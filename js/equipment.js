@@ -29,6 +29,32 @@ export function entryStats(item, variantName = null) {
   return { price_gp: src.price_gp ?? null, weight_lbs: src.weight_lbs ?? null };
 }
 
+// Price and weight of an owned magic item, or of one of its price options (e.g. a +2 ring of protection).
+export function magicItemStats(item, optionLabel = null) {
+  const option = optionLabel ? (item.price_options || []).find(o => o.label === optionLabel) : null;
+  return { price_gp: option ? option.price_gp : (item.price_gp ?? null), weight_lbs: item.weight_lbs ?? null };
+}
+
+// Special abilities are added to a magic weapon or armor; they can't be owned on their own.
+export function ownable(item) {
+  return !/special abilities/i.test(item.category);
+}
+
+// Cost and weight of owned magic items ([{ id, option, qty }]).
+export function magicItemTotals(owned, itemsById) {
+  let cost = 0;
+  let weight = 0;
+  const unpriced = [];
+  for (const entry of owned) {
+    const item = itemsById.get(entry.id);
+    if (!item) continue;
+    const { price_gp, weight_lbs } = magicItemStats(item, entry.option);
+    if (price_gp === null) unpriced.push(item.name); else cost += price_gp * entry.qty;
+    weight += (weight_lbs || 0) * entry.qty;
+  }
+  return { cost, weight: Math.round(weight * 100) / 100, unpriced };
+}
+
 // Totals for the inventory ([{ id, variant, qty }]) plus worn armor and shield ({ armor, armorEnh, shield, shieldEnh }).
 // Items with no listed price or weight count as 0 and are listed in `unpriced` / `unweighed`.
 export function equipmentTotals(inventory, itemsById, worn = {}) {

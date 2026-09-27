@@ -305,3 +305,19 @@ table.inventory, table.versions { width: 100%; border-collapse: collapse; }
 button.item-link { font-size: 1rem; text-decoration: none; padding: 0; text-align: left; min-height: 32px; }
 .versions { margin: 8px 0; font-size: 0.95rem; }
 .browser-panel .slot-buttons { flex-wrap: wrap; }
+
+/* Tables inside rules text */
+.table-wrap { overflow-x: auto; margin: 8px 0; }
+table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%; }
+.text-table th, .text-table td { border: 1px solid var(--border); padding: 4px 8px; text-align: left; vertical-align: top; }
+.text-table th { background: var(--bg); }
+
+/* My spells */
+.my-spell-level { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.my-spell-level h3 { margin: 4px 0; font-size: 0.95rem; }
+.my-spell-level .count.over { color: var(--bad); font-weight: 600; }
+.chip-list { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-list li { display: inline-flex; }
+.chip { min-height: 36px; padding: 0 10px; border-radius: 18px 0 0 18px; border-right: 0; }
+.chip-remove { min-height: 36px; width: 36px; padding: 0; border-radius: 0 18px 18px 0; color: var(--muted); }
+.pick-list button.mine { font-weight: 600; }

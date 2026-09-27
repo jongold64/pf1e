@@ -1,8 +1,24 @@
-// Magic Items tab: every magic item, alphabetical within its category, with a side panel for the chosen item.
+// Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
+// side panel for the item being looked at.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
 
 let selectedId = null;
 let listed = false;
+
+const entryName = (item, option) => (option ? `${item.name} (${option})` : item.name);
+
+function addButtons(item) {
+  if (!ownable(item)) {
+    return '<p class="hint">Special abilities are added to a magic weapon or armor, so they can\'t be owned on their own.</p>';
+  }
+  const options = item.price_options || [];
+  const buttons = options.length
+    ? options.map(o => `<button type="button" class="primary" data-add-item="${esc(item.id)}" data-option="${esc(o.label)}">
+        Add ${esc(o.label)} (${esc(formatGp(o.price_gp))})</button>`).join('')
+    : `<button type="button" class="primary" data-add-item="${esc(item.id)}">Add to my magic items</button>`;
+  return `<div class="slot-buttons">${buttons}</div>`;
+}
 
 function itemDetails(item) {
   const c = item.construction || {};
@@ -15,18 +31,55 @@ function itemDetails(item) {
       ['Price', item.price],
       ['Weight', item.weight],
     ])}
+    ${addButtons(item)}
     ${paragraphs(item.description) || '<p class="hint">The source has no description for this item.</p>'}
     ${c.requirements || c.cost ? `<h4>Construction</h4>${facts([['Requirements', c.requirements], ['Cost', c.cost]])}` : ''}`;
 }
 
 function renderPanel(app) {
-  const item = app.data.items?.find(i => i.id === selectedId);
+  const item = app.data.itemsById?.get(selectedId);
   $('item-panel').innerHTML = item ? itemDetails(item) : '<p class="hint">Choose an item to see its details.</p>';
   document.querySelectorAll('#item-list [data-item]').forEach(b =>
     b.setAttribute('aria-current', String(b.dataset.item === selectedId)));
 }
 
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+// The "My magic items" table: quantity buttons, cost and weight, and totals.
+export function renderMyItems(app) {
+  const owned = app.state.magicItems;
+  const byId = app.data.itemsById;
+  if (!byId) return;
+  const count = owned.reduce((n, e) => n + e.qty, 0);
+  $('my-items-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
+  $('my-items-rows').innerHTML = owned.map((e, i) => {
+    const item = byId.get(e.id);
+    if (!item) return '';
+    const s = magicItemStats(item, e.option);
+    return `<tr><td><button type="button" class="link item-link" data-show-item="${esc(item.id)}">${esc(entryName(item, e.option))}</button>
+        <div class="breakdown">${esc(item.category)}${item.slot && !['none', 'slotless'].includes(item.slot) ? ` · ${esc(item.slot)}` : ''}</div></td>
+      <td><span class="base">
+        <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
+        <span class="value">${e.qty}</span>
+        <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
+      </span></td>
+      <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</td>
+      <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
+  }).join('') || '<tr><td colspan="4" class="hint">No magic items yet. Choose one below, then add it.</td></tr>';
+  const totals = magicItemTotals(owned, byId);
+  $('my-items-total').textContent = owned.length
+    ? `Total ${formatGp(totals.cost)}, ${formatLbs(totals.weight)}. These count toward gold and weight on the Equipment tab.` +
+      (totals.unpriced.length ? ` No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.` : '')
+    : '';
+}
+
+function addItem(app, id, option) {
+  const owned = app.state.magicItems.map(e => ({ ...e }));
+  const existing = owned.find(e => e.id === id && (e.option || null) === (option || null));
+  if (existing) existing.qty += 1;
+  else owned.push({ id, ...(option ? { option } : {}), qty: 1 });
+  app.update({ magicItems: owned });
+}
 
 export function initItemsTab(app) {
   $('item-filter').addEventListener('input', () => renderList(app));
@@ -39,6 +92,20 @@ export function initItemsTab(app) {
     if (!btn) return;
     selectedId = btn.dataset.item;
     renderPanel(app);
+  });
+  $('item-panel').addEventListener('click', e => {
+    const btn = e.target.closest('[data-add-item]');
+    if (btn) addItem(app, btn.dataset.addItem, btn.dataset.option);
+  });
+  $('my-items-rows').addEventListener('click', e => {
+    const step = e.target.closest('[data-item-qty]');
+    if (step) {
+      const owned = app.state.magicItems.map(x => ({ ...x }));
+      owned[Number(step.dataset.itemQty)].qty += Number(step.dataset.step);
+      app.update({ magicItems: owned.filter(x => x.qty > 0) });
+    }
+    const show = e.target.closest('[data-show-item]');
+    if (show) showItem(app, show.dataset.showItem);
   });
 }
 
@@ -68,11 +135,12 @@ function renderList(app) {
 }
 
 export async function renderItemsTab(app) {
-  if (listed) return;
   if (!app.data.items) {
     $('item-list').innerHTML = '<p class="hint">Loading magic items…</p>';
     await app.loadItems();
   }
+  renderMyItems(app);
+  if (listed) return;
   listed = true;
   renderList(app);
 }
@@ -80,7 +148,7 @@ export async function renderItemsTab(app) {
 // Used by search: show an item in the side panel and scroll the list to it.
 export async function showItem(app, id) {
   selectedId = id;
-  if (!listed) await renderItemsTab(app);
+  await renderItemsTab(app);
   if ($('item-filter').value) {
     $('item-filter').value = '';
     renderList(app);

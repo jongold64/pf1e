@@ -10,9 +10,43 @@ export function signed(n) {
   return n >= 0 ? `+${n}` : `${n}`;
 }
 
-// Plain text with blank lines between paragraphs -> <p> elements.
+const isRow = line => line.includes(' | ');
+
+function table(rows) {
+  const cells = row => row.split(' | ').map(c => c.trim());
+  const [head, ...body] = rows;
+  return `<div class="table-wrap"><table class="text-table">
+    <thead><tr>${cells(head).map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+    <tbody>${body.map(r => `<tr>${cells(r).map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// Plain text -> HTML. Blank lines separate paragraphs, single line breaks are kept, and runs of two or more
+// "a | b | c" lines (tables in the rules text) become tables with the first line as the header.
 export function paragraphs(text) {
-  return String(text || '').split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('');
+  return String(text || '').split(/\n{2,}/).map(block => {
+    const lines = block.split('\n');
+    let html = '';
+    let words = [];
+    const flush = () => {
+      if (words.length) html += `<p>${words.map(esc).join('<br>')}</p>`;
+      words = [];
+    };
+    for (let i = 0; i < lines.length;) {
+      let j = i;
+      while (j < lines.length && isRow(lines[j])) j++;
+      if (j - i >= 2) {
+        flush();
+        html += table(lines.slice(i, j));
+        i = j;
+      } else {
+        words.push(lines[i]);
+        i += 1;
+      }
+    }
+    flush();
+    return html;
+  }).join('');
 }
 
 // A label/value list, skipping empty values: [['Aura', 'faint abjuration'], ['CL', 5]].

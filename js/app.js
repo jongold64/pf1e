@@ -15,7 +15,7 @@ import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
-import { initItemsTab, renderItemsTab, showItem } from './tab-items.js';
+import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { initSearch } from './search-ui.js';
 
@@ -27,7 +27,7 @@ const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
   races: [], classes: [], feats: [], featsById: new Map(), armor: [], armorById: new Map(),
-  spells: null, items: null, gear: null, gearById: null,
+  spells: null, items: null, itemsById: null, gear: null, gearById: null,
 };
 const pending = {};
 function loadOnce(name, file, prepare = x => x) {
@@ -36,7 +36,10 @@ function loadOnce(name, file, prepare = x => x) {
 }
 // Mythic spells are already left out of the data file.
 const loadSpells = () => loadOnce('spells', 'data/spells.json');
-const loadItems = () => loadOnce('items', 'data/magic-items.json');
+const loadItems = () => loadOnce('items', 'data/magic-items.json', items => {
+  data.itemsById = new Map(items.map(i => [i.id, i]));
+  return items;
+});
 const loadGear = () => loadOnce('gear', 'data/equipment.json', gear => {
   data.gearById = new Map(gear.map(i => [i.id, i]));
   return gear;
@@ -66,6 +69,8 @@ const state = {
   shieldEnh: 0,
   gold: null,      // gold the character has; null means the class's average starting gold
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
+  spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
+  magicItems: [],  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'
 };
 
 // Shared with the tab modules.
@@ -112,6 +117,10 @@ function load() {
   state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
+  state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
+  state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
+    .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
+    .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty }));
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -463,6 +472,7 @@ function render() {
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
   if (tab === 'equipment') renderEquipment(app, view);
+  if (tab === 'magic-items') renderMyItems(app);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 

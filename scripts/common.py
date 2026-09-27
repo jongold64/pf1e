@@ -79,6 +79,8 @@ def text(h):
     s = s.replace('\xa0', ' ').replace('–', '-').replace('—', '-')
     s = s.replace('‘', "'").replace('’', "'").replace('“', '"').replace('”', '"')
     s = s.replace('−', '-')
+    # The source has a few broken apostrophes ("doesn�t").
+    s = re.sub(r'(?<=\w)�(?=\w)', "'", s)
     s = re.sub(r'[ \t]+', ' ', s)
     s = re.sub(r' *\n *', '\n', s)
     s = re.sub(r'\n{3,}', '\n\n', s)
@@ -131,6 +133,23 @@ def plain(s):
     """Unescape HTML entities and normalize dashes, e.g. '&ndash;5' -> '-5'."""
     s = html.unescape(s or '').replace('\xa0', ' ')
     return s.replace('–', '-').replace('—', '-').replace('−', '-').strip()
+
+
+UNITS = {'pp': 10, 'gp': 1, 'sp': 0.1, 'cp': 0.01}
+
+
+def price_gp(s):
+    """'5 sp' -> 0.5, '1,500 gp' -> 1500, ': 80 gp' -> 80, '80,500' -> 80500 (gold when no unit),
+    '+50 gp' -> None (an add-on price), 'varies' -> None."""
+    s = plain(s).lstrip(': ').lower()
+    if s.startswith('+'):
+        return None
+    # Digits grouped by commas ("1,000"), then an optional footnote digit ("1,0001 gp" is 1,000 gp, note 1).
+    # A range ("1-20 gp") has no single price.
+    m = re.match(r'^(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?!\s*-\s*\d)\d?\s*(pp|gp|sp|cp)?(?:\b|$)', s)
+    if not m:
+        return None
+    return round(float(m.group(1).replace(',', '')) * UNITS[m.group(2) or 'gp'], 2)
 
 
 def to_number(s):

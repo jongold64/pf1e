@@ -7,7 +7,9 @@ import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksA
          skillTotal, ranksFor } from './skills.js';
 import { armorEffects, speedInArmor, proficiencyWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
-import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs } from './equipment.js';
+import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
+         magicItemStats, magicItemTotals, ownable } from './equipment.js';
+import { paragraphs } from './dom.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -470,6 +472,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('search: limit', search(index, 'ar', 1).length, 1);
 }
 
+// Rules text display
+{
+  check('paragraphs', paragraphs('One.\n\nTwo.'), '<p>One.</p><p>Two.</p>');
+  check('line breaks are kept', paragraphs('Line one\nLine two'), '<p>Line one<br>Line two</p>');
+  check('text is escaped', paragraphs('a < b & c'), '<p>a &lt; b &amp; c</p>');
+  const t = paragraphs('Intro text.\nHit Points | Duration\n50 or less | Permanent\n51-100 | 1d4+1 minutes');
+  check('table rows become a table', (t.match(/<tr>/g) || []).length, 3);
+  check('first table row is the header', t.includes('<th>Hit Points</th><th>Duration</th>'), true);
+  check('text before the table stays text', t.startsWith('<p>Intro text.</p>'), true);
+  check('a single "a | b" line stays text', paragraphs('Just | one'), '<p>Just | one</p>');
+}
+
 // Equipment
 {
   check('formatGp: gold', formatGp(1250), '1,250 gp');
@@ -503,6 +517,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('inventory cost (2 + 50 + 2 + 0.10 + 150 chainmail)', t.cost, 204.1);
   check('inventory weight (2 + 4 + 20 + 40 chainmail; candles have no weight)', t.weight, 66);
   check('items without a weight are listed', t.unweighed.join(), 'Candle');
+
+  const ring = { name: 'Ring of Protection', category: 'Rings', price_gp: 2000, weight_lbs: null,
+                 price_options: [{ label: '+1', price_gp: 2000 }, { label: '+2', price_gp: 8000 }] };
+  const cloak = { name: 'Cloak of Resistance', category: 'Wondrous Items', price_gp: 1000, weight_lbs: 1 };
+  check('magic item price option', magicItemStats(ring, '+2').price_gp, 8000);
+  check('magic item default price', magicItemStats(cloak).price_gp, 1000);
+  const owned = magicItemTotals([{ id: 'ring', option: '+2', qty: 1 }, { id: 'cloak', qty: 2 }],
+                                new Map([['ring', ring], ['cloak', cloak]]));
+  check('magic items cost (8,000 + 2 × 1,000)', owned.cost, 10000);
+  check('magic items weight', owned.weight, 2);
+  check('special abilities can\'t be owned alone', ownable({ category: 'Weapon Special Abilities' }), false);
+  check('wondrous items can be owned', ownable(cloak), true);
 }
 
 const failed = results.filter(r => !r.pass);

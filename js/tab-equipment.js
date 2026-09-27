@@ -1,6 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, entryStats, formatGp, formatLbs } from './equipment.js';
+import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, entryStats, formatGp, formatLbs } from './equipment.js';
 
 let selectedId = null;
 let listed = false;
@@ -63,9 +63,9 @@ function renderList(app) {
 // Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
 export async function renderEquipment(app, view) {
   const { state, data } = app;
-  if (!data.gear) {
+  if (!data.gear || (state.magicItems.length && !data.itemsById)) {
     $('inventory-rows').innerHTML = '<tr><td colspan="4" class="hint">Loading equipment…</td></tr>';
-    await app.loadGear();
+    await Promise.all([app.loadGear(), state.magicItems.length ? app.loadItems() : null]);
     view = app.view;
   }
   const start = startingGold(view.cls, data.classes);
@@ -81,16 +81,20 @@ export async function renderEquipment(app, view) {
     armor: view.gear.armor, armorEnh: state.armorEnh, shield: view.gear.shield, shieldEnh: state.shieldEnh,
   });
   const armorSpend = armorCost(view.gear.armor, state.armorEnh) + armorCost(view.gear.shield, state.shieldEnh);
-  const left = Math.round((gold - totals.cost) * 100) / 100;
+  const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
+  const left = Math.round((gold - totals.cost - magic.cost) * 100) / 100;
   $('money-summary').innerHTML = [
     ['Gold', formatGp(gold)],
     ['Armor and shield', formatGp(armorSpend)],
     ['Equipment', formatGp(totals.cost - armorSpend)],
+    ['Magic items', formatGp(magic.cost)],
     ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>`],
-    ['Weight carried', formatLbs(totals.weight)],
+    ['Weight carried', formatLbs(totals.weight + magic.weight)],
   ].map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === 'Left' ? v : esc(v)}</dd>`).join('');
   const notes = ['Weights are for Medium characters; gear for Small characters weighs half as much.'];
-  if (totals.unpriced.length) notes.push(`No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.`);
+  const unpriced = [...totals.unpriced, ...magic.unpriced];
+  if (unpriced.length) notes.push(`No price listed for: ${[...new Set(unpriced)].join(', ')}.`);
+  if (state.magicItems.length) notes.push('Magic items are listed on the Magic Items tab.');
   if (totals.unweighed.length) notes.push(`No weight listed for: ${[...new Set(totals.unweighed)].join(', ')}.`);
   $('money-note').textContent = notes.join(' ');
 

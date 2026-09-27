@@ -6,7 +6,7 @@ in several books, the earliest book's entry is kept and the others are listed in
 """
 import json, re, sys
 from collections import Counter
-from common import ALL_BOOKS, iter_books, slug, node_text, text, clean, plain, to_number
+from common import ALL_BOOKS, iter_books, slug, node_text, text, clean, plain, to_number, price_gp
 
 # First heading (walking up from the item) that matches decides the category. Order matters.
 CATEGORIES = [
@@ -60,6 +60,24 @@ def by_slot(slot, name):
     return 'Wondrous Items'
 
 
+PRICE_OPTION = re.compile(r'([\d,]+)\s*gp\s*\(([^)]+)\)')
+
+
+def price_options(price):
+    """'2,000 gp (+1), 8,000 gp (+2)' -> [{'label': '+1', 'price_gp': 2000}, {'label': '+2', 'price_gp': 8000}].
+    Only when the price lists two or more choices."""
+    opts = [{'label': label.strip(), 'price_gp': int(gp.replace(',', ''))} for gp, label in PRICE_OPTION.findall(price or '')]
+    return opts if len(opts) >= 2 else []
+
+
+def tidy(description):
+    """Artifacts' "Destruction" sections carry a placeholder label "descriptor" in the source:
+    "Destruction: descriptor The aegis is destroyed..." and a trailing "descriptor" line."""
+    d = re.sub(r'(^|\n|: )descriptor\b\s*', r'\1', description)
+    d = re.sub(r'^Description:\s*', '', d)
+    return re.sub(r'\n{3,}', '\n\n', d).strip()
+
+
 def cl_number(s):
     m = re.match(r'^(\d+)', plain(s))
     return int(m.group(1)) if m else None
@@ -82,12 +100,16 @@ def ability_from_stat_block(n, category, book):
     stats = {label.lower(): clean(value) for label, value in STAT_BLOCK.findall(body)}
     if 'aura' not in stats:
         return None
-    description = text(STAT_BLOCK.sub('', body))
+    parts = [text(STAT_BLOCK.sub('', body))]
     requirements = ''
     for ch in n['children']:
         if (ch['name'] or '').lower().startswith('construction'):
             # The child repeats the price lines; the requirements are its last paragraph.
             requirements = text(STAT_BLOCK.sub('', ch['body'] or ''))
+        else:
+            # Some abilities keep their description in a child section (Putrid > Putrid).
+            parts.append(node_text(ch))
+    description = tidy('\n\n'.join(p for p in parts if p))
     price = stats.get('price', '')
     return {
         'id': slug(n['name']), 'name': clean(n['name']), 'source': book, 'category': category, 'slot': None,
@@ -160,8 +182,10 @@ def main():
                 'id': slug(n['name']), 'name': clean(n['name']), 'source': book, 'category': category,
                 'slot': slot_text if slot_text in SLOTS else (slot_text or None),
                 'aura': clean(aura), 'cl': cl_number(cl), 'price': clean(price) or None,
-                'price_gp': to_number(price), 'weight': clean(weight) if clean(weight).strip('-') else None,
-                'description': re.sub(r'^Description:\s*', '', node_text(n)),
+                'price_gp': price_gp(price), **({'price_options': price_options(price)} if price_options(price) else {}),
+                'weight': clean(weight) if clean(weight).strip('-') else None,
+                'weight_lbs': to_number(weight) if clean(weight).strip('-') else None,
+                'description': tidy(node_text(n)),
                 **({'construction': construction} if construction else {}),
             }
             add(item, book)

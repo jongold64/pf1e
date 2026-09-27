@@ -7,7 +7,7 @@ alchemist's fire are gear.
 """
 import json, re, sys
 from collections import Counter
-from common import ALL_BOOKS, iter_books, slug, node_text, clean, plain, to_number
+from common import ALL_BOOKS, iter_books, slug, node_text, clean, plain, to_number, price_gp
 
 PREFERRED = 'Ultimate Equipment'
 # First heading (walking up from the item) that matches decides the category. Order matters.
@@ -28,23 +28,6 @@ CATEGORIES = [
 ]
 WEAPON_FIELDS = ('Dmg (M)', 'Dmg', 'Weapon Class', 'Critical')
 ARMOR_FIELDS = ('Armor Type', 'ArmorBonus', 'Armor Bonus', 'Armor/ShieldBonus', 'Shield Bonus')
-UNITS = {'pp': 10, 'gp': 1, 'sp': 0.1, 'cp': 0.01}
-
-
-def price_gp(s):
-    """'5 sp' -> 0.5, '1,500 gp' -> 1500, ': 80 gp' -> 80, '80,500' -> 80500 (gold when no unit),
-    '+50 gp' -> None (an add-on price), 'varies' -> None."""
-    s = plain(s).lstrip(': ').lower()
-    if s.startswith('+'):
-        return None
-    # Digits grouped by commas ("1,000"), then an optional footnote digit ("1,0001 gp" is 1,000 gp, note 1).
-    # A range ("1-20 gp") has no single price.
-    m = re.match(r'^(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)(?!\s*-\s*\d)\d?\s*(pp|gp|sp|cp)?(?:\b|$)', s)
-    if not m:
-        return None
-    return round(float(m.group(1).replace(',', '')) * UNITS[m.group(2) or 'gp'], 2)
-
-
 def match_key(name):
     """'Rope, Silk' (Core Rulebook) and 'Silk Rope' (Ultimate Equipment) are the same item."""
     n = name.lower().strip()
@@ -117,6 +100,9 @@ def main():
                 continue  # magic item
             if any(f in fields for f in ARMOR_FIELDS):
                 continue  # armor (armor.json)
+            parent = (rows.get(n['parent_id']) or {}).get('name') or ''
+            if parent == 'Construction' or parent.startswith('Growing a'):
+                continue  # a monster's construction cost (e.g. a golem), not gear
             category, chain = category_of(n, rows, book, fields)
             is_weapon = any(f in fields for f in WEAPON_FIELDS)
             if is_weapon and category != 'Alchemical Items':
