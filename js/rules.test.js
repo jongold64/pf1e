@@ -315,7 +315,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   // The class data names skills with an ability; they should agree with the skill list.
   // (Some prestige classes, which the app doesn't offer yet, have source errors like "Handle Animals".)
   const mismatches = [];
-  for (const c of classes.filter(x => x.category !== 'prestige')) {
+  for (const c of classes.filter(x => x.category !== 'prestige' && x.category !== 'npc')) {
     for (const s of c.class_skills || []) {
       const info = skillInfo(s.skill) || SKILLS.find(x => x.name === splitSkill(s.skill).base);
       const expected = info?.ability ?? (splitSkill(s.skill).base === 'Knowledge' ? 'int' : null);
@@ -334,10 +334,6 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const limited = classes.find(c => (c.class_skills || []).some(s => s.skill.startsWith('Perform (oratory')));
   check('limited Perform list: sing', classSkillTest(limited)('Perform (sing)'), true);
   check('limited Perform list: dance', classSkillTest(limited)('Perform (dance)'), false);
-  const expert = classSkillTest(cls('expert'), ['Stealth', 'Craft']);
-  check('expert: chosen skill', expert('Stealth'), true);
-  check('expert: chosen family', expert('Craft (traps)'), true);
-  check('expert: not chosen', expert('Climb'), false);
 
   const ranks = (r, c, level, base, extra = {}) => skillRanksAvailable({ race: race(r), cls: cls(c), level, baseScores: base, ...extra });
   check('human fighter 1, Int 10 (2 + 0 + 1 Skilled)', ranks('human', 'fighter', 1, scores(10, 10, 10, 10, 10, 10), { flexibleChoice: 'str' }), 3);

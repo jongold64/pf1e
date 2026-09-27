@@ -80,7 +80,7 @@ export function formatBab(bab) {
 
 // Ability each class casts with, taken from its "Spells" rules text ("must have a ___ score equal to at least 10 + the spell level").
 export const CASTING_ABILITY = {
-  adept: 'wis', alchemist: 'int', antipaladin: 'cha', arcanist: 'int', bard: 'cha', bloodrager: 'cha',
+  alchemist: 'int', antipaladin: 'cha', arcanist: 'int', bard: 'cha', bloodrager: 'cha',
   cleric: 'wis', druid: 'wis', hunter: 'wis', inquisitor: 'wis', investigator: 'int', magus: 'int',
   oracle: 'cha', paladin: 'cha', ranger: 'wis', shaman: 'wis', skald: 'cha', sorcerer: 'cha',
   summoner: 'cha', warpriest: 'wis', witch: 'int', wizard: 'int',

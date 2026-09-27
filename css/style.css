@@ -194,6 +194,4 @@ table.skills { width: 100%; border-collapse: collapse; }
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 button.link { border: 0; background: none; color: var(--accent); min-height: 0; padding: 0 4px;
   font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
-.expert-pick { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); min-height: 32px; }
-.expert-pick input { width: 20px; height: 20px; }
 .skills .warning { font-size: 0.85rem; }

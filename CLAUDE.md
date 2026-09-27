@@ -49,15 +49,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   proficiency text (`proficiencyFeats`). Mythic feats are filtered out in `app.js`.
 - Skills: `js/skills.js` has the Core Rulebook skill list (abilities, trained-only, and the Craft /
   Perform / Profession "family" skills that take player-added specialties). `classSkillTest` expands
-  class-data shorthand ("Craft (any)", "Knowledge (all)", limited Perform lists); experts have no list
-  and pick 10. Ranks per level use Int as of that level. Racial skill bonuses are parsed from trait
+  class-data shorthand ("Craft (any)", "Knowledge (all)", limited Perform lists). Ranks per level use Int as of that level. Racial skill bonuses are parsed from trait
   text and only unconditional ones are kept. Skill ranks feed feat prerequisites via `featContext`.
+- The app offers core, base, hybrid and alternate classes only: prestige and NPC classes are filtered
+  out in `app.js` `start()` (the user asked for NPC classes to be removed).
 - Class data quirks: the NPC classes (aristocrat, commoner, expert, warrior) have no `special` list on
-  any progression row, so always use `row.special || []`. Some prestige classes list Disable Device
+  any progression row, so rules code uses `row.special || []` in case they're offered again. Some prestige classes list Disable Device
   under Int and misspell "Handle Animals" (source errors; matters once prestige classes are offered).
 - The app changes by pure functions + a full re-render; UI-level behaviour (the feat picker dialog,
   skill buttons) isn't covered by tests.html, so check it in a browser after changes, including
-  switching through every class (the NPC classes are the usual casualties).
+  switching through every class.
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 

@@ -48,9 +48,8 @@ export function skillInfo(name) {
 
 // A class's class skills as a test function: isClassSkill('Knowledge (arcana)'), isClassSkill('Craft (alchemy)').
 // Class data uses a few shorthand forms: "Craft (any)", "Knowledge (all)", "Perform (oratory, sing, ...)".
-// An expert has no fixed list and picks up to 10 (`expertChoices`).
-export function classSkillTest(cls, expertChoices = []) {
-  const entries = cls.class_skills?.length ? cls.class_skills.map(s => s.skill) : expertChoices;
+export function classSkillTest(cls) {
+  const entries = (cls.class_skills || []).map(s => s.skill);
   const exact = new Set();
   const families = new Map();  // base name -> null (any specialty) or a set of allowed specialties
   let allKnowledge = false;

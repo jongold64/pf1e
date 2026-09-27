@@ -14,7 +14,7 @@ import {
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
-const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate'], ['npc', 'NPC']];
+const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate']];
 
 const $ = id => document.getElementById(id);
 
@@ -42,10 +42,7 @@ const state = {
   feats: {},       // feat slot id (see featSlots) -> feat id
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
-  expertSkills: [], // an expert's chosen class skills (up to 10)
 };
-
-const EXPERT_CLASS_SKILLS = 10;
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -74,7 +71,6 @@ function load() {
   }
   if (!Array.isArray(state.specialties)) state.specialties = [];
   state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
-  if (!Array.isArray(state.expertSkills)) state.expertSkills = [];
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
   for (const [name, ranks] of Object.entries(state.skills)) {
     const known = SKILLS.some(s => s.name === name && !s.family) || state.specialties.includes(name);
@@ -207,12 +203,6 @@ function buildControls() {
       $('skill-rows').querySelector(`[data-add-specialty="${e.target.dataset.specialtyFor}"]`).click();
     }
   });
-  $('skill-rows').addEventListener('change', e => {
-    const name = e.target.dataset.expert;
-    if (!name) return;
-    const chosen = state.expertSkills.filter(n => n !== name);
-    update({ expertSkills: e.target.checked ? [...chosen, name] : chosen });
-  });
 
   // Feats
   const types = [...new Set(feats.flatMap(f => f.types || []))].sort();
@@ -341,8 +331,7 @@ function render() {
 }
 
 function renderSkills(race, cls, scores, featNames) {
-  const isExpert = !cls.class_skills?.length;
-  const isClassSkill = classSkillTest(cls, state.expertSkills);
+  const isClassSkill = classSkillTest(cls);
   const racial = racialSkillBonuses(race);
   const available = skillRanksAvailable({
     race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
@@ -353,9 +342,8 @@ function renderSkills(race, cls, scores, featNames) {
   $('skill-count').textContent = `${used} of ${available} ranks used`;
   $('skill-count').classList.toggle('over', used > available);
 
-  const hints = [`At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.`];
-  if (isExpert) hints.push(`Experts choose ${EXPERT_CLASS_SKILLS} class skills: tick them below (${state.expertSkills.length} chosen).`);
-  $('skills-hint').textContent = hints.join(' ');
+  $('skills-hint').textContent =
+    `At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.`;
 
   const abbr = a => a.charAt(0).toUpperCase() + a.slice(1);
   $('skill-rows').innerHTML = names.map(name => {
@@ -363,18 +351,13 @@ function renderSkills(race, cls, scores, featNames) {
     // Only Craft/Perform/Profession have player-added specialties; "Knowledge (arcana)" is a skill of its own.
     const specialty = info.family ? splitSkill(name).specialty : null;
     const classSkill = isClassSkill(name);
-    const expertBox = isExpert && (!info.family || !specialty)
-      ? `<label class="expert-pick"><input type="checkbox" data-expert="${esc(name)}"
-           ${state.expertSkills.includes(name) ? 'checked' : ''}
-           ${!state.expertSkills.includes(name) && state.expertSkills.length >= EXPERT_CLASS_SKILLS ? 'disabled' : ''}> class skill</label>`
-      : '';
     const tags = [classSkill ? '<span class="tag">class</span>' : '', info.trained ? '<span class="tag muted">trained only</span>' : ''].join('');
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
       const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false });
       return `<tr class="family">
-        <td><div class="skill-name">${esc(name)} ${tags}</div>${expertBox}
+        <td><div class="skill-name">${esc(name)} ${tags}</div>
           <div class="add-specialty">
             <input type="text" data-specialty-for="${esc(name)}" placeholder="Add a specialty, e.g. ${name === 'Craft' ? 'alchemy' : name === 'Perform' ? 'sing' : 'sailor'}" aria-label="${esc(name)} specialty">
             <button type="button" data-add-specialty="${esc(name)}">Add</button>
@@ -393,7 +376,6 @@ function renderSkills(race, cls, scores, featNames) {
     return `<tr${specialty ? ' class="specialty"' : ''}>
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
-        ${expertBox}
         <div class="breakdown">${parts.join(' · ')}</div>
         ${ranks > state.level ? `<div class="warning">More than ${state.level} ranks</div>` : ''}</td>
       <td><span class="base">
@@ -572,7 +554,8 @@ async function start() {
     return;
   }
   // Prestige classes need levels in other classes first, and multiclassing isn't supported yet.
-  classes = classes.filter(c => c.category !== 'prestige');
+  // NPC classes (adept, aristocrat, commoner, expert, warrior) aren't offered.
+  classes = classes.filter(c => c.category !== 'prestige' && c.category !== 'npc');
   // Mythic feats need mythic tiers, which the builder doesn't support.
   feats = feats.filter(f => !(f.types || []).includes('Mythic'));
   featsById = new Map(feats.map(f => [f.id, f]));
