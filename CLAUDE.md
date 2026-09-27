@@ -34,6 +34,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   e.g. `[11, 6, 1]`); monk AC reads `other['AC Bonus']` from that row. HP uses the fixed average after
   1st level (half the die + 1), and the favored class bonus applies at every level. Multiclassing is
   not supported yet, so prestige classes stay filtered out.
+- Spells: `spellsPerDay` in `rules.js` combines the class table (`spells_per_day`/`spells_known`) with
+  bonus spells from the casting ability. `CASTING_ABILITY` and `EXTRA_SLOTS` (cleric domain, shaman
+  spirit magic, wizard school, druid domain) are hand-entered because the data doesn't carry them:
+  the build's `to_int` keeps only the leading number of a table cell, so printed "+1" slots are lost.
+  The arcanist's "spells prepared" table is also missing from the data.
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 

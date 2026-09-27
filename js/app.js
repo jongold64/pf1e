@@ -1,7 +1,8 @@
 // Page code: loads the data, builds the controls, and shows the results from rules.js.
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
-  pointsSpent, racialAdjustments, characterStats, formatBab,
+  EXTRA_SLOTS,
+  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay,
 } from './rules.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
@@ -24,6 +25,7 @@ const state = {
   armor: 0,
   shield: 0,
   favored: 'hp',
+  extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
 };
 
 function esc(s) {
@@ -46,6 +48,14 @@ function load() {
   if (!(Number.isInteger(state.level) && state.level >= 1 && state.level <= 20)) state.level = 1;
   state.increases = INCREASE_LEVELS.map((_, i) =>
     ABILITIES.includes(state.increases?.[i]) ? state.increases[i] : '');
+  if (typeof state.extraSlots !== 'object' || state.extraSlots === null) state.extraSlots = {};
+}
+
+// Whether the optional extra spell slot is on for a class, falling back to its default.
+function extraSlotOn(clsId) {
+  const slot = EXTRA_SLOTS[clsId];
+  if (!slot?.optional) return false;
+  return typeof state.extraSlots[clsId] === 'boolean' ? state.extraSlots[clsId] : slot.default;
 }
 
 function save() {
@@ -108,6 +118,8 @@ function buildControls() {
   $('race').addEventListener('change', e => update({ race: e.target.value }));
   $('class').addEventListener('change', e => update({ cls: e.target.value }));
   $('level').addEventListener('change', e => update({ level: Number(e.target.value) }));
+  $('extra-slot').addEventListener('change', e =>
+    update({ extraSlots: { ...state.extraSlots, [state.cls]: e.target.checked } }));
   $('increase-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.increase);
     update({ increases: state.increases.map((a, j) => (j === i ? e.target.value : a)) });
@@ -198,6 +210,57 @@ function render() {
     ['Flat-footed AC', stats.flatFooted],
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+
+  renderSpells(cls, stats.scores);
+}
+
+const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
+
+function renderSpells(cls, scores) {
+  const spells = spellsPerDay({ cls, level: state.level, scores, extraSlot: extraSlotOn(cls.id) });
+  $('spells-card').hidden = !spells;
+  if (!spells) return;
+
+  const abilityName = ABILITY_NAMES[spells.ability];
+  $('spells-summary').textContent = `Casts with ${abilityName} (${spells.score}).`;
+
+  const slot = EXTRA_SLOTS[cls.id];
+  $('extra-slot-row').hidden = !slot?.optional;
+  if (slot?.optional) {
+    $('extra-slot-label').textContent = slot.label;
+    $('extra-slot').checked = extraSlotOn(cls.id);
+  }
+
+  $('spells-table').hidden = spells.rows.length === 0;
+  if (spells.rows.length === 0) {
+    $('spells-note').textContent = `${cls.name}s start casting spells at level ${spells.firstLevel}.`;
+    return;
+  }
+
+  const showKnown = spells.rows.some(r => r.known !== null);
+  const extraName = spells.extraSlotName;
+  $('spells-head').innerHTML = `<tr><th>Spell level</th><th>Class</th><th>${esc(abilityName.slice(0, 3))}</th>` +
+    (extraName ? `<th>${esc(extraName)}</th>` : '') + '<th>Per day</th>' + (showKnown ? '<th>Known</th>' : '') + '</tr>';
+
+  const dash = v => (v === null ? '—' : v);
+  $('spells-body').innerHTML = spells.rows.map(r => {
+    // Level 0 spells (cantrips/orisons) are cast at will.
+    let total = r.spellLevel === 0 ? (r.base === null ? 'At will' : `${r.base} prepared`) : dash(r.total);
+    if (!r.canCast) total = `<span class="warning">Needs ${abilityName.slice(0, 3)} ${10 + r.spellLevel}</span>`;
+    return `<tr${r.canCast ? '' : ' class="cannot"'}>
+      <td>${ORDINALS[r.spellLevel]}</td>
+      <td>${dash(r.base)}</td>
+      <td>${r.bonus ? `+${r.bonus}` : ''}</td>
+      ${extraName ? `<td>${r.extra ? `+${r.extra}` : ''}</td>` : ''}
+      <td class="total">${total}</td>
+      ${showKnown ? `<td>${dash(r.known)}</td>` : ''}
+    </tr>`;
+  }).join('');
+
+  const notes = [];
+  if (spells.rows[0].spellLevel === 0) notes.push('Level 0 spells (cantrips and orisons) can be cast any number of times.');
+  if (cls.id === 'arcanist') notes.push(`Arcanists also have a "spells prepared" table, which isn't in the data yet.`);
+  $('spells-note').textContent = notes.join(' ');
 }
 
 async function start() {

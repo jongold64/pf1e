@@ -78,6 +78,64 @@ export function formatBab(bab) {
   return bab.map(b => (b >= 0 ? `+${b}` : `${b}`)).join('/');
 }
 
+// Ability each class casts with, taken from its "Spells" rules text ("must have a ___ score equal to at least 10 + the spell level").
+export const CASTING_ABILITY = {
+  adept: 'wis', alchemist: 'int', antipaladin: 'cha', arcanist: 'int', bard: 'cha', bloodrager: 'cha',
+  cleric: 'wis', druid: 'wis', hunter: 'wis', inquisitor: 'wis', investigator: 'int', magus: 'int',
+  oracle: 'cha', paladin: 'cha', ranger: 'wis', shaman: 'wis', skald: 'cha', sorcerer: 'cha',
+  summoner: 'cha', warpriest: 'wis', witch: 'int', wizard: 'int',
+};
+
+// Classes with one extra slot per spell level they can cast (1st and up). The class tables in the
+// data don't include these. `optional` slots depend on a choice the player makes.
+export const EXTRA_SLOTS = {
+  cleric: { name: 'Domain', optional: false },
+  shaman: { name: 'Spirit magic', optional: false },
+  wizard: { name: 'School', optional: true, label: 'Specialist wizard (not a universalist)', default: true },
+  druid: { name: 'Domain', optional: true, label: 'Chose a domain for Nature Bond', default: false },
+};
+
+// Bonus spells per day from a high casting ability (Core Rulebook Table 1-3). None for level 0.
+export function bonusSpells(abilityMod, spellLevel) {
+  if (spellLevel < 1 || abilityMod < spellLevel) return 0;
+  return Math.floor((abilityMod - spellLevel) / 4) + 1;
+}
+
+// Spells per day for a class at `level`, or null for classes that never cast.
+// `scores` are final ability scores; `extraSlot` turns on an optional EXTRA_SLOTS entry.
+// Each row: { spellLevel, base, bonus, extra, total, known, canCast }. `base` and `known` are null
+// when the class table has no number for that spell level (e.g. a sorcerer's cantrips per day).
+export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
+  const ability = CASTING_ABILITY[cls.id];
+  if (!ability) return null;
+  const row = cls.progression[level - 1];
+  const perDay = row.spells_per_day || {};
+  const known = row.spells_known || {};
+  const firstLevel = cls.progression.find(r => r.spells_per_day)?.level;
+  const mod = abilityModifier(scores[ability]);
+  const slot = EXTRA_SLOTS[cls.id];
+  const hasExtra = !!slot && (!slot.optional || extraSlot);
+
+  const spellLevels = [...new Set([...Object.keys(perDay), ...Object.keys(known)])]
+    .map(Number).sort((a, b) => a - b);
+  const rows = spellLevels.map(sl => {
+    const canCast = scores[ability] >= 10 + sl;
+    const base = perDay[sl] ?? null;
+    const bonus = canCast && base !== null ? bonusSpells(mod, sl) : 0;
+    const extra = canCast && base !== null && hasExtra && sl >= 1 ? 1 : 0;
+    return {
+      spellLevel: sl,
+      base,
+      bonus,
+      extra,
+      total: base === null ? null : (canCast ? base + bonus + extra : 0),
+      known: known[sl] ?? null,
+      canCast,
+    };
+  });
+  return { ability, score: scores[ability], firstLevel, extraSlotName: hasExtra ? slot.name : null, rows };
+}
+
 // Everything the results panel shows for a single-class character of `level` (1-20).
 // favoredHp is true if the favored class bonus goes to HP (it applies at every level).
 export function characterStats({ race, cls, level = 1, baseScores, flexibleChoice, increases = [],

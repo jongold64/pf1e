@@ -119,3 +119,11 @@ summary { cursor: pointer; min-height: 32px; display: flex; align-items: center;
 ol.features { list-style: none; padding: 0; margin: 6px 0 0; }
 ol.features li { padding: 3px 0; border-bottom: 1px solid var(--border); }
 ol.features b { display: inline-block; min-width: 2.2em; color: var(--text); }
+
+.check-row { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 6px; }
+.check-row input { width: 22px; height: 22px; }
+table.spells { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.spells th, .spells td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border); }
+.spells th:first-child, .spells td:first-child { text-align: left; }
+.spells td.total { font-weight: 700; }
+.spells tr.cannot td { color: var(--muted); }

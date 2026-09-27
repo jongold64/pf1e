@@ -1,5 +1,6 @@
 // Checks for rules.js. Open tests.html through the local server to run them.
-import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases } from './rules.js';
+import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases,
+         bonusSpells, spellsPerDay } from './rules.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -121,6 +122,44 @@ check('wizard hit die', hitDieSize(cls('wizard')), 6);
   check('monk 8 Wis 18', m8.scores.wis, 18);
   check('monk 8 AC (10 + 2 + 4 + 2)', m8.ac, 18);
   check('monk 8 BAB', formatBab(m8.bab), '+6/+1');
+}
+
+// Spells
+for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2], [9, 1, 3], [0, 1, 0], [5, 0, 0]]) {
+  check(`bonus spells: mod +${mod}, level ${sl}`, bonusSpells(mod, sl), n);
+}
+{
+  const spell = (id, level, sc, extraSlot) => spellsPerDay({ cls: cls(id), level, scores: sc, extraSlot });
+  const lvl = (sp, sl) => sp.rows.find(r => r.spellLevel === sl);
+
+  check('fighter has no spells', spell('fighter', 5, scores(10, 10, 10, 10, 10, 10)), null);
+
+  const cleric = spell('cleric', 1, scores(10, 10, 10, 10, 16, 10));
+  check('cleric casts with Wis', cleric.ability, 'wis');
+  check('cleric 1 orisons', lvl(cleric, 0).total, 3);
+  check('cleric 1 first level (1 + 1 bonus + 1 domain)', lvl(cleric, 1).total, 3);
+
+  const pal3 = spell('paladin', 3, scores(10, 10, 10, 10, 10, 14));
+  check('paladin 3 has no spells yet', pal3.rows.length, 0);
+  check('paladin spells start at 4', pal3.firstLevel, 4);
+  check('paladin 4 Cha 14: bonus spell only', lvl(spell('paladin', 4, scores(10, 10, 10, 10, 10, 14)), 1).total, 1);
+  check('paladin 4 Cha 11: none', lvl(spell('paladin', 4, scores(10, 10, 10, 10, 10, 11)), 1).total, 0);
+
+  const sorc = spell('sorcerer', 4, scores(10, 10, 10, 10, 10, 18));
+  check('sorcerer cantrips per day not listed', lvl(sorc, 0).base, null);
+  check('sorcerer 4 cantrips known', lvl(sorc, 0).known, 6);
+  check('sorcerer 4 first level (6 + 1)', lvl(sorc, 1).total, 7);
+  check('sorcerer 4 second level (3 + 1)', lvl(sorc, 2).total, 4);
+  check('sorcerer 4 second level known', lvl(sorc, 2).known, 1);
+
+  const wiz10 = spell('wizard', 1, scores(10, 10, 10, 10, 10, 10), true);
+  check('wizard Int 10 cannot cast 1st', lvl(wiz10, 1).canCast, false);
+  check('wizard Int 10 gets no 1st-level spells', lvl(wiz10, 1).total, 0);
+  check('specialist wizard 1 Int 11 (1 + school)', lvl(spell('wizard', 1, scores(10, 10, 10, 11, 10, 10), true), 1).total, 2);
+  check('universalist wizard 1 Int 11', lvl(spell('wizard', 1, scores(10, 10, 10, 11, 10, 10), false), 1).total, 1);
+
+  check('druid without domain (1 + 1 bonus)', lvl(spell('druid', 1, scores(10, 10, 10, 10, 12, 10), false), 1).total, 2);
+  check('druid with domain', lvl(spell('druid', 1, scores(10, 10, 10, 10, 12, 10), true), 1).total, 3);
 }
 
 const failed = results.filter(r => !r.pass);
