@@ -144,6 +144,9 @@ def main():
             for ch in n['children']:
                 key = (ch['name'] or '').strip().lower()
                 val = node_text(ch)
+                # Source typo (Deny the Reaper): a section named "B" whose text starts "enefit ...".
+                if key == 'b' and val.startswith('enefit'):
+                    key, val = 'benefit', val[len('enefit'):].strip()
                 if key in ('prerequisite', 'prerequisites'):
                     prereq = val
                 elif key in ('benefit', 'benefits'):

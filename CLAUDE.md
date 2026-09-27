@@ -117,7 +117,7 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
   (or pass the path to `build_all.py`, which exports it).
 - The older builders (races/classes/feats) open output files without an explicit encoding and write with
   `ensure_ascii=False`. On Windows set `PYTHONUTF8=1` so non-ASCII text doesn't fail or get written as
-  cp1252. Rebuilding them on Windows gives identical JSON content (only line endings differ).
+  cp1252.
 - There is no test suite; `validate.py` is the check (duplicate ids, complete 1–20 / 1–10 level
   tables, required class/race fields, every `feat` prerequisite referring to an existing feat name).
 
@@ -145,10 +145,10 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
   ("Common | 2 gp | 2 lbs.") become `variants`, and `price_gp` understands cp/sp/gp/pp, ranges and
   footnote digits (`price_gp` in `common.py`, shared with the magic item builder). `text()` in
   `common.py` adds a space after a bold/italic run-in heading before a capital or digit
-  ("<i>1st Round</i>Presence") and repairs broken apostrophes; races/classes/feats were built before
-  those fixes and haven't been rebuilt yet (rebuilding them may change parsed feat prerequisites, so
-  diff and re-run the checks when you do). Each builder prints what it couldn't place; check that output
-  after changes.
+  ("<i>1st Round</i>Presence"), repairs broken apostrophes, drops tags written out as text and a
+  leading ":". All seven data files were rebuilt with these fixes. Before replacing data after a builder
+  change, rebuild to a temp folder and diff field by field (prerequisites, class `special` lists and
+  race traits drive app logic). Each builder prints what it couldn't place; check that output after changes.
 - **Build order matters**: `build_feats.py` reads `races.json` from the same directory as its output
   path to recognize race prerequisites, so races must be built first (`build_all.py` does this).
 - **Feat prerequisite parsing** (`build_feats.py`): `split_prereqs` → `parse_one` (regex per type) →

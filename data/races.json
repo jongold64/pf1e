@@ -4572,7 +4572,7 @@
       },
       {
         "name": "Hag Racial Trait",
-        "text": "The changeling inherits one of the following racial traits, depending on her mother's hag type:\n\nHulking Changeling (Annis Hag)The changeling gains a +1 racial bonus on melee damage.\n\nGreen Widow (Green Hag): The changeling gains a +2 racial bonus on Bluff checks against creatures that are sexually attracted to her.\n\nSea Lungs (Sea Hag): The changeling may hold her breath for a number of rounds equal to three times her Constitution before she risks drowning."
+        "text": "The changeling inherits one of the following racial traits, depending on her mother's hag type:\n\nHulking Changeling (Annis Hag) The changeling gains a +1 racial bonus on melee damage.\n\nGreen Widow (Green Hag): The changeling gains a +2 racial bonus on Bluff checks against creatures that are sexually attracted to her.\n\nSea Lungs (Sea Hag): The changeling may hold her breath for a number of rounds equal to three times her Constitution before she risks drowning."
       },
       {
         "name": "Claws",
@@ -5604,7 +5604,7 @@
     "alternate_traits": [
       {
         "name": "Energy Strike (Su)",
-        "text": "A suli with this racial trait has a stronger connection to one energy type than to the other three used by sulis. Choose one energy type: acid, cold, electricity, or fire. The suli's elemental assault ability can only deal energy damage of this type. The suli has resistance 5 to this energy type and no racial resistance to the other three types. While her elemental assault is active, the suli gains an additional ability based on the chosen energy type.\n\nEarthfoot (acid)Whenever the suli moves through difficult terrain related to earth and stone (rubble, mud, sand, and so on), she may move through 5 feet of that difficult terrain each round as if it were normal terrain. This allows the suli to take a 5-foot step into that difficult terrain. Other kinds of difficult terrain (ice, caltrops, foliage, and so on) affect the suli normally.\n\nFirehand (fire): Instead of adding damage to a melee attack, the suli may hurl a piece of her arm-flames as if it were a thrown weapon. The suli makes a ranged touch attack; if the attack hits, the target takes 1d6 points of fire damage. The flames have a range increment of 10 feet.\n\nIcewalk (cold): The suli can walk on water-based liquids as if using water walk, except instead of hovering above the surface, she creates a temporary layer of ice that supports her and immediately melts once she moves away from it. This ice is not slippery to the suli and does not affect her balance or speed, though other ice affects her normally. Other creatures cannot travel on this ice, but the suli may carry a creature while moving.\n\nShockshield (electricity): Once per round as an immediate action, the suli can shock a creature that touches or attacks her with a natural attack, unarmed strike, or metal melee weapon, dealing 1d6 points of electricity damage to the creature.\n\nThis racial trait otherwise works like and replaces elemental assault."
+        "text": "A suli with this racial trait has a stronger connection to one energy type than to the other three used by sulis. Choose one energy type: acid, cold, electricity, or fire. The suli's elemental assault ability can only deal energy damage of this type. The suli has resistance 5 to this energy type and no racial resistance to the other three types. While her elemental assault is active, the suli gains an additional ability based on the chosen energy type.\n\nEarthfoot (acid) Whenever the suli moves through difficult terrain related to earth and stone (rubble, mud, sand, and so on), she may move through 5 feet of that difficult terrain each round as if it were normal terrain. This allows the suli to take a 5-foot step into that difficult terrain. Other kinds of difficult terrain (ice, caltrops, foliage, and so on) affect the suli normally.\n\nFirehand (fire): Instead of adding damage to a melee attack, the suli may hurl a piece of her arm-flames as if it were a thrown weapon. The suli makes a ranged touch attack; if the attack hits, the target takes 1d6 points of fire damage. The flames have a range increment of 10 feet.\n\nIcewalk (cold): The suli can walk on water-based liquids as if using water walk, except instead of hovering above the surface, she creates a temporary layer of ice that supports her and immediately melts once she moves away from it. This ice is not slippery to the suli and does not affect her balance or speed, though other ice affects her normally. Other creatures cannot travel on this ice, but the suli may carry a creature while moving.\n\nShockshield (electricity): Once per round as an immediate action, the suli can shock a creature that touches or attacks her with a natural attack, unarmed strike, or metal melee weapon, dealing 1d6 points of electricity damage to the creature.\n\nThis racial trait otherwise works like and replaces elemental assault."
       }
     ],
     "favored_class_options": [
@@ -6443,7 +6443,7 @@
       },
       {
         "name": "Darkvision 60 ft",
-        "text": ": Wyvarans can see in the dark up to 60 feet."
+        "text": "Wyvarans can see in the dark up to 60 feet."
       },
       {
         "name": "Low-Light Vision",

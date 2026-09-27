@@ -85,12 +85,15 @@ def text(h):
     s = s.replace('\xa0', ' ').replace('–', '-').replace('—', '-')
     s = s.replace('‘', "'").replace('’', "'").replace('“', '"').replace('”', '"')
     s = s.replace('−', '-')
-    # The source has a few broken apostrophes ("doesn�t").
+    # The source has a few broken apostrophes ("doesn�t") and a few tags written out as text
+    # ("<i>shield companion</i>").
     s = re.sub(r'(?<=\w)�(?=\w)', "'", s)
+    s = re.sub(r'</?(?:i|b|em|strong)>', '', s)
     s = re.sub(r'[ \t]+', ' ', s)
     s = re.sub(r' *\n *', '\n', s)
     s = re.sub(r'\n{3,}', '\n\n', s)
-    return s.strip().lstrip('. ').strip()
+    # Some source text starts with a stray "." or ":" (": Wyvarans can see in the dark...").
+    return s.strip().lstrip('.: ').strip()
 
 
 def clean(s):
