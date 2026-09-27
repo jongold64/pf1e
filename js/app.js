@@ -8,6 +8,9 @@ import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeats, proficiencyFeats, featContext, checkFeat,
   repeatable, featEffects,
 } from './feats.js';
+import {
+  SKILLS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
+} from './skills.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -37,7 +40,12 @@ const state = {
   favored: 'hp',
   extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
   feats: {},       // feat slot id (see featSlots) -> feat id
+  skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
+  specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
+  expertSkills: [], // an expert's chosen class skills (up to 10)
 };
+
+const EXPERT_CLASS_SKILLS = 10;
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -64,6 +72,21 @@ function load() {
   for (const [slotId, featId] of Object.entries(state.feats)) {
     if (!featsById.has(featId)) delete state.feats[slotId];
   }
+  if (!Array.isArray(state.specialties)) state.specialties = [];
+  state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
+  if (!Array.isArray(state.expertSkills)) state.expertSkills = [];
+  if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
+  for (const [name, ranks] of Object.entries(state.skills)) {
+    const known = SKILLS.some(s => s.name === name && !s.family) || state.specialties.includes(name);
+    if (!known || !Number.isInteger(ranks) || ranks < 0) delete state.skills[name];
+  }
+}
+
+// Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
+function skillRowNames() {
+  return SKILLS.flatMap(s => (s.family
+    ? [s.name, ...state.specialties.filter(n => splitSkill(n).base === s.name).sort()]
+    : [s.name]));
 }
 
 // Whether the optional extra spell slot is on for a class, falling back to its default.
@@ -153,6 +176,44 @@ function buildControls() {
     if (next >= MIN_SCORE && next <= MAX_SCORE) update({ base: { ...state.base, [a]: next } });
   });
 
+  // Skills
+  $('skill-rows').addEventListener('click', e => {
+    const step = e.target.closest('[data-skill-step]');
+    if (step) {
+      const name = step.dataset.skill;
+      const next = (state.skills[name] || 0) + Number(step.dataset.skillStep);
+      if (next < 0 || next > state.level) return;
+      const { [name]: _, ...rest } = state.skills;
+      update({ skills: next ? { ...rest, [name]: next } : rest });
+    }
+    const add = e.target.closest('[data-add-specialty]');
+    if (add) {
+      const base = add.dataset.addSpecialty;
+      const input = $('skill-rows').querySelector(`input[data-specialty-for="${base}"]`);
+      const specialty = input.value.trim().replace(/[()]/g, '').toLowerCase();
+      const name = `${base} (${specialty})`;
+      if (specialty && !state.specialties.includes(name)) update({ specialties: [...state.specialties, name] });
+    }
+    const remove = e.target.closest('[data-remove-specialty]');
+    if (remove) {
+      const name = remove.dataset.removeSpecialty;
+      const { [name]: _, ...rest } = state.skills;
+      update({ specialties: state.specialties.filter(n => n !== name), skills: rest });
+    }
+  });
+  // Enter in a specialty box works like its Add button.
+  $('skill-rows').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.dataset.specialtyFor) {
+      $('skill-rows').querySelector(`[data-add-specialty="${e.target.dataset.specialtyFor}"]`).click();
+    }
+  });
+  $('skill-rows').addEventListener('change', e => {
+    const name = e.target.dataset.expert;
+    if (!name) return;
+    const chosen = state.expertSkills.filter(n => n !== name);
+    update({ expertSkills: e.target.checked ? [...chosen, name] : chosen });
+  });
+
   // Feats
   const types = [...new Set(feats.flatMap(f => f.types || []))].sort();
   $('feat-type').innerHTML = '<option value="">All types</option>' +
@@ -207,7 +268,7 @@ function render() {
 
   // Class info: features gained at every level up to the current one
   const features = cls.progression.slice(0, state.level)
-    .map(r => `<li><b>${r.level}</b> ${r.special.map(esc).join(', ') || '—'}</li>`).join('');
+    .map(r => `<li><b>${r.level}</b> ${(r.special || []).map(esc).join(', ') || '—'}</li>`).join('');
   $('class-info').innerHTML = `
     <p>Hit die ${esc(cls.hit_die)} · ${cls.skill_ranks_per_level} + Int skill ranks per level</p>
     <details>
@@ -238,9 +299,11 @@ function render() {
     armor: state.armor, shield: state.shield, favoredHp: state.favored === 'hp',
     featBonuses: featEffects(chosen.map(f => f.name), state.level),
   });
+  const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
   const ctx = featContext({
     race, cls, level: state.level, scores: stats.scores, bab: stats.bab[0],
     haveFeats: [...chosen.map(f => f.name), ...granted, ...proficiencyFeats(cls)],
+    skillRanks,
   });
   current = { slots, ctx };
   for (const a of ABILITIES) {
@@ -272,8 +335,75 @@ function render() {
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
+  renderSkills(race, cls, stats.scores, chosen.map(f => f.name));
   renderFeats(slots, granted, ctx);
   renderSpells(cls, stats.scores);
+}
+
+function renderSkills(race, cls, scores, featNames) {
+  const isExpert = !cls.class_skills?.length;
+  const isClassSkill = classSkillTest(cls, state.expertSkills);
+  const racial = racialSkillBonuses(race);
+  const available = skillRanksAvailable({
+    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
+    increases: state.increases, favoredSkill: state.favored === 'skill',
+  });
+  const names = skillRowNames();
+  const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);
+  $('skill-count').textContent = `${used} of ${available} ranks used`;
+  $('skill-count').classList.toggle('over', used > available);
+
+  const hints = [`At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.`];
+  if (isExpert) hints.push(`Experts choose ${EXPERT_CLASS_SKILLS} class skills: tick them below (${state.expertSkills.length} chosen).`);
+  $('skills-hint').textContent = hints.join(' ');
+
+  const abbr = a => a.charAt(0).toUpperCase() + a.slice(1);
+  $('skill-rows').innerHTML = names.map(name => {
+    const info = skillInfo(name);
+    // Only Craft/Perform/Profession have player-added specialties; "Knowledge (arcana)" is a skill of its own.
+    const specialty = info.family ? splitSkill(name).specialty : null;
+    const classSkill = isClassSkill(name);
+    const expertBox = isExpert && (!info.family || !specialty)
+      ? `<label class="expert-pick"><input type="checkbox" data-expert="${esc(name)}"
+           ${state.expertSkills.includes(name) ? 'checked' : ''}
+           ${!state.expertSkills.includes(name) && state.expertSkills.length >= EXPERT_CLASS_SKILLS ? 'disabled' : ''}> class skill</label>`
+      : '';
+    const tags = [classSkill ? '<span class="tag">class</span>' : '', info.trained ? '<span class="tag muted">trained only</span>' : ''].join('');
+
+    // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
+    if (info.family && !specialty) {
+      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false });
+      return `<tr class="family">
+        <td><div class="skill-name">${esc(name)} ${tags}</div>${expertBox}
+          <div class="add-specialty">
+            <input type="text" data-specialty-for="${esc(name)}" placeholder="Add a specialty, e.g. ${name === 'Craft' ? 'alchemy' : name === 'Perform' ? 'sing' : 'sailor'}" aria-label="${esc(name)} specialty">
+            <button type="button" data-add-specialty="${esc(name)}">Add</button>
+          </div></td>
+        <td></td>
+        <td class="total">${untrained.usable ? signed(untrained.total) : '—'}</td>
+      </tr>`;
+    }
+
+    const ranks = state.skills[name] || 0;
+    const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames });
+    const parts = [`${abbr(info.ability)} ${signed(t.abilityMod)}`];
+    if (t.classBonus) parts.push(`class +${t.classBonus}`);
+    if (t.racial) parts.push(`race ${signed(t.racial)}`);
+    if (t.feat) parts.push(`feats +${t.feat}`);
+    return `<tr${specialty ? ' class="specialty"' : ''}>
+      <td><div class="skill-name">${esc(name)} ${tags}
+          ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
+        ${expertBox}
+        <div class="breakdown">${parts.join(' · ')}</div>
+        ${ranks > state.level ? `<div class="warning">More than ${state.level} ranks</div>` : ''}</td>
+      <td><span class="base">
+        <button type="button" data-skill="${esc(name)}" data-skill-step="-1" aria-label="Fewer ranks in ${esc(name)}">−</button>
+        <span class="value">${ranks}</span>
+        <button type="button" data-skill="${esc(name)}" data-skill-step="1" aria-label="More ranks in ${esc(name)}">+</button>
+      </span></td>
+      <td class="total">${t.usable ? signed(t.total) : '<span class="muted" title="Needs at least 1 rank">—</span>'}</td>
+    </tr>`;
+  }).join('');
 }
 
 const STATUS_ICON = {

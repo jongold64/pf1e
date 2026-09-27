@@ -10,7 +10,7 @@ Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
-On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC, feats, spells per day),
+On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC, skills, feats, spells per day),
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -47,8 +47,17 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   ("8th-level fighter", "X with selected weapon", "ability to cast Nth-level spells"). Free class feats
   come from class-table specials (`grantedFeats`) and armor/shield proficiency from the class's
   proficiency text (`proficiencyFeats`). Mythic feats are filtered out in `app.js`.
-- The app changes by pure functions + a full re-render; UI-level behaviour (the feat picker dialog)
-  isn't covered by tests.html, so check it in a browser after changes.
+- Skills: `js/skills.js` has the Core Rulebook skill list (abilities, trained-only, and the Craft /
+  Perform / Profession "family" skills that take player-added specialties). `classSkillTest` expands
+  class-data shorthand ("Craft (any)", "Knowledge (all)", limited Perform lists); experts have no list
+  and pick 10. Ranks per level use Int as of that level. Racial skill bonuses are parsed from trait
+  text and only unconditional ones are kept. Skill ranks feed feat prerequisites via `featContext`.
+- Class data quirks: the NPC classes (aristocrat, commoner, expert, warrior) have no `special` list on
+  any progression row, so always use `row.special || []`. Some prestige classes list Disable Device
+  under Int and misspell "Handle Animals" (source errors; matters once prestige classes are offered).
+- The app changes by pure functions + a full re-render; UI-level behaviour (the feat picker dialog,
+  skill buttons) isn't covered by tests.html, so check it in a browser after changes, including
+  switching through every class (the NPC classes are the usual casualties).
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 

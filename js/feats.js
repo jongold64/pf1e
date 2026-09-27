@@ -1,6 +1,7 @@
 // Feat rules: where feat slots come from, which feats a slot accepts, and prerequisite checks.
 // No page code here, so these functions can be tested on their own.
 import { spellsPerDay } from './rules.js';
+import { ranksFor } from './skills.js';
 
 const lower = s => String(s ?? '').toLowerCase();
 const hasType = (feat, ...types) => types.some(t => (feat.types || []).includes(t));
@@ -119,13 +120,15 @@ export function casterLevel(cls, level) {
 
 // Everything prerequisite checks need to know about the character.
 // `haveFeats` is every feat the character has (chosen, granted and proficiencies).
-export function featContext({ race, cls, level, scores, bab, haveFeats }) {
+// `skillRanks` ({ skill name: ranks }) is optional; without it skill prerequisites can't be checked.
+export function featContext({ race, cls, level, scores, bab, haveFeats, skillRanks = null }) {
   const castable = (spellsPerDay({ cls, level, scores })?.rows || [])
     .filter(r => r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0));
   return {
     race, cls, level, scores, bab,
     casterLevel: casterLevel(cls, level),
     maxSpellLevel: castable.length ? Math.max(...castable.map(r => r.spellLevel)) : -1,
+    skillRanks,
     haveFeats: new Set(haveFeats.map(lower)),
   };
 }
@@ -193,8 +196,11 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
       return result(ctx.maxSpellLevel >= p.value, `Can cast level ${p.value} spells`);
     case 'mythic_tier':
       return result(false, `Mythic tier ${p.value}`);
-    case 'skill':
-      return { status: 'unknown', why: `${p.skill} ${p.ranks} rank${p.ranks === 1 ? '' : 's'} (skills not added yet)` };
+    case 'skill': {
+      const why = `${p.skill} ${p.ranks} rank${p.ranks === 1 ? '' : 's'}`;
+      if (!ctx.skillRanks) return { status: 'unknown', why: `${why} (skills not added yet)` };
+      return result(ranksFor(p.skill, ctx.skillRanks) >= p.ranks, why);
+    }
     case 'any_of': {
       const parts = p.options.map(o => checkPrereq(o, ctx, feat, slotRule));
       const status = parts.some(x => x.status === 'met') ? 'met'

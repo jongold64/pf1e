@@ -3,6 +3,8 @@ import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, 
          bonusSpells, spellsPerDay } from './rules.js';
 import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
+import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
+         skillTotal, ranksFor } from './skills.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -306,6 +308,87 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
                              featBonuses: featEffects(['Great Fortitude', 'Lightning Reflexes'], 1) });
   check('Great Fortitude', g.fort, 7);
   check('Lightning Reflexes', g.ref, 3);
+}
+
+// Skills
+{
+  // The class data names skills with an ability; they should agree with the skill list.
+  // (Some prestige classes, which the app doesn't offer yet, have source errors like "Handle Animals".)
+  const mismatches = [];
+  for (const c of classes.filter(x => x.category !== 'prestige')) {
+    for (const s of c.class_skills || []) {
+      const info = skillInfo(s.skill) || SKILLS.find(x => x.name === splitSkill(s.skill).base);
+      const expected = info?.ability ?? (splitSkill(s.skill).base === 'Knowledge' ? 'int' : null);
+      if (expected !== s.ability) mismatches.push(`${c.id}:${s.skill}`);
+    }
+  }
+  check('class skill abilities match the skill list', mismatches.join(', '), '');
+
+  const fighter = classSkillTest(cls('fighter'));
+  check('fighter: Climb is a class skill', fighter('Climb'), true);
+  check('fighter: Acrobatics is not', fighter('Acrobatics'), false);
+  check('fighter: any Craft is', fighter('Craft (alchemy)'), true);
+  check('fighter: Knowledge (engineering) is', fighter('Knowledge (engineering)'), true);
+  check('fighter: Knowledge (arcana) is not', fighter('Knowledge (arcana)'), false);
+  check('bard: every Knowledge is a class skill', classSkillTest(cls('bard'))('Knowledge (planes)'), true);
+  const limited = classes.find(c => (c.class_skills || []).some(s => s.skill.startsWith('Perform (oratory')));
+  check('limited Perform list: sing', classSkillTest(limited)('Perform (sing)'), true);
+  check('limited Perform list: dance', classSkillTest(limited)('Perform (dance)'), false);
+  const expert = classSkillTest(cls('expert'), ['Stealth', 'Craft']);
+  check('expert: chosen skill', expert('Stealth'), true);
+  check('expert: chosen family', expert('Craft (traps)'), true);
+  check('expert: not chosen', expert('Climb'), false);
+
+  const ranks = (r, c, level, base, extra = {}) => skillRanksAvailable({ race: race(r), cls: cls(c), level, baseScores: base, ...extra });
+  check('human fighter 1, Int 10 (2 + 0 + 1 Skilled)', ranks('human', 'fighter', 1, scores(10, 10, 10, 10, 10, 10), { flexibleChoice: 'str' }), 3);
+  check('elf wizard 1, Int 18 (2 + 4)', ranks('elf', 'wizard', 1, scores(10, 10, 10, 16, 10, 10)), 6);
+  check('dwarf fighter 3, Int 7: at least 1 per level', ranks('dwarf', 'fighter', 3, scores(10, 10, 10, 7, 10, 10)), 3);
+  const int13 = scores(10, 10, 10, 13, 10, 10);
+  check('Int increase at 4 counts from 4th level on (3 × 4 + 5)',
+        ranks('human', 'fighter', 4, int13, { flexibleChoice: 'str', increases: ['int'] }), 17);
+  check('favored class skill ranks', ranks('human', 'fighter', 4, int13, { flexibleChoice: 'str', increases: ['int'], favoredSkill: true }), 21);
+  check('aasimar "Skilled" is a skill bonus, not extra ranks', ranks('aasimar', 'fighter', 1, scores(10, 10, 10, 10, 10, 10)), 2);
+
+  const sorted = o => JSON.stringify(Object.fromEntries(Object.entries(o).sort()));
+  check('elf racial skills (Spellcraft bonus is conditional)', sorted(racialSkillBonuses(race('elf'))), '{"Perception":2}');
+  check('halfling racial skills', sorted(racialSkillBonuses(race('halfling'))), '{"Acrobatics":2,"Climb":2,"Perception":2}');
+  check('half-orc racial skills', sorted(racialSkillBonuses(race('half-orc'))), '{"Intimidate":2}');
+  check('goblin racial skills', sorted(racialSkillBonuses(race('goblin'))), '{"Ride":4,"Stealth":4}');
+  check('kobold racial skills', sorted(racialSkillBonuses(race('kobold'))), '{"Craft (trapmaking)":2,"Perception":2,"Profession (miner)":2}');
+  check('nagaji: only the unconditional bonus', sorted(racialSkillBonuses(race('nagaji'))), '{"Perception":2}');
+  check('svirfneblin racial skills', sorted(racialSkillBonuses(race('svirfneblin'))), '{"Craft (alchemy)":2,"Perception":2,"Stealth":2}');
+  check('tengu racial skills', sorted(racialSkillBonuses(race('tengu'))), '{"Linguistics":4,"Perception":2,"Stealth":2}');
+  check('kitsune: Disguise bonus is conditional', sorted(racialSkillBonuses(race('kitsune'))), '{"Acrobatics":2}');
+  check('strix: dim light bonus is conditional', sorted(racialSkillBonuses(race('strix'))), '{}');
+  check('dwarf has no unconditional skill bonus', sorted(racialSkillBonuses(race('dwarf'))), '{}');
+
+  const str16 = scores(16, 10, 10, 10, 12, 10);
+  const climb = skillTotal({ name: 'Climb', ranks: 1, scores: str16, isClassSkill: true });
+  check('Climb: 1 rank + 3 Str + 3 class', climb.total, 7);
+  check('class bonus needs a rank', skillTotal({ name: 'Climb', ranks: 0, scores: str16, isClassSkill: true }).total, 3);
+  check('trained-only skill with no ranks is unusable', skillTotal({ name: 'Knowledge (arcana)', ranks: 0, scores: str16, isClassSkill: false }).usable, false);
+  check('untrained skill is usable', skillTotal({ name: 'Climb', ranks: 0, scores: str16, isClassSkill: false }).usable, true);
+  const perc = skillTotal({ name: 'Perception', ranks: 10, scores: str16, isClassSkill: false,
+                            racialBonuses: { Perception: 2 }, featNames: ['Alertness'] });
+  check('Perception: 10 ranks + 1 Wis + 2 race + 4 Alertness', perc.total, 17);
+  check('Alertness is +2 below 10 ranks', skillTotal({ name: 'Perception', ranks: 9, scores: str16, isClassSkill: false,
+                                                       featNames: ['Alertness'] }).feat, 2);
+  const missingSkillFeats = Object.keys(SKILL_FEATS).filter(n => !feat(n));
+  check('every skill feat exists in the data', missingSkillFeats.join(', '), '');
+  const wrongText = Object.entries(SKILL_FEATS).filter(([n, sk]) => !sk.every(s => feat(n).benefit.includes(s))).map(([n]) => n);
+  check('skill feat benefits name their skills', wrongText.join(', '), '');
+
+  check('ranksFor exact', ranksFor('Craft (alchemy)', { 'Craft (alchemy)': 3 }), 3);
+  check('ranksFor any Craft', ranksFor('Craft', { 'Craft (alchemy)': 3 }), 3);
+  check('ranksFor other specialty', ranksFor('Craft (traps)', { 'Craft (alchemy)': 3 }), 0);
+  check('ranksFor "or" specialties', ranksFor('Perform (oratory or sing)', { 'Perform (sing)': 2 }), 2);
+  check('ranksFor plain skill', ranksFor('Acrobatics', { Acrobatics: 5 }), 5);
+
+  const k = cls('fighter');
+  const skillCtx = featContext({ race: race('human'), cls: k, level: 5, scores: str16, bab: 5, haveFeats: [],
+                                 skillRanks: { Acrobatics: 5 } });
+  check('skill prerequisite met', checkPrereq({ type: 'skill', skill: 'Acrobatics', ranks: 3 }, skillCtx, {}).status, 'met');
+  check('skill prerequisite unmet', checkPrereq({ type: 'skill', skill: 'Acrobatics', ranks: 6 }, skillCtx, {}).status, 'unmet');
 }
 
 const failed = results.filter(r => !r.pass);
