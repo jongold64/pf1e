@@ -22,6 +22,7 @@
       <button type="button" role="tab" data-tab="spells">Spells</button>
       <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
       <button type="button" role="tab" data-tab="armor">Armor</button>
+      <button type="button" role="tab" data-tab="equipment">Equipment</button>
     </nav>
 
     <!-- Character -->
@@ -90,6 +91,11 @@
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
       <section class="card wide" id="feats-card">
         <h2>Feats <span id="feat-count" class="count"></span></h2>
+        <form class="search-row tab-search" id="feat-tab-search-form" role="search">
+          <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <ul id="feat-tab-results" class="search-results" hidden></ul>
         <p id="granted-feats" class="hint"></p>
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
@@ -100,6 +106,10 @@
     <main class="tab-panel" id="tab-skills" role="tabpanel" hidden>
       <section class="card wide" id="skills-card">
         <h2>Skills <span id="skill-count" class="count"></span></h2>
+        <form class="search-row tab-search" id="skill-search-form" role="search">
+          <input id="skill-search" type="search" autocomplete="off" placeholder="Search skills by name" aria-label="Search skills">
+          <button type="submit" class="primary">Search</button>
+        </form>
         <p id="skills-hint" class="hint"></p>
         <table class="skills">
           <thead><tr><th>Skill</th><th>Ranks</th><th>Total</th></tr></thead>
@@ -128,7 +138,11 @@
       </section>
       <section class="card wide" id="spell-list-card">
         <h2 id="spell-list-title">Spell list</h2>
-        <input id="spell-filter" class="filter" type="search" placeholder="Filter by name" autocomplete="off" aria-label="Filter spells by name">
+        <form class="search-row tab-search" id="spell-filter-form" role="search">
+          <input id="spell-filter" type="search" autocomplete="off" placeholder="Search spells by name" aria-label="Search spells">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <label class="check-row"><input type="checkbox" id="spell-all"> Search all spells, not just my class's list</label>
         <div class="browser">
           <div class="browser-list" id="spell-list" aria-label="Spells"></div>
           <aside class="browser-panel" id="spell-panel" aria-live="polite"></aside>
@@ -140,10 +154,11 @@
     <main class="tab-panel" id="tab-magic-items" role="tabpanel" hidden>
       <section class="card wide">
         <h2>Magic items <span id="item-count" class="count"></span></h2>
-        <div class="item-filters">
-          <input id="item-filter" class="filter" type="search" placeholder="Filter by name" autocomplete="off" aria-label="Filter magic items by name">
-          <select id="item-category" aria-label="Jump to a category"></select>
-        </div>
+        <form class="search-row tab-search" id="item-filter-form" role="search">
+          <input id="item-filter" type="search" autocomplete="off" placeholder="Search magic items by name" aria-label="Search magic items">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <select id="item-category" class="jump" aria-label="Jump to a category"></select>
         <div class="browser">
           <div class="browser-list" id="item-list" aria-label="Magic items"></div>
           <aside class="browser-panel" id="item-panel" aria-live="polite"></aside>
@@ -153,6 +168,13 @@
 
     <!-- Armor -->
     <main class="tab-panel" id="tab-armor" role="tabpanel" hidden>
+      <section class="card wide">
+        <form class="search-row tab-search" id="armor-search-form" role="search">
+          <input id="armor-search" type="search" autocomplete="off" placeholder="Search armor and shields by name" aria-label="Search armor">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <ul id="armor-search-results" class="search-results" hidden></ul>
+      </section>
       <section class="card">
         <h2>Armor</h2>
         <select id="armor-select" aria-label="Armor"></select>
@@ -169,6 +191,39 @@
         <h2>In this armor</h2>
         <div id="armor-warnings"></div>
         <dl id="armor-summary" class="facts wide-facts"></dl>
+      </section>
+    </main>
+
+    <!-- Equipment -->
+    <main class="tab-panel" id="tab-equipment" role="tabpanel" hidden>
+      <section class="card wide">
+        <h2>Money and weight</h2>
+        <div class="money-row">
+          <label>Gold <input id="gold" type="number" min="0" step="any" inputmode="decimal"></label>
+          <button type="button" id="gold-start"></button>
+          <button type="button" id="gold-wealth" hidden></button>
+        </div>
+        <dl id="money-summary" class="facts wide-facts"></dl>
+        <p id="money-note" class="hint"></p>
+      </section>
+      <section class="card wide">
+        <h2>Inventory <span id="inventory-count" class="count"></span></h2>
+        <table class="inventory">
+          <thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Weight</th></tr></thead>
+          <tbody id="inventory-rows"></tbody>
+        </table>
+      </section>
+      <section class="card wide">
+        <h2>Equipment <span id="gear-count" class="count"></span></h2>
+        <form class="search-row tab-search" id="gear-search-form" role="search">
+          <input id="gear-search" type="search" autocomplete="off" placeholder="Search equipment by name" aria-label="Search equipment">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <select id="gear-category" class="jump" aria-label="Jump to a category"></select>
+        <div class="browser">
+          <div class="browser-list" id="gear-list" aria-label="Equipment"></div>
+          <aside class="browser-panel" id="gear-panel" aria-live="polite"></aside>
+        </div>
       </section>
     </main>
   </div>

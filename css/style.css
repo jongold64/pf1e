@@ -283,3 +283,25 @@ tr.flash td { animation: flash 1.6s ease-out; }
   .browser-panel { position: static; order: -1; max-height: 50vh; }
   .results dl { grid-template-columns: auto auto; }
 }
+
+/* Search box on each tab */
+.tab-search { margin-bottom: 10px; }
+.jump { width: auto; max-width: 100%; margin-bottom: 10px; }
+#tab-spells .check-row { margin-bottom: 10px; }
+.tag.type-equipment { background: #7a5a2b; }
+.search-results .status { flex: none; }
+
+/* Equipment */
+.money-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 8px; }
+.money-row label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.money-row input { width: 9em; }
+table.inventory, table.versions { width: 100%; border-collapse: collapse; }
+.inventory th, .inventory td, .versions th, .versions td { padding: 8px 4px; border-bottom: 1px solid var(--border); text-align: right; }
+.inventory th:first-child, .inventory td:first-child, .versions th:first-child, .versions td:first-child { text-align: left; }
+.inventory td:nth-child(2) { text-align: center; }
+.inventory .base { display: inline-flex; align-items: center; gap: 6px; }
+.inventory .base button { width: 44px; padding: 0; font-size: 1.3rem; }
+.inventory tr.worn td { background: var(--bg); }
+button.item-link { font-size: 1rem; text-decoration: none; padding: 0; text-align: left; min-height: 32px; }
+.versions { margin: 8px 0; font-size: 0.95rem; }
+.browser-panel .slot-buttons { flex-wrap: wrap; }

@@ -6,14 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert the
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) SQLite books into plain-text JSON in `data/`
-(`races.json`, `classes.json`, `feats.json`, `armor.json`, `magic-items.json`, `spells.json`) plus
+(`races.json`, `classes.json`, `feats.json`, `armor.json`, `magic-items.json`, `spells.json`,
+`equipment.json`) plus
 `LICENSE-OGL.txt`. The JSON files are generated
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
 On top of the data is a static web app (single-class builder, levels 1-20) with tabs: Character (race,
 class, point buy, results, global search), Feats, Skills, Spells (per day + class spell list), Magic Items
-(browse by category with a details panel) and Armor (kept separate from any future general equipment),
+(browse by category with a details panel), Armor, and Equipment (inventory + gold + weight; armor is kept
+separate from it, and weapons are planned as their own tab). Every tab except Character has its own search
+box that looks only through what that tab covers; the Character tab's search covers everything,
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -31,12 +34,17 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 - `js/rules.js` holds all rules math as pure functions (point-buy costs, modifiers, racial
   adjustments, level-based ability increases, `characterStats`). Put new calculations here and add checks to `js/rules.test.js`.
 - `js/app.js` owns the page: loads races/classes/feats/armor at start (spells and magic items load on
-  first use via `loadSpells`/`loadItems`, they're ~3.7 MB), keeps one `state` object saved to
+  first use via `loadSpells`/`loadItems`/`loadGear`), keeps one `state` object saved to
   `localStorage`, computes a shared `view` (stats, gear, feat context) in `computeView()`, and re-renders
   on each change via `update()` → `render()`. Tabs are `<main class="tab-panel">` elements switched by
   `showTab()`; the open tab is kept in the URL hash (`#spells`). Tab modules get an `app` object
   (`state`, `data`, `update`, `view`, `showTab`, `openDetail`, `openResult`): `tab-armor.js`,
-  `tab-spells.js`, `tab-items.js`, `search-ui.js`. Shared DOM helpers are in `dom.js`.
+  `tab-spells.js`, `tab-items.js`, `tab-equipment.js`, `search-ui.js`. Shared DOM helpers are in
+  `dom.js`. The Feats, Skills and Armor tab searches live in `app.js` (`initTabSearches`).
+- Equipment: `js/equipment.js` has money and weight rules (`startingGold` with the alternate-class
+  fallback, `WEALTH_BY_LEVEL`, `armorCost` = base + 150 masterwork + enh² × 1,000, `equipmentTotals`,
+  `formatGp`). Inventory entries are `{ id, variant, qty }`; `variant` picks one of an item's `variants`
+  (e.g. common vs masterwork backpack). `state.gold === null` means "use the class's starting gold".
 - Armor: `js/armor.js` (`armorEffects`, `speedInArmor`, `proficiencyWarnings`) turns worn armor/shield +
   enhancement into AC bonus, max Dex cap, check penalty (-1 for magic/masterwork, applied to `acp` skills),
   arcane spell failure and speed. `characterStats` takes that as `gear`; a monk's AC bonus needs no armor
@@ -125,7 +133,10 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
   `spell_lists`, `spell_effects`). Armor prefers the Ultimate Equipment reprint (field names vary by book,
   hence `key()`); magic items are `item` sections with an aura, categorised by the nearest heading
   (`CATEGORIES`) or by slot, plus special abilities stored as text sections with a stat line or an
-  Ultimate Equipment stat block. Each builder prints what it couldn't place; check that output after changes.
+  Ultimate Equipment stat block. Equipment is every other `item` without an aura (weapons and armor
+  excluded; alchemical weapons kept), categorised by heading or Gear Type; version tables in the text
+  ("Common | 2 gp | 2 lbs.") become `variants`, and `price_gp` understands cp/sp/gp/pp, ranges and
+  footnote digits. Each builder prints what it couldn't place; check that output after changes.
 - **Build order matters**: `build_feats.py` reads `races.json` from the same directory as its output
   path to recognize race prerequisites, so races must be built first (`build_all.py` does this).
 - **Feat prerequisite parsing** (`build_feats.py`): `split_prereqs` → `parse_one` (regex per type) →

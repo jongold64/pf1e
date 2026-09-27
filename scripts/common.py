@@ -134,9 +134,9 @@ def plain(s):
 
 
 def to_number(s):
-    """'1,500 gp' -> 1500, '2 1/2 lbs.' -> 2.5, '—' -> None."""
+    """'1,500 gp' -> 1500, '2 1/2 lbs.' or '2-1/2 lbs.' -> 2.5, '—' -> None."""
     s = plain(s).replace(',', '')
-    m = re.match(r'^\+?(\d+)(?:\s+(\d+)/(\d+))?', s)
+    m = re.match(r'^\+?(\d+)(?:[\s-]+(\d+)/(\d+))?', s)
     if not m:
         m2 = re.match(r'^(\d+)/(\d+)', s)
         return int(m2.group(1)) / int(m2.group(2)) if m2 else None

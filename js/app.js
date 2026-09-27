@@ -16,17 +16,18 @@ import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, showItem } from './tab-items.js';
+import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { initSearch } from './search-ui.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate']];
-const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor'];
+const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'equipment'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
   races: [], classes: [], feats: [], featsById: new Map(), armor: [], armorById: new Map(),
-  spells: null, items: null,
+  spells: null, items: null, gear: null, gearById: null,
 };
 const pending = {};
 function loadOnce(name, file, prepare = x => x) {
@@ -36,6 +37,10 @@ function loadOnce(name, file, prepare = x => x) {
 // Mythic spells are already left out of the data file.
 const loadSpells = () => loadOnce('spells', 'data/spells.json');
 const loadItems = () => loadOnce('items', 'data/magic-items.json');
+const loadGear = () => loadOnce('gear', 'data/equipment.json', gear => {
+  data.gearById = new Map(gear.map(i => [i.id, i]));
+  return gear;
+});
 
 // Set by render() and used by the feat picker and tabs, so everything checks rules the same way.
 let view = null;
@@ -59,11 +64,13 @@ const state = {
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   shieldId: '',
   shieldEnh: 0,
+  gold: null,      // gold the character has; null means the class's average starting gold
+  inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
 };
 
 // Shared with the tab modules.
 const app = {
-  state, data, update, loadSpells, loadItems, showTab, openDetail, openResult,
+  state, data, update, loadSpells, loadItems, loadGear, showTab, openDetail, openResult,
   get view() { return view; },
 };
 
@@ -100,6 +107,11 @@ function load() {
   for (const k of ['armorEnh', 'shieldEnh']) {
     if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
+  if (!(typeof state.gold === 'number' && state.gold >= 0)) state.gold = null;
+  // Items the equipment data no longer has are skipped when shown.
+  state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
+    .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
+    .map(e => ({ id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -137,6 +149,7 @@ function showTab(name) {
   if (location.hash.slice(1) !== name) history.replaceState(null, '', `#${name}`);
   if (name === 'spells') renderSpellList(app, view);
   if (name === 'magic-items') renderItemsTab(app);
+  if (name === 'equipment') renderEquipmentTab(app);
 }
 
 function buildControls() {
@@ -269,7 +282,74 @@ function buildControls() {
   initArmorTab(app);
   initSpellList(app);
   initItemsTab(app);
+  initEquipmentTab(app);
   initSearch(app);
+  initTabSearches();
+}
+
+// Search boxes on the Feats, Skills and Armor tabs (Spells, Magic Items and Equipment have theirs in
+// their own modules). Each looks only through what its tab covers.
+let skillFilter = '';
+function initTabSearches() {
+  const live = (formId, inputId, run) => {
+    $(formId).addEventListener('submit', e => { e.preventDefault(); run(); });
+    $(inputId).addEventListener('input', run);
+  };
+  live('feat-tab-search-form', 'feat-tab-search', renderFeatTabSearch);
+  $('feat-tab-results').addEventListener('click', e => {
+    const btn = e.target.closest('[data-feat-result]');
+    if (btn) openFeatForSlots(btn.dataset.featResult);
+  });
+  live('skill-search-form', 'skill-search', () => {
+    skillFilter = $('skill-search').value.trim().toLowerCase();
+    render();
+  });
+  live('armor-search-form', 'armor-search', renderArmorSearch);
+  $('armor-search-results').addEventListener('click', e => {
+    const btn = e.target.closest('[data-armor-result]');
+    if (btn) openResult('armor', btn.dataset.armorResult);
+  });
+}
+
+// A list of results under a tab's search box: items are [{ id, name, detail, icon }].
+function resultList(el, query, items, attr, limit = 60) {
+  const short = query.trim().length < 2;
+  el.hidden = short;
+  if (short) return;
+  el.innerHTML = items.slice(0, limit).map(r => `
+    <li><button type="button" ${attr}="${esc(r.id)}">${r.icon || ''}<span class="result-name">${esc(r.name)}</span>
+      <small>${esc(r.detail || '')}</small></button></li>`).join('') || '<li class="hint">Nothing found by that name.</li>';
+}
+
+function renderFeatTabSearch() {
+  const q = $('feat-tab-search').value.trim().toLowerCase();
+  const hits = data.feats.filter(f => f.name.toLowerCase().includes(q))
+    .sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || a.name.localeCompare(b.name));
+  resultList($('feat-tab-results'), q, hits.map(f => ({
+    id: f.id, name: f.name, detail: (f.types || []).join(', '), icon: STATUS_ICON[checkFeat(f, view.ctx).status],
+  })), 'data-feat-result');
+}
+
+// A feat's details with a button for each open slot it can go in.
+function openFeatForSlots(id) {
+  const f = data.featsById.get(id);
+  const alreadyHave = view.slots.some(s => state.feats[s.id] === id) && !repeatable(f);
+  const open = view.slots.filter(s => !data.featsById.has(state.feats[s.id]) && slotAccepts(s, f));
+  const actions = alreadyHave ? [] : open.map(s => ({
+    label: `Choose for ${s.label}`, primary: true,
+    run: () => { update({ feats: { ...state.feats, [s.id]: id } }); showTab('feats'); },
+  }));
+  const note = alreadyHave ? '<p class="hint">You already have this feat.</p>'
+    : open.length ? '' : '<p class="hint">No open feat slot can take this feat. Remove or change a feat to make room.</p>';
+  openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)) + note, actions);
+}
+
+function renderArmorSearch() {
+  const q = $('armor-search').value.trim().toLowerCase();
+  const hits = data.armor.filter(a => a.name.toLowerCase().includes(q));
+  resultList($('armor-search-results'), q, hits.map(a => ({
+    id: a.id, name: a.name, detail: `${a.category === 'shield' ? 'shield' : `${a.category} armor`} · ${signed(a.bonus)}`,
+  })), 'data-armor-result');
 }
 
 function update(changes) {
@@ -382,6 +462,8 @@ function render() {
   renderSpells(cls, stats.scores);
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
+  if (tab === 'equipment') renderEquipment(app, view);
+  if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 
 function renderSkills(race, cls, scores, featNames) {
@@ -393,6 +475,8 @@ function renderSkills(race, cls, scores, featNames) {
   });
   const names = skillRowNames();
   const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);
+  // The Skills tab's search shows only matching rows.
+  const shownNames = skillFilter ? names.filter(n => n.toLowerCase().includes(skillFilter)) : names;
   $('skill-count').textContent = `${used} of ${available} ranks used`;
   $('skill-count').classList.toggle('over', used > available);
 
@@ -402,7 +486,8 @@ function renderSkills(race, cls, scores, featNames) {
     (checkPenalty ? ` Your armor's check penalty (${checkPenalty}) applies to Str and Dex skills.` : '');
 
   const abbr = a => a.charAt(0).toUpperCase() + a.slice(1);
-  $('skill-rows').innerHTML = names.map(name => {
+  $('skill-rows').innerHTML = (shownNames.length ? '' : '<tr><td colspan="3" class="hint">No skill matches that search.</td></tr>') +
+    shownNames.map(name => {
     const info = skillInfo(name);
     // Only Craft/Perform/Profession have player-added specialties; "Knowledge (arcana)" is a skill of its own.
     const specialty = info.family ? splitSkill(name).specialty : null;
@@ -648,6 +733,9 @@ function openResult(type, id) {
   } else if (type === 'magic-item') {
     showTab('magic-items');
     showItem(app, id);
+  } else if (type === 'equipment') {
+    showTab('equipment');
+    showGear(app, id);
   } else if (type === 'armor') {
     const a = data.armorById.get(id);
     const isShield = a.category === 'shield';

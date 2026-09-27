@@ -30,6 +30,7 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 export function initItemsTab(app) {
   $('item-filter').addEventListener('input', () => renderList(app));
+  $('item-filter-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
   $('item-category').addEventListener('change', e => {
     document.getElementById(`cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });

@@ -7,18 +7,21 @@ import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksA
          skillTotal, ranksFor } from './skills.js';
 import { armorEffects, speedInArmor, proficiencyWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
+import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs } from './equipment.js';
 
 const results = [];
 function check(name, actual, expected) {
   results.push({ name, pass: Object.is(actual, expected), actual, expected });
 }
 
-const [races, classes, allFeats, allArmor] = await Promise.all([
+const [races, classes, allFeats, allArmor, allGear] = await Promise.all([
   fetch('data/races.json').then(r => r.json()),
   fetch('data/classes.json').then(r => r.json()),
   fetch('data/feats.json').then(r => r.json()),
   fetch('data/armor.json').then(r => r.json()),
+  fetch('data/equipment.json').then(r => r.json()),
 ]);
+const gearById = new Map(allGear.map(i => [i.id, i]));
 const armorById = id => allArmor.find(a => a.id === id);
 const race = id => races.find(r => r.id === id);
 const cls = id => classes.find(c => c.id === id);
@@ -448,6 +451,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 // Search
 {
   check('normalize strips punctuation and case', normalize("Mage's  Armor"), 'mages armor');
+  check('normalize strips accents', normalize('Élan Vital'), 'elan vital');
   const index = buildIndex([
     { type: 'spell', id: 'mage-armor', name: 'Mage Armor' },
     { type: 'armor', id: 'chainmail', name: 'Chainmail' },
@@ -464,6 +468,41 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('search: words in any position', names('ring prot'), 'Ring of Protection');
   check('search: "mage\'s" becomes "mages", which isn\'t in "Mage Armor"', names("mage's"), '');
   check('search: limit', search(index, 'ar', 1).length, 1);
+}
+
+// Equipment
+{
+  check('formatGp: gold', formatGp(1250), '1,250 gp');
+  check('formatGp: silver', formatGp(0.5), '5 sp');
+  check('formatGp: copper', formatGp(0.01), '1 cp');
+  check('formatGp: mixed', formatGp(2.55), '2 gp 5 sp 5 cp');
+  check('formatGp: zero', formatGp(0), '0 gp');
+  check('formatGp: negative', formatGp(-12.5), '−12 gp 5 sp');
+  check('formatLbs', `${formatLbs(1)} / ${formatLbs(2.5)}`, '1 lb. / 2.5 lbs.');
+
+  check('fighter starting gold', startingGold(cls('fighter'), classes), 175);
+  check('wizard starting gold', startingGold(cls('wizard'), classes), 70);
+  check('antipaladin uses the paladin figure', startingGold(cls('antipaladin'), classes), 175);
+  check('wealth at level 5', WEALTH_BY_LEVEL[5], 10500);
+  check('wealth at level 20', WEALTH_BY_LEVEL[20], 880000);
+
+  check('chainmail costs 150 gp', armorCost(armorById('chainmail')), 150);
+  check('+1 chainmail: 150 + 150 masterwork + 1,000', armorCost(armorById('chainmail'), 1), 1300);
+  check('+2 heavy steel shield: 20 + 150 + 4,000', armorCost(armorById('heavy-steel-shield'), 2), 4170);
+
+  const backpack = gearById.get('backpack');
+  check('backpack from the data (common is the default)', `${backpack.price_gp} ${backpack.weight_lbs}`, '2 2');
+  check('masterwork backpack version', JSON.stringify(entryStats(backpack, 'Masterwork')), '{"price_gp":50,"weight_lbs":4}');
+  check('grappling hook mithral price ignores the footnote',
+        gearById.get('grappling-hook').variants.find(v => v.name === 'Mithral').price_gp, 1000);
+  check('silk rope merged with "Rope, Silk"', gearById.get('silk-rope').also_in?.includes('Core Rulebook'), true);
+
+  const inv = [{ id: 'backpack', qty: 1 }, { id: 'backpack', variant: 'Masterwork', qty: 1 }, { id: 'rope', qty: 2 },
+               { id: 'candle', qty: 10 }, { id: 'no-such-item', qty: 1 }];
+  const t = equipmentTotals(inv, gearById, { armor: armorById('chainmail'), armorEnh: 0 });
+  check('inventory cost (2 + 50 + 2 + 0.10 + 150 chainmail)', t.cost, 204.1);
+  check('inventory weight (2 + 4 + 20 + 40 chainmail; candles have no weight)', t.weight, 66);
+  check('items without a weight are listed', t.unweighed.join(), 'Candle');
 }
 
 const failed = results.filter(r => !r.pass);

@@ -4,7 +4,7 @@ import { SKILLS } from './skills.js';
 import { buildIndex, search, TYPE_LABELS } from './search.js';
 
 let index = null;
-let complete = false;  // spells and magic items included
+let complete = false;  // spells, magic items and equipment included
 
 function entries(app) {
   const { data } = app;
@@ -18,6 +18,7 @@ function entries(app) {
   ];
   if (data.spells) out.push(...data.spells.map(s => ({ type: 'spell', id: s.id, name: s.name, detail: s.school || '' })));
   if (data.items) out.push(...data.items.map(i => ({ type: 'magic-item', id: i.id, name: i.name, detail: i.category })));
+  if (data.gear) out.push(...data.gear.map(i => ({ type: 'equipment', id: i.id, name: i.name, detail: i.category })));
   return out;
 }
 
@@ -27,7 +28,7 @@ function run(app) {
   const hits = search(index, query);
   const tooShort = query.trim().length < 2;
   $('search-results').hidden = tooShort;
-  const status = !complete ? 'Loading spells and magic items so they can be searched too…'
+  const status = !complete ? 'Loading spells, magic items and equipment so they can be searched too…'
     : tooShort ? '' : `${hits.length === 40 ? 'First 40' : hits.length} result${hits.length === 1 ? '' : 's'}`;
   $('search-status').textContent = status;
   $('search-status').hidden = !status;
@@ -39,11 +40,11 @@ function run(app) {
     </button></li>`).join('') || (tooShort ? '' : '<li class="hint">Nothing found by that name.</li>');
 }
 
-// Spells and magic items load the first time the search box is used, then the search runs again.
+// Spells, magic items and equipment load the first time the search box is used, then the search runs again.
 function loadAll(app) {
   if (complete || loadAll.started) return;
   loadAll.started = true;
-  Promise.all([app.loadSpells(), app.loadItems()]).then(() => {
+  Promise.all([app.loadSpells(), app.loadItems(), app.loadGear()]).then(() => {
     complete = true;
     index = null;
     run(app);

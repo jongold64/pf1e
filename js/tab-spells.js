@@ -42,6 +42,8 @@ function renderPanel(app, view) {
 
 export function initSpellList(app) {
   $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
+  $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
+  $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
   $('spell-list').addEventListener('click', e => {
     const btn = e.target.closest('[data-spell]');
     if (!btn) return;
@@ -59,15 +61,28 @@ export async function renderSpellList(app, view) {
   }
   const all = app.data.spells;
   const onList = all.filter(s => s.levels[view.cls.id] !== undefined);
+  const filter = $('spell-filter').value.trim().toLowerCase();
+  // Classes without a spell list can still search every spell.
+  $('spell-all').closest('label').hidden = !onList.length;
+  const searchAll = $('spell-all').checked || !onList.length;
   $('spell-list-title').textContent = onList.length ? `${cls.name} spells (${onList.length})` : 'Spells';
 
-  if (!onList.length) {
-    $('spell-list').innerHTML = `<p class="hint">${esc(cls.name)}s don't have a spell list. Search on the Character tab finds any spell.</p>`;
+  if (searchAll) {
+    if (filter.length < 2) {
+      $('spell-list').innerHTML = `<p class="hint">${onList.length ? '' : `${esc(cls.name)}s don't have a spell list. `}` +
+        `Type at least 2 letters to search all ${all.length.toLocaleString()} spells.</p>`;
+    } else {
+      const hits = all.filter(s => s.name.toLowerCase().includes(filter));
+      $('spell-list').innerHTML = hits.length ? `<section class="list-group">
+        <h3 class="list-heading">All spells <span class="count">${hits.length}</span></h3>
+        <ul class="pick-list">${hits.slice(0, 200).map(s =>
+          `<li><button type="button" data-spell="${esc(s.id)}">${esc(s.name)}<small>${esc(s.school || '')}</small></button></li>`).join('')}</ul>
+      </section>` : '<p class="hint">No spells match.</p>';
+    }
     renderPanel(app, view);
     return;
   }
 
-  const filter = $('spell-filter').value.trim().toLowerCase();
   const maxLevel = view.ctx.maxSpellLevel;
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {

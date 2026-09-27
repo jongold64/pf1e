@@ -4,9 +4,10 @@ d = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__)
 load = lambda name: json.load(open(os.path.join(d, name), encoding='utf-8'))
 races, classes, feats = load('races.json'), load('classes.json'), load('feats.json')
 armor, magic_items, spells = load('armor.json'), load('magic-items.json'), load('spells.json')
+equipment = load('equipment.json')
 errors = []
 for name, items in [('race', races), ('class', classes), ('feat', feats), ('armor', armor),
-                    ('magic item', magic_items), ('spell', spells)]:
+                    ('magic item', magic_items), ('spell', spells), ('equipment', equipment)]:
     dup = [i for i, n in collections.Counter(x['id'] for x in items).items() if n > 1]
     if dup:
         errors.append(f'duplicate {name} ids: {dup}')
@@ -41,6 +42,12 @@ for a in armor:
 for i in magic_items:
     if not i.get('category') or not i.get('aura') or not i.get('description'):
         print('note: magic item', i['name'], 'is missing', [f for f in ('category', 'aura', 'description') if not i.get(f)])
+for e in equipment:
+    for v in [e, *e.get('variants', [])]:
+        if (v.get('price_gp') is not None and v['price_gp'] < 0) or (v.get('weight_lbs') is not None and v['weight_lbs'] < 0):
+            errors.append(f"equipment {e['id']} has a negative price or weight")
+    if not e.get('category'):
+        errors.append(f"equipment {e['id']} has no category")
 class_ids = {k['id'] for k in classes}
 for s in spells:
     if not s['levels'] or not s.get('school'):
@@ -49,7 +56,7 @@ unknown_lists = {c for s in spells for c in s['levels'] if c not in class_ids}
 if unknown_lists - {'elementalist-wizard'}:
     errors.append(f'spell lists for unknown classes: {sorted(unknown_lists)}')
 print(f'{len(races)} races, {len(classes)} classes, {len(feats)} feats, {len(armor)} armor, '
-      f'{len(magic_items)} magic items, {len(spells)} spells')
+      f'{len(magic_items)} magic items, {len(spells)} spells, {len(equipment)} pieces of equipment')
 auto = sum(1 for f in feats if all(p['type'] != 'other' for p in f.get('prerequisites', [])))
 print(f'{auto} of {len(feats)} feats have fully machine-readable prerequisites')
 if errors:

@@ -1,0 +1,184 @@
+// Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
+import { $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, entryStats, formatGp, formatLbs } from './equipment.js';
+
+let selectedId = null;
+let listed = false;
+
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLowerCase()})` : item.name);
+
+function gearDetails(item) {
+  const versions = item.variants || [];
+  const addButtons = versions.length
+    ? versions.map(v => `<button type="button" class="primary" data-add-gear="${esc(item.id)}" data-variant="${esc(v.name)}">
+        Add ${esc(v.name.toLowerCase())} (${esc(formatGp(v.price_gp))})</button>`).join('')
+    : `<button type="button" class="primary" data-add-gear="${esc(item.id)}">Add to inventory</button>`;
+  return `<h3>${esc(item.name)}</h3>
+    <p class="hint">${esc(item.category)} · ${esc(sourceText(item))}</p>
+    ${versions.length
+      ? `<table class="versions"><thead><tr><th>Version</th><th>Price</th><th>Weight</th></tr></thead><tbody>${versions.map(v =>
+          `<tr><td>${esc(v.name)}</td><td>${esc(v.price_gp !== null ? formatGp(v.price_gp) : v.price)}</td><td>${esc(v.weight_lbs !== null ? formatLbs(v.weight_lbs) : '—')}</td></tr>`).join('')}</tbody></table>`
+      : facts([
+          ['Price', item.price_gp !== null ? formatGp(item.price_gp) : item.price],
+          ['Weight', item.weight_lbs !== null ? formatLbs(item.weight_lbs) : item.weight],
+        ])}
+    ${facts([['Craft DC', item.craft_dc]])}
+    <div class="slot-buttons">${addButtons}</div>
+    ${paragraphs(item.description)}`;
+}
+
+function renderPanel(app) {
+  const item = app.data.gearById?.get(selectedId);
+  $('gear-panel').innerHTML = item ? gearDetails(item) : '<p class="hint">Choose an item to see its details and add it to your inventory.</p>';
+  document.querySelectorAll('#gear-list [data-gear]').forEach(b =>
+    b.setAttribute('aria-current', String(b.dataset.gear === selectedId)));
+}
+
+function renderList(app) {
+  const items = app.data.gear;
+  const filter = $('gear-search').value.trim().toLowerCase();
+  const byCategory = new Map();
+  for (const i of items) {
+    if (filter && !i.name.toLowerCase().includes(filter)) continue;
+    if (!byCategory.has(i.category)) byCategory.set(i.category, []);
+    byCategory.get(i.category).push(i);
+  }
+  const categories = [...byCategory.keys()].sort();
+  const shown = [...byCategory.values()].reduce((n, list) => n + list.length, 0);
+  $('gear-count').textContent = filter ? `${shown} of ${items.length}` : `${items.length}`;
+  $('gear-category').innerHTML = '<option value="">Jump to a category…</option>' +
+    categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
+  $('gear-list').innerHTML = categories.map(c => {
+    const list = byCategory.get(c).sort((a, b) => a.name.localeCompare(b.name));
+    return `<section class="list-group" id="gear-cat-${slug(c)}">
+      <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
+      <ul class="pick-list">${list.map(i =>
+        `<li><button type="button" data-gear="${esc(i.id)}">${esc(i.name)}<small>${esc(i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''))}</small></button></li>`).join('')}</ul>
+    </section>`;
+  }).join('') || '<p class="hint">No equipment matches.</p>';
+  renderPanel(app);
+}
+
+// Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
+export async function renderEquipment(app, view) {
+  const { state, data } = app;
+  if (!data.gear) {
+    $('inventory-rows').innerHTML = '<tr><td colspan="4" class="hint">Loading equipment…</td></tr>';
+    await app.loadGear();
+    view = app.view;
+  }
+  const start = startingGold(view.cls, data.classes);
+  const wealth = WEALTH_BY_LEVEL[state.level];
+  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} starting gold (${formatGp(start)})` : 'No starting gold listed';
+  $('gold-start').disabled = !start;
+  $('gold-wealth').hidden = !wealth;
+  if (wealth) $('gold-wealth').textContent = `Use wealth for level ${state.level} (${formatGp(wealth)})`;
+  const gold = state.gold ?? start ?? 0;
+  if (document.activeElement !== $('gold')) $('gold').value = gold;
+
+  const totals = equipmentTotals(state.inventory, data.gearById, {
+    armor: view.gear.armor, armorEnh: state.armorEnh, shield: view.gear.shield, shieldEnh: state.shieldEnh,
+  });
+  const armorSpend = armorCost(view.gear.armor, state.armorEnh) + armorCost(view.gear.shield, state.shieldEnh);
+  const left = Math.round((gold - totals.cost) * 100) / 100;
+  $('money-summary').innerHTML = [
+    ['Gold', formatGp(gold)],
+    ['Armor and shield', formatGp(armorSpend)],
+    ['Equipment', formatGp(totals.cost - armorSpend)],
+    ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>`],
+    ['Weight carried', formatLbs(totals.weight)],
+  ].map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === 'Left' ? v : esc(v)}</dd>`).join('');
+  const notes = ['Weights are for Medium characters; gear for Small characters weighs half as much.'];
+  if (totals.unpriced.length) notes.push(`No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.`);
+  if (totals.unweighed.length) notes.push(`No weight listed for: ${[...new Set(totals.unweighed)].join(', ')}.`);
+  $('money-note').textContent = notes.join(' ');
+
+  const count = state.inventory.reduce((n, e) => n + e.qty, 0);
+  $('inventory-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
+  const worn = [[view.gear.armor, state.armorEnh], [view.gear.shield, state.shieldEnh]].filter(([a]) => a);
+  $('inventory-rows').innerHTML = [
+    ...worn.map(([a, enh]) => `<tr class="worn"><td><b>${esc(enh ? `+${enh} ` : '')}${esc(a.name)}</b>
+        <div class="breakdown">worn · change it on the Armor tab</div></td><td>1</td>
+        <td>${esc(formatGp(armorCost(a, enh)))}</td><td>${esc(formatLbs(a.weight_lbs))}</td></tr>`),
+    ...state.inventory.map((e, i) => {
+      const item = data.gearById.get(e.id);
+      if (!item) return '';
+      const s = entryStats(item, e.variant);
+      return `<tr><td><button type="button" class="link item-link" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button></td>
+        <td><span class="base">
+          <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
+          <span class="value">${e.qty}</span>
+          <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
+        </span></td>
+        <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</td>
+        <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
+    }),
+  ].join('') || '<tr><td colspan="4" class="hint">Nothing yet. Choose items below and add them.</td></tr>';
+}
+
+function addToInventory(app, id, variant) {
+  const inv = app.state.inventory.map(e => ({ ...e }));
+  const existing = inv.find(e => e.id === id && (e.variant || null) === (variant || null));
+  if (existing) existing.qty += 1;
+  else inv.push({ id, ...(variant ? { variant } : {}), qty: 1 });
+  app.update({ inventory: inv });
+}
+
+export function initEquipmentTab(app) {
+  $('gear-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
+  $('gear-search').addEventListener('input', () => renderList(app));
+  $('gear-category').addEventListener('change', e => {
+    document.getElementById(`gear-cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
+  });
+  $('gear-list').addEventListener('click', e => {
+    const btn = e.target.closest('[data-gear]');
+    if (!btn) return;
+    selectedId = btn.dataset.gear;
+    renderPanel(app);
+  });
+  $('gear-panel').addEventListener('click', e => {
+    const btn = e.target.closest('[data-add-gear]');
+    if (btn) addToInventory(app, btn.dataset.addGear, btn.dataset.variant);
+  });
+  $('inventory-rows').addEventListener('click', e => {
+    const step = e.target.closest('[data-qty]');
+    if (step) {
+      const inv = app.state.inventory.map(x => ({ ...x }));
+      inv[Number(step.dataset.qty)].qty += Number(step.dataset.step);
+      app.update({ inventory: inv.filter(x => x.qty > 0) });
+    }
+    const show = e.target.closest('[data-show-gear]');
+    if (show) showGear(app, show.dataset.showGear);
+  });
+  $('gold').addEventListener('change', e => {
+    const n = Number(e.target.value);
+    app.update({ gold: Number.isFinite(n) && n >= 0 ? n : null });
+  });
+  $('gold-start').addEventListener('click', () => app.update({ gold: startingGold(app.view.cls, app.data.classes) }));
+  $('gold-wealth').addEventListener('click', () => app.update({ gold: WEALTH_BY_LEVEL[app.state.level] }));
+}
+
+export async function renderEquipmentTab(app) {
+  if (!app.data.gear) {
+    $('gear-list').innerHTML = '<p class="hint">Loading equipment…</p>';
+    await app.loadGear();
+  }
+  if (!listed) {
+    listed = true;
+    renderList(app);
+  }
+  await renderEquipment(app, app.view);
+}
+
+// Used by search: show an item in the side panel and scroll the list to it.
+export async function showGear(app, id) {
+  selectedId = id;
+  await renderEquipmentTab(app);
+  if ($('gear-search').value) {
+    $('gear-search').value = '';
+    renderList(app);
+  }
+  renderPanel(app);
+  document.querySelector(`#gear-list [data-gear="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center' });
+}
