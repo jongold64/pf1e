@@ -19,6 +19,28 @@ BOOKS = [
     ('book-acg.db', 'Advanced Class Guide', 'ACG'),
 ]
 
+# Every book in PSRD-Data (publication order), used for armor, magic items and spells.
+# BOOKS above is kept as-is so races/classes/feats rebuild unchanged.
+ALL_BOOKS = [
+    ('book-cr.db', 'Core Rulebook', 'CRB'),
+    ('book-b1.db', 'Bestiary', 'B1'),
+    ('book-apg.db', "Advanced Player's Guide", 'APG'),
+    ('book-gmg.db', 'Game Mastery Guide', 'GMG'),
+    ('book-b2.db', 'Bestiary 2', 'B2'),
+    ('book-um.db', 'Ultimate Magic', 'UM'),
+    ('book-uc.db', 'Ultimate Combat', 'UC'),
+    ('book-b3.db', 'Bestiary 3', 'B3'),
+    ('book-arg.db', 'Advanced Race Guide', 'ARG'),
+    ('book-ue.db', 'Ultimate Equipment', 'UE'),
+    ('book-npc.db', 'NPC Codex', 'NPC'),
+    ('book-ucampaign.db', 'Ultimate Campaign', 'UCa'),
+    ('book-ma.db', 'Mythic Adventures', 'MA'),
+    ('book-b4.db', 'Bestiary 4', 'B4'),
+    ('book-acg.db', 'Advanced Class Guide', 'ACG'),
+    ('book-mc.db', 'Monster Codex', 'MC'),
+    ('book-tech.db', 'Technology Guide', 'TG'),
+]
+
 ABILITIES = {'strength': 'str', 'dexterity': 'dex', 'constitution': 'con',
              'intelligence': 'int', 'wisdom': 'wis', 'charisma': 'cha',
              'str': 'str', 'dex': 'dex', 'con': 'con', 'int': 'int', 'wis': 'wis', 'cha': 'cha'}
@@ -99,10 +121,29 @@ def find(n, pred):
     return None
 
 
-def iter_books():
-    for db, name, abbr in BOOKS:
+def iter_books(books=None):
+    for db, name, abbr in books or BOOKS:
         c, rows = load(db)
         yield db, name, abbr, c, rows
+
+
+def plain(s):
+    """Unescape HTML entities and normalize dashes, e.g. '&ndash;5' -> '-5'."""
+    s = html.unescape(s or '').replace('\xa0', ' ')
+    return s.replace('–', '-').replace('—', '-').replace('−', '-').strip()
+
+
+def to_number(s):
+    """'1,500 gp' -> 1500, '2 1/2 lbs.' -> 2.5, '—' -> None."""
+    s = plain(s).replace(',', '')
+    m = re.match(r'^\+?(\d+)(?:\s+(\d+)/(\d+))?', s)
+    if not m:
+        m2 = re.match(r'^(\d+)/(\d+)', s)
+        return int(m2.group(1)) / int(m2.group(2)) if m2 else None
+    n = int(m.group(1))
+    if m.group(2):
+        n += int(m.group(2)) / int(m.group(3))
+    return n
 
 
 def parse_table(table_html):

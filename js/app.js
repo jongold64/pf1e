@@ -1,4 +1,4 @@
-// Page code: loads the data, builds the controls, and shows the results from rules.js.
+// Page code: loads the data, builds the controls, switches tabs, and shows the results from the rules modules.
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
@@ -11,21 +11,36 @@ import {
 import {
   SKILLS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
+import { armorEffects, speedInArmor } from './armor.js';
+import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
+import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
+import { initItemsTab, renderItemsTab, showItem } from './tab-items.js';
+import { initSearch } from './search-ui.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate']];
+const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor'];
 
-const $ = id => document.getElementById(id);
+// Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
+const data = {
+  races: [], classes: [], feats: [], featsById: new Map(), armor: [], armorById: new Map(),
+  spells: null, items: null,
+};
+const pending = {};
+function loadOnce(name, file, prepare = x => x) {
+  pending[name] ??= fetch(file).then(r => r.json()).then(prepare).then(x => { data[name] = x; return x; });
+  return pending[name];
+}
+// Mythic spells are already left out of the data file.
+const loadSpells = () => loadOnce('spells', 'data/spells.json');
+const loadItems = () => loadOnce('items', 'data/magic-items.json');
 
-let races = [];
-let classes = [];
-let feats = [];
-let featsById = new Map();
-
-// Set by render() and used by the feat picker, so both check prerequisites the same way.
-let current = { slots: [], ctx: null };
+// Set by render() and used by the feat picker and tabs, so everything checks rules the same way.
+let view = null;
 let pickerSlotId = null;
+let tab = 'character';
 
 const state = {
   race: 'human',
@@ -35,22 +50,22 @@ const state = {
   base: Object.fromEntries(ABILITIES.map(a => [a, 10])),
   flexible: 'str',
   increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
-  armor: 0,
-  shield: 0,
   favored: 'hp',
   extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
   feats: {},       // feat slot id (see featSlots) -> feat id
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
+  armorId: '',     // worn armor (data/armor.json id), '' for none
+  armorEnh: 0,     // its magic enhancement bonus, 0-5
+  shieldId: '',
+  shieldEnh: 0,
 };
 
-function esc(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-function signed(n) {
-  return n >= 0 ? `+${n}` : `${n}`;
-}
+// Shared with the tab modules.
+const app = {
+  state, data, update, loadSpells, loadItems, showTab, openDetail, openResult,
+  get view() { return view; },
+};
 
 // Saved characters survive a reload. Storage can be blocked (private browsing), so failures are ignored.
 function load() {
@@ -67,7 +82,7 @@ function load() {
   if (typeof state.extraSlots !== 'object' || state.extraSlots === null) state.extraSlots = {};
   if (typeof state.feats !== 'object' || state.feats === null) state.feats = {};
   for (const [slotId, featId] of Object.entries(state.feats)) {
-    if (!featsById.has(featId)) delete state.feats[slotId];
+    if (!data.featsById.has(featId)) delete state.feats[slotId];
   }
   if (!Array.isArray(state.specialties)) state.specialties = [];
   state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
@@ -75,6 +90,15 @@ function load() {
   for (const [name, ranks] of Object.entries(state.skills)) {
     const known = SKILLS.some(s => s.name === name && !s.family) || state.specialties.includes(name);
     if (!known || !Number.isInteger(ranks) || ranks < 0) delete state.skills[name];
+  }
+  // Older versions saved typed-in armor and shield bonuses as numbers.
+  delete state.armor;
+  delete state.shield;
+  const worn = (id, category) => data.armorById.get(id) && (data.armorById.get(id).category === 'shield') === (category === 'shield');
+  if (!worn(state.armorId, 'armor')) state.armorId = '';
+  if (!worn(state.shieldId, 'shield')) state.shieldId = '';
+  for (const k of ['armorEnh', 'shieldEnh']) {
+    if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
 }
 
@@ -104,9 +128,20 @@ function groupedOptions(items, groups) {
   }).join('');
 }
 
+// Tabs. The open tab is in the address (#feats), so reloading or the back button keeps it.
+function showTab(name) {
+  if (!TABS.includes(name)) name = 'character';
+  tab = name;
+  for (const t of TABS) $(`tab-${t}`).hidden = t !== name;
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  if (location.hash.slice(1) !== name) history.replaceState(null, '', `#${name}`);
+  if (name === 'spells') renderSpellList(app, view);
+  if (name === 'magic-items') renderItemsTab(app);
+}
+
 function buildControls() {
-  $('race').innerHTML = groupedOptions(races, RACE_GROUPS);
-  $('class').innerHTML = groupedOptions(classes, CLASS_GROUPS);
+  $('race').innerHTML = groupedOptions(data.races, RACE_GROUPS);
+  $('class').innerHTML = groupedOptions(data.classes, CLASS_GROUPS);
   $('budget').innerHTML = BUDGETS.map(b => `<option value="${b.points}">${b.label}</option>`).join('');
   $('flexible').innerHTML = ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
   $('level').innerHTML = Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
@@ -132,22 +167,17 @@ function buildControls() {
       <td id="mod-${a}"></td>
     </tr>`).join('');
 
+  // A saved id that no longer exists in the data falls back to the first option.
   $('race').value = state.race;
   $('class').value = state.cls;
-  $('level').value = state.level;
-  INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
-  $('budget').value = state.budget;
-  $('flexible').value = state.flexible;
-  $('armor').value = state.armor;
-  $('shield').value = state.shield;
-  if (state.favored !== 'skill') state.favored = 'hp';
-  document.querySelector(`input[name="favored"][value="${state.favored}"]`).checked = true;
-
-  // A saved id that no longer exists in the data falls back to the first option.
   if (!$('race').value) $('race').selectedIndex = 0;
   if (!$('class').value) $('class').selectedIndex = 0;
   state.race = $('race').value;
   state.cls = $('class').value;
+  if (state.favored !== 'skill') state.favored = 'hp';
+
+  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
   $('race').addEventListener('change', e => update({ race: e.target.value }));
   $('class').addEventListener('change', e => update({ cls: e.target.value }));
@@ -160,8 +190,6 @@ function buildControls() {
   });
   $('budget').addEventListener('change', e => update({ budget: Number(e.target.value) }));
   $('flexible').addEventListener('change', e => update({ flexible: e.target.value }));
-  $('armor').addEventListener('input', e => update({ armor: Math.max(0, Number(e.target.value) || 0) }));
-  $('shield').addEventListener('input', e => update({ shield: Math.max(0, Number(e.target.value) || 0) }));
   document.querySelectorAll('input[name="favored"]').forEach(r =>
     r.addEventListener('change', e => update({ favored: e.target.value })));
   $('ability-rows').addEventListener('click', e => {
@@ -205,7 +233,7 @@ function buildControls() {
   });
 
   // Feats
-  const types = [...new Set(feats.flatMap(f => f.types || []))].sort();
+  const types = [...new Set(data.feats.flatMap(f => f.types || []))].sort();
   $('feat-type').innerHTML = '<option value="">All types</option>' +
     types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
   $('feat-slots').addEventListener('click', e => {
@@ -227,15 +255,21 @@ function buildControls() {
   $('feat-list').addEventListener('toggle', e => {
     const item = e.target.closest('details[data-feat]');
     if (!item?.open) return;
-    const f = featsById.get(item.dataset.feat);
-    const slot = current.slots.find(s => s.id === pickerSlotId);
-    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, current.ctx, slot)) +
+    const f = data.featsById.get(item.dataset.feat);
+    const slot = view.slots.find(s => s.id === pickerSlotId);
+    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.ctx, slot)) +
       `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`;
   }, true);
   $('feat-search').addEventListener('input', renderPicker);
   $('feat-type').addEventListener('change', renderPicker);
   $('feat-qualify').addEventListener('change', renderPicker);
   $('picker-close').addEventListener('click', () => $('feat-picker').close());
+  $('detail-close').addEventListener('click', () => $('detail-dialog').close());
+
+  initArmorTab(app);
+  initSpellList(app);
+  initItemsTab(app);
+  initSearch(app);
 }
 
 function update(changes) {
@@ -244,9 +278,44 @@ function update(changes) {
   render();
 }
 
+// Everything derived from the character, computed once per change and shared by all tabs.
+function computeView() {
+  const race = data.races.find(r => r.id === state.race);
+  const cls = data.classes.find(c => c.id === state.cls);
+  // Feats the character has: chosen ones (only slots reached at this level), free ones from the
+  // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
+  // prerequisite context can use the same stats that include feat bonuses.
+  const slots = featSlots({ race, cls, level: state.level });
+  const chosen = slots.map(s => data.featsById.get(state.feats[s.id])).filter(Boolean);
+  const granted = grantedFeats(cls, state.level, data.feats.map(f => f.name));
+  const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeats(cls)];
+  const gear = armorEffects({
+    armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh,
+    shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh,
+  });
+  const stats = characterStats({
+    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
+    increases: state.increases, favoredHp: state.favored === 'hp',
+    featBonuses: featEffects(chosen.map(f => f.name), state.level), gear,
+  });
+  const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
+  const ctx = featContext({ race, cls, level: state.level, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
+  const speed = speedInArmor(race.base_speed, gear, race);
+  return { race, cls, slots, chosen, granted, haveFeats, gear, stats, ctx, speed };
+}
+
 function render() {
-  const race = races.find(r => r.id === state.race);
-  const cls = classes.find(c => c.id === state.cls);
+  view = computeView();
+  const { race, cls, stats } = view;
+
+  // Controls changed from elsewhere (e.g. "Make my character a dwarf" in search) show their new value.
+  $('race').value = state.race;
+  $('class').value = state.cls;
+  $('level').value = state.level;
+  $('budget').value = state.budget;
+  $('flexible').value = state.flexible;
+  INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
+  document.querySelector(`input[name="favored"][value="${state.favored}"]`).checked = true;
 
   // Race info
   // Ability scores, size, speed, type and languages are shown elsewhere, so list only the other traits.
@@ -265,7 +334,7 @@ function render() {
       <summary>Class features by level</summary>
       <ol class="features">${features}</ol>
     </details>`;
-  $('subtitle').textContent = `${cls.name} ${state.level}`;
+  $('subtitle').textContent = `${race.name} ${cls.name} ${state.level}`;
 
   // Point buy
   const spent = pointsSpent(state.base);
@@ -276,26 +345,6 @@ function render() {
   // Ability rows
   $('flexible-row').hidden = !race.flexible_ability_bonus;
   const adj = racialAdjustments(race, state.flexible);
-
-  // Feats the character has: chosen ones (only slots reached at this level), free ones from the
-  // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
-  // prerequisite context can use the same stats that include feat bonuses.
-  const slots = featSlots({ race, cls, level: state.level });
-  const chosen = slots.map(s => featsById.get(state.feats[s.id])).filter(Boolean);
-  const granted = grantedFeats(cls, state.level, feats.map(f => f.name));
-  const stats = characterStats({
-    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
-    increases: state.increases,
-    armor: state.armor, shield: state.shield, favoredHp: state.favored === 'hp',
-    featBonuses: featEffects(chosen.map(f => f.name), state.level),
-  });
-  const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
-  const ctx = featContext({
-    race, cls, level: state.level, scores: stats.scores, bab: stats.bab[0],
-    haveFeats: [...chosen.map(f => f.name), ...granted, ...proficiencyFeats(cls)],
-    skillRanks,
-  });
-  current = { slots, ctx };
   for (const a of ABILITIES) {
     $(`base-${a}`).textContent = state.base[a];
     $(`base-${a}`).title = `Costs ${POINT_COSTS[state.base[a]]} points`;
@@ -313,6 +362,7 @@ function render() {
   $('increase-note').textContent = unchosen ? `${unchosen} increase${unchosen > 1 ? 's' : ''} still to choose.` : '';
 
   // Results
+  const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
   const results = [
     ['Hit points', stats.hp],
     ['Base attack bonus', formatBab(stats.bab)],
@@ -322,12 +372,16 @@ function render() {
     ['Armor Class', stats.ac],
     ['Touch AC', stats.touch],
     ['Flat-footed AC', stats.flatFooted],
+    ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`],
+    ['Wearing', worn || 'no armor'],
   ];
-  $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
 
-  renderSkills(race, cls, stats.scores, chosen.map(f => f.name));
-  renderFeats(slots, granted, ctx);
+  renderSkills(race, cls, stats.scores, view.chosen.map(f => f.name));
+  renderFeats(view.slots, view.granted, view.ctx);
   renderSpells(cls, stats.scores);
+  renderArmorTab(app, view);
+  if (tab === 'spells') renderSpellList(app, view);
 }
 
 function renderSkills(race, cls, scores, featNames) {
@@ -342,8 +396,10 @@ function renderSkills(race, cls, scores, featNames) {
   $('skill-count').textContent = `${used} of ${available} ranks used`;
   $('skill-count').classList.toggle('over', used > available);
 
+  const checkPenalty = view.gear.checkPenalty;
   $('skills-hint').textContent =
-    `At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.`;
+    `At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.` +
+    (checkPenalty ? ` Your armor's check penalty (${checkPenalty}) applies to Str and Dex skills.` : '');
 
   const abbr = a => a.charAt(0).toUpperCase() + a.slice(1);
   $('skill-rows').innerHTML = names.map(name => {
@@ -355,8 +411,8 @@ function renderSkills(race, cls, scores, featNames) {
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
-      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false });
-      return `<tr class="family">
+      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty });
+      return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
           <div class="add-specialty">
             <input type="text" data-specialty-for="${esc(name)}" placeholder="Add a specialty, e.g. ${name === 'Craft' ? 'alchemy' : name === 'Perform' ? 'sing' : 'sailor'}" aria-label="${esc(name)} specialty">
@@ -368,12 +424,13 @@ function renderSkills(race, cls, scores, featNames) {
     }
 
     const ranks = state.skills[name] || 0;
-    const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames });
+    const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty });
     const parts = [`${abbr(info.ability)} ${signed(t.abilityMod)}`];
     if (t.classBonus) parts.push(`class +${t.classBonus}`);
     if (t.racial) parts.push(`race ${signed(t.racial)}`);
     if (t.feat) parts.push(`feats +${t.feat}`);
-    return `<tr${specialty ? ' class="specialty"' : ''}>
+    if (t.armor) parts.push(`armor ${t.armor}`);
+    return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
         <div class="breakdown">${parts.join(' · ')}</div>
@@ -394,10 +451,6 @@ const STATUS_ICON = {
   unknown: '<span class="status unknown" title="Some prerequisites can\'t be checked">?</span>',
 };
 
-function paragraphs(text) {
-  return String(text || '').split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('');
-}
-
 // Prerequisites (each marked ✓/✗/?) and rules text for one feat.
 function featDetails(f, check) {
   const prereqs = check.waived
@@ -416,12 +469,12 @@ function featDetails(f, check) {
 }
 
 function renderFeats(slots, granted, ctx) {
-  const filled = slots.filter(s => featsById.has(state.feats[s.id])).length;
+  const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
   $('granted-feats').textContent = granted.length ? `Free from your class: ${granted.join(', ')}.` : '';
 
   $('feat-slots').innerHTML = slots.map(slot => {
-    const f = featsById.get(state.feats[slot.id]);
+    const f = data.featsById.get(state.feats[slot.id]);
     const rule = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
     let body;
     if (f) {
@@ -453,7 +506,7 @@ const PICKER_LIMIT = 150;
 
 function openPicker(slotId) {
   pickerSlotId = slotId;
-  const slot = current.slots.find(s => s.id === slotId);
+  const slot = view.slots.find(s => s.id === slotId);
   $('picker-title').textContent = slot.label;
   $('picker-rule').textContent = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
   $('feat-search').value = '';
@@ -462,21 +515,21 @@ function openPicker(slotId) {
 }
 
 function renderPicker() {
-  const slot = current.slots.find(s => s.id === pickerSlotId);
+  const slot = view.slots.find(s => s.id === pickerSlotId);
   if (!slot) return;
   const search = $('feat-search').value.trim().toLowerCase();
   const type = $('feat-type').value;
   const hideUnmet = $('feat-qualify').checked;
   // Feats already chosen in another slot, unless the feat can be taken more than once.
-  const taken = new Set(current.slots.filter(s => s.id !== slot.id).map(s => state.feats[s.id]));
+  const taken = new Set(view.slots.filter(s => s.id !== slot.id).map(s => state.feats[s.id]));
 
   const matches = [];
-  for (const f of feats) {
+  for (const f of data.feats) {
     if (!slotAccepts(slot, f)) continue;
     if (taken.has(f.id) && !repeatable(f)) continue;
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
-    const check = checkFeat(f, current.ctx, slot);
+    const check = checkFeat(f, view.ctx, slot);
     if (hideUnmet && check.status === 'unmet') continue;
     matches.push({ f, check });
   }
@@ -497,6 +550,8 @@ const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '
 function renderSpells(cls, scores) {
   const spells = spellsPerDay({ cls, level: state.level, scores, extraSlot: extraSlotOn(cls.id) });
   $('spells-card').hidden = !spells;
+  $('no-spells').hidden = !!spells;
+  $('no-spells-text').textContent = spells ? '' : `${cls.name}s don't cast spells.`;
   if (!spells) return;
 
   const abilityName = ABILITY_NAMES[spells.ability];
@@ -541,12 +596,76 @@ function renderSpells(cls, scores) {
   $('spells-note').textContent = notes.join(' ');
 }
 
+// A details window with action buttons: actions are [{ label, primary, run }].
+function openDetail(title, bodyHtml, actions = []) {
+  $('detail-title').textContent = title;
+  $('detail-body').innerHTML = bodyHtml;
+  $('detail-actions').innerHTML = actions.map((a, i) =>
+    `<button type="button" data-action="${i}"${a.primary ? ' class="primary"' : ''}>${esc(a.label)}</button>`).join('');
+  $('detail-actions').onclick = e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    $('detail-dialog').close();
+    actions[Number(btn.dataset.action)].run();
+  };
+  if (!$('detail-dialog').open) $('detail-dialog').showModal();
+}
+
+// What happens when a search result is chosen: go to its tab, or show it with a way to use it.
+function openResult(type, id) {
+  if (type === 'race') {
+    const r = data.races.find(x => x.id === id);
+    const traits = (r.traits || []).map(t => `<li><b>${esc(t.name)}</b> ${esc(t.text)}</li>`).join('');
+    openDetail(r.name, `<p class="hint">${esc(r.category)} race · ${esc(sourceText(r))}</p>
+      ${paragraphs(r.summary || '')}<ul class="plain-list">${traits}</ul>`,
+    [{ label: `Make my character ${/^[aeiou]/i.test(r.name) ? 'an' : 'a'} ${r.name}`, primary: true,
+       run: () => { update({ race: id }); showTab('character'); } }]);
+  } else if (type === 'class') {
+    const c = data.classes.find(x => x.id === id);
+    const featureNames = [...new Set((c.features || []).map(f => f.name))].join(', ');
+    openDetail(c.name, `<p class="hint">${esc(c.category)} class · ${esc(sourceText(c))}</p>
+      ${paragraphs(c.summary || '')}
+      ${facts([['Hit die', c.hit_die], ['Skill ranks per level', c.skill_ranks_per_level], ['Alignment', c.alignment]])}
+      ${featureNames ? `<h4>Class features</h4><p>${esc(featureNames)}</p>` : ''}`,
+    [{ label: `Make my character ${/^[aeiou]/i.test(c.name) ? 'an' : 'a'} ${c.name}`, primary: true,
+       run: () => { update({ cls: id }); showTab('character'); } }]);
+  } else if (type === 'feat') {
+    const f = data.featsById.get(id);
+    openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)),
+      [{ label: 'Go to Feats', primary: true, run: () => showTab('feats') }]);
+  } else if (type === 'skill') {
+    showTab('skills');
+    const row = document.querySelector(`[data-row-skill="${CSS.escape(id)}"]`);
+    if (row) {
+      row.scrollIntoView({ block: 'center' });
+      row.classList.remove('flash');
+      void row.offsetWidth;  // restart the highlight animation
+      row.classList.add('flash');
+    }
+  } else if (type === 'spell') {
+    showTab('spells');
+    showSpell(app, id);
+  } else if (type === 'magic-item') {
+    showTab('magic-items');
+    showItem(app, id);
+  } else if (type === 'armor') {
+    const a = data.armorById.get(id);
+    const isShield = a.category === 'shield';
+    openDetail(a.name, armorDetails(a), [
+      { label: isShield ? 'Use this shield' : 'Wear this armor', primary: true,
+        run: () => { update(isShield ? { shieldId: id } : { armorId: id }); showTab('armor'); } },
+      { label: 'Go to Armor', run: () => showTab('armor') },
+    ]);
+  }
+}
+
 async function start() {
   try {
-    [races, classes, feats] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
+      fetch('data/armor.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -555,15 +674,17 @@ async function start() {
   }
   // Prestige classes need levels in other classes first, and multiclassing isn't supported yet.
   // NPC classes (adept, aristocrat, commoner, expert, warrior) aren't offered.
-  classes = classes.filter(c => c.category !== 'prestige' && c.category !== 'npc');
+  data.classes = data.classes.filter(c => c.category !== 'prestige' && c.category !== 'npc');
   // Mythic feats need mythic tiers, which the builder doesn't support.
-  feats = feats.filter(f => !(f.types || []).includes('Mythic'));
-  featsById = new Map(feats.map(f => [f.id, f]));
+  data.feats = data.feats.filter(f => !(f.types || []).includes('Mythic'));
+  data.featsById = new Map(data.feats.map(f => [f.id, f]));
+  data.armorById = new Map(data.armor.map(a => [a.id, a]));
   load();
   buildControls();
   $('loading').hidden = true;
   $('app').hidden = false;
   render();
+  showTab(location.hash.slice(1));
 }
 
 start();

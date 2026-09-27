@@ -3,17 +3,18 @@
 import { abilityModifier, finalScores, levelIncreases } from './rules.js';
 
 // Core Rulebook skills. `family` skills (Craft, Perform, Profession) need a specialty, e.g. Craft (alchemy).
+// `acp` skills take the armor check penalty.
 export const SKILLS = [
-  { name: 'Acrobatics', ability: 'dex' },
+  { name: 'Acrobatics', ability: 'dex', acp: true },
   { name: 'Appraise', ability: 'int' },
   { name: 'Bluff', ability: 'cha' },
-  { name: 'Climb', ability: 'str' },
+  { name: 'Climb', ability: 'str', acp: true },
   { name: 'Craft', ability: 'int', family: true },
   { name: 'Diplomacy', ability: 'cha' },
-  { name: 'Disable Device', ability: 'dex', trained: true },
+  { name: 'Disable Device', ability: 'dex', acp: true, trained: true },
   { name: 'Disguise', ability: 'cha' },
-  { name: 'Escape Artist', ability: 'dex' },
-  { name: 'Fly', ability: 'dex' },
+  { name: 'Escape Artist', ability: 'dex', acp: true },
+  { name: 'Fly', ability: 'dex', acp: true },
   { name: 'Handle Animal', ability: 'cha', trained: true },
   { name: 'Heal', ability: 'wis' },
   { name: 'Intimidate', ability: 'cha' },
@@ -23,13 +24,13 @@ export const SKILLS = [
   { name: 'Perception', ability: 'wis' },
   { name: 'Perform', ability: 'cha', family: true },
   { name: 'Profession', ability: 'wis', trained: true, family: true },
-  { name: 'Ride', ability: 'dex' },
+  { name: 'Ride', ability: 'dex', acp: true },
   { name: 'Sense Motive', ability: 'wis' },
-  { name: 'Sleight of Hand', ability: 'dex', trained: true },
+  { name: 'Sleight of Hand', ability: 'dex', acp: true, trained: true },
   { name: 'Spellcraft', ability: 'int', trained: true },
-  { name: 'Stealth', ability: 'dex' },
+  { name: 'Stealth', ability: 'dex', acp: true },
   { name: 'Survival', ability: 'wis' },
-  { name: 'Swim', ability: 'str' },
+  { name: 'Swim', ability: 'str', acp: true },
   { name: 'Use Magic Device', ability: 'cha', trained: true },
 ];
 
@@ -129,18 +130,20 @@ export function featSkillBonus(featNames, skillName, ranks) {
   return bonus;
 }
 
-// One skill's total. `scores` are final ability scores. Returns { total, usable, classBonus, racial, feat, abilityMod }.
+// One skill's total. `scores` are final ability scores; `checkPenalty` (0 or less) is the armor check penalty.
+// Returns { total, usable, classBonus, racial, feat, armor, abilityMod }.
 // A trained-only skill with no ranks can't be used (usable: false).
-export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [] }) {
+export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [], checkPenalty = 0 }) {
   const info = skillInfo(name);
   const abilityMod = abilityModifier(scores[info.ability]);
   const classBonus = isClassSkill && ranks > 0 ? 3 : 0;
   const racial = racialBonuses[name] || 0;
   const feat = featSkillBonus(featNames, name, ranks);
+  const armor = info.acp ? checkPenalty : 0;
   return {
-    abilityMod, classBonus, racial, feat,
+    abilityMod, classBonus, racial, feat, armor,
     usable: !(info.trained && ranks === 0),
-    total: ranks + abilityMod + classBonus + racial + feat,
+    total: ranks + abilityMod + classBonus + racial + feat + armor,
   };
 }
 

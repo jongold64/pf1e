@@ -6,11 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert the
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) SQLite books into plain-text JSON in `data/`
-(`races.json`, `classes.json`, `feats.json`) plus `LICENSE-OGL.txt`. The JSON files are generated
+(`races.json`, `classes.json`, `feats.json`, `armor.json`, `magic-items.json`, `spells.json`) plus
+`LICENSE-OGL.txt`. The JSON files are generated
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
-On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC, skills, feats, spells per day),
+On top of the data is a static web app (single-class builder, levels 1-20) with tabs: Character (race,
+class, point buy, results, global search), Feats, Skills, Spells (per day + class spell list), Magic Items
+(browse by category with a details panel) and Armor (kept separate from any future general equipment),
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -27,9 +30,19 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 
 - `js/rules.js` holds all rules math as pure functions (point-buy costs, modifiers, racial
   adjustments, level-based ability increases, `characterStats`). Put new calculations here and add checks to `js/rules.test.js`.
-- `js/app.js` owns the page: loads races/classes (prestige classes filtered out), builds the
-  controls, keeps one `state` object, saves it to `localStorage`, and re-renders everything on each
-  change via `update()` → `render()`.
+- `js/app.js` owns the page: loads races/classes/feats/armor at start (spells and magic items load on
+  first use via `loadSpells`/`loadItems`, they're ~3.7 MB), keeps one `state` object saved to
+  `localStorage`, computes a shared `view` (stats, gear, feat context) in `computeView()`, and re-renders
+  on each change via `update()` → `render()`. Tabs are `<main class="tab-panel">` elements switched by
+  `showTab()`; the open tab is kept in the URL hash (`#spells`). Tab modules get an `app` object
+  (`state`, `data`, `update`, `view`, `showTab`, `openDetail`, `openResult`): `tab-armor.js`,
+  `tab-spells.js`, `tab-items.js`, `search-ui.js`. Shared DOM helpers are in `dom.js`.
+- Armor: `js/armor.js` (`armorEffects`, `speedInArmor`, `proficiencyWarnings`) turns worn armor/shield +
+  enhancement into AC bonus, max Dex cap, check penalty (-1 for magic/masterwork, applied to `acp` skills),
+  arcane spell failure and speed. `characterStats` takes that as `gear`; a monk's AC bonus needs no armor
+  and no shield.
+- Search: `js/search.js` ranks names (exact, prefix, word prefix, substring, all words); `search-ui.js`
+  builds the index from all data and `app.openResult()` routes each type to its tab or a details dialog.
 - Level N values come from `progression[N - 1]` of a class record (`bab` is the full iterative list,
   e.g. `[11, 6, 1]`); monk AC reads `other['AC Bonus']` from that row. HP uses the fixed average after
   1st level (half the die + 1), and the favored class bonus applies at every level. Multiclassing is
@@ -62,10 +75,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 
+- UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
+  `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
+  race and class at a few levels, each tab, search results opening their tab, and a character saved
+  by an older version still loading (`load()` migrates or drops old fields).
+
 ## Data build commands
 
-Requires Python 3.9+ and `pip install beautifulsoup4`, plus a local clone of PSRD-Data
-(`git clone --depth 1 https://github.com/devonjones/PSRD-Data.git`).
+Requires Python 3.9+ and `pip install beautifulsoup4`, plus the PSRD-Data book databases. On this
+machine they're in `C:\Users\jongo\Projects\PSRD-Data` (the `.db` files only, downloaded from the repo;
+`git clone --depth 1 https://github.com/devonjones/PSRD-Data.git` also works).
 
 ```
 python scripts/build_all.py path/to/PSRD-Data     # rebuild everything, then validate
@@ -81,8 +100,9 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
 
 - `PSRD` defaults to `/home/claude/src/PSRD-Data` in `psrd_tree.py`; on this machine always set it
   (or pass the path to `build_all.py`, which exports it).
-- Output files are opened without an explicit encoding and written with `ensure_ascii=False`. On
-  Windows set `PYTHONUTF8=1` so non-ASCII text doesn't fail or get written as cp1252.
+- The older builders (races/classes/feats) open output files without an explicit encoding and write with
+  `ensure_ascii=False`. On Windows set `PYTHONUTF8=1` so non-ASCII text doesn't fail or get written as
+  cp1252. Rebuilding them on Windows gives identical JSON content (only line endings differ).
 - There is no test suite; `validate.py` is the check (duplicate ids, complete 1–20 / 1–10 level
   tables, required class/race fields, every `feat` prerequisite referring to an existing feat name).
 
@@ -91,8 +111,9 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
 - **`psrd_tree.py`** — loads one PSRD book DB (`sections` table, nested-set `lft`/`rgt` +
   `parent_id`) into a dict of rows, each with a `children` list. `show()` prints a subtree and is
   handy for exploring how a book structures a given race/class/feat.
-- **`common.py`** — `BOOKS` lists the book DBs in publication order; `iter_books()` walks them in
-  that order, and builders rely on it for duplicate resolution ("earlier book wins", except races
+- **`common.py`** — `BOOKS` lists the book DBs in publication order (kept unchanged so races/classes/feats
+  rebuild the same); `ALL_BOOKS` is every PSRD book and is used by the armor, magic item and spell
+  builders. `iter_books(books)` walks them in that order, and builders rely on it for duplicate resolution ("earlier book wins", except races
   prefer the Advanced Race Guide write-up and record others in `also_in`). Also holds the HTML →
   plain-text conversion (`text`/`clean`/`node_text`, which also normalizes dashes and smart quotes),
   `slug()` for ids, and `parse_table()` (handles rowspan/colspan headers; used for class progression
@@ -100,6 +121,11 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
 - **Builders** each scan every book for sections of their `type` (`race`, `class`, `feat`) and read
   child sections by name (e.g. "Prerequisites", "Benefit", "Hit Die"). Some books also have side
   tables that are queried directly (`class_details`, `feat_types`).
+- **Armor / magic items / spells** read structured tables (`item_details`, `item_misc`, `spell_details`,
+  `spell_lists`, `spell_effects`). Armor prefers the Ultimate Equipment reprint (field names vary by book,
+  hence `key()`); magic items are `item` sections with an aura, categorised by the nearest heading
+  (`CATEGORIES`) or by slot, plus special abilities stored as text sections with a stat line or an
+  Ultimate Equipment stat block. Each builder prints what it couldn't place; check that output after changes.
 - **Build order matters**: `build_feats.py` reads `races.json` from the same directory as its output
   path to recognize race prerequisites, so races must be built first (`build_all.py` does this).
 - **Feat prerequisite parsing** (`build_feats.py`): `split_prereqs` → `parse_one` (regex per type) →
@@ -112,4 +138,6 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
 ## License
 
 Content is OGL 1.0a; `LICENSE-OGL.txt` (generated by `build_license.py` from `book-ogl.db`) must ship
-with anything that uses the data.
+with anything that uses the data. PSRD's list lacks Mythic Adventures, so `build_license.py` adds that
+notice (`MISSING_NOTICES`, wording from the official PRD license page). When adding data from a new book,
+check its Section 15 notice is in the license.

@@ -1,4 +1,4 @@
-# Pathfinder 1e Rules Data (races, classes, feats)
+# Pathfinder 1e Rules Data (races, classes, feats, armor, magic items, spells)
 
 Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) (the Paizo Pathfinder Reference Document).
@@ -8,17 +8,26 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | `data/races.json` | 43 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary) |
 | `data/classes.json` | 55 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC |
 | `data/feats.json` | 1,227 feats, including 162 mythic feats |
+| `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
+| `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items) |
+| `data/spells.json` | 1,536 spells with school, class spell levels, components, range, duration, saves and text (mythic spells left out) |
 | `LICENSE-OGL.txt` | The Open Game License 1.0a and Section 15 copyright notices. **Ship this with your app.** |
 | `scripts/` | The Python scripts that generate the files above |
 
-Books covered: Core Rulebook, Advanced Player's Guide, Advanced Race Guide, Advanced Class Guide,
-Ultimate Magic, Ultimate Combat, Ultimate Campaign, Mythic Adventures, and Bestiary 1-4.
+Books covered by races, classes and feats: Core Rulebook, Advanced Player's Guide, Advanced Race Guide,
+Advanced Class Guide, Ultimate Magic, Ultimate Combat, Ultimate Campaign, Mythic Adventures, and Bestiary 1-4.
+Armor, magic items and spells also use Ultimate Equipment, GameMastery Guide, NPC Codex, Monster Codex and
+Technology Guide: every book in PSRD-Data. Later books (Occult Adventures, Pathfinder Unchained, Ultimate
+Intrigue, Ultimate Wilderness and others) and Player Companion / Campaign Setting books are not in PSRD-Data.
 
 ## The character builder app
 
-`index.html` is a character builder for a single class at levels 1-20 that uses this data: pick a race and a class, set ability
-scores with point buy, put ranks in skills, choose feats (with prerequisite checks), and see HP, saves, BAB, AC and spells per day. To try it on your computer, run this from the
-repo folder (needs Python 3) and open http://localhost:8000/ in a browser:
+`index.html` is a character builder for a single class at levels 1-20 that uses this data. Its tabs:
+Character (race, class, point buy, results, and a search box that finds anything by name), Feats (with
+prerequisite checks), Skills, Spells (spells per day and the class spell list), Magic Items (every magic
+item by category, with a details panel) and Armor (worn armor and shield, applied to AC, skills and speed).
+To try it on your computer, run this from the repo folder (needs Python 3) and open http://localhost:8000/
+in a browser:
 
 ```
 python -m http.server 8000

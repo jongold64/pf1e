@@ -14,91 +14,164 @@
 
   <p id="loading">Loading rules data…</p>
 
-  <main id="app" hidden>
-    <section class="card">
-      <h2>Race</h2>
-      <select id="race"></select>
-      <div id="race-info" class="info"></div>
-    </section>
+  <div id="app" hidden>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button type="button" role="tab" data-tab="character">Character</button>
+      <button type="button" role="tab" data-tab="feats">Feats</button>
+      <button type="button" role="tab" data-tab="skills">Skills</button>
+      <button type="button" role="tab" data-tab="spells">Spells</button>
+      <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
+      <button type="button" role="tab" data-tab="armor">Armor</button>
+    </nav>
 
-    <section class="card">
-      <h2>Class</h2>
-      <select id="class"></select>
-      <label class="row level-row">Level <select id="level"></select></label>
-      <div id="class-info" class="info"></div>
-    </section>
+    <!-- Character -->
+    <main class="tab-panel" id="tab-character" role="tabpanel">
+      <section class="card wide search-card">
+        <form id="search-form" class="search-row" role="search">
+          <input id="global-search" type="search" autocomplete="off"
+                 placeholder="Find anything by name: races, classes, feats, skills, spells, armor, magic items"
+                 aria-label="Search everything by name">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <p id="search-status" class="hint" hidden></p>
+        <ul id="search-results" class="search-results" hidden></ul>
+      </section>
 
-    <section class="card wide">
-      <h2>Ability scores</h2>
-      <div class="row">
-        <label>Point buy
-          <select id="budget"></select>
+      <section class="card">
+        <h2>Race</h2>
+        <select id="race"></select>
+        <div id="race-info" class="info"></div>
+      </section>
+
+      <section class="card">
+        <h2>Class</h2>
+        <select id="class"></select>
+        <label class="row level-row">Level <select id="level"></select></label>
+        <div id="class-info" class="info"></div>
+        <fieldset>
+          <legend>Favored class bonus</legend>
+          <label><input type="radio" name="favored" value="hp" checked> +1 hit point per level</label>
+          <label><input type="radio" name="favored" value="skill"> +1 skill rank per level</label>
+        </fieldset>
+      </section>
+
+      <section class="card wide">
+        <h2>Ability scores</h2>
+        <div class="row">
+          <label>Point buy
+            <select id="budget"></select>
+          </label>
+          <span id="points" class="points"></span>
+        </div>
+        <label id="flexible-row" class="row" hidden>Racial +2 to
+          <select id="flexible"></select>
         </label>
-        <span id="points" class="points"></span>
-      </div>
-      <label id="flexible-row" class="row" hidden>Racial +2 to
-        <select id="flexible"></select>
-      </label>
-      <table class="abilities">
-        <thead>
-          <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
-        </thead>
-        <tbody id="ability-rows"></tbody>
-      </table>
-      <div id="increases" class="increases">
-        <h3>Ability increases</h3>
-        <p class="hint">Every 4 levels you add 1 to one ability score.</p>
-        <div id="increase-rows"></div>
-        <p id="increase-note" class="warning"></p>
-      </div>
-    </section>
+        <table class="abilities">
+          <thead>
+            <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
+          </thead>
+          <tbody id="ability-rows"></tbody>
+        </table>
+        <div id="increases" class="increases">
+          <h3>Ability increases</h3>
+          <p class="hint">Every 4 levels you add 1 to one ability score.</p>
+          <div id="increase-rows"></div>
+          <p id="increase-note" class="warning"></p>
+        </div>
+      </section>
 
-    <section class="card">
-      <h2>Armor</h2>
-      <p class="hint">No equipment list yet. Type the armor and shield bonus from your gear.</p>
-      <label class="row">Armor bonus <input id="armor" type="number" min="0" max="20" value="0" inputmode="numeric"></label>
-      <label class="row">Shield bonus <input id="shield" type="number" min="0" max="10" value="0" inputmode="numeric"></label>
-      <fieldset>
-        <legend>Favored class bonus</legend>
-        <label><input type="radio" name="favored" value="hp" checked> +1 hit point per level</label>
-        <label><input type="radio" name="favored" value="skill"> +1 skill rank per level</label>
-      </fieldset>
-    </section>
+      <section class="card wide results">
+        <h2>Results</h2>
+        <dl id="results"></dl>
+      </section>
+    </main>
 
-    <section class="card results">
-      <h2>Results</h2>
-      <dl id="results"></dl>
-    </section>
+    <!-- Feats -->
+    <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
+      <section class="card wide" id="feats-card">
+        <h2>Feats <span id="feat-count" class="count"></span></h2>
+        <p id="granted-feats" class="hint"></p>
+        <ul id="feat-slots" class="feat-slots"></ul>
+        <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
+      </section>
+    </main>
 
-    <section class="card wide" id="skills-card">
-      <h2>Skills <span id="skill-count" class="count"></span></h2>
-      <p id="skills-hint" class="hint"></p>
-      <table class="skills">
-        <thead><tr><th>Skill</th><th>Ranks</th><th>Total</th></tr></thead>
-        <tbody id="skill-rows"></tbody>
-      </table>
-    </section>
+    <!-- Skills -->
+    <main class="tab-panel" id="tab-skills" role="tabpanel" hidden>
+      <section class="card wide" id="skills-card">
+        <h2>Skills <span id="skill-count" class="count"></span></h2>
+        <p id="skills-hint" class="hint"></p>
+        <table class="skills">
+          <thead><tr><th>Skill</th><th>Ranks</th><th>Total</th></tr></thead>
+          <tbody id="skill-rows"></tbody>
+        </table>
+      </section>
+    </main>
 
-    <section class="card wide" id="feats-card">
-      <h2>Feats <span id="feat-count" class="count"></span></h2>
-      <p id="granted-feats" class="hint"></p>
-      <ul id="feat-slots" class="feat-slots"></ul>
-      <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked yet (skill ranks, or rules the app can't read)</p>
-    </section>
+    <!-- Spells -->
+    <main class="tab-panel" id="tab-spells" role="tabpanel" hidden>
+      <section class="card wide" id="no-spells" hidden>
+        <h2>Spells</h2>
+        <p id="no-spells-text"></p>
+      </section>
+      <section class="card wide" id="spells-card" hidden>
+        <h2>Spells per day</h2>
+        <p id="spells-summary" class="hint"></p>
+        <label id="extra-slot-row" class="check-row" hidden>
+          <input type="checkbox" id="extra-slot"> <span id="extra-slot-label"></span>
+        </label>
+        <table class="spells" id="spells-table">
+          <thead id="spells-head"></thead>
+          <tbody id="spells-body"></tbody>
+        </table>
+        <p id="spells-note" class="hint"></p>
+      </section>
+      <section class="card wide" id="spell-list-card">
+        <h2 id="spell-list-title">Spell list</h2>
+        <input id="spell-filter" class="filter" type="search" placeholder="Filter by name" autocomplete="off" aria-label="Filter spells by name">
+        <div class="browser">
+          <div class="browser-list" id="spell-list" aria-label="Spells"></div>
+          <aside class="browser-panel" id="spell-panel" aria-live="polite"></aside>
+        </div>
+      </section>
+    </main>
 
-    <section class="card wide" id="spells-card" hidden>
-      <h2>Spells</h2>
-      <p id="spells-summary" class="hint"></p>
-      <label id="extra-slot-row" class="check-row" hidden>
-        <input type="checkbox" id="extra-slot"> <span id="extra-slot-label"></span>
-      </label>
-      <table class="spells" id="spells-table">
-        <thead id="spells-head"></thead>
-        <tbody id="spells-body"></tbody>
-      </table>
-      <p id="spells-note" class="hint"></p>
-    </section>
-  </main>
+    <!-- Magic items -->
+    <main class="tab-panel" id="tab-magic-items" role="tabpanel" hidden>
+      <section class="card wide">
+        <h2>Magic items <span id="item-count" class="count"></span></h2>
+        <div class="item-filters">
+          <input id="item-filter" class="filter" type="search" placeholder="Filter by name" autocomplete="off" aria-label="Filter magic items by name">
+          <select id="item-category" aria-label="Jump to a category"></select>
+        </div>
+        <div class="browser">
+          <div class="browser-list" id="item-list" aria-label="Magic items"></div>
+          <aside class="browser-panel" id="item-panel" aria-live="polite"></aside>
+        </div>
+      </section>
+    </main>
+
+    <!-- Armor -->
+    <main class="tab-panel" id="tab-armor" role="tabpanel" hidden>
+      <section class="card">
+        <h2>Armor</h2>
+        <select id="armor-select" aria-label="Armor"></select>
+        <label class="row enh-row">Magic bonus <select id="armor-enh"></select></label>
+        <div id="armor-info" class="info"></div>
+      </section>
+      <section class="card">
+        <h2>Shield</h2>
+        <select id="shield-select" aria-label="Shield"></select>
+        <label class="row enh-row">Magic bonus <select id="shield-enh"></select></label>
+        <div id="shield-info" class="info"></div>
+      </section>
+      <section class="card wide">
+        <h2>In this armor</h2>
+        <div id="armor-warnings"></div>
+        <dl id="armor-summary" class="facts wide-facts"></dl>
+      </section>
+    </main>
+  </div>
 
   <dialog id="feat-picker" aria-labelledby="picker-title">
     <div class="picker-head">
@@ -113,6 +186,15 @@
     </div>
     <p id="picker-count" class="hint"></p>
     <div id="feat-list"></div>
+  </dialog>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <div class="picker-head">
+      <h2 id="detail-title"></h2>
+      <button type="button" id="detail-close">Close</button>
+    </div>
+    <div id="detail-body"></div>
+    <div id="detail-actions" class="slot-buttons"></div>
   </dialog>
 
   <footer>

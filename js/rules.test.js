@@ -5,17 +5,21 @@ import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, fe
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
          skillTotal, ranksFor } from './skills.js';
+import { armorEffects, speedInArmor, proficiencyWarnings } from './armor.js';
+import { normalize, buildIndex, search } from './search.js';
 
 const results = [];
 function check(name, actual, expected) {
   results.push({ name, pass: Object.is(actual, expected), actual, expected });
 }
 
-const [races, classes, allFeats] = await Promise.all([
+const [races, classes, allFeats, allArmor] = await Promise.all([
   fetch('data/races.json').then(r => r.json()),
   fetch('data/classes.json').then(r => r.json()),
   fetch('data/feats.json').then(r => r.json()),
+  fetch('data/armor.json').then(r => r.json()),
 ]);
+const armorById = id => allArmor.find(a => a.id === id);
 const race = id => races.find(r => r.id === id);
 const cls = id => classes.find(c => c.id === id);
 const feat = name => allFeats.find(f => f.name === name);
@@ -74,8 +78,8 @@ check('wizard hit die', hitDieSize(cls('wizard')), 6);
 
 // Armor, shield, favored class, low Con
 {
-  const s = characterStats({ race: race('elf'), cls: cls('sorcerer'), baseScores: scores(10, 8, 7, 10, 10, 10),
-                          armor: 4, shield: 2, favoredHp: true });
+  const s = characterStats({ race: race('elf'), cls: cls('sorcerer'), baseScores: scores(10, 8, 7, 10, 10, 10), favoredHp: true,
+                             gear: armorEffects({ armor: armorById('chain-shirt'), shield: armorById('heavy-steel-shield') }) });
   check('elf Con 5 gives -3', s.mod.con, -3);
   check('favored class adds 1 HP', s.hp, 4);  // 6 - 3 + 1
   check('armor + shield AC', s.ac, 16);
@@ -385,6 +389,81 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
                                  skillRanks: { Acrobatics: 5 } });
   check('skill prerequisite met', checkPrereq({ type: 'skill', skill: 'Acrobatics', ranks: 3 }, skillCtx, {}).status, 'met');
   check('skill prerequisite unmet', checkPrereq({ type: 'skill', skill: 'Acrobatics', ranks: 6 }, skillCtx, {}).status, 'unmet');
+}
+
+// Armor
+{
+  const chainmail = armorById('chainmail');
+  check('chainmail from the data', [chainmail.bonus, chainmail.max_dex, chainmail.check_penalty, chainmail.spell_failure].join(), '6,2,-5,30');
+  check('tower shield from the data', [armorById('tower-shield').bonus, armorById('tower-shield').max_dex].join(), '4,2');
+  const e = armorEffects({ armor: chainmail });
+  check('chainmail bonus', e.armorBonus, 6);
+  check('chainmail max Dex', e.maxDex, 2);
+  check('chainmail check penalty', e.checkPenalty, -5);
+  const magic = armorEffects({ armor: chainmail, armorEnh: 1 });
+  check('+1 chainmail bonus', magic.armorBonus, 7);
+  check('+1 chainmail check penalty (masterwork)', magic.checkPenalty, -4);
+  check('+1 padded check penalty stays 0', armorEffects({ armor: armorById('padded'), armorEnh: 1 }).checkPenalty, 0);
+  const plateTower = armorEffects({ armor: armorById('full-plate'), shield: armorById('tower-shield') });
+  check('full plate + tower shield: lowest max Dex', plateTower.maxDex, 1);
+  check('full plate + tower shield: penalties add', plateTower.checkPenalty, -16);
+  check('full plate + tower shield: spell failure adds', plateTower.spellFailure, 85);
+  check('shields have no max Dex', armorEffects({ shield: armorById('heavy-steel-shield') }).maxDex, null);
+
+  const dex18 = scores(10, 18, 10, 10, 10, 10);
+  const inChain = characterStats({ race: race('dwarf'), cls: cls('fighter'), baseScores: dex18, gear: e });
+  check('Dex +4 capped at +2 in chainmail: AC', inChain.ac, 18);
+  check('capped Dex: touch AC', inChain.touch, 12);
+  check('capped Dex: flat-footed AC', inChain.flatFooted, 16);
+  const dex8 = characterStats({ race: race('dwarf'), cls: cls('fighter'), baseScores: scores(10, 8, 10, 10, 10, 10),
+                               gear: armorEffects({ armor: armorById('full-plate') }) });
+  check('Dex penalty is not capped (10 + 9 - 1)', dex8.ac, 18);
+
+  const monkBase = scores(14, 14, 12, 10, 14, 7);
+  const monk = gear => characterStats({ race: race('human'), cls: cls('monk'), baseScores: monkBase, flexibleChoice: 'wis', gear });
+  check('monk unarmored keeps Wis to AC', monk(null).ac, 15);
+  check('monk in leather loses Wis to AC (10 + 2 + 2)', monk(armorEffects({ armor: armorById('leather') })).ac, 14);
+
+  check('human in chainmail: 30 -> 20 ft.', speedInArmor(30, e, race('human')), 20);
+  check('halfling in chainmail: 20 -> 15 ft.', speedInArmor(20, e, race('halfling')), 15);
+  check('dwarf in full plate keeps 20 ft.', speedInArmor(20, plateTower, race('dwarf')), 20);
+  check('light armor does not slow', speedInArmor(30, armorEffects({ armor: armorById('leather') }), race('human')), 30);
+
+  const profs = c => proficiencyFeats(cls(c));
+  check('fighter proficient with full plate + tower shield', proficiencyWarnings(plateTower, profs('fighter')).length, 0);
+  check('wizard not proficient with chainmail', proficiencyWarnings(e, profs('wizard')).length, 1);
+  check('cleric not proficient with tower shield',
+        proficiencyWarnings(armorEffects({ shield: armorById('tower-shield') }), profs('cleric')).length, 1);
+  check('cleric proficient with a heavy shield',
+        proficiencyWarnings(armorEffects({ shield: armorById('heavy-steel-shield') }), profs('cleric')).length, 0);
+  check('feat gives proficiency', proficiencyWarnings(e, [...profs('wizard'), 'Armor Proficiency, Medium']).length, 0);
+
+  const s10 = scores(14, 10, 10, 10, 10, 10);
+  check('armor check penalty on Climb', skillTotal({ name: 'Climb', ranks: 1, scores: s10, isClassSkill: true, checkPenalty: -5 }).total, 1);
+  check('no armor check penalty on Perception', skillTotal({ name: 'Perception', ranks: 1, scores: s10, isClassSkill: false, checkPenalty: -5 }).total, 1);
+  check('armor check penalty skills', SKILLS.filter(x => x.acp).map(x => x.name).join(', '),
+        'Acrobatics, Climb, Disable Device, Escape Artist, Fly, Ride, Sleight of Hand, Stealth, Swim');
+}
+
+// Search
+{
+  check('normalize strips punctuation and case', normalize("Mage's  Armor"), 'mages armor');
+  const index = buildIndex([
+    { type: 'spell', id: 'mage-armor', name: 'Mage Armor' },
+    { type: 'armor', id: 'chainmail', name: 'Chainmail' },
+    { type: 'magic-item', id: 'ring-of-protection', name: 'Ring of Protection' },
+    { type: 'feat', id: 'armor-proficiency-light', name: 'Armor Proficiency, Light' },
+    { type: 'race', id: 'elf', name: 'Elf' },
+    { type: 'magic-item', id: 'elven-chain', name: 'Elven Chain' },
+  ]);
+  const names = q => search(index, q).map(e => e.name).join(' | ');
+  check('search: one letter finds nothing', names('e'), '');
+  check('search: starts-with ranks first', names('elf'), 'Elf');
+  check('search: word match', names('armor'), 'Armor Proficiency, Light | Mage Armor');
+  check('search: contains', names('chain'), 'Chainmail | Elven Chain');
+  check('search: words in any position', names('ring prot'), 'Ring of Protection');
+  check('search: "mage\'s" becomes "mages", which isn\'t in "Mage Armor"', names("mage's"), '');
+  check('search: limit', search(index, 'ar', 1).length, 1);
 }
 
 const failed = results.filter(r => !r.pass);
