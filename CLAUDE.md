@@ -10,7 +10,7 @@ Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
-On top of the data is a static web app (level 1 builder: race, class, point buy, HP/saves/BAB/AC),
+On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC),
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -26,11 +26,14 @@ Tests: open `http://localhost:8000/tests.html`, which runs `js/rules.test.js` in
 lists pass/fail. There is no command-line test runner (Node is not installed).
 
 - `js/rules.js` holds all rules math as pure functions (point-buy costs, modifiers, racial
-  adjustments, `level1Stats`). Put new calculations here and add checks to `js/rules.test.js`.
+  adjustments, level-based ability increases, `characterStats`). Put new calculations here and add checks to `js/rules.test.js`.
 - `js/app.js` owns the page: loads races/classes (prestige classes filtered out), builds the
   controls, keeps one `state` object, saves it to `localStorage`, and re-renders everything on each
   change via `update()` → `render()`.
-- Level 1 values come from `progression[0]` of a class record; monk AC reads `progression[0].other['AC Bonus']`.
+- Level N values come from `progression[N - 1]` of a class record (`bab` is the full iterative list,
+  e.g. `[11, 6, 1]`); monk AC reads `other['AC Bonus']` from that row. HP uses the fixed average after
+  1st level (half the die + 1), and the favored class bonus applies at every level. Multiclassing is
+  not supported yet, so prestige classes stay filtered out.
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 

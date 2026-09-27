@@ -1,7 +1,7 @@
 // Page code: loads the data, builds the controls, and shows the results from rules.js.
 import {
-  ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS,
-  pointsSpent, racialAdjustments, level1Stats,
+  ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
+  pointsSpent, racialAdjustments, characterStats, formatBab,
 } from './rules.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
@@ -16,9 +16,11 @@ let classes = [];
 const state = {
   race: 'human',
   cls: 'fighter',
+  level: 1,
   budget: 15,
   base: Object.fromEntries(ABILITIES.map(a => [a, 10])),
   flexible: 'str',
+  increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
   armor: 0,
   shield: 0,
   favored: 'hp',
@@ -41,6 +43,9 @@ function load() {
   for (const a of ABILITIES) {
     if (!(state.base[a] in POINT_COSTS)) state.base[a] = 10;
   }
+  if (!(Number.isInteger(state.level) && state.level >= 1 && state.level <= 20)) state.level = 1;
+  state.increases = INCREASE_LEVELS.map((_, i) =>
+    ABILITIES.includes(state.increases?.[i]) ? state.increases[i] : '');
 }
 
 function save() {
@@ -60,6 +65,14 @@ function buildControls() {
   $('class').innerHTML = groupedOptions(classes, CLASS_GROUPS);
   $('budget').innerHTML = BUDGETS.map(b => `<option value="${b.points}">${b.label}</option>`).join('');
   $('flexible').innerHTML = ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
+  $('level').innerHTML = Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+
+  const abilityOptions = '<option value="">— choose —</option>' +
+    ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
+  $('increase-rows').innerHTML = INCREASE_LEVELS.map((lv, i) => `
+    <label class="row" id="increase-row-${i}">Level ${lv}: +1 to
+      <select data-increase="${i}">${abilityOptions}</select>
+    </label>`).join('');
 
   $('ability-rows').innerHTML = ABILITIES.map(a => `
     <tr>
@@ -70,12 +83,15 @@ function buildControls() {
         <button type="button" data-ability="${a}" data-step="1" aria-label="Raise ${ABILITY_NAMES[a]}">+</button>
       </span></td>
       <td id="race-${a}"></td>
+      <td id="inc-${a}"></td>
       <td class="score" id="score-${a}"></td>
       <td id="mod-${a}"></td>
     </tr>`).join('');
 
   $('race').value = state.race;
   $('class').value = state.cls;
+  $('level').value = state.level;
+  INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
   $('budget').value = state.budget;
   $('flexible').value = state.flexible;
   $('armor').value = state.armor;
@@ -91,6 +107,11 @@ function buildControls() {
 
   $('race').addEventListener('change', e => update({ race: e.target.value }));
   $('class').addEventListener('change', e => update({ cls: e.target.value }));
+  $('level').addEventListener('change', e => update({ level: Number(e.target.value) }));
+  $('increase-rows').addEventListener('change', e => {
+    const i = Number(e.target.dataset.increase);
+    update({ increases: state.increases.map((a, j) => (j === i ? e.target.value : a)) });
+  });
   $('budget').addEventListener('change', e => update({ budget: Number(e.target.value) }));
   $('flexible').addEventListener('change', e => update({ flexible: e.target.value }));
   $('armor').addEventListener('input', e => update({ armor: Math.max(0, Number(e.target.value) || 0) }));
@@ -124,11 +145,16 @@ function render() {
     <p>${esc(race.size)} ${esc(race.type || '')} · Speed ${race.base_speed ?? '?'} ft.</p>
     <p>${traits.map(t => esc(t.name)).join(', ')}</p>`;
 
-  // Class info
-  const row = cls.progression[0];
+  // Class info: features gained at every level up to the current one
+  const features = cls.progression.slice(0, state.level)
+    .map(r => `<li><b>${r.level}</b> ${r.special.map(esc).join(', ') || '—'}</li>`).join('');
   $('class-info').innerHTML = `
     <p>Hit die ${esc(cls.hit_die)} · ${cls.skill_ranks_per_level} + Int skill ranks per level</p>
-    <p>Level 1: ${row.special.map(esc).join(', ') || '—'}</p>`;
+    <details>
+      <summary>Class features by level</summary>
+      <ol class="features">${features}</ol>
+    </details>`;
+  $('subtitle').textContent = `${cls.name} ${state.level}`;
 
   // Point buy
   const spent = pointsSpent(state.base);
@@ -139,22 +165,31 @@ function render() {
   // Ability rows
   $('flexible-row').hidden = !race.flexible_ability_bonus;
   const adj = racialAdjustments(race, state.flexible);
-  const stats = level1Stats({
-    race, cls, baseScores: state.base, flexibleChoice: state.flexible,
+  const stats = characterStats({
+    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
+    increases: state.increases,
     armor: state.armor, shield: state.shield, favoredHp: state.favored === 'hp',
   });
   for (const a of ABILITIES) {
     $(`base-${a}`).textContent = state.base[a];
     $(`base-${a}`).title = `Costs ${POINT_COSTS[state.base[a]]} points`;
     $(`race-${a}`).textContent = adj[a] ? signed(adj[a]) : '';
+    $(`inc-${a}`).textContent = stats.increases[a] ? signed(stats.increases[a]) : '';
     $(`score-${a}`).textContent = stats.scores[a];
     $(`mod-${a}`).textContent = signed(stats.mod[a]);
   }
 
+  // Ability increases: only the levels reached so far are shown
+  const reached = INCREASE_LEVELS.filter(lv => state.level >= lv).length;
+  INCREASE_LEVELS.forEach((_, i) => { $(`increase-row-${i}`).hidden = i >= reached; });
+  $('increases').hidden = reached === 0;
+  const unchosen = state.increases.slice(0, reached).filter(a => !a).length;
+  $('increase-note').textContent = unchosen ? `${unchosen} increase${unchosen > 1 ? 's' : ''} still to choose.` : '';
+
   // Results
   const results = [
     ['Hit points', stats.hp],
-    ['Base attack bonus', signed(stats.bab)],
+    ['Base attack bonus', formatBab(stats.bab)],
     ['Fortitude', signed(stats.fort)],
     ['Reflex', signed(stats.ref)],
     ['Will', signed(stats.will)],
@@ -176,7 +211,7 @@ async function start() {
       'start the local server (python -m http.server 8000) and open http://localhost:8000/ instead.';
     return;
   }
-  // Prestige classes need other levels first, so they can't be picked at level 1.
+  // Prestige classes need levels in other classes first, and multiclassing isn't supported yet.
   classes = classes.filter(c => c.category !== 'prestige');
   load();
   buildControls();

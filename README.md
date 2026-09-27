@@ -16,7 +16,7 @@ Ultimate Magic, Ultimate Combat, Ultimate Campaign, Mythic Adventures, and Besti
 
 ## The character builder app
 
-`index.html` is a level 1 character builder that uses this data: pick a race and a class, set ability
+`index.html` is a character builder for a single class at levels 1-20 that uses this data: pick a race and a class, set ability
 scores with point buy, and see HP, saves, BAB and AC. To try it on your computer, run this from the
 repo folder (needs Python 3) and open http://localhost:8000/ in a browser:
 

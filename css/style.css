@@ -108,3 +108,14 @@ a { color: var(--accent); }
   .abilities th, .abilities td { padding: 6px 2px; }
   .abilities button { width: 38px; }
 }
+
+label.level-row { margin-top: 10px; justify-content: flex-start; }
+.increases { margin-top: 16px; }
+.increases h3 { margin: 0 0 4px; font-size: 1rem; }
+.increases .row { justify-content: flex-start; }
+.increases .warning:empty { display: none; }
+details { margin-top: 6px; }
+summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; color: var(--accent); }
+ol.features { list-style: none; padding: 0; margin: 6px 0 0; }
+ol.features li { padding: 3px 0; border-bottom: 1px solid var(--border); }
+ol.features b { display: inline-block; min-width: 2.2em; color: var(--text); }

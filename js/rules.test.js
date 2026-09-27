@@ -1,5 +1,5 @@
 // Checks for rules.js. Open tests.html through the local server to run them.
-import { abilityModifier, pointsSpent, finalScores, level1Stats, hitDieSize } from './rules.js';
+import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases } from './rules.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -31,12 +31,12 @@ check('wizard hit die', hitDieSize(cls('wizard')), 6);
 
 // Dwarf fighter
 {
-  const s = level1Stats({ race: race('dwarf'), cls: cls('fighter'), baseScores: scores(15, 12, 14, 10, 12, 9) });
+  const s = characterStats({ race: race('dwarf'), cls: cls('fighter'), baseScores: scores(15, 12, 14, 10, 12, 9) });
   check('dwarf Con 16', s.scores.con, 16);
   check('dwarf Wis 14', s.scores.wis, 14);
   check('dwarf Cha 7', s.scores.cha, 7);
   check('dwarf fighter HP', s.hp, 13);
-  check('dwarf fighter BAB', s.bab, 1);
+  check('dwarf fighter BAB', s.bab[0], 1);
   check('dwarf fighter Fort', s.fort, 5);
   check('dwarf fighter Ref', s.ref, 1);
   check('dwarf fighter Will', s.will, 2);
@@ -47,11 +47,11 @@ check('wizard hit die', hitDieSize(cls('wizard')), 6);
 
 // Halfling wizard: Small size, Str -2, Will +2 base
 {
-  const s = level1Stats({ race: race('halfling'), cls: cls('wizard'), baseScores: scores(10, 14, 12, 16, 10, 10) });
+  const s = characterStats({ race: race('halfling'), cls: cls('wizard'), baseScores: scores(10, 14, 12, 16, 10, 10) });
   check('halfling Str 8', s.scores.str, 8);
   check('halfling Dex 16', s.scores.dex, 16);
   check('halfling wizard HP', s.hp, 7);
-  check('halfling wizard BAB', s.bab, 0);
+  check('halfling wizard BAB', s.bab[0], 0);
   check('halfling wizard Will', s.will, 2);
   check('halfling wizard AC (10 + 3 Dex + 1 size)', s.ac, 14);
   check('halfling wizard flat-footed', s.flatFooted, 11);
@@ -67,22 +67,60 @@ check('wizard hit die', hitDieSize(cls('wizard')), 6);
 
 // Armor, shield, favored class, low Con
 {
-  const s = level1Stats({ race: race('elf'), cls: cls('sorcerer'), baseScores: scores(10, 8, 7, 10, 10, 10),
+  const s = characterStats({ race: race('elf'), cls: cls('sorcerer'), baseScores: scores(10, 8, 7, 10, 10, 10),
                           armor: 4, shield: 2, favoredHp: true });
   check('elf Con 5 gives -3', s.mod.con, -3);
   check('favored class adds 1 HP', s.hp, 4);  // 6 - 3 + 1
   check('armor + shield AC', s.ac, 16);
   check('touch ignores armor and shield', s.touch, 10);
-  const low = level1Stats({ race: race('elf'), cls: cls('wizard'), baseScores: scores(10, 7, 7, 10, 10, 10) });
+  const low = characterStats({ race: race('elf'), cls: cls('wizard'), baseScores: scores(10, 7, 7, 10, 10, 10) });
   check('HP with Con penalty', low.hp, 3);  // 6 - 3
   check('Dex penalty stays when flat-footed', low.flatFooted, low.ac);
 }
 
 // Monk: Wis to AC
 {
-  const s = level1Stats({ race: race('human'), cls: cls('monk'), baseScores: scores(14, 14, 12, 10, 14, 7), flexibleChoice: 'wis' });
+  const s = characterStats({ race: race('human'), cls: cls('monk'), baseScores: scores(14, 14, 12, 10, 14, 7), flexibleChoice: 'wis' });
   check('monk AC (10 + 2 Dex + 3 Wis)', s.ac, 15);
   check('monk flat-footed keeps Wis', s.flatFooted, 13);
+}
+
+// Higher levels
+{
+  const base = scores(15, 12, 14, 10, 12, 9);
+  const s20 = characterStats({ race: race('dwarf'), cls: cls('fighter'), level: 20, baseScores: base });
+  check('fighter 20 HP (13 + 19 × (6 + 3))', s20.hp, 184);
+  check('fighter 20 BAB', formatBab(s20.bab), '+20/+15/+10/+5');
+  check('fighter 20 Fort', s20.fort, 15);
+  check('fighter 20 Ref', s20.ref, 7);
+  check('fighter 20 Will', s20.will, 8);
+
+  const s5 = characterStats({ race: race('dwarf'), cls: cls('fighter'), level: 5, baseScores: base, increases: ['str'] });
+  check('level 4 increase applies at 5', s5.scores.str, 16);
+  check('fighter 5 HP (13 + 4 × 9)', s5.hp, 49);
+  const s5fav = characterStats({ race: race('dwarf'), cls: cls('fighter'), level: 5, baseScores: base, increases: ['str'], favoredHp: true });
+  check('favored class HP at every level', s5fav.hp, 54);
+  const s3 = characterStats({ race: race('dwarf'), cls: cls('fighter'), level: 3, baseScores: base, increases: ['str'] });
+  check('level 4 increase not yet at 3', s3.scores.str, 15);
+}
+{
+  const inc = levelIncreases(20, ['str', 'str', 'con', '', 'dex']);
+  check('two increases to Str', inc.str, 2);
+  check('unchosen increase adds nothing', inc.con + inc.dex, 2);
+  check('increases stop at current level', levelIncreases(11, ['str', 'str', 'str']).str, 2);
+}
+{
+  const s = characterStats({ race: race('elf'), cls: cls('wizard'), level: 10, baseScores: scores(10, 8, 7, 10, 10, 10) });
+  check('wizard 10 with Con -3 gets 1 HP per level', s.hp, 12);  // 3 + 9 × max(1, 4 - 3)
+}
+{
+  const base = scores(14, 14, 12, 10, 14, 7);
+  const m4 = characterStats({ race: race('human'), cls: cls('monk'), level: 4, baseScores: base, flexibleChoice: 'wis', increases: ['wis'] });
+  check('monk 4 AC bonus +1 (10 + 2 + 3 + 1)', m4.ac, 16);
+  const m8 = characterStats({ race: race('human'), cls: cls('monk'), level: 8, baseScores: base, flexibleChoice: 'wis', increases: ['wis', 'wis'] });
+  check('monk 8 Wis 18', m8.scores.wis, 18);
+  check('monk 8 AC (10 + 2 + 4 + 2)', m8.ac, 18);
+  check('monk 8 BAB', formatBab(m8.bab), '+6/+1');
 }
 
 const failed = results.filter(r => !r.pass);

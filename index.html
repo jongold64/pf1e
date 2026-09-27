@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>PF1e Character Builder</h1>
-    <p class="subtitle">Level 1</p>
+    <p class="subtitle" id="subtitle"></p>
   </header>
 
   <p id="loading">Loading rules data…</p>
@@ -24,6 +24,7 @@
     <section class="card">
       <h2>Class</h2>
       <select id="class"></select>
+      <label class="row level-row">Level <select id="level"></select></label>
       <div id="class-info" class="info"></div>
     </section>
 
@@ -40,10 +41,16 @@
       </label>
       <table class="abilities">
         <thead>
-          <tr><th>Ability</th><th>Base</th><th>Race</th><th>Score</th><th>Mod</th></tr>
+          <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
         </thead>
         <tbody id="ability-rows"></tbody>
       </table>
+      <div id="increases" class="increases">
+        <h3>Ability increases</h3>
+        <p class="hint">Every 4 levels you add 1 to one ability score.</p>
+        <div id="increase-rows"></div>
+        <p id="increase-note" class="warning"></p>
+      </div>
     </section>
 
     <section class="card">
@@ -53,8 +60,8 @@
       <label class="row">Shield bonus <input id="shield" type="number" min="0" max="10" value="0" inputmode="numeric"></label>
       <fieldset>
         <legend>Favored class bonus</legend>
-        <label><input type="radio" name="favored" value="hp" checked> +1 hit point</label>
-        <label><input type="radio" name="favored" value="skill"> +1 skill rank</label>
+        <label><input type="radio" name="favored" value="hp" checked> +1 hit point per level</label>
+        <label><input type="radio" name="favored" value="skill"> +1 skill rank per level</label>
       </fieldset>
     </section>
 
