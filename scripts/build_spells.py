@@ -37,7 +37,9 @@ def main():
             d = details.get(sid)
             if not d:
                 continue
-            _, school, subschool, descriptors, components, casting_time, rng, duration, save, sr = d
+            # A few detail fields start with a stray colon in the source (": V, S").
+            _, school, subschool, descriptors, components, casting_time, rng, duration, save, sr = \
+                [x if not isinstance(x, str) else x.lstrip(': ') for x in d]
             spell = {
                 'id': slug(n['name']), 'name': title(clean(n['name'])), 'source': book,
                 'school': clean(school) or None, 'subschool': clean(subschool) or None,

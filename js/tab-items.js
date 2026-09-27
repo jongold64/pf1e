@@ -68,7 +68,7 @@ export function renderMyItems(app) {
   }).join('') || '<tr><td colspan="4" class="hint">No magic items yet. Choose one below, then add it.</td></tr>';
   const totals = magicItemTotals(owned, byId);
   $('my-items-total').textContent = owned.length
-    ? `Total ${formatGp(totals.cost)}, ${formatLbs(totals.weight)}. These count toward gold and weight on the Equipment tab.` +
+    ? `Total ${formatGp(totals.cost)}, ${formatLbs(totals.weight)} (counted in gold and weight on the Equipment tab).` +
       (totals.unpriced.length ? ` No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.` : '')
     : '';
 }

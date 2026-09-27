@@ -26,8 +26,9 @@ Intrigue, Ultimate Wilderness and others) and Player Companion / Campaign Settin
 `index.html` is a character builder for a single class at levels 1-20 that uses this data. Its tabs:
 Character (race, class, point buy, results, and a search box that finds anything by name), Feats (with
 prerequisite checks), Skills, Spells (spells per day and the class spell list), Magic Items (every magic
-item by category, with a details panel), Armor (worn armor and shield, applied to AC, skills and speed) and
-Equipment (an inventory with gold and weight). Every tab has its own search box as well.
+item by category, with a details panel; items can be added to the character), Armor (worn armor and
+shield, applied to AC, skills and speed) and Equipment (an inventory with gold and weight). Spells can be
+added to the character too. Every tab has its own search box as well.
 To try it on your computer, run this from the repo folder (needs Python 3) and open http://localhost:8000/
 in a browser:
 

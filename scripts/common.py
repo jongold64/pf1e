@@ -72,6 +72,12 @@ def text(h):
         t.replace_with('\n' + _table_text(t) + '\n')
     for br in soup.find_all('br'):
         br.replace_with('\n')
+    # Bold or italic run-in headings often have no space after them: "<i>1st Round</i>Presence of...",
+    # "<b>Silver dragon</b>30-foot cone". Only before a capital or digit, so "<i>fireball</i>s" stays one word.
+    for b in soup.find_all(['b', 'strong', 'i', 'em']):
+        after = b.next_sibling
+        if isinstance(after, str) and after[:1] and (after[0].isupper() or after[0].isdigit()):
+            b.insert_after(' ')
     for tag in soup.find_all(['p', 'li', 'blockquote', 'div', 'h1', 'h2', 'h3', 'h4']):
         tag.insert_before('\n')
         tag.insert_after('\n')

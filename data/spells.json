@@ -4134,7 +4134,7 @@
     "saving_throw": "none",
     "spell_resistance": "no",
     "summary": "Create bow with brilliant energy arrows or a bridge that helps allies and hinders opponents.",
-    "description": "You create a spectrum of multicolored solid light that can be used for one of two effects.\n\nBowThe spell creates a longbow or shortbow appropriate for your size, and you are proficient in the use of this weapon. When drawn, the bow automatically creates a +1 seeking brilliant energy arrow; it cannot fire any other arrows. A creature struck by one of these arrows is surrounded by faerie fire and dazzled for 1 minute. This version of the spell ends when you have fired a number of arrows equal to your caster level.\n\nBridgeThe light forms a bridge or ramp 5 feet wide and up to 10 feet long per caster level. Creatures on the bridge are dazzled. Allies gain a bonus equal to your Wisdom modifier (minimum 1) on checks, saves, and to their CMD to resist being moved from the bridge against their will. Enemies take a penalty equal to your Wisdom modifier (minimum 1) checks, saves, and to their CMD to resist being moved from the bridge against their will."
+    "description": "You create a spectrum of multicolored solid light that can be used for one of two effects.\n\nBow The spell creates a longbow or shortbow appropriate for your size, and you are proficient in the use of this weapon. When drawn, the bow automatically creates a +1 seeking brilliant energy arrow; it cannot fire any other arrows. A creature struck by one of these arrows is surrounded by faerie fire and dazzled for 1 minute. This version of the spell ends when you have fired a number of arrows equal to your caster level.\n\nBridge The light forms a bridge or ramp 5 feet wide and up to 10 feet long per caster level. Creatures on the bridge are dazzled. Allies gain a bonus equal to your Wisdom modifier (minimum 1) on checks, saves, and to their CMD to resist being moved from the bridge against their will. Enemies take a penalty equal to your Wisdom modifier (minimum 1) checks, saves, and to their CMD to resist being moved from the bridge against their will."
   },
   {
     "id": "bleed",
@@ -5516,7 +5516,7 @@
       "bloodrager": 2
     },
     "casting_time": "1 standard action",
-    "components": ": V, S",
+    "components": "V, S",
     "range": "touch",
     "effects": [
       [
@@ -7389,7 +7389,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": "yes",
     "summary": "Knocks unconscious, blinds, and/or stuns weak creatures.",
-    "description": "A vivid cone of clashing colors springs forth from your hand, causing creatures to become stunned, perhaps also blinded, and possibly knocking them unconscious. Each creature within the cone is affected according to its HD.\n\n2 HD or less: The creature is unconscious, blinded, and stunned for 2d4 rounds, then blinded and stunned for 1d4 rounds, and then stunned for 1 round. (Only living creatures are knocked unconscious.)\n\n3 or 4 HDThe creature is blinded and stunned for 1d4 rounds, then stunned for 1 round.\n\n5 or more HDThe creature is stunned for 1 round.\n\nSightless creatures are not affected by color spray."
+    "description": "A vivid cone of clashing colors springs forth from your hand, causing creatures to become stunned, perhaps also blinded, and possibly knocking them unconscious. Each creature within the cone is affected according to its HD.\n\n2 HD or less: The creature is unconscious, blinded, and stunned for 2d4 rounds, then blinded and stunned for 1d4 rounds, and then stunned for 1 round. (Only living creatures are knocked unconscious.)\n\n3 or 4 HD The creature is blinded and stunned for 1d4 rounds, then stunned for 1 round.\n\n5 or more HD The creature is stunned for 1 round.\n\nSightless creatures are not affected by color spray."
   },
   {
     "id": "command",
@@ -11118,7 +11118,7 @@
       "magus": 0
     },
     "casting_time": "1 standard action",
-    "components": ": V, S",
+    "components": "V, S",
     "range": "60 ft.",
     "effects": [
       [
@@ -11130,7 +11130,7 @@
     "saving_throw": "none",
     "spell_resistance": "no",
     "summary": "Detects all spells and magic items within 60 ft.",
-    "description": "You detect magical auras. The amount of information revealed depends on how long you study a particular area or subject.\n\n1st RoundPresence or absence of magical auras.\n\n2nd RoundNumber of different magical auras and the power of the most potent aura.\n\n3rd RoundThe strength and location of each aura. If the items or creatures bearing the auras are in line of sight, you can make Knowledge (arcana) skill checks to determine the school of magic involved in each. (Make one check per aura: DC 15 + spell level, or 15 + 1/2 caster level for a nonspell effect.) If the aura emanates from a magic item, you can attempt to identify its properties (see Spellcraft).\n\nMagical areas, multiple types of magic, or strong local magical emanations may distort or conceal weaker auras.\n\nAura StrengthAn aura's power depends on a spell's functioning spell level or an item's caster level; see the accompanying table. If an aura falls into more than one category, detect magic indicates the stronger of the two.\n\nLingering AuraA magical aura lingers after its original source dissipates (in the case of a spell) or is destroyed (in the case of a magic item). If detect magic is cast and directed at such a location, the spell indicates an aura strength of dim (even weaker than a faint aura). How long the aura lingers at this dim level depends on its original power:\n\nOriginal Strength | Duration of Lingering Aura\nFaint | 1d6 rounds\nModerate | 1d6 minutes\nStrong | 1d6 × 10 minutes\nOverwhelming | 1d6 days\n\nDetect Magic\nSpell or Object | Aura Power\nFaint | Moderate | Strong | Overwhelming\nFunctioning spell (spell level) | 3rd or lower | 4th-6th | 7th-9th | 10th+ (deity-level)\nMagic item (caster level) | 5th or lower | 6th-11th | 12th-20th | 21st+ (artifact)"
+    "description": "You detect magical auras. The amount of information revealed depends on how long you study a particular area or subject.\n\n1st Round Presence or absence of magical auras.\n\n2nd Round Number of different magical auras and the power of the most potent aura.\n\n3rd Round The strength and location of each aura. If the items or creatures bearing the auras are in line of sight, you can make Knowledge (arcana) skill checks to determine the school of magic involved in each. (Make one check per aura: DC 15 + spell level, or 15 + 1/2 caster level for a nonspell effect.) If the aura emanates from a magic item, you can attempt to identify its properties (see Spellcraft).\n\nMagical areas, multiple types of magic, or strong local magical emanations may distort or conceal weaker auras.\n\nAura Strength An aura's power depends on a spell's functioning spell level or an item's caster level; see the accompanying table. If an aura falls into more than one category, detect magic indicates the stronger of the two.\n\nLingering Aura A magical aura lingers after its original source dissipates (in the case of a spell) or is destroyed (in the case of a magic item). If detect magic is cast and directed at such a location, the spell indicates an aura strength of dim (even weaker than a faint aura). How long the aura lingers at this dim level depends on its original power:\n\nOriginal Strength | Duration of Lingering Aura\nFaint | 1d6 rounds\nModerate | 1d6 minutes\nStrong | 1d6 × 10 minutes\nOverwhelming | 1d6 days\n\nDetect Magic\nSpell or Object | Aura Power\nFaint | Moderate | Strong | Overwhelming\nFunctioning spell (spell level) | 3rd or lower | 4th-6th | 7th-9th | 10th+ (deity-level)\nMagic item (caster level) | 5th or lower | 6th-11th | 12th-20th | 21st+ (artifact)"
   },
   {
     "id": "detect-poison",
@@ -16791,7 +16791,7 @@
       "ranger": 2
     },
     "casting_time": "1 round",
-    "components": ": V, S, M (a pinch of manure)",
+    "components": "V, S, M (a pinch of manure)",
     "range": "close (25 ft. + 5 ft./2 levels)",
     "effects": [
       [
@@ -16862,7 +16862,7 @@
     "saving_throw": "see text",
     "spell_resistance": "no",
     "summary": "Turns you into a Medium dragon.",
-    "description": "You become a Medium chromatic or metallic dragon. You gain a +4 size bonus to Strength, a +2 size bonus to Constitution, a +4 natural armor bonus, fly 60 feet (poor), darkvision 60 feet, a breath weapon, and resistance to one element. You also gain one bite (1d8), two claws (1d6), and two wing attacks (1d4). Your breath weapon and resistance depend on the type of dragon. You can only use the breath weapon once per casting of this spell. All breath weapons deal 6d8 points of damage and allow a Reflex save for half damage. In addition, some of the dragon types grant additional abilities, as noted below.\n\nBlack dragon60-foot line of acid, resist acid 20, swim 60 feet\n\nBlue dragon60-foot line of electricity, resist electricity 20, burrow 20 feet\n\nGreen dragon30-foot cone of acid, resist acid 20, swim 40 feet\n\nRed dragon30-foot cone of fire, resist fire 30, vulnerability to cold\n\nWhite dragon30-foot cone of cold, resist cold 20, swim 60 feet, vulnerability to fire\n\nBrass dragon60-foot line of fire, resist fire 20, burrow 30 feet, vulnerability to cold\n\nBronze dragon60-foot line of electricity, resist electricity 20, swim 60 feet\n\nCopper dragon60-foot line of acid, resist acid 20, spider climb (always active)\n\nGold dragon30-foot cone of fire, resist fire 20, swim 60 feet\n\nSilver dragon30-foot cone of cold, resist cold 30, vulnerability to fire"
+    "description": "You become a Medium chromatic or metallic dragon. You gain a +4 size bonus to Strength, a +2 size bonus to Constitution, a +4 natural armor bonus, fly 60 feet (poor), darkvision 60 feet, a breath weapon, and resistance to one element. You also gain one bite (1d8), two claws (1d6), and two wing attacks (1d4). Your breath weapon and resistance depend on the type of dragon. You can only use the breath weapon once per casting of this spell. All breath weapons deal 6d8 points of damage and allow a Reflex save for half damage. In addition, some of the dragon types grant additional abilities, as noted below.\n\nBlack dragon 60-foot line of acid, resist acid 20, swim 60 feet\n\nBlue dragon 60-foot line of electricity, resist electricity 20, burrow 20 feet\n\nGreen dragon 30-foot cone of acid, resist acid 20, swim 40 feet\n\nRed dragon 30-foot cone of fire, resist fire 30, vulnerability to cold\n\nWhite dragon 30-foot cone of cold, resist cold 20, swim 60 feet, vulnerability to fire\n\nBrass dragon 60-foot line of fire, resist fire 20, burrow 30 feet, vulnerability to cold\n\nBronze dragon 60-foot line of electricity, resist electricity 20, swim 60 feet\n\nCopper dragon 60-foot line of acid, resist acid 20, spider climb (always active)\n\nGold dragon 30-foot cone of fire, resist fire 20, swim 60 feet\n\nSilver dragon 30-foot cone of cold, resist cold 30, vulnerability to fire"
   },
   {
     "id": "form-of-the-dragon-ii",
@@ -18110,7 +18110,7 @@
     "saving_throw": "see text",
     "spell_resistance": "no (object) and yes; see text",
     "summary": "Inscription harms those who pass it.",
-    "description": "This powerful inscription harms those who enter, pass, or open the warded area or object. A glyph of warding can guard a bridge or passage, ward a portal, trap a chest or box, and so on.\n\nYou set all of the conditions of the ward. Typically, any creature entering the warded area or opening the warded object without speaking a password (which you set when casting the spell) is subject to the magic it stores. Alternatively or in addition to a password trigger, glyphs can be set according to physical characteristics (such as height or weight) or creature type, subtype, or kind. Glyphs can also be set with respect to good, evil, law, or chaos, or to pass those of your religion. They cannot be set according to class, HD, or level. Glyphs respond to invisible creatures normally but are not triggered by those who travel past them ethereally. Multiple glyphs cannot be cast on the same area. However, if a cabinet has three different drawers, each can be separately warded.\n\nWhen casting the spell, you weave a tracery of faintly glowing lines around the warding sigil. A glyph can be placed to conform to any shape up to the limitations of your total square footage. When the spell is completed, the glyph and tracery become nearly invisible.\n\nGlyphs cannot be affected or bypassed by such means as physical or magical probing, though they can be dispelled. Mislead, polymorph, and nondetection (and similar magical effects) can fool a glyph, though nonmagical disguises and the like can't. Read magic allows you to identify a glyph of warding with a DC 13 Knowledge (arcana) check. Identifying the glyph does not discharge it and allows you to know the basic nature of the glyph (version, type of damage caused, what spell is stored).\n\nNoteMagic traps such as glyph of warding are hard to detect and disable. While any character can use Perception to find a glyph, only a character with the trapfinding class feature can use Disable Device to disarm it.\n\nDepending on the version selected, a glyph either blasts the intruder or activates a spell.\n\nBlast GlyphA blast glyph deals 1d8 points of damage per two caster levels (maximum 5d8) to the intruder and to all within 5 feet of him or her. This damage is acid, cold, fire, electricity, or sonic (caster's choice, made at time of casting). Each creature affected can attempt a Reflex save to take half damage. Spell resistance applies against this effect.\n\nSpell GlyphYou can store any harmful spell of 3rd level or lower that you know. All level-dependent features of the spell are based on your caster level at the time of casting the glyph. If the spell has a target, it targets the intruder. If the spell has an area or an amorphous effect, the area or effect is centered on the intruder. If the spell summons creatures, they appear as close as possible to the intruder and attack. Saving throws and spell resistance operate as normal, except that the DC is based on the level of the spell stored in the glyph."
+    "description": "This powerful inscription harms those who enter, pass, or open the warded area or object. A glyph of warding can guard a bridge or passage, ward a portal, trap a chest or box, and so on.\n\nYou set all of the conditions of the ward. Typically, any creature entering the warded area or opening the warded object without speaking a password (which you set when casting the spell) is subject to the magic it stores. Alternatively or in addition to a password trigger, glyphs can be set according to physical characteristics (such as height or weight) or creature type, subtype, or kind. Glyphs can also be set with respect to good, evil, law, or chaos, or to pass those of your religion. They cannot be set according to class, HD, or level. Glyphs respond to invisible creatures normally but are not triggered by those who travel past them ethereally. Multiple glyphs cannot be cast on the same area. However, if a cabinet has three different drawers, each can be separately warded.\n\nWhen casting the spell, you weave a tracery of faintly glowing lines around the warding sigil. A glyph can be placed to conform to any shape up to the limitations of your total square footage. When the spell is completed, the glyph and tracery become nearly invisible.\n\nGlyphs cannot be affected or bypassed by such means as physical or magical probing, though they can be dispelled. Mislead, polymorph, and nondetection (and similar magical effects) can fool a glyph, though nonmagical disguises and the like can't. Read magic allows you to identify a glyph of warding with a DC 13 Knowledge (arcana) check. Identifying the glyph does not discharge it and allows you to know the basic nature of the glyph (version, type of damage caused, what spell is stored).\n\nNote Magic traps such as glyph of warding are hard to detect and disable. While any character can use Perception to find a glyph, only a character with the trapfinding class feature can use Disable Device to disarm it.\n\nDepending on the version selected, a glyph either blasts the intruder or activates a spell.\n\nBlast Glyph A blast glyph deals 1d8 points of damage per two caster levels (maximum 5d8) to the intruder and to all within 5 feet of him or her. This damage is acid, cold, fire, electricity, or sonic (caster's choice, made at time of casting). Each creature affected can attempt a Reflex save to take half damage. Spell resistance applies against this effect.\n\nSpell Glyph You can store any harmful spell of 3rd level or lower that you know. All level-dependent features of the spell are based on your caster level at the time of casting the glyph. If the spell has a target, it targets the intruder. If the spell has an area or an amorphous effect, the area or effect is centered on the intruder. If the spell summons creatures, they appear as close as possible to the intruder and attack. Saving throws and spell resistance operate as normal, except that the DC is based on the level of the spell stored in the glyph."
   },
   {
     "id": "glyph-of-warding-greater",
@@ -18994,7 +18994,7 @@
     "saving_throw": "none",
     "spell_resistance": "no",
     "summary": "Enable weapons to overcome DR like adamantine, cold iron, or silver.",
-    "description": "You lend the nature of adamantine, cold iron, or silver to the targeted weapons, with the following effects:\n\nAdamantineThe weapons overcome DR/adamantine and ignore hardness less than 20.\n\nCold Iron: The weapons overcome DR/cold iron.\n\nSilver: The weapons overcome DR/silver.\n\nNo other advantages or disadvantages of these metal types apply. For example, a weapon given the nature of adamantine is not automatically masterwork.\n\nThis is able to affect nonmetal weapons. If you grant the target weapons the property of cold iron, the spell lasts half as long as normal."
+    "description": "You lend the nature of adamantine, cold iron, or silver to the targeted weapons, with the following effects:\n\nAdamantine The weapons overcome DR/adamantine and ignore hardness less than 20.\n\nCold Iron: The weapons overcome DR/cold iron.\n\nSilver: The weapons overcome DR/silver.\n\nNo other advantages or disadvantages of these metal types apply. For example, a weapon given the nature of adamantine is not automatically masterwork.\n\nThis is able to affect nonmetal weapons. If you grant the target weapons the property of cold iron, the spell lasts half as long as normal."
   },
   {
     "id": "heat-metal",
@@ -19622,7 +19622,7 @@
       "ranger": 2
     },
     "casting_time": null,
-    "components": ": V, S",
+    "components": "V, S",
     "range": null,
     "effects": [
       [
@@ -19654,7 +19654,7 @@
       "witch": 5
     },
     "casting_time": null,
-    "components": ": V, S, M/DF (one hard metal bar or rod, which can be as small as a three-penny nail)",
+    "components": "V, S, M/DF (one hard metal bar or rod, which can be as small as a three-penny nail)",
     "range": null,
     "effects": [
       [
@@ -19682,7 +19682,7 @@
       "witch": 9
     },
     "casting_time": null,
-    "components": ": V, S, M/DF (one hard metal bar or rod, which can be as small as a three-penny nail)",
+    "components": "V, S, M/DF (one hard metal bar or rod, which can be as small as a three-penny nail)",
     "range": null,
     "effects": [
       [
@@ -21763,7 +21763,7 @@
       "arcanist": 3
     },
     "casting_time": null,
-    "components": ": V, S, M",
+    "components": "V, S, M",
     "range": null,
     "effects": [
       [
@@ -21797,7 +21797,7 @@
       "magus": 4
     },
     "casting_time": "1 standard action",
-    "components": ": V, S",
+    "components": "V, S",
     "range": "personal or touch",
     "effects": [
       [
@@ -23678,7 +23678,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": "yes",
     "summary": "Nauseates and/or sickens weak creatures.",
-    "description": "This spell creates a transparent veil of shifting, multicolored strands of light that form into endlessly varied and alien patterns. One side of the veil, chosen by you at the time of casting, is harmless. The other side twists and turns into impossible shapes, affecting any creature with 60 feet who views the veil. The veil affects a maximum of 24 Hit Dice of creatures. Creatures with the fewest HD are affected first. Among creatures with equal HD, those who are closest to the spell are affected first. The effect is according to the creature's HD.\n\n4 HD or fewer: The creature is nauseated while it can see the veil, nauseated for 1d4 rounds after it last saw the veil, then sickened for 2d4 rounds after it last saw the veil.\n\n8 HD or fewer: The creature is nauseated for 1d4 rounds, sickened while it can see the veil, then sickened for 1d4 rounds after it last saw the veil.\n\n9 or more HDThe creature is sickened while it can see the veil.\n\nA successful saving throw ignores all effects of the veil. Sightless creatures are not affected by loathsome veil. Affected creatures can avert or close their eyes to avoid seeing the veil, similar to avoiding a gaze attack.\n\nLoathsome veil can be made permanent with the permanency spell by a caster of 10th level or higher for the cost of 7,500 gp."
+    "description": "This spell creates a transparent veil of shifting, multicolored strands of light that form into endlessly varied and alien patterns. One side of the veil, chosen by you at the time of casting, is harmless. The other side twists and turns into impossible shapes, affecting any creature with 60 feet who views the veil. The veil affects a maximum of 24 Hit Dice of creatures. Creatures with the fewest HD are affected first. Among creatures with equal HD, those who are closest to the spell are affected first. The effect is according to the creature's HD.\n\n4 HD or fewer: The creature is nauseated while it can see the veil, nauseated for 1d4 rounds after it last saw the veil, then sickened for 2d4 rounds after it last saw the veil.\n\n8 HD or fewer: The creature is nauseated for 1d4 rounds, sickened while it can see the veil, then sickened for 1d4 rounds after it last saw the veil.\n\n9 or more HD The creature is sickened while it can see the veil.\n\nA successful saving throw ignores all effects of the veil. Sightless creatures are not affected by loathsome veil. Affected creatures can avert or close their eyes to avoid seeing the veil, similar to avoiding a gaze attack.\n\nLoathsome veil can be made permanent with the permanency spell by a caster of 10th level or higher for the cost of 7,500 gp."
   },
   {
     "id": "locate-creature",
@@ -23697,7 +23697,7 @@
       "witch": 4
     },
     "casting_time": null,
-    "components": ": V, S, M (fur from a bloodhound)",
+    "components": "V, S, M (fur from a bloodhound)",
     "range": null,
     "effects": [],
     "duration": "10 min./level",
@@ -27621,7 +27621,7 @@
       "shaman": 5
     },
     "casting_time": null,
-    "components": ": V, S",
+    "components": "V, S",
     "range": "personal",
     "effects": [
       [
@@ -28946,7 +28946,7 @@
       "summoner": 5
     },
     "casting_time": null,
-    "components": ": V, S",
+    "components": "V, S",
     "range": null,
     "effects": [
       [
@@ -28975,7 +28975,7 @@
       "summoner": 6
     },
     "casting_time": null,
-    "components": ": V, S",
+    "components": "V, S",
     "range": null,
     "effects": [
       [
@@ -29744,7 +29744,7 @@
       "arcanist": 9
     },
     "casting_time": null,
-    "components": ": V",
+    "components": "V",
     "range": "10 ft.",
     "effects": [
       [
@@ -35367,7 +35367,7 @@
       "elementalist-wizard": 8
     },
     "casting_time": "1 standard action",
-    "components": ": V, S, F (a metal or ivory horn)",
+    "components": "V, S, F (a metal or ivory horn)",
     "range": "60 ft.",
     "effects": [
       [
@@ -36182,7 +36182,7 @@
       "shaman": 4
     },
     "casting_time": null,
-    "components": ": V, S, M (powdered peas and an animal hoof)",
+    "components": "V, S, M (powdered peas and an animal hoof)",
     "range": null,
     "effects": [],
     "duration": "1 min./level",
@@ -39354,7 +39354,7 @@
     "saving_throw": "Fortitude negates",
     "spell_resistance": "yes",
     "summary": "Triggered rune kills nearby creatures.",
-    "description": "This spell allows you to scribe a potent rune of power upon a surface. When triggered, a symbol of death kills one or more creatures within 60 feet of the symbol (treat as a burst) whose combined total current hit points do not exceed 150. The symbol of death affects the closest creatures first, skipping creatures with too many hit points to affect. Once triggered, the symbol becomes active and glows, lasting for 10 minutes per caster level or until it has affected 150 hit points' worth of creatures, whichever comes first. A creature that enters the area while the symbol of death is active is subject to its effect, whether or not that creature was in the area when it was triggered. A creature need save against the symbol only once as long as it remains within the area, though if it leaves the area and returns while the symbol is still active, it must save again.\n\nUntil it is triggered, the symbol of death is inactive (though visible and legible at a distance of 60 feet). To be effective, a symbol of death must always be placed in plain sight and in a prominent location. Covering or hiding the rune renders the symbol of death ineffective, unless a creature removes the covering, in which case the symbol of death works normally.\n\nAs a default, a symbol of death is triggered whenever a creature does one or more of the following, as you select: looks at the rune; reads the rune; touches the rune; passes over the rune; or passes through a portal bearing the rune. Regardless of the trigger method or methods chosen, a creature more than 60 feet from a symbol of death can't trigger it (even if it meets one or more of the triggering conditions, such as reading the rune). Once the spell is cast, a symbol of death's triggering conditions cannot be changed.\n\nIn this case, \"reading\" the rune means any attempt to study it, identify it, or fathom its meaning. Throwing a cover over a symbol of death to render it inoperative triggers it if the symbol reacts to touch. You can't use a symbol of death offensively; for instance, a touch-triggered symbol of death remains untriggered if an item bearing the symbol of death is used to touch a creature. Likewise, a symbol of death cannot be placed on a weapon and set to activate when the weapon strikes a foe.\n\nYou can also set special triggering limitations of your own. These can be as simple or elaborate as you desire. Special conditions for triggering a symbol of death can be based on a creature's name, identity, or alignment, but otherwise must be based on observable actions or qualities. Intangibles such as level, class, HD, and hit points don't qualify.\n\nWhen scribing a symbol of death, you can specify a password or phrase that prevents a creature using it from triggering the symbol's effect. Anyone using the password remains immune to that particular rune's effects so long as the creature remains within 60 feet of the rune. If the creature leaves the radius and returns later, it must use the password again.\n\nYou also can attune any number of creatures to the symbol of death, but doing this can extend the casting time. Attuning one or two creatures takes negligible time, and attuning a small group (as many as 10 creatures) extends the casting time to 1 hour. Attuning a large group (as many as 25 creatures) takes 24 hours. Attuning larger groups takes an additional 24 hours per 25 creatures. Any creature attuned to a symbol of death cannot trigger it and is immune to its effects, even if within its radius when it is triggered. You are automatically considered attuned to your own symbols of death, and thus always ignore the effects and cannot inadvertently trigger them.\n\nRead magic allows you to identify a symbol with a Spellcraft check (DC 10 + the symbol's spell level). Of course, if the symbol is set to be triggered by reading it, this will trigger the symbol.\n\nA symbol of death can be removed by a successful dispel magic targeted solely on the rune. An erase spell has no effect on a symbol of death. Destruction of the surface where a symbol of death is inscribed destroys the symbol but also triggers it.\n\nSymbol of death can be made permanent with a permanency spell. A permanent symbol of death that is disabled or has affected its maximum number of hit points becomes inactive for 10 minutes, but then can be triggered again as normal.\n\nNoteMagic traps such as symbol of death are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 33 for symbol of death."
+    "description": "This spell allows you to scribe a potent rune of power upon a surface. When triggered, a symbol of death kills one or more creatures within 60 feet of the symbol (treat as a burst) whose combined total current hit points do not exceed 150. The symbol of death affects the closest creatures first, skipping creatures with too many hit points to affect. Once triggered, the symbol becomes active and glows, lasting for 10 minutes per caster level or until it has affected 150 hit points' worth of creatures, whichever comes first. A creature that enters the area while the symbol of death is active is subject to its effect, whether or not that creature was in the area when it was triggered. A creature need save against the symbol only once as long as it remains within the area, though if it leaves the area and returns while the symbol is still active, it must save again.\n\nUntil it is triggered, the symbol of death is inactive (though visible and legible at a distance of 60 feet). To be effective, a symbol of death must always be placed in plain sight and in a prominent location. Covering or hiding the rune renders the symbol of death ineffective, unless a creature removes the covering, in which case the symbol of death works normally.\n\nAs a default, a symbol of death is triggered whenever a creature does one or more of the following, as you select: looks at the rune; reads the rune; touches the rune; passes over the rune; or passes through a portal bearing the rune. Regardless of the trigger method or methods chosen, a creature more than 60 feet from a symbol of death can't trigger it (even if it meets one or more of the triggering conditions, such as reading the rune). Once the spell is cast, a symbol of death's triggering conditions cannot be changed.\n\nIn this case, \"reading\" the rune means any attempt to study it, identify it, or fathom its meaning. Throwing a cover over a symbol of death to render it inoperative triggers it if the symbol reacts to touch. You can't use a symbol of death offensively; for instance, a touch-triggered symbol of death remains untriggered if an item bearing the symbol of death is used to touch a creature. Likewise, a symbol of death cannot be placed on a weapon and set to activate when the weapon strikes a foe.\n\nYou can also set special triggering limitations of your own. These can be as simple or elaborate as you desire. Special conditions for triggering a symbol of death can be based on a creature's name, identity, or alignment, but otherwise must be based on observable actions or qualities. Intangibles such as level, class, HD, and hit points don't qualify.\n\nWhen scribing a symbol of death, you can specify a password or phrase that prevents a creature using it from triggering the symbol's effect. Anyone using the password remains immune to that particular rune's effects so long as the creature remains within 60 feet of the rune. If the creature leaves the radius and returns later, it must use the password again.\n\nYou also can attune any number of creatures to the symbol of death, but doing this can extend the casting time. Attuning one or two creatures takes negligible time, and attuning a small group (as many as 10 creatures) extends the casting time to 1 hour. Attuning a large group (as many as 25 creatures) takes 24 hours. Attuning larger groups takes an additional 24 hours per 25 creatures. Any creature attuned to a symbol of death cannot trigger it and is immune to its effects, even if within its radius when it is triggered. You are automatically considered attuned to your own symbols of death, and thus always ignore the effects and cannot inadvertently trigger them.\n\nRead magic allows you to identify a symbol with a Spellcraft check (DC 10 + the symbol's spell level). Of course, if the symbol is set to be triggered by reading it, this will trigger the symbol.\n\nA symbol of death can be removed by a successful dispel magic targeted solely on the rune. An erase spell has no effect on a symbol of death. Destruction of the surface where a symbol of death is inscribed destroys the symbol but also triggers it.\n\nSymbol of death can be made permanent with a permanency spell. A permanent symbol of death that is disabled or has affected its maximum number of hit points becomes inactive for 10 minutes, but then can be triggered again as normal.\n\nNote Magic traps such as symbol of death are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 33 for symbol of death."
   },
   {
     "id": "symbol-of-fear",
@@ -39380,7 +39380,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": null,
     "summary": "Triggered rune panics nearby creatures.",
-    "description": "This spell functions like symbol of death, except that all creatures within 60 feet of the symbol of fear instead become panicked for 1 round per caster level.\n\nNoteMagic traps such as symbol of fear are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 31 for symbol of fear."
+    "description": "This spell functions like symbol of death, except that all creatures within 60 feet of the symbol of fear instead become panicked for 1 round per caster level.\n\nNote Magic traps such as symbol of fear are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 31 for symbol of fear."
   },
   {
     "id": "symbol-of-healing",
@@ -39435,7 +39435,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": null,
     "summary": "Triggered rune renders nearby creatures insane.",
-    "description": "This spell functions like symbol of death, except that all creatures within the radius of the symbol of insanity instead become permanently insane (as the insanity spell).\n\nUnlike symbol of death, symbol of insanity has no hit point limit; once triggered, a symbol of insanity simply remains active for 10 minutes per caster level.\n\nNoteMagic traps such as symbol of insanity are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 33 for symbol of insanity."
+    "description": "This spell functions like symbol of death, except that all creatures within the radius of the symbol of insanity instead become permanently insane (as the insanity spell).\n\nUnlike symbol of death, symbol of insanity has no hit point limit; once triggered, a symbol of insanity simply remains active for 10 minutes per caster level.\n\nNote Magic traps such as symbol of insanity are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 33 for symbol of insanity."
   },
   {
     "id": "symbol-of-laughter",
@@ -39512,7 +39512,7 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": "Triggered rune wracks creatures with pain.",
-    "description": "This spell functions like symbol of death, except that each creature within the radius of a symbol of pain instead suffers wracking pains that impose a -4 penalty on attack rolls, skill checks, and ability checks. These effects last for 1 hour after the creature moves farther than 60 feet from the symbol.\n\nUnlike symbol of death, symbol of pain has no hit point limit; once triggered, a symbol of pain simply remains active for 10 minutes per caster level.\n\nNoteMagic traps such as symbol of pain are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 30 for symbol of pain."
+    "description": "This spell functions like symbol of death, except that each creature within the radius of a symbol of pain instead suffers wracking pains that impose a -4 penalty on attack rolls, skill checks, and ability checks. These effects last for 1 hour after the creature moves farther than 60 feet from the symbol.\n\nUnlike symbol of death, symbol of pain has no hit point limit; once triggered, a symbol of pain simply remains active for 10 minutes per caster level.\n\nNote Magic traps such as symbol of pain are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 30 for symbol of pain."
   },
   {
     "id": "symbol-of-persuasion",
@@ -39538,7 +39538,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": null,
     "summary": "Triggered rune charms creatures.",
-    "description": "This spell functions like symbol of death, except that all creatures within the radius of a symbol of persuasion instead become charmed by the caster (as the charm monster spell) for 1 hour per caster level.\n\nUnlike symbol of death, symbol of persuasion has no hit point limit; once triggered, a symbol of persuasion simply remains active for 10 minutes per caster level.\n\nNoteMagic traps such as symbol of persuasion are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 31 for symbol of persuasion."
+    "description": "This spell functions like symbol of death, except that all creatures within the radius of a symbol of persuasion instead become charmed by the caster (as the charm monster spell) for 1 hour per caster level.\n\nUnlike symbol of death, symbol of persuasion has no hit point limit; once triggered, a symbol of persuasion simply remains active for 10 minutes per caster level.\n\nNote Magic traps such as symbol of persuasion are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 31 for symbol of persuasion."
   },
   {
     "id": "symbol-of-revelation",
@@ -39657,7 +39657,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": null,
     "summary": "Triggered rune puts nearby creatures into catatonic slumber.",
-    "description": "This spell functions like symbol of death, except that all creatures of 10 HD or less within 60 feet of the symbol of sleep instead fall into a catatonic slumber for 3d6 × 10 minutes. Unlike with the sleep spell, sleeping creatures cannot be awakened by nonmagical means before this time expires.\n\nUnlike symbol of death, symbol of sleep has no hit point limit; once triggered, a symbol of sleep simply remains active for 10 minutes per caster level.\n\nNoteMagic traps such as symbol of sleep are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 30 for symbol of sleep."
+    "description": "This spell functions like symbol of death, except that all creatures of 10 HD or less within 60 feet of the symbol of sleep instead fall into a catatonic slumber for 3d6 × 10 minutes. Unlike with the sleep spell, sleeping creatures cannot be awakened by nonmagical means before this time expires.\n\nUnlike symbol of death, symbol of sleep has no hit point limit; once triggered, a symbol of sleep simply remains active for 10 minutes per caster level.\n\nNote Magic traps such as symbol of sleep are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 30 for symbol of sleep."
   },
   {
     "id": "symbol-of-slowing",
@@ -39767,7 +39767,7 @@
     "saving_throw": "Will negates",
     "spell_resistance": null,
     "summary": "Triggered rune stuns creatures.",
-    "description": "This spell functions like symbol of death, except that all creatures within 60 feet of a symbol of stunning instead become stunned for 1d6 rounds.\n\nNoteMagic traps such as symbol of stunning are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 32 for symbol of stunning."
+    "description": "This spell functions like symbol of death, except that all creatures within 60 feet of a symbol of stunning instead become stunned for 1d6 rounds.\n\nNote Magic traps such as symbol of stunning are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 32 for symbol of stunning."
   },
   {
     "id": "symbol-of-vulnerability",
@@ -39824,7 +39824,7 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": "Triggered rune weakens creatures.",
-    "description": "This spell functions like symbol of death, except that every creature within 60 feet of a symbol of weakness instead suffers crippling weakness that deals 3d6 points of Strength damage.\n\nUnlike symbol of death, symbol of weakness has no hit point limit; once triggered, a symbol of weakness simply remains active for 10 minutes per caster level. A creature can only be affected by this symbol once.\n\nNoteMagic traps such as symbol of weakness are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 32 for symbol of weakness."
+    "description": "This spell functions like symbol of death, except that every creature within 60 feet of a symbol of weakness instead suffers crippling weakness that deals 3d6 points of Strength damage.\n\nUnlike symbol of death, symbol of weakness has no hit point limit; once triggered, a symbol of weakness simply remains active for 10 minutes per caster level. A creature can only be affected by this symbol once.\n\nNote Magic traps such as symbol of weakness are hard to detect and disable. While any character can use Perception to find a symbol, only a character with the trapfinding class feature can use Disable Device to disarm it. The DC in each case is 25 + spell level, or 32 for symbol of weakness."
   },
   {
     "id": "sympathetic-vibration",
@@ -42107,7 +42107,7 @@
       "inquisitor": 6
     },
     "casting_time": null,
-    "components": ": V, S, M/DF (diamond powder worth 500 gp)",
+    "components": "V, S, M/DF (diamond powder worth 500 gp)",
     "range": null,
     "effects": [
       [
@@ -43011,7 +43011,7 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": "Take the form and some of the powers of a Small or Medium vermin.",
-    "description": "When you cast this spell, you assume the form of any Small or Medium creature of the vermin type. If the form you assume has any of the following abilities, you gain the listed ability: climb 30 feet, fly 30 feet (average maneuverability), swim 30 feet, darkvision 60 feet, low-light vision, scent, and lunge. You don't gain full immunity to mind-affecting effects, but you do gain a +2 resistance bonus on all saving throws against such effects.\n\nSmall verminIf you take the form of a Small vermin, you gain a +2 size bonus to your Dexterity and a +2 natural armor bonus.\n\nMedium verminIf you take the form of a Medium vermin, you gain a +2 size bonus to your Strength and a +3 natural armor bonus."
+    "description": "When you cast this spell, you assume the form of any Small or Medium creature of the vermin type. If the form you assume has any of the following abilities, you gain the listed ability: climb 30 feet, fly 30 feet (average maneuverability), swim 30 feet, darkvision 60 feet, low-light vision, scent, and lunge. You don't gain full immunity to mind-affecting effects, but you do gain a +2 resistance bonus on all saving throws against such effects.\n\nSmall vermin If you take the form of a Small vermin, you gain a +2 size bonus to your Dexterity and a +2 natural armor bonus.\n\nMedium vermin If you take the form of a Medium vermin, you gain a +2 size bonus to your Strength and a +3 natural armor bonus."
   },
   {
     "id": "vermin-shape-ii",
@@ -43044,7 +43044,7 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": null,
-    "description": "This spell functions as vermin shape I, except it also allows you to assume the form of a Tiny or Large creature of the vermin type. If the form you assume has any of the following abilities, you gain the listed ability: burrow 30 feet, climb 60 feet, fly 60 feet (good maneuverability), swim 60 feet, darkvision 60 feet, low-light vision, tremorsense 30 feet, scent, blood drain, constrict, grab, lunge, poison, pull, trample, and web. You don't gain full immunity to mind-affecting effects, but you do gain a +4 bonus on all saving throws against such effects.\n\nTiny verminIf you take the form of a Tiny vermin, you gain a +4 size bonus to your Dexterity, a -2 penalty to your Strength, and a +1 natural armor bonus.\n\nLarge verminIf you take the form of a Large vermin, you gain a +4 size bonus to your Strength, a -2 penalty to your Dexterity, and a +5 natural armor bonus."
+    "description": "This spell functions as vermin shape I, except it also allows you to assume the form of a Tiny or Large creature of the vermin type. If the form you assume has any of the following abilities, you gain the listed ability: burrow 30 feet, climb 60 feet, fly 60 feet (good maneuverability), swim 60 feet, darkvision 60 feet, low-light vision, tremorsense 30 feet, scent, blood drain, constrict, grab, lunge, poison, pull, trample, and web. You don't gain full immunity to mind-affecting effects, but you do gain a +4 bonus on all saving throws against such effects.\n\nTiny vermin If you take the form of a Tiny vermin, you gain a +4 size bonus to your Dexterity, a -2 penalty to your Strength, and a +1 natural armor bonus.\n\nLarge vermin If you take the form of a Large vermin, you gain a +4 size bonus to your Strength, a -2 penalty to your Dexterity, and a +5 natural armor bonus."
   },
   {
     "id": "versatile-weapon",

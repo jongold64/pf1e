@@ -45,6 +45,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   fallback, `WEALTH_BY_LEVEL`, `armorCost` = base + 150 masterwork + enh² × 1,000, `equipmentTotals`,
   `formatGp`). Inventory entries are `{ id, variant, qty }`; `variant` picks one of an item's `variants`
   (e.g. common vs masterwork backpack). `state.gold === null` means "use the class's starting gold".
+- Chosen spells and magic items: `state.spells` (spell ids, shown as "My spells" on the Spells tab with
+  known-spell limits from the class table for spontaneous casters) and `state.magicItems`
+  (`{ id, option, qty }`, "My magic items"; `option` is a `price_options` label like "+2"). Special
+  abilities can't be owned alone (`ownable`). Magic item cost/weight count on the Equipment tab
+  (`magicItemTotals`).
+- Rules text is rendered by `paragraphs()` in `dom.js`: blank lines split paragraphs, single line breaks
+  are kept, and runs of 2+ "a | b" lines (tables flattened by the build) become HTML tables.
 - Armor: `js/armor.js` (`armorEffects`, `speedInArmor`, `proficiencyWarnings`) turns worn armor/shield +
   enhancement into AC bonus, max Dex cap, check penalty (-1 for magic/masterwork, applied to `acp` skills),
   arcane spell failure and speed. `characterStats` takes that as `gear`; a monk's AC bonus needs no armor
@@ -136,7 +143,12 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
   Ultimate Equipment stat block. Equipment is every other `item` without an aura (weapons and armor
   excluded; alchemical weapons kept), categorised by heading or Gear Type; version tables in the text
   ("Common | 2 gp | 2 lbs.") become `variants`, and `price_gp` understands cp/sp/gp/pp, ranges and
-  footnote digits. Each builder prints what it couldn't place; check that output after changes.
+  footnote digits (`price_gp` in `common.py`, shared with the magic item builder). `text()` in
+  `common.py` adds a space after a bold/italic run-in heading before a capital or digit
+  ("<i>1st Round</i>Presence") and repairs broken apostrophes; races/classes/feats were built before
+  those fixes and haven't been rebuilt yet (rebuilding them may change parsed feat prerequisites, so
+  diff and re-run the checks when you do). Each builder prints what it couldn't place; check that output
+  after changes.
 - **Build order matters**: `build_feats.py` reads `races.json` from the same directory as its output
   path to recognize race prerequisites, so races must be built first (`build_all.py` does this).
 - **Feat prerequisite parsing** (`build_feats.py`): `split_prereqs` → `parse_one` (regex per type) →
