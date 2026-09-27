@@ -1,18 +1,22 @@
-// Checks for rules.js. Open tests.html through the local server to run them.
+// Checks for rules.js and feats.js. Open tests.html through the local server to run them.
 import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases,
          bonusSpells, spellsPerDay } from './rules.js';
+import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
+         checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 
 const results = [];
 function check(name, actual, expected) {
   results.push({ name, pass: Object.is(actual, expected), actual, expected });
 }
 
-const [races, classes] = await Promise.all([
+const [races, classes, allFeats] = await Promise.all([
   fetch('data/races.json').then(r => r.json()),
   fetch('data/classes.json').then(r => r.json()),
+  fetch('data/feats.json').then(r => r.json()),
 ]);
 const race = id => races.find(r => r.id === id);
 const cls = id => classes.find(c => c.id === id);
+const feat = name => allFeats.find(f => f.name === name);
 const scores = (str, dex, con, int, wis, cha) => ({ str, dex, con, int, wis, cha });
 
 // Ability modifiers
@@ -160,6 +164,148 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 
   check('druid without domain (1 + 1 bonus)', lvl(spell('druid', 1, scores(10, 10, 10, 10, 12, 10), false), 1).total, 2);
   check('druid with domain', lvl(spell('druid', 1, scores(10, 10, 10, 10, 12, 10), true), 1).total, 3);
+}
+
+// Feat slots
+{
+  const ids = (r, c, level) => featSlots({ race: race(r), cls: cls(c), level }).map(s => s.id).join(' ');
+  check('human fighter 1 slots', ids('human', 'fighter', 1), 'L1 race class-L1');
+  check('elf wizard 5 slots', ids('elf', 'wizard', 5), 'L1 L3 L5 class-L5');
+  check('human fighter 20 has 22 feats', featSlots({ race: race('human'), cls: cls('fighter'), level: 20 }).length, 22);
+  check('monk 6 slots', ids('dwarf', 'monk', 6), 'L1 L3 L5 class-L1 class-L2 class-L6');
+  check('inquisitor 3 teamwork slot', ids('dwarf', 'inquisitor', 3), 'L1 L3 class-L3');
+}
+
+// What class bonus slots accept
+{
+  const slot = (c, level, id) => featSlots({ race: race('dwarf'), cls: cls(c), level }).find(s => s.id === id);
+  const fighterSlot = slot('fighter', 1, 'class-L1');
+  check('fighter slot takes Power Attack', slotAccepts(fighterSlot, feat('Power Attack')), true);
+  check('fighter slot refuses Toughness', slotAccepts(fighterSlot, feat('Toughness')), false);
+  const wizSlot = slot('wizard', 5, 'class-L5');
+  check('wizard slot takes Empower Spell', slotAccepts(wizSlot, feat('Empower Spell')), true);
+  check('wizard slot takes Spell Mastery', slotAccepts(wizSlot, feat('Spell Mastery')), true);
+  check('wizard slot refuses Toughness', slotAccepts(wizSlot, feat('Toughness')), false);
+  check('monk level 2 slot takes Dodge', slotAccepts(slot('monk', 6, 'class-L2'), feat('Dodge')), true);
+  check('monk level 2 slot refuses Mobility', slotAccepts(slot('monk', 6, 'class-L2'), feat('Mobility')), false);
+  check('monk level 6 slot takes Mobility', slotAccepts(slot('monk', 6, 'class-L6'), feat('Mobility')), true);
+  check('general slot takes anything', slotAccepts({ kind: 'general' }, feat('Toughness')), true);
+  const missing = monkFeatList(20).filter(n => !feat(n));
+  check('every monk bonus feat exists in the data', missing.join(', '), '');
+}
+
+// Prerequisites
+{
+  const names = allFeats.map(f => f.name);
+  const ctxFor = (r, c, level, sc, chosen = []) => {
+    const k = cls(c);
+    const stats = characterStats({ race: race(r), cls: k, level, baseScores: sc });
+    return featContext({ race: race(r), cls: k, level, scores: stats.scores, bab: stats.bab[0],
+                         haveFeats: [...chosen, ...grantedFeats(k, level, names), ...proficiencyFeats(k)] });
+  };
+  const status = (f, ctx, slot) => checkFeat(typeof f === 'string' ? feat(f) : f, ctx, slot).status;
+  const str13 = scores(13, 10, 10, 10, 10, 10);
+  const plain = scores(10, 10, 10, 10, 10, 10);
+
+  check('Power Attack: fighter 1, Str 13', status('Power Attack', ctxFor('human', 'fighter', 1, str13)), 'met');
+  check('Power Attack: Str 12', status('Power Attack', ctxFor('human', 'fighter', 1, scores(12, 10, 10, 10, 10, 10))), 'unmet');
+  check('Power Attack: wizard 1 (BAB 0)', status('Power Attack', ctxFor('human', 'wizard', 1, str13)), 'unmet');
+  check('Cleave without Power Attack', status('Cleave', ctxFor('human', 'fighter', 1, str13)), 'unmet');
+  check('Cleave with Power Attack', status('Cleave', ctxFor('human', 'fighter', 1, str13, ['Power Attack'])), 'met');
+
+  check('Extra Channel: cleric 1', status('Extra Channel', ctxFor('human', 'cleric', 1, plain)), 'met');
+  check('Extra Channel: fighter 1', status('Extra Channel', ctxFor('human', 'fighter', 1, plain)), 'unmet');
+  check('Extra Channel: paladin 3', status('Extra Channel', ctxFor('human', 'paladin', 3, plain)), 'unmet');
+  check('Extra Channel: paladin 4', status('Extra Channel', ctxFor('human', 'paladin', 4, plain)), 'met');
+
+  check('monk gets Improved Unarmed Strike free', grantedFeats(cls('monk'), 1, names).includes('Improved Unarmed Strike'), true);
+  check('wizard gets Scribe Scroll free', grantedFeats(cls('wizard'), 1, names).includes('Scribe Scroll'), true);
+  check('Scorpion Style: monk 1', status('Scorpion Style', ctxFor('human', 'monk', 1, plain)), 'met');
+  check('Scorpion Style: fighter 1', status('Scorpion Style', ctxFor('human', 'fighter', 1, plain)), 'unmet');
+
+  check('fighter has tower shield proficiency', proficiencyFeats(cls('fighter')).includes('Tower Shield Proficiency'), true);
+  check('cleric has shields', proficiencyFeats(cls('cleric')).includes('Shield Proficiency'), true);
+  check('cleric has no tower shields', proficiencyFeats(cls('cleric')).includes('Tower Shield Proficiency'), false);
+  check('cleric has no heavy armor', proficiencyFeats(cls('cleric')).includes('Armor Proficiency, Heavy'), false);
+  check('wizard has no armor or shields', proficiencyFeats(cls('wizard')).length, 0);
+  check('monk has no armor or shields', proficiencyFeats(cls('monk')).length, 0);
+  check('Shield Focus: fighter 1', status('Shield Focus', ctxFor('human', 'fighter', 1, plain)), 'met');
+  check('Shield Focus: wizard 1', status('Shield Focus', ctxFor('human', 'wizard', 1, plain)), 'unmet');
+
+  const fighter4 = { type: 'class_level', class: 'fighter', value: 4 };
+  check('fighter 3 is not fighter level 4', checkPrereq(fighter4, ctxFor('human', 'fighter', 3, plain), feat('Weapon Specialization')).status, 'unmet');
+  check('swashbuckler 4 counts as fighter 4 for combat feats',
+        checkPrereq(fighter4, ctxFor('human', 'swashbuckler', 4, plain), feat('Weapon Specialization')).status, 'met');
+  check('...but not for other feats', checkPrereq(fighter4, ctxFor('human', 'swashbuckler', 4, plain), feat('Toughness')).status, 'unmet');
+  const bab6 = { type: 'bab', value: 6 };
+  const wp6 = ctxFor('human', 'warpriest', 6, plain);
+  check('warpriest 6 has BAB +4', wp6.bab, 4);
+  check('warpriest bonus feat uses level as BAB', checkPrereq(bab6, wp6, feat('Power Attack'), BONUS_FEAT_RULES.warpriest).status, 'met');
+  check('...but not for other feats', checkPrereq(bab6, wp6, feat('Power Attack')).status, 'unmet');
+
+  check('caster level: wizard 3', casterLevel(cls('wizard'), 3), 3);
+  check('caster level: paladin 5', casterLevel(cls('paladin'), 5), 2);
+  check('caster level: paladin 3', casterLevel(cls('paladin'), 3), 0);
+  check('caster level: fighter', casterLevel(cls('fighter'), 10), 0);
+  const cl3 = { type: 'caster_level', value: 3 };
+  check('CL 3: paladin 6', checkPrereq(cl3, ctxFor('human', 'paladin', 6, plain), {}).status, 'met');
+  check('CL 3: paladin 5', checkPrereq(cl3, ctxFor('human', 'paladin', 5, plain), {}).status, 'unmet');
+
+  const elfOnly = { type: 'race', race: 'elf' };
+  check('half-elf counts as an elf', checkPrereq(elfOnly, ctxFor('half-elf', 'fighter', 1, plain), {}).status, 'met');
+  check('dwarf is not an elf', checkPrereq(elfOnly, ctxFor('dwarf', 'fighter', 1, plain), {}).status, 'unmet');
+
+  const ctx = ctxFor('human', 'fighter', 1, plain);
+  check('skill ranks cannot be checked', checkPrereq({ type: 'skill', skill: 'Acrobatics', ranks: 1 }, ctx, {}).status, 'unknown');
+  check('text prerequisites cannot be checked', checkPrereq({ type: 'other', text: 'Small size' }, ctx, {}).status, 'unknown');
+  const str20 = { type: 'ability', ability: 'str', value: 20 };
+  const skill = { type: 'skill', skill: 'Acrobatics', ranks: 1 };
+  check('any_of: unmet or unknown', checkPrereq({ type: 'any_of', options: [str20, skill] }, ctx, {}).status, 'unknown');
+  check('any_of: one met', checkPrereq({ type: 'any_of', options: [str20, { type: 'bab', value: 1 }] }, ctx, {}).status, 'met');
+  check('one unmet part makes the feat unmet', checkFeat({ prerequisites: [skill, str20] }, ctx).status, 'unmet');
+
+  const monkSlot = featSlots({ race: race('human'), cls: cls('monk'), level: 1 }).find(s => s.kind === 'class');
+  check('monk bonus feat waives prerequisites', status('Improved Grapple', ctxFor('human', 'monk', 1, plain), monkSlot), 'met');
+  check('...but not in a general slot', status('Improved Grapple', ctxFor('human', 'monk', 1, plain)), 'unmet');
+
+  // Prerequisites the data left as text
+  check('reads "8th-level fighter"', JSON.stringify(readTextPrereq('8th-level fighter')),
+        JSON.stringify({ type: 'class_level', class: 'fighter', value: 8 }));
+  check('reads "Weapon Focus with selected weapon"', readTextPrereq('Weapon Focus with selected weapon').feat, 'Weapon Focus');
+  check('leaves "Proficiency with selected weapon"', readTextPrereq('Proficiency with selected weapon'), null);
+  check('reads "Ability to cast 4th-level spells"', readTextPrereq('Ability to cast 4th-level spells').value, 4);
+  check('Greater Weapon Focus: fighter 1', status('Greater Weapon Focus', ctxFor('human', 'fighter', 1, str13)), 'unmet');
+  check('Greater Weapon Focus: fighter 8 without Weapon Focus', status('Greater Weapon Focus', ctxFor('human', 'fighter', 8, str13)), 'unmet');
+  check('Greater Weapon Focus: fighter 8 with Weapon Focus (proficiency not checked)',
+        status('Greater Weapon Focus', ctxFor('human', 'fighter', 8, str13, ['Weapon Focus'])), 'unknown');
+  const int14 = scores(10, 10, 10, 14, 10, 10);
+  check('Minor Spell Expertise: wizard 7 Int 14', checkPrereq({ type: 'other', text: 'Ability to cast 4th-level spells' },
+        ctxFor('human', 'wizard', 7, int14), {}).status, 'met');
+  check('Minor Spell Expertise: wizard 5', checkPrereq({ type: 'other', text: 'Ability to cast 4th-level spells' },
+        ctxFor('human', 'wizard', 5, int14), {}).status, 'unmet');
+  check('Minor Spell Expertise: wizard 7 Int 13', checkPrereq({ type: 'other', text: 'Ability to cast 4th-level spells' },
+        ctxFor('human', 'wizard', 7, scores(10, 10, 10, 13, 10, 10)), {}).status, 'unmet');
+
+  check('Weapon Focus can be taken more than once', repeatable(feat('Weapon Focus')), true);
+  check('Power Attack cannot', repeatable(feat('Power Attack')), false);
+}
+
+// Feat effects on the numbers
+{
+  check('Toughness at level 1', featEffects(['Toughness'], 1).hp, 3);
+  check('Toughness at level 10', featEffects(['Toughness'], 10).hp, 10);
+  const base = scores(15, 12, 14, 10, 12, 9);
+  const s = characterStats({ race: race('dwarf'), cls: cls('fighter'), baseScores: base,
+                             featBonuses: featEffects(['Toughness', 'Iron Will', 'Dodge'], 1) });
+  check('dwarf fighter with Toughness HP', s.hp, 16);
+  check('Iron Will', s.will, 4);
+  check('Dodge AC', s.ac, 12);
+  check('Dodge touch AC', s.touch, 12);
+  check('no Dodge when flat-footed', s.flatFooted, 10);
+  const g = characterStats({ race: race('dwarf'), cls: cls('fighter'), baseScores: base,
+                             featBonuses: featEffects(['Great Fortitude', 'Lightning Reflexes'], 1) });
+  check('Great Fortitude', g.fort, 7);
+  check('Lightning Reflexes', g.ref, 3);
 }
 
 const failed = results.filter(r => !r.pass);

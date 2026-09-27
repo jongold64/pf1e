@@ -70,6 +70,13 @@
       <dl id="results"></dl>
     </section>
 
+    <section class="card wide" id="feats-card">
+      <h2>Feats <span id="feat-count" class="count"></span></h2>
+      <p id="granted-feats" class="hint"></p>
+      <ul id="feat-slots" class="feat-slots"></ul>
+      <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked yet (skill ranks, or rules the app can't read)</p>
+    </section>
+
     <section class="card wide" id="spells-card" hidden>
       <h2>Spells</h2>
       <p id="spells-summary" class="hint"></p>
@@ -83,6 +90,21 @@
       <p id="spells-note" class="hint"></p>
     </section>
   </main>
+
+  <dialog id="feat-picker" aria-labelledby="picker-title">
+    <div class="picker-head">
+      <h2 id="picker-title"></h2>
+      <button type="button" id="picker-close">Close</button>
+    </div>
+    <p id="picker-rule" class="hint"></p>
+    <input id="feat-search" type="search" placeholder="Search feats by name" autocomplete="off">
+    <div class="picker-filters">
+      <select id="feat-type" aria-label="Feat type"></select>
+      <label class="check-row"><input type="checkbox" id="feat-qualify" checked> Hide feats I don't qualify for</label>
+    </div>
+    <p id="picker-count" class="hint"></p>
+    <div id="feat-list"></div>
+  </dialog>
 
   <footer>
     Rules content is Open Game Content under the <a href="LICENSE-OGL.txt">Open Game License 1.0a</a>.

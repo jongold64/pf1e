@@ -10,7 +10,7 @@ Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
-On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC),
+On top of the data is a static web app (single-class builder, levels 1-20: race, class, point buy, HP/saves/BAB/AC, feats, spells per day),
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -39,6 +39,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   spirit magic, wizard school, druid domain) are hand-entered because the data doesn't carry them:
   the build's `to_int` keeps only the leading number of a table cell, so printed "+1" slots are lost.
   The arcanist's "spells prepared" table is also missing from the data.
+- Feats: `js/feats.js` holds feat logic (pure functions, tested alongside `rules.js`). `featSlots`
+  derives slots from odd levels, the race's "Bonus Feat" trait and class-table entries like "Bonus
+  feat" / "Teamwork feat"; `BONUS_FEAT_RULES` encodes each class's bonus-feat restrictions from its
+  rules text. `checkFeat` returns met / unmet / unknown per prerequisite; skill ranks and most `other`
+  prerequisites are unknown, but `readTextPrereq` reads a few text patterns the data build missed
+  ("8th-level fighter", "X with selected weapon", "ability to cast Nth-level spells"). Free class feats
+  come from class-table specials (`grantedFeats`) and armor/shield proficiency from the class's
+  proficiency text (`proficiencyFeats`). Mythic feats are filtered out in `app.js`.
+- The app changes by pure functions + a full re-render; UI-level behaviour (the feat picker dialog)
+  isn't covered by tests.html, so check it in a browser after changes.
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
   without `kind` are the ones to list as racial traits.
 

@@ -7,6 +7,7 @@
   --border: #ddd7cc;
   --good: #1a7f37;
   --bad: #cf222e;
+  --warn: #9a6700;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +20,7 @@
     --border: #3a3731;
     --good: #57c27a;
     --bad: #ff7b72;
+    --warn: #d4a72c;
   }
 }
 
@@ -127,3 +129,46 @@ table.spells { width: 100%; border-collapse: collapse; margin-top: 4px; }
 .spells th:first-child, .spells td:first-child { text-align: left; }
 .spells td.total { font-weight: 700; }
 .spells tr.cannot td { color: var(--muted); }
+
+/* Feats */
+.count { font-weight: 400; font-size: 0.95rem; color: var(--muted); margin-left: 6px; }
+.feat-slots { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.slot { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.slot-label { font-weight: 600; margin-bottom: 4px; }
+.slot .hint { margin: 0 0 6px; }
+.slot .warning { margin: 6px 0 0; font-size: 0.95rem; }
+.slot-buttons { display: flex; gap: 8px; margin-top: 8px; }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); padding: 0 16px; }
+.status { display: inline-block; width: 1.4em; text-align: center; font-weight: 700; }
+.status.met { color: var(--good); }
+.status.unmet { color: var(--bad); }
+.status.unknown { color: var(--warn); }
+details.chosen summary { font-weight: 600; }
+details.chosen, .feat-body { font-size: 0.95rem; }
+details h4 { margin: 10px 0 4px; font-size: 0.95rem; }
+details p { margin: 4px 0; }
+ul.prereqs { list-style: none; padding: 0; margin: 0; }
+ul.prereqs li { padding: 2px 0; }
+
+dialog#feat-picker {
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+}
+dialog#feat-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
+.picker-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.picker-head h2 { margin: 0; }
+#feat-search { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin: 8px 0;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+.picker-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.picker-filters select { width: auto; }
+#feat-list { border-top: 1px solid var(--border); }
+.feat-item { border-bottom: 1px solid var(--border); }
+.feat-item summary { padding: 10px 4px; min-height: 44px; }
+.feat-item small { color: var(--muted); margin-left: 6px; }
+.feat-body { padding: 0 4px 12px 30px; }
+.feat-body button { margin-top: 10px; }

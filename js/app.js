@@ -4,6 +4,10 @@ import {
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay,
 } from './rules.js';
+import {
+  BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeats, proficiencyFeats, featContext, checkFeat,
+  repeatable, featEffects,
+} from './feats.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -13,6 +17,12 @@ const $ = id => document.getElementById(id);
 
 let races = [];
 let classes = [];
+let feats = [];
+let featsById = new Map();
+
+// Set by render() and used by the feat picker, so both check prerequisites the same way.
+let current = { slots: [], ctx: null };
+let pickerSlotId = null;
 
 const state = {
   race: 'human',
@@ -26,6 +36,7 @@ const state = {
   shield: 0,
   favored: 'hp',
   extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
+  feats: {},       // feat slot id (see featSlots) -> feat id
 };
 
 function esc(s) {
@@ -49,6 +60,10 @@ function load() {
   state.increases = INCREASE_LEVELS.map((_, i) =>
     ABILITIES.includes(state.increases?.[i]) ? state.increases[i] : '');
   if (typeof state.extraSlots !== 'object' || state.extraSlots === null) state.extraSlots = {};
+  if (typeof state.feats !== 'object' || state.feats === null) state.feats = {};
+  for (const [slotId, featId] of Object.entries(state.feats)) {
+    if (!featsById.has(featId)) delete state.feats[slotId];
+  }
 }
 
 // Whether the optional extra spell slot is on for a class, falling back to its default.
@@ -137,6 +152,39 @@ function buildControls() {
     const next = state.base[a] + Number(btn.dataset.step);
     if (next >= MIN_SCORE && next <= MAX_SCORE) update({ base: { ...state.base, [a]: next } });
   });
+
+  // Feats
+  const types = [...new Set(feats.flatMap(f => f.types || []))].sort();
+  $('feat-type').innerHTML = '<option value="">All types</option>' +
+    types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('feat-slots').addEventListener('click', e => {
+    const choose = e.target.closest('[data-choose]');
+    if (choose) openPicker(choose.dataset.choose);
+    const remove = e.target.closest('[data-remove]');
+    if (remove) {
+      const { [remove.dataset.remove]: _, ...rest } = state.feats;
+      update({ feats: rest });
+    }
+  });
+  $('feat-list').addEventListener('click', e => {
+    const pick = e.target.closest('[data-pick]');
+    if (!pick) return;
+    update({ feats: { ...state.feats, [pickerSlotId]: pick.dataset.pick } });
+    $('feat-picker').close();
+  });
+  // Feat details are filled in only when opened, so the long list stays quick.
+  $('feat-list').addEventListener('toggle', e => {
+    const item = e.target.closest('details[data-feat]');
+    if (!item?.open) return;
+    const f = featsById.get(item.dataset.feat);
+    const slot = current.slots.find(s => s.id === pickerSlotId);
+    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, current.ctx, slot)) +
+      `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`;
+  }, true);
+  $('feat-search').addEventListener('input', renderPicker);
+  $('feat-type').addEventListener('change', renderPicker);
+  $('feat-qualify').addEventListener('change', renderPicker);
+  $('picker-close').addEventListener('click', () => $('feat-picker').close());
 }
 
 function update(changes) {
@@ -177,11 +225,24 @@ function render() {
   // Ability rows
   $('flexible-row').hidden = !race.flexible_ability_bonus;
   const adj = racialAdjustments(race, state.flexible);
+
+  // Feats the character has: chosen ones (only slots reached at this level), free ones from the
+  // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
+  // prerequisite context can use the same stats that include feat bonuses.
+  const slots = featSlots({ race, cls, level: state.level });
+  const chosen = slots.map(s => featsById.get(state.feats[s.id])).filter(Boolean);
+  const granted = grantedFeats(cls, state.level, feats.map(f => f.name));
   const stats = characterStats({
     race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
     increases: state.increases,
     armor: state.armor, shield: state.shield, favoredHp: state.favored === 'hp',
+    featBonuses: featEffects(chosen.map(f => f.name), state.level),
   });
+  const ctx = featContext({
+    race, cls, level: state.level, scores: stats.scores, bab: stats.bab[0],
+    haveFeats: [...chosen.map(f => f.name), ...granted, ...proficiencyFeats(cls)],
+  });
+  current = { slots, ctx };
   for (const a of ABILITIES) {
     $(`base-${a}`).textContent = state.base[a];
     $(`base-${a}`).title = `Costs ${POINT_COSTS[state.base[a]]} points`;
@@ -211,7 +272,112 @@ function render() {
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
+  renderFeats(slots, granted, ctx);
   renderSpells(cls, stats.scores);
+}
+
+const STATUS_ICON = {
+  met: '<span class="status met" title="Prerequisites met">✓</span>',
+  unmet: '<span class="status unmet" title="Prerequisites not met">✗</span>',
+  unknown: '<span class="status unknown" title="Some prerequisites can\'t be checked">?</span>',
+};
+
+function paragraphs(text) {
+  return String(text || '').split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join('');
+}
+
+// Prerequisites (each marked ✓/✗/?) and rules text for one feat.
+function featDetails(f, check) {
+  const prereqs = check.waived
+    ? '<p class="hint">Prerequisites are waived for this bonus feat.</p>'
+    : check.parts.length
+      ? `<ul class="prereqs">${check.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>`
+      : '<p class="hint">No prerequisites.</p>';
+  const section = (label, text) => (text ? `<h4>${label}</h4>${paragraphs(text)}` : '');
+  return `<p class="hint">${esc((f.types || []).join(', ') || 'General')} · ${esc(f.source)}</p>
+    <h4>Prerequisites</h4>${prereqs}
+    ${section('Benefit', f.benefit || f.description)}
+    ${section('Goal', f.goal)}
+    ${section('Completion benefit', f.completion_benefit)}
+    ${section('Normal', f.normal)}
+    ${section('Special', f.special)}`;
+}
+
+function renderFeats(slots, granted, ctx) {
+  const filled = slots.filter(s => featsById.has(state.feats[s.id])).length;
+  $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
+  $('granted-feats').textContent = granted.length ? `Free from your class: ${granted.join(', ')}.` : '';
+
+  $('feat-slots').innerHTML = slots.map(slot => {
+    const f = featsById.get(state.feats[slot.id]);
+    const rule = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
+    let body;
+    if (f) {
+      const check = checkFeat(f, ctx, slot);
+      const wrongSlot = !slotAccepts(slot, f);
+      body = `
+        <details class="chosen">
+          <summary>${STATUS_ICON[check.status]} ${esc(f.name)}</summary>
+          ${featDetails(f, check)}
+        </details>
+        ${wrongSlot ? '<p class="warning">This feat isn\'t allowed in this slot.</p>' : ''}
+        ${check.status === 'unmet' ? '<p class="warning">You don\'t meet all the prerequisites.</p>' : ''}
+        <div class="slot-buttons">
+          <button type="button" data-choose="${slot.id}">Change</button>
+          <button type="button" data-remove="${slot.id}">Remove</button>
+        </div>`;
+    } else {
+      body = `<button type="button" class="primary" data-choose="${slot.id}">Choose a feat</button>`;
+    }
+    return `<li class="slot">
+      <div class="slot-label">${esc(slot.label)}</div>
+      ${rule ? `<p class="hint">${esc(rule)}</p>` : ''}
+      ${body}
+    </li>`;
+  }).join('');
+}
+
+const PICKER_LIMIT = 150;
+
+function openPicker(slotId) {
+  pickerSlotId = slotId;
+  const slot = current.slots.find(s => s.id === slotId);
+  $('picker-title').textContent = slot.label;
+  $('picker-rule').textContent = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
+  $('feat-search').value = '';
+  renderPicker();
+  $('feat-picker').showModal();
+}
+
+function renderPicker() {
+  const slot = current.slots.find(s => s.id === pickerSlotId);
+  if (!slot) return;
+  const search = $('feat-search').value.trim().toLowerCase();
+  const type = $('feat-type').value;
+  const hideUnmet = $('feat-qualify').checked;
+  // Feats already chosen in another slot, unless the feat can be taken more than once.
+  const taken = new Set(current.slots.filter(s => s.id !== slot.id).map(s => state.feats[s.id]));
+
+  const matches = [];
+  for (const f of feats) {
+    if (!slotAccepts(slot, f)) continue;
+    if (taken.has(f.id) && !repeatable(f)) continue;
+    if (type && !(f.types || []).includes(type)) continue;
+    if (search && !f.name.toLowerCase().includes(search)) continue;
+    const check = checkFeat(f, current.ctx, slot);
+    if (hideUnmet && check.status === 'unmet') continue;
+    matches.push({ f, check });
+  }
+
+  $('picker-count').textContent = matches.length > PICKER_LIMIT
+    ? `Showing ${PICKER_LIMIT} of ${matches.length} feats. Search to narrow the list.`
+    : `${matches.length} feat${matches.length === 1 ? '' : 's'}`;
+  $('feat-list').innerHTML = matches.slice(0, PICKER_LIMIT).map(({ f, check }) => `
+    <details class="feat-item" data-feat="${esc(f.id)}">
+      <summary>${STATUS_ICON[check.status]} <span class="feat-name">${esc(f.name)}</span>
+        <small>${esc((f.types || []).join(', '))}</small></summary>
+      <div class="feat-body"></div>
+    </details>`).join('') || '<p class="hint">No feats match.</p>';
 }
 
 const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -265,9 +431,10 @@ function renderSpells(cls, scores) {
 
 async function start() {
   try {
-    [races, classes] = await Promise.all([
+    [races, classes, feats] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
+      fetch('data/feats.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -276,6 +443,9 @@ async function start() {
   }
   // Prestige classes need levels in other classes first, and multiclassing isn't supported yet.
   classes = classes.filter(c => c.category !== 'prestige');
+  // Mythic feats need mythic tiers, which the builder doesn't support.
+  feats = feats.filter(f => !(f.types || []).includes('Mythic'));
+  featsById = new Map(feats.map(f => [f.id, f]));
   load();
   buildControls();
   $('loading').hidden = true;

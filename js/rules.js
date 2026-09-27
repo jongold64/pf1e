@@ -138,8 +138,10 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
 
 // Everything the results panel shows for a single-class character of `level` (1-20).
 // favoredHp is true if the favored class bonus goes to HP (it applies at every level).
+// featBonuses holds the numbers feats add ({ hp, fort, ref, will, dodgeAc }, see featEffects in feats.js).
 export function characterStats({ race, cls, level = 1, baseScores, flexibleChoice, increases = [],
-                                 armor = 0, shield = 0, favoredHp = false }) {
+                                 armor = 0, shield = 0, favoredHp = false, featBonuses = {} }) {
+  const fb = { hp: 0, fort: 0, ref: 0, will: 0, dodgeAc: 0, ...featBonuses };
   const racial = finalScores(baseScores, race, flexibleChoice);
   const inc = levelIncreases(level, increases);
   const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a]]));
@@ -150,6 +152,7 @@ export function characterStats({ race, cls, level = 1, baseScores, flexibleChoic
   let hp = Math.max(1, hitDieSize(cls) + mod.con);
   hp += (level - 1) * Math.max(1, averageHpPerLevel(cls) + mod.con);
   if (favoredHp) hp += level;
+  hp += fb.hp;
 
   // Monks add Wis (if positive) plus their level-based AC bonus when unarmored.
   let classAc = 0;
@@ -157,7 +160,7 @@ export function characterStats({ race, cls, level = 1, baseScores, flexibleChoic
     classAc = Math.max(0, mod.wis) + signedNumber(row.other?.['AC Bonus']);
   }
   const size = SIZE_AC[race?.size] ?? 0;
-  const ac = 10 + armor + shield + mod.dex + size + classAc;
+  const ac = 10 + armor + shield + mod.dex + size + classAc + fb.dodgeAc;
 
   return {
     increases: inc,
@@ -165,12 +168,12 @@ export function characterStats({ race, cls, level = 1, baseScores, flexibleChoic
     mod,
     hp,
     bab: row.bab,
-    fort: row.fort + mod.con,
-    ref: row.ref + mod.dex,
-    will: row.will + mod.wis,
+    fort: row.fort + mod.con + fb.fort,
+    ref: row.ref + mod.dex + fb.ref,
+    will: row.will + mod.wis + fb.will,
     ac,
     touch: ac - armor - shield,
-    // Flat-footed loses a Dex bonus, but a Dex penalty still applies.
-    flatFooted: ac - Math.max(0, mod.dex),
+    // Flat-footed loses a Dex bonus and dodge bonuses, but a Dex penalty still applies.
+    flatFooted: ac - Math.max(0, mod.dex) - fb.dodgeAc,
   };
 }
