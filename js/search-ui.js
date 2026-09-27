@@ -19,6 +19,7 @@ function entries(app) {
   if (data.spells) out.push(...data.spells.map(s => ({ type: 'spell', id: s.id, name: s.name, detail: s.school || '' })));
   if (data.items) out.push(...data.items.map(i => ({ type: 'magic-item', id: i.id, name: i.name, detail: i.category })));
   if (data.gear) out.push(...data.gear.map(i => ({ type: 'equipment', id: i.id, name: i.name, detail: i.category })));
+  if (data.weapons) out.push(...data.weapons.map(w => ({ type: 'weapon', id: w.id, name: w.name, detail: w.category })));
   return out;
 }
 
@@ -28,7 +29,7 @@ function run(app) {
   const hits = search(index, query);
   const tooShort = query.trim().length < 2;
   $('search-results').hidden = tooShort;
-  const status = !complete ? 'Loading spells, magic items and equipment so they can be searched too…'
+  const status = !complete ? 'Loading spells, magic items, weapons and equipment so they can be searched too…'
     : tooShort ? '' : `${hits.length === 40 ? 'First 40' : hits.length} result${hits.length === 1 ? '' : 's'}`;
   $('search-status').textContent = status;
   $('search-status').hidden = !status;
@@ -44,7 +45,7 @@ function run(app) {
 function loadAll(app) {
   if (complete || loadAll.started) return;
   loadAll.started = true;
-  Promise.all([app.loadSpells(), app.loadItems(), app.loadGear()]).then(() => {
+  Promise.all([app.loadSpells(), app.loadItems(), app.loadGear(), app.loadWeapons()]).then(() => {
     complete = true;
     index = null;
     run(app);

@@ -1,10 +1,11 @@
 // Search by name across everything in the app. No page code here, so it can be tested on its own.
 
 // Types in the order they're listed when matches are equally good.
-export const SEARCH_TYPES = ['race', 'class', 'feat', 'skill', 'spell', 'armor', 'equipment', 'magic-item'];
+export const SEARCH_TYPES = ['race', 'class', 'feat', 'skill', 'spell', 'armor', 'weapon', 'equipment', 'magic-item'];
 
 export const TYPE_LABELS = {
-  race: 'Race', class: 'Class', feat: 'Feat', skill: 'Skill', spell: 'Spell', armor: 'Armor', equipment: 'Equipment',
+  race: 'Race', class: 'Class', feat: 'Feat', skill: 'Skill', spell: 'Spell', armor: 'Armor', weapon: 'Weapon',
+  equipment: 'Equipment',
   'magic-item': 'Magic item',
 };
 

@@ -321,3 +321,16 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .chip { min-height: 36px; padding: 0 10px; border-radius: 18px 0 0 18px; border-right: 0; }
 .chip-remove { min-height: 36px; width: 36px; padding: 0; border-radius: 0 18px 18px 0; color: var(--muted); }
 .pick-list button.mine { font-weight: 600; }
+
+/* Weapons */
+.weapon-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.weapon-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.weapon-head .item-link { font-weight: 700; font-size: 1.05rem; }
+.attack-line { grid-template-columns: max-content 1fr max-content 1fr; }
+.attack-line dd b { font-size: 1.1rem; }
+.weapon-controls { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; }
+.weapon-controls label { display: inline-flex; align-items: center; gap: 6px; }
+.weapon-controls select { width: auto; }
+.check-row.small { min-height: 36px; font-size: 0.9rem; margin: 0; }
+.check-row.small input { width: 20px; height: 20px; }
+.tag.type-weapon { background: #6b3a3a; }

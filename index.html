@@ -22,6 +22,7 @@
       <button type="button" role="tab" data-tab="spells">Spells</button>
       <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
       <button type="button" role="tab" data-tab="armor">Armor</button>
+      <button type="button" role="tab" data-tab="weapons">Weapons</button>
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
     </nav>
 
@@ -204,6 +205,27 @@
         <h2>In this armor</h2>
         <div id="armor-warnings"></div>
         <dl id="armor-summary" class="facts wide-facts"></dl>
+      </section>
+    </main>
+
+    <!-- Weapons -->
+    <main class="tab-panel" id="tab-weapons" role="tabpanel" hidden>
+      <section class="card wide">
+        <h2>My weapons <span id="my-weapons-count" class="count"></span></h2>
+        <p id="my-weapons-note" class="hint"></p>
+        <div id="my-weapons"></div>
+      </section>
+      <section class="card wide">
+        <h2>Weapons <span id="weapon-count" class="count"></span></h2>
+        <form class="search-row tab-search" id="weapon-search-form" role="search">
+          <input id="weapon-search" type="search" autocomplete="off" placeholder="Search weapons by name" aria-label="Search weapons">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <select id="weapon-category" class="jump" aria-label="Jump to a category"></select>
+        <div class="browser">
+          <div class="browser-list" id="weapon-list" aria-label="Weapons"></div>
+          <aside class="browser-panel" id="weapon-panel" aria-live="polite"></aside>
+        </div>
       </section>
     </main>
 

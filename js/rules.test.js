@@ -5,11 +5,12 @@ import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, fe
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
          skillTotal, ranksFor } from './skills.js';
-import { armorEffects, speedInArmor, proficiencyWarnings } from './armor.js';
+import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs } from './dom.js';
+import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost } from './weapons.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -24,6 +25,8 @@ const [races, classes, allFeats, allArmor, allGear] = await Promise.all([
   fetch('data/equipment.json').then(r => r.json()),
 ]);
 const gearById = new Map(allGear.map(i => [i.id, i]));
+const allWeapons = await fetch('data/weapons.json').then(r => r.json());
+const weapon = name => allWeapons.find(w => w.name === name);
 const armorById = id => allArmor.find(a => a.id === id);
 const race = id => races.find(r => r.id === id);
 const cls = id => classes.find(c => c.id === id);
@@ -442,6 +445,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('cleric proficient with a heavy shield',
         proficiencyWarnings(armorEffects({ shield: armorById('heavy-steel-shield') }), profs('cleric')).length, 0);
   check('feat gives proficiency', proficiencyWarnings(e, [...profs('wizard'), 'Armor Proficiency, Medium']).length, 0);
+  check('attack penalty: proficient fighter in chainmail', armorAttackPenalty(e, profs('fighter')), 0);
+  check('attack penalty: wizard in chainmail (-5)', armorAttackPenalty(e, profs('wizard')), -5);
+  check('attack penalty: wizard in +1 chainmail (-4)', armorAttackPenalty(armorEffects({ armor: chainmail, armorEnh: 1 }), profs('wizard')), -4);
+  check('attack penalty: fighter with a tower shield (-2 always)', armorAttackPenalty(plateTower, profs('fighter')), -2);
+  check('attack penalty: cleric with a tower shield (-10 - 2)',
+        armorAttackPenalty(armorEffects({ shield: armorById('tower-shield') }), profs('cleric')), -12);
 
   const s10 = scores(14, 10, 10, 10, 10, 10);
   check('armor check penalty on Climb', skillTotal({ name: 'Climb', ranks: 1, scores: s10, isClassSkill: true, checkPenalty: -5 }).total, 1);
@@ -529,6 +538,64 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('magic items weight', owned.weight, 2);
   check('special abilities can\'t be owned alone', ownable({ category: 'Weapon Special Abilities' }), false);
   check('wondrous items can be owned', ownable(cloak), true);
+}
+
+// Weapons
+{
+  const ls = weapon('Longsword');
+  check('longsword from the data', `${ls.proficiency} ${ls.group} ${ls.damage.m} ${ls.threat}/${ls.multiplier} ${ls.price_gp}`, 'martial one-handed 1d8 19/2 15');
+  check('rapier works with Weapon Finesse', weapon('Rapier').finesse, true);
+  check('longsword does not', ls.finesse, false);
+  check('dagger is a thrown light weapon', `${weapon('Dagger').group} ${weapon('Dagger').thrown}`, 'light true');
+  check('heavy crossbow merged with "Crossbow, Heavy"', weapon('Heavy Crossbow').also_in?.includes('Core Rulebook'), true);
+
+  const fighterProf = proficiencyTest(cls('fighter'), race('human'));
+  check('fighter: martial weapons', fighterProf(ls), true);
+  check('fighter: simple weapons too ("simple and martial weapons")', fighterProf(weapon('Dagger')), true);
+  check('everyone with simple weapons can use an unarmed strike', fighterProf(weapon('Unarmed Strike')), true);
+  check('fighter: not exotic', fighterProf(weapon('Bastard Sword')), false);
+  const wizProf = proficiencyTest(cls('wizard'), race('human'));
+  check('wizard: dagger (named in class text)', wizProf(weapon('Dagger')), true);
+  check('wizard: heavy crossbow (named)', wizProf(weapon('Heavy Crossbow')), true);
+  check('wizard: not a longsword', wizProf(ls), false);
+  const elfWiz = proficiencyTest(cls('wizard'), race('elf'));
+  check('elf wizard: longbow from weapon familiarity', elfWiz(weapon('Longbow')), true);
+  check('elf wizard: composite longbow too', elfWiz(weapon('Composite Longbow')), true);
+  check('elf fighter: elven curve blade counts as martial', proficiencyTest(cls('fighter'), race('elf'))(weapon('Elven Curve Blade')), true);
+  check('human fighter: elven curve blade is exotic', fighterProf(weapon('Elven Curve Blade')), false);
+  check('gunslinger: firearms', proficiencyTest(cls('gunslinger'), race('human'))(weapon('Pistol')), true);
+  check('fighter: no firearms', fighterProf(weapon('Pistol')), false);
+
+  check('Str to damage: two-handed ×1.5', strToDamage(weapon('Greatsword'), 3), 4);
+  check('Str to damage: one-handed', strToDamage(ls, 3), 3);
+  check('Str to damage: longbow bonus ignored', strToDamage(weapon('Longbow'), 3), 0);
+  check('Str to damage: longbow penalty applies', strToDamage(weapon('Longbow'), -1), -1);
+  check('Str to damage: composite longbow', strToDamage(weapon('Composite Longbow'), 3), 3);
+  check('Str to damage: crossbow none', strToDamage(weapon('Heavy Crossbow'), 3), 0);
+  check('Str to damage: javelin (thrown)', strToDamage(weapon('Javelin'), 2), 2);
+  check('formatDamage', `${formatDamage('1d8', 4)} / ${formatDamage('1d6 fire', 0)} / ${formatDamage('1d4', -1)}`, '1d8+4 / 1d6 fire / 1d4-1');
+
+  // Human fighter 6, Str 18 (+4), Dex 14 (+2): BAB +6/+1
+  const mod = { str: 4, dex: 2 };
+  const a = weaponAttack({ weapon: ls, bab: [6, 1], mod, entry: { enh: 1, focus: true, spec: true },
+                           haveFeats: ['Weapon Focus', 'Weapon Specialization'] });
+  check('+1 longsword with Focus: +6 +4 Str +1 magic +1 focus', a.attacks.join('/'), '12/7');
+  check('+1 longsword with Specialization: 1d8+4+1+2', a.damage, '1d8+7');
+  const noFeat = weaponAttack({ weapon: ls, bab: [6, 1], mod, entry: { focus: true } });
+  check('Focus flag without the feat adds nothing', noFeat.attacks.join('/'), '10/5');
+  check('masterwork: +1 attack, no damage', weaponAttack({ weapon: ls, bab: [1], mod, entry: { masterwork: true } }).attacks[0] +
+        ' ' + weaponAttack({ weapon: ls, bab: [1], mod, entry: { masterwork: true } }).damage, '6 1d8+4');
+  check('not proficient: -4', weaponAttack({ weapon: weapon('Bastard Sword'), bab: [1], mod, proficient: false }).attacks[0], 1);
+  const rapier = weaponAttack({ weapon: weapon('Rapier'), bab: [1], mod: { str: 0, dex: 3 }, haveFeats: ['Weapon Finesse'] });
+  check('Weapon Finesse uses Dex for a rapier', `${rapier.attacks[0]} ${rapier.abilityUsed} ${rapier.damage}`, '4 dex 1d6');
+  check('longbow uses Dex, no Str damage', `${weaponAttack({ weapon: weapon('Longbow'), bab: [1], mod }).attacks[0]} ${weaponAttack({ weapon: weapon('Longbow'), bab: [1], mod }).damage}`, '3 1d8');
+  check('Small size: +1 attack, Small damage dice', `${weaponAttack({ weapon: ls, bab: [1], mod, sizeAttack: 1, size: 'Small' }).attacks[0]} ` +
+        weaponAttack({ weapon: ls, bab: [1], mod, sizeAttack: 1, size: 'Small' }).damage, '6 1d6+4');
+  check('greatsword two-handed Str', weaponAttack({ weapon: weapon('Greatsword'), bab: [1], mod }).damage, '2d6+6');
+
+  check('longsword price', weaponCost(ls), 15);
+  check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);
+  check('+2 longsword: 15 + 300 + 8,000', weaponCost(ls, { enh: 2 }), 8315);
 }
 
 const failed = results.filter(r => !r.pass);

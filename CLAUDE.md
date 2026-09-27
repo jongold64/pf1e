@@ -7,15 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert the
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) SQLite books into plain-text JSON in `data/`
 (`races.json`, `classes.json`, `feats.json`, `armor.json`, `magic-items.json`, `spells.json`,
-`equipment.json`) plus
+`equipment.json`, `weapons.json`) plus
 `LICENSE-OGL.txt`. The JSON files are generated
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
 On top of the data is a static web app (single-class builder, levels 1-20) with tabs: Character (race,
 class, point buy, results, global search), Feats, Skills, Spells (per day + class spell list), Magic Items
-(browse by category with a details panel), Armor, and Equipment (inventory + gold + weight; armor is kept
-separate from it, and weapons are planned as their own tab). Every tab except Character has its own search
+(browse by category with a details panel), Armor, Weapons (attack bonus and damage per carried weapon),
+and Equipment (inventory + gold + weight; armor and weapons are kept separate from it). Every tab except Character has its own search
 box that looks only through what that tab covers; the Character tab's search covers everything,
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
@@ -39,7 +39,7 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   on each change via `update()` → `render()`. Tabs are `<main class="tab-panel">` elements switched by
   `showTab()`; the open tab is kept in the URL hash (`#spells`). Tab modules get an `app` object
   (`state`, `data`, `update`, `view`, `showTab`, `openDetail`, `openResult`): `tab-armor.js`,
-  `tab-spells.js`, `tab-items.js`, `tab-equipment.js`, `search-ui.js`. Shared DOM helpers are in
+  `tab-spells.js`, `tab-items.js`, `tab-weapons.js`, `tab-equipment.js`, `search-ui.js`. Shared DOM helpers are in
   `dom.js`. The Feats, Skills and Armor tab searches live in `app.js` (`initTabSearches`).
 - Equipment: `js/equipment.js` has money and weight rules (`startingGold` with the alternate-class
   fallback, `WEALTH_BY_LEVEL`, `armorCost` = base + 150 masterwork + enh² × 1,000, `equipmentTotals`,
@@ -50,6 +50,15 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   (`{ id, option, qty }`, "My magic items"; `option` is a `price_options` label like "+2"). Special
   abilities can't be owned alone (`ownable`). Magic item cost/weight count on the Equipment tab
   (`magicItemTotals`).
+- Weapons: `js/weapons.js` — `proficiencyTest(cls, race)` reads the class proficiency text (simple /
+  martial / firearms / named weapons) and racial weapon familiarity; `weaponAttack` gives iterative attack
+  bonuses (BAB + Str, or Dex for ranged and for finesse weapons with Weapon Finesse; size; masterwork +1 or
+  enhancement; Weapon Focus/Greater; −4 non-proficient; `armorAttackPenalty` from armor.js) and damage (size
+  dice; `strToDamage`: ×1.5 two-handed, bows penalty-only unless composite, none for crossbows/firearms/tech;
+  enhancement; Weapon Specialization/Greater). Feat bonuses only count when the character has the feat AND
+  the weapon entry's flag is ticked. `state.weapons` entries are `{ id, enh, masterwork, focus, greaterFocus,
+  spec, greaterSpec, proficient }`; `weaponCost` = price + 300 masterwork + enh² × 2,000 (counted on the
+  Equipment tab).
 - Rules text is rendered by `paragraphs()` in `dom.js`: blank lines split paragraphs, single line breaks
   are kept, and runs of 2+ "a | b" lines (tables flattened by the build) become HTML tables.
 - Armor: `js/armor.js` (`armorEffects`, `speedInArmor`, `proficiencyWarnings`) turns worn armor/shield +
@@ -143,7 +152,10 @@ PSRD=path/to/PSRD-Data python scripts/build_feats.py data/feats.json
   Ultimate Equipment stat block. Equipment is every other `item` without an aura (weapons and armor
   excluded; alchemical weapons kept), categorised by heading or Gear Type; version tables in the text
   ("Common | 2 gp | 2 lbs.") become `variants`, and `price_gp` understands cp/sp/gp/pp, ranges and
-  footnote digits (`price_gp` in `common.py`, shared with the magic item builder). `text()` in
+  footnote digits (`price_gp` in `common.py`, shared with the magic item builder). Weapons merge every
+  book's entry for a weapon (Ultimate Equipment swaps its Proficiency/Weapon Class fields, so proficiency
+  comes from other books or its Simple/Martial/Exotic Weapons tables; "Crossbow, Heavy" = "Heavy Crossbow");
+  siege engines and alchemical weapons are left out. `text()` in
   `common.py` adds a space after a bold/italic run-in heading before a capital or digit
   ("<i>1st Round</i>Presence"), repairs broken apostrophes, drops tags written out as text and a
   leading ":". All seven data files were rebuilt with these fixes. Before replacing data after a builder

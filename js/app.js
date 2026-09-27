@@ -17,17 +17,18 @@ import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
+import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate']];
-const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'equipment'];
+const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'weapons', 'equipment'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
   races: [], classes: [], feats: [], featsById: new Map(), armor: [], armorById: new Map(),
-  spells: null, items: null, itemsById: null, gear: null, gearById: null,
+  spells: null, items: null, itemsById: null, gear: null, gearById: null, weapons: null, weaponsById: null,
 };
 const pending = {};
 function loadOnce(name, file, prepare = x => x) {
@@ -39,6 +40,10 @@ const loadSpells = () => loadOnce('spells', 'data/spells.json');
 const loadItems = () => loadOnce('items', 'data/magic-items.json', items => {
   data.itemsById = new Map(items.map(i => [i.id, i]));
   return items;
+});
+const loadWeapons = () => loadOnce('weapons', 'data/weapons.json', weapons => {
+  data.weaponsById = new Map(weapons.map(w => [w.id, w]));
+  return weapons;
 });
 const loadGear = () => loadOnce('gear', 'data/equipment.json', gear => {
   data.gearById = new Map(gear.map(i => [i.id, i]));
@@ -71,11 +76,12 @@ const state = {
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
   magicItems: [],  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'
+  weapons: [],     // [{ id, enh, masterwork, focus, greaterFocus, spec, greaterSpec, proficient }] from data/weapons.json
 };
 
 // Shared with the tab modules.
 const app = {
-  state, data, update, loadSpells, loadItems, loadGear, showTab, openDetail, openResult,
+  state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult,
   get view() { return view; },
 };
 
@@ -121,6 +127,11 @@ function load() {
   state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty }));
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'proficient'];
+  state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
+    .filter(e => e && typeof e.id === 'string')
+    .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
+                 ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])) }));
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -159,6 +170,7 @@ function showTab(name) {
   if (name === 'spells') renderSpellList(app, view);
   if (name === 'magic-items') renderItemsTab(app);
   if (name === 'equipment') renderEquipmentTab(app);
+  if (name === 'weapons') renderWeaponsTab(app);
 }
 
 function buildControls() {
@@ -292,6 +304,7 @@ function buildControls() {
   initSpellList(app);
   initItemsTab(app);
   initEquipmentTab(app);
+  initWeaponsTab(app);
   initSearch(app);
   initTabSearches();
 }
@@ -473,6 +486,7 @@ function render() {
   if (tab === 'spells') renderSpellList(app, view);
   if (tab === 'equipment') renderEquipment(app, view);
   if (tab === 'magic-items') renderMyItems(app);
+  if (tab === 'weapons') renderMyWeapons(app, view);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 
@@ -746,6 +760,9 @@ function openResult(type, id) {
   } else if (type === 'equipment') {
     showTab('equipment');
     showGear(app, id);
+  } else if (type === 'weapon') {
+    showTab('weapons');
+    showWeapon(app, id);
   } else if (type === 'armor') {
     const a = data.armorById.get(id);
     const isShield = a.category === 'shield';

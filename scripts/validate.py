@@ -4,10 +4,10 @@ d = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__)
 load = lambda name: json.load(open(os.path.join(d, name), encoding='utf-8'))
 races, classes, feats = load('races.json'), load('classes.json'), load('feats.json')
 armor, magic_items, spells = load('armor.json'), load('magic-items.json'), load('spells.json')
-equipment = load('equipment.json')
+equipment, weapons = load('equipment.json'), load('weapons.json')
 errors = []
 for name, items in [('race', races), ('class', classes), ('feat', feats), ('armor', armor),
-                    ('magic item', magic_items), ('spell', spells), ('equipment', equipment)]:
+                    ('magic item', magic_items), ('spell', spells), ('equipment', equipment), ('weapon', weapons)]:
     dup = [i for i, n in collections.Counter(x['id'] for x in items).items() if n > 1]
     if dup:
         errors.append(f'duplicate {name} ids: {dup}')
@@ -48,6 +48,11 @@ for e in equipment:
             errors.append(f"equipment {e['id']} has a negative price or weight")
     if not e.get('category'):
         errors.append(f"equipment {e['id']} has no category")
+for w in weapons:
+    if w['proficiency'] not in ('simple', 'martial', 'exotic') or w['group'] not in ('unarmed', 'light', 'one-handed', 'two-handed', 'ranged'):
+        errors.append(f"weapon {w['id']} has proficiency {w['proficiency']!r} and group {w['group']!r}")
+    if w['category'] != 'Technological Weapons' and not w['damage']['m']:
+        print('note: weapon', w['name'], 'has no Medium damage')
 class_ids = {k['id'] for k in classes}
 for s in spells:
     if not s['levels'] or not s.get('school'):
@@ -56,7 +61,7 @@ unknown_lists = {c for s in spells for c in s['levels'] if c not in class_ids}
 if unknown_lists - {'elementalist-wizard'}:
     errors.append(f'spell lists for unknown classes: {sorted(unknown_lists)}')
 print(f'{len(races)} races, {len(classes)} classes, {len(feats)} feats, {len(armor)} armor, '
-      f'{len(magic_items)} magic items, {len(spells)} spells, {len(equipment)} pieces of equipment')
+      f'{len(magic_items)} magic items, {len(spells)} spells, {len(equipment)} pieces of equipment, {len(weapons)} weapons')
 auto = sum(1 for f in feats if all(p['type'] != 'other' for p in f.get('prerequisites', [])))
 print(f'{auto} of {len(feats)} feats have fully machine-readable prerequisites')
 if errors:

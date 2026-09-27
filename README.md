@@ -1,4 +1,4 @@
-# Pathfinder 1e Rules Data (races, classes, feats, armor, magic items, spells, equipment)
+# Pathfinder 1e Rules Data (races, classes, feats, armor, weapons, magic items, spells, equipment)
 
 Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 [PSRD-Data](https://github.com/devonjones/PSRD-Data) (the Paizo Pathfinder Reference Document).
@@ -11,13 +11,14 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
 | `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items) |
 | `data/spells.json` | 1,536 spells with school, class spell levels, components, range, duration, saves and text (mythic spells left out) |
-| `data/equipment.json` | 829 pieces of mundane gear in 12 categories (adventuring gear, tools, clothing, alchemical items, animals, vehicles, services, ...), with price, weight and versions such as common/masterwork. Weapons are not included yet |
+| `data/equipment.json` | 828 pieces of mundane gear in 12 categories (adventuring gear, tools, clothing, alchemical items, animals, vehicles, services, ...), with price, weight and versions such as common/masterwork |
+| `data/weapons.json` | 241 weapons: simple, martial, exotic, firearms and technological, with proficiency, damage by size, critical, range, type, special qualities, price and weight (siege engines left out) |
 | `LICENSE-OGL.txt` | The Open Game License 1.0a and Section 15 copyright notices. **Ship this with your app.** |
 | `scripts/` | The Python scripts that generate the files above |
 
 Books covered by races, classes and feats: Core Rulebook, Advanced Player's Guide, Advanced Race Guide,
 Advanced Class Guide, Ultimate Magic, Ultimate Combat, Ultimate Campaign, Mythic Adventures, and Bestiary 1-4.
-Armor, magic items, spells and equipment also use Ultimate Equipment, GameMastery Guide, NPC Codex, Monster Codex and
+Armor, weapons, magic items, spells and equipment also use Ultimate Equipment, GameMastery Guide, NPC Codex, Monster Codex and
 Technology Guide: every book in PSRD-Data. Later books (Occult Adventures, Pathfinder Unchained, Ultimate
 Intrigue, Ultimate Wilderness and others) and Player Companion / Campaign Setting books are not in PSRD-Data.
 
@@ -27,7 +28,8 @@ Intrigue, Ultimate Wilderness and others) and Player Companion / Campaign Settin
 Character (race, class, point buy, results, and a search box that finds anything by name), Feats (with
 prerequisite checks), Skills, Spells (spells per day and the class spell list), Magic Items (every magic
 item by category, with a details panel; items can be added to the character), Armor (worn armor and
-shield, applied to AC, skills and speed) and Equipment (an inventory with gold and weight). Spells can be
+shield, applied to AC, skills and speed), Weapons (attack bonus and damage for each weapon you carry) and
+Equipment (an inventory with gold and weight). Spells can be
 added to the character too. Every tab has its own search box as well.
 To try it on your computer, run this from the repo folder (needs Python 3) and open http://localhost:8000/
 in a browser:
