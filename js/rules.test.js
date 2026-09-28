@@ -17,7 +17,7 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy } from './rules.js';
+import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
@@ -806,6 +806,10 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('paladin 4 channel energy', JSON.stringify(channelEnergy(pal4).map(c => [c.source, c.dice, c.dc, c.uses])), '[["Paladin","2d6",15,2]]');
   const pal3 = characterStats({ race: race('human'), cls: cls('paladin'), level: 3, baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' });
   check('paladin 3 has no channel yet', channelEnergy(pal3).length, 0);
+  // Paladin 4, Cha 16 (+3): lay on hands 2d6, 2 + 3 = 5 per day
+  check('paladin 4 lay on hands', JSON.stringify(layOnHands(pal4)), '[{"name":"Lay on hands","dice":"2d6","uses":5,"heals":true}]');
+  check('paladin 1 has no lay on hands yet', layOnHands(characterStats({ race: race('human'), cls: cls('paladin'), level: 1,
+        baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' })).length, 0);
   const wp7 = characterStats({ race: race('human'), cls: cls('warpriest'), level: 7, baseScores: scores(14, 10, 10, 10, 14, 10), flexibleChoice: 'wis' });
   check('warpriest 7 channels as cleric 4: 2d6', channelEnergy(wp7)[0].dice, '2d6');
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');

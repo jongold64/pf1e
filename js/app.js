@@ -3,7 +3,7 @@ import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
-  currentHp, changeHp, hpStatus, channelEnergy,
+  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, SIZE_AC,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -813,6 +813,14 @@ function render() {
     ${channelEnergy(stats, view.haveFeats).map(c => `<div class="defense-row channel-row">
       <span>Channel energy${c.source !== 'Cleric' ? ` (${esc(c.source)})` : ''}<small>${esc(c.energy)} · DC ${c.dc} Will half · ${c.uses}/day</small></span>
       <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms' }] })}</div>`).join('')}
+    ${layOnHands(stats).map(l => {
+      // Touch of corruption needs a melee touch attack: BAB + Str + size.
+      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[race.size] ?? 0);
+      const spec = l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
+        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] };
+      return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
+        <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
+    }).join('')}
     ${cm.maneuvers.map((m, i) => rollRow(`${m.name} (CMB)`, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] },
       i === 0 ? 'defense-row first-cmb' : 'defense-row')).join('')}`;
 

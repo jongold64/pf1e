@@ -278,6 +278,18 @@ export function channelEnergy(stats, haveFeats = []) {
   return out;
 }
 
+// Lay on hands (paladin) and touch of corruption (antipaladin) from 2nd level: 1d6 per two class levels, used
+// half the class level + Cha times per day. Returns [{ name, dice, uses, heals }].
+export function layOnHands(stats) {
+  const counts = stats.classCounts || [];
+  const out = [];
+  for (const [id, name, heals] of [['paladin', 'Lay on hands', true], ['antipaladin', 'Touch of corruption', false]]) {
+    const level = counts.find(e => e.cls.id === id)?.level || 0;
+    if (level >= 2) out.push({ name, dice: `${Math.floor(level / 2)}d6`, uses: Math.max(0, Math.floor(level / 2) + stats.mod.cha), heals });
+  }
+  return out;
+}
+
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = []) {
   return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);
