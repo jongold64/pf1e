@@ -28,15 +28,19 @@ for ch in ogl['children']:
 if not all(n in out for n in MISSING_NOTICES):
     out.extend(MISSING_NOTICES)
 
-# Books whose content came from the Foundry VTT data (records with "origin"): their notices from
-# scripts/ogl_notices.json, skipping any already listed.
+# Books whose content came from the Foundry VTT data or d20pfsrd (records with "origin"): their notices from
+# scripts/ogl_notices.json and scripts/d20_feat_notices.json, skipping any already listed.
 data_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), 'data')
 used = set()
 for name in sorted(os.listdir(data_dir)):
     if name.endswith('.json'):
         used |= {r['source'] for r in json.load(open(os.path.join(data_dir, name), encoding='utf-8'))
-                 if isinstance(r, dict) and r.get('origin') == 'Foundry VTT pf1'}
-notices = json.load(open(os.path.join(os.path.dirname(__file__), 'ogl_notices.json'), encoding='utf-8'))
+                 if isinstance(r, dict) and r.get('origin')}
+here = os.path.dirname(__file__)
+notices = json.load(open(os.path.join(here, 'ogl_notices.json'), encoding='utf-8'))
+if os.path.exists(os.path.join(here, 'd20_feat_notices.json')):
+    for book, lines in json.load(open(os.path.join(here, 'd20_feat_notices.json'), encoding='utf-8')).items():
+        notices[book] = notices.get(book, []) + [n for n in lines if n not in notices.get(book, [])]
 have = {re.sub(r'\W', '', n.lower()) for n in out}
 added = 0
 for book in sorted(used):

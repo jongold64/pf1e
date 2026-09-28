@@ -18,7 +18,11 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_classes.py', 'data/classes.json'),
                     # Adds post-2015 classes (occult, unchained, shifter, vigilante) after the PSRD ones.
                     ('build_foundry_classes.py', 'data/classes.json'),
-                    ('build_feats.py', 'data/feats.json'), ('build_armor.py', 'data/armor.json'),
+                    ('build_feats.py', 'data/feats.json'),
+                    # Paizo feats from later books, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py.
+                    *([('build_d20_feats.py', 'data/feats.json')]
+                      if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-feats')) else []),
+                    ('build_armor.py', 'data/armor.json'),
                     ('build_magic_items.py', 'data/magic-items.json'), ('build_spells.py', 'data/spells.json'),
                     # Adds post-2015 spells to the PSRD ones, so it runs after build_spells.py.
                     ('build_foundry_spells.py', 'data/spells.json'),

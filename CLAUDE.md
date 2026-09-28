@@ -175,6 +175,14 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
 - `build_foundry_races.py` (after `build_races.py`) reads traits from "<strong>Name</strong>: text" list items in the
   description, sets `kind` for the standard ones, ability modifiers from `changes`, size/speed/type from the fields.
   Bestiary 5 and 6 races are left out: their notices aren't on the Archives of Nethys page.
+- Feats from later books come from d20pfsrd.com (Foundry has few feats). `fetch_d20pfsrd_feats.py` downloads every
+  page under /feats/ except the third-party section (listed in the site's sitemap; the site answers some requests
+  with status 404 but the real content) into `C:\Users\jongo\Projects\d20pfsrd-feats`, once. `build_d20_feats.py`
+  (after `build_feats.py`, only when that cache exists) keeps feats whose page's "Section 15" notice is a Paizo book,
+  drops mythic and caravan feats and ones already present (names compared letters-only, the trailing "(Combat,
+  Halfling)" bracket stripped into types), parses prerequisites with `build_feats.parse_prereqs`, marks them
+  `"origin": "d20pfsrd"` and saves each book's notices to `scripts/d20_feat_notices.json` for `build_license.py`.
+  Pages with no notice (about 45 new feats) are left out.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.
