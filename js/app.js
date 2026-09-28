@@ -746,7 +746,6 @@ function render() {
     $(`race-${a}`).textContent = adj[a] ? signed(adj[a]) : '';
     $(`inc-${a}`).textContent = stats.increases[a] ? signed(stats.increases[a]) : '';
     $(`score-${a}`).textContent = stats.scores[a];
-    $(`mod-${a}`).textContent = signed(stats.mod[a]);
   }
 
   // Ability increases: only the levels reached so far are shown
@@ -764,17 +763,20 @@ function render() {
     ['Hit points', esc(stats.hp)],
     ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
     ['Base attack bonus', esc(formatBab(stats.bab))],
-    // Combat maneuvers: the general CMB, then any maneuver the character has an Improved/Greater feat for.
-    ['Combat maneuvers (CMB)', `${esc(signed(cm.cmb))}${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}`],
-    ...cm.maneuvers.map(m => [`${m.name}`, `${esc(signed(m.cmb))}${rollButton({ title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] })}`]),
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
     ['Wearing', esc(worn || 'no armor')],
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
   // Armor Class and saving throws, in the Race card; each save has a Roll button.
-  const saveRow = (name, value) => `<div class="defense-row"><span>${name}</span><b>${esc(signed(value))}</b>
-    ${rollButton({ title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] })}</div>`;
+  const rollRow = (name, value, spec, cls = 'defense-row') => `<div class="${cls}"><span>${esc(name)}</span><b>${esc(signed(value))}</b>
+    ${rollButton(spec)}</div>`;
+  const saveRow = (name, value) => rollRow(name, value, { title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] });
+  // Ability checks: d20 + modifier, a Roll button beside each modifier.
+  for (const a of ABILITIES) {
+    $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check`, check: ABILITY_NAMES[a],
+      plain: true, groups: [{ attacks: [stats.mod[a]] }] })}`;
+  }
   $('race-defense').innerHTML = `
     <div class="defense-ac">
       <div><span>AC</span><b>${stats.ac}</b></div>
@@ -783,7 +785,9 @@ function render() {
       <div><span>CMD</span><b>${cm.cmd}</b></div>
     </div>
     ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
-    ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}`;
+    ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
+    ${rollRow('CMB', cm.cmb, { title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] }, 'defense-row first-cmb')}
+    ${cm.maneuvers.map(m => rollRow(m.name, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] })).join('')}`;
 
   renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);

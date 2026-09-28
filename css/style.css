@@ -454,3 +454,6 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-row span { display: inline; flex: 1; font-size: 0.95rem; color: var(--text); }
 .defense-row b { font-size: 1.1rem; min-width: 3ch; text-align: right; }
 @media print { .roll-panel { display: none !important; } }
+.defense-row.first-cmb { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
+.abilities td[id^="mod-"] { white-space: nowrap; }
+.abilities button.roll-button { width: auto; padding: 2px 10px; font-size: 0.85rem; }
