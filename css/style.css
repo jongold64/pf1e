@@ -486,3 +486,12 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-ac .cmb-box .roll-button { display: inline-block; margin: 0; }
 .channel-row { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
 .channel-row small { display: block; color: var(--muted); font-size: 0.8rem; }
+
+/* House rules: Y/N buttons */
+.house-rule-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+button.house-rule { display: inline-flex; align-items: center; gap: 10px; border-radius: 22px; padding: 0 6px 0 14px; }
+button.house-rule .yn { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--border); font-weight: 700; }
+button.house-rule.on { border-color: var(--accent); color: var(--accent); }
+button.house-rule.on .yn { background: var(--accent); color: #fff; }
+#house-rules-note { margin: 8px 0 0; }

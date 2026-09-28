@@ -900,6 +900,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('damage only', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4' }] }, dice(6)).lines[0], 'damage 1d8 (6) + 4 = 10');
   check('critical damage ×3', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4', critMult: 3 }] }, dice(1, 2, 3)).lines[0],
         'critical damage (×3) 1d8 (1) + 4 + 1d8 (2) + 4 + 1d8 (3) + 4 = 18');
+  check('Max Healing house rule: healing gives its maximum', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '2d8+5', heal: true }] },
+        dice(1, 1), { maxHealing: true }).lines[0], 'healing 2d8 (8, 8) + 5 = 21 (Max Healing)');
+  check('...but not damage', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d6' }] }, dice(2), { maxHealing: true }).lines[0], 'damage 1d6 (2) = 2');
   check('natural 1 misses', rollSpec({ title: 'x', groups: [{ attacks: [20], damage: '1d6' }] }, dice(1)).lines[0], 'Attack: d20 (1) + 20 = 21, natural 1: miss');
   check('iterative attacks each roll', rollSpec({ title: 'x', groups: [{ attacks: [6, 1], damage: '1d6' }] }, dice(10, 2, 11, 3)).lines.length, 2);
   check('magic missile: 3 missiles, no attack roll', rollSpec({ title: 'Magic Missile', groups: [{ attacks: [], damage: '1d4+1', times: 3 }] }, dice(1, 2, 3)).lines.length, 3);

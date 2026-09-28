@@ -55,9 +55,13 @@ export function rollD20(bonus, rng = randomDie) {
 // roll), damage: "1d8+4" | null, threat: 19, mult: 2, times: 1 }] }. A natural 20 always hits and a natural 1
 // always misses; a natural roll in the threat range is confirmed with another attack roll, and a confirmed critical
 // rolls the damage `mult` times. Returns { title, lines: [text] }.
-export function rollSpec(spec, rng = randomDie) {
+// options.maxHealing (house rule): healing groups (heal: true) give their maximum instead of being rolled.
+export function rollSpec(spec, rng = randomDie, options = {}) {
   const lines = [];
   for (const g of spec.groups) {
+    const maxed = options.maxHealing && g.heal;
+    const dmgRng = maxed ? sides => sides : rng;
+    const tag = maxed ? ' (Max Healing)' : '';
     const prefix = g.label ? `${g.label}: ` : '';
     if (!g.attacks?.length) {
       // No attack roll: damage (a fireball, magic missiles), or just a check or save with no damage.
@@ -68,8 +72,8 @@ export function rollSpec(spec, rng = randomDie) {
         continue;
       }
       for (let i = 0; i < (g.times || 1); i++) {
-        const dmg = g.damage ? rollDamage(g.damage, rng) : null;
-        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}`);
+        const dmg = g.damage ? rollDamage(g.damage, dmgRng) : null;
+        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}${tag}`);
       }
       continue;
     }
@@ -94,7 +98,7 @@ export function rollSpec(spec, rng = randomDie) {
         times = g.mult || 2;
         text += ` (if it hits AC, ×${times} damage)`;
       }
-      const dmg = rollDamage(g.damage, rng);
+      const dmg = rollDamage(g.damage, dmgRng);
       if (dmg) {
         text += `. ${g.heal ? 'Healing' : 'Damage'} ${dmg.text}`;
         if (times > 1) text += `; critical damage ${rollDamage(g.damage, rng, times).text}`;

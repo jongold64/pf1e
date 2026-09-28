@@ -5,6 +5,11 @@ import { rollSpec } from './dice.js';
 
 const KEEP = 6;
 const history = [];
+// House rule options that change how rolls are made ({ maxHealing }).
+let options = {};
+export function setRollOptions(o) {
+  options = o;
+}
 
 // The attribute value for a Roll button: data-roll="${rollAttr(spec)}".
 export function rollAttr(spec) {
@@ -38,7 +43,7 @@ export function initRolls() {
     const btn = e.target.closest?.('[data-roll]');
     if (btn) {
       e.preventDefault();
-      history.unshift(rollSpec(JSON.parse(btn.dataset.roll)));
+      history.unshift(rollSpec(JSON.parse(btn.dataset.roll), undefined, options));
       history.length = Math.min(history.length, KEEP);
       render(panel);
       return;

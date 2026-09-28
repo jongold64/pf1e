@@ -26,7 +26,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
-import { initRolls, rollButton } from './roll-ui.js';
+import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
 import { weaponSummaries } from './tab-weapons.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -68,6 +68,7 @@ let raceItems = [];
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   hpCurrent: null,           // current hit points during play; null means full
+  houseRules: {},            // house rules switched on: encumbrance, maxHealing, actionPoints, flaws, extraTrait
   race: 'human',
   classLevels: ['fighter'],  // class id at each character level, 1st level first
   favoredClass: '',          // favored class id; '' means the first class
@@ -101,6 +102,15 @@ const state = {
   combat: { main: '', off: '' },
 };
 
+// House rules the player can switch on (Character tab): [key, button label, what it does].
+const HOUSE_RULES = [
+  ['encumbrance', 'Encumbrance', 'Encumbrance: not set up yet.'],
+  ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
+  ['actionPoints', 'Action Points', 'Action Points: not set up yet.'],
+  ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
+  ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
+];
+
 // A fresh character, for "New" and for resetting before a saved one is loaded.
 const DEFAULTS = structuredClone(state);
 // The saved characters (see storage.js) and which one is open.
@@ -121,6 +131,8 @@ function load(saved) {
   if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
   state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
+  const hr = state.houseRules && typeof state.houseRules === 'object' ? state.houseRules : {};
+  state.houseRules = Object.fromEntries(HOUSE_RULES.filter(([k]) => hr[k] === true).map(([k]) => [k, true]));
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
   if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
   if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
@@ -404,6 +416,10 @@ function buildControls() {
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  $('house-rules').addEventListener('click', e => {
+    const key = e.target.closest('[data-house-rule]')?.dataset.houseRule;
+    if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
+  });
   initTermPopover($('race-info'), () => raceItems);
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
@@ -777,6 +793,15 @@ function render() {
 
   // Results
   const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
+  // House rules: a Y/N button for each, and what the ones switched on do.
+  $('house-rules').innerHTML = HOUSE_RULES.map(([key, label]) => {
+    const on = !!state.houseRules[key];
+    return `<button type="button" class="house-rule${on ? ' on' : ''}" data-house-rule="${key}" aria-pressed="${on}">${esc(label)}
+      <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
+  }).join('');
+  $('house-rules-note').textContent = HOUSE_RULES.filter(([k]) => state.houseRules[k]).map(([, , note]) => note).join(' ');
+  setRollOptions({ maxHealing: !!state.houseRules.maxHealing });
+
   // Hit point tracker: current hit points (full unless damage has been applied) and what they mean at 0 or below.
   const hpNow = currentHp(state.hpCurrent, stats.hp);
   $('hp-current').textContent = hpNow;
@@ -816,7 +841,7 @@ function render() {
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
     ${channelEnergy(stats, view.haveFeats).map(c => `<div class="defense-row channel-row">
       <span>Channel energy${c.source !== 'Cleric' ? ` (${esc(c.source)})` : ''}<small>${esc(c.energy)} · DC ${c.dc} Will half · ${c.uses}/day</small></span>
-      <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms' }] })}</div>`).join('')}
+      <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] })}</div>`).join('')}
     ${layOnHands(stats).map(l => {
       // Touch of corruption needs a melee touch attack: BAB + Str + size.
       const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[race.size] ?? 0);
