@@ -197,7 +197,15 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   drops mythic and caravan feats and ones already present (names compared letters-only, the trailing "(Combat,
   Halfling)" bracket stripped into types), parses prerequisites with `build_feats.parse_prereqs`, marks them
   `"origin": "d20pfsrd"` and saves each book's notices to `scripts/d20_feat_notices.json` for `build_license.py`.
-  Pages with no notice (about 45 new feats) are left out.
+  Pages with no notice are left out unless `FEAT_SOURCES` names the book (from Archives of Nethys; the book's notice
+  must be known). Page quirks handled: unclosed `<p>`s (closed before parsing), bold `<span>` labels, "Benefit*",
+  and, only when a first reading finds no benefit (`parse_page(html, unwrap=True)`), paragraphs wrapped in plain
+  divs, loose text and unbolded "Benefit:". Stain feats' Gift/Stain go into the benefit. "Source PPC:XX" lines,
+  "Combat Trick" headings and the book-cover box are dropped. Racial feats sharing a name with different races are
+  kept as "Unusual Origin (Changeling)" etc.; `NAME_FIXES` corrects page titles. Traits: different d20pfsrd traits
+  sharing a name (other category and book) are both kept; `PLAIN_ID_SOURCE` says which keeps the plain id.
+  Still left out: Endure Pain, Knights Candidate, Extra Invocation, Faulty Teamwork (no book found), Fleshwarping,
+  and spells from Second Darkness #2 and Shattered Star #4 (no notice found).
 - Traits: `build_traits.py` (PSRD: APG and Ultimate Campaign, names compared letters-only) then `build_d20_traits.py`
   (d20pfsrd pages cached in `C:\Users\jongo\Projects\d20pfsrd-traits` by `fetch_d20pfsrd_feats.py <cache> traits`).
   Category and race/region/deity come from the page's folder; a trailing "(Dwarf)" in the name becomes the

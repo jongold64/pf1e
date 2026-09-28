@@ -29,6 +29,15 @@ MANUAL_NOTICES = {
         'Sean K Reynolds, F. Wesley Schneider, Leandra Christine Schneider, David Schwartz, Amber E. Scott, Stan!, '
         'Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, and JD Wiker.',
     ],
+    # Read from the book's Section 15 on d20pfsrd.com spell pages (the Archives of Nethys page lacks these books).
+    'Pathfinder Society Field Guide': ["Pathfinder Campaign Setting: Pathfinder Society Field Guide. © 2011, Paizo Publishing, LLC. Authors: Erik Mona, Mark Moreland, Russ Taylor, and Larry Wilhelm."],
+    'Pathfinder Chronicles: Gods and Magic': ["Pathfinder Chronicles: Gods and Magic. Copyright 2008, Paizo Publishing, LLC; Author: Sean K Reynolds."],
+    'Dungeons of Golarion': ["Pathfinder Campaign Setting: Dungeons of Golarion. © 2011, Paizo Publishing, LLC. Authors: Jason Bulmahn, Matthew Goodall, Brandon Hodge, Anthony Pryor, and Mike Shel."],
+    'Giantslayer #1: Battle of Bloodmarch Hill': ["Pathfinder Adventure Path #91: Battle of Bloodmarch Hill © 2015, Paizo Inc.; Authors: Patrick Renie, with Tyler Beck, Adam Daigle, Richard Pett, Stephen Radney-MacFarland, and David Schwartz."],
+    'Osirion, Legacy of Pharaohs': ["Pathfinder Campaign Setting: Osirion, Legacy of Pharaohs © 2014, Paizo Publishing, LLC; Authors: Alex Greenshields, Amanda Hamon, Jonathan H. Keith, Ron Lundeen, and David N. Ross."],
+    'Legacy of Fire #1: Howl of the Carrion King': ["Pathfinder 19: Howl of the Carrion King. Copyright 2009, Paizo Publishing, LLC; Author: Erik Mona."],
+    'Guardians of Dragonfall': ["GameMastery Module J2: Guardians of Dragonfall, Copyright 2007, Paizo Publishing, LLC. Author: Anson Caralya."],
+    'Pathfinder Chronicles: Guide to the River Kingdoms': ["Pathfinder Chronicles: Guide to the River Kingdoms © 2010, Paizo Publishing, LLC; Authors: Eric Bailey, Kevin Carter, Elaine Cunningham, Adam Daigle, Mike Ferguson, Joshua J. Frost, James Jacobs, Steve Kenson, Rob Manning, Colin McComb, Alison McKenzie, China Miéville, Brock Mitchel-Slentz, Jason Nelson, Richard Pett, Chris Pramas, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Neil Spicer, Lisa Stevens, Matthew Stinson, and John Wick."],
 }
 
 norm = lambda s: re.sub(r'[^a-z0-9]', '', html.unescape(s).lower().replace('&', 'and'))

@@ -597,7 +597,26 @@
     "types": [
       "General"
     ],
-    "prerequisites": [],
+    "prerequisites_text": "Ability to cast divine spells, summon familiar class ability, caster level 4th,\nCharisma 13.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Ability to cast divine spells"
+      },
+      {
+        "type": "other",
+        "text": "summon familiar class ability"
+      },
+      {
+        "type": "caster_level",
+        "value": 4
+      },
+      {
+        "type": "ability",
+        "ability": "cha",
+        "value": 13
+      }
+    ],
     "benefit": "You gain the channel energy class feature, as a cleric, usable 2 times per day. This ability otherwise functions like the cleric's channel energy ability, except that your effective cleric level is equal to your divine spellcasting class level -3. Unlike a cleric, however, the number of times per day you may channel energy is not affected by your Charisma modifier.",
     "origin": "d20pfsrd"
   },
@@ -3150,7 +3169,7 @@
     ],
     "benefit": "You and your apparent allies gain a +2 bonus on skill checks to gain influence or request a favor. This bonus no longer applies on checks against a person or organization once you fail a skill check to gain influence over or request a favor from that person or organization. Additionally, the DC of Sense Motive checks to get hunches about you and your apparent allies increases by 2.",
     "goal": "Achieve a position in a high social class (such as the nobility) or an esteemed military position (such as general) without any substantiated rumors impugning your reputation. If your secret is exposed, you can replace this feat with Redemption after 1 month without meeting that feat's prerequisite.",
-    "completion_benefit": "You no longer lose this feat's bonus for failing a skill check. Your Bluff checks to maintain a good reputation are always at worst unlikely (if not believable), and Bluff checks attempted by others to spoil your reputation are always at best unlikely (if not harder to believe).\n\nYour fellow knights would never let you live it down if they learned you were once a slave and are still technically a fugitive, so you seek a leadership position among the Hellknights, which would make questioning you unthinkable.\n\nYou stole the identity of a slain noble to claim the fortune you used to begin your adventuring career, rather than leaving the funds to rot in a foreign bank. Now agents or inquisitors threaten to destroy your new life, and you must gain a position of influence strong enough to order them to stop their investigations.\n\nYou struggle to put your past of piracy or other crimes behind you and seek a position of power.\n\nYou found the corpse of a dead linnorm and chose to use it to make a claim on a throne. You must present your claim and defend yourself from inevitable inquiries into the truth of your conquest.",
+    "completion_benefit": "You no longer lose this feat's bonus for failing a skill check. Your Bluff checks to maintain a good reputation are always at worst unlikely (if not believable), and Bluff checks attempted by others to spoil your reputation are always at best unlikely (if not harder to believe).\n\nQuest (Roll a 1d4)\n\nYour fellow knights would never let you live it down if they learned you were once a slave and are still technically a fugitive, so you seek a leadership position among the Hellknights, which would make questioning you unthinkable.\n\nYou stole the identity of a slain noble to claim the fortune you used to begin your adventuring career, rather than leaving the funds to rot in a foreign bank. Now agents or inquisitors threaten to destroy your new life, and you must gain a position of influence strong enough to order them to stop their investigations.\n\nYou struggle to put your past of piracy or other crimes behind you and seek a position of power.\n\nYou found the corpse of a dead linnorm and chose to use it to make a claim on a throne. You must present your claim and defend yourself from inevitable inquiries into the truth of your conquest.",
     "origin": "d20pfsrd"
   },
   {
@@ -3800,7 +3819,7 @@
         "value": 3
       }
     ],
-    "benefit": "You can apply your Strength modifier instead of your Charisma modifier to performance combat checks.\n\nIn addition, when you spend a swift action to attempt a performance combat check that was triggered by a successful bull rush or sunder combat maneuver check, you gain a +2 bonus on the performance combat check. For every 5 points by which your attack exceeded your opponent's CMD, this bonus increases by 2.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "You can apply your Strength modifier instead of your Charisma modifier to performance combat checks.\n\nIn addition, when you spend a swift action to attempt a performance combat check that was triggered by a successful bull rush or sunder combat maneuver check, you gain a +2 bonus on the performance combat check. For every 5 points by which your attack exceeded your opponent's CMD, this bonus increases by 2.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: After successfully performing a bull rush or sunder combat maneuver, you can spend up to 5 stamina points to increase the bonus on performance combat checks that you gain from Awe-Inspiring Smash by 1 per stamina point spent.",
     "origin": "d20pfsrd"
   },
@@ -5380,7 +5399,7 @@
         "value": 4
       }
     ],
-    "benefit": "When you spend a swift action to attempt a performance combat check, you can sacrifice one cartridge or an amount of black powder required for a single shot to make either a loud sound or an impressive flash. If you choose to make your weapon's report louder, you gain a +4 bonus on all Intimidate checks you attempt for 1 round. If you choose to create an impressive flash, you gain a +4 bonus on any Perform checks you attempt for 1 round.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When you spend a swift action to attempt a performance combat check, you can sacrifice one cartridge or an amount of black powder required for a single shot to make either a loud sound or an impressive flash. If you choose to make your weapon's report louder, you gain a +4 bonus on all Intimidate checks you attempt for 1 round. If you choose to create an impressive flash, you gain a +4 bonus on any Perform checks you attempt for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points when using Black Powder Spectacle in order to gain a +4 bonus on Intimidate checks and Perform checks for 1 round.",
     "origin": "d20pfsrd"
   },
@@ -5568,7 +5587,7 @@
   {
     "id": "bleeding-attack",
     "name": "Bleeding Attack",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -6791,7 +6810,7 @@
         "text": "or assassination"
       }
     ],
-    "benefit": "If you hit an opponent with both your primary weapon and your off-hand weapon as part of the same attack action, and both of those weapons are sawtooth sabres, you deal 1 point of bleed damage in addition to the normal damage dealt by these attacks.\n\nCombat Trick",
+    "benefit": "If you hit an opponent with both your primary weapon and your off-hand weapon as part of the same attack action, and both of those weapons are sawtooth sabres, you deal 1 point of bleed damage in addition to the normal damage dealt by these attacks.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points when dealing bleed damage with the Bloody Sabres feat to increase the amount of bleed damage your opponent takes by 1.",
     "origin": "d20pfsrd"
   },
@@ -7674,6 +7693,29 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "brilliant-spell-preparation",
+    "name": "Brilliant Spell Preparation",
+    "source": "Ultimate Intrigue",
+    "types": [
+      "General"
+    ],
+    "description": "You have the foresight to prepare just the right spell for the troubles you face.",
+    "prerequisites_text": "Int 13, ability to prepare 3rd-level spells.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "int",
+        "value": 13
+      },
+      {
+        "type": "other",
+        "text": "ability to prepare 3rd-level spells"
+      }
+    ],
+    "benefit": "Select one class for which you prepare spells of 3rd level or higher. Once you select a class, it can't be changed. When you prepare spells for that class, you can leave one spell slot open as a special slot. The slot must be at least 2 levels lower than the highest-level spell you can cast. You can then prepare a spell in this special open slot as a standard action instead of it taking 15 minutes.\n\nSpecial: You can take this feat multiple times. Each time you do, you can leave an additional special slot open.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "brisk-spell",
     "name": "Brisk Spell",
     "source": "Magic Tactics Toolbox",
@@ -8318,7 +8360,7 @@
         "value": 5
       }
     ],
-    "benefit": "You can spend a move action to steady your shot. When you do, you gain a +4 bonus on your next ranged attack roll before the end of your turn.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "You can spend a move action to steady your shot. When you do, you gain a +4 bonus on your next ranged attack roll before the end of your turn.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 5 stamina points to use Bullseye Shot as a swift action.",
     "origin": "d20pfsrd"
   },
@@ -8566,7 +8608,7 @@
         "text": "worship of the associated deity"
       }
     ],
-    "benefit": "When you confirm a critical hit against a creature, you can choose to forgo the effect of the critical hit and grant a critical hit to the next ally who hits the creature with a melee attack before the start of your next turn. Your attack only deals normal damage, and the next ally automatically confirms the hit as a critical.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When you confirm a critical hit against a creature, you can choose to forgo the effect of the critical hit and grant a critical hit to the next ally who hits the creature with a melee attack before the start of your next turn. Your attack only deals normal damage, and the next ally automatically confirms the hit as a critical.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you confirm a critical hit, you can spend 10 stamina points to use Butterfly's Sting without forgoing your own critical hit.",
     "origin": "d20pfsrd"
   },
@@ -8930,7 +8972,7 @@
         "value": 4
       }
     ],
-    "benefit": "If you ready a ranged attack with a firearm to attack a spellcaster when he begins casting a spell and successfully hit your opponent, you can expend 1 grit point to increase the target's concentration check DC for being injured while casting by 5.\n\nCombat Trick",
+    "benefit": "If you ready a ranged attack with a firearm to attack a spellcaster when he begins casting a spell and successfully hit your opponent, you can expend 1 grit point to increase the target's concentration check DC for being injured while casting by 5.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When using Casterbane Shot, you can spend up to 5 stamina points to increase the DC of the concentration check imposed by the feat by an amount equal to the number of stamina points spent.",
     "origin": "d20pfsrd"
   },
@@ -10150,6 +10192,38 @@
       }
     ],
     "benefit": "You can use the charge rules to make a thrown weapon attack. All the parameters of a charge apply, except that you must only move closer to your opponent, and you must end your movement within 30 feet of that opponent. If you do, you can make a single thrown weapon attack against that opponent, gaining the +2 bonus on the attack roll and taking a -2 penalty to your AC until the start of your next turn."
+  },
+  {
+    "id": "charging-stag-style",
+    "name": "Charging Stag Style",
+    "source": "Heroes of the Wild",
+    "types": [
+      "Combat",
+      "Style"
+    ],
+    "prerequisites_text": "Dex 13, Dodge, Improved Unarmed Strike, Mobility",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 13
+      },
+      {
+        "type": "feat",
+        "feat": "Dodge"
+      },
+      {
+        "type": "feat",
+        "feat": "Improved Unarmed Strike"
+      },
+      {
+        "type": "feat",
+        "feat": "Mobility"
+      }
+    ],
+    "benefit": "When using this style and not mounted, you can charge through difficult terrain and spaces containing allies. You can also make a single turn of up to 90 degrees during your charge. You must see your target at the beginning of your charge, and can make only a single attack at the end, even if you would normally be able to make multiple attacks (such as with the pounce ability).",
+    "normal": "You can't charge through allies' spaces or difficult terrain.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "charming-performance",
@@ -12169,7 +12243,7 @@
     ],
     "benefit": "You can attempt a Diplomacy check to make a request of an enemy even if he is unfriendly or hostile, but only to request a pause in combat (which requires you and your apparent allies to take no attacks or hostile actions for 1 round prior to the request) or to request that he uses only nonlethal attacks (which requires you and your apparent allies to have made no attacks or used only nonlethal attacks against him for the past 24 hours). The DC is equal to 15 + the target's CR + the target's Wisdom modifier; it is modified by any other factors that would impact a Diplomacy check to make a request.\n\nAdditionally, your allies within 30 feet who can see or hear you gain a +2 bonus on skill checks to analyze individuals while attempting to gain influence or assess an audience before a verbal duel.\n\nOnce an ally benefits from this feat, that ally can't do so again for 1 day.",
     "goal": "Thwart an appropriate number of challenging foes with dialogue, nonviolent favors, and verbal duels.",
-    "completion_benefit": "Your allies can benefit from this feat any number of times per day.\n\nYou have been sent to negotiate an alliance.\n\nYou must use speeches to put an end to crimes of the a lumber consortium.\n\nHaving witnessed the ceaseless cycle of bloodshed in multiple vicious overthrows of the government, you are determined to reform or replace a council without resorting to further violence.\n\nYou must use negotiation to bring a cult back into the fold and align the members' beliefs and actions to match those of a merciful church.",
+    "completion_benefit": "Your allies can benefit from this feat any number of times per day.\n\nQuest (Roll a 1d4)\n\nYou have been sent to negotiate an alliance.\n\nYou must use speeches to put an end to crimes of the a lumber consortium.\n\nHaving witnessed the ceaseless cycle of bloodshed in multiple vicious overthrows of the government, you are determined to reform or replace a council without resorting to further violence.\n\nYou must use negotiation to bring a cult back into the fold and align the members' beliefs and actions to match those of a merciful church.",
     "origin": "d20pfsrd"
   },
   {
@@ -12817,7 +12891,7 @@
   {
     "id": "cornugon-shield",
     "name": "Cornugon Shield",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -12840,7 +12914,7 @@
   {
     "id": "cornugon-smash",
     "name": "Cornugon Smash",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -12862,7 +12936,7 @@
   {
     "id": "cornugon-stun",
     "name": "Cornugon Stun",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -12875,6 +12949,33 @@
     ],
     "benefit": "You may use Stunning Fist when making melee attacks with special monk weapons as well as when making unarmed attacks.",
     "normal": "You can only use Stunning Fist when making an attack with an unarmed strike.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "cornugon-trip",
+    "name": "Cornugon Trip",
+    "source": "Cheliax, Empire of Devils",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Dex 15, Improved Trip, Weapon Focus (spiked chain).",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 15
+      },
+      {
+        "type": "feat",
+        "feat": "Improved Trip"
+      },
+      {
+        "type": "feat",
+        "feat": "Weapon Focus",
+        "detail": "spiked chain"
+      }
+    ],
+    "benefit": "You may throw your spiked chain (as if it were a thrown weapon with a range increment of 10 feet) and can make trip attacks when throwing it. Failing at this attack does not knock you prone.",
     "origin": "d20pfsrd"
   },
   {
@@ -13290,6 +13391,33 @@
       }
     ],
     "benefit": "You can create any construct whose prerequisites you meet. The act of animating a construct takes one day for each 1,000 gp in its market price. To create a construct, you must use up raw materials costing half of its base price, plus the full cost of the basic body created for the construct. Each construct has a special section that summarizes its costs and other prerequisites. A newly created construct has average hit points for its Hit Dice."
+  },
+  {
+    "id": "craft-cybernetics",
+    "name": "Craft Cybernetics",
+    "source": "Technology Guide",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Technologist, Heal 9 ranks, Knowledge (engineering) 9 ranks",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Technologist"
+      },
+      {
+        "type": "skill",
+        "skill": "Heal",
+        "ranks": 9
+      },
+      {
+        "type": "skill",
+        "skill": "Knowledge (engineering)",
+        "ranks": 9
+      }
+    ],
+    "benefit": "You can create cybernetic items. Creating a cybernetic item takes 1 day for every 1,000 gp in the item's price. To create the object, you must use up raw materials costing half of this total price.\n\nYou can repair a broken cybernetic item if it is one that you could make. Doing so costs half the raw materials and half the time it would take to craft that item from scratch.\n\nYou can also install a cybernetic item in a creature's body.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "craft-magic-arms-and-armor",
@@ -16465,6 +16593,24 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "dedicated-adversary",
+    "name": "Dedicated Adversary",
+    "source": "Dirty Tactics Toolbox",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "No levels in a class that has the favored enemy class feature.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "No levels in a class that has the favored enemy class feature"
+      }
+    ],
+    "benefit": "When you select this feat, choose a specific kind of creature, such as wolf, frost giant, goblin, or babau demon. You gain the ranger's favored enemy class ability against this particular type of creature with a bonus of +2.\n\nThis feat does not grant the favored enemy class feature for the purposes of prerequisites. If you later gain the favored enemy class feature, you can replace this feat with a feat for which you qualify and whose prerequisites include the favored enemy class feature.",
+    "special": "You can gain this feat multiple times. Its effects do not stack. Each time you take the feat, it applies to a different creature.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "deep-breath",
     "name": "Deep Breath",
     "source": "Aquatic Adventures",
@@ -16977,7 +17123,7 @@
         "ranks": 6
       }
     ],
-    "benefit": "You gain a +2 bonus on Knowledge (planes) checks to know the powers and abilities of demons. You gain a +2 morale bonus on all attack rolls and a +2 morale bonus on caster level checks to penetrate spell resistance made against creatures with the demon subtype you recognize as demons.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "You gain a +2 bonus on Knowledge (planes) checks to know the powers and abilities of demons. You gain a +2 morale bonus on all attack rolls and a +2 morale bonus on caster level checks to penetrate spell resistance made against creatures with the demon subtype you recognize as demons.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you successfully identify a demon using Knowledge (planes), you can spend up to 9 stamina points to increase the morale bonus on attack rolls and caster level checks from Demon Hunter by 1 per 3 stamina points spent.",
     "origin": "d20pfsrd"
   },
@@ -17354,7 +17500,7 @@
       "Combat"
     ],
     "prerequisites": [],
-    "benefit": "When no ally is within 10 feet of you and you are not receiving benefits from the aid another action, you gain a +1 morale bonus on melee attack and damage rolls.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When no ally is within 10 feet of you and you are not receiving benefits from the aid another action, you gain a +1 morale bonus on melee attack and damage rolls.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points to gain the benefits of Desperate Battler even while an ally is within 10 feet of you (but not when receiving the benefits of the aid another action).",
     "origin": "d20pfsrd"
   },
@@ -17407,7 +17553,7 @@
         "text": "worshiper of an evil deity"
       }
     ],
-    "benefit": "Whenever you confirm a critical hit against an opponent, in addition to dealing critical damage as normal, you maim your target so much that it takes 2 points of Charisma damage and becomes staggered for 1 round.\n\nCombat Trick",
+    "benefit": "Whenever you confirm a critical hit against an opponent, in addition to dealing critical damage as normal, you maim your target so much that it takes 2 points of Charisma damage and becomes staggered for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you confirm a critical hit against an opponent, you can spend 4 stamina points to increase the Charisma damage that opponent takes from Destroy Identity to 1d3+1 points.",
     "origin": "d20pfsrd"
   },
@@ -17609,6 +17755,31 @@
       }
     ],
     "benefit": "At the beginning of your turn each round, if you are within 60 feet of an outsider with the evil subtype, you instinctively sense that something unholy is near. You may experience this sense as an unpleasant smell or taste (such as sulfur), as gooseflesh on your arms or neck, or as an ineffable sense of dread. This sense does not alert you to the direction of the outsider. Anything that can thwart or mislead detect evil can likewise block this sense.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "devils-foe",
+    "name": "Devil's Foe",
+    "source": "Andoran, Spirit of Liberty",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Face 10 different devils in combat and take damage or suffer some other sort of injury from five or more attacks made by each one without falling unconscious, fleeing, or otherwise becoming unable to strike back at them.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Face 10 different devils in combat and take damage or suffer some other sort of injury from five or more attacks made by each one without falling unconscious"
+      },
+      {
+        "type": "other",
+        "text": "fleeing"
+      },
+      {
+        "type": "other",
+        "text": "or otherwise becoming unable to strike back at them"
+      }
+    ],
+    "benefit": "Your attacks count as Good-aligned for the purposes of bypassing the damage reduction of devils.",
     "origin": "d20pfsrd"
   },
   {
@@ -20114,6 +20285,29 @@
     "special": "Kobold sorcerers with either the Draconic or Kobold bloodline can use their Charisma modifier instead of their Constitution to determine the number of times per day they can use this breath weapon and the DC of this breath weapon."
   },
   {
+    "id": "draconic-defender",
+    "name": "Draconic Defender",
+    "source": "Dragons Revisited",
+    "types": [
+      "General"
+    ],
+    "description": "You have a knack for placing yourself between your enemies and those they wish to harm.",
+    "prerequisites_text": "Con 17, Toughness",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "con",
+        "value": 17
+      },
+      {
+        "type": "feat",
+        "feat": "Toughness"
+      }
+    ],
+    "benefit": "During your action, designate an ally within your reach. When you fight defensively or use Combat Expertise, your ally gains a natural armor bonus to AC equal to the dodge bonus you gain from fighting defensively or Combat Expertise. You can select a new ally on any action. Allies who move out of your reach lose this natural armor bonus.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "draconic-discipline",
     "name": "Draconic Discipline",
     "source": "Dragons Revisited",
@@ -21139,7 +21333,7 @@
         "detail": "dueling sword"
       }
     ],
-    "benefit": "You gain a +2 morale bonus on all Intimidate checks to demoralize opponents, and the DC of any attempt to demoralize you increases by 2. When you're participating in a duel, these bonuses increase to +4.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "You gain a +2 morale bonus on all Intimidate checks to demoralize opponents, and the DC of any attempt to demoralize you increases by 2. When you're participating in a duel, these bonuses increase to +4.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: During any combat that is not a duel, you can spend 1 stamina point at the start of your turn to treat the combat as a duel until the start of your next turn for the purpose of gaining the benefits of the Dueling Discipline feat.",
     "origin": "d20pfsrd"
   },
@@ -21325,7 +21519,7 @@
         "detail": "falcata"
       }
     ],
-    "benefit": "When fighting with the falcata and buckler, your shield bonus to AC increases by +1 and you gain a +2 bonus on Acrobatics checks.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When fighting with the falcata and buckler, your shield bonus to AC increases by +1 and you gain a +2 bonus on Acrobatics checks.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you make an attack with a falcata using two hands while wearing a buckler, you can spend 3 stamina points to ignore the -1 penalty on attack rolls for using your shield arm to wield a weapon while wearing a buckler and to retain the buckler's shield bonus for 1 round.",
     "origin": "d20pfsrd"
   },
@@ -21362,7 +21556,7 @@
         "value": 5
       }
     ],
-    "benefit": "When you use a dueling sword to deal damage to a shaken, frightened, or panicked foe, you can add your Dexterity bonus to damage rolls instead of your Strength bonus. If you can already add your Dexterity bonus to damage rolls, you instead gain a +1 competence bonus on damage rolls made with a dueling sword.\n\nWhen you attempt a dueling parry during a duel, the penalty on your attack roll to parry is reduced from -5 to -3. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When you use a dueling sword to deal damage to a shaken, frightened, or panicked foe, you can add your Dexterity bonus to damage rolls instead of your Strength bonus. If you can already add your Dexterity bonus to damage rolls, you instead gain a +1 competence bonus on damage rolls made with a dueling sword.\n\nWhen you attempt a dueling parry during a duel, the penalty on your attack roll to parry is reduced from -5 to -3. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you hit a foe with a melee attack made using a dueling sword, you can spend 4 stamina points to treat that foe as being shaken for the purpose of gaining a bonus from Duelist of the Roaring Falls until the start of your next turn.",
     "origin": "d20pfsrd"
   },
@@ -21399,7 +21593,7 @@
         "value": 5
       }
     ],
-    "benefit": "When attempting to bull rush or reposition a foe, you gain a +1 insight bonus on the combat maneuver check and a +4 dodge bonus to your AC against attacks of opportunity you provoke. You also gain a +1 insight bonus to your CMD against bull rush and reposition attempts. When you attempt a dueling dodge during a duel, your bonus to AC increases to +6. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When attempting to bull rush or reposition a foe, you gain a +1 insight bonus on the combat maneuver check and a +4 dodge bonus to your AC against attacks of opportunity you provoke. You also gain a +1 insight bonus to your CMD against bull rush and reposition attempts. When you attempt a dueling dodge during a duel, your bonus to AC increases to +6. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 5 stamina points when you attempt a combat maneuver check with a dueling sword, you gain a +4 bonus to your AC against attacks made by that target until the beginning of your next turn.",
     "origin": "d20pfsrd"
   },
@@ -23583,6 +23777,28 @@
     "benefit": "A swift action, you can expend one use of channel energy to grant your weapon attacks a bonus on damage rolls equal to twice the number of dice rolled for your channel energy. This additional damage is of an energy type determined by your domain or blessing: acid (Earth), cold (Water), electricity (Air), or fire (Fire). If you have more than one of those domains or blessings, you must choose one of those damage types when you use this ability. This effect lasts for your next three weapon attacks or until the end of combat, whichever comes first."
   },
   {
+    "id": "energy-mastery",
+    "name": "Energy Mastery",
+    "source": "Weapon Master's Handbook",
+    "types": [
+      "Item Mastery"
+    ],
+    "prerequisites_text": "Use Magic Device 1 rank, base Fortitude save bonus +4.",
+    "prerequisites": [
+      {
+        "type": "skill",
+        "skill": "Use Magic Device",
+        "ranks": 1
+      },
+      {
+        "type": "other",
+        "text": "base Fortitude save bonus +4"
+      }
+    ],
+    "benefit": "You can cause an item that has a 1st level or higher evocation spell with the acid, cold, electricity, or fire descriptor in its construction requirements to cast burning hands. The spell has the energy descriptor from the appropriate requirement spell and deals that type of damage instead of fire damage.\n\nYou can use this feat once per day, plus an additional time per day at base Fortitude save bonus +6, +8, +10, and +12.\n\nYou can spend two daily uses of this feat to cast lighting bolt this way if the spell listed in the item's construction requirements is at least 3rd level (still dealing a type of energy damage appropriate to that spell).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "enfilading-fire",
     "name": "Enfilading Fire",
     "source": "Ultimate Combat",
@@ -24113,6 +24329,29 @@
     ],
     "benefit": "Your attacks deal an additional 1d6 points of precision damage against targets of your hatred racial trait. This bonus damage stacks with other sources of precision damage, such as sneak attack. If your hatred racial trait applies to two creature types or subtypes, you must choose one of them-this feat applies to targets of that type (and subtype, if applicable). Once made, this choice cannot be changed.",
     "special": "The Knowledge skill used to qualify for this feat must be appropriate for identifying creatures of the chosen type.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "evidence-forger",
+    "name": "Evidence Forger",
+    "source": "Antihero's Handbook",
+    "types": [
+      "General"
+    ],
+    "description": "You don't care about truth; you care only that the \"facts\" support your agenda, and you are adept at making such falsehoods seem true.",
+    "prerequisites_text": "Manifestation level 3rd, evidence eraser*.",
+    "prerequisites": [
+      {
+        "type": "class_level",
+        "class": "manifestation",
+        "value": 3
+      },
+      {
+        "type": "other",
+        "text": "evidence eraser*"
+      }
+    ],
+    "benefit": "When attempting a Linguistics or similar check to create a forged piece of evidence, you can roll twice and use the higher result. You can use this gift a number of times per week equal to your manifestation level.\n\nStain: You can no longer discern between reality and a plausible lie. Whenever you attempt either a Will saving throw to disbelieve an illusion or an opposed Sense Motive check, you roll twice and take the lower result.",
     "origin": "d20pfsrd"
   },
   {
@@ -26486,7 +26725,7 @@
         "value": 8
       }
     ],
-    "benefit": "When attacking a creature denied its Dexterity bonus to AC because of your successful feint, you increase the threat range of your dueling sword by 1 (typically to 18-20/x2), and gain a +2 bonus on attack rolls to confirm critical hits. After you make a dueling dodge or succeed at a dueling parry during a duel, you can make an attack of opportunity against the foe who attacked you if that foe is shaken, frightened, or panicked. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).\n\nCombat Trick",
+    "benefit": "When attacking a creature denied its Dexterity bonus to AC because of your successful feint, you increase the threat range of your dueling sword by 1 (typically to 18-20/x2), and gain a +2 bonus on attack rolls to confirm critical hits. After you make a dueling dodge or succeed at a dueling parry during a duel, you can make an attack of opportunity against the foe who attacked you if that foe is shaken, frightened, or panicked. To gain these benefits, you must be wielding only a dueling sword (not using a shield, an off-hand weapon, armor spikes, unarmed strikes, or natural weapons).",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 4 stamina points, you gain the ability to attempt a dueling dodge or a dueling parry against attacks made by a shaken, frightened, or panicked opponent, even if you aren't participating in a duel.",
     "origin": "d20pfsrd"
   },
@@ -28741,7 +28980,7 @@
         "value": 15
       }
     ],
-    "benefit": "As long as you hold your clan, house, or party's flag, members of that allegiance within 30 feet who can see the flag (including yourself ) gain a +1 morale bonus on attack rolls, weapon damage rolls, and saving throws against fear and charm effects. You must hold the flag in one hand in order to grant this bonus. If the standard is taken by the enemy or destroyed, this bonus becomes a penalty, affecting all creatures that the bonus previously affected for 1 hour (or until you reclaim the lost flag).\n\nFlag\n\nA flag is a colorful banner that bears the heraldry or symbol of a nation or organization. A character with the Flagbearer feat who bears a flag can grant additional combat bonuses to nearby allies. Carrying a flag in combat requires a free hand.\n\nCost: 10 gp Weight 3 lbs.\n\nCombat Trick",
+    "benefit": "As long as you hold your clan, house, or party's flag, members of that allegiance within 30 feet who can see the flag (including yourself ) gain a +1 morale bonus on attack rolls, weapon damage rolls, and saving throws against fear and charm effects. You must hold the flag in one hand in order to grant this bonus. If the standard is taken by the enemy or destroyed, this bonus becomes a penalty, affecting all creatures that the bonus previously affected for 1 hour (or until you reclaim the lost flag).\n\nFlag\n\nA flag is a colorful banner that bears the heraldry or symbol of a nation or organization. A character with the Flagbearer feat who bears a flag can grant additional combat bonuses to nearby allies. Carrying a flag in combat requires a free hand.\n\nCost: 10 gp Weight 3 lbs.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: Whenever you can see your flag but aren't holding it, you can spend 1 stamina point to gain the benefits of Flagbearer for 1 minute as if you were holding it.",
     "origin": "d20pfsrd"
   },
@@ -29264,7 +29503,7 @@
     ],
     "description": "Familiarity with the military traditions of your homeland inspires uncommon valor in you.",
     "prerequisites": [],
-    "benefit": "You gain a +2 bonus on all saving throws against fear effects. Whenever a fear effect targets you and fails to affect you (either because of a successful saving throw or because of immunity to fear), you gain a +2 morale bonus on attack rolls, weapon damage rolls, and CMB checks against the creature that attempted to use the fear affect on you for 1 round.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "You gain a +2 bonus on all saving throws against fear effects. Whenever a fear effect targets you and fails to affect you (either because of a successful saving throw or because of immunity to fear), you gain a +2 morale bonus on attack rolls, weapon damage rolls, and CMB checks against the creature that attempted to use the fear affect on you for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points in order to gain the benefit of Focused Discipline for 1 round as if you had been targeted by a fear effect that failed to affect you.",
     "origin": "d20pfsrd"
   },
@@ -29784,6 +30023,25 @@
     ],
     "prerequisites": [],
     "benefit": "If you damage a foe that is of a larger size category than you with a weapon that does piercing or slashing damage, you can attempt to damage the creature's feet in a way that impedes its movement. Attacking a foe in this way is a standard action-you cannot use Footslasher as part of a full-attack action. When you use Footslasher, you take a -2 penalty on your attack roll, but if you hit and deal at least 1 point of damage to the target, it is affected as if by caltrops-its speed is reduced by half. This penalty lasts for 24 hours, or until the creature is successfully treated with a DC 15 Heal check or receives at least 1 point of magical healing. Footslasher does not stack with itself-once a foe has been wounded by this attack, its speed cannot be further reduced by additional attacks (or by damage from caltrops).",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "forbidden-magic",
+    "name": "Forbidden Magic",
+    "source": "Antihero's Handbook",
+    "types": [
+      "General"
+    ],
+    "description": "You find your magic to be insufficient for reaching your goal, so you begin to draw from darker sources.",
+    "prerequisites_text": "Manifestation level 3rd.",
+    "prerequisites": [
+      {
+        "type": "class_level",
+        "class": "manifestation",
+        "value": 3
+      }
+    ],
+    "benefit": "When you are the target of a damaging or healing spell, before the damage or healing is rolled, you can choose to take one fewer die of damage (for a damaging spell) or add one die of healing (for a healing spell).\n\nStain: Each time you use forbidden magic's gift, you must succeed at a Will saving throw (DC = 15 + your manifestation level) or you progress to the next corruption stage.",
     "origin": "d20pfsrd"
   },
   {
@@ -30616,7 +30874,7 @@
   {
     "id": "furys-fall",
     "name": "Fury's Fall",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -30633,7 +30891,7 @@
   {
     "id": "furys-snare",
     "name": "Fury's Snare",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -31191,6 +31449,23 @@
       }
     ],
     "benefit": "You can read the future by cutting open your abdomen and pulling out your entrails. This is a full-round action that deals 6d6 points of damage to you. This functions as the divination spell, using your Hit Dice as the caster level. You can perform this ability no more than once per day.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "gifted-mesmerist",
+    "name": "Gifted Mesmerist",
+    "source": "Legacy of Fire Player's Guide",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Successfully affect 25 different targets with charm or compulsion spells.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Successfully affect 25 different targets with charm or compulsion spells"
+      }
+    ],
+    "benefit": "Choose any one charm or compulsion spell you can cast. You can use this spell once per day as a spell-like ability. Your caster level and DC for this spell-like ability is the same as if you were casting the spell. Each time you gain a level in a spellcasting class, you may replace your current charm or compulsion spell-like ability with a new one.",
     "origin": "d20pfsrd"
   },
   {
@@ -32548,6 +32823,29 @@
     "benefit": "Before making any melee attacks on your turn, you can use a swift action to expend one daily use of your channel energy class feature. The dice from your channel energy feature form a pool of damage dice you can access to further damage creatures normally harmed by the energy you are channeling-undead for positive energy, living creatures for negative energy. Prior to making each melee attack, allocate dice from the pool to be used as extra damage dice if you hit. Your target can make a Will save, as normal, to halve this extra damage. This extra damage is not multiplied when you score a critical hit. If you miss, the extra damage dice remain in your pool, but any dice left unexpended at the end of your turn are wasted."
   },
   {
+    "id": "greater-clandestine-dealings",
+    "name": "Greater Clandestine Dealings",
+    "source": "Antihero's Handbook",
+    "types": [
+      "General"
+    ],
+    "description": "Fiends have taken notice of your wavering beliefs, and they seek to entice you.",
+    "prerequisites_text": "Manifestation level 3rd, clandestine dealings*.",
+    "prerequisites": [
+      {
+        "type": "class_level",
+        "class": "manifestation",
+        "value": 3
+      },
+      {
+        "type": "other",
+        "text": "clandestine dealings*"
+      }
+    ],
+    "benefit": "The benefits of clandestine dealings also apply to evil outsiders, regardless of their initial attitude. Furthermore, such outsiders are always willing to offer bargains, whether they are encountered normally or called by planar binding or similar methods.\n\nStain: You count as evil for the purposes of spells that have alignment-based effects.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "greater-cloud-invocation",
     "name": "Greater Cloud Invocation",
     "source": "Heroes from the Fringe",
@@ -33537,8 +33835,8 @@
     "prerequisites_text": "Stylized Spell, Bluff 10 ranks, Spellcraft 10 ranks.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Stylized Spell"
+        "type": "feat",
+        "feat": "Stylized Spell"
       },
       {
         "type": "skill",
@@ -34542,9 +34840,39 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "hamatula-grasp",
+    "name": "Hamatula Grasp",
+    "source": "Cheliax, Empire of Devils",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Hamatula Strike, Improved Grapple, Strength 13, Base Attack Bonus +9.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Hamatula Strike"
+      },
+      {
+        "type": "feat",
+        "feat": "Improved Grapple"
+      },
+      {
+        "type": "ability",
+        "ability": "str",
+        "value": 13
+      },
+      {
+        "type": "bab",
+        "value": 9
+      }
+    ],
+    "benefit": "When attacking an impaled opponent (see Hamatula Strike) with the weapon that impales them, you only suffer a -2 penalty to your grapple check. If the check succeeds, you deal an extra 1d6 damage.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "hamatula-strike",
     "name": "Hamatula Strike",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -34590,7 +34918,7 @@
       }
     ],
     "benefit": "Your unarmed attacks can deal either bludgeoning or piercing damage. You decide which type of damage you deal whenever you attack a foe, but you may only choose one type at a time. If you critically hit a foe with your unarmed strike while doing piercing damage, the additional pain caused by the strike causes the foe to become sickened for 1 round (or staggered for 1 round if the target is already sickened). Multiple critical hits in a round against a single foe do not increase the duration of the sickened or staggered condition.",
-    "special": "Hamatulatsu may be selected as a substitute bonus feat at 6th level by a monk even if the monk does not otherwise meet the prerequisites. This fighting style is normally only taught to women of a specific fighting school.\n\nCombat Trick",
+    "special": "Hamatulatsu may be selected as a substitute bonus feat at 6th level by a monk even if the monk does not otherwise meet the prerequisites. This fighting style is normally only taught to women of a specific fighting school.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 5 stamina points, you can treat a hit with an unarmed strike as a critical hit for the purpose of determining the benefits that you gain from Hamatulatsu.",
     "origin": "d20pfsrd"
   },
@@ -35378,6 +35706,57 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "hellcat-pounce",
+    "name": "Hellcat Pounce",
+    "source": "Cheliax, Empire of Devils",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Hellcat Stealth, Skill Focus (Stealth), sneak attack +2d6.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Hellcat Stealth"
+      },
+      {
+        "type": "feat",
+        "feat": "Skill Focus",
+        "detail": "Stealth"
+      },
+      {
+        "type": "other",
+        "text": "sneak attack +2d6"
+      }
+    ],
+    "benefit": "Whenever you attack and damage an opponent in the surprise round, you may immediately make a second attack against the same opponent using the same attack bonus. The target is not considered flat-footed against this second attack.",
+    "special": "This ability only functions when carrying a light load or less.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "hellcat-stealth",
+    "name": "Hellcat Stealth",
+    "source": "Cheliax, Empire of Devils",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Skill Focus (Stealth), Stealth 6 ranks.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Skill Focus",
+        "detail": "Stealth"
+      },
+      {
+        "type": "skill",
+        "skill": "Stealth",
+        "ranks": 6
+      }
+    ],
+    "benefit": "You may make Stealth checks in normal or bright light even when observed, but at a -10 penalty.",
+    "normal": "You cannot make Stealth checks while observed.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "helpless-prisoner",
     "name": "Helpless Prisoner",
     "source": "Gnomes of Golarion",
@@ -35550,7 +35929,7 @@
         "text": "worshiper of an empyreal lord"
       }
     ],
-    "benefit": "Once per day, you can move up to your speed as an immediate action, but you must end this movement adjacent to an opponent who is about to make an attack against an ally. As long as you are visible to the opponent you moved next to, that opponent takes a -2 penalty on the attack roll to which you moved in response.\n\nCombat Trick",
+    "benefit": "Once per day, you can move up to your speed as an immediate action, but you must end this movement adjacent to an opponent who is about to make an attack against an ally. As long as you are visible to the opponent you moved next to, that opponent takes a -2 penalty on the attack roll to which you moved in response.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 4 stamina points, you can use this feat an additional time per day.",
     "origin": "d20pfsrd"
   },
@@ -40297,7 +40676,7 @@
     ],
     "benefit": "Once per day, you can choose to take the maximum possible weapon damage die roll rather than rolling when you hit a foe that is unaware of you or considers you an ally.\n\nBonus dice, including from sneak attack, surprise attack, and Vital Strike, are rolled normally.",
     "goal": "Decisively defeat or slay the offender without killing any innocents in the process. You can complete the goal after killing innocents if you receive an atonement spell.",
-    "completion_benefit": "You can use this feat's benefit once per combat.\n\nA vigilante down one of your family members for a crime your relative did not commit, and you must bring that vigilante to justice.\n\nYou must hunt down the thugs who defiled sacred elven ruins.\n\nBecause your home lacks a strong military force keeping order, it falls to you to put an end to a serial criminal who preyed upon your friends or family.\n\nThe slave trade has ruined countless lives, and you are determined to seek out the grand slavemaster kingpin and eliminate him.",
+    "completion_benefit": "You can use this feat's benefit once per combat.\n\nQuest (Roll a 1d4)\n\nA vigilante down one of your family members for a crime your relative did not commit, and you must bring that vigilante to justice.\n\nYou must hunt down the thugs who defiled sacred elven ruins.\n\nBecause your home lacks a strong military force keeping order, it falls to you to put an end to a serial criminal who preyed upon your friends or family.\n\nThe slave trade has ruined countless lives, and you are determined to seek out the grand slavemaster kingpin and eliminate him.",
     "origin": "d20pfsrd"
   },
   {
@@ -40355,7 +40734,7 @@
     ],
     "benefit": "Once per day when you succeed at a saving throw to negate a divination, you learn what the divination would have revealed and can spend an immediate action to cause the divination to return appropriate false information you imagine that would fit with your cover identity.",
     "goal": "Thwart the organization you have infiltrated, defeating or turning to your cause an appropriate number of challenging foes in the process.",
-    "completion_benefit": "Whenever a spell or spell-like ability would reveal information about you, you can attempt a Will saving throw. If your saving throw is successful, the spell reveals nothing about you. You can use this feat's benefits to instead give false information, as detailed above.\n\nYou must use the rigorous training you received from skilled inquisitors to join and thwart your foes.\n\nA conservatory gave you the identity of a distant relative of a rival information broker so you could erase the broker's records and eliminate important witnesses of their psychic spying.\n\nAlthough you were sent as a spy by a ninja clan, you came to think of your targets as your new kin. When you were caught, you managed to convince your former targets to keep you on as a double agent, and when you were called back to report, you went as a spy for your new home.\n\nThe church assigned you to infiltrate the ranks of a secret cult.",
+    "completion_benefit": "Whenever a spell or spell-like ability would reveal information about you, you can attempt a Will saving throw. If your saving throw is successful, the spell reveals nothing about you. You can use this feat's benefits to instead give false information, as detailed above.\n\nQuest (Roll a 1d4)\n\nYou must use the rigorous training you received from skilled inquisitors to join and thwart your foes.\n\nA conservatory gave you the identity of a distant relative of a rival information broker so you could erase the broker's records and eliminate important witnesses of their psychic spying.\n\nAlthough you were sent as a spy by a ninja clan, you came to think of your targets as your new kin. When you were caught, you managed to convince your former targets to keep you on as a double agent, and when you were called back to report, you went as a spy for your new home.\n\nThe church assigned you to infiltrate the ranks of a secret cult.",
     "origin": "d20pfsrd"
   },
   {
@@ -40568,6 +40947,28 @@
     "benefit": "You gain a +2 bonus on Intimidate checks. If you have 10 or more ranks in Intimidate, this bonus increases to +4. Each time you slay an intelligent creature, you gain a +1 bonus on attack rolls and caster level checks for 1 minute (this bonus does not stack with itself).",
     "goal": "Slay at least 200 more intelligent noncombatants, then slay a challenging foe that seeks to either bring you to justice for your crimes or usurp your position.",
     "completion_benefit": "Any shaken creature takes double the normal penalties when attacking you, making saves against your abilities, or resolving skill checks with you as a target."
+  },
+  {
+    "id": "inscribe-magical-tattoo",
+    "name": "Inscribe Magical Tattoo",
+    "source": "Inner Sea Magic",
+    "types": [
+      "Item Creation"
+    ],
+    "description": "You can craft magical tattoos.",
+    "prerequisites_text": "Craft (calligraphy, paintings, or tattoos) 5 ranks, caster level 5th.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Craft (calligraphy, paintings, or tattoos) 5 ranks"
+      },
+      {
+        "type": "caster_level",
+        "value": 5
+      }
+    ],
+    "benefit": "You can create magical tattoos, magic items inked directly into the flesh of a willing or helpless creature. Both you and the recipient of the tattoo (if the recipient is not yourself) must be present during the entire tattooing process. Magic tattoos must be placed on a part of the body normally able to hold a magic item slot, but they do not count against or interfere with magic items worn on those slots. A single slot can only hold one magical tattoo (non-magical tattoos and tattoos acquired from the tattooed sorcerer archetype do not count against this limit). Tattoos may be inscribed on the following slots: belt, body, chest, feet, hands, head, neck, shoulder, ring (up to two), or wrist. They cannot be inscribed on armor, eye, headband, or shield slots.\n\nMagical tattoos are difficult to destroy, though they count as magic items for the purposes of dispel magic. The spell erase can permanently destroy a magical tattoo, but the bearer of the tattoo can resist the spell with a Will save, in addition to the caster needing to make a successful caster level check to erase the tattoo. Physically removing a magical tattoo with a sharp instrument or defacing it with fire or acid can destroy it as well. Doing so is a full-round action that not only requires the target to be willing or helpless, but also provokes attacks of opportunity. At least 2 points of damage per caster level of the tattoo must be dealt to destroy a magical tattoo in this manner.\n\nMagical tattoos follow the rules for magic item creation as though they were wondrous items, except that they can use the Craft (calligraphy, paintings, tattoos) skill. New magical tattoos can be researched and designed using the guidelines for pricing new magic items. Magical tattoos are treated as slotless magical items for pricing purposes.\n\nTattoo Magic\n\nTattoo magic binds magic into intricate patterns and sometimes into sentient art (see tattooed sorcerer archetype). Yet the wonders of tattoo magic are not limited to sorcerers-any spellcaster can craft magical tattoos, given the proper training.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "inscribe-rune-item-creation",
@@ -45618,7 +46019,7 @@
     ],
     "benefit": "Select a class feature from the following list: one bloodline power, eidolon evolutions, one revelation, phantom abilities, spirit animal, or witch's familiar. The feature must be from a class you have at least 1 level in, and you must have the class feature. You can treat either your class level as being 1 higher, or your Intelligence, Wisdom, or Charisma score as 2 higher, for the purpose of calculating the effect of the selected power. This impacts only the calculations of your existing powers that are based on class level or the appropriate ability score.\n\nIt does not grant you early access to abilities gained at higher levels.",
     "goal": "Learn and verify the chosen magic secret for your family, defeating a challenging foe in the process.",
-    "completion_benefit": "Select one Knowledge skill or the Use Magic Device skill. This is now a class skill for you.\n\nYou clearly remember briefly having a baby sister, but your family insists she never existed and threatens to cut you off if you do not stop inquiring. Your only clues are your aberrant magical abilities and recurring nightmares of fish-men walking under the surface of the nearby lake.\n\nYour eidolon, familiar, or phantom came to you in fulfillment of a bargain it cannot remember and that cannot be revealed to any other mortal lest it come undone, so you quest secretly for its origin.\n\nWithout seeking it out yourself, you manifested a touch of the divine. You yearn to discover its origin without being imprisoned or executed.\n\nYour family's draconic bloodline is secretly said to be linked distantly to a vanished royal house. You seek to learn why you were spared without drawing the attention of the many houses intent on usurping the throne.",
+    "completion_benefit": "Select one Knowledge skill or the Use Magic Device skill. This is now a class skill for you.\n\nQuest (Roll a 1d4)\n\nYou clearly remember briefly having a baby sister, but your family insists she never existed and threatens to cut you off if you do not stop inquiring. Your only clues are your aberrant magical abilities and recurring nightmares of fish-men walking under the surface of the nearby lake.\n\nYour eidolon, familiar, or phantom came to you in fulfillment of a bargain it cannot remember and that cannot be revealed to any other mortal lest it come undone, so you quest secretly for its origin.\n\nWithout seeking it out yourself, you manifested a touch of the divine. You yearn to discover its origin without being imprisoned or executed.\n\nYour family's draconic bloodline is secretly said to be linked distantly to a vanished royal house. You seek to learn why you were spared without drawing the attention of the many houses intent on usurping the throne.",
     "origin": "d20pfsrd"
   },
   {
@@ -47005,6 +47406,27 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "measure-foe",
+    "name": "Measure Foe",
+    "source": "Ultimate Intrigue",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Street Smarts, base attack bonus +1.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Street Smarts"
+      },
+      {
+        "type": "bab",
+        "value": 1
+      }
+    ],
+    "benefit": "You can attempt a Sense Motive check as a free action to deduce a foe's martial training after observing the foe's movements for at least 1 minute or observing the foe's attacks for at least 2 rounds. You take a -10 penalty on your check if you are observing movements, rather than attacks. The DC equals 20 + the creature's base attack bonus or 10 + the creature's Bluff or Disguise modifier, whichever is higher.\n\nIf you succeed, you learn the foe's base attack bonus and one combat feat it has, and you learn an additional combat feat it has for every 5 points by which you exceed the DC.\n\nYou also gain a +1 insight bonus on attack rolls against that foe and to your AC against that foe until the foe gains a level or otherwise improves its abilities. If you fail this check against a particular foe, you can't try again against that foe until you gain more ranks in Sense Motive.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "measured-response",
     "name": "Measured Response",
     "source": "Inner Sea Gods",
@@ -47023,7 +47445,7 @@
         "text": "worshiper of the associated deity"
       }
     ],
-    "benefit": "When you hit an opponent with a melee or ranged weapon attack, you may choose to deal average damage (rounded down), as if you had rolled exactly the average amount on the damage die or dice. You add your damage bonuses and penalties as normal.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When you hit an opponent with a melee or ranged weapon attack, you may choose to deal average damage (rounded down), as if you had rolled exactly the average amount on the damage die or dice. You add your damage bonuses and penalties as normal.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 5 stamina points before making a melee or ranged attack with Measured Response to treat the attack roll's result as a 10.",
     "origin": "d20pfsrd"
   },
@@ -50551,7 +50973,7 @@
         "text": "must be taken at 1st level"
       }
     ],
-    "benefit": "You gain a +2 bonus on all Knowledge (nobility) checks, and that chosen Knowledge skill is always considered a class skill for you.\n\nWhen you select this feat, choose one of the benefits listed below that matches the flavor of your noble family. Work with your GM to ensure that your choice is appropriate.\n\nAdditional options\n\nSource PPC:HotHC",
+    "benefit": "You gain a +2 bonus on all Knowledge (nobility) checks, and that chosen Knowledge skill is always considered a class skill for you.\n\nWhen you select this feat, choose one of the benefits listed below that matches the flavor of your noble family. Work with your GM to ensure that your choice is appropriate.\n\nAdditional options",
     "origin": "d20pfsrd"
   },
   {
@@ -51575,14 +51997,14 @@
         "feature": "favored enemy"
       }
     ],
-    "benefit": "When you spend a swift action to attempt a performance combat check, you may add your favored enemy bonus to the check if you're fighting a favored enemy.\n\nCombat Trick",
+    "benefit": "When you spend a swift action to attempt a performance combat check, you may add your favored enemy bonus to the check if you're fighting a favored enemy.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points to select another type of favored enemy (and subtype if humanoid or outsider is chosen). For the purposes of Ostentatious Weakness, that type counts as having been chosen with the favored enemy class feature, with a bonus equal to your highest favored enemy bonus.",
     "origin": "d20pfsrd"
   },
   {
     "id": "osyluth-guile",
     "name": "Osyluth Guile",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "types": [
       "Combat"
     ],
@@ -52086,6 +52508,25 @@
     "prerequisites": [],
     "benefit": "You are considered to be flanking an opponent if at least one ally who also has this feat is threatening that opponent and the opponent is at least two size categories larger than the larger of you or your ally, regardless of your actual positioning.",
     "normal": "You must be positioned opposite an ally to flank an opponent.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "overwhelming-hate",
+    "name": "Overwhelming Hate",
+    "source": "Antihero's Handbook",
+    "types": [
+      "General"
+    ],
+    "description": "You cannot abide those who would oppose your goals-the very thought makes your blood boil.",
+    "prerequisites_text": "Manifestation level 6th.",
+    "prerequisites": [
+      {
+        "type": "class_level",
+        "class": "manifestation",
+        "value": 6
+      }
+    ],
+    "benefit": "Once per day, you can declare an enemy to be a threat to your goal, allowing you to add your manifestation level as a bonus on damage rolls against that enemy. At manifestation level 8th, this extra damage is doubled.\n\nStain: When you encounter a significant setback in reaching your goal (as determined by the GM), you must attempt a Will saving throw (DC = 15 + your manifestation level). On a failure, you attempt to take revenge on the party you consider responsible within the next few days, and your corruption progresses to the next stage.",
     "origin": "d20pfsrd"
   },
   {
@@ -53080,7 +53521,7 @@
       }
     ],
     "benefit": "When you take this feat, choose one of the following houses of combat styles; once this decision has been made it cannot be changed. While using this style, you gain a type of energy resistance based on the house you have chosen.\n\nStudents of iron gain acid resistance 5.\n\nStudents of flame gain fire resistance 5.\n\nStudents of wind gain electricity resistance 5.\n\nIf you have energy resistance from a racial trait or class feature, the energy resistance gained from this style stacks. Additionally, you gain a ki pool that you can use to activate abilities of your chosen House of Perfection style. Your pool contains 1 ki point at 1st level and increases by 1 point every 4 levels thereafter. If you have a ki pool from another source, you do not gain additional ki points from this feat.",
-    "special": "You may select Perfect Style multiple times. Each time you do so, you must select a different house to belong to.\n\nCombat Trick\n\nSource PPC:WMH",
+    "special": "You may select Perfect Style multiple times. Each time you do so, you must select a different house to belong to.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend up to 5 stamina points to increase the resistance granted to you by Perfect Style by 2 per stamina point spent.",
     "origin": "d20pfsrd"
   },
@@ -57101,6 +57542,32 @@
     "benefit": "Whenever you use Greater Grapple to successfully maintain a grapple as a move action, you can then spend a swift action to make a grapple combat maneuver check."
   },
   {
+    "id": "rapid-recovery",
+    "name": "Rapid Recovery",
+    "source": "People of the Stars",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Con 13, Rapid Repair, nanite surge racial trait.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "con",
+        "value": 13
+      },
+      {
+        "type": "feat",
+        "feat": "Rapid Repair"
+      },
+      {
+        "type": "other",
+        "text": "nanite surge racial trait"
+      }
+    ],
+    "benefit": "When you heal damage using Rapid Repair, you remove any and all of the following conditions: blinded, confused, dazzled, deafened, shaken, sickened, and staggered. You cannot cure blindness or deafness caused by loss of sensory organs.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "rapid-reload",
     "name": "Rapid Reload",
     "source": "Ultimate Combat",
@@ -57902,7 +58369,7 @@
         "feat": "Precise Shot"
       }
     ],
-    "benefit": "As long as you have at least 1 grit point, after an ally has made a ranged attack roll but before the results of the roll have been revealed, you can fire a loaded firearm at the volley as it moves toward its target, redirecting its path. Make an attack roll using your highest attack bonus, and use your result in place of your ally's original attack roll. On a successful hit, your ally's attack deals damage as normal. You may perform this action a number of times per round up to your Wisdom bonus (minimum 1).\n\nCombat Trick",
+    "benefit": "As long as you have at least 1 grit point, after an ally has made a ranged attack roll but before the results of the roll have been revealed, you can fire a loaded firearm at the volley as it moves toward its target, redirecting its path. Make an attack roll using your highest attack bonus, and use your result in place of your ally's original attack roll. On a successful hit, your ally's attack deals damage as normal. You may perform this action a number of times per round up to your Wisdom bonus (minimum 1).",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 4 stamina points, you can use this feat an additional time per round.",
     "origin": "d20pfsrd"
   },
@@ -59152,7 +59619,7 @@
         "feat": "Improved Trip"
       }
     ],
-    "benefit": "When you succeed at a trip combat maneuver, you may automatically make a drag combat maneuver against your tripped target as a swift action. Your base attack bonus for the drag check is the same as the base attack bonus you used for the trip check. The drag attempt provokes attacks of opportunity as normal.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "When you succeed at a trip combat maneuver, you may automatically make a drag combat maneuver against your tripped target as a swift action. Your base attack bonus for the drag check is the same as the base attack bonus you used for the trip check. The drag attempt provokes attacks of opportunity as normal.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 4 stamina points, you can attempt a drag combat maneuver check against any opponent that you successfully trip using Riptide Attack as a free action instead of a swift action.",
     "origin": "d20pfsrd"
   },
@@ -59253,7 +59720,7 @@
       }
     ],
     "benefit": "Your striving pushes you to become ever more skillful. When you gain this feat, and every 2 character levels thereafter, either you gain 1 skill point or your Fame score increases by 1 (if your game uses the reputation and Fame system).",
-    "special": "Thwarting you becomes an all-consuming goal for your rival. Your rival gains a +2 bonus on initiative checks, saving throws, and skill checks against you. Your rival attempts to steal or undermine accomplishments which you strive to achieve.\n\nYou and your rival wish to earn entry into the a great tournament, and you must ensure you are victorious.\n\nYou and an old friend vie for the sole opening at one of the grand houses, but only one of you will be accepted.\n\nYou and a relative with equally distant descent both strive to be the first to unseat the King and claim rulership.\n\nYou and a fellow explorer each hope to be the first to reveal a lost dwarven citadel.",
+    "special": "Thwarting you becomes an all-consuming goal for your rival. Your rival gains a +2 bonus on initiative checks, saving throws, and skill checks against you. Your rival attempts to steal or undermine accomplishments which you strive to achieve.\n\nQuest (Roll a 1d4)\n\nYou and your rival wish to earn entry into the a great tournament, and you must ensure you are victorious.\n\nYou and an old friend vie for the sole opening at one of the grand houses, but only one of you will be accepted.\n\nYou and a relative with equally distant descent both strive to be the first to unseat the King and claim rulership.\n\nYou and a fellow explorer each hope to be the first to reveal a lost dwarven citadel.",
     "goal": "Thwart your rival without anyone else directly interfering. Achieving your rival's goal before her in a manner that humiliates her or completely steals her glory through your direct actions also qualifies.",
     "completion_benefit": "Once per day, you can take 20 on a single skill check as a standard action if the skill check is one that would allow you to take 20.",
     "origin": "d20pfsrd"
@@ -60096,7 +60563,7 @@
         "feature": "rage"
       }
     ],
-    "benefit": "When attempting a performance combat check while raging, you may, as a free action, expend a number of your daily rounds of rage up to half your barbarian level to create a display of savagery. You gain a bonus on the performance combat check equal to half the number of rounds expended, rounded down. If you expend all your remaining rounds of rage in this manner, thus ending your rage, you gain an additional +2 bonus on the check.\n\nCombat Trick",
+    "benefit": "When attempting a performance combat check while raging, you may, as a free action, expend a number of your daily rounds of rage up to half your barbarian level to create a display of savagery. You gain a bonus on the performance combat check equal to half the number of rounds expended, rounded down. If you expend all your remaining rounds of rage in this manner, thus ending your rage, you gain an additional +2 bonus on the check.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend stamina points instead of rounds of rage when using Savage Surge.",
     "origin": "d20pfsrd"
   },
@@ -61201,6 +61668,25 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "self-righteous-fury",
+    "name": "Self-Righteous Fury",
+    "source": "Antihero's Handbook",
+    "types": [
+      "General"
+    ],
+    "description": "Your fury at being vexed knows no bounds, and you sometimes slip into violent rages.",
+    "prerequisites_text": "Manifestation level 6th.",
+    "prerequisites": [
+      {
+        "type": "class_level",
+        "class": "manifestation",
+        "value": 6
+      }
+    ],
+    "benefit": "Three times per day, you can gain the benefits of the rage spell with a caster level equal to your manifestation level. At manifestation level 8th, you also gain the benefits of the haste spell for as long as your rage lasts.\n\nStain: Your temper is difficult to control. Whenever you fail an ability check or skill check by 5 or more, you must succeed at a Will saving throw (DC = 15 + your manifestation level) or you immediately lash out at a creature or object involved in the situation (determined randomly if there are multiple targets), attacking it with a weapon or otherwise attempting to damage it. You are not compelled to continue attacking the target.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "self-sufficient",
     "name": "Self-Sufficient",
     "source": "Core Rulebook",
@@ -61507,6 +61993,28 @@
       }
     ],
     "benefit": "You are able to use the light around you to move back and forth from shadow to light again, and your sudden shifting dazzles your enemies' eyes. By spending a number of feet (in 10-foot increments) when you use this feat to move from one square to another and back again, you gain a Dodge bonus to your AC. This bonus is equal to +1 for every 10 feet you spend moving like this. You do not provoke an attack of opportunity while using this ability. Enemies who do not use sight in order to pinpoint your location or who are otherwise able to locate you more precisely (such as creatures that possess blindsight, tremorsense, or true seeing) ignore this AC bonus. Likewise, this feat is ineffective in areas of darkness or bright light, where one cannot readily shift between light and shadow.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "shadow-gambit",
+    "name": "Shadow Gambit",
+    "source": "Inner Sea Magic",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Spell Focus (illusion), caster level 5th.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Spell Focus",
+        "detail": "illusion"
+      },
+      {
+        "type": "caster_level",
+        "value": 5
+      }
+    ],
+    "benefit": "As a standard action, you can draw upon energies from the Plane of Shadow to cause an ongoing figment spell you cast to damage a foe as if the illusion were real. The illusion must be one you retain ongoing control of, such as minor image, and the target must be both visible to you and within or adjacent to the area of your illusion. Using this feat immediately ends the figment's duration.\n\nYou must either make a melee touch attack or give the target a saving throw (Fortitude or Reflex) to resist the damage (see below). If you choose a melee touch attack, you use your own melee touch attack bonus, and if you miss, the spell deals no damage. If you choose to allow the target a saving throw, a successful save means it takes half damage. The shadowy attack deals 1d6 points of damage per spell level. If the target disbelieves or sees through the illusion, reduce the damage by half.\n\nThe shadowy attack can deal acid, bludgeoning, cold, electricity, fire, piercing, or slashing damage, but the damage must be appropriate to the illusion. For example, an illusory wall that collapses deals bludgeoning damage with a Fortitude save for half, an illusory swordsman strikes with a melee touch attack deals slashing damage, and an illusory wall of fire deals fire damage with a Reflex save for half.",
     "origin": "d20pfsrd"
   },
   {
@@ -63609,7 +64117,7 @@
         "feat": "Combat Reflexes"
       }
     ],
-    "benefit": "Opponents do not gain a +2 bonus on attack rolls for flanking you, although they can still sneak attack you. You also gain a +3 bonus on Sense Motive checks made to resist a foe's Bluff checks to feint in combat.\n\nCombat Trick\n\nSource PPC:WMH",
+    "benefit": "Opponents do not gain a +2 bonus on attack rolls for flanking you, although they can still sneak attack you. You also gain a +3 bonus on Sense Motive checks made to resist a foe's Bluff checks to feint in combat.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When an opponent attempts a feint against you, you can spend up to 5 stamina points to increase the DC of the skill check made to feint by 1 per point of stamina spent.",
     "origin": "d20pfsrd"
   },
@@ -66282,7 +66790,7 @@
         "ranks": 4
       }
     ],
-    "benefit": "Each time you hit a creature with a two-handed reach weapon that you have Weapon Focus in, the creature is dazzled for 1 round.\n\nCombat Trick",
+    "benefit": "Each time you hit a creature with a two-handed reach weapon that you have Weapon Focus in, the creature is dazzled for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you inflict the dazzled condition on an opponent using the Spear Dancer feat, you can spend up to 5 stamina points to increase the duration of the effect by 1 round per stamina point spent.",
     "origin": "d20pfsrd"
   },
@@ -66453,7 +66961,7 @@
         "ranks": 7
       }
     ],
-    "benefit": "When you must attempt a performance combat check because you used the withdraw action, you can attempt an Acrobatics check against your opponent's CMD before the performance combat check. Success allows you to withdraw without taking the standard -5 penalty on your check. In addition, for every 5 points by which your Acrobatics check result exceeds your opponent's CMD, you gain a +1 bonus on all Perform checks you make for the remainder of the round.\n\nCombat Trick",
+    "benefit": "When you must attempt a performance combat check because you used the withdraw action, you can attempt an Acrobatics check against your opponent's CMD before the performance combat check. Success allows you to withdraw without taking the standard -5 penalty on your check. In addition, for every 5 points by which your Acrobatics check result exceeds your opponent's CMD, you gain a +1 bonus on all Perform checks you make for the remainder of the round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: When you use Spectacular Exit to withdraw without taking the -5 penalty on performance combat checks and you spend 5 stamina points, you don't need to succeed at an Acrobatics check in order to avoid the penalty.",
     "origin": "d20pfsrd"
   },
@@ -67098,7 +67606,7 @@
         "text": "Proficient in spiked armor"
       }
     ],
-    "benefit": "When you succeed at a bull rush or overrun combat maneuver, you may automatically make an attack roll with your armor spikes against the target of the maneuver as a swift action, using your highest attack bonus.\n\nCombat Trick",
+    "benefit": "When you succeed at a bull rush or overrun combat maneuver, you may automatically make an attack roll with your armor spikes against the target of the maneuver as a swift action, using your highest attack bonus.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 4 stamina points after succeeding at a bull rush or overrun combat maneuver check to use Spiked Destroyer against that target as a free action.",
     "origin": "d20pfsrd"
   },
@@ -67659,6 +68167,17 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "splash-weapon-mastery",
+    "name": "Splash Weapon Mastery",
+    "source": "Adventurer's Armory",
+    "types": [
+      "General"
+    ],
+    "prerequisites": [],
+    "benefit": "When throwing a splash weapon, you act as if you had the Far Shot feat. When you hit with a splash weapon, select one additional square adjacent to the splash area; creatures in this area also take splash damage. When you miss with a splash weapon, you may adjust the miss direction on the grid by +1 or -1. This feat counts as Far Shot for the purpose of qualifying for other feats, but only in regard to splash weapons.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "splintering-weapon",
     "name": "Splintering Weapon",
     "source": "Ultimate Combat",
@@ -68123,12 +68642,12 @@
   {
     "id": "squash-flat",
     "name": "Squash Flat",
-    "source": "Faiths of Corruption",
+    "source": "Inner Sea Gods",
     "types": [
-      "General"
+      "Combat"
     ],
-    "description": "You are able to bull rush an opponent straight to the ground.",
-    "prerequisites_text": "Improved Bull Rush, Merciless Rush, worshiper of an evil god.",
+    "description": "You can bull rush an opponent straight to the ground.",
+    "prerequisites_text": "Improved Bull Rush, Merciless Rush, worshiper of the associated deity.",
     "prerequisites": [
       {
         "type": "feat",
@@ -68140,10 +68659,11 @@
       },
       {
         "type": "other",
-        "text": "worshiper of an evil god"
+        "text": "worshiper of the associated deity"
       }
     ],
-    "benefit": "Whenever you make a bull rush attack and your check exceeds the target's CMD by 5 or more, you can choose to expend one of the increments of 5 feet you would normally move the target back to instead attempt to trip the target as a part of your bull rush action. This does not provoke an attack of opportunity.",
+    "benefit": "Whenever you make a bull rush attack and your combat maneuver check exceeds the target's CMD by 5 or more, you can attempt to trip the target as part of your bull rush as a free action. This does not provoke an attack of opportunity.",
+    "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: After succeeding at a bull rush combat maneuver check, you can spend 4 stamina points to attempt to trip the target with Squash Flat regardless of your bull rush combat maneuver check's result.",
     "origin": "d20pfsrd"
   },
   {
@@ -68244,8 +68764,8 @@
         "value": 13
       },
       {
-        "type": "other",
-        "text": "Charging Stag Style"
+        "type": "feat",
+        "feat": "Charging Stag Style"
       },
       {
         "type": "feat",
@@ -68280,8 +68800,8 @@
         "value": 13
       },
       {
-        "type": "other",
-        "text": "Charging Stag Style"
+        "type": "feat",
+        "feat": "Charging Stag Style"
       },
       {
         "type": "feat",
@@ -68788,6 +69308,34 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "steadfast-mind",
+    "name": "Steadfast Mind",
+    "source": "Pathfinder Society Primer",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Cha 15, Int 15, or Wis 15 (see special).",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "cha",
+        "value": 15
+      },
+      {
+        "type": "ability",
+        "ability": "int",
+        "value": 15
+      },
+      {
+        "type": "other",
+        "text": "or Wis 15 (see special)"
+      }
+    ],
+    "benefit": "Whenever you fail a concentration check while casting defensively and would normally lose a prepared spell or spell slot, you may attempt a Will save (DC = 15 + spell level) to retain the spell as though you had not attempted to cast it. The failed concentration check still results in the spell's failure, even if the spell is retained.",
+    "special": "To gain the benefits of this feat, you must meet the prerequisite that matches the ability score you use to determine your save DCs, bonus spells per day, and ability to cast spells of a given level. If you gain spells from multiple classes, you must meet the prerequisite ability score for each class to gain the benefits of this feat when casting spells from that class's spell list.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "steadfast-personality",
     "name": "Steadfast Personality",
     "source": "Advanced Class Guide",
@@ -68832,7 +69380,7 @@
         "text": "worshiper of the associated deity"
       }
     ],
-    "benefit": "If you use Stand Still to prevent an opponent from moving, you may make a disarm or trip combat maneuver against your target as an immediate action.\n\nCombat Trick",
+    "benefit": "If you use Stand Still to prevent an opponent from moving, you may make a disarm or trip combat maneuver against your target as an immediate action.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend up to 4 stamina points to gain a +1 bonus per stamina point spent on any combat maneuver check that you attempt as part of Steady Engagement.",
     "origin": "d20pfsrd"
   },
@@ -69676,6 +70224,18 @@
       }
     ],
     "benefit": "You can transfer the power of storms from your body to any metal melee weapons you wield, dealing an additional 1d6 points of electricity damage.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "storm-lashed",
+    "name": "Storm-Lashed",
+    "source": "Adventurer's Guide",
+    "types": [
+      "General"
+    ],
+    "description": "A life spent enduring gales and storms has hardened your body to the elements.",
+    "prerequisites": [],
+    "benefit": "You can ignore many of the effects of severe weather. In rainy conditions, your visibility is reduced by only one-quarter (not by half ) and you take only a -2 penalty on Perception checks. You are treated as if you were one size category larger for the purpose of wind effects, and halve any penalty on Perception checks caused by high winds. Finally, you gain a +2 bonus on saving throws against effects with the electricity descriptor or that deal electricity damage.",
     "origin": "d20pfsrd"
   },
   {
@@ -70561,6 +71121,29 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "stylized-spell",
+    "name": "Stylized Spell",
+    "source": "Ultimate Intrigue",
+    "types": [
+      "Metamagic"
+    ],
+    "prerequisites_text": "Bluff 5 ranks, Spellcraft 5 ranks.",
+    "prerequisites": [
+      {
+        "type": "skill",
+        "skill": "Bluff",
+        "ranks": 5
+      },
+      {
+        "type": "skill",
+        "skill": "Spellcraft",
+        "ranks": 5
+      }
+    ],
+    "benefit": "A stylized spell has slightly different verbal and somatic components than normal, and the spell effect appears noticeably different. The Spellcraft DC to identify a stylized spell as it is being cast is 10 higher than normal.\n\nThe Knowledge (arcana) DC to identify a stylized spell, its effects, or the materials it creates is 10 higher than normal, as is the DC to recognize your magical signature with greater detect magic.\n\nWhen you apply this feat to a spell, you can attempt to disguise your stylized spell as another spell of the same school and subschool with the same descriptors. The other spell must be either the same spell level as the stylized spell (before applying the metamagic adjustment) or 1 spell level higher. If you do so, the stylized spell gains the ruse descriptor and takes on some superficial aspects of the other spell. As usual for a spell with the ruse descriptor, identification attempts that fail by 10 or less mistakenly identify it as the chosen spell (those that fail by more can't identify it at all).\n\nLevel Increase: +1 (a stylized spell uses up a spell slot 1 level higher than the spell's actual level.)\n\n*Special: When you cast a spell modified by this feat, you can reduce the DC of the Spellcraft or Knowledge (arcana) check to identify the spell by 5 to disguise the spell in one of the following ways.\n\nApparent Descriptor: A stylized spell can appear to have a descriptor it lacks or appear to lack a descriptor it truly has. Changing an apparent energy descriptor changes the superficial manifestation of the energy in the spell effect but does not change the type of damage the spell deals. If the energy damages any creatures or objects, an observer who succeeds at a DC 15 Knowledge (arcana) or Perception check as a move action can identify the actual type of damage dealt based on sensory clues.\n\nApparent School: A stylized spell can appear to be of a different school or subschool when studied with detect magic.\n\nApparent Source of Magic: A stylized spell can appear to be a different type of magic-arcane, divine, or psychic. The effect is convincing only if the spellcaster provides any necessary components (such as a divine focus when imitating divine spells), and the caster must have a number of ranks in the skill associated with that type of magic equal to the spell's level. Knowledge (arcana) and Perform are associated with arcane magic, Knowledge (nature and religion) are associated with divine magic, and Bluff and Knowledge (arcana) are associated with psychic magic. A spellcaster can disguise his spell as psychic magic only if he can hide or remove the spell's verbal and somatic components (if any), such as with Conceal Spell, Secret Signs, Silent Spell, or Still Spell.\n\nDirection of Spell's Effect: A stylized spell effect that visibly originates from the caster (such as a ray, magic missile, or fireball bead) can instead appear to originate from another point within 30 feet of the caster. There must be clear lines of effect between each of the caster, the new origin point, and the destination. If the spell effect instead fills an area that originates from the caster (such as a line or cone), the effect can instead appear to originate from any point in that area. The new point of origin is entirely cosmetic, and it does not allow the spellcaster to ignore cover or other barriers. In addition, the deception can't make it appear that another creature cast the spell.\n\nImitate a Dissimilar Spell: If a stylized spell appears to be of the same school and same source of magic, and to have the same descriptors as another spell because of other stylized spell modifications or changes from other sources (such as a class ability), the stylized spell can take on the superficial visual and auditory properties of the other spell.\n\nSuppress Audible or Visible Effects: A stylized spell's effects can be suppressed to the point where they are difficult to spot or hear. Such a spell's audible and visual effects are largely transparent, quieter, smaller, or otherwise less obtrusive. A creature notices the suppressed effects only if it succeeds at a Perception check (DC = 10 + your number of ranks in Bluff or Spellcraft + the highest of your Intelligence, Wisdom or Charisma modifiers). If, at the GM's discretion, a spell's effects are intrinsically bound to its visual or auditory signature (such as sunburst, sound burst, and most spells with the language-dependent, light, or sonic descriptors), reduce the DC of the Perception by 10.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "stylized-spell-mastery",
     "name": "Stylized Spell Mastery",
     "source": "Inner Sea Intrigue",
@@ -70574,8 +71157,8 @@
         "feat": "Spell Mastery"
       },
       {
-        "type": "other",
-        "text": "Stylized Spell"
+        "type": "feat",
+        "feat": "Stylized Spell"
       },
       {
         "type": "skill",
@@ -70792,6 +71375,48 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "summon-guardian-spirit",
+    "name": "Summon Guardian Spirit",
+    "source": "Monster Summoner's Handbook",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Ability to cast summon monster III or summon nature's ally III.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Ability to cast summon monster III or summon nature's ally III"
+      }
+    ],
+    "benefit": "Select one creature that qualifies to be an improved familiar, and apply the guardian spirit template to it. That creature is added to either your summon monster III or summon nature's ally III list as a summonable creature. When you summon your guardian spirit, the duration of the spell you use to summon it is 1 minute per level. A guardian spirit is always exactly the same creature, with memory of all the events that occurred while previously summoned; multiple versions of it can't be summoned. If it's killed while summoned, it cannot be summoned again for 24 hours.\n\nIf you're capable of casting a higher-level summon monster or summon nature's ally spell, you can perform a ritual to attune the guardian spirit to a higher-level version of the spell. This also allows you to change any selections made regarding the abilities the creature gains based on the level of spell used to conjure it. This ritual takes 24 hours, and once complete it moves the guardian spirit to the higher level list of creatures that can be summoned.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "summon-neutral-monster",
+    "name": "Summon Neutral Monster",
+    "source": "Champions of Balance",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Chaotic neutral, lawful neutral, or neutral alignment.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Chaotic neutral"
+      },
+      {
+        "type": "other",
+        "text": "lawful neutral"
+      },
+      {
+        "type": "other",
+        "text": "or neutral alignment"
+      }
+    ],
+    "benefit": "When casting a summon monster spell, you gain access to the list of neutral creatures at right. You may also summon creatures from the standard summon monster list and apply the counterpoised creature simple template to applicable creatures instead of the celestial or fiendish template.\n\nCreatures you summon from the list and creatures you summon with the counterpoised template gain a +2 resistance bonus on Will saves.\n\nTable: Summon Monster I\nTable: Summon Monster I Creature Alignment Subtype(s) Sprite CN - Stirge N - Table: Summon Monster II Creature Alignment Subtype(s) Atomie CN - Brownie N - Table: Summon Monster III Creature Alignment Subtype(s) Arbiter LN inevitable Nosoi N psychopomp Paracletus N aeon Thoqqua N - Voidworm CN protean Table: Summon Monster IV Creature Alignment Subtype(s) D'ziriak N - Magmin CN - Mephit (any) N - Satyr CN - Shae N - Viduus ( psychopomp ) N psychopomp Table: Summon Monster V Creature Alignment Subtype(s) Catrina N psychopomp Mercane LN - Rast N - Tojanida N - Table: Summon Monster VI Creature Alignment Subtype(s) Chaos Beast CN - Invisible stalker N - Naunet CN protean Theletos N aeon Vanth N psychopomp Table: Summon Monster VII Creature Alignment Subtype(s) Axiomite LN - Jyoti N - Shoki N psychopomp Zelekhut LN inevitable Table: Summon Monster VIII Creature Alignment Subtype(s) Imentesh CN protean Table: Summon Monster IX Creature Alignment Subtype(s) Akhana N aeon Morrigna N psychopomp Valkyrie CN - | Creature | Alignment | Subtype(s) | Sprite | CN | - | Stirge | N | - | Creature | Alignment | Subtype(s) | Atomie | CN | - | Brownie | N | - | Creature | Alignment | Subtype(s) | Arbiter | LN | inevitable | Nosoi | N | psychopomp | Paracletus | N | aeon | Thoqqua | N | - | Voidworm | CN | protean | Creature | Alignment | Subtype(s) | D'ziriak | N | - | Magmin | CN | - | Mephit (any) | N | - | Satyr | CN | - | Shae | N | - | Viduus ( psychopomp ) | N | psychopomp | Creature | Alignment | Subtype(s) | Catrina | N | psychopomp | Mercane | LN | - | Rast | N | - | Tojanida | N | - | Creature | Alignment | Subtype(s) | Chaos Beast | CN | - | Invisible stalker | N | - | Naunet | CN | protean | Theletos | N | aeon | Vanth | N | psychopomp | Creature | Alignment | Subtype(s) | Axiomite | LN | - | Jyoti | N | - | Shoki | N | psychopomp | Zelekhut | LN | inevitable | Creature | Alignment | Subtype(s) | Imentesh | CN | protean | Creature | Alignment | Subtype(s) | Akhana | N | aeon | Morrigna | N | psychopomp | Valkyrie | CN | -\nCreature | Alignment | Subtype(s)\nSprite | CN | -\nStirge | N | -\nCreature | Alignment | Subtype(s)\nAtomie | CN | -\nBrownie | N | -\nCreature | Alignment | Subtype(s)\nArbiter | LN | inevitable\nNosoi | N | psychopomp\nParacletus | N | aeon\nThoqqua | N | -\nVoidworm | CN | protean\nCreature | Alignment | Subtype(s)\nD'ziriak | N | -\nMagmin | CN | -\nMephit (any) | N | -\nSatyr | CN | -\nShae | N | -\nViduus ( psychopomp ) | N | psychopomp\nCreature | Alignment | Subtype(s)\nCatrina | N | psychopomp\nMercane | LN | -\nRast | N | -\nTojanida | N | -\nCreature | Alignment | Subtype(s)\nChaos Beast | CN | -\nInvisible stalker | N | -\nNaunet | CN | protean\nTheletos | N | aeon\nVanth | N | psychopomp\nCreature | Alignment | Subtype(s)\nAxiomite | LN | -\nJyoti | N | -\nShoki | N | psychopomp\nZelekhut | LN | inevitable\nCreature | Alignment | Subtype(s)\nImentesh | CN | protean\nCreature | Alignment | Subtype(s)\nAkhana | N | aeon\nMorrigna | N | psychopomp\nValkyrie | CN | -",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "summoners-call",
     "name": "Summoner's Call",
     "source": "Advanced Player's Guide",
@@ -70837,7 +71462,7 @@
         "text": "worshiper of a good deity"
       }
     ],
-    "benefit": "Whenever you confirm a critical hit against an undead creature, your attack bypasses all DR, deals full damage to incorporeal creatures, and acts as though it has the flaming burst weapon special ability.\n\nCombat Trick",
+    "benefit": "Whenever you confirm a critical hit against an undead creature, your attack bypasses all DR, deals full damage to incorporeal creatures, and acts as though it has the flaming burst weapon special ability.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: Whenever you threaten a critical hit against an undead creature, you can spend up to 4 stamina points to gain a +1 bonus per stamina point spent to confirm the critical hit.",
     "origin": "d20pfsrd"
   },
@@ -71112,7 +71737,7 @@
     ],
     "benefit": "Treat your Intelligence, Wisdom, or Charisma score as 2 higher for the purpose of calculating the effects and save DCs of one of the following class features: alchemist discoveries, arcane discoveries, arcanist exploits, or magus arcana. You select both the ability score and class feature to be affected when you select this feat, and the choice cannot be changed. This increases the potency of the abilities but does not grant access to additional abilities.",
     "goal": "Learn a great supernatural secret, connected in some manner to an aspect of the class feature you selected with this story feat.\n\nYou must evade or thwart a challenging foe in the process.",
-    "completion_benefit": "When calculating the effect of the class feature selected with this feat, you treat your class level for the relevant class as 2 higher. This does not impact when you gain access to additional abilities tied to that class feature, only the effectiveness of abilities from the feature you already have.\n\nCriers show up near occult phenomena with suspicious frequency; you seek to learn what they have learned on a major topic such as extraplanetary studies, necrotic enrichment, or supernatural meteorology.\n\nAboleths are rumored to use gillmen and other servants (both knowing and unwitting) to monitor or manipulate events, and you intend to discover more about the aboleth ability to transform other creatures.\n\nYou seek to discover the terms of an infernal pact to secure rulership and to learn more about infernal magic.\n\nA priest charges you with hunting down a powerful divination spell lost long ago and rumored to have been found and sold by merchants to an unknown buyer.",
+    "completion_benefit": "When calculating the effect of the class feature selected with this feat, you treat your class level for the relevant class as 2 higher. This does not impact when you gain access to additional abilities tied to that class feature, only the effectiveness of abilities from the feature you already have.\n\nQuest (Roll a 1d4)\n\nCriers show up near occult phenomena with suspicious frequency; you seek to learn what they have learned on a major topic such as extraplanetary studies, necrotic enrichment, or supernatural meteorology.\n\nAboleths are rumored to use gillmen and other servants (both knowing and unwitting) to monitor or manipulate events, and you intend to discover more about the aboleth ability to transform other creatures.\n\nYou seek to discover the terms of an infernal pact to secure rulership and to learn more about infernal magic.\n\nA priest charges you with hunting down a powerful divination spell lost long ago and rumored to have been found and sold by merchants to an unknown buyer.",
     "origin": "d20pfsrd"
   },
   {
@@ -71396,6 +72021,30 @@
       }
     ],
     "benefit": "Once per day, when fighting defensively or making an attack of opportunity while taking the total defense action with the Desperate Swing feat, you take no penalty on the attack roll."
+  },
+  {
+    "id": "surprising-combatant",
+    "name": "Surprising Combatant",
+    "source": "Blood of the Moon",
+    "types": [
+      "Combat"
+    ],
+    "description": "You can get the drop on foes by tricking your opponents into overlooking you as a combatant.",
+    "prerequisites_text": "Improved Initiative, Bluff 3 ranks.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Improved Initiative"
+      },
+      {
+        "type": "skill",
+        "skill": "Bluff",
+        "ranks": 3
+      }
+    ],
+    "benefit": "At the beginning of a combat in which you would normally be able to act in a surprise round, after initiative is rolled but before the surprise round begins, you can attempt a Bluff check as a free action. The DC of this Bluff check is equal to 15 + the CR of the encounter. If you succeed at this Bluff check, you may treat the result of your Bluff check as your initiative result for the surprise round. If your Bluff check fails, you cannot act during the surprise round. Regardless, you use your normal initiative result to determine initiative for the remainder of the encounter.",
+    "special": "This feat is available to weretigers, weretiger-kin and those who associate with these creatures.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "surprising-strategy",
@@ -72501,7 +73150,17 @@
     "prerequisites_text": "Inscribe Magical Tattoo or Mage's Tattoo; Spellcraft 5 ranks.",
     "prerequisites": [
       {
-        "type": "other",
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Inscribe Magical Tattoo"
+          },
+          {
+            "type": "feat",
+            "feat": "Mage's Tattoo"
+          }
+        ],
         "text": "Inscribe Magical Tattoo or Mage's Tattoo"
       },
       {
@@ -72523,7 +73182,17 @@
     "prerequisites_text": "Inscribe Magical Tattoo or Mage's Tattoo; Tattoo Attunement; Spellcraft 15 ranks; ability to cast control summoned creature.",
     "prerequisites": [
       {
-        "type": "other",
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Inscribe Magical Tattoo"
+          },
+          {
+            "type": "feat",
+            "feat": "Mage's Tattoo"
+          }
+        ],
         "text": "Inscribe Magical Tattoo or Mage's Tattoo"
       },
       {
@@ -72553,7 +73222,17 @@
     "prerequisites_text": "Inscribe Magical Tattoo or Mage's Tattoo; Tattoo Attunement; Spellcraft 9 ranks.",
     "prerequisites": [
       {
-        "type": "other",
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Inscribe Magical Tattoo"
+          },
+          {
+            "type": "feat",
+            "feat": "Mage's Tattoo"
+          }
+        ],
         "text": "Inscribe Magical Tattoo or Mage's Tattoo"
       },
       {
@@ -73592,7 +74271,7 @@
         "feature": "rage"
       }
     ],
-    "benefit": "When you spend a swift action to attempt a performance combat check while you're raging, you gain a +2 bonus on the check if the trigger involved you dealing damage to a creature that had hit you within the last round.\n\nCombat Trick",
+    "benefit": "When you spend a swift action to attempt a performance combat check while you're raging, you gain a +2 bonus on the check if the trigger involved you dealing damage to a creature that had hit you within the last round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 3 stamina points to increase the bonus on performance combat checks that you gain from Thrilling Vengeance by 2.",
     "origin": "d20pfsrd"
   },
@@ -73987,7 +74666,7 @@
         "text": "worshiper of a god of battle"
       }
     ],
-    "benefit": "When you are disabled, you are not staggered, though performing standard actions still deals 1 point of damage to you. Taking a full-round action deals 2 points of damage to you.\n\nCombat Trick",
+    "benefit": "When you are disabled, you are not staggered, though performing standard actions still deals 1 point of damage to you. Taking a full-round action deals 2 points of damage to you.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 1 stamina when disabled to take a standard action without losing a hit point.",
     "origin": "d20pfsrd"
   },
@@ -74131,7 +74810,7 @@
     "description": "You can make use of a torch as a deadly, mace-like weapon.",
     "prerequisites": [],
     "benefit": "You treat a torch as a light weapon that deals bludgeoning damage equal to that of a light mace of its size plus 1 point of fire damage, and you do not incur penalties as you would for using it as an improvised weapon.",
-    "normal": "A torch used in combat is treated as a one-handed improvised weapon that deals bludgeoning damage equal to that of a gauntlet of its size plus 1 point of fire damage.\n\nCombat Trick",
+    "normal": "A torch used in combat is treated as a one-handed improvised weapon that deals bludgeoning damage equal to that of a gauntlet of its size plus 1 point of fire damage.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: By spending 2 stamina points when you hit an opponent with a torch, you can increase the amount of fire damage dealt by the torch to 1d4.",
     "origin": "d20pfsrd"
   },
@@ -76182,6 +76861,29 @@
     "benefit": "When using Two-Weapon Defense, you apply the highest enhancement bonus from your two weapons to the shield bonus granted by that feat."
   },
   {
+    "id": "two-weapon-drunkard",
+    "name": "Two-Weapon Drunkard",
+    "source": "Paths of the Righteous",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Catch Off-Guard, Two-Weapon Fighting",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Catch Off-Guard"
+      },
+      {
+        "type": "feat",
+        "feat": "Two-Weapon Fighting"
+      }
+    ],
+    "benefit": "When you wield a tankard as an improvised weapon in your off hand, it functions as a light mace, including for the purpose of determining the effects of feats like Weapon Focus. If you worship the associated deity, your off-hand tankard functions as a divine focus and does not interfere with somatic spell components.\n\nWhen you fight with two weapons and have the sickened condition, you do not apply the penalties from being sickened to attack rolls or weapon damage rolls.",
+    "normal": "A tankard wielded as an improvised weapon normally functions as a gauntlet.",
+    "note": "This is associated with a specific deity.\n\nYou effortlessly wield tankards in your off hand, and can use them to drink from and as deadly weapons in a battle with equal ease.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "two-weapon-feint",
     "name": "Two-Weapon Feint",
     "source": "Ultimate Combat",
@@ -76580,7 +77282,7 @@
         "text": "base attack bonus +9 or monk level 9th"
       }
     ],
-    "benefit": "While using Perfect Style, you can use your Wisdom modifier in place of your Charisma modifier when attempting Bluff checks to feint. You can spend 1 ki point as a swift action to gain the benefits of Improved Feint for 1 round.\n\nCombat Trick",
+    "benefit": "While using Perfect Style, you can use your Wisdom modifier in place of your Charisma modifier when attempting Bluff checks to feint. You can spend 1 ki point as a swift action to gain the benefits of Improved Feint for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Unblinking Flame Feint.",
     "origin": "d20pfsrd"
   },
@@ -76637,7 +77339,7 @@
         "text": "base attack bonus +13 or monk level 13th"
       }
     ],
-    "benefit": "When using Perfect Style, the save DC of your stunning fist attack increases by 2 against flat-footed targets. When you spend 1 ki point to gain the benefits of Improved Feint for 1 round, you may attempt a feint as part of your movement when charging.\n\nCombat Trick",
+    "benefit": "When using Perfect Style, the save DC of your stunning fist attack increases by 2 against flat-footed targets. When you spend 1 ki point to gain the benefits of Improved Feint for 1 round, you may attempt a feint as part of your movement when charging.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Unblinking Flame Fist.",
     "origin": "d20pfsrd"
   },
@@ -77186,7 +77888,7 @@
         "text": "base attack bonus +13 or monk level 13th"
       }
     ],
-    "benefit": "When using Perfect Style and wielding thrown weapons, you can combine a full attack action with a single move action. You must forgo the attack at your highest bonus but may take the remaining attacks as normal at any point during your movement. You can spend 1 ki point as a swift action to create a path of wind along your path of movement that functions as wind wall for 1 round; this effect does not affect your ranged attacks.\n\nCombat Trick",
+    "benefit": "When using Perfect Style and wielding thrown weapons, you can combine a full attack action with a single move action. You must forgo the attack at your highest bonus but may take the remaining attacks as normal at any point during your movement. You can spend 1 ki point as a swift action to create a path of wind along your path of movement that functions as wind wall for 1 round; this effect does not affect your ranged attacks.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Unfolding Wind Rush.",
     "origin": "d20pfsrd"
   },
@@ -77235,7 +77937,7 @@
         "text": "base attack bonus +9 or monk level 9th"
       }
     ],
-    "benefit": "When using Perfect Style, you double the range increment of any thrown weapon you wield. You can spend 1 ki point as a swift action to imbue a number of thrown weapons equal to your Wisdom bonus with the returning or seeking weapon special ability for 1 round.\n\nCombat Trick",
+    "benefit": "When using Perfect Style, you double the range increment of any thrown weapon you wield. You can spend 1 ki point as a swift action to imbue a number of thrown weapons equal to your Wisdom bonus with the returning or seeking weapon special ability for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Unfolding Wind Strike.",
     "origin": "d20pfsrd"
   },
@@ -77584,7 +78286,7 @@
         "text": "base attack bonus +13 or monk level 13th"
       }
     ],
-    "benefit": "When using Perfect Style, you gain an amount of DR/adamantine equal to 1/3 your character level (maximum 6). Additionally, whenever you break an item with at least hardness 10, you gain DR 1/- for a number of rounds equal to half the item's hit points (maximum 10 rounds); the value of this damage reduction increases by 1 for every 5 points of hardness above 10 the broken item possessed. You can spend 1 ki point as a swift action to double either of the damage reduction values granted by this feat for 1 round.\n\nCombat Trick",
+    "benefit": "When using Perfect Style, you gain an amount of DR/adamantine equal to 1/3 your character level (maximum 6). Additionally, whenever you break an item with at least hardness 10, you gain DR 1/- for a number of rounds equal to half the item's hit points (maximum 10 rounds); the value of this damage reduction increases by 1 for every 5 points of hardness above 10 the broken item possessed. You can spend 1 ki point as a swift action to double either of the damage reduction values granted by this feat for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Untwisting Iron Skin.",
     "origin": "d20pfsrd"
   },
@@ -77629,13 +78331,49 @@
         "text": "base attack bonus +9 or monk level 9th"
       }
     ],
-    "benefit": "When using Perfect Style, you can ignore an amount of hardness equal to your character level. Additionally, you gain a +4 bonus on Strength checks to break objects. If you spend 1 ki point as a swift action, you also gain the benefits of Improved Sunder for 1 round.\n\nCombat Trick",
+    "benefit": "When using Perfect Style, you can ignore an amount of hardness equal to your character level. Additionally, you gain a +4 bonus on Strength checks to break objects. If you spend 1 ki point as a swift action, you also gain the benefits of Improved Sunder for 1 round.",
     "note": "If using the optional Stamina Pool rules, the following trick may be used with this feat.\n\nCombat Trick: You can spend 2 stamina points instead of 1 ki point when using Untwisting Iron Strength.",
     "origin": "d20pfsrd"
   },
   {
-    "id": "unusual-origin",
-    "name": "Unusual Origin",
+    "id": "unusual-origin-changeling",
+    "name": "Unusual Origin (Changeling)",
+    "source": "Bastards of Golarion",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Changeling.",
+    "prerequisites": [
+      {
+        "type": "race",
+        "race": "changeling"
+      }
+    ],
+    "benefit": "As long as you are within 30 feet of at least two other changelings, you gain a +2 bonus on concentration checks and dispel checks. If at least two of these changelings also have this feat, these bonuses increase to +4.",
+    "special": "This version of Unusual Origin is a teamwork feat.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "unusual-origin-dhampir",
+    "name": "Unusual Origin (Dhampir)",
+    "source": "Bastards of Golarion",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Dhampir.",
+    "prerequisites": [
+      {
+        "type": "race",
+        "race": "dhampir"
+      }
+    ],
+    "benefit": "You gain a natural bite attack that deals 1d4 points of damage. Once per day upon making a successful bite attack, you can choose to deal an additional 1d4 points of bleed damage to the creature struck.",
+    "special": "You can only select this feat at 1st level.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "unusual-origin-fetchling",
+    "name": "Unusual Origin (Fetchling)",
     "source": "Bastards of Golarion",
     "types": [
       "General"
@@ -77648,6 +78386,46 @@
       }
     ],
     "benefit": "Once per day while sleeping, you can create a magical sensor, as arcane eye except this sensor can view only your current location as it exists on the Shadow Plane. This effect lasts for 1 minute per character level, and can be used during any point while you sleep.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "unusual-origin-gillman",
+    "name": "Unusual Origin (Gillman)",
+    "source": "Bastards of Golarion",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Gillman.",
+    "prerequisites": [
+      {
+        "type": "race",
+        "race": "gillman"
+      }
+    ],
+    "benefit": "Your divination spells and spell-like abilities manifest at 1 caster level higher. In addition, once per day while fully immersed in water, you can cast augury as a spell- like ability.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "unyielding-ferocity",
+    "name": "Unyielding Ferocity",
+    "source": "Horror Adventures",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Con 19, ferocity",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "con",
+        "value": 19
+      },
+      {
+        "type": "other",
+        "text": "ferocity"
+      }
+    ],
+    "benefit": "When you are reduced to 0 or fewer hit points, if you remain conscious from your ferocity monster ability, you can make a full attack on your next turn (or your current turn if you are reduced to 0 hit points on your own turn). If you do, you push your body to the point that your mind becomes more primitive, and you can no longer use any Charisma-, Dexterity-, or Intelligence-based skills except Acrobatics, Fly, Intimidate, or Ride, or any ability that requires patience or concentration (such as spellcasting) until your hit points are raised above 0.",
+    "normal": "When using the ferocity ability, you are staggered while you have fewer than 0 hit points and thus can't make a full attack.",
     "origin": "d20pfsrd"
   },
   {
@@ -80344,7 +81122,7 @@
     ],
     "benefit": "Once per day, you can use your ranks in Sense Motive in place of your total Will saving throw modifier when attempting a Will save. You must decide to use this ability prior to attempting the saving throw.",
     "goal": "Thwart an appropriate number of challenging foes after getting a negative hunch about them when they attempted to deceive you or after ambushing them.",
-    "completion_benefit": "The DC of Bluff and Intimidate checks attempted against you increase by 5.\n\nYou were born and raised in a town surrounded and often besieged by orcs (and occasionally giants), and will defend it against all attackers.\n\nYour awareness was honed to a knife's edge by training in martial monasteries, and you wish to outdo every rival.\n\nYou steadfastly watch for spies and assassins seeking to undermine the leadership.\n\nFoolish commanders have proven themselves temporary but relentless problems. You intend to give them a humiliating defeat that will finally put them in their place.",
+    "completion_benefit": "The DC of Bluff and Intimidate checks attempted against you increase by 5.\n\nQuest (Roll a 1d4)\n\nYou were born and raised in a town surrounded and often besieged by orcs (and occasionally giants), and will defend it against all attackers.\n\nYour awareness was honed to a knife's edge by training in martial monasteries, and you wish to outdo every rival.\n\nYou steadfastly watch for spies and assassins seeking to undermine the leadership.\n\nFoolish commanders have proven themselves temporary but relentless problems. You intend to give them a humiliating defeat that will finally put them in their place.",
     "origin": "d20pfsrd"
   },
   {

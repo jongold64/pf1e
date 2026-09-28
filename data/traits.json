@@ -606,6 +606,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "arcane-dabbler-inner-sea-primer",
+    "name": "Arcane Dabbler",
+    "source": "Inner Sea Primer",
+    "category": "Regional",
+    "text": "Your study of magic is shown by your expertise in the simplest of magical exploits.\n\nBenefit: Select two non-harmful arcane cantrips. You can cast these two cantrips once per day each (caster level 1st).\n\nIf you have levels in a class that can cast these cantrips, your caster level for these cantrips is equal to that class level.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "arcane-depth",
     "name": "Arcane Depth",
     "source": "Inner Sea Gods",
@@ -652,6 +660,19 @@
     "category": "Faith",
     "text": "Benefit(s): Choose either Knowledge (arcana) or Spellcraft; you gain a +1 trait bonus on that skill and it is a class skill for you.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "arcane-student",
+    "name": "Arcane Student",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have spent time at a magical academy absorbing the ancient knowledge taught there.\n\nBenefit You gain a +1 trait bonus on Knowledge (arcana) and Spellcraft checks, and you may make these checks untrained.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Spellcraft": 1
+      }
+    }
   },
   {
     "id": "arcane-temper",
@@ -720,6 +741,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "artistic-dilettante",
+    "name": "Artistic Dilettante",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You come from money, and because of this can quickly discern objects' value.\n\nBenefit You gain a +1 trait bonus on Appraise checks, and on checks for one Craft skill of your choice.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1
+      }
+    }
+  },
+  {
     "id": "ascendant-recollection",
     "name": "Ascendant Recollection",
     "source": "Ultimate Campaign",
@@ -782,6 +816,19 @@
     "category": "Equipment",
     "text": "You gain a +2 trait bonus on Disguise checks when wearing a wig, false beard, or similar large prop, or if you are wearing a special costume or eye-catching bauble that reinforces your disguise.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "auspicious-tattoo",
+    "name": "Auspicious Tattoo",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You bear a tattoo depicting one of the totems listed for your tribe that favors you with good fortune.\n\nBenefit You gain a +1 trait bonus on Will saving throws.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "will": 1
+      }
+    }
   },
   {
     "id": "authoritarian",
@@ -978,6 +1025,15 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "beast-of-the-society",
+    "name": "Beast of the Society",
+    "source": "Faction Guide",
+    "category": "Magic",
+    "requirement": "Druid, Society",
+    "text": "A master druid revealed to you greater secrets of concentration when changing your form into that of an animal.\n\nBenefit: Whenever you use your wild shape class ability to turn yourself into a Small or Medium-sized animal, the effect lasts for 2 hours per druid level instead of 1 hour per druid level.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "beastkin",
     "name": "Beastkin",
     "source": "Heroes of the Wild",
@@ -997,6 +1053,15 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "While nothing is actually reversed, your bones and limbs are slightly out of alignment.\n\nBenefit You gain a +2 trait bonus to CMD when resisting grapple attempts.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "berserker-of-the-society",
+    "name": "Berserker of the Society",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Barbarian, Society",
+    "text": "Your time spent as a society member has taught you new truths about the origins of the your rage ability.\n\nBenefit: You may use your rage ability for 3 additional rounds per day.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
     "origin": "d20pfsrd"
   },
   {
@@ -1113,12 +1178,29 @@
     "text": "You were born and raised in town. You know many of the region's secrets and the locals already know who you are. You aren't quite hated in town, but folk seem to think you're a troublemaker and a bastard and not to be trusted. The town's tougher folk respect you, but the law-abiding citizens don't. You gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is a class skill for you. In addition, you can choose any one notorious citizen from below as an ally; depending on the person you pick, you'll get different benefits."
   },
   {
+    "id": "blade-bravado",
+    "name": "Blade Bravado",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You grew up fighting in a dueling academy and have honed your skills with one-handed weapons.\n\nBenefit When wielding a one-handed weapon and nothing in your off hand, you gain a +1 trait bonus on Acrobatics and Bluff checks.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "blade-of-mercy",
     "name": "Blade of Mercy",
     "source": "Legacy of Fire Player's Guide",
     "category": "Religion",
     "requirement": "3.5",
     "text": "You know that within the heart of even the most hateful and cruel living creature exists a sliver of shame and hope for redemption. You have trained long on martial techniques to use bladed weapons not to kill, but to subdue.\n\nBenefit When striking to inflict nonlethal damage with any slashing weapon, you do not take the normal -4 penalty on your attack roll, and gain a +1 trait bonus to any nonlethal damage you inflict with a slashing weapon.\n\nEditor's Note\n\nThe rules presented here are 3.5 OGL content.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "blade-of-the-society",
+    "name": "Blade of the Society",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Rogue, Society",
+    "text": "You have studied and learned the weak spots of many humanoids and monsters.\n\nBenefit: You gain a +1 trait bonus to damage rolls from sneak attacks.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
     "origin": "d20pfsrd"
   },
   {
@@ -1402,6 +1484,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "bred-for-war",
+    "name": "Bred for War",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You tower above most other humans and possess a physique of hard, corded muscle.\n\nBenefit You gain a +1 trait bonus on Intimidate checks and a +1 trait bonus on your CMB because of your great size. You must be at least 6 feet tall.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Intimidate": 1
+      }
+    }
+  },
+  {
     "id": "brewmaster",
     "name": "Brewmaster",
     "source": "Ultimate Campaign",
@@ -1491,7 +1586,7 @@
   {
     "id": "builders-apprentice",
     "name": "Builders Apprentice",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You gain a +3 trait bonus on Knowledge (engineering) checks and a +2 trait bonus on Perception checks to find secret doors or traps in buildings built in the style of your guild.",
     "origin": "d20pfsrd"
@@ -1559,7 +1654,7 @@
   {
     "id": "businessman",
     "name": "Businessman",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Race",
     "requirement": "Gnome",
     "text": "You gain a +2 trait bonus on all Craft (alchemy) checks.",
@@ -1926,6 +2021,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "child-of-the-crusades-inner-sea-primer",
+    "name": "Child of the Crusades",
+    "source": "Inner Sea Primer",
+    "category": "Regional",
+    "text": "Your parents stood strong against the worst of this world and the great beyond.\n\nBenefit: You have inherited their indomitable spirit, and you gain a +2 trait bonus on all saves against fear.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "child-of-the-moon",
     "name": "Child of the Moon",
     "source": "Blood of the Moon",
@@ -2114,7 +2217,7 @@
   {
     "id": "cliff-jumper",
     "name": "Cliff Jumper",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You gain a +1 trait bonus on\nAcrobatics and Climb checks, and on Reflex saves to avoid falling.",
     "origin": "d20pfsrd",
@@ -2774,6 +2877,15 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "defender-of-the-society",
+    "name": "Defender of the Society",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Fighter, Society",
+    "text": "Your time spent fighting and studying the greatest warriors of the society has taught you new defensive skills while wearing armor.\n\nBenefit: You gain a +1 trait bonus to Armor Class when wearing medium or heavy armor.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "defensive-strategist",
     "name": "Defensive Strategist",
     "source": "Inner Sea Gods",
@@ -2835,6 +2947,14 @@
     "source": "Advanced Player's Guide",
     "category": "Religion",
     "text": "Raised in the church (whether or not you are currently a follower), you've focused your indoctrinated fervor primarily on the elimination of demons. You gain a +3 trait bonus on Knowledge (planes) checks about demons and a +2 trait bonus on Will saves against mind-affecting spells and effects from demons."
+  },
+  {
+    "id": "demon-slayer-faction-guide",
+    "name": "Demon Slayer",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "text": "By studying a demonic opponent, you can sense and target its weak spots.\n\nBenefit: You can attempt a Knowledge (planes) check to find a demon's weak spot. (DC 10 + the demon's CR). If you succeed, you gain a +3 trait bonus on rolls to confirm critical hits against that demon until the end of the battle. This effect only works on demons.\n\nAttention! Legal Stuff Ahead!\n\nThe name or some of the content on this page has been slightly edited in order for us to be in compliance with the Pathfinder Compatibility License. While the rules (mechanics) have not changed, if you prefer the original wording we may have made a copy of it on our sister website. It is built and maintained by the same collaborators who work on d20pfsrd.com. Otherwise, read on! only the names have been changed to protect the innocent!",
+    "origin": "d20pfsrd"
   },
   {
     "id": "demon-slayer",
@@ -2913,7 +3033,7 @@
   {
     "id": "desperate-focus",
     "name": "Desperate Focus",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Magic",
     "text": "You gain a +2 trait bonus on concentration checks.",
     "origin": "d20pfsrd"
@@ -3025,7 +3145,7 @@
   {
     "id": "diabolical-dabbler",
     "name": "Diabolical Dabbler",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Magic",
     "text": "Each fiendish animal you conjure with any summon spell gains +1 hit point per hit die for the duration of the spell that summoned it.",
     "origin": "d20pfsrd"
@@ -3805,6 +3925,19 @@
     "text": "Larger enemies have a hard time striking you. You gain a +1 dodge bonus to AC against enemies that are both your favored enemy and at least two size categories larger than you."
   },
   {
+    "id": "ever-home",
+    "name": "Ever Home",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have lived in many cities and after you have departed from each, you have taken a small token to remember it by.\n\nBenefit You gain a +1 trait bonus on Knowledge (geography) and Sleight of Hand checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Sleight of Hand": 1
+      }
+    }
+  },
+  {
     "id": "ever-wary",
     "name": "Ever Wary",
     "source": "Blood of Fiends",
@@ -3819,6 +3952,15 @@
     "source": "Champions of Balance",
     "category": "Regional",
     "text": "You know how best to appear supportive of the current regime despite the vagaries of a shifting government.\n\nBenefit(s): The Sense Motive DC needed for a city guard, a politician, or other governmental functionary in a large town or larger settlement to gain a hunch about your trustworthiness is 25 (instead of 20). On a failed check, you're seen as trustworthy regardless of the situation.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "exalted-of-the-society",
+    "name": "Exalted of the Society",
+    "source": "Faction Guide",
+    "category": "Faith",
+    "requirement": "Cleric, Society",
+    "text": "The vaults of the great city contain many secrets of the divine powers of the gods, and you have studied your god extensively.\n\nBenefit: You may channel energy 1 additional time per day.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
     "origin": "d20pfsrd"
   },
   {
@@ -4341,6 +4483,15 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "firebug-kobolds-of-golarion",
+    "name": "Firebug",
+    "source": "Kobolds of Golarion",
+    "category": "Race",
+    "requirement": "Kobold, Red-Scaled",
+    "text": "Like the red dragons that inspire your tribe, you're blessed with a small spark of incendiary magic.\n\nBenefit: You are able to cast spark three times per day as a spell-like ability. The caster level is equal to your character level. This spell-like ability's save DC is Intelligence-based.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "first-memories",
     "name": "First Memories",
     "source": "Gnomes of Golarion",
@@ -4626,6 +4777,32 @@
     }
   },
   {
+    "id": "freed-slave-legacy-of-fire-players-guide",
+    "name": "Freed Slave",
+    "source": "Legacy of Fire Player's Guide",
+    "category": "Regional",
+    "text": "You spent a significant portion of your childhood as a slave, but were freed from slavery several years ago by a benevolent master who purchased you from an auction after your previous master's death. Yet while the memories of your difficult childhood still haunt you, the hard life did toughen you.\n\nBenefit You gain a +1 trait bonus on Fortitude saves.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "fort": 1
+      }
+    }
+  },
+  {
+    "id": "freed-slave-inner-sea-primer",
+    "name": "Freed Slave",
+    "source": "Inner Sea Primer",
+    "category": "Regional",
+    "text": "You were either born or sold into slavery, but were later freed. Your strong will helped you persevere in captivity, and gave you strength to start again from nothing in your new life.\n\nBenefit: You gain a +1 trait bonus on Will saves.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "will": 1
+      }
+    }
+  },
+  {
     "id": "freedom-fighter",
     "name": "Freedom Fighter",
     "source": "Ultimate Campaign",
@@ -4779,7 +4956,7 @@
   {
     "id": "garbage-picker",
     "name": "Garbage Picker",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You grew up in or around your city's rubbish-strewn shores and spent your spare time digging through trash looking for things worth selling.\n\nBenefit: You gain a +3 trait bonus on Perception checks to search for concealed items.",
     "origin": "d20pfsrd"
@@ -4875,6 +5052,14 @@
     "source": "People of the River",
     "category": "Regional",
     "text": "You trained at an exclusive gladiatorial college.\n\nSelect one combat maneuver when you take this trait.\n\nBenefit(s) You gain a +1 trait bonus on performance combat checks and a +1 trait bonus on combat maneuver checks to perform the selected maneuver.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "glib-barrister",
+    "name": "Glib Barrister",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You grew up within a bureaucratic system where law reigns supreme; however, that has never stopped you from creating loopholes in ironclad contracts.\n\nBenefit You gain a +2 trait bonus on Linguistics checks to create forgeries.",
     "origin": "d20pfsrd"
   },
   {
@@ -4981,6 +5166,15 @@
     "category": "Regional",
     "requirement": "Usually Under Warm Mountains",
     "text": "Having grown up navigating rockslides and picking your way through partially collapsed tunnels, you are able to determine the most stable path across difficult terrain caused by rubble or other debris.\n\nBenefit(s): You can move normally through such obstructed spaces, and can run or charge though them with a successful Acrobatics check.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "greater-adept-of-the-society",
+    "name": "Greater Adept of the Society",
+    "source": "Faction Guide",
+    "category": "Magic",
+    "requirement": "Wizard, Society",
+    "text": "Months of meditation and practice with the greatest wizards of the Society have given you an increased capacity for arcane knowledge.\n\nBenefit: You gain one additional 0-level spell slot.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
     "origin": "d20pfsrd"
   },
   {
@@ -5142,6 +5336,17 @@
     }
   },
   {
+    "id": "harrow-born",
+    "name": "Harrow Born",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You grew up around mysterious fortune-tellers.\n\nBenefit You start play with a harrow deck passed down from a relative. Because of your skill with fortune-telling, you gain a +1 trait bonus on initiative checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "initiative": 1
+    }
+  },
+  {
     "id": "harrow-chosen",
     "name": "Harrow Chosen",
     "source": "Varisia, Birthplace of Legends",
@@ -5163,6 +5368,15 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Your god's own hatred of other deities is reflected in your ability to withstand the attacks of their followers.\n\nBenefit(s) You gain a +1 trait bonus on saving throws made against divine spells.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "havoc-of-the-society",
+    "name": "Havoc of the Society",
+    "source": "Faction Guide",
+    "category": "Magic",
+    "requirement": "Sorcerer, Society",
+    "text": "Through countless hours studying vast libraries of arcane power, you have learned how to cause greater damage to your foes.\n\nBenefit: Whenever you cast a spell that deals damage, you gain a +1 trait bonus to the total damage dealt. This damage is considered force damage regardless of the type of damage dealt by the spell.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
     "origin": "d20pfsrd"
   },
   {
@@ -5232,7 +5446,7 @@
   {
     "id": "hell-knight-ancestry",
     "name": "Hell Knight Ancestry",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Social",
     "text": "You gain a +2 trait bonus on Diplomacy checks to influence Hell Knights and a +2 trait bonus on Intimidate checks to influence enemies of the Hell Knights.",
     "origin": "d20pfsrd"
@@ -5251,6 +5465,15 @@
     "source": "Champions of Purity",
     "category": "Combat",
     "text": "You always know the best way to assist your companions, be it assisting them with a task, defending them in battle, or helping them place a well-aimed strike.\n\nBenefit(s): When using the aid another action, you grant your ally a +3 bonus instead of a +2 bonus.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "helpful-halflings-of-golarion",
+    "name": "Helpful",
+    "source": "Halflings of Golarion",
+    "category": "Race",
+    "requirement": "Halfling",
+    "text": "You see nothing wrong with letting others achieve greatness so long as the job gets done.\n\nBenefit: Whenever you successfully perform an aid another action, you grant your ally a +4 bonus instead of the normal +2.",
     "origin": "d20pfsrd"
   },
   {
@@ -5445,12 +5668,35 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "honored-fist-of-the-society",
+    "name": "Honored Fist of the Society",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Monk, Society",
+    "text": "You have studied dozens of ancient texts on martial arts that only the Society possesses, and are more learned in these arts than most.\n\nBenefit: You increase your ki pool by 1 point.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "horrifying-mind",
     "name": "Horrifying Mind",
     "source": "Champions of Corruption",
     "category": "Magic",
     "text": "Benefit(s): When a non-evil humanoid attempts to read your mind via a magical effect, the reader must attempt a Will save opposed by your Wisdom or Charisma check (your choice). If the reader fails this save, she is shaken for 1 round. If she fails by 10 or more, she is instead frightened for 1 round, then shaken for 1 round.\n\nPick up Champions of Corruption AND support this site!",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "horse-lord",
+    "name": "Horse Lord",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You grew up horse racing along the plains.\n\nBenefit You gain a +2 trait bonus on Handle Animal checks, and a +1 trait bonus on Ride checks. This trait applies only to horses.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Handle Animal": 2,
+        "Ride": 1
+      }
+    }
   },
   {
     "id": "house-of-green-mothers-pupil",
@@ -5477,7 +5723,7 @@
   {
     "id": "hunter-of-outsiders",
     "name": "Hunter of Outsiders",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You gain a +2 trait bonus on Survival checks to track evil outsiders and a +2 trait bonus on initiative checks when you know your opponent is an evil outsider.",
     "origin": "d20pfsrd"
@@ -5488,6 +5734,14 @@
     "source": "Ultimate Campaign",
     "category": "Combat",
     "text": "When you watch and wait before attacking, your strike is true. You gain a +1 trait bonus on attack rolls against your favored enemies when you make such attacks as part of a readied action."
+  },
+  {
+    "id": "ice-walker",
+    "name": "Ice Walker",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You spent years roaming the frozen tundra of the frigid north, and have adapted to its numbing effects.\n\nBenefit You gain a +1 trait bonus on saving throws against attacks that deal cold damage. Furthermore, you may ignore the Acrobatics penalty for ice and can move across ice at normal speed.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "icy-mementos",
@@ -5627,7 +5881,7 @@
   {
     "id": "infernal-influence",
     "name": "Infernal Influence",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Race",
     "requirement": "Human",
     "text": "You gain fire resistance 1 and a +1 trait bonus on Fortitude saves against poison.",
@@ -5942,6 +6196,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "keeper-of-the-ancestral-scrolls",
+    "name": "Keeper of the Ancestral Scrolls",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You take pride in recording the genealogy of your family, tracing your heritage on large scrolls dating back hundreds, if not thousands of years.\n\nBenefit You gain a +1 trait bonus on Knowledge (history), and Knowledge (nobility) checks, and one of these skills (your choice) is always a class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "keeper-of-the-veil",
     "name": "Keeper of the Veil",
     "source": "Qadira, Gateway to the East",
@@ -6180,6 +6442,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "light-sleeper-inner-sea-gods",
+    "name": "Light Sleeper",
+    "source": "Inner Sea Gods",
+    "category": "Religion",
+    "text": "Because of a blessing from your god, or worries inspired by the way he died as a mortal, you are a light sleeper.\n\nBenefit(s) Your modifier to Perception DCs when sleeping is +5 instead of +10.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "light-bringer",
     "name": "Light-Bringer",
     "source": "Inner Sea Gods",
@@ -6315,7 +6585,7 @@
   {
     "id": "lost-nobility",
     "name": "Lost Nobility",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Social",
     "text": "You gain a +1 trait bonus on attack and damage rolls against government officials of your homeland.",
     "origin": "d20pfsrd"
@@ -6564,6 +6834,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "market-rat",
+    "name": "Market Rat",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You spent your youth amid varied market stalls and mercantile leagues. Perhaps you came from a family of merchants, or you dwelt amid the many booths of a market, begging to survive.\n\nBenefit You gain a +1 trait bonus on Appraise and Knowledge (local) checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1
+      }
+    }
+  },
+  {
     "id": "martial-manuscript",
     "name": "Martial Manuscript",
     "source": "Ultimate Campaign",
@@ -6619,9 +6902,17 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "master-of-the-sudden-strike",
+    "name": "Master of the Sudden Strike",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have mastered the deadly fighting arts of your people.\n\nBenefit When you wield a masterwork version of any sword if you act before your opponent during the surprise round, you gain a +2 trait bonus on weapon damage rolls for the surprise round only. This additional damage is precision damage.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "masterful-demeanor",
     "name": "Masterful Demeanor",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Race",
     "requirement": "Human",
     "text": "You gain a +3 trait bonus on Intimidate checks against members of non-human humanoid races.",
@@ -7177,7 +7468,7 @@
   {
     "id": "nonchalant-thuggery",
     "name": "Nonchalant Thuggery",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Social",
     "text": "You gain a +4 trait bonus on Bluff checks to keep others from noticing your aggressive actions.",
     "origin": "d20pfsrd"
@@ -7307,6 +7598,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "open-hand-and-mind",
+    "name": "Open Hand and Mind",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "Your practice of the martial arts has granted you a perfect balance between body and spirit.\n\nBenefit You gain a +1 trait bonus on Acrobatics and Knowledge (religion) checks. If you have a ki pool, once per day as a swift action, you may channel your ki during an unarmed strike, gaining a +2 trait bonus on one damage roll. This additional damage is precision damage.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Acrobatics": 1
+      }
+    }
+  },
+  {
     "id": "open-minded-explorer",
     "name": "Open-Minded Explorer",
     "source": "Bastards of Golarion",
@@ -7325,6 +7629,14 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "You have the ability to find hidden portals.\n\nBenefit(s) You gain a +2 trait bonus on Perception checks to find secret doors.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "operatic",
+    "name": "Operatic",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You grew up in wonder of theater, and spent countless hours in opera houses and even more time perfecting your voice.\n\nBenefit You gain a +1 trait bonus on Perform (sing) checks. Furthermore you have memorized the works of many sung in an ancient tongue (choose an ancient language), granting you a +2 trait bonus on Linguistics checks when trying to decipher the chosen language.",
     "origin": "d20pfsrd"
   },
   {
@@ -7584,6 +7896,20 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "pearl-diver-dragon-empires-primer",
+    "name": "Pearl Diver",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were a pearl harvester and you know just what clues to look for when searching for a worthwhile haul in the briny shallows.\n\nBenefit: You gain a +1 trait bonus on Appraise and Swim checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1,
+        "Swim": 1
+      }
+    }
+  },
+  {
     "id": "peg-leg",
     "name": "Peg Leg",
     "source": "Skull & Shackles Player's Guide",
@@ -7635,6 +7961,20 @@
     "category": "Regional",
     "text": "Time has taught you that any obstacle can be endured and overcome.\n\nBenefit: When you have more than one Will saving throw to overcome an effect (such as from greater command or hold person, or by using the good fortune ability of the Luck domain), you receive a +3 trait bonus on the extra Will saves against that effect.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "persuasive",
+    "name": "Persuasive",
+    "source": "People of the Stars",
+    "category": "Race",
+    "requirement": "Elf",
+    "text": "You speak precisely and persuasively, especially among elves.\n\nBenefit(s) You gain a +1 trait bonus on Diplomacy checks. This bonus increases to +3 against creatures with the elf subtype.\n\nAnother Idea…\n\nIt seems reasonable to reword this as:\n\nYou speak precisely and persuasively, especially among your own kind.\n\nBenefit(s) You gain a +1 trait bonus on Diplomacy checks. This bonus increases to +3 against creatures of your race or subtype.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
   },
   {
     "id": "pillager",
@@ -7709,6 +8049,14 @@
     "category": "Race",
     "requirement": "Aasimar",
     "text": "You are skilled at convincing outsiders that you require their aid.\n\nBenefit: Whenever you cast lesser planar ally, planar ally, or greater planar ally, you receive a 10% discount on the monetary cost required by the summoned outsiders. This bonus has no effect on services the outsiders may demand in order to strike a bargain.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "planar-negotiator-demon-hunters-handbook",
+    "name": "Planar Negotiator",
+    "source": "Demon Hunter's Handbook",
+    "category": "Regional",
+    "text": "You are used to dealing with outsiders that would fluster a less experienced negotiator.\n\nBenefit When dealing with an outsider within one step of your alignment, you gain a +1 trait bonus on Diplomacy and Sense Motive checks. Increase these bonuses to +2 if you and the outsider worship the same deity.",
     "origin": "d20pfsrd"
   },
   {
@@ -8979,6 +9327,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "secret-keeper-quests-campaigns",
+    "name": "Secret-Keeper",
+    "source": "Quests & Campaigns",
+    "category": "Social",
+    "text": "Growing up in a land where paranoia fills the air and any accusation of heresy or dissent can spell doom for whole families, you learned very quickly to keep a secret.\n\nBenefit(s): You gain a +1 trait bonus on Bluff checks and a +1 trait bonus on saving throws against divinations, domination effects, and effects that would compel you to speak the truth.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Bluff": 1
+      }
+    }
+  },
+  {
     "id": "seeker",
     "name": "Seeker",
     "source": "Ultimate Campaign",
@@ -9117,6 +9478,14 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Benefit(s) You gain a +1 trait bonus on combat maneuver checks to grapple a foe, as well as a +1 trait bonus to your CMD whenever an opponent tries to grapple you.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "shadow-caster",
+    "name": "Shadow Caster",
+    "source": "Inner Sea Gods",
+    "category": "Religion",
+    "text": "Benefit(s) You gain a +4 trait bonus on concentration checks when casting spells with the darkness, pain, or shadow descriptor.",
     "origin": "d20pfsrd"
   },
   {
@@ -9413,6 +9782,23 @@
     "category": "Regional",
     "text": "You have hunted monsters and know how to take advantage of their weaknesses.\n\nBenefit: You gain a +1 trait bonus on damage rolls made against creatures of the aberration type.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "slippery",
+    "name": "Slippery",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Flower Network",
+    "text": "You have escaped from so many dangerous situations in your life that you've gotten quite good at not getting caught.\n\nBenefit: You gain a +1 trait bonus on Stealth checks and Stealth is a class skill for you.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site, pathfindercommunity.net",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Stealth": 1
+      },
+      "class_skills": [
+        "Stealth"
+      ]
+    }
   },
   {
     "id": "slippery-step",
@@ -9780,6 +10166,15 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "stalwart-of-the-society",
+    "name": "Stalwart of the Society",
+    "source": "Faction Guide",
+    "category": "Faith",
+    "requirement": "Paladin, Society",
+    "text": "The courageous powers of the ancient orders of paladins are open to you thanks to the Society's records of heroic deeds.\n\nBenefit: Your aura of courage class ability grants an additional +1 trait bonus on saving throws against fear effects.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "star-reader",
     "name": "Star Reader",
     "source": "Demon Hunter's Handbook",
@@ -9805,6 +10200,27 @@
     "category": "Campaign",
     "requirement": "Shattered Star",
     "text": "Benefit(s) You gain a +2 trait bonus on Knowledge checks to identify alien monsters' abilities and weaknesses. In addition, you gain a +1 trait bonus on Knowledge (geography) checks, and this skill is a class skill for you. You are treated as if you possessed the Technologist feat for the purposes of resolving checks to identify an alien creature using a Knowledge skill and for all Knowledge (geography) checks. If you already possess the Technologist feat, then your trait bonus on Knowledge (geography) checks increases to +3.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "stargazer-humans-of-golarion",
+    "name": "Stargazer",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You spent many years wandering the roads and during clear nights, you took to tracking the celestial bodies that adorn the skies.\n\nBenefit You gain a +1 trait bonus on Knowledge (geography) and Survival checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Survival": 1
+      }
+    }
+  },
+  {
+    "id": "stargazer-blood-of-the-ancients",
+    "name": "Stargazer",
+    "source": "Blood of the Ancients",
+    "category": "Regional",
+    "text": "Having spent your youth staring at the night sky, you gain a +1 trait bonus on Knowledge (arcana) and Knowledge (nature) checks. One of these skills becomes a class skill for you.",
     "origin": "d20pfsrd"
   },
   {
@@ -10130,7 +10546,7 @@
   {
     "id": "successful-shirker",
     "name": "Successful Shirker",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Race",
     "requirement": "Halfling",
     "text": "You gain a +1 trait bonus on Stealth checks and a +3 trait bonus on Bluff and Diplomacy checks to avoid punishment by lawful authority.",
@@ -10183,6 +10599,14 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Your hands not only are bigger than normal, but also have a strong grip useful for wielding large weapons.\n\nBenefit You gain a +1 trait bonus on damage rolls when using weapons intended for creatures of a larger size.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "superstitious-humans-of-golarion",
+    "name": "Superstitious",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have a healthy fear of sorcerers' speech and wizards' words that has helped you to survive their charms.\n\nBenefit You gain a +1 trait bonus on saving throws against arcane spells.",
     "origin": "d20pfsrd"
   },
   {
@@ -10246,6 +10670,27 @@
     "requirement": "Human",
     "text": "Benefit(s) You gain a +1 trait bonus on saving throws against natural environmental hazards.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "survivalist-faction-guide",
+    "name": "Survivalist",
+    "source": "Faction Guide",
+    "category": "Regional",
+    "text": "You are experienced in carefully moving slaves from one hideout to the next.\n\nBenefit: You gain a +5 trait bonus on all Survival skill checks made to get along in the wild, travel in severe weather, keep from getting lost, or predict the weather.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "survivalist-inner-sea-primer",
+    "name": "Survivalist",
+    "source": "Inner Sea Primer",
+    "category": "Regional",
+    "text": "You gain a +1 trait bonus on Fortitude saves.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "fort": 1
+      }
+    }
   },
   {
     "id": "survivor",
@@ -10505,7 +10950,7 @@
   {
     "id": "theoretical-magician",
     "name": "Theoretical Magician",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Magic",
     "text": "You gain a +2 trait bonus on Spellcraft checks, or a +3 bonus if you aren't a spellcaster.",
     "origin": "d20pfsrd",
@@ -10566,7 +11011,7 @@
   {
     "id": "threatening-defender",
     "name": "Threatening Defender",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Combat",
     "text": "When you use Combat Expertise, reduce the number you subtract from your melee attack rolls by 1.",
     "origin": "d20pfsrd"
@@ -10642,6 +11087,14 @@
     "source": "Dwarves of Golarion",
     "category": "Religion",
     "text": "Choose one Craft or Profession skill in which you have at least 1 rank. Ranks in your chosen skill count as your caster level for the purpose of qualifying for the Craft Magic Arms and Armor feat. You may craft +1 armor, weapons, or shields (with no special qualities), substituting your rank in the chosen skill for your caster level. You must use the chosen skill for the check to create the item. Crafting in this fashion takes twice as long as normal. These items cannot be upgraded with new abilities.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "tongue-of-many-towns",
+    "name": "Tongue of Many Towns",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have spent many years traveling and have met many different people on your journeys.\n\nBenefit You gain a +1 trait bonus on two of the following skills: Diplomacy, Knowledge (local), and Linguistics.",
     "origin": "d20pfsrd"
   },
   {
@@ -10722,6 +11175,18 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "tracker-of-the-society",
+    "name": "Tracker of the Society",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "requirement": "Ranger, Society",
+    "text": "Thanks to your time as a society member, you've mastered the art of tracking.\n\nBenefit: You gain a +1 trait bonus on Initiative checks and a +2 trait bonus on Survival skill checks made while traveling through any of your favored terrains. This is in addition to any bonuses you receive from your Favored Terrain class ability.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "initiative": 1
+    }
+  },
+  {
     "id": "trade-camel",
     "name": "Trade Camel",
     "source": "Wilderness Origins",
@@ -10744,6 +11209,14 @@
     "source": "Divine Anthology",
     "category": "Faith",
     "text": "Benefit(s): You gain a +1 trait bonus on Knowledge (nobility) checks, and Knowledge (nobility) is a class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "trailblazer",
+    "name": "Trailblazer",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "Your ability to endure in the darkest jungles has earned you a reputation as a novice guide.\n\nBenefit While traversing any wilderness, you gain a +1 trait bonus on Survival checks, and gain a +1 trait bonus on Fortitude saving throws against diseases.",
     "origin": "d20pfsrd"
   },
   {
@@ -11442,6 +11915,19 @@
     "text": "Your faith leads you to see the power and wonder in even the most horrible abominations. Once per day, you can cast speak with animals. When you cast this spell, it can affect animals (as normal) as well as aberrations and magical beasts with an Intelligence of 2 or lower."
   },
   {
+    "id": "voice-of-velvet",
+    "name": "Voice of Velvet",
+    "source": "Humans of Golarion",
+    "category": "Race",
+    "text": "You have the ability to sing a song and spin a story that captures the hearts of those around you.\n\nBenefit You gain a +1 trait bonus on Diplomacy and Perform (oratory) checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
+  },
+  {
     "id": "void-child",
     "name": "Void Child",
     "source": "People of the Stars",
@@ -11548,6 +12034,14 @@
         "Disguise": 1
       }
     }
+  },
+  {
+    "id": "wary-people-of-the-river",
+    "name": "Wary",
+    "source": "People of the River",
+    "category": "Regional",
+    "text": "You survived an assassination attempt once.\n\nBenefit(s) You gain a +1 trait bonus on opposed Perception and Sense Motive checks. One of these skills is always a class skill for you.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "wasp-whisperer",
@@ -11689,7 +12183,7 @@
   {
     "id": "wharf-rat",
     "name": "Wharf Rat",
-    "source": "– Cheliax: Empire of Devils",
+    "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You gain a +2 trait bonus on skill checks involving climbing and rope use, and a +4 trait bonus on Appraise checks to determine the value of large quantities of bulk goods without opening their containers.",
     "origin": "d20pfsrd"
@@ -11820,6 +12314,22 @@
     "category": "Religion",
     "text": "If you have 4 or more ranks in Survival or Knowledge (Nature), when you aid another with these skills, you grant a +4 bonus on the check you are aiding instead of the normal +2.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "witty-repartee",
+    "name": "Witty Repartee",
+    "source": "Faction Guide",
+    "category": "Combat",
+    "text": "You are quick with your tongue and have always possessed the talent to quickly admonish your enemies.\n\nBenefit: You gain a +1 trait bonus on Bluff checks and Bluff is a class skill for you.\n\nAttention! Legal Stuff Ahead!\n\nThe name or some of the content on this page has been slightly edited in order for us to be in compliance with the Pathfinder Compatibility License. While the rules (mechanics) have not changed, if you prefer the original wording we may have made a copy of it on our sister website. It is built and maintained by the same collaborators who work on d20pfsrd.com. Otherwise, read on! only the names have been changed to protect the innocent!",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Bluff": 1
+      },
+      "class_skills": [
+        "Bluff"
+      ]
+    }
   },
   {
     "id": "wolf-cub",

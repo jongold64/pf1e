@@ -22,6 +22,11 @@ CATEGORIES = {'combat-traits': 'Combat', 'faith-traits': 'Faith', 'magic-traits'
               'equipment-traits': 'Equipment', 'family-traits': 'Family', 'mount-traits': 'Mount', 'exemplar-traits': 'Exemplar'}
 
 
+# Different traits sharing a name (a Regional "Demon Slayer" and a Combat one): both are kept, and the id without a
+# suffix stays with the book that had it first, so saved characters keep the trait they chose.
+PLAIN_ID_SOURCE = {'demon-slayer': 'Inner Sea Primer', 'superstitious': 'Inner Sea Primer'}
+
+
 def words(slug_text):
     return ' '.join(w.capitalize() for w in slug_text.replace('-traits', '').replace('-trait', '').split('-') if w)
 
@@ -58,7 +63,7 @@ def main():
     out_path = sys.argv[1]
     traits = [t for t in json.load(open(out_path, encoding='utf-8')) if t.get('origin') != ORIGIN]
     key = lambda n: re.sub(r'[^a-z0-9]', '', n.lower())
-    have = {key(t['name']) for t in traits}
+    have = {key(t['name']): t for t in traits}
     skills = skill_names(os.path.dirname(os.path.abspath(out_path)))
     notices = json.load(open(NOTICES, encoding='utf-8')) if os.path.exists(NOTICES) else {}
     ids = {t['id'] for t in traits}
@@ -76,15 +81,19 @@ def main():
         if not paizo:
             skipped['no Paizo notice'] += 1
             continue
-        if key(rec['name']) in have:
+        source = book_name(paizo[-1])
+        same = have.get(key(rec['name']))
+        # A reprint is skipped; a different d20pfsrd trait with the same name (other category) is kept.
+        if same and not (same.get('origin') == ORIGIN and same['category'] != rec['category'] and same['source'] != source):
             skipped['duplicate'] += 1
             continue
-        source = book_name(paizo[-1])
         for n in rec['notices']:
             notices.setdefault(source, [])
             if n not in notices[source]:
                 notices[source].append(n)
         tid = slug(rec['name']) if slug(rec['name']) not in ids else f"{slug(rec['name'])}-{slug(source)}"
+        if same and PLAIN_ID_SOURCE.get(slug(rec['name'])) == source:
+            same['id'], tid = f"{slug(rec['name'])}-{slug(same['source'])}", slug(rec['name'])
         ids.add(tid)
         out = {'id': tid, 'name': rec['name'], 'source': source, 'category': rec['category'],
                **({'requirement': rec['requirement']} if rec['requirement'] else {}), 'text': rec['text'], 'origin': ORIGIN}
@@ -92,7 +101,7 @@ def main():
         if eff:
             out['effects'] = eff
         traits.append(out)
-        have.add(key(rec['name']))
+        have.setdefault(key(rec['name']), out)
         added.append(out)
     traits.sort(key=lambda t: t['name'].lower())
     json.dump(traits, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)

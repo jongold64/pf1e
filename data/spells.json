@@ -4651,6 +4651,44 @@
     ]
   },
   {
+    "id": "apparent-master",
+    "name": "Apparent Master",
+    "source": "Guardians of Dragonfall",
+    "school": "enchantment",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 5,
+      "bard": 4,
+      "skald": 4,
+      "sorcerer": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one construct; see text"
+      ]
+    ],
+    "duration": "1 hour/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Take control over a construct, forcing it to regard you as its master.",
+    "description": "This charm makes a construct regard you as its master. The spell only affects mindless constructs that are attuned to the commands of a master, such as animated objects, golems, retrievers, and shield guardians. All constructs with Intelligence scores, even those that explicitly follow the commands of their creator, such as an homunculus, are unaffected. If the construct is currently being threatened or attacked by you or your allies it receives a +5 bonus on its saving throw.\n\nThe spell enables you to control the construct completely, with the sole exception that commands directly resulting in damage break the spell. Any act by you or your apparent allies that damages the construct also breaks the spell. You can communicate your commands in any spoken language. The construct reverts to obeying the last commands given by its true master when the spell's duration expires.\n\nIf the construct's true master attempts to command a construct affected by apparent master, you must win an opposed Charisma check for the construct to continue to follow your commands. Failing this check breaks the spell.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
+  },
+  {
     "id": "apparent-treachery",
     "name": "Apparent Treachery",
     "source": "Wrath of the Righteous #2: Sword of Valor",
@@ -5010,6 +5048,66 @@
         "save_text": "Reflex negates"
       }
     ]
+  },
+  {
+    "id": "aram-zeys-focus",
+    "name": "Aram Zey's Focus",
+    "source": "Pathfinder Society Field Guide",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 2,
+      "arcanist": 2,
+      "bard": 2,
+      "investigator": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (masterwork thieves' tools worth 100 gp)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Grant the trapfinding ability or a +5 Disable Device bonus.",
+    "description": "Aram Zey created this spell for use by his students, both to increase their confidence in their skills and to ensure more of them survived encounters with deadly traps. If you don't have the trapfinding class ability, this spell grants you the trapfinding ability of a rogue of half your character level.\n\nIf you have the trapfinding ability granted by class levels, however, this spell grants you a +5 competence bonus on all Disable Device checks made to disarm mechanical (but not magical) traps. While under the effects of Aram Zey's focus, whenever you trigger a trap by rolling poorly on a Disable Device check, you may roll a second Disable Device check. This new roll uses the same modifiers as the first roll. If your second roll is high enough to avoid accidentally springing the trap, you avoid setting it off, but still fail to disarm it. Each time you take advantage of this feature, the remaining duration of the spell is reduced by 1 minute-if less than a minute's worth of duration remains, the spell ends as soon as you reroll your Disable Device check.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "aram-zeys-trap-ward",
+    "name": "Aram Zey's Trap Ward",
+    "source": "Pathfinder Society Field Guide",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "sorcerer": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (masterwork thieves' tools worth 100 gp)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "10 minutes/level or until discharged",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Protect yourself against magical traps.",
+    "description": "While he was researching the underlying causes of the resonance created by overlapping abjurations, Aram Zey discovered a way to manipulate that resonance to the caster's advantage when encountering magical traps.\n\nThe protection provided by Aram Zey's trap ward comes into play whenever the caster is subjected to the effects of a magical trap. The spell immediately discharges and interferes with the trap's function in an attempt to counter the trap's magic. When this occurs, make a caster level check as an immediate action. The DC of this check is equal to the trap's Disable Device DC. If you're successful, the trap ward dispels the magical effect of the trap before the effect actually manifests, effectively preventing the trap from triggering for the next 1d4 rounds and ending Aram Zey's trap ward immediately.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "arbitrament",
@@ -7807,6 +7905,50 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "battering-blast",
+    "name": "Battering Blast",
+    "source": "Dungeons of Golarion",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature or unattended object"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Reflex partial (see text)",
+    "spell_resistance": "yes",
+    "summary": "Hurl a fist sized ball of force to damage your enemy and knock them back.",
+    "description": "You hurl a fist-sized ball of force resembling a sphere of spikes to ram a designated creature or object. You must succeed on a ranged touch attack to strike your target. On a successful hit, you deal 1d6 points of force damage per two caster levels (maximum 5d6). For every 5 caster levels you possess beyond 5th, you gain a second ball of force.\n\nA creature struck by any of these is subject to a bull rush attempt. The force has a Strength modifier equal to your Intelligence, Wisdom, or Charisma modifier (whichever is highest). The CMB for the force's bull rush uses your caster level as its base attack bonus, adding the force's Strength modifier and a +10 bonus for each additional blast directed against the same target. Each sphere of force makes its own separate bull rush attempt-if multiple spheres strike one target, you make multiple CMB checks but only take the highest result to determine success. If the bull rush succeeds, the force pushes the creature away from you in a straight line, and the creature must make a Reflex save or fall prone. This spell pushes an unattended object struck by it 20 feet away from you, provided it weighs no more than 25 pounds per level (maximum 250 pounds). This spell cannot move creatures or objects beyond your range. Used on a door or other obstacle, the spell attempts a Strength check to destroy it if the sheer damage inflicted by the spell doesn't do the job.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "ref",
+        "save_text": "Reflex partial (see text)",
+        "damage": [
+          {
+            "formula": "(min(5, floor(@cl / 2)))d6",
+            "types": [
+              "force"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "battle-trance",
     "name": "Battle Trance",
     "source": "Advanced Race Guide",
@@ -7959,6 +8101,36 @@
     "spell_resistance": "no",
     "summary": "Send out a burst of luck to allies around you.",
     "description": "You send out a burst of luck with a 30-foot radius centered around you. While the Beacon of Luck is in effect, you gain a +2 sacred bonus on all saving throws. As an immediate action before a saving throw is made, allies within the area can choose to benefit from this luck, rolling twice for a saving throw and taking the better result. Once a creature benefits from the Beacon of Luck in this way, it cannot gain the benefit of this spell for 24 hours.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "beanstalk",
+    "name": "Beanstalk",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "conjuration",
+    "subschool": "creation",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "sorcerer": 4,
+      "summoner": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 minute",
+    "components": "V, S, M (a small handful of beans)",
+    "range": "0 ft.",
+    "effects": [
+      [
+        "Effect",
+        "a 5-foot-radius beanstalk that grows to a height of 50 ft./caster level"
+      ]
+    ],
+    "duration": "24 hours",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create an enormous beanstalk that leads into the clouds.",
+    "description": "When casting this spell, you must plant the material components in soil. When you do, at the end of casting, a large beanstalk rises up from the ground. It's strong enough to support Huge or smaller creatures weighing no more than 2,000 pounds total, and has enough handholds and footholds that it can be climbed as if it were knotted rope (Climb DC 5). At the end of the spell's duration, the beanstalk withers and dies at an accelerated rate, leaving nothing more than a pile of compost.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -9162,6 +9334,88 @@
     "summary": "Gain a pool of luck that can be used to add a luck bonus to any d20 rolls, which can turn a failure into a success",
     "description": "For the spell's duration, the caster gains a reservoir of luck with a total number of points equal to 1 point per 2 caster levels. During the spell's duration, the caster can spend 1 point from this reservoir when making an attack roll or skill check to add a +1d8 luck bonus to the d20 roll's result. This bonus can be added before or after the roll or check's result is revealed, and if this bonus is large enough to turn a failure into a success, the roll succeeds. The spell instantly ends when all points are expended or when it is cast on the target again. An 8th-level caster can instead spend 4 points to add a +2d8 luck bonus, and a 16th-level caster can spend 8 luck points to instead add a +3d8 luck bonus.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "bite-the-hand",
+    "name": "Bite the Hand",
+    "source": "Pathfinder Society Field Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "druid": 3,
+      "hunter": 3,
+      "inquisitor": 3,
+      "sorcerer": 4,
+      "summoner": 3,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature summoned by a spell or spell-like ability"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Compel a summoned creature to attack its summoner.",
+    "description": "With a short command and a wave of the hand, you compel the target creature to attack the being who summoned it, to the best of its ability. If the being who summoned it is not present, the creature acts normally according to its last task or instructions. This spell has no effect on called creatures, summoned creatures not brought forth by spells or spell-like abilities (such as a summoner's eidolon), or bonded creatures not explicitly summoned, such as a paladin's mount or wizard's familiar.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
+  },
+  {
+    "id": "bite-the-hand-mass",
+    "name": "Bite the Hand, Mass",
+    "source": "Pathfinder Society Field Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 7,
+      "druid": 6,
+      "hunter": 6,
+      "inquisitor": 6,
+      "sorcerer": 7,
+      "summoner": 6,
+      "witch": 7,
+      "wizard": 7
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one creature summoned by a spell or spell-like ability/level, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "As Bite the Hand but with multiple creatures.",
+    "description": "This spell functions like bite the hand, except as noted above.\n\nThe target creatures do not need to have all been summoned by the same being.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
   },
   {
     "id": "biting-words",
@@ -20756,6 +21010,35 @@
     "spell_resistance": "no",
     "summary": "Grants allies a teamwork feat.",
     "description": "Choose a single teamwork feat that you possess. You forge a link with your allies, allowing them to gain the benefits of the chosen feat even if they do not have it themselves. You must be a part of the group qualifying for a given bonus for your allies to gain the benefits. For example, two of your allies flanking an orc would gain no benefit from your Outflank feat, but an ally flanking the orc with you would. Your allies' positioning and actions must still meet the prerequisites listed in the teamwork feat for either of you to receive the listed bonus."
+  },
+  {
+    "id": "corpse-lanterns",
+    "name": "Corpse Lanterns",
+    "source": "Pathfinder Society Field Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "light",
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Effect",
+        "up to 4 lights, all within a 10-ft.-radius area"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a sickly version of dancing lights.",
+    "description": "This spell functions as dancing lights, except it summons up to four spheres of light, each of which glows a sickly pale green. These corpse lanterns shed dim light in a 20-foot radius, and do not increase the light level in areas of normal light or bright light. In dim or normal light, the radiance of corpse lanterns provides a strange contrast, giving all creatures in the area a -5 penalty on Stealth checks. In addition, the hue interferes with illusion (pattern) spells, giving all creatures in the illuminated area a +2 bonus on any saving throws against such spells. Unlike dancing lights, you may have more than one corpse lanterns spell active at a time, but you may only move one set in any given round.\n\nMoving the corpse lanterns does not require concentration.\n\nCorpse lanterns can be made permanent on an area with a permanency spell by a caster of at least 11th level for the cost of 7,500 gp.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "corrosive-consumption",
@@ -38338,6 +38621,42 @@
     ]
   },
   {
+    "id": "flaming-aura",
+    "name": "Flaming Aura",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "fire",
+    "levels": {
+      "arcanist": 4,
+      "bloodrager": 4,
+      "cleric": 4,
+      "magus": 4,
+      "oracle": 4,
+      "shaman": 4,
+      "sorcerer": 4,
+      "summoner": 4,
+      "warpriest": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a small piece of charcoal)/DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you (see text)"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none (see text)",
+    "spell_resistance": "no",
+    "summary": "Gain the fire subtype or enhance an already existing subtype.",
+    "description": "The spell allows you channel fire into your very being. If you don't already have the fire subtype, this spell grants you the fire subtype. If you already have the fire subtype, you instead channel the flames from your being outward, creating a 10-foot-radius aura of fire centered on you. Creatures who enter or end their turns in the aura must succeed at a Fortitude saving throw or take 1d8 points of fire damage. Multiple castings of this spell stack; you can cast it once on yourself to gain the fire subtype, then again to manifest the aura of flames around you.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "flaming-sphere",
     "name": "Flaming Sphere",
     "source": "Core Rulebook",
@@ -41304,6 +41623,42 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "frosty-aura",
+    "name": "Frosty Aura",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "cold",
+    "levels": {
+      "arcanist": 4,
+      "bloodrager": 4,
+      "cleric": 4,
+      "magus": 4,
+      "oracle": 4,
+      "shaman": 4,
+      "sorcerer": 4,
+      "summoner": 4,
+      "warpriest": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a chunk of ice or a few drops of water melted from glacier ice)/DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you (see text)"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none (see text)",
+    "spell_resistance": "no",
+    "summary": "Gain the cold subtype or enhance an already existing subtype.",
+    "description": "The spell allows you to channel cold into your very being. If you don't already have the cold subtype, this spell grants you the cold subtype. If you already have the cold subtype, you instead channel the frost from your being outward, creating a 10-foot-radius aura of cold centered on you. Creatures who enter or end their turns in the aura must succeed at a Fortitude saving throw or take 1d8 points of cold damage. Multiple castings of this spell stack; you can cast it once on yourself to gain the cold subtype, then again to manifest the aura of frost around you.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "frozen-note",
     "name": "Frozen Note",
     "source": "Advanced Player's Guide",
@@ -42688,6 +43043,45 @@
         "save": "fort",
         "save_text": "Fortitude negate",
         "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "gilded-whispers",
+    "name": "Gilded Whispers",
+    "source": "Pathfinder Society Field Guide",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "cleric": 4,
+      "oracle": 4,
+      "sorcerer": 3,
+      "warpriest": 4,
+      "wizard": 3
+    },
+    "casting_time": "1 round",
+    "components": "V, S, M (100 gp of powdered gemstones)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "a gold or platinum coin"
+      ]
+    ],
+    "duration": "1 day/level (D)",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "yes",
+    "summary": "Use a single coin as a conduit for eavesdropping.",
+    "description": "Developed by priests of Abadar to catch thieves and skimmers, gilded whispers later spread to other faiths and was adapted to the arcane arts through the combined efforts of Aram Zey and Kreighton Shaine. Pathfinders most commonly use this spell to track bribes and illicit purchases back to their ultimate source, especially when they suspect the influence of Aspis Consortium agents.\n\nGilded whispers allows you to use a single coin as a conduit for an eavesdropping spell. When you use a divination (scrying) spell or item, such as clairvoyance/ clairaudience, scrying, or a crystal ball, you can choose to target a coin you have affected with gilded whispers instead of a creature or location (even if you would not otherwise be able to target an object), though any range limits on the scrying effect still apply. If the coin is held or carried by a creature, its owner receives any applicable saving throw against the effect. The caster of gilded whispers treats the coin as a familiar subject. The residual psychic impressions left upon the coin by other handlers help mask this dweomer from detection, protecting gilded whispers against location by detect magic, arcane sight, and similar effects unless the latter spell's caster succeeds on a caster level check (1d20 + caster level) against a DC of 11 + the caster level of the spellcaster who cast gilded whispers.\n\nThe scrying sensor created by using a divination (scrying) spell to observe or listen to the coin's surroundings can be detected as normal.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (object)"
       }
     ]
   },
@@ -57340,6 +57734,43 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "lipstitch",
+    "name": "Lipstitch",
+    "source": "Pathfinder Society Field Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "S, M (a bone needle and sinew thread)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "Sew the target's lips together.",
+    "description": "A rare spell without verbal components, lipstitch sews the target's lips tightly together if it fails a saving throw, such that no clear speech, bite attacks, spellcasting, or use of command words is possible. The target takes 1d6 points of damage as the stitches weave through flesh. The victim can still make enough noise to be heard at a distance with a DC 10 Perception check.\n\nThe thread created by lipstitch can be burst with a DC 20 Strength check as a standard action or can be sliced open with a piercing or slashing weapon (wielded by the target or an ally) as a full-round action. Cutting the thread provokes attacks of opportunity, while making a Strength check does not. Either option causes 1d6 points of damage and 1 point of bleed damage. The target has a 20% chance of failing to cast spells with verbal components until the bleeding is stopped. The effects of multiple castings of this spell do not stack. Optionally, the thread can be removed more carefully over the course of a minute with a DC 20 Heal check. If the check fails, the target takes damage and bleeds as described above. If the check succeeds, the stitches are removed with no harm. Creatures with no mouths are unaffected by lipstitch. Creatures with multiple mouths lose the use of only one mouth per casting-the particular mouth is chosen by the caster.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude negates"
+      }
+    ]
+  },
+  {
     "id": "liquefy",
     "name": "Liquefy",
     "source": "Arcane Anthology",
@@ -69331,6 +69762,37 @@
     ]
   },
   {
+    "id": "petulengros-validation",
+    "name": "Petulengro's Validation",
+    "source": "Pathfinder Society Field Guide",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 1,
+      "arcanist": 1,
+      "inquisitor": 1,
+      "investigator": 1,
+      "sorcerer": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a bit of hair, a fingernail, or a similar portion of a creature)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Detect what creature a missing portion came from.",
+    "description": "After a particularly harrowing brush with death at the hands of doppelgangers, Venture-Captain Eliza Petulengro devised a means of being sure her companions were actually who they appeared to be. To cast this spell, you must have a bit of hair, a fingernail clipping, or some other portion of a creature. The sample must be no more than 1 week old per caster level. As part of casting, you touch the target creature, and instantly know whether the target is the same creature the sample is from. Note that if you wish to be discrete, you can cast the spell away from the target and hold the charge before touching the creature, so that the casting is not noticed. You can also use this spell to divine whether a dead body, or even partial remains from a body, belonged to the same person whose fingernail clipping or bit of hair you used when casting the spell.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "phantasmal-affliction",
     "name": "Phantasmal Affliction",
     "source": "Ultimate Intrigue",
@@ -75164,6 +75626,46 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "quick-throwing",
+    "name": "Quick Throwing",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "antipaladin": 2,
+      "bloodrager": 2,
+      "hunter": 2,
+      "magus": 2,
+      "paladin": 2,
+      "ranger": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature/level, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "Draw thrown weapons faster, gaining full attacks with such weapons.",
+    "description": "Those under the effects of this spell become faster in the use of thrown weapons. They can draw thrown weapons (including rocks if they have the rock throwing ability) on their bodies or within their space without the need for the Quick Draw feat, allowing them to make their full normal rate of attacks with such weapons. This has no effects on other forms of ranged weapon ammunition.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "quieting-weapons",
     "name": "Quieting Weapons",
     "source": "Ultimate Intrigue",
@@ -79457,6 +79959,41 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "reveal-mirage",
+    "name": "Reveal Mirage",
+    "source": "Osirion, Legacy of Pharaohs",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "cleric": 3,
+      "druid": 2,
+      "hunter": 1,
+      "oracle": 3,
+      "ranger": 1,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "witch": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (a small prism)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Discern illusory terrain from range.",
+    "description": "You can focus upon a single point within line of sight and discern if the terrain or geographic features of that point are illusory. This ability allows you a Will save to disbelieve a terrain-affecting illusion (glamer) effect from range as though you had interacted with it. In addition to affecting such spells as hallucinatory terrain and mirage arcana, this spell also allows you to disbelieve naturally occurring mirages.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "reveal-secrets",
     "name": "Reveal Secrets",
     "source": "Inner Sea Temples",
@@ -79488,6 +80025,49 @@
     "spell_resistance": "yes",
     "summary": "Target reveals if it has secret knowledge of a topic",
     "description": "When you cast this spell, you ask the target whether it has a secret about a specific topic that can be described in 10 words or fewer. This can concern a person, place, or thing (such as a town's mayor, the ring worn by a traveling merchant, or the bridge spanning a nearby river) or an easily distinguished event (such as a historic battle or a recent rash of disappearances). If the target knows a secret about the topic (information it believes isn't common knowledge and which it would not normally tell you), it states it has a secret. The target doesn't mention anything about the secret and doesn't remember telling you it has a secret. If the target succeeds at its saving throw, it isn't compelled to reveal whether it knows a secret and is aware that you asked.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
+  },
+  {
+    "id": "reveal-true-shape",
+    "name": "Reveal True Shape",
+    "source": "Legacy of Fire #1: Howl of the Carrion King",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "bard": 2,
+      "cleric": 2,
+      "druid": 2,
+      "hunter": 2,
+      "oracle": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "warpriest": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a pinch of rare herbs worth 50 gp)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Reveal the true form of a magically disguised/transformed creature.",
+    "description": "You reveal the true form of a magically disguised or transformed creature, whether the target's transformation is physical (such as polymorph) or illusory (such as disguise self). The spell does not force the creature into its true form, but rather creates a perfect illusion of the creature's true form that overlaps it and hides the disguised form completely, making the true form visible to all observers. For the duration of the spell, if the target changes shape or uses illusion to disguise its appearance, observers can still see its true form, though once the spell runs out any illusions or shape changes made by the target in the meantime immediately take effect. This spell does not reveal invisible creatures, overcome effects such as blur and displacement, or penetrate mundane disguises.",
     "origin": "Foundry VTT pf1",
     "actions": [
       {
@@ -84280,6 +84860,36 @@
     ]
   },
   {
+    "id": "sequester-thoughts",
+    "name": "Sequester Thoughts",
+    "source": "Pathfinder Society Field Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "arcanist": 5,
+      "bard": 3,
+      "skald": 3,
+      "sorcerer": 5,
+      "wizard": 5
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, M (a gemstone worth at least 500 gp)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "one willing creature"
+      ]
+    ],
+    "duration": "permanent until discharged (see text)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Erase a creature's memory about a single topic.",
+    "description": "Sequester thoughts allows you to erase a creature's memory of either an event lasting not more than 1 minute per caster level or all of its knowledge about a single topic (using the GM's discretion as to what constitutes a single topic). For example, you could erase a single battle from a creature's memory, or all knowledge of a plot to assassinate a king.\n\nThe memories you remove are stored within the gem used at the time of casting. If the gem is shattered, the memories return to the creature as long as the two are within 30 feet of each other. Once sequester thoughts has been cast, the spell remains active on the gem and can be dispelled (which shatters it). No portion of the spell remains active on the target creature, and the target does not radiate magic as a consequence of the spell, nor can its memories be returned by dispelling the creature or subjecting it to antimagic. If the gem is shattered or dispelled out of range from the creature, the thoughts sequestered within are forever lost save by the use of wish, miracle, or the like.\n\nSequester thoughts protects against detect thoughts, zone of truth, discern lies, and similar spells where the memories removed are concerned, though careful questioning may reveal the gaps in the creature's memory, or that it has been affected by the spell. Note that the creature itself does not remember any details of what memories were removed until the gem is broken.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "serenity",
     "name": "Serenity",
     "source": "Ultimate Magic",
@@ -86274,6 +86884,44 @@
     ]
   },
   {
+    "id": "sharesister",
+    "name": "Sharesister",
+    "source": "Pathfinder Society Field Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 3,
+      "oracle": 3,
+      "warpriest": 3,
+      "witch": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a drop of your own blood)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "you and one creature of your gender"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Take a negative level to grant another creature of the same gender a bonus on their casting ability.",
+    "description": "Ithuna Vardsdottir claims to have unearthed this ancient prayer in a ruined temple of Desna, though Pathfinders have reported the use of similar magic in Irrisen among the White Witches. While the name of this spell is sharesister, it works equally well on male or female creatures-both targets of the spell must simply be of the same gender.\n\nWhen you deliver the spell, you receive a negative level for the duration of the spell, and the other target receives a +1 insight bonus to her caster level and a +1 insight bonus to the save DCs of all of her spells. At 11th level, you can opt to take four negative levels to grant a +2 insight bonus to the other target's caster level and spell save DCs if you wish, while at 17th level you can take 6 negative levels to increase the insight bonus to +3. Any effect that removes or prevents the negative level immediately ends the sharesister spell. Negative levels received from the spell vanish as soon as this spell effect ends.\n\nNegative levels from multiple castings of this spell stack.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "shatter",
     "name": "Shatter",
     "source": "Core Rulebook",
@@ -88026,6 +88674,50 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "silverlight",
+    "name": "Silverlight",
+    "source": "Pathfinder Chronicles: Guide to the River Kingdoms",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "light",
+    "levels": {
+      "arcanist": 3,
+      "bard": 3,
+      "cleric": 3,
+      "druid": 3,
+      "hunter": 3,
+      "oracle": 3,
+      "paladin": 3,
+      "skald": 3,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (1 sp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "object touched"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Fortitude partial (see text)",
+    "spell_resistance": "no",
+    "summary": "Create a bright silver light that is harmful to those vulnerable to silver.",
+    "description": "As daylight, except the object touched sheds bright silvery light in a 20-foot radius. In addition to providing illumination, the area of bright light is painful to creatures that are susceptible to alchemical silver. A creature with DR/silver that begins its turn within the light of this spell is automatically dazzled and becomes sickened unless it succeeds on a Fortitude save. These effects disappear 1 round after the target leaves the silverlight. A creature that leaves the area and then returns must make a new saving throw. This spell provides dim light up to 40 feet away, but only creatures within 20 feet are subject to the above e!ects.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch",
+        "save": "fort",
+        "save_text": "Fortitude partial (see text)"
       }
     ]
   },
@@ -92473,6 +93165,48 @@
     ]
   },
   {
+    "id": "stalwart-resolve",
+    "name": "Stalwart Resolve",
+    "source": "Pathfinder Society Field Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "alchemist": 2,
+      "cleric": 2,
+      "inquisitor": 1,
+      "investigator": 2,
+      "oracle": 2,
+      "paladin": 1,
+      "warpriest": 2,
+      "witch": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Ignore the effects of ability damage and penalties to one score.",
+    "description": "Stalwart resolve was originally created to temporarily aid those suffering from certain afflictions. The recipient of stalwart resolve ignores the effects of ability damage and penalties to a single ability score of your choice, except that damage equal to or greater than the ability score still causes unconsciousness or death. This applies whether or not the ability damage or penalty happened before or during the spell's duration, and whether or not multiple sources are involved. This spell has no effect on ability drain.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "starsight",
     "name": "Starsight",
     "source": "People of the Stars",
@@ -93086,6 +93820,44 @@
     "summary": "Increase the natural heat of your body, transferring it to weapons and armor.",
     "description": "You increase the natural heat within your body, transferring it to your weapons and armor. As a swift action, you may grant one of your natural or manufactured weapons the flaming special ability for 1 round. If you have the fire subtype, your weapon instead gains the flaming burst special ability. If the weapon leaves your hand for any reason, it loses the flaming (or flaming burst) special ability until you spend a swift action to activate it again. You can only have Stoke the Inner Fire active on one weapon at a time, and spending a swift action to imbue a second weapon with the spell's power immediately ends its effect on the first weapon. The spell also builds a wall of searing heat between your armor and your flesh. Anyone striking you with a natural weapon or unarmed strike takes 1 point of fire damage. A creature that grapples you or is grappled by you takes 1 point of fire damage each round the grapple persists. If you have the fire subtype, these damage values increase to 1d6 points of fire damage each. Removing your armor causes this wall of heat to dissipate and ends these effects.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "stolen-light",
+    "name": "Stolen Light",
+    "source": "Pathfinder Society Field Guide",
+    "school": "illusion",
+    "subschool": "figment",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "bard": 3,
+      "skald": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 full-round action",
+    "components": "V, S, F (a gem worth at least 500 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "transparent gem touched"
+      ]
+    ],
+    "duration": "permanent or 1 minute/level (see text)",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "yes",
+    "summary": "Store images within a gem.",
+    "description": "Kreighton Shaine researched this spell from the fragmentary notes of a Vudrani ascetic recorded in a strange tome, and rumors credit him with no fewer than a dozen permanent stolen light gems hidden in compartments and drawers in his study. Stolen light stores images within a gem. To store an image, as part of casting you must touch a gem worth not less than 500 gp. You trap within the gem an image of everything visible within a 30-foot cone measured from the gem, in a direction of your choice. Alternatively, you can capture a less detailed image of a single object within sight.\n\nOnce the casting is complete, the gem turns opaque, and the image inside cannot be seen. The stolen image remains within the gem until released or dispelled.\n\nTo release an image, you touch a gem holding stolen light as a standard action and speak a command word chosen at the time of casting. For 1 minute per caster level, the image stored within the gem becomes visible. Details can be made out as clearly as they could be perceived at the time of casting. Darkvision is of no use for making out details in a stolen image, though low-light vision or other exceptional visual talents may reveal information the caster did not see.\n\nLight sources brighter than bright light are reduced to bright light in the stolen image. Once the image has been released, it cannot again be recovered from the gem.\n\nStolen light can be made permanent with the permanency spell by a caster of 10th level for a cost of 5,000 gp. This leaves the gem capable of projecting the image indefinitely, activated and deactivated by its command word, until it is destroyed or dispelled.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (object)"
+      }
+    ]
   },
   {
     "id": "stone-call",
@@ -97948,6 +98720,44 @@
     ]
   },
   {
+    "id": "sympathetic-wounds",
+    "name": "Sympathetic Wounds",
+    "source": "Pathfinder Chronicles: Gods and Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": "evil",
+    "levels": {
+      "cleric": 2,
+      "druid": 2,
+      "hunter": 2,
+      "oracle": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (250 gp of powdered amber)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": null,
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Force half of the damage you take onto another creature.",
+    "description": "This spell functions like shield other, except some of your wounds transfer to the targeted creature rather than some of their wounds transferring to you. For example, you could link yourself to a nearby chained slave so that when you are wounded, some of the damage is transferred to the slave. You must have at least as many hit dice as the target, otherwise the spell fails. A creature can only be under the effects of one instance of this spell at a time.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
+  },
+  {
     "id": "sympathy",
     "name": "Sympathy",
     "source": "Core Rulebook",
@@ -99841,6 +100651,35 @@
     ]
   },
   {
+    "id": "thanatotic-fury",
+    "name": "Thanatotic Fury",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "sorcerer": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (shavings from a holy symbol)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you (see text)"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Stifle other creatures' abilities to cast divine spells by attacking them.",
+    "description": "You may cast this spell only if you have the giant subtype. When casting this spell, you channel the fury and the abilities of thanatotic titans, gaining some of their abilities for a short period of time. When you hit a creature capable of casting divine spells, that creature must succeed at a Will saving throw or be unable to cast divine spells for 1d4 rounds and be shaken for the same duration. If the save is successful, the target is instead shaken for only 1 round. Additionally, your attacks are treated as epic and evil for the purposes of overcoming damage reduction.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "thaumaturgic-circle",
     "name": "Thaumaturgic Circle",
     "source": "Occult Adventures",
@@ -100640,6 +101479,44 @@
     ]
   },
   {
+    "id": "thunderous-footfalls",
+    "name": "Thunderous Footfalls",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "summoner": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one Large or larger creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "no",
+    "summary": "Knock down smaller creatures by moving close to them.",
+    "description": "This spell makes the target creature's footfalls shake the ground violently as he trundles, which may knock down smaller creatures as he passes by, though it also makes the target slower on land. The target's land speed is reduced by half (round down to the nearest 5-foot increment), but each time he moves overland adjacent to a creature that is at least one size category smaller than he is, that creature must succeed at a Fortitude saving throw or be knocked prone.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "thunderstomp",
     "name": "Thunderstomp",
     "source": "Advanced Class Guide",
@@ -101008,6 +101885,40 @@
     "spell_resistance": null,
     "summary": "Ignore fatigue while hustling.",
     "description": "You harden your body against the stresses of long travel. You halve the damage caused by hustling and forced marching (see Pathfinder RPG Core Rulebook 171). In addition, for the duration of the spell you ignore any fatigue caused by such travel. Once the spell ends, if you still have any nonlethal damage caused by the hustling or forced march, you become fatigued, or exhausted if already fatigued."
+  },
+  {
+    "id": "titanic-anchoring",
+    "name": "Titanic Anchoring",
+    "source": "Giantslayer #1: Battle of Bloodmarch Hill",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "antipaladin": 3,
+      "bloodrager": 3,
+      "cleric": 3,
+      "hunter": 3,
+      "magus": 3,
+      "oracle": 3,
+      "paladin": 3,
+      "ranger": 3,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a shaving of oak root)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Become grounded and nearly immovable.",
+    "description": "You become grounded and nearly immovable. You are immune to the pull and push special abilities, and all bull rush, grapple, overrun, reposition, and trip combat maneuvers made by creatures your size or smaller always fail. You gain a +10 bonus to your CMD against those combat maneuver checks made by creatures larger than you.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "toilsome-chant",
@@ -102741,6 +103652,36 @@
     "description": "Trap the soul forces a creature's life force (and its material body) into a gem. The gem holds the trapped entity indefinitely or until the gem is broken and the life force is released, which allows the material body to reform. If the trapped creature is a powerful creature from another plane, it can be required to perform a service immediately upon being freed. Otherwise, the creature can go free once the gem imprisoning it is broken.\n\nDepending on the version selected, the spell can be triggered in one of two ways.\n\nSpell Completion: First, the spell can be completed by speaking its final word as a standard action as if you were casting a regular spell at the subject. This allows spell resistance (if any) and a Will save to avoid the effect. If the creature's name is spoken as well, any spell resistance is ignored and the save DC increases by 2. If the save or spell resistance is successful, the gem shatters.\n\nTrigger Object: The second method is far more insidious, for it tricks the subject into accepting a trigger object inscribed with the final spell word, automatically placing the creature's soul in the trap. To use this method, both the creature's name and the trigger word must be inscribed on the trigger object when the gem is enspelled. A sympathy spell can also be placed on the trigger object. As soon as the subject picks up or accepts the trigger object, its life force is automatically transferred to the gem without the benefit of spell resistance or a save."
   },
   {
+    "id": "traveling-dream",
+    "name": "Traveling Dream",
+    "source": "Pathfinder Chronicles: Gods and Magic",
+    "school": "divination",
+    "subschool": "scrying",
+    "descriptors": null,
+    "levels": {
+      "cleric": 4,
+      "druid": 4,
+      "hunter": 4,
+      "oracle": 4,
+      "warpriest": 4
+    },
+    "casting_time": "10 minutes",
+    "components": "V, DF",
+    "range": "unlimited",
+    "effects": [
+      [
+        "Effect",
+        "magical sensor"
+      ]
+    ],
+    "duration": "1 hour/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a magical sensor that you can watch through while you sleep.",
+    "description": "This spell functions like arcane eye, except as noted above. Upon casting this spell, you fall asleep for its duration, creating an invisible magic sensor (called a dreamscryer) that is the exact size and shape of your body, is recognizable as you, and cannot pass through spaces that your body cannot enter. Unlike the invisible sensor created by arcane eye, children of any race (no older than the human equivalent of 10) and animals can see your dreamscryer. Sleeping creatures can sense its presence and might incorporate your image into their dreams. Force effects and abjuration spells that ward out creatures (such as magic circle against evil) are effective barriers against a dreamscryer (regardless of your creature type, alignment, or other specifics). If you dismiss the spell or the dreamscryer is dispelled or destroyed, you awaken.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "treacherous-teleport",
     "name": "Treacherous Teleport",
     "source": "Ultimate Intrigue",
@@ -103599,6 +104540,38 @@
     ]
   },
   {
+    "id": "twisted-innards",
+    "name": "Twisted Innards",
+    "source": "Pathfinder Society Field Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 2,
+      "arcanist": 3,
+      "investigator": 2,
+      "magus": 3,
+      "sorcerer": 3,
+      "witch": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a cocoon tied with string)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Avoid critical hits and sneak attacks by making your vital organs writhe around.",
+    "description": "For the duration of this spell, your vital organs writhe, shift, and move about, making it difficult to strike you in a vulnerable area. While this spell is in effect, critical hits and sneak attacks against you have a 25% chance of failing to inflict any additional damage-though you still take the normal damage from the attack. At 7th level, the chance to ignore additional damage increases to 50%, while at 13th level the chance increases to 75%.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "twisted-space",
     "name": "Twisted Space",
     "source": "Ultimate Combat",
@@ -104288,6 +105261,47 @@
         "kind": "save",
         "save": "will",
         "save_text": "Will negates"
+      }
+    ]
+  },
+  {
+    "id": "undeath-ward",
+    "name": "Undeath Ward",
+    "source": "Dungeons of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 6,
+      "cleric": 5,
+      "inquisitor": 4,
+      "oracle": 5,
+      "sorcerer": 6,
+      "warpriest": 5,
+      "witch": 6,
+      "wizard": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (powdered silver)/DF",
+    "range": "10 ft.",
+    "effects": [
+      [
+        "Area",
+        "10-ft.-radius emanation, centered on you"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none or Will negates (see text)",
+    "spell_resistance": "yes",
+    "summary": "Create a barrier to repel undead.",
+    "description": "You create a pale silver barrier that repels undead. Mindless undead and intelligent undead with fewer Hit Dice than your caster level cannot enter the area or penetrate the barrier.\n\nUndead of Hit Dice equal to or greater than your caster level can pass through this barrier by making a successful Will save against the spell, but as they do so, they take 3d6 points of damage. Once an undead creature makes its save again this spell and takes this damage, it can come and go without further penalty. This spell may only be used defensively, not aggressively. Forcing an undeath ward against creatures that the spell keeps at bay collapses the barrier.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "none or Will negates (see text)"
       }
     ]
   },

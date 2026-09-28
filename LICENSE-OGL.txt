@@ -249,6 +249,7 @@ Pathfinder Player Companion: Champions of Balance © 2014, Paizo Publishing, LLC
 Pathfinder Player Companion: Champions of Corruption © 2014, Paizo Inc.; Authors: Paris Crenshaw, Jim Groves, Sean McGowen, and Philip Minchin.
 Pathfinder Player Companion: Champions of Purity © 2013, Paizo Publishing, LLC; Authors: Jessica Blomstrom, Adam Daigle, Shaun Hocking, Daniel Marthaler, Tork Shaw, and Christina Stiles.
 Pathfinder Companion: Cheliax, Empire of Devils. Copyright 2009, Paizo Publishing, LLC; Authors: Jonathan H. Keith, Colin McComb, Steven E. Schend, Leandra Christine Schneider, and Amber E. Scott.
+Pathfinder Chronicles – Cheliax: Empire of Devils Copyright 2009, Paizo Publishing, LLC Authors: Jonathan H. Keith, Colin McComb, Steven E. Schend, Leandra Christine Schneider, and Amber E. Scott
 Pathfinder Player Companion: Chronicle of Legends © 2019, Paizo Inc.; Authors: Calder CaDavid, Vanessa Hoskins, Mike Kimmel, Isabelle Lee, Matt Morris, Mikhail Rekun, and Michael Sayre.
 Pathfinder Player Companion: Chronicle of Legends © 2019, Paizo Publishing, LLC; Authors: Calder CaDavid, Vanessa Hoskins, Mike Kimmel, Isabelle Lee, Matt Morris, Mikhail Rekun, and Michael Sayre.
 Aurumvorax from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -315,6 +316,7 @@ Scarecrow from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pu
 Pathfinder Campaign Setting: Druma, Profit and Prophecy © 2019, Paizo Inc.; Authors: John Compton and Thurston Hillman.
 Dungeon Denizens Revisited. Copyright 2009, Paizo Publishing, LLC Authors Clinton Boomer, Jason Bulmahn, Joshua J. Frost, Nicolas Logue, Robert McCreary, Jason Nelson, Richard Pett, Sean K Reynolds, James L. Sutter, and Greg A. Vaughan.
 Pathfinder Player Companion: Dungeoneer’s Handbook © 2013, Paizo Publishing, LLC; Authors: Amanda Hamon, Gareth Hanrahan, David Ross, and Jerome Virnich.
+Pathfinder Campaign Setting: Dungeons of Golarion. © 2011, Paizo Publishing, LLC. Authors: Jason Bulmahn, Matthew Goodall, Brandon Hodge, Anthony Pryor, and Mike Shel.
 Pathfinder Companion: Dwarves of Golarion. Copyright 2009, Paizo Publishing, LLC; Authors: David A. Eitelbach, Russ Taylor, JD Wiker, Keri Wiker, and Hank Woon.
 Pathfinder Player Companion: Elemental Master’s Handbook © 2017, Paizo Inc.; Authors: John Compton, Eleanor Ferron, Mikko Kallio, Jason Keeley, Isabelle Lee, and Christopher Wasko.
 Pathfinder Companion: Elves of Golarion Copyright 2009, Paizo Publishing, LLC; Authors: Jeff Quick, Hal MacLean, and Sean K Reynolds
@@ -340,6 +342,7 @@ Golem, Wood from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., 
 Pathfinder Adventure Path #95: Anvil of Fire © 2015, Paizo Inc.; Authors: Sean K Reynolds, with Benjamin Bruck, Mikko Kallio, David Schwartz, Russ Taylor, Jerome Virnych, and Wendy N. Wagner.
 Pathfinder Companion: Gnomes of Golarion. Copyright 2010, Paizo Publishing, LLC; Authors: Hal Maclean, Colin McComb, Mark Moreland, Jeff Quick, Sean K Reynolds, Steven Schend, and Owen K. C. Stephens.
 Pathfinder Player Companion: Goblins of Golarion. © 2011, Paizo Publishing, LLC; Author: James Jacobs, Hal Maclean, and Richard Pett.
+GameMastery Module J2: Guardians of Dragonfall, Copyright 2007, Paizo Publishing, LLC. Author: Anson Caralya.
 Pathfinder Player Companion: Halflings of Golarion. Copyright 2010, Paizo Publishing, LLC; Authors: Hal MacLean and Amber E. Scott.
 Pathfinder Player Companion: Haunted Heroes Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, Thurston Hillman, Isabelle Lee, Stephen Rowe, and Christopher Wasko.
 Pathfinder Player Companion: Healer’s Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, David N. Ross, and Stephen Rowe.
@@ -413,6 +416,7 @@ Vegepygmy from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Au
 Yeti from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Lands of the Linnorm Kings © 2011, Paizo Publishing, LLC; Authors: Matthew Goodall, Jonathan Keith, Colin McComb, and Rob McCreary.
 Pathfinder Player Companion: Legacy of Dragons © 2016, Paizo Inc.; Authors: Alexander Augunas, Robert Brookes, Thurston Hillman, Michelle Jones, Mikko Kallio, and Mark Seifter.
+Pathfinder 19: Howl of the Carrion King. Copyright 2009, Paizo Publishing, LLC; Author: Erik Mona.
 Pathfinder Adventure Path volume #24: The Final Wish. © 2009, Paizo Publishing, LLC; Author: Rob McCreary.
 Pathfinder Companion: Legacy of Fire Player's Guide. Copyright 2009, Paizo Publishing, LLC; Authors: Brian Cortijo, Stephen S. Greer, James Jacobs, Jonathan H. Keith, F. Wesley Schneider, Amber E. Scott, and James L. Sutter.
 Pathfinder Player Companion: Legacy of the First World © 2017, Paizo Inc.; Authors: Jake Alley, Judy Bauer, John Compton, Mikko Kallio, Jason Keeley, Joe Pasini, Mark Seifter, Kendra Leigh Speedling, Josh Vogt, and Linda Zayas-Palmer.
@@ -452,6 +456,7 @@ Pathfinder Player Companion: Occult Origins © 2015, Paizo Inc.; Authors: Robert
 Pathfinder Campaign Setting: Occult Realms © 2015, Paizo Inc.; Authors: Robert Brookes, Thurston Hillman, Thomas M. Reed, and Mark Seifter.
 Pathfinder Companion: Orcs of Golarion. Copyright 2010, Paizo Publishing, LLC; Authors: Steve Kenson, Rob McCreary, Richard Pett, Sean K Reynolds, and JD Wiker.
 Pathfinder Companion: Osirion, Land of Pharaohs, Copyright 2008, Paizo Publishing, LLC; Authors: Jason Nelson and Todd Stewart.
+Pathfinder Campaign Setting: Osirion, Legacy of Pharaohs © 2014, Paizo Publishing, LLC; Authors: Alex Greenshields, Amanda Hamon, Jonathan H. Keith, Ron Lundeen, and David N. Ross.
 PAP25. Copyright 2009, Paizo Publishing, LLC; Author: Sean K Reynolds
 PPC:AM © 2014, Paizo Inc.; Authors: Jason Nelson, Patrick Renie, and David N. Ross.
 Pathfinder Campaign Setting: Path of the Hellknight © 2016, Paizo Inc.; Author: F. Wesley Schneider.
@@ -459,7 +464,10 @@ Pathfinder 15: The Armageddon Echo. Copyright 2009, Paizo Publishing, LLC; Autho
 Pathfinder 16: Endless Night. Copyright 2008, Paizo Publishing, LLC; Author: F. Wesley Schneider.
 Pathfinder 26: The Sixfold Trial. Copyright 2009, Paizo Publishing, LLC; Author: Richard Pett
 Pathfinder 5: Sins of the Saviors. Copyright 2007, Paizo Publishing LLC. Author: Steven S. Greer
+Pathfinder Chronicles: Gods and Magic. Copyright 2008, Paizo Publishing, LLC; Author: Sean K Reynolds.
+Pathfinder Chronicles: Guide to the River Kingdoms © 2010, Paizo Publishing, LLC; Authors: Eric Bailey, Kevin Carter, Elaine Cunningham, Adam Daigle, Mike Ferguson, Joshua J. Frost, James Jacobs, Steve Kenson, Rob Manning, Colin McComb, Alison McKenzie, China Miéville, Brock Mitchel-Slentz, Jason Nelson, Richard Pett, Chris Pramas, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Neil Spicer, Lisa Stevens, Matthew Stinson, and John Wick.
 Pathfinder Chronicles: Seekers of Secrets. Copyright 2009, Paizo Publishing, LLC; Authors: Tim Hitchcock, Erik Mona, Sean K Reynolds, James L. Sutter, and Russ Taylor.
+Pathfinder Campaign Setting: Pathfinder Society Field Guide. © 2011, Paizo Publishing, LLC. Authors: Erik Mona, Mark Moreland, Russ Taylor, and Larry Wilhelm.
 Kobold Quarterly Issue 14 © 2010, Open Design LLC, www.koboldquarterly.com.
 Pathfinder Player Companion: Pathfinder Society Primer © 2013, Paizo Publishing, LLC; Authors: John Compton and Mark Moreland.
 Pathfinder Roleplaying Game Pathfinder Unchained © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, Ross Beyers, Logan Bonner, Jason Bulmahn, Robert Emerson, Tim Hitchcock, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Robert Schwalb, Mark Seifter, and Russ Taylor.
@@ -574,4 +582,3 @@ Ooze, Crystal from the Tome Horrors Complete © 2011, Necromancer Games, Inc., p
 Pathfinder Adventure Path #77: Herald of the Ivory Labyrinth © 2013, Paizo Publishing, LLC; Author: Wolfgang Baur.
 Pathfinder Adventure Path #78: City of Locusts © 2014, Paizo Publishing, LLC; Author: Richard Pett.
 Wrath of the Righteous Player’s Guide © 2013, Paizo Publishing, LLC; Authors: Adam Daigle and Jay Loomis.
-Pathfinder Chronicles – Cheliax: Empire of Devils Copyright 2009, Paizo Publishing, LLC Authors: Jonathan H. Keith, Colin McComb, Steven E. Schend, Leandra Christine Schneider, and Amber E. Scott
