@@ -12,7 +12,7 @@ Usage: python build_d20_races.py path/to/races.json [cache-folder]
 import json, os, re, sys
 from bs4 import BeautifulSoup
 from common import text
-from build_d20_feats import book_name, fix_notice
+from build_d20_feats import book_name, take_notices
 
 CACHE = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(__file__), '..', '..', 'd20pfsrd-races')
 NOTICES = os.path.join(os.path.dirname(__file__), 'd20_feat_notices.json')
@@ -54,12 +54,7 @@ def parse_page(html):
     art = BeautifulSoup(html, 'html.parser').find(id='article-content')
     if not art:
         return None
-    notices = []
-    for box in art.find_all('div', class_='section15'):
-        for p in box.find_all('p') + list(box.find_next_siblings('p')):
-            n = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.')
-            if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15'):
-                notices.append(fix_notice(n))
+    notices = take_notices(art)
     found = {}
     for h in art.find_all(re.compile(r'^h[2-5]$')):
         title = h.get_text(' ', strip=True).lower()

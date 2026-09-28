@@ -156,6 +156,34 @@
     ]
   },
   {
+    "id": "ablative-sphere",
+    "name": "Ablative Sphere",
+    "source": "Humans of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a crystalline sphere worth 10 gp)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": null,
+    "description": "The Garundi tenaciously protect their homes, and through the years they have perfected magic to aid them in their defense.\n\nAn immobile, crystalline, weblike globe surrounds you.\n\nWhen the ablative sphere winks into existence, it provides you with improved cover (Pathfinder RPG Core Rulebook 196). The barrier does not impede a spell's line of sight or effect.\n\nThe sphere is 1 inch thick per caster level, has hardness 5, and 3 hit points per inch of thickness. When an ablative sphere loses hit points, the level of cover it provides is reduced. When the ablative sphere has lost one-third of its hit points, it provides cover instead of improved cover. Once it has lost two-thirds of its hit points, it provides only partial cover. Finally, when the ablative sphere's hit points reach 0, the globe is destroyed. When an attack reduces an ablative sphere's hit points to 0, you take any remaining damage.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "aboleths-lung",
     "name": "Aboleth's Lung",
     "source": "Advanced Race Guide",
@@ -1299,6 +1327,50 @@
     "spell_resistance": null,
     "summary": "As alter self, but you can change the shape as a swift action.",
     "description": "This spell functions as alter self, except you can as a swift action alter the disguise (within the limitations of alter self). For example, you could transform yourself into a halfling, then a lizardfolk, then an elf, and so on. You can change your form a number of times equal to your caster level."
+  },
+  {
+    "id": "admonishing-ray",
+    "name": "Admonishing Ray",
+    "source": "Taldor, Echoes of Glory",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "arcanist": 2,
+      "cleric": 2,
+      "oracle": 2,
+      "sorcerer": 2,
+      "warpriest": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "one or more rays"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Fire multiple rays that deal nonlethal force.",
+    "description": "You blast your enemies with rays of nonlethal force. You may fire one ray, plus one additional ray for every four levels you possess beyond 3rd (to a maximum of three rays at 11th level). Each ray requires a ranged touch attack to hit and deals 4d6 points of nonlethal damage. This is a force effect. The rays may be fired at the same or different targets, but all rays must be fired simultaneously and aimed at targets within 30 feet of each other. The rays hit about as hard as a punch from a strong adult human, and can knock away unattended objects weighing up to 10 pounds if that amount of force could normally do so.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "ranged touch",
+        "damage": [
+          {
+            "formula": "4d6",
+            "types": []
+          }
+        ],
+        "extra_attacks": "min(floor((@cl - 3) / 4), 3)"
+      }
+    ]
   },
   {
     "id": "adoration",
@@ -3074,6 +3146,66 @@
     ]
   },
   {
+    "id": "ancestral-communion",
+    "name": "Ancestral Communion",
+    "source": "Dwarves of Golarion",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 2,
+      "cleric": 2,
+      "oracle": 2,
+      "skald": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 minute",
+    "components": "V, S, F (stone or metal image of your ancestor)/DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Contact the spirits of your ancestors to bolster your own knowledge.",
+    "description": "You contact the spirits of your ancestors and use their great wisdom to bolster your own knowledge. Consulting with the spirits is a full-round action. If you consult with the spirits before making a Knowledge check, you gain a +4 insight bonus on the check. If you have already failed at a Knowledge check, you may consult with your ancestors and make another attempt. The insight bonus on these checks increases to +6 at caster level 7th and +8 at caster level 11th. You may consult with the spirits for this purpose as often as you like while the spell remains in effect. Only you can hear the spirits speak to you.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "ancestral-gift",
+    "name": "Ancestral Gift",
+    "source": "Dwarves of Golarion",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": null,
+    "levels": {
+      "bard": 4,
+      "cleric": 4,
+      "oracle": 4,
+      "skald": 4,
+      "warpriest": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (stone or metal image of your ancestor)/DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Effect",
+        "magical weapon"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Summon an ancestor to bring you a ghostly, magical weapon.",
+    "description": "A ghostly manifestation of one of your ancestors appears before you bearing a weapon of your choice in its hands. The weapon may be any simple, martial, or dwarven weapon. It has a +1 enhancement bonus and one weapon special ability (your choice) from the Pathfinder RPG Core Rulebook with a price equivalent to a +1 bonus (if the weapon is a double weapon, the ability and the enhancement bonus only apply to one end, or the weapon can have a +1 enhancement bonus on both ends but no other magical abilities).\n\nYou may use the weapon as if you were proficient in it. The weapon may not be wielded by anyone else, and if removed from your grasp, it vanishes and the spell ends immediately.\n\nIf you conjure a weapon with the flaming, frost, shock, or thundering property, this spell has the fire, cold, electricity, or sonic descriptor (respectively).",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "ancestral-memory",
     "name": "Ancestral Memory",
     "source": "The Inner Sea World Guide",
@@ -4438,6 +4570,46 @@
     ]
   },
   {
+    "id": "ape-walk",
+    "name": "Ape Walk",
+    "source": "Sargava, the Lost Colony",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "druid": 3,
+      "hunter": 2,
+      "ranger": 2,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (an ape or monkey paw)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Enchant someone to climb as well as an ape.",
+    "description": "The subject can climb as well as an ape or monkey, gaining a climb speed of 30 feet and a +8 racial bonus on Climb skill checks. The affected creature must have her hands free to climb in this manner. In addition, as long as she has 10 feet of space in which to make a running start, the subject can make a long jump of up to 10 feet without making an Acrobatics check (an Acrobatics check is still required to jump longer distances).",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "aphasia",
     "name": "Aphasia",
     "source": "Ultimate Intrigue",
@@ -5145,6 +5317,34 @@
     "spell_resistance": "no",
     "summary": "Conjure an extradimensional space inside a pouch or pocket.",
     "description": "With a touch, you conjure an extradimensional space inside a pouch or pocket. The pocket acts as a bag of holding, except it can hold only 10 pounds per caster level. Regardless of what is placed into the pocket, it weighs 3 pounds. Unlike a bag of holding, the pocket created by this ability cannot be overloaded or ruptured-any additional material simply spills out of the top-nor does it have any special interaction with other kinds of extradimensional spaces. An arcane pocket grants you a +1 bonus on Sleight of Hand checks to conceal its contents. The pocket becomes nonmagical, spilling all of its contents onto the ground unharmed, if it leaves your possession or you create a new arcane pocket.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "arcane-reinforcement",
+    "name": "Arcane Reinforcement",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 round",
+    "components": "V, S",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "concentration (up to 8 hours)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Add your Spellcraft to Craft when creating a magic item.",
+    "description": "You cast this spell as you begin crafting an item using a Craft skill, and add your Spellcraft ranks to Craft checks made to create that item. As part of concentrating on the spell, you must continue chanting the verbal components, pausing at most for a few seconds at a time to speak, chew, and so on. If the crafting takes more than 1 day to complete, you must cast the spell each day to gain its benefit.\n\nThis spell originated among wizards of the Arcanamirium, though the Pathfinder Society also uses it.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -9152,6 +9352,42 @@
     "description": "This spell causes a field of rubbery black tentacles to appear, burrowing up from the floor and reaching for any creature in the area.\n\nEvery creature within the area of the spell is the target of a combat maneuver check made to grapple each round at the beginning of your turn, including the round that black tentacles is cast. Creatures that enter the area of effect are also automatically attacked. The tentacles do not provoke attacks of opportunity. When determining the tentacles' CMB, the tentacles use your caster level as their base attack bonus and receive a +4 bonus due to their Strength and a +1 size bonus. Roll only once for the entire spell effect each round and apply the result to all creatures in the area of effect.\n\nIf the tentacles succeed in grappling a foe, that foe takes 1d6+4 points of damage and gains the grappled condition. Grappled opponents cannot move without first breaking the grapple. All other movement is prohibited unless the creature breaks the grapple first. The black tentacles spell receives a +5 bonus on grapple checks made against opponents it is already grappling, but cannot move foes or pin foes. Each round that black tentacles succeeds on a grapple check, it deals an additional 1d6+4 points of damage. The CMD of black tentacles, for the purposes of escaping the grapple, is equal to 10 + its CMB.\n\nThe tentacles created by this spell cannot be damaged, but they can be dispelled as normal. The entire area of effect is considered difficult terrain while the tentacles last."
   },
   {
+    "id": "blacklight",
+    "name": "Blacklight",
+    "source": "Pathfinder Chronicles: Campaign Setting",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "darkness",
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "20-ft.-radius emanation"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "Will negates or none (object)",
+    "spell_resistance": "yes",
+    "summary": "Create an area of total darkness.",
+    "description": "You create an area of total darkness. The darkness is impenetrable even to darkvision, but you can see normally within it. Creatures outside the spell's area, even you, cannot see through it.\n\nYou can cast the spell on a point in space, but the effect is stationary unless cast on a mobile object. You can cast the spell on a creature, and the effect then radiates from the creature and moves as it moves. Unattended objects and points in space do not get saving throws or benefit from spell resistance. Blacklight counters or dispels any light spell of equal or lower level. Daylight counters or dispels blacklight.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates or none (object)"
+      }
+    ]
+  },
+  {
     "id": "blade-barrier",
     "name": "Blade Barrier",
     "source": "Core Rulebook",
@@ -10987,6 +11223,49 @@
     ]
   },
   {
+    "id": "blood-rage",
+    "name": "Blood Rage",
+    "source": "Orcs of Golarion",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "adept": 3,
+      "arcanist": 3,
+      "bard": 2,
+      "cleric": 3,
+      "oracle": 3,
+      "skald": 2,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a drop of blood from each creature to be affected)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one willing living creature per 2 levels, no two of which may be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Inspire a number of creatures into a rage, increaing their strength but lowering their AC.",
+    "description": "The targets of this spell become angrier as they fight, the pain of their wounds fueling their strength. An affected creature gains a cumulative +2 morale bonus to Strength and a cumulative -1 penalty to AC for every 5 points of damage it takes (maximum +10 Strength, -5 AC) for the duration of the spell. These bonuses last until the spell expires or the target falls unconscious.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "blood-salvation",
     "name": "Blood Salvation",
     "source": "Advanced Class Origins",
@@ -11351,6 +11630,37 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "bloodsworn-retribution",
+    "name": "Bloodsworn Retribution",
+    "source": "Dwarves of Golarion",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 6,
+      "hunter": 4,
+      "oracle": 6,
+      "paladin": 4,
+      "ranger": 4,
+      "warpriest": 6
+    },
+    "casting_time": "1 round",
+    "components": "V, S, M (your blood)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "see text",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Swear an oath, damaging yourself to gain a bonus to things relating to that oath.",
+    "description": "When you cast this spell, you cut yourself and swear an oath of retribution on your own blood. You decide how much damage you want to take from this attack, up to 25 points. This damage cannot be healed for as long as the spell is in effect. Anytime you perform an attack, save, or check that is directly related to the oath and brings you closer to the fulfillment of that oath, you gain a morale bonus to that roll equal to the number of hit points of damage you took from the oath divided by 5. The GM is the final arbiter over whether or not an action qualifies for this bonus. When you fulfill the oath (or choose to forsake it), the spell ends, and the lost hit points can be healed as normal.\n\nFor example, a notorious bandit leader killed Stigur's brother, and Stigur wants to avenge his brother's death. Stigur casts this spell and sacrifices 20 hit points. Thereafter Stigur gains a +4 morale bonus on attack rolls against the bandit leader's minions, saves against spells from said minions, Intimidate checks to coerce an informant to tell him where the bandit leader is camped, and so on.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "bloody-arrows",
     "name": "Bloody Arrows",
     "source": "Ranged Tactics Toolbox",
@@ -11451,6 +11761,47 @@
     "summary": "Become more intimidating with black eyes that weep blood and turn your teeth into jagged fangs.",
     "description": "Your eyes turn black and weep blood, and your teeth become jagged fangs. You gain a bite attack (1d3 points of damage if you are Small, 1d4 points of damage if you are Medium). You gain a +4 profane bonus on Intimidate checks and on your spell DCs for spells with the fear descriptor. You perceive creatures as if using deathwatch.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "blot",
+    "name": "Blot",
+    "source": "Goblins of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "bard": 3,
+      "cleric": 3,
+      "oracle": 3,
+      "skald": 3,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a bit of cloth made wet with saliva)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "10 ft.-radius burst"
+      ]
+    ],
+    "duration": "24 hours",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "yes",
+    "summary": "Destroy all writing within an area.",
+    "description": "This spell reduces all types of writing and other recognizable symbols found on any sort of surface within range into illegible smears. It affects books, carvings on stone, or even tattoos with equal ease. It does not affect writing that is not actually on a surface, such as an illusion, projection, reflection, or anything similar. Spellbooks and magical items that contain writing (such as scrolls) gain a saving throw to resist the effects of this spell. Against magical writing created by spell effects (such as glyphs of warding or symbols), blot instead functions as a dispel magic spell capable of targeting all such spell effects in the area. This spell has no on writing found on artifacts or similarly unique surfaces.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (object)"
+      }
+    ]
   },
   {
     "id": "blur",
@@ -11849,6 +12200,48 @@
         ],
         "save": "fort",
         "save_text": "Fortitude partial (see text)"
+      }
+    ]
+  },
+  {
+    "id": "book-ward",
+    "name": "Book Ward",
+    "source": "Pathfinder Chronicles: Seekers of Secrets",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "bard": 2,
+      "cleric": 2,
+      "oracle": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "warpriest": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a drop of clear oil)/DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one touched object of up to 10 pounds/level"
+      ]
+    ],
+    "duration": "1 day/level or until discharged (see text)",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "no",
+    "summary": "Protect a book from fire, acid, and water.",
+    "description": "As protection from energy, except as noted above and that the spell only protects against acid and fire damage. While the energy protection remains, the item is also completely waterproof (this protection extends to other liquids as well, such as alcohol and oil).",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (object)",
+        "harmless": true
       }
     ]
   },
@@ -13087,6 +13480,117 @@
         ],
         "save": "ref",
         "save_text": "Reflex half"
+      }
+    ]
+  },
+  {
+    "id": "burning-arc",
+    "name": "Burning Arc",
+    "source": "Humans of Golarion",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "fire",
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one primary target plus one additional target/3 levels  (each of which must be within 15 ft. of the primary target)"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Reflex half",
+    "spell_resistance": "yes",
+    "summary": null,
+    "description": "Keleshites brag that they stole this spell from genie-kind thousands of years ago while other civilizations struggled without fire.\n\nThis spell causes an arc of flame to leap from your fingers, burning a number of enemies nearby. It deals 1d6 points of fire damage per caster level (maximum 10d6). For every additional target the discharge arcs to, reduce the number of damage dice by half (rounded down). Therefore, at 9th level, your burning arc deals 9d6 points of fire damage to the primary target, then 4d6 points of fire damage to a secondary target, then 2d6 points of fire damage to an additional target.\n\nEach target can attempt a Reflex saving throw for half damage. The Reflex DC to halve the damage of the secondary bolts is 2 lower than the DC to halve the damage of the primary bolt. You may choose secondary targets as you like, but they must all be within 15 feet of the primary target, and no target can be struck more than once. You can choose to affect fewer secondary targets than the maximum.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "damage": [
+          {
+            "formula": "(min(@cl, 10))d6",
+            "types": [
+              "fire"
+            ]
+          },
+          {
+            "formula": "(min(floor(@cl / 2), 5))d6",
+            "types": [
+              "fire"
+            ]
+          },
+          {
+            "formula": "(min(floor(@cl / 4), 5))d6",
+            "types": [
+              "fire"
+            ]
+          },
+          {
+            "formula": "(min(floor(@cl / 8), 5))d6",
+            "types": [
+              "fire"
+            ]
+          }
+        ],
+        "save": "ref",
+        "save_text": "Reflex half"
+      }
+    ]
+  },
+  {
+    "id": "burning-disarm",
+    "name": "Burning Disarm",
+    "source": "Cheliax, Empire of Devils",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "fire",
+    "levels": {
+      "arcanist": 1,
+      "cleric": 1,
+      "druid": 1,
+      "hunter": 1,
+      "oracle": 1,
+      "sorcerer": 1,
+      "warpriest": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "held metal item of one creature or 15 lbs. of unattended metal"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Reflex negates (object, see text)",
+    "spell_resistance": "no",
+    "summary": "Make a metal item become red hot, forcing those holding it to drop it or risk searing their hand.",
+    "description": "This spell causes a metal object to instantly become red hot. A creature holding the item may attempt a Reflex save to drop it and take no damage (even if it is not their turn), otherwise the hot metal deals 1d4 points of fire damage per caster level (maximum 5d4). Circumstances that prevent the creature from dropping the item (such as a locked gauntlet) mean the creature gets no saving throw. The heat does not harm the item, and it does not get hot enough or last long enough to ignite flammable objects. The item cools to its previous temperature almost instantly. If cast underwater, burning disarm deals half damage and boils the surrounding water.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "damage": [
+          {
+            "formula": "(min(5, @cl))d4",
+            "types": [
+              "fire"
+            ]
+          }
+        ],
+        "save": "ref",
+        "save_text": "Reflex negates (object, see text)"
       }
     ]
   },
@@ -14535,6 +15039,44 @@
     "spell_resistance": "yes",
     "summary": "Creates a shelter around a campfire.",
     "description": "You can create a barrier around a fire of at least campfire size that shelters everyone inside so long as the fire continues to burn. The barrier appears as a crackling sphere of light and fire that is clearly visible, providing as much illumination as a torch. The barrier bocks line of sight, granting creatures on either side of the barrier total concealment from creatures on the other side. Any object or creature passing through the barrier from outside takes 1d6 points of fire damage and is also outlined with light equivalent to that of a torch, for 1d6 minutes. Creatures outlined in this way are plainly visible regardless of the light conditions and do not benefit from any sort of concealment, magical or otherwise. The light is not bright enough to have any special effect on undead or creatures vulnerable to light. Creatures inside the barrier can leave without penalty, but if they try to return they suffer the same consequences as anyone else. If the fire source at the barrier's center is extinguished or moved, the spell ends."
+  },
+  {
+    "id": "canopic-conversion",
+    "name": "Canopic Conversion",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "death, evil",
+    "levels": {
+      "arcanist": 9,
+      "cleric": 9,
+      "oracle": 9,
+      "sorcerer": 9,
+      "wizard": 9
+    },
+    "casting_time": "1 round",
+    "components": "V, S, M (black onyx worth 100 gp per hit die of the target), F (four alabaster canopic jars worth 100 gp each)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one living humanoid"
+      ]
+    ],
+    "duration": "instantaneous and see text",
+    "saving_throw": "Fortitude half",
+    "spell_resistance": "yes",
+    "summary": "Eviscerate a target, creating an advanced mummy from its life essence.",
+    "description": "This spell eviscerates the target, drawing forth its life essence as well as its internal organs. The target takes 1d6 hit points of damage per caster level (maximum 20d6). If this damage kills the target, the spell pulls the creature's organs into a set of 4 canopic jars and seals them; 1d4 rounds later, the corpse revives as a mummy (if 8 HD or fewer) or an advanced mummy (if 9 HD or more).\n\nThe mummy is not under your control, but the canopic jars give the bearer certain powers over it. Anyone holding one of the jars can communicate with the mummy as if the two shared a common language. The bearer gains the benefits of Protection from Evil and sanctuary, but only against that mummy. Unsealing or breaking a jar is a standard action, which dissipates its power (and protection) but lets the bearer issue a short command to the mummy, similar to a suggestion spell (Will DC 23 negates). You (and only you) may unseal all 4 jars in a 10-minute ritual to control the mummy with an similar to geas (Will DC 23 negates); most casters typically include a restriction that the mummy will not harm them, as unsealing the jars leaves them vulnerable.\n\nThe pharaohs of ancient Osirion sometimes used this spell to punish their enemies. The Risen Guard does not use the spell (though they have access to it), preferring trustworthy living guardians for the Ruby Prince. The Whispering Way may have copies of the spell.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude half"
+      }
+    ]
   },
   {
     "id": "cape-of-wasps",
@@ -16352,6 +16894,36 @@
         "harmless": true
       }
     ]
+  },
+  {
+    "id": "chastise",
+    "name": "Chastise",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "bard": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "+5 bonus to convince a target to do what you want or get in trouble with their superiors.",
+    "description": "You gain a +5 bonus on Bluff, Diplomacy, and Intimidate checks to convince a listener that they will get in trouble with their superiors or with the law if they don't do what you ask.\n\nThis spell is primarily used by the Eagle Knights, though they did not create it; Hellknights also use it extensively to gather information and foster cooperation.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "cheetahs-sprint",
@@ -21682,6 +22254,39 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "cultural-adaptation-taldan",
+    "name": "Cultural Adaptation (Taldan)",
+    "source": "Humans of Golarion",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "bard": 1,
+      "cleric": 1,
+      "oracle": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "warpriest": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a document written in the language of the culture to be emulated)/DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Better impersonate the member of a specific culture.",
+    "description": "When casting this spell, you must concentrate on the culture to which you wish to adapt. If you speak the native language of the culture in question, then for the duration of this spell, you speak the language with a native accent. The spell does not teach you the language in question, but may be combined with tongues or a similar spell. Your body language and gestures mark you as a native of the culture, and you unconsciously make small decisions that help you blend in. These combined new traits give you a +2 on Diplomacy checks made to influence members of the culture to which you have adapted. You also gain a +2 circumstance bonus on Disguise checks made to pass yourself off as a member of the culture. Additionally, the DCs of enchantment (charm) spells you cast against natives of the culture to which you are attuned increase by +1.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "cup-of-dust",
     "name": "Cup of Dust",
     "source": "Advanced Player's Guide",
@@ -24019,6 +24624,80 @@
     ]
   },
   {
+    "id": "dazzling-blade",
+    "name": "Dazzling Blade",
+    "source": "Rival Guide",
+    "school": "illusion",
+    "subschool": "pattern",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "bard": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 swift action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one metal weapon"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates (see text)",
+    "spell_resistance": "yes",
+    "summary": "Make a weapon appear dazzingly shiny, making it easier to disarm and feint in combat.",
+    "description": "Dazzling blade makes a weapon appear dazzlingly shiny, as if crafted from pure silver and heavily polished. In combat, the flashing movements of a dazzling blade become almost hypnotic. The wielder of a weapon under the effects of dazzling blade gains a +1 competence bonus on all Bluff checks made to feint in combat. The wielder also gains a +1 competence bonus on all CMB checks made to disarm a foe, and a +1 competence bonus to his CMD against disarm attempts made against the weapon bearing the dazzling blade effect. This bonus increases by +1 for every 3 caster levels, to a maximum bonus of +5 at 12th level.\n\nThe wielder of a dazzling blade can discharge the spell into a blinding burst of silvery light as a free action. The wielder selects an adjacent opponent as the focal point of this burst of light-that creature must make a Will save to avoid being blinded for 1 round (with a successful save, the creature is instead dazzled for 1 round).\n\nDespite its shiny appearance, a dazzling blade grants no extra benefit against creatures that are vulnerable to silver.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (see text)"
+      }
+    ]
+  },
+  {
+    "id": "dazzling-blade-mass",
+    "name": "Dazzling Blade, Mass",
+    "source": "Rival Guide",
+    "school": "illusion",
+    "subschool": "pattern",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 swift action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "One metal weapon/level, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates (see text)",
+    "spell_resistance": "yes",
+    "summary": "As dazzling blade, except with multiple weapons.",
+    "description": "This spell functions like dazzling blade, except that it affects multiple weapons. Each wielder of a dazzling blade can discharge the weapon's effect to attempt to blind a foe independently of the others.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (see text)"
+      }
+    ]
+  },
+  {
     "id": "deadeyes-arrow",
     "name": "Deadeye's Arrow",
     "source": "Inner Sea Gods",
@@ -25307,6 +25986,49 @@
     "spell_resistance": null,
     "summary": "Attacks that miss are redirected back to the source of the attack.",
     "description": "You surround yourself in a whirling barrier of force that sends any attack that misses you hurling back toward its source. This applies to any melee or ranged attack directed against you so long as it uses an attack roll to determine whether or not it strikes you. If an attack misses you, the attacker must make a second attack roll against its own Armor Class, using all of the applicable modifiers of the original attack and if it hits, the attacker takes the attack's damage and suffers all the other consequences of getting struck with that attack. You cannot deflect attacks that miss you for any reason besides a failed attack roll (such as concealment). Similarly, you cannot deflect attacks that actually do strike you but simply fail to do any harm."
+  },
+  {
+    "id": "defoliate",
+    "name": "Defoliate",
+    "source": "Sargava, the Lost Colony",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "druid": 2,
+      "hunter": 1,
+      "ranger": 1,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a locust)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "10 ft spread"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Hurl a tiny ball of negative energy to destroy plant life.",
+    "description": "You hurl a tiny ball of negative energy, destroying plant life either in a line 60 feet long or a 10-foot-radius spread. This effect removes the cover and concealment provided by trees and undergrowth, eliminates the movement penalties associated with undergrowth, and so forth.\n\nYou may also target a single plant creature with this spell. You must succeed on a ranged touch attack to hit your target. An affected plant creature takes 2d8 points of damage.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Plant Creature",
+        "kind": "ranged touch",
+        "damage": [
+          {
+            "formula": "2d8",
+            "types": []
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "deft-digits",
@@ -30414,6 +31136,72 @@
     "description": "You ward a magic item against other creatures who try to learn to use or copy it. When you cast the spell, you designate one creature type, subtype, or a specific individual. If the item is worn or carried for 1 continuous hour or more by a creature that doesn't match the designation, the dust ward disintegrates the item into worthless gray dust. This destruction also occurs if the creature attempts to study the item in order to learn its properties or how to magically craft it (a miracle or wish spell used on the gray dust can still reveal this information). The destruction of the item doesn't harm the creature wearing or carrying the item (although the item's destruction may put the creature in harm's way, such as if a magical rope were being used to cross a chasm at the time). If the offending creature wears or carries the item for less than 1 hour and passes it to a different creature, the countdown to the item's destruction starts over.\n\nThe spell cannot affect a magic item with a caster level greater than half your caster level."
   },
   {
+    "id": "dwarven-veil",
+    "name": "Dwarven Veil",
+    "source": "Dwarves of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 2,
+      "oracle": 2,
+      "paladin": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Enhance a target's dwarf-like qualities, giving it a +2 bonus to influence dwarves.",
+    "description": "This spell enhances the target's dwarven or dwarf-like qualities, making it appear more attractive, personable, and worthy of respect and admiration by dwarves. The target is still recognizable as itself. The target gains a +2 circumstance bonus to checks to influence dwarves (such as Diplomacy, Intimidate, and so on).",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "dweomer-retaliation",
+    "name": "Dweomer Retaliation",
+    "source": "Cheliax, Empire of Devils",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 immediate action",
+    "components": "V",
+    "range": "long (400 ft. + 40 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one creature you counterspelled since your last turn"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Gain hit points and damage your opponent immediately after counterspelling a spell.",
+    "description": "You may only cast this spell immediately after successfully counterspelling an opponent. Drawing upon the residual energy of the countered spells, you gain a number of temporary hit points equal to the level of the countered spell plus your Charisma or Intelligence modifier (for sorcerers and wizards, respectively); your counterspelled opponent takes damage equal to this amount.\n\nIf the countered spell was at least 4th level, you and your opponent make opposed concentration checks. If you beat your opponent by 10 or more, you retain this spell (or its spell slot, if you are a sorcerer) as if you had not cast it.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "eagle-aerie",
     "name": "Eagle Aerie",
     "source": "Ultimate Magic",
@@ -30911,6 +31699,34 @@
         "save_text": "see text"
       }
     ]
+  },
+  {
+    "id": "echeans-excellent-enclosure",
+    "name": "Echean's Excellent Enclosure",
+    "source": "Rival Guide",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "arcanist": 9,
+      "sorcerer": 9,
+      "wizard": 9
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a sphere of glass worth 100 gp and an iron nail, with which you pierce the glass on casting)",
+    "range": "touch",
+    "effects": [
+      [
+        "Area",
+        "immobile 10-ft.-radius emanation"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a combination spherical wall of force and antimagic field.",
+    "description": "You call into being around you an invisible barrier of force within which magic cannot persist. Within the area of the spell, effects are suppressed and creatures are affected as by antimagic field. An immobile sphere of impenetrable force surrounds the field, equivalent in all ways to a spherical Wall of Force, including its immunity to dispel magic and vulnerability to a sphere of annihilation or rod of cancellation. The barrier has hardness 40 and 20 hit points per caster level, and can be damaged by both mundane attacks and spells cast from outside the field. If the bubble of force is destroyed, the spell's duration ends.\n\nSpells cannot be cast within, into, or out of the enclosure, and teleportation effects that ignore a Wall of Force (such as dimension door or teleport) are thwarted by the enclosure's field of antimagic.\n\nEchean's excellent enclosure has the same effect on summoned creatures of any type and incorporeal undead that an antimagic field does, causing them to wink out of existence for the duration of Echean's excellent enclosure unless their spell resistance, if any, allows them to remain where they are within the field.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "echo",
@@ -32065,6 +32881,34 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "emergency-force-sphere",
+    "name": "Emergency Force Sphere",
+    "source": "Cheliax, Empire of Devils",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "arcanist": 4,
+      "sorcerer": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 immediate action",
+    "components": "V",
+    "range": "5 ft.",
+    "effects": [
+      [
+        "Effect",
+        "5-ft.-radius hemisphere of force centered on you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a quick hemispherical wall of force to protect you from falling debris.",
+    "description": "As Wall of Force, except you create a hemispherical dome of force with hardness 20 and a number of hit points equal to 10 per caster level. The bottom edge of the dome forms a relatively watertight space if you are standing on a reasonably flat surface. The dome shape means that falling debris (such as rocks from a collapsing ceiling) tend to tumble to the side and pile up around the base of the dome. If you make a DC 20 Craft (stonemasonry), Knowledge (engineering), or Profession (architect or engineer) check, the debris is stable enough that it retains its dome-like configuration when the spell ends, otherwise it collapses.\n\nNormally this spell is used to buy time for dealing with avalanches, floods, and rockslides, though it is also handy in dealing with ambushes.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "emotive-block",
     "name": "Emotive Block",
     "source": "Occult Adventures",
@@ -32684,6 +33528,45 @@
         "kind": "save",
         "save": "fort",
         "save_text": "Fortitude negates (object)",
+        "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "enhanced-diplomacy",
+    "name": "Enhanced Diplomacy",
+    "source": "Taldor, Echoes of Glory",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 0,
+      "druid": 0,
+      "hunter": 0,
+      "oracle": 0,
+      "warpriest": 0
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "1 minute or until discharged",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Grant a +2 to diplomacy or intimidate to a single subject.",
+    "description": "You imbue the subject with divine diplomacy skills. The creature gets a +2 competence bonus on a single Diplomacy or Intimidate check. It must choose to use the bonus before making the roll to which it applies.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
         "harmless": true
       }
     ]
@@ -36781,6 +37664,46 @@
     ]
   },
   {
+    "id": "fire-sneeze",
+    "name": "Fire Sneeze",
+    "source": "Goblins of Golarion",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "air, fire",
+    "levels": {
+      "alchemist": 2,
+      "arcanist": 2,
+      "druid": 2,
+      "hunter": 2,
+      "investigator": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (hot pepper soaked in oil)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round + 1 round/2 levels",
+    "saving_throw": "Reflex half",
+    "spell_resistance": "yes",
+    "summary": "Sneeze flame to set your enemies on fire and knock them prone.",
+    "description": "This spell causes you to begin sneezing gouts of fire that can not only set creatures ablaze but also drop them flat on their backs.\n\nOnce you cast this spell, you must sneeze each round as a standard action-you can take no other standard action as long as this spell is in effect, nor can you take full-round actions. Each time you sneeze, you produce a 10-foot-long cone of fire and wind. All creatures caught in this cone take 2d6 points of fire damage-a successful Reflex save halves this damage. Any creature that fails to resist this spell with a Reflex save must immediately make a DC 12 Fortitude save or be knocked prone by the blast of wind associated with the sneeze.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "ref",
+        "save_text": "Reflex half"
+      }
+    ]
+  },
+  {
     "id": "fire-storm",
     "name": "Fire Storm",
     "source": "Core Rulebook",
@@ -37901,6 +38824,42 @@
     "summary": "Control multiple zombies in human guise.",
     "description": "This spell functions as flesh puppet, but can animate multiple zombies. As noted in animate dead, you can't control more than 4 HD per caster level worth of undead in total, nor can a single casting create more than 2 HD per caster level. A separate string attaches to each zombie in your horde. Severing a zombie's string reverts that zombie to a corpse, but doesn't end the spell for other zombies. Because commanding a flesh puppet requires a swift action, you can issue commands to only one zombie per round, though zombies you previously commanded continue to follow their orders. Likewise, you can command only one zombie to speak per round. Unlike with flesh puppet, you can command a zombie to attack. If you do, all your zombies immediately gain the staggered quality and no longer appear to be alive. This spell ends automatically if you cast flesh puppet or flesh puppet horde on a new corpse.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "flesh-to-ooze",
+    "name": "Flesh to Ooze",
+    "source": "Pathfinder Chronicles: Dungeon Denizens Revisited",
+    "school": "transmutation",
+    "subschool": "polymorph",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 6,
+      "sorcerer": 6,
+      "wizard": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (alchemical reagents worth 100 gp)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "1 creature or see text"
+      ]
+    ],
+    "duration": "permanent",
+    "saving_throw": "Fortitude negates, Will partial, see text",
+    "spell_resistance": "no",
+    "summary": "Turn someone into an ooze.",
+    "description": "This functions like baleful polymorph, except the target becomes an ooze. A creature of 3 HD or less becomes a gray ooze, 4-9 HD becomes a gelatinous cube or ochre jelly, and 10+ HD becomes a black pudding. Alternatively, instead of a creature you may target a quantity of inert flesh (such as that created by the stone to flesh spell) of sufficient mass, which becomes an ooze of your choice.\n\nBecause a target's gear does not transform with it, any items fall under or within the ooze's body, which may mean the items are destroyed. If the ooze has the split ability, splitting the ooze creates one ooze that retains the creature's original identity (for the purpose of memories or restoring the creature) and one normal mindless ooze of that type.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude negates, Will partial, see text"
+      }
+    ]
   },
   {
     "id": "flesh-to-stone",
@@ -43169,6 +44128,43 @@
     "description": "You conjure a sheltered grove of trees surrounding a shallow spring. The grove appears from nowhere even in the most barren, rocky soil regardless of season, but the spell must be cast outside on open ground.\n\nThe area within the grove is temperate and comfortable, like that of a tiny hut, although the grove provides no illumination and provides no protection from the elements. The water in the grove's spring is clean and drinkable. Additionally, the trees provide a variety of ripe fruit, regardless of season, which acts as a goodberry spell for up to eight people. The grove is warded with an alarm spell that alerts you whenever any creature enters the area. Once the spell expires, the grove vanishes, including all fruit, water, and other materials from it, although any nourishment or healing gained from its effects remains."
   },
   {
+    "id": "guardian-armor",
+    "name": "Guardian Armor",
+    "source": "Armor Master's Handbook",
+    "school": "conjuration",
+    "subschool": "teleportation",
+    "descriptors": null,
+    "levels": {
+      "antipaladin": 1,
+      "arcanist": 1,
+      "bloodrager": 1,
+      "cleric": 1,
+      "inquisitor": 1,
+      "magus": 1,
+      "occultist": 1,
+      "oracle": 1,
+      "paladin": 1,
+      "sorcerer": 1,
+      "warpriest": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 immediate action",
+    "components": "V, S, F (armor worn)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one willing creature; see below"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Teleport your armor onto an ally in range",
+    "description": "This spell teleports the suit of armor you are wearing off of your body and onto an ally within range; the target must be the same size and general shape as you. This armor appears on the target's body fully formed and properly donned, granting the creature the immediate benefit of its protection. If the target of guardian armor was already wearing armor, the armor wearing it is removed from the target's body and falls undamaged into an adjacent square.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "guardian-monument-greater",
     "name": "Guardian Monument, Greater",
     "source": "Arcane Anthology",
@@ -44054,6 +45050,43 @@
     "summary": "Assemble a sturdy raft and oars from driftwood, reeds, and other river debris.",
     "description": "This spell assembles a sturdy raft and oars from driftwood, reeds, and other river detritus. The smallest raft created by the spell is roughly 5 feet square, increasing by an additional 5 feet square for every 2 caster levels you possess. Each 5-foot section of the raft can carry two Medium passengers or 300 pounds of cargo. The vessel functions as a normal raft, except it is not slowed or damaged by nonmagical river hazards such as rapids or shallows, and it is always considered to be traveling downstream for the purpose of calculating travel speed, regardless of its actual direction.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "hardening",
+    "name": "Hardening",
+    "source": "Pathfinder Chronicles: Campaign Setting",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 6,
+      "sorcerer": 6,
+      "wizard": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one item of a volume no greater than 10 cu. ft./level"
+      ]
+    ],
+    "duration": "permanent",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "yes",
+    "summary": "Increase the hardness of materials.",
+    "description": "This spell increases the hardness of materials by 1 point per 2 caster levels. The hardening spell does not in any way affect resistance to other forms of transformation.\n\nThis spell affects up to 10 cubic feet per level. If cast upon a metal or mineral, the spell affects 1 cubic foot per level.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (object)",
+        "harmless": true
+      }
+    ]
   },
   {
     "id": "harm",
@@ -45021,6 +46054,50 @@
     ]
   },
   {
+    "id": "heatstroke",
+    "name": "Heatstroke",
+    "source": "Sargava, the Lost Colony",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "fire",
+    "levels": {
+      "arcanist": 3,
+      "druid": 3,
+      "hunter": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a drop of sweat)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "ray"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Fortitude partial, see text",
+    "spell_resistance": "yes",
+    "summary": "Fire a ray to give someone heatstroke, dealing 1d4 nonleathal damage and inducing exhaustion.",
+    "description": "A wavering red ray projects from your finger. You must succeed on a ranged touch attack with the ray to hit your target.\n\nThe ray inflicts 1d4 points of nonlethal damage, causing the target to suffer from heatstroke as its body temperature dramatically increases. Except as noted above, this spell otherwise functions as ray of exhaustion.\n\nCharacters wearing heavy clothing or armor of any sort take a -4 penalty on their saves.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "ranged touch",
+        "damage": [
+          {
+            "formula": "1d4",
+            "types": []
+          }
+        ],
+        "save": "fort",
+        "save_text": "Fortitude partial, see text"
+      }
+    ]
+  },
+  {
     "id": "heavy-water",
     "name": "Heavy Water",
     "source": "Magical Marketplace",
@@ -45841,6 +46918,33 @@
         "harmless": true
       }
     ]
+  },
+  {
+    "id": "hibernate",
+    "name": "Hibernate",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "druid": 1,
+      "hunter": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Place a willing subject into a cataleptic state.",
+    "description": "You place a willing subject into a cataleptic state. It remains aware of its surroundings but is paralyzed, appearing dead unless observers make a DC 20 Heal check. Hibernate delays the effects of poison, disease, and bleed effects for the spell's duration, and half of any hit point damage suffered by the subject is converted to nonlethal damage.\n\nThis spell originated with the Green Faith, but has spread to all other druidic religions.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "hidden-blades",
@@ -49297,6 +50401,42 @@
     ]
   },
   {
+    "id": "illusory-poison",
+    "name": "Illusory Poison",
+    "source": "Gnomes of Golarion",
+    "school": "illusion",
+    "subschool": "phantasm",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "weapon touched"
+      ]
+    ],
+    "duration": "1 minute/level or until discharged (see text)",
+    "saving_throw": "Will disbelief, then Fortitude (see text)",
+    "spell_resistance": "yes",
+    "summary": "Create a phantasmal poison on a weapon.",
+    "description": "You create a phantasm of an oily green phantasmal poison on the target weapon. The first creature hit by the poisoned weapon must make a Will save against the illusion spell; success means the spell has no effect and is expended from the weapon. If the creature fails its save, it believes it has been poisoned and must make Fortitude saves at the spell's DC to avoid suffering illusory poison damage.\n\nDelay poison allows the target to ignore the effects of the phantasmal poison until the delay poison spell ends, at which time it may make a Will save to realize the poison is illusory and recover all illusory poison damage. Neutralize poison, lesser restoration, or restoration immediately recovers all damage from the spell. A successful dispel magic spell ends the effect of the illusion, as do spells that penetrate illusions (such as true seeing).\n\nThe target automatically recovers all illusory poison damage after 1 hour.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Will disbelief, then Fortitude (see text)"
+      }
+    ]
+  },
+  {
     "id": "illusory-script",
     "name": "Illusory Script",
     "source": "Core Rulebook",
@@ -49664,6 +50804,44 @@
     "summary": "Impart a portion of your intellect and personality into a magical item.",
     "description": "This spell grants the target magic item temporary intelligence by siphoning off a tiny portion of your own mind to infuse the object. Only permanent magic items may be enhanced by this spell-one-use items and charged items cannot be affected by impart mind. Intelligent magic items cannot be affected by impart mind.\n\nWhen you cast impart mind on a magic item, the item gains an Intelligence, Wisdom, and Charisma score of 10 and gains your alignment. You have no special control over the item once it becomes intelligent, although since it has your alignment, personality conflicts with items you wield won't be a problem. Determine the item's ego normally, as per the rules on intelligent items in the Core Rulebook.\n\nAn item made intelligent via impart mind communicates via speech and has normal senses to a range of 60 feet. It speaks and reads one language known by you-if you know multiple languages, you may choose which language the item knows.\n\nWhen you cast impart mind on an item, roll once on Table 15-24 on page 534 of the Core Rulebook to randomly determine the item's power-add your caster level to this roll. By expending additional diamond dust in excess of the 1,000 gp worth of material components required to cast this spell, you can gain further bonuses on the d% roll made to determine the item's power. Every additional 100 gp in diamond dust you use in excess grants a cumulative +1 bonus to the roll, up to a maximum additional bonus equal to your caster level. If the item gains the ability to cast a spell, determine the spell it can cast randomly from spells you know of the appropriate level. If the item gains ranks in a skill, it gains ranks in a random skill in which you have at least 1 rank.\n\nIf you roll above 100, then you can choose one item power on Table 15-24 in the Core Rulebook to grant the item, and the item gains a special purpose. Roll once on Tables 15-25 and 15-26 on page 534 of the Core Rulebook to determine what the item's special purpose and dedicated powers are. These d% rolls are not modified by your caster level or any additional powdered gems you used to cast the spell.\n\nOnce this spell ends, the item reverts to its previous nature-if you cast this spell on the item again, it gains entirely different powers as determined by a new set of rolls.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "impede-speech",
+    "name": "Impede Speech",
+    "source": "Second Darkness Player's Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "bard": 2,
+      "skald": 2,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Interfere with the target's ability to speak.",
+    "description": "This minor curse interferes with the target's ability to speak. On a failed save, the target has difficulty stringing words together. Only with great concentration can he communicate intelligibly. Speaking in combat becomes a move-equivalent action rather than a free action. If the target attempts to cast a spell with a verbal component, he has a 50% chance of making an error and losing the spell. Even if he can successfully cast a spell, doing so takes 1 round if the spell's normal casting time is less than 1 round. If the spell's casting time is usually 1 round or longer, its casting time doubles (up until the end of impede speech). Impede speech cannot be dispelled, but break enchantment, limited wish, miracle, remove curse, or wish can end it prematurely.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch",
+        "save": "will",
+        "save_text": "Will negates"
+      }
+    ]
   },
   {
     "id": "impenetrable-veil",
@@ -52253,6 +53431,34 @@
         "harmless": true
       }
     ]
+  },
+  {
+    "id": "invigorating-repose",
+    "name": "Invigorating Repose",
+    "source": "Dwarves of Golarion",
+    "school": "conjuration",
+    "subschool": "healing",
+    "descriptors": null,
+    "levels": {
+      "cleric": 5,
+      "oracle": 5,
+      "warpriest": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 hour or until discharged",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Enhance your spells that bring the dead back to life.",
+    "description": "This spell enhances your spells that bring the dead back to life. If you cast raise dead, the target creature is restored to full hit points. If you cast breath of life, that spell can revive a dead target as long as you cast it within a number of rounds equal to half your caster level, and the healing effect is treated as if the spell were empowered with the Empower Spell feat. Casting any of these spells discharges the invigorating repose spell.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "invisibility",
@@ -56006,6 +57212,35 @@
     "spell_resistance": "yes",
     "summary": "Alters reality (within limits).",
     "description": "A limited wish lets you create nearly any type of effect. For example, a limited wish can do any of the following things.\n\nDuplicate any sorcerer/wizard spell of 6th level or lower, provided the spell does not belong to one of your opposition schools.\n\nDuplicate any non-sorcerer/wizard spell of 5th level or lower, provided the spell does not belong to one of your opposition schools.\n\nDuplicate any sorcerer/wizard spell of 5th level or lower, even if it belongs to one of your opposition schools.\n\nDuplicate any non-sorcerer/wizard spell of 4th level or lower, even if it belongs to one of your opposition schools.\n\nUndo the harmful effects of many spells, such as geas/quest or insanity.\n\nProduce any other effect whose power level is in line with the above effects, such as a single creature automatically hitting on its next attack or taking a -7 penalty on its next saving throw.\n\nA duplicated spell allows saving throws and spell resistance as normal, but the save DC is for a 7th-level spell. When a limited wish spell duplicates a spell with a material component that costs more than 1,000 gp, you must provide that component (in addition to the 1,500 gp diamond component for this spell)."
+  },
+  {
+    "id": "limp-lash",
+    "name": "Limp Lash",
+    "source": "Goblins of Golarion",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a dead wasp)",
+    "range": "20 ft.",
+    "effects": [
+      [
+        "Target",
+        "1 creature"
+      ]
+    ],
+    "duration": "see text",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Paralyze an enemy from the neck down.",
+    "description": "You create a dark whip-shaped field of energy that wraps around an enemy's neck, leaving everything except his head paralyzed until you let go of the whip or it is destroyed. You must make a ranged touch attack with this spell. If you strike your target, he takes a 1d6 penalty to his Strength, Dexterity, and Constitution each round.\n\nThis penalty cannot reduce any attribute to less than 1, and once any of these attributes reaches 1 the target collapses and his body, except his head, becomes paralyzed. While paralyzed in this way, the target retains full use of his senses, including the ability to feel pain, and can speak (including casting spells with only verbal components). The whip has a maximum length of 20 feet, 15 hit points, and a hardness of 5. The spell ends immediately if you let go of the whip or it is destroyed. When the spell ends, all penalties the target took from this spell also end.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "line-in-the-sand",
@@ -61165,6 +62400,35 @@
     "description": "You create a fist-sized rock that flies toward one enemy. Make an unarmed strike attack roll against the target as if it were in your threatened area. If the attack is successful, the rock deals bludgeoning damage to the target as if you had hit the target with your unarmed strike. If you have a ki pool, as long as you have at least 1 point in your ki pool, the rock counts as a ki strike.\n\nAt 4th level, a qinggong monk may select this spell as a ki power costing 1 ki point to activate (if the monk has 0 ki points after activating this ki power, the rock does not count as a ki strike)."
   },
   {
+    "id": "mighty-strength",
+    "name": "Mighty Strength",
+    "source": "Dwarves of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 4,
+      "oracle": 4,
+      "paladin": 4,
+      "warpriest": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "As bull's strength, except it grants a +8 enhancement bonus to Strength.",
+    "description": "As bulls's strength, except it grants a +8 enhancement bonus to Strength.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "mind-blank",
     "name": "Mind Blank",
     "source": "Core Rulebook",
@@ -65115,6 +66379,35 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "oath-of-justice",
+    "name": "Oath of Justice",
+    "source": "Dwarves of Golarion",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 3,
+      "oracle": 3,
+      "paladin": 2,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "two creatures touched"
+      ]
+    ],
+    "duration": "permanent (see text)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Seal an oath between two creatures.",
+    "description": "This spell seals a solemn vow between two creatures. When this spell is cast, the targets must clasp hands and swear their oath in Kols's name. The spell functions like mark of justice, except as noted above and rather than being cursed, the oath-breaker gains a mark on the face indicating to all dwarves who see it that the target has broken a sacred oath, which gives the oath-breaker a -4 penalty to influence dwarves. The mark can be removed as described in the mark of justice spell, or the other target can forgive the oath-breaker, which causes the mark to vanish.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "oath-of-peace",
     "name": "Oath of Peace",
     "source": "Advanced Player's Guide",
@@ -67348,6 +68641,42 @@
         "kind": "save",
         "save": "will",
         "save_text": "Will negates (object)"
+      }
+    ]
+  },
+  {
+    "id": "peacemakers-parley",
+    "name": "Peacemaker’s Parley",
+    "source": "Dwarves of Golarion",
+    "school": "enchantment",
+    "subschool": "charm",
+    "descriptors": null,
+    "levels": {
+      "cleric": 2,
+      "oracle": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 swift action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "creatures in a 20-ft.-radius spread"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Quickly manipulate unfriendly or hostile creatures with diplomacy.",
+    "description": "You can attempt to influence unfriendly or hostile creatures, altering their attitudes toward you. After casting, make a Diplomacy check against the creatures as a free action; you gain a +2 sacred bonus on this check against creatures that failed their saves against the spell. Even if you favorably manipulate the attitude of the affected targets, they quickly revert to their previous attitude if threatened or treated poorly.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
       }
     ]
   },
@@ -69849,6 +71178,37 @@
         "harmless": true
       }
     ]
+  },
+  {
+    "id": "planned-assault",
+    "name": "Planned Assault",
+    "source": "Dwarves of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 3,
+      "hunter": 4,
+      "oracle": 3,
+      "paladin": 3,
+      "ranger": 4,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "one creature/level, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 minute/level or until discharged",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Increase the effectiveness of actions planned in advance.",
+    "description": "This spell increases the effectiveness of a planned action. If the targets spend at least 1 minute studying a situation, they receive bonuses to their first actions in response to the situation. All targets must declare in advance what their intended actions are. If they perform those actions, they receive a +2 sacred bonus to AC, saving throws, and checks for the first round. This bonus increases to +4 at 10th level and +6 at 15th level.\n\nFor example, the PCs discover a camp of orcs; the PC cleric casts planned assault, the group spends 1 minute analyzing the layout of the camp, and then declares its actions. As long as the PCs stick to the plan, they gain a +2 morale bonus to AC, saving throws, and all actions for the first round.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "plant-growth",
@@ -73726,6 +75086,36 @@
         ]
       }
     ]
+  },
+  {
+    "id": "questing-stone",
+    "name": "Questing Stone",
+    "source": "Pathfinder Chronicles: Seekers of Secrets",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "bard": 4,
+      "skald": 4,
+      "sorcerer": 4,
+      "wizard": 4
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one ioun stone touched"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Turn an ioun stone into a scrying sensor.",
+    "description": "This spell functions like arcane eye, except that it uses an ioun stone as a visible scrying sensor. The ioun stone moves at the same rate as an arcane eye, and may pass through holes or spaces as small as 2 inches in diameter. It can enter another plane of existence using a gate or similar portal, but the caster loses contact with the sensor should this occur. The enhanced ioun stone has AC 24, 10 hp, hardness 5, fly speed 30 (perfect), and a +16 Stealth bonus. The stone does not provide you with its normal benefits while you are using it as a scrying sensor.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "quick-change",
@@ -77879,6 +79269,36 @@
     ]
   },
   {
+    "id": "retrieve-item",
+    "name": "Retrieve Item",
+    "source": "Pathfinder Chronicles: Classic Treasures Revisited",
+    "school": "conjuration",
+    "subschool": "calling",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "bard": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 full-round action",
+    "components": "V, S",
+    "range": "long (400 ft. + 40 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "an unattended object weighing 1 lb. or less whose longest dimension is 6 inches or less"
+      ]
+    ],
+    "duration": "permanent until discharged",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Call a small item into your hand from anywhere.",
+    "description": "You call a specific nonliving item directly to your hand from a nearby location. First, you must cast the spell on the item while holding it. Thereafter, you can summon the item by speaking a special word (set by you when the spell is cast) and snapping your fingers. The item appears instantly in your hand.\n\nIf the item is in the possession of another creature, the spell fails.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "retrocognition",
     "name": "Retrocognition",
     "source": "Occult Adventures",
@@ -78119,6 +79539,78 @@
         "kind": "melee touch"
       }
     ]
+  },
+  {
+    "id": "revelation",
+    "name": "Revelation",
+    "source": "Pathfinder Chronicles: Seekers of Secrets",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "bard": 2,
+      "cleric": 3,
+      "oracle": 3,
+      "skald": 2,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 round",
+    "components": "V, S",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level; see text",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Gain great insight into the inner workings of a puzzle, device, or trap.",
+    "description": "You gain a brief understanding of the workings of a single puzzle, device, or trap, gaining an insight bonus equal to your caster level (maximum +10) on checks to disable, manipulate or solve the object in question. Your insight is ineffable; you are unable to communicate your understanding to others.\n\nAt the GM's option, this spell may instead give you a clue or other piece of useful information. In this case you may communicate the clue to others and retain knowledge of it after the spell's duration has expired.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "revenant-armor",
+    "name": "Revenant Armor",
+    "source": "Armor Master's Handbook",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "antipaladin": 3,
+      "arcanist": 4,
+      "cleric": 4,
+      "magus": 4,
+      "medium": 4,
+      "occultist": 4,
+      "oracle": 4,
+      "paladin": 3,
+      "shaman": 3,
+      "sorcerer": 4,
+      "spiritualist": 3,
+      "warpriest": 4,
+      "witch": 3,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (one suit of armor)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one suit of armor"
+      ]
+    ],
+    "duration": "1 day/level or 1 hour/level; see below",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Grant a suit of armor limited animation when its wearer falls unconcious or is killed",
+    "description": "This spell endows a suit of armor with a singular purpose realized only after its wearer goes unconscious or is killed; whenever the wearer of a suit of armor warded by revenant armor is brought below 0 hit points or otherwise rendered unconscious (but not paralyzed or held) in combat, the armor is immediately brought to life as a Medium animated object. This animated suit of armor still contains the unconscious (or dead) body of its former wearer and moves with a shambling gait at a speed of 20 feet. This animated object has average hit points and, if the armor is made from metal, it has the metal animated object extraordinary ability (plus additional abilities based on the type of metal, as indicated on page 14 of the Pathfinder RPG Bestiary). Once animated, the revenant armor remains standing (and stands if knocked prone, doing so without provoking attacks of opportunity), and prevents the wearer of the armor from being considered helpless. If an ally of the wearer is within range of the armor, she can direct it to move, though it refuses to go anywhere that requires a skill check. If grappled or otherwise restrained, it can attempt to break free with a Strength score equal to your caster level and a CMB equal to 1 + your caster level + the armor's Strength modifier. If the armor's wearer is reduced to dust, made conscious, or removed from the armor, the spell ends.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "reverse-gravity",
@@ -79171,6 +80663,34 @@
     ]
   },
   {
+    "id": "rune-of-durability",
+    "name": "Rune of Durability",
+    "source": "Dwarves of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 minute",
+    "components": "V, S, M (iron filings)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "weapon touched"
+      ]
+    ],
+    "duration": "permanent",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Inscribe a rune upon a weapon to double its hit points.",
+    "description": "You inscribe an angular rune upon the surface of a weapon, increasing its hit points. A weapon that bears this rune multiplies its hit points by 2, as if it were one size category larger than it actually is. Placing more than one rune of this type on a weapon has no effect.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "rune-of-jandelay",
     "name": "Rune of Jandelay",
     "source": "Wrath of the Righteous #5: Herald of the Ivory Labyrinth",
@@ -79279,6 +80799,42 @@
         "save": "will",
         "save_text": "Will negates",
         "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "rune-of-warding",
+    "name": "Rune of Warding",
+    "source": "Dwarves of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 hour",
+    "components": "V, S, M (powdered adamantine, diamond, or mithral worth 200 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "doorway or portal touched"
+      ]
+    ],
+    "duration": "permanent until discharged",
+    "saving_throw": "Reflex half",
+    "spell_resistance": "no",
+    "summary": "Place a visible glyph of warding to protect a door or other entryway.",
+    "description": "You inscribe a series of runes upon the surface of a door or around the border of an entryway. They function as a Glyph of Warding (blast glyph), though unlike a Glyph of Warding, these runes are always visible. The runes count as a Glyph of Warding for the purpose of what spells can defeat it, placing multiple glyphs in the same area, and so on.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "ref",
+        "save_text": "Reflex half"
       }
     ]
   },
@@ -79901,6 +81457,78 @@
     "summary": "Create a model of the surrounding land and the creatures nearby",
     "description": "Sand table allows you to create a scale model of the battlefield surrounding your position, showing numbers of troops, their relative positions, and their movement as if you were observing from a great height overhead (1,000 feet up). You cast the spell upon a table or other flat surface and cause the model to appear upon a 5-foot-by-5-foot section of that table or surface. It reflects accurate terrain and topography, though it doesn't identify fine topographical features or concealed or hidden topography. It also indicates all normally visible Small or larger creatures within the area of effect, but it doesn't provide identifying characteristics of those creatures; each creature appears as an indistinct speck, under 1 millimeter in each dimension. The spell marks obvious war camps and contingents of troops with a symbol of their banner (if they openly carry such a symbol). The spell provides a snapshot of the topography and creature locations when cast; it doesn't adjust for changes that occur during the duration. The table shows the land surrounding itself up to a 1-mile radius from the surface. The sand table does not reveal invisible or incorporeal creatures, nor does it include creatures that are underground, indoors, submerged below the surface of water, below a tree line or other source of cover from above, or flying above 1,000 feet in the air. Those looking at the table can spot Small and larger creatures that are using Stealth to hide, but they take a -10 penalty on their Perception checks because of the size of the models. Once the spell has been cast, if anything moves or shakes the surface upon which it was placed, the spell ends instantly.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "sand-whirlwind",
+    "name": "Sand Whirlwind",
+    "source": "Taldor, Echoes of Glory",
+    "school": "conjuration",
+    "subschool": "creation",
+    "descriptors": null,
+    "levels": {
+      "cleric": 3,
+      "oracle": 3,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a handful of sand, dust, or fine powder)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates (blinding only)",
+    "spell_resistance": "no",
+    "summary": "Create a whirling cloud of sand around someone, making it harder for them to speak.",
+    "description": "A whirling cloud of sand strikes the target, blinding it and hampering its ability to speak. To speak while affected by the spell, the target must make a Concentration check (DC equal to the DC of this spell). If the target tries to cast a spell, the Concentration DC increases by the level of the spell being cast. A successful Will save negates the blindness but not the speechhampering effect.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (blinding only)"
+      }
+    ]
+  },
+  {
+    "id": "sand-whirlwind-greater",
+    "name": "Sand Whirlwind, Greater",
+    "source": "Taldor, Echoes of Glory",
+    "school": "conjuration",
+    "subschool": "creation",
+    "descriptors": null,
+    "levels": {
+      "cleric": 5,
+      "oracle": 5,
+      "warpriest": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a handful of sand, dust, or fine powder)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Area",
+        "10-ft.-radius spread"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates (blinding only)",
+    "spell_resistance": "no",
+    "summary": "Create a large whirlwind of sand, blinding and hampering the ability to speak of those within.",
+    "description": "This spell functions as sand whirlwind except as noted above.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates (blinding only)"
+      }
+    ]
   },
   {
     "id": "sands-of-time",
@@ -80768,6 +82396,48 @@
         "kind": "save",
         "save": "will",
         "save_text": "Will disbelief"
+      }
+    ]
+  },
+  {
+    "id": "scriveners-chant",
+    "name": "Scrivener's Chant",
+    "source": "Pathfinder Chronicles: Seekers of Secrets",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 0,
+      "bard": 0,
+      "cleric": 0,
+      "oracle": 0,
+      "skald": 0,
+      "sorcerer": 0,
+      "warpriest": 0,
+      "wizard": 0
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (fine sand and a vial of ink)",
+    "range": "5 ft.",
+    "effects": [
+      [
+        "Target",
+        "one or more written objects"
+      ]
+    ],
+    "duration": "concentration, up to 1 minute/level",
+    "saving_throw": "Will (object)",
+    "spell_resistance": "yes",
+    "summary": "Imbue a quill to rapidly transcribe words from one page to another.",
+    "description": "This spell imbues a quill with animate energy and rapidly transcribes words from one page to another. The quill copies a written work at the rate of one normal-sized page per minute.\n\nThe Linguistics skill can be used to make a convincing copy, but otherwise the reproduction is written in the hand of the caster.\n\nYou must concentrate upon the material being duplicated for the spell's duration and provide new blank pages as required.\n\nThe scrivener's chant requires blank paper and a quill or other writing materials, in addition to the material components.\n\nThis spell cannot duplicate magical writing (including spells and magical scrolls), though it can duplicate non-magical writing from a magical source.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will (object)",
+        "harmless": true
       }
     ]
   },
@@ -81775,6 +83445,43 @@
     "spell_resistance": null,
     "summary": "Reveals invisible creatures or objects.",
     "description": "You can see any objects or beings that are invisible within your range of vision, as well as any that are ethereal, as if they were normally visible. Such creatures are visible to you as translucent shapes, allowing you easily to discern the difference between visible, invisible, and ethereal creatures.\n\nThe spell does not reveal the method used to obtain invisibility. It does not reveal illusions or enable you to see through opaque objects. It does not reveal creatures who are simply hiding, concealed, or otherwise hard to see.\n\nSee invisibility can be made permanent with a permanency spell."
+  },
+  {
+    "id": "see-through-stone",
+    "name": "See Through Stone",
+    "source": "Dwarves of Golarion",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "druid": 4,
+      "hunter": 3,
+      "ranger": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "concentration, up to 1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Look through solid rock as if it were glass.",
+    "description": "You gain the ability to see through solid rock as if it were transparent glass. You may see through 1 foot of stone per caster level. You see within the stone as if you were looking at the area in normal light, even if there is no illumination, though low-light vision and darkvision have no effect on your ability to see through stone. Metal at least 1 inch thick or wood or dirt at least 3 feet thick blocks your vision.\n\nThe spell does not negate concealment for those creatures hiding behind stone objects (the stone is still an obstacle to your attacks).",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
   },
   {
     "id": "seed-spies",
@@ -84626,6 +86333,44 @@
     ]
   },
   {
+    "id": "sheet-lightning",
+    "name": "Sheet Lightning",
+    "source": "Rival Guide",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "electricity",
+    "levels": {
+      "arcanist": 3,
+      "druid": 3,
+      "hunter": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "20-ft.-radius spread"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Fortitude partial",
+    "spell_resistance": "yes",
+    "summary": "Create an area of electricity that dazes all those within.",
+    "description": "You create a dazzling flash of electricity that fills the target area. Sheet lightning inflicts 1 point of electricity damage to all creatures within the area of effect (no save). The true power of the spell, though, lies not in the damage it inflicts but in the overwhelming pain the lightning creates. The sudden flash and jolt dazes living creatures for 1 round if they fail a saving throw. Creatures that save are instead dazzled for 1 round. Any creature wearing metal armor takes a -2 penalty to its saving throw against this spell.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude partial"
+      }
+    ]
+  },
+  {
     "id": "shield",
     "name": "Shield",
     "source": "Core Rulebook",
@@ -84881,6 +86626,40 @@
     "description": "A dim, blue glow surrounds the subjects, protecting them from attacks, granting them resistance to spells cast by chaotic creatures, and slowing chaotic creatures when they strike the subjects. This abjuration has four effects.\n\nFirst, each warded creature gains a +4 deflection bonus to AC and a +4 resistance bonus on saves. Unlike protection from chaos, this benefit applies against all attacks, not just against attacks by chaotic creatures.\n\nSecond, a warded creature gains spell resistance 25 against chaotic spells and spells cast by chaotic creatures.\n\nThird, the abjuration protects you from possession and mental influence, just as protection from chaos does.\n\nFinally, if a chaotic creature succeeds on a melee attack against a warded creature, the attacker is slowed (Will save negates, as the slow spell, but against shield of law's save DC)."
   },
   {
+    "id": "shield-of-shards",
+    "name": "Shield of Shards",
+    "source": "Armor Master's Handbook",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bloodrager": 1,
+      "cleric": 2,
+      "inquisitor": 2,
+      "magus": 2,
+      "medium": 2,
+      "oracle": 2,
+      "paladin": 1,
+      "shaman": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (a shield)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "one shield you wield"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Turn your shield into a storm of shards that attack adjacent creatures",
+    "description": "This defensive spell must be cast on a shield you are currently wielding, and fractures the shield into two shards, plus one additional shard per 2 caster levels (to a maximum of 12 shards at 20th level). While shield of shards is active, you lose your shield's bonus to AC as its broken pieces orbit you. On your turn, you can direct the shards to attack an adjacent opponent as a move action. The shards' attack bonus is equal to your caster level + the modifier for the ability score that determines your spell save DCs. The shards deal an amount of slashing and piercing damage equal to 1d4 points + 1 point per shard beyond the first, and have a threat range of 19-20. They are considered magic weapons for the purpose of bypassing damage reduction. Additionally, if your shield is made from a special material (such as adamantine), the shards penetrate damage reduction and hardness as if they were weapons made from the same material. At the end of this spell's duration, the shards reform into their original shield form. You regain its shield bonus to AC, provided you still have a free hand in which to wield it. Otherwise, the shield falls at your feet in your square.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "shield-of-the-dawnflower",
     "name": "Shield of the Dawnflower",
     "source": "The Inner Sea World Guide",
@@ -85013,6 +86792,129 @@
         "save": "will",
         "save_text": "Will negates",
         "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "shield-speech",
+    "name": "Shield Speech",
+    "source": "Taldor, Echoes of Glory",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "cleric": 1,
+      "druid": 1,
+      "hunter": 1,
+      "oracle": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "warpriest": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "10 ft.",
+    "effects": [
+      [
+        "Target",
+        "you and one other creature"
+      ]
+    ],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Speak freely to one creature within 10 feet without being overheard.",
+    "description": "You can securely communicate with one creature within range. So long as your target remains within 10 feet of you, you and it can speak freely to each other without fear of being overheard. Communications that involve shield speech cannot be spied on, such as with a divination spell, and observers of the conversation can tell you are communicating but cannot read lips or hear the conversation unless they are the target of the spell. If you or the target speak to any other creatures, they can hear you normally (only communication between you and the target is protected). The spell does not shield writing, sign language, or any form of communication other than speaking.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "shield-speech-greater",
+    "name": "Shield Speech, Greater",
+    "source": "Taldor, Echoes of Glory",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "cleric": 4,
+      "druid": 4,
+      "hunter": 4,
+      "oracle": 4,
+      "skald": 4,
+      "sorcerer": 4,
+      "warpriest": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "30 ft.",
+    "effects": [
+      [
+        "Area",
+        "30-ft. emanation centered on you"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Communicate freely with a group of nearby people without anyone else being able to overhear.",
+    "description": "This spell functions as shield speech, except all creatures within the dome may communicate with each other as if linked by shield speech. If they speak with anyone outside the area, those outside the area hear them normally.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
+    "id": "shield-the-banner",
+    "name": "Shield the Banner",
+    "source": "Orcs of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "adept": 1,
+      "cleric": 1,
+      "oracle": 1,
+      "warpriest": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "standard touched"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "no",
+    "summary": "Protect your tribe's banner with a sanctuary-like effect.",
+    "description": "This spell is used to protect one of a tribe's most valuable possessions: its tribal banner. Any creature (other than a member of the tribe which the standard represents) attempting to directly attack or touch the standard must make a Will save. This spell functions as sanctuary, but only protects a standard or banner. In addition, the spell grants a +2 bonus to the standard's hardness, and +10 to the standard's hit points for the duration of the spell.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
       }
     ]
   },
@@ -85756,6 +87658,38 @@
     "description": "You examine an area at range as if you were searching for fine details with the Perception skill. Make a Perception check with a -5 penalty, modified as normal for conditions. No penalty is applied for distance. Apply the result against the DC for any hidden features, such as secret doors, traps, or hidden treasure. You must be able to see the area you are attempting to search, and you only find details that can be perceived with sight or touch. Sift detects only objects and features, not actual creatures."
   },
   {
+    "id": "sign-of-the-dawnflower",
+    "name": "Sign of the Dawnflower",
+    "source": "Taldor, Echoes of Glory",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 0,
+      "druid": 0,
+      "hunter": 0,
+      "oracle": 0,
+      "paladin": 1,
+      "ranger": 1,
+      "warpriest": 0
+    },
+    "casting_time": "1 standard action",
+    "components": "S, F",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one creature/level"
+      ]
+    ],
+    "duration": "1 hour/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Transmit a hidden message that you are a worshipper of Sarenrae to the target.",
+    "description": "As message, except the only information you can transmit is that you are a worshiper of Sarenrae. Once notified, the target can reply that he understands your sign. The spell transmits meaning, not sound, and transcends language barriers.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "sign-of-wrath",
     "name": "Sign of Wrath",
     "source": "Rise of the Runelords Anniversary Edition",
@@ -85799,6 +87733,45 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "signifers-rally",
+    "name": "Signifer's Rally",
+    "source": "Cheliax, Empire of Devils",
+    "school": "conjuration",
+    "subschool": "teleportation",
+    "descriptors": "evil",
+    "levels": {
+      "arcanist": 7,
+      "cleric": 7,
+      "oracle": 7,
+      "sorcerer": 7,
+      "wizard": 7
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (100 gp worth of bloodstone for every ally teleported)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one willing ally/5 levels"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Teleport allies to your location.",
+    "description": "You teleport up to one ally per five caster levels to your location.\n\nYou determine which allies you want to teleport at the time of casting; these allies have 1 round to decide to allow or refuse your spell, and they teleport immediately upon accepting. Allies are teleported as if you had cast teleport on them (your current location is at least \"studied carefully\" for this purpose), appearing in a puff of brimstone in a space adjacent to you. If you are in combat and your allies were not, your allies may roll initiative upon arrival but are not considered flat-footed even though they have not taken any actions. The spell does not function in areas warded against intrusion by evil creatures (such as a magic circle against evil effect).",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
       }
     ]
   },
@@ -87099,6 +89072,39 @@
     "description": "This spell enables you to make a snare that functions as a magic trap. The snare can be made from any supple vine, a thong, or a rope. When you cast snare upon it, the cordlike object blends with its surroundings (DC 23 Perception check for a character with the trapfinding ability to locate). One end of the snare is tied in a loop that contracts around one or more of the limbs of any creature stepping inside the circle.\n\nIf a strong and supple tree is nearby, the snare can be fastened to it. The spell causes the tree to bend, straightening when the loop is triggered, dealing 1d6 points of damage to the creature trapped and lifting it off the ground by the trapped limb or limbs. If no such tree is available, the cordlike object tightens around the creature, dealing no damage but causing it to be entangled.\n\nThe snare is magical. To escape, a trapped creature must make a DC 23 Escape Artist check or a DC 23 Strength check that is a full-round action. The snare has AC 7 and 5 hit points. A successful escape from the snare breaks the loop and ends the spell."
   },
   {
+    "id": "snow-shape",
+    "name": "Snow Shape",
+    "source": "Humans of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "water",
+    "levels": {
+      "arcanist": 2,
+      "cleric": 2,
+      "druid": 1,
+      "hunter": 1,
+      "oracle": 2,
+      "sorcerer": 2,
+      "warpriest": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a miniature shovel)/DF",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "snow or snow-sculpted object touched, up to 5 cubic ft.  + 1 cubic ft./level"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": null,
+    "description": "In frozen northern lands, where the earth may be hidden beneath heavy drifts of snow, Ulfen druids developed a variation of stone shape that other spellcasters have since learned.\n\nYou can form a mass of snow into any shape that suits your purpose, as per the spell stone shape. While it's possible to make crude objects with snow shape, most fine details aren't possible.\n\nHowever, a successful Craft (weapons) check allows you to create a bladed weapon from the snow. The DC of this check is equal to the DC listed with the Craft (weapons) skill (Core Rulebook 93).\n\nYou must be the one to make the Craft check and must do so at the time of casting this spell. A failed check means that the spell is cast normally but the weapon created is malformed and useless. This spell can only be used to craft weapons and not more precise tools or elaborate armors.\n\nOnce you create the item with this spell, it solidifies into super-hard ice, gaining a hardness of 5 and 10 hit points per inch of thickness. This weapon takes double damage from fire.\n\nAnyone using an ice weapon takes a -2 penalty on attacks due to the slippery, unwieldy nature of the weapon, but the weapon deals 1 point of cold damage in addition to its normal damage. A weapon created by this spell lasts for 24 hours before melting into uselessness.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "snowball",
     "name": "Snowball",
     "source": "Ultimate Wilderness",
@@ -87594,6 +89600,47 @@
       {
         "name": "Use",
         "kind": "heal"
+      }
+    ]
+  },
+  {
+    "id": "sotto-voce",
+    "name": "Sotto Voce",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "fear, mind-affecting, sonic",
+    "levels": {
+      "arcanist": 0,
+      "bard": 1,
+      "cleric": 0,
+      "oracle": 0,
+      "skald": 1,
+      "sorcerer": 0,
+      "warpriest": 0,
+      "wizard": 0
+    },
+    "casting_time": "1 standard action",
+    "components": "V",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one humanoid creature of 4 HD or less"
+      ]
+    ],
+    "duration": "1 round",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Use your dry, rasping whisper to fill a creature with dread.",
+    "description": "Your dry, rasping whisper fills a living creature of 4 or fewer Hit Dice with unnatural dread. The affected creature must make a Will save or be shaken for 1 round.\n\nThis spell originated among the followers of the Whispering Way, but necromancers and other intimidating folk outside that group are known to use it.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates"
       }
     ]
   },
@@ -89348,6 +91395,29 @@
     ]
   },
   {
+    "id": "spherescry",
+    "name": "Spherescry",
+    "source": "Pathfinder Chronicles: Classic Treasures Revisited",
+    "school": "divination",
+    "subschool": "scrying",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 hour",
+    "components": "V, S, F (onyx sphere worth at least 50 gp)",
+    "range": "see text",
+    "effects": [],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Scry through a sphere of annihilation.",
+    "description": "This spell allows remote viewing through spheres that have previously consumed some portion of the spellcaster's body: a single digit of a finger or toe at a minimum. The caster can view and listen to events within a 20-foot radius of the associated sphere; this radius follows the sphere if the sphere moves. Unlike a true scrying spell, no other spells operate through the associated sphere, but spherescry produces no indication of its activity on the target and cannot be discovered by normal methods of magical detection.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "spider-climb",
     "name": "Spider Climb",
     "source": "Core Rulebook",
@@ -89869,6 +91939,34 @@
     "description": "An ally made of pure force appears in a single 5-foot square within range. The ally takes the form of a servant of your god. The spiritual ally occupies its space, though you and your allies can move through it, since it is your ally. The spiritual ally carries a single weapon, one favored by your deity (as for spiritual weapon), which has the same threat range and critical modifiers as a real weapon of its form. Each round on your turn, starting with the turn that you cast this spell, your spiritual ally can make an attack against a foe within its reach that you designate. The spiritual ally threatens adjacent squares and can flank and make attacks of opportunity as if it were a normal creature. The spiritual ally uses your base attack bonus (gaining extra attacks if your base attack bonus is high enough) plus your Wisdom bonus when it makes a melee attack. When the spiritual ally hits, it deals 1d10 points of force damage + 1 point of damage per 3 caster levels (maximum +5 at 15th level). It strikes as a spell, not a weapon, so it bypasses DR and can affect incorporeal creatures.\n\nEach round after the first, you can move the spiritual ally as a swift action. It has a speed of 30 feet, and a fly speed of 30 feet (perfect maneuverability). Being a construct of force, the spiritual ally cannot be harmed by any physical attacks, but dispel magic, disintegrate, a sphere of annihilation, or a rod of cancellation affects it. A spiritual ally's AC against touch attacks is 10.\n\nIf an attacked creature has spell resistance, you make a caster level check (1d20 + caster level) against that spell resistance the first time the spiritual ally strikes it. If the ally is successfully resisted, the spell is dispelled. If not, the weapon has its normal full effect on that creature for the duration of the spell."
   },
   {
+    "id": "spiritual-squire",
+    "name": "Spiritual Squire",
+    "source": "Armor Master's Handbook",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "antipaladin": 2,
+      "cleric": 2,
+      "inquisitor": 2,
+      "oracle": 2,
+      "paladin": 2,
+      "shaman": 2,
+      "spiritualist": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [],
+    "duration": "1 minute/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create an ally out of force to assist you in combat",
+    "description": "This spell causes an ally made of pure force to appear in a single 5-foot square within range. The ally takes the form of a servant of your god (if any) or an ancestor. The spiritual squire occupies its space, though you and your allies can move through it, since it is your ally. While the spiritual squire appears to wear armor and carry a weapon, it cannot make attacks and does not threaten any spaces. On your turn, the spiritual squire can do one of the following: retrieve one stowed item from your possessions, carry an object weighing no more than 10 pounds per caster level, hand you an object it is carrying, perform the aid another action on your behalf or for one of your allies, or help one creature of your choice don armor (which then takes half the normal time). When the spiritual squire attempts the aid another action in combat, its attack bonus is equal to your base attack bonus + your Wisdom modifier. Each round after the first as a swift action, you can order the spiritual squire to move. It has a speed of 30 feet. Being a construct of force, the spiritual squire cannot be harmed by any physical attacks, but disintegrate, dispel magic, a rod of cancellation, or a sphere of annihilation affects it. A spiritual ally's AC against touch attacks is 10.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "spiritual-weapon",
     "name": "Spiritual Weapon",
     "source": "Core Rulebook",
@@ -90331,6 +92429,46 @@
         "kind": "save",
         "save": "will",
         "save_text": "Will negates"
+      }
+    ]
+  },
+  {
+    "id": "staggering-fall",
+    "name": "Staggering Fall",
+    "source": "Rival Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "cleric": 2,
+      "oracle": 2,
+      "sorcerer": 2,
+      "warpriest": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 immediate action",
+    "components": "V, S",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "one falling creature"
+      ]
+    ],
+    "duration": "1 round/level (see below)",
+    "saving_throw": "Fort. partial (see below)",
+    "spell_resistance": "yes",
+    "summary": "Make a falling creature hit the ground harder.",
+    "description": "This spell must be cast on a creature as it falls, either from a height or after being knocked prone or tripped. The magic of this spell causes the creature to hit the ground particularly hard, knocking the wind from it. The creature takes an additional 1d6 points of damage from the fall. In addition, the creature becomes staggered for the duration of the spell unless it makes a Will save. Each round the spell's effects persist, the creature may attempt a new Will save as a free action to end the staggered effect early. A creature under the effects of this spell must take a standard action to stand up.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fort. partial (see below)"
       }
     ]
   },
@@ -92227,6 +94365,71 @@
     ]
   },
   {
+    "id": "summon-accuser",
+    "name": "Summon Accuser",
+    "source": "Rival Guide",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": "evil, lawful",
+    "levels": {
+      "arcanist": 4,
+      "bard": 4,
+      "cleric": 4,
+      "oracle": 4,
+      "skald": 4,
+      "sorcerer": 4,
+      "summoner": 4,
+      "warpriest": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 round",
+    "components": "V, S, F (chunk of rotten meat)/DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "1 accuser devil"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Summon an accuser devil to do your bidding.",
+    "description": "This spell summons a single accuser devil from Hell to do the spellcaster's bidding, similar to how summon monster spells function. Accuser devils, known to diabolists as zebubs, are hideous flying creatures with the torso of a plump human infant and the body and wings of an enormous fly. They make excellent spies, for they have the ability to grant visions of what they have witnessed to others-the Queen's Hands sometimes use summoned zebubs to observe suspects from afar. Accuser devils are detailed on page 84 of the Pathfinder RPG Bestiary 2.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "summon-ancestral-guardian",
+    "name": "Summon Ancestral Guardian",
+    "source": "Dwarves of Golarion",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": null,
+    "levels": {
+      "bard": 3,
+      "cleric": 3,
+      "oracle": 3,
+      "skald": 3,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (stone or metal image of your ancestor)/DF",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Effect",
+        "two summoned ancestor spirits"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Conjure your ancestors' spirits to help you in combat.",
+    "description": "You call the spirits of two ancestors to manifest in the mortal world and attack your enemies. Each appears as a transparent image of a powerful, wise dwarf armed with a traditional dwarven weapon of your choice. These spirits move and attack at your direction, each having the abilities of a spiritual weapon, except they can attack different targets and deal physical damage (bludgeoning, piercing, or slashing, according to the weapon the spirit wields) instead of force damage. Like creatures conjured with a summon monster spell, your ancestors are not harmed if these manifestations are destroyed.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "summon-cacodaemon",
     "name": "Summon Cacodaemon",
     "source": "Horsemen of the Apocalypse",
@@ -92406,6 +94609,32 @@
     "spell_resistance": "no",
     "summary": "Summon a giant purple worm.",
     "description": "This spell functions as summon nature's ally VIII, except you summon a purple worm with the giant creature simple template."
+  },
+  {
+    "id": "summon-elemental-steed",
+    "name": "Summon Elemental Steed",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": "see text",
+    "levels": {
+      "druid": 9
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "one chariot"
+      ]
+    ],
+    "duration": "10 minutes/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a mighty chariot with a greater elemental bound to serve it.",
+    "description": "You summon a greater elemental (air, earth, fire, or water) bound in the form of a mighty chariot that moves at your command and can carry up to nine Medium creatures.\n\nPassengers inside are not harmed by the elemental, and can see, breathe, and act normally, suffering no environmental damage even when the elemental chariot is flying, underwater, burrowing, or using earth glide. Passengers are not otherwise protected, though the elemental chariot does provide cover like a normal chariot.\n\nThe elemental keeps all of its statistics and abilities, except it loses its slam attacks and gains a trample attack (Pathfinder RPG Bestiary 305).\n\nWhen you use a summoning spell to summon an air, earth, fire, or water creature, it is a spell of that type.\n\nThis spell is almost exclusively used by the Green Faith.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "summon-erodaemon",
@@ -92707,6 +94936,41 @@
     "spell_resistance": "no",
     "summary": "As summon monster, except to summon a coloxus, omox demon, or 1d3 kalavakus demons.",
     "description": "This spell functions like , except it allows you to summon a single coloxus (Pathfinder RPG Bestiary 3 pg. 72), an omox demon (Pathfinder RPG Bestiary 2 pg. 79), or 1d3 kalavakus demons (Bestiary 2 pg. 78).",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "summon-infernal-host",
+    "name": "Summon Infernal Host",
+    "source": "Rival Guide",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": "evil, lawful",
+    "levels": {
+      "arcanist": 5,
+      "bard": 5,
+      "cleric": 5,
+      "oracle": 5,
+      "skald": 5,
+      "sorcerer": 5,
+      "summoner": 5,
+      "warpriest": 5,
+      "witch": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 round",
+    "components": "V, S, F (strip of rune-inscribed parchment)/DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "1d4+1 lesser host devils or 1 greater host devil"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Summon host devils.",
+    "description": "This spell functions as , save that it can only be used to summon host devils. These noxious flying devils, known also as gaavs and magaavs, are detailed on page 58 of Pathfinder Campaign Setting: Princes of Darkness, Book of the Damned, Vol. 1.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -93674,6 +95938,41 @@
     "spell_resistance": "no",
     "summary": "Summon a thanadaemon.",
     "description": "This spell functions like , except it summons a single thanadaemon. You can only use this spell in an area with enough open water to accommodate the daemon's skiff, or when on the Astral Plane or Ethereal Plane.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "summon-totem-creature",
+    "name": "Summon Totem Creature",
+    "source": "Humans of Golarion",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "cleric": 3,
+      "druid": 3,
+      "hunter": 3,
+      "oracle": 3,
+      "ranger": 3,
+      "sorcerer": 3,
+      "summoner": 3,
+      "warpriest": 3,
+      "wizard": 3
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, M (a piece of bone from any one of your totem animals)/DF",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "one summoned creature"
+      ]
+    ],
+    "duration": "1 hour (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": null,
+    "description": "The Shoanti revere more than the deities of distant planes, but also the animals and natural forces of the rugged lands they call home. Shoanti spellcasters have learned ways to call upon the might of their quahs' totem creatures in times of need. A character must have been raised by the Shoanti and be considered part of a quah to be able to cast this spell. Characters with access to this spell can only summon creatures revered by the quah they are a part of, as noted on the following lists. Except as noted above, this spell functions as .\n\nLyrune-Quah (Moon Clan): air elemental (small), 1d3 bats, wolf, 1d3 owls.\n\nShadde-Quah (Axe Clan): 1d3 eagles, earth elemental (small), water elemental (small).\n\nShriikirri-Quah (Hawk Clan): air elemental (small), 1d3+1 hawks (familiars), horse.\n\nShundar-Quah (Spire Clan): air elemental (small), earth elemental (small), 1d3 eagles.\n\nSklar-Quah (Sun Clan): 1d3 fire beetles, fire elemental (small), horse.\n\nSkoan-Quah (Skull Clan): 1d3+1 eagles (vultures), 1d3 fire beetles, 1d3 giant centipedes.\n\nTamiir-Quah (Wind Clan): air elemental (small), 1d3 eagles, earth elemental (small).",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -95973,6 +98272,46 @@
     "summary": "Gain a combat feat for the spell's duration",
     "description": "This spell was developed by an Aldori Academy student after several weeks of observing (and occasionally joining) Restov barroom brawls. You draw on your mind's hidden reserves, instantaneously mastering advanced combat techniques. When you cast this spell, choose a combat feat. You must meet all prerequisites for this feat, treating your magus level as your base attack bonus for this purpose. For the duration of this spell, you are treated as if you had the chosen feat. Once you cast this spell, you cannot change the chosen feat (or any decisions related to that feat) for additional castings of this spell on the same day. A creature can benefit from only one tactical adaptation spell at a time.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "tactical-formation",
+    "name": "Tactical Formation",
+    "source": "Dwarves of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 3,
+      "hunter": 4,
+      "oracle": 3,
+      "paladin": 3,
+      "ranger": 4,
+      "warpriest": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "up to one creature/level, no two of which may be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Grant targets a bonus to AC so long as they remain in formation.",
+    "description": "This spell increases the effectiveness of a group's formation in battle. When cast, all creatures under the effect of the spell must be adjacent to one another, forming an unbroken chain of squares (which may include creatures sharing the same square). This chain does not need to be a straight line. Each target in the chain receives a +2 defection bonus to AC as long as the targets stay adjacent to at least one other creature affected by the spell; moving more than 5 feet from another target ends the spell with respect to that creature only. For example, a cleric could cast it on himself and four dwarves blocking a 20-foot-wide corridor; the cleric can move freely from the left side of the formation to the right side (whether in front of or behind the other targets) and not break the spell as long as he stays within 5 feet of at least one of them.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
   },
   {
     "id": "tactical-insight",
@@ -98706,6 +101045,36 @@
     ]
   },
   {
+    "id": "tomb-legion",
+    "name": "Tomb Legion",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "evil",
+    "levels": {
+      "arcanist": 8,
+      "cleric": 8,
+      "oracle": 8,
+      "sorcerer": 8,
+      "wizard": 8
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Effect",
+        "Three or more advanced mummies, no two of which can be more than 30 ft. apart; see text"
+      ]
+    ],
+    "duration": "7 days or 7 months; see text",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Summon 1d4+2 advanced mummies.",
+    "description": "This spell functions like shambler, except that it calls into existence 1d4+2 advanced mummies rather than shambling mounds.\n\nThough the spell has fallen out of favor among the Risen Guard because the Ruby Prince frowns on the use of undead, this spell is popular among followers of the Whispering Way.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "tongues",
     "name": "Tongues",
     "source": "Core Rulebook",
@@ -99829,6 +102198,36 @@
     ]
   },
   {
+    "id": "trail-of-the-rose",
+    "name": "Trail of the Rose",
+    "source": "Faiths of Purity",
+    "school": "illusion",
+    "subschool": "phantasm",
+    "descriptors": null,
+    "levels": {
+      "bard": 2,
+      "cleric": 2,
+      "oracle": 2,
+      "skald": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "1 rose touched"
+      ]
+    ],
+    "duration": "1 hour/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Cause a rose to leave a scented trail along your path as you move.",
+    "description": "This spell creates an illusory trail in the form of a misty and visible scent coming from the rose used as this spell's material component. When you cast this spell, the scent of the rose leaves a faint pink-tinged illusion that ripples and flows in the area. Only you and up to six creatures you designate upon casting the spell can see the illusion. To designate a creature, you must know it well. It is not enough simply to have met that creature once or heard of the creature.\n\nWhen you move, this illusory scent leaves a trail, though there are no telltale signs of which direction you moved if creatures designated by this spell find a middle section of the trail. This is typically used to create backtracking method for the caster's handpicked allies, useful for navigating in and out of mazes or labyrinthine cave complexes without leaving behind an obvious trail.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "transfer-familiar",
     "name": "Transfer Familiar",
     "source": "Familiar Folio",
@@ -100665,6 +103064,46 @@
     ]
   },
   {
+    "id": "tripvine",
+    "name": "Tripvine",
+    "source": "Pathfinder Chronicles: Faction Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "bard": 1,
+      "druid": 1,
+      "hunter": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "10-foot-long rope or vine"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Reflex negates",
+    "spell_resistance": "no",
+    "summary": "Animate a rope/vine/etc. to trip nearby creatures.",
+    "description": "You animate a rope, vine, or similar object so that it attempts to trip any creature that comes near. The rope attacks anything in a 10-foot-square area you designate. The rope does not provoke an attack of opportunity. Its CMB is equal to your caster level +2. A tripped target that was running, jumping, or charging takes 1d6 points of nonlethal damage. Creatures aware of the tripvine gain a +4 bonus to their CMD against it.\n\nThe Green Faith created this spell, but it is now common.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "ref",
+        "save_text": "Reflex negates"
+      }
+    ]
+  },
+  {
     "id": "true-appraisal",
     "name": "True Appraisal",
     "source": "Inner Sea Temples",
@@ -101085,6 +103524,34 @@
     "spell_resistance": null,
     "summary": "Creates controllable duplicate of you.",
     "description": "This extract splits a perfect double of yourself from your body, dressed and equipped exactly as you are. You are able to shift your consciousness from one body to the other once each round as a free action. This shift takes place either immediately before your turn or immediately after it, but not during the round. You may act normally in the body you inhabit. Your other self is treated as though dazed, except it may take a single move action each round during your turn. Your twin cannot speak while you are in your other body, and cannot flank, make attacks of opportunity, or otherwise threaten enemies.\n\nBoth you and your twin have the same statistics and start with the number of hit points you had when you ingested the extract. Once you have split, these hit points are tracked separately. Any spells, extracts, or magical effects (such as from potions) that were active when you ingested the extract are active for both you and your twin. If any such effects expire, are dispelled, dismissed, or otherwise used or ended, they end for both of you. Extracts or spells cast after you split affect you and your twin as though you were two separate targets. Your equipment is linked between your two selves, and if an item on one is consumed or destroyed, its duplicate is used up or destroyed as well.\n\nThe body you do not inhabit crumbles into dust when the extract's duration expires or is dismissed. If the body you inhabit is destroyed, you immediately shift to your surviving self and the extract immediately ends. The body you left behind crumbles into dust, and you are stunned until the start of your next turn. If the body you do not inhabit is destroyed, the extract also ends immediately, but you suffer no ill effects.\n\nYou have no special ability to sense what your second body is experiencing, though you immediately know if it has been destroyed. You may switch between bodies at any distance on the same plane. If your bodies cross into separate planes (including through the use of teleport or blink), the body you inhabit survives, while your other body is destroyed."
+  },
+  {
+    "id": "twine-double",
+    "name": "Twine Double",
+    "source": "Cheliax, Empire of Devils",
+    "school": "illusion",
+    "subschool": "shadow",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, M (cloth and twine)",
+    "range": "0 ft.",
+    "effects": [
+      [
+        "Effect",
+        "One duplicate creature"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create a simulacrum of yourself out of cloth and twine.",
+    "description": "As simulacrum, except you can only duplicate yourself, and the duplicate is created from cloth and twine rather than ice and snow. The double looks exactly like you except its eyes are balls of twine (DC 10 Perception check to recognize double's strange eyes). It wears clothing and gear that appear exactly like what you are wearing at the time of casting. Its copies of your magic items are nonfunctional but radiate magic and have the same auras as your items. Its aura is identical to yours. Attempts to scry you while the double exists have a 50% chance of targeting the double instead of you.\n\nThe double cannot attack, has no special abilities, and has a +0 bonus on all saves and checks. You may verbally give the double orders as a free action, or control it telepathically as a standard action. You know what the double is experiencing, and when controlling it telepathically you can see and hear everything it sees and hears, though events at your location may drown out the sensory inputs from the double. The double has hit points equal to half your hit points at the time of casting. If brought to 0 hit points, it is destroyed, reverting to cloth and twine. The double is an animated object.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "twisted-futures",
@@ -104269,6 +106736,44 @@
     ]
   },
   {
+    "id": "vigor",
+    "name": "Vigor",
+    "source": "Orcs of Golarion",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "adept": 0,
+      "cleric": 0,
+      "oracle": 0,
+      "warpriest": 0
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "1 minute or until discharged",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Give someone a +1 bonus on their next melee damage roll.",
+    "description": "This spell infuses the subject with a small surge of strength.\n\nThe creature gets a +1 competence bonus on a single melee damage roll. It must choose to use the bonus before making the roll to which it applies. Ranged or spell attacks are unaffected by this spell.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
+  },
+  {
     "id": "vile-dog-transformation",
     "name": "Vile Dog Transformation",
     "source": "Horror Adventures",
@@ -106418,6 +108923,44 @@
     "summary": "Place a scrying sensor on your animal companion or familiar.",
     "description": "You place a scrying sensor on your animal companion or familiar. This allows the animal companion or familiar to function as if it were an insect summoned by the greater insect spy spell. The animal companion or familiar does not change shape, nor does it lose the ability to make its own decisions, but it receives orders and gives answers as per insects summoned by that spell, and you can sense its direction and distance and receive sensory input from it as with that spell.",
     "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "watchful-eye",
+    "name": "Watchful Eye",
+    "source": "Dwarves of Golarion",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "cleric": 1,
+      "oracle": 1,
+      "paladin": 1,
+      "warpriest": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (a pair of silver or gold rings worth 10 gp, worn by both you and the target)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "As shield other, but with a shorter duration and the requirement that you must maintain line of effect with whom you are linked to.",
+    "description": "This spell emulates Folgrit's motherly protection. It functions as Shield Other, except as noted above, and you must maintain line of effect to the target.",
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "will",
+        "save_text": "Will negates",
+        "harmless": true
+      }
+    ]
   },
   {
     "id": "water-breathing",

@@ -10,7 +10,7 @@ Usage: python build_foundry_spells.py path/to/spells.json   (reads and rewrites 
 import json, re, sys
 from collections import Counter
 from common import slug
-from foundry import load_pack, load_sources, load_notices, paizo_source, html_text
+from foundry import load_pack, load_sources, load_notices, find_notices, paizo_source, html_text
 
 ORIGIN = 'Foundry VTT pf1'
 SCHOOLS = {'abj': 'abjuration', 'con': 'conjuration', 'div': 'divination', 'enc': 'enchantment', 'evo': 'evocation',
@@ -251,14 +251,16 @@ def main():
     by_key = {key(s['name']): s for s in spells}
     books = load_sources()
     # Books whose OGL notice we have: PSRD-Data's (the books its spells came from) and scripts/ogl_notices.json.
-    licensed = {s['source'] for s in spells} | set(load_notices())
+    notices = load_notices()
+    psrd_books = {s['source'] for s in spells}
+    licensed = lambda book: book in psrd_books or bool(find_notices(notices, book))
     added, levels_added, skipped, unlicensed = [], Counter(), Counter(), Counter()
     for doc in load_pack('spells', 'spell'):
         book = paizo_source(doc, books)
         if not book:
             skipped[str([x.get('id') for x in doc['system'].get('sources') or []])] += 1
             continue
-        if book not in licensed and not by_key.get(key(doc['name'])):
+        if not licensed(book) and not by_key.get(key(doc['name'])):
             unlicensed[book] += 1
             continue
         existing = by_key.get(key(doc['name']))

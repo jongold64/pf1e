@@ -187,7 +187,6 @@ Pathfinder Player Companion: Advanced Class Origins © 2014, Paizo Inc.; Authors
 Pathfinder Companion: Adventurer's Armory. Copyright 2010, Paizo Publishing, LLC; Authors: Jonathan Keith, Hal Maclean, Jeff Quick, Christopher Self, JD Wiker, and Keri Wiker.
 Rot Grub from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Clark Peterson, based on original material by Gary Gygax.
 Pathfinder Player Companion: Adventurer’s Armory 2 © 2017, Paizo Inc.; Authors: Jenny Jarzabski, Mikko Kallio, Isabelle Lee, Luis Loza, Joe Pasini, David N. Ross, and Linda Zayas-Palmer.
-Pathfinder Roleplaying Game Core Rulebook © 2009, Paizo Inc.; Author: Jason Bulmahn, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
 Pathfinder Roleplaying Game Adventurer’s Guide © 2017, Paizo Inc.; Authors: Benjamin Bruck, John Compton, Crystal Frasier, Tim Hitchcock, Jenny Jarzabski, Isabelle Lee, Joe Pasini, Jessica Price, David Schwartz, and Josh Vogt.
 Demon Lord, Jubilex from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on material by Gary Gygax.
 Pathfinder Player Companion: Agents of Evil © 2015, Paizo Inc.; Author: Thurston Hillman.
@@ -207,7 +206,6 @@ Axe Beak from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pub
 Pathfinder Player Companion: Animal Archive © 2013, Paizo Publishing, LLC; Authors: Amanda Hamon, Philip Minchin, Jason Nelson, Patrick Renie, Owen K.C. Stephens, and Christina Stiles.
 Pathfinder Player Companion: Antihero's Handbook © 2017, Paizo Inc.; Authors: Emily Brumfield, Violet Hargrave, Susann Hessen, Mikko Kallio, Lyz Liddell, Adrian Ng, Joe Pasini, Lacy Pellazar, Kyle T. Raes, David N. Ross, and Kendra Leigh Speedling.
 Bunyip from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Dermot Jackson.
-Demon Lord, Kostchtchie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on material by Gary Gygax.
 Hippocampus from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley, based on original material by Gary Gygax.
 Troll, Ice from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Russell Cole.
 Pathfinder Campaign Setting: Aquatic Adventures © 2017, Paizo Inc.; Authors: Amber E. Scott and Mark Seifter.
@@ -293,7 +291,6 @@ Curse of the Crimson Throne Player's Guide © 2008, Paizo Publishing, LLC; Autho
 Pathfinder Chronicles: Dark Markets, A Guide to Katapesh. Copyright 2009, Paizo Publishing, LLC; Authors: Stephen S. Greer, Amber Scott, Greg A. Vaughan, and Sean K Reynolds.
 Demon Lord, Dagon from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Demon Lord, Orcus from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on material by Gary Gygax.
-Demon Lord, Pazuzu from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on material by Gary Gygax.
 Pathfinder Player Companion: Demon Hunter’s Handbook © 2013, Paizo Publishing, LLC; Authors: Philip Minchin, F. Wesley Schneider, and Jerome Virnich.
 Plot & Poison: A Guidebook to Drow © 2002, Green Ronin Publishing; Author: Matthew Sernett.
 Demon, Alu- from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on material by Gary Gygax.
@@ -302,9 +299,7 @@ Pathfinder Campaign Setting: Demons Revisited © 2013, Paizo Publishing, LLC; Au
 Pathfinder Player Companion: Dirty Tactics Toolbox © 2015, Paizo Inc.; Authors: Alexander Augunas, Mikko Kallio, Anthony Li, Luis Loza, and Andrew Marlowe.
 Pathfinder Player Companion: Disciple’s Doctrine © 2018, Paizo Inc.; Authors: Saif Ansari, Mara Lynn Butler, Jeffrey Hersh, Andrew Hoskins, Lyz Liddell, Luis Loza, and Linda Zayas-Palmer.
 Pathfinder Campaign Setting: Distant Realms © 2018, Paizo Inc.; Authors: John Compton, Crystal Frasier, Thurston Hillman, Amanda Hamon Kunz, Lyz Liddell, and David Schwartz.
-Axe Beak from the Tome of Horrors Revised © 2002, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Death Worm from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley.
-Grippli from the Tome of Horrors Revised © 2002, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Distant Shores © 2015, Paizo Inc.; Authors: John Compton, Adam Daigle, Crystal Frasier, Amanda Hamon Kunz, Rob McCreary, Mark Moreland, James L. Sutter, and Owen K.C. Stephens.
 Pathfinder Player Companion: Divine Anthology © 2016, Paizo Inc.; Authors: Alexander Augunas, Russ Brown, John Compton, Alex Riggs, and David Ross.
 Pathfinder Player Companion: Weapon Master's Handbook © 2015, Paizo Inc.; Authors: Alexander Augunas and David N. Ross.
@@ -349,7 +344,6 @@ Pathfinder Player Companion: Halflings of Golarion. Copyright 2010, Paizo Publis
 Pathfinder Player Companion: Haunted Heroes Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, Thurston Hillman, Isabelle Lee, Stephen Rowe, and Christopher Wasko.
 Pathfinder Player Companion: Healer’s Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, David N. Ross, and Stephen Rowe.
 Pathfinder Adventure Path #102: Breaking the Bones of Hell © 2016, Paizo Inc.; Authors: Amber E. Scott, with Adam Daigle, James Jacobs, Jenny Jarzabski, Mikko Kallio, Stephanie Lorée, F. Wesley Schneider, and David Schwartz.
-Advanced Bestiary © 2004, Green Ronin Publishing, LLC; Author: Matthew Sernett.
 Pathfinder Adventure Path #107: Scourge of the Godclaw © 2016, Paizo Inc.; Authors: Larry Wilhelm, with Benjamin Bruck, Paris Crenshaw, Alex Greenshields, Jason Keeley, F. Wesley Schneider, Owen K.C. Stephens, Greg A. Vaughan, and Josh Vogt.
 Hell’s Vengeance Player’s Guide © 2016, Paizo Inc.; Authors: Adam Daigle and Rob McCreary.
 Kelpie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Lawrence Schick.
@@ -369,10 +363,7 @@ Pathfinder Player Companion: Heroes of the Wild © 2015, Paizo Inc.; Authors: Ty
 Hangman Tree from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax
 . Pathfinder Roleplaying Game Horror Adventures © 2016, Paizo Inc.; Authors: John Bennett, Clinton J. Boomer, Logan Bonner, Robert Brookes, Jason Bulmahn, Ross Byers, Jim Groves, Steven Helt, Thurston Hillman, Eric Hindley, Brandon Hodge, Mikko Kallio, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, F. Wesley Schneider, David Schwartz, Mark Seifter, and Linda Zayas-Palmer.
 Daemon, Ceustodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Ian McDowall.
-Daemon, Derghodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
-Daemon, Hydrodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
 Daemon, Oinodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
-Daemon, Piscodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Horsemen of the Apocalypse: Book of the Damned, Vol. 3 © 2011, Paizo Publishing, LLC; Author: Todd Stewart.
 Pathfinder Player Companion: Humans of Golarion. © 2011, Paizo Publishing, LLC; Authors: James Jacobs, Colin McComb, Sean K Reynolds, Amber Scott, and Larry Wilhelm.
 Pathfinder Campaign Setting: Inner Sea Bestiary © 2012, Paizo Publishing, LLC; Authors: Jim Groves, James Jacobs, Rob McCreary, Erik Mona, Jason Nelson, Patrick Renie, F. Wesley Schneider, James L. Sutter, Russ Taylor, and Greg A. Vaughan.
@@ -468,6 +459,7 @@ Pathfinder 15: The Armageddon Echo. Copyright 2009, Paizo Publishing, LLC; Autho
 Pathfinder 16: Endless Night. Copyright 2008, Paizo Publishing, LLC; Author: F. Wesley Schneider.
 Pathfinder 26: The Sixfold Trial. Copyright 2009, Paizo Publishing, LLC; Author: Richard Pett
 Pathfinder 5: Sins of the Saviors. Copyright 2007, Paizo Publishing LLC. Author: Steven S. Greer
+Pathfinder Chronicles: Seekers of Secrets. Copyright 2009, Paizo Publishing, LLC; Authors: Tim Hitchcock, Erik Mona, Sean K Reynolds, James L. Sutter, and Russ Taylor.
 Kobold Quarterly Issue 14 © 2010, Open Design LLC, www.koboldquarterly.com.
 Pathfinder Player Companion: Pathfinder Society Primer © 2013, Paizo Publishing, LLC; Authors: John Compton and Mark Moreland.
 Pathfinder Roleplaying Game Pathfinder Unchained © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, Ross Beyers, Logan Bonner, Jason Bulmahn, Robert Emerson, Tim Hitchcock, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Robert Schwalb, Mark Seifter, and Russ Taylor.
@@ -532,7 +524,6 @@ Rise of the Runelords Player's Guide. Copyright 2007 Paizo Publishing LLC. Autho
 Pathfinder Campaign Setting: Rival Guide. © 2011, Paizo Publishing, LLC. Authors: Brian Cortijo, Adam Daigle, Tim Hitchcock, Brandon Hodge, Colin McComb, Jason Nelson, Amber Scott, Neil Spicer, and Todd Stewart.
 Pathfinder Companion: Sargava, the Lost Colony. Copyright 2010, Paizo Publishing, LLC; Author: JD Wiker.
 Pathfinder Companion: Second Darkness Player's Guide. Copyright 2008, Paizo Publishing, LLC; Authors James Jacobs, F. Wesley Schneider, Amber Scott, Greg A. Vaughan.
-Pathfinder Chronicles: Seekers of Secrets. Copyright 2009, Paizo Publishing, LLC; Authors: Tim Hitchcock, Erik Mona, Sean K Reynolds, James L. Sutter, and Russ Taylor.
 Pathfinder Chronicles Seekers of Secrets Paizo Publishing, LLC. © 2009 Paizo Publishing. Authors: Tim Hitchcock, Erik Mona, Sean K Reynolds, James L. Sutter, and Russ Taylor.
 Pathfinder Adventure Path #42: Sanctum of the Serpent God. © 2011, Paizo Publishing, LLC; Author: Neil Spicer.
 Serpent's Skull Player's Guide © 2010, Paizo Publishing, LLC; Author: Mark Moreland.

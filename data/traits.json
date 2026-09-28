@@ -71,6 +71,14 @@
     "text": "Having trained from a young age, you're capable of amazing feats of daring. You gain a +1 bonus on Acrobatics checks, and you take only a -2 penalty instead of the normal -5 penalty when using the Climb skill to attempt an accelerated climb."
   },
   {
+    "id": "acupuncturist",
+    "name": "Acupuncturist",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have studied the ancient art of acupuncture, and use it to pursue enlightenment and healing.\n\nBenefit: You gain a +2 trait bonus on all Fortitude saves made against poison effects.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "adaptable-flatterer",
     "name": "Adaptable Flatterer",
     "source": "Bastards of Golarion",
@@ -150,6 +158,14 @@
     "category": "Race",
     "requirement": "Goblin",
     "text": "Like most goblins, you're easily distracted. Unlike most goblins, though, you have a knack for being distracted at the right time, especially when it comes to avoiding pain.\n\nBenefit: Once per day as a swift action, you can be momentarily distracted in combat-ducking an axe swing to inspect a toadstool, or stooping behind a tree to lick some bark and accidentally avoiding an arrow, and so on. When you activate this ability, you gain a +2 dodge bonus to your AC for 1 round.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "adventurous-explorer",
+    "name": "Adventurous Explorer",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "When frightened or shaken, you only take a -1 penalty on your rolls instead of -2.",
     "origin": "d20pfsrd"
   },
   {
@@ -752,6 +768,14 @@
     }
   },
   {
+    "id": "assimilated-native",
+    "name": "Assimilated Native",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +2 trait bonus on Intimidate checks to influence natives, but you suffer a -2 on Diplomacy checks to influence them.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "augmented-disguise",
     "name": "Augmented Disguise",
     "source": "Adventurer's Armory",
@@ -1205,6 +1229,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "blood-steed",
+    "name": "Blood Steed",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You begin play with a combat trained light horse. While riding this horse bareback, you are treated as though you were riding it with a riding saddle (placing any actual saddle upon the horse negates this benefit). The horse can fend for itself outside of settlements in all but the most hostile environments. If whistled for outside of a community, the horse typically arrives within 1d6 minutes. If your horse is slain, you may receive a new horse by returning to your clan and performing a vigil for its spirit (a rite that costs 100 gp in rare herbs and incense).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "blooded",
     "name": "Blooded",
     "source": "Dwarves of Golarion",
@@ -1256,6 +1288,23 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "border-guard",
+    "name": "Border Guard",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You are one of the warriors on the front lines and excel at combat against water-dwelling foes.\n\nBenefit: You gain a +2 trait bonus on rolls to confirm critical hits against foes with the aquatic subtype.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "born-damned",
+    "name": "Born Damned",
+    "source": "Blood of Fiends",
+    "category": "Race",
+    "requirement": "Tiefling",
+    "text": "The inherent sacrilege that taints your soul sometimes crowds out lesser banes.\n\nBenefit: You gain a +2 trait bonus on saving throws against curses and magical effects that produce curses.\n\nEditor's Note\n\nThe publisher didn't say to but since they created a curse descriptor, why not use it? If doing so, change the \"Benefit\" line to:\n\nBenefit You gain a +2 trait bonus on saving throws against spells and effects that have the [curse] descriptor.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "born-in-the-light",
     "name": "Born in the Light",
     "source": "Blood of the Night,",
@@ -1277,6 +1326,14 @@
         "Ride": 1
       }
     }
+  },
+  {
+    "id": "born-to-the-water",
+    "name": "Born to the Water",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +1 bonus on Swim checks and only need to make Swim checks once every 2 hours to avoid fatigue, instead of once each hour.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "born-under-the-green-star",
@@ -1948,6 +2005,14 @@
     }
   },
   {
+    "id": "chosen-child",
+    "name": "Chosen Child",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "The oracles smiled upon you when your parents claimed you were of divine right, and you were raised with privileges few can fathom.\n\nBenefit: Your starting money increases by 900 gp.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "chosen-one",
     "name": "Chosen One",
     "source": "Champions of Purity",
@@ -1969,6 +2034,14 @@
     "source": "Ultimate Campaign",
     "category": "Social",
     "text": "You are well versed in the local laws, customs, and politics. You gain a +1 trait bonus on Knowledge (nobility) checks and Knowledge (local) checks. Knowledge (local) is always a class skill for you."
+  },
+  {
+    "id": "clan-artisan",
+    "name": "Clan Artisan",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were raised in one of numerous clans and learned a valuable trade in your early years.\n\nChoose: One Craft skill.\n\nBenefit: You gain a +2 trait bonus on checks with the chosen skill, and it becomes a class skill for you.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "classically-schooled",
@@ -2014,6 +2087,15 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "clergy-member",
+    "name": "Clergy Member",
+    "source": "Blood of Angels",
+    "category": "Race",
+    "requirement": "Aasimar",
+    "text": "You belong to a particular faith, and your religious leaders see you as a mortal aspect of their deity. You are treated with respect and graciousness whenever you visit a temple of your faith.\n\nBenefit: You receive a +1 trait bonus on Diplomacy checks when interacting with ordained members of your religion, and once per week you can request aid from a temple of your faith. The GM has final say in what sort of aid you can reasonably request, but in general you may ask for the casting of a 1st-level spell or for a non-magical item worth 50 gp or less.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "clever-mount",
     "name": "Clever Mount",
     "source": "Wilderness Origins",
@@ -2053,6 +2135,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "cliff-master",
+    "name": "Cliff-Master",
+    "source": "Goblins of Golarion",
+    "category": "Regional",
+    "text": "You are adept at scavenging along the cliffs by the sea, and have become a skilled climber.\n\nBenefit: You gain a +1 trait bonus on all Climb and Survival checks.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "clockwork-engineer",
     "name": "Clockwork Engineer",
     "source": "People of the Wastes",
@@ -2083,6 +2173,14 @@
     "source": "Faction Guide",
     "category": "Combat",
     "text": "Your determination allows you to hold onto a shred of your rational mind at all times.\n\nBenefit: Select one of the following skills: Bluff, Escape Artist, Handle Animal, or Stealth.\n\nYou may use this skill normally while raging.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "coincunning",
+    "name": "Coincunning",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You receive a +2 trait bonus on Perception checks to notice coins, gems, jewelry, and valuable trade goods. You gain a chance to notice such goods whenever you pass within 10 feet of them, whether or not you are actively looking.",
     "origin": "d20pfsrd"
   },
   {
@@ -2136,6 +2234,22 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "colonial-entitlement",
+    "name": "Colonial Entitlement",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +2 trait bonus on Intimidate checks against primitives.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "colonial-sympathizer",
+    "name": "Colonial Sympathizer",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +1 trait bonus on Bluff and Diplomacy checks involving colonials and others with this trait.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "color-thief",
     "name": "Color Thief",
     "source": "Goblins of Golarion",
@@ -2180,6 +2294,19 @@
     "category": "Regional",
     "text": "Others recognize that you are filled with the spirit of liberty and equality.\n\nBenefits: You gain a +2 trait bonus on Diplomacy checks to improve the attitude of oppressed, enslaved, or imprisoned subjects, and unless they have reason to distrust you, their starting attitude toward you is at least indifferent, if not better.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "conscientious-miner",
+    "name": "Conscientious Miner",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were one of the mithral miners, and learned how to extract the delicate ore as well as determine its value.\n\nBenefit: You gain a +1 trait bonus on Appraise checks, and a +1 trait bonus on Profession (miner) checks. In addition, Profession (miner) becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1
+      }
+    }
   },
   {
     "id": "conspiracy-hunter",
@@ -2266,6 +2393,19 @@
     "category": "Religion",
     "text": "You have dedicated yourself to the destruction of undead.\n\nBenefit(s) You gain a +1 trait bonus on attacks made against undead.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "cosmopolitan",
+    "name": "Cosmopolitan",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your exposure to many people and tongues has given you a particular facility for speech.\n\nBenefit: You gain a +1 trait bonus on Linguistics checks, and Linguistics becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Linguistics": 1
+      }
+    }
   },
   {
     "id": "courageous",
@@ -2440,6 +2580,14 @@
     "source": "Bastards of Golarion",
     "category": "Social",
     "text": "Neither honeyed tongues or righteous wrath move you much.\n\nBenefit(s): Add 2 when determining your Hit Dice for Intimidate checks, and increase the DC or all Diplomacy checks against you by 2.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "cypher-resistance",
+    "name": "Cypher Resistance",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You can recount runes from memory, and repeated exposure to ancient cyphers has imbued you with a faint resistance to runic magic.\n\nBenefit: You gain a +2 trait bonus on saving throws against spells with the word \"glyph\" or \"symbol\" in their name.",
     "origin": "d20pfsrd"
   },
   {
@@ -2901,6 +3049,33 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "dim-seer",
+    "name": "Dim Seer",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You gain a +2 trait bonus on Perception checks in dim light, and Perception is always a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Perception"
+      ]
+    }
+  },
+  {
+    "id": "diplomat",
+    "name": "Diplomat",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You know how to handle delicate communications with different groups of people.\n\nBenefit: You gain a +1 trait bonus on Diplomacy and Sense Motive checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Sense Motive": 1,
+        "Diplomacy": 1
+      }
+    }
+  },
+  {
     "id": "dirty-fighter",
     "name": "Dirty Fighter",
     "source": "Ultimate Campaign",
@@ -2916,6 +3091,14 @@
     "source": "Inner Sea Primer",
     "category": "Regional",
     "text": "As a person who rejects covenants with gods, your belief is strong enough to repel divine spells.\n\nBenefit: You gain a +2 trait bonus on saving throws against divine spells, but you must make a saving throw even when that magic is beneficial to you.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "discerning-beliefs",
+    "name": "Discerning Beliefs",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You helped the samsarans maintain the magical boundaries around their valleys, and learned the secrets of avoiding such illusions yourself.\n\nBenefit: You gain a +2 trait bonus on saving throws to disbelieve illusions.",
     "origin": "d20pfsrd"
   },
   {
@@ -3015,6 +3198,14 @@
         "Sense Motive": 1
       }
     }
+  },
+  {
+    "id": "divine-deceiver",
+    "name": "Divine Deceiver",
+    "source": "Champions of Corruption",
+    "category": "Regional",
+    "text": "You are trained in using your arcana to fuel minor healing powers.\n\nBenefit(s): Once per day as a full-round action, you can sacrifice a prepared arcane spell or spell slot to manifest healing magic. This acts as cure light wounds, except you heal 1d6 points of damage per level of the spell or spell slot sacrificed (maximum 5d6) and the hit points healed are temporary (lasting 1 hour).\n\nPick up Champions of Corruption AND support this site!",
+    "origin": "d20pfsrd"
   },
   {
     "id": "divine-the-mystery",
@@ -3478,6 +3669,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "emissary",
+    "name": "Emissary",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You gain a +2 trait bonus on Diplomacy checks when dealing with aberrations, monstrous humanoids, undead, and creatures with the giant subtype.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "empty-heart-full-heart",
     "name": "Empty Heart, Full Heart",
     "source": "Inner Sea Gods",
@@ -3861,6 +4060,19 @@
     "requirement": "any religion",
     "text": "A shared religious fervor makes your healing magic more effective.\n\nBenefit: Whenever you cast a spell belonging to the healing subschool on someone of your religion, increase the hit points healed by +1.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "faithful-of-the-dead-god",
+    "name": "Faithful of the Dead God",
+    "source": "Sargava, the Lost Colony",
+    "category": "Religion",
+    "text": "You gain a +1 trait bonus on Diplomacy checks; this bonus increases to +3 if you are dealing with a follower of a dead god.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
   },
   {
     "id": "famed-performer",
@@ -4840,6 +5052,14 @@
     }
   },
   {
+    "id": "group-fighter",
+    "name": "Group Fighter",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have trained extensively to fight with groups.\n\nBenefit: You gain a +1 trait bonus on attacks made while flanking an opponent.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "guardian-of-the-forge",
     "name": "Guardian of the Forge",
     "source": "Ultimate Campaign",
@@ -4848,6 +5068,14 @@
     "also_in": [
       "Advanced Player's Guide"
     ]
+  },
+  {
+    "id": "guerilla",
+    "name": "Guerilla",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have spent much time in the rainforests and know its secrets.\n\nBenefit: You gain a +1 trait bonus on Knowledge (nature) checks as well as Survival checks made in the rainforest. One of these skills becomes a class skill for you.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "guerrilla-tactics",
@@ -4914,6 +5142,15 @@
     }
   },
   {
+    "id": "harrow-chosen",
+    "name": "Harrow Chosen",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Race",
+    "requirement": "Human",
+    "text": "All your life you've been drawn to the mysteries surrounding your family's harrow deck.\n\nBenefit: You begin play with your family's heirloom harrow deck. If you use this specific harrow deck as an additional focus component when you cast a divination spell, your caster level is treated as being 2 levels higher. Additionally, twice per week, you can spend 10 minutes consulting this harrow deck on a particular action to gain the effects of the spell augury as a spellcaster of your character level. No one other than you gains these benefits from this harrow deck. If your harrow deck is destroyed, it cannot be replaced. However, by returning to your family, paying 300 gp on materials, and spending 1 week immersed in the songs and stories of your people, you can create a new harrow deck that grants half the benefits of the lost heirloom.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "harvester",
     "name": "Harvester",
     "source": "Ultimate Campaign",
@@ -4929,12 +5166,33 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "heart-of-clay",
+    "name": "Heart of Clay",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You believe you are destined for an afterlife of service so you do not fear death as others do.\n\nBenefit: You gain a +1 trait bonus on Fortitude saves.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "fort": 1
+      }
+    }
+  },
+  {
     "id": "heat-fortitude",
     "name": "Heat Fortitude",
     "source": "Kobolds of Golarion",
     "category": "Race",
     "requirement": "Kobold, Red-Scaled",
     "text": "You grew up close to sulfurous volcanic vents, which steeled you against heat dangers.\n\nBenefit: You gain a +4 trait bonus on Fortitude saving throws against nonlethal damage from heat.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "heavenly-touch",
+    "name": "Heavenly Touch",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Growing up, you were exposed to everyday miracles performed by your half-celestial friends, and some of this magic rubbed off.\n\nBenefit: At will, you can touch a dying creature to stabilize it as a standard action.",
     "origin": "d20pfsrd"
   },
   {
@@ -5056,6 +5314,14 @@
     }
   },
   {
+    "id": "hill-fighter",
+    "name": "Hill Fighter",
+    "source": "Sargava, the Lost Colony",
+    "category": "Combat",
+    "text": "You may run or charge downhill on a steep slope (moving up to your base speed) without making an Acrobatics check to avoid stumbling but if you travel farther than this distance, the normal rules for steep slopes apply.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "historian",
     "name": "Historian",
     "source": "Legacy of Fire Player's Guide",
@@ -5136,6 +5402,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "honeyed-tongue",
+    "name": "Honeyed Tongue",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You are quite capable of bringing peace to rival groups.\n\nBenefit: You gain a +1 trait bonus on Diplomacy checks, and Diplomacy becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
+  },
+  {
     "id": "honeyed-words",
     "name": "Honeyed Words",
     "source": "Dwarves of Golarion",
@@ -5166,6 +5445,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "horrifying-mind",
+    "name": "Horrifying Mind",
+    "source": "Champions of Corruption",
+    "category": "Magic",
+    "text": "Benefit(s): When a non-evil humanoid attempts to read your mind via a magical effect, the reader must attempt a Will save opposed by your Wisdom or Charisma check (your choice). If the reader fails this save, she is shaken for 1 round. If she fails by 10 or more, she is instead frightened for 1 round, then shaken for 1 round.\n\nPick up Champions of Corruption AND support this site!",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "house-of-green-mothers-pupil",
     "name": "House of Green Mothers Pupil",
     "source": "Distant Shores",
@@ -5178,6 +5465,14 @@
         "Handle Animal": 1
       }
     }
+  },
+  {
+    "id": "humble-beginnings",
+    "name": "Humble Beginnings",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "Choose one of the following: boot, bucket, frying pan, mug, rolling pin, spade, or stool. You are treated as having the Catch Off-Guard feat when wielding the chosen item. (These items should all be considered improvised melee weapons that deal 1d4 points of bludgeoning damage.)",
+    "origin": "d20pfsrd"
   },
   {
     "id": "hunter-of-outsiders",
@@ -5467,6 +5762,20 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "instigator-of-rebellion",
+    "name": "Instigator of Rebellion",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your rage over the political repositioning within your homeland has led you to incite rage within your compatriots. You have become adept at organizing rallies in opposition to the government.\n\nBenefit: You gain a +1 trait bonus on Diplomacy and Intimidate checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Intimidate": 1,
+        "Diplomacy": 1
+      }
+    }
+  },
+  {
     "id": "intense-artist",
     "name": "Intense Artist",
     "source": "Inner Sea Gods",
@@ -5551,6 +5860,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "jungle-fighter",
+    "name": "Jungle Fighter",
+    "source": "Sargava, the Lost Colony",
+    "category": "Combat",
+    "text": "Your speed may not be reduced to less than 10 feet by difficult terrain in jungles (meaning you may take a 5-foot step in difficult terrain and not provoke an attack of opportunity).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "jungle-guide",
     "name": "Jungle Guide",
     "source": "Inner Sea Primer",
@@ -5593,6 +5910,14 @@
     "source": "Champions of Balance",
     "category": "Regional",
     "text": "You are experienced in interpreting and applying legal doctrine, notably the Laws of Man, independent of any divine mandates.\n\nBenefit(s): You gain a +1 trait bonus on Diplomacy and Knowledge (local) checks to settle disputes or arbitrate laws. Once per day if you succeed at an Intimidate check to demoralize a foe who has repudiated or ignored a pronounced judgment you've made, you may choose to cause the creature to be sickened instead of shaken. The duration of the effect remains the same.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "kami-talker",
+    "name": "Kami Talker",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have learned how best to communicate with otherworldly inhabitants.\n\nBenefit: You gain a +2 trait bonus on Diplomacy and Intimidate checks made against outsiders that have the native subtype.",
     "origin": "d20pfsrd"
   },
   {
@@ -5931,6 +6256,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "local-know-it-all",
+    "name": "Local Know-It-All",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "Choose a community that you've lived in for at least 5 years. You gain a +2 trait bonus on Knowledge (local) checks related to that community.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "local-ties",
     "name": "Local Ties",
     "source": "Shattered Star Player's Guide",
@@ -5955,12 +6288,28 @@
     }
   },
   {
+    "id": "long-jumper",
+    "name": "Long Jumper",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "When using the Acrobatics skill to make a long jump, you treat the DC of the skill check as if the distance being jumped were 5 feet shorter than it actually is.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "looking-for-work",
     "name": "Looking for Work",
     "source": "Second Darkness Player's Guide",
     "category": "Campaign",
     "requirement": "Second Darkness",
     "text": "Benefit Choose one of the following skills: Bluff, Craft (any), Diplomacy, Intimidate, Perform (any), Profession (gambler), or Perception. You gain a +1 trait bonus in that skill, and that skill is always considered a class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "loreseeker",
+    "name": "Loreseeker",
+    "source": "Faiths of Corruption",
+    "category": "Religion",
+    "text": "You gain a +2 trait bonus on Spellcraft checks made to identify magical items.",
     "origin": "d20pfsrd"
   },
   {
@@ -6026,6 +6375,14 @@
     "source": "Wilderness Origins",
     "category": "Mount",
     "text": "Despite the name, most lucky hounds are not hounds but mutts of unclear heritage.\n\nStatistics: Riding dog.\n\nBlessed Mutt: Lucky hounds gain a +1 luck bonus on saves against spells or effects with the evil descriptor or which originate from evil outsiders or undead.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "lucky-turnabout",
+    "name": "Lucky Turnabout",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "Whenever you succeed at a Reflex saving throw, you may draw a weapon as an immediate action, or a hidden weapon as a move action.",
     "origin": "d20pfsrd"
   },
   {
@@ -6254,6 +6611,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "master-of-peaks",
+    "name": "Master of Peaks",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have made it to the summits of a number of the greatest peaks, and your body is used to the effects of both extreme cold and high altitude.\n\nBenefit: You gain a +2 trait bonus on Fortitude saving throws made against the effects of cold dangers and altitude sickness.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "masterful-demeanor",
     "name": "Masterful Demeanor",
     "source": "– Cheliax: Empire of Devils",
@@ -6375,6 +6740,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "metamagic-master",
+    "name": "Metamagic Master",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your ability to alter your spell of choice is greater than expected.\n\nChoose: A spell of 3rd level or below.\n\nBenefit: When you use the chosen spell with a metamagic feat, it uses up a spell slot one level lower than it normally would.\n\nEditor's Note\n\nIt is likely that the same clarification made for the Magical Lineage trait also applies to this trait but this has not been stated officially.\n\n\"This trait was never intended as a way for you to actually lower a spell's level. It was put in to allow you to reduce the increase from a metamagic feat. So, no unlimited magic missiles. I will see to it that the language of this ability is clarified soon and I will get this added to the FAQ.\"\n\n[Source]",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "meticulous-concoction",
     "name": "Meticulous Concoction",
     "source": "Ultimate Campaign",
@@ -6421,6 +6794,19 @@
     "requirement": "Dhampir",
     "text": "Your honeyed words are nearly impossible for your enchanted subjects to ignore.\n\nBenefit: You gain a +2 trait bonus on Charisma checks to convince an ally enchanted by one of your charm spells (such as charm person or charm monster) to do things it wouldn't normally do.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "miner",
+    "name": "Miner",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were a miner and have become adept at identifying minerals and gems.\n\nBenefit: You gain a +1 trait bonus on Appraise checks, and Appraise becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1
+      }
+    }
   },
   {
     "id": "missing-child",
@@ -6573,12 +6959,28 @@
     }
   },
   {
+    "id": "natural-artist",
+    "name": "Natural Artist",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your artistic talents were cherished and honed from an early age.\n\nChoose: One Perform skill.\n\nBenefit: You gain a +1 trait bonus on checks with the chosen performance skill, and it becomes a class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "natural-born-sailor",
     "name": "Natural Born Sailor",
     "source": "Skull & Shackles Player's Guide",
     "category": "Campaign",
     "requirement": "Skull Shackles",
     "text": "You were born aboard a ship at sea or down by the docks in a port city on an auspicious day. Old salts and sea dogs nod knowingly and say that the goddess of piracy, sea monsters, and strife, has marked you for a greater destiny. You don't know anything about that, but you've always felt more at home on the sea than on land, and your keen eyes can easily pick out a sail on the distant horizon.\n\nYou came to a tavern in port in search of your fate. You're not sure how many drinks you had, but they quickly went to your head and you passed out on the table before you found your destiny-unless it lay in the bottom of a bottle. Then again, maybe you found your destiny after all…\n\nBenefit You gain a +1 trait bonus on Perception and Profession (sailor) checks. In addition, once per week you can reroll a Profession (sailor) check and take the higher result (you must announce that you are using this ability before the results of the check are known).",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "natural-climber",
+    "name": "Natural Climber",
+    "source": "Goblins of Golarion",
+    "category": "Regional",
+    "text": "You are adept at arboreal activity, and are more at home in the branches of a tree than you are on the ground.\n\nBenefit: You gain a +2 trait bonus on Acrobatics and Climb checks while climbing trees.",
     "origin": "d20pfsrd"
   },
   {
@@ -6646,6 +7048,14 @@
     "source": "Ultimate Campaign",
     "category": "Combat",
     "text": "Your knowledge of nature informs your fighting style, and that style gives you insight into related aspects of the natural world. You gain a +1 trait bonus on all Knowledge (nature) checks, and Knowledge (nature) is always a class skill for you. You can make Knowledge (nature) checks pertaining to animals that correspond to your style feats untrained."
+  },
+  {
+    "id": "navigator",
+    "name": "Navigator",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You've sailed the treacherous waters of the sea and you can navigate their dangers adroitly.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) checks, and a +1 trait bonus on Profession (sailor) checks. One of these skills becomes a class skill for you.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "necrotic-aura",
@@ -6750,6 +7160,19 @@
     "category": "Regional",
     "text": "You never forget you're a noble.\n\nBenefit(s) You gain a +1 trait bonus on Diplomacy checks while interacting with aristocrats and nobles, and a +1 trait bonus on Intimidate checks while interacting with commoners.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "nomadic",
+    "name": "Nomadic",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +1 trait bonus on Knowledge (geography) and Survival checks, and one of these skills (your choice) is always a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Survival": 1
+      }
+    }
   },
   {
     "id": "nonchalant-thuggery",
@@ -7231,11 +7654,35 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "pirate",
+    "name": "Pirate",
+    "source": "Goblins of Golarion",
+    "category": "Regional",
+    "text": "Although you might prefer life on board a ship, you often end up in the water for some odd reason.\n\nBenefit: You gain a +1 trait bonus on Profession (sailor) and Swim checks, and Swim is always a class skill for you. You might also have a peg leg or a hook for a hand, but that's not so helpful.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Swim": 1
+      },
+      "class_skills": [
+        "Swim"
+      ]
+    }
+  },
+  {
     "id": "pirate-queens-strength",
     "name": "Pirate Queen's Strength",
     "source": "People of the Wastes",
     "category": "Religion",
     "text": "The Pirate Queen sometimes answers your calls when you tread dangerous waters.\n\nBenefit(s): Once per day when attempting a Swim check, you can treat the water as if it were one category calmer (as if stormy water were rough water or rough water were calm water).",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "plainsman",
+    "name": "Plainsman",
+    "source": "Sargava, the Lost Colony",
+    "category": "Regional",
+    "text": "You gain a +1 trait bonus on all Knowledge (geography) and Survival checks regarding the plains.",
     "origin": "d20pfsrd"
   },
   {
@@ -7379,6 +7826,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "powerful-bloodline",
+    "name": "Powerful Bloodline",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You possess one of the favored bloodlines and as a result your sorcerous powers are particularly potent.\n\nChoose: One of the following sorcerer bloodlines: fey, maestro, starsoul, or stormborn.\n\nBenefit: Once per day, you may use one of your bloodline powers as if your sorcerer level were 1 higher than normal. This trait does not give you access to bloodline powers whose level requirements you do not yet meet.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "practiced-deception",
     "name": "Practiced Deception",
     "source": "Inner Sea Gods",
@@ -7508,6 +7963,19 @@
     "text": "You hold yourself to a strict code of behavior that guides all of your decisions and actions. You take a -2 penalty on Bluff checks and gain a +2 trait bonus on saving throws against charm, compulsion, and emotion effects."
   },
   {
+    "id": "privileged-slave",
+    "name": "Privileged Slave",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were enslaved but obeyed your masters dutifully, earning yourself additional benefits from your masters.\n\nBenefit: You gain a +1 trait bonus on Bluff checks, and Bluff becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Bluff": 1
+      }
+    }
+  },
+  {
     "id": "prolong-magic",
     "name": "Prolong Magic",
     "source": "Blood of Fiends",
@@ -7537,11 +8005,45 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "prospector",
+    "name": "Prospector",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You know much about mines and being underground in general.\n\nBenefit: You gain a +1 trait bonus on Appraise and Knowledge (dungeoneering) checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Appraise": 1
+      }
+    }
+  },
+  {
+    "id": "prostitute",
+    "name": "Prostitute",
+    "source": "Advanced Player's Guide",
+    "category": "Religion",
+    "text": "You gain a +1 trait bonus on Sense Motive checks and Diplomacy checks to gather information, and one of these skills (your choice) is always a class skill for you. .",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Sense Motive": 1
+      }
+    }
+  },
+  {
     "id": "protective-faith",
     "name": "Protective Faith",
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Your faith strengthens your ability to shield others.\n\nBenefit(s) When you use the aid another action to grant your ally a bonus to AC, you grant a +3 bonus to AC instead of the normal +2.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "proud-tribesman",
+    "name": "Proud Tribesman",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +2 bonus on checks to Intimidate colonialists.",
     "origin": "d20pfsrd"
   },
   {
@@ -7650,6 +8152,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "quick-reactor",
+    "name": "Quick Reactor",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You gain a +1 trait bonus on Reflex saves.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "saves": {
+        "ref": 1
+      }
+    }
+  },
+  {
     "id": "rabble-rebel",
     "name": "Rabble Rebel",
     "source": "Halflings of Golarion",
@@ -7711,6 +8226,14 @@
     "effects": {
       "initiative": 2
     }
+  },
+  {
+    "id": "rebel-leader",
+    "name": "Rebel Leader",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have inherited a quality of leadership from one of your ancestors.\n\nBenefit: If you take the Leadership feat, you receive a +1 trait bonus to your Leadership score.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "reckless",
@@ -7779,6 +8302,30 @@
         "Diplomacy"
       ]
     }
+  },
+  {
+    "id": "regions-finest",
+    "name": "Region's Finest",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You are an elite soldier in the local army, and your discipline has made you a truly deadly foe.\n\nBenefit: You gain a +1 trait bonus on all rolls to confirm critical hits.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "regional-influence",
+    "name": "Regional Influence",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "Determine the city-state of which your home is a holding.\n\nYou gain a +1 trait bonus on checks with one Profession skill and one of the following benefits:\n\nGain Infernal as a bonus language. If you already have this language, gain a +1 trait bonus on Diplomacy checks.\n\nGain a +1 trait bonus on Swim checks.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "regional-recluse",
+    "name": "Regional Recluse",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You gain a +1 trait bonus on Survival checks and one of the following benefits.\n\nGain a +1 trait bonus on Perception checks made at night.\n\nGain proficiency with light shields.\n\nGain Gnome as a bonus language. If you already have this language, gain a +1 trait bonus on Stealth checks made in forested areas.\n\nGain a +1 bonus to damage on all attacks against creatures of the giant type.\n\nGain Orc as a bonus language. If you already know this language, gain a +1 trait bonus on Intimidate checks.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "reincarnated",
@@ -7949,6 +8496,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "rice-runner",
+    "name": "Rice Runner",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You grew up as a slave harvesting rice and you know how to move agilely across sodden and unsteady ground.\n\nBenefit: You gain a +1 trait bonus on Acrobatics checks, and Acrobatics becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Acrobatics": 1
+      }
+    }
+  },
+  {
     "id": "rich-parents",
     "name": "Rich Parents",
     "source": "Ultimate Campaign",
@@ -7973,6 +8533,14 @@
     "source": "People of the River",
     "category": "Faith",
     "text": "Your connection with the river and its tributaries has blended with your reverence for the gods of the river passages so much so that you seem divinely blessed while plying river waters.\n\nBenefit(s) You gain a +2 trait bonus on Swim checks in rivers or streams, and a +2 trait bonus on Survival checks to forage for food in or near a river or stream.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "river-fighter",
+    "name": "River Fighter",
+    "source": "Sargava, the Lost Colony",
+    "category": "Combat",
+    "text": "You may swim downstream or cross-current as a charge if you make your Swim DC by 5 or more.",
     "origin": "d20pfsrd"
   },
   {
@@ -8175,6 +8743,14 @@
     "text": "You were born and raised in untamed lands far from civilization. You learned to survive in the elements among brutal humanoids and beasts. You gain a +1 trait bonus on Knowledge (nature) checks and a +1 trait bonus on Survival checks to get along in the wild. Knowledge (nature) is always a class skill for you."
   },
   {
+    "id": "savage-breaker",
+    "name": "Savage Breaker",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "You gain a +2 trait bonus on combat maneuver checks made to sunder simple or primitive armor and weapons, or any other equipment the GM deems \"barbarian-made.\"",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "savanna-child",
     "name": "Savanna Child",
     "source": "Ultimate Campaign",
@@ -8183,6 +8759,14 @@
     "also_in": [
       "Advanced Player's Guide"
     ]
+  },
+  {
+    "id": "savanna-hunter",
+    "name": "Savanna Hunter",
+    "source": "Sargava, the Lost Colony",
+    "category": "Combat",
+    "text": "You gain a +1 trait bonus on attacks of opportunity attack rolls made with a shortspear, as well as a +1 racial bonus on Constitution checks to continue running and avoid nonlethal damage from a forced march.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "savannah-child",
@@ -8339,6 +8923,19 @@
     "category": "Religion",
     "text": "You deal additional precision damage equal to your Wisdom modifier when you score a critical hit with a melee weapon against an undead opponent.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "seasoned-climber",
+    "name": "Seasoned Climber",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your time on the slopes has improved your ability to surmount great peaks.\n\nBenefit: You gain a +1 trait bonus on Climb checks, and Climb becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Climb": 1
+      }
+    }
   },
   {
     "id": "second-chance",
@@ -8720,6 +9317,19 @@
     }
   },
   {
+    "id": "silvertongued",
+    "name": "Silvertongued",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were brought up as part of the bureaucracy learning extensive education and tact.\n\nBenefit: You gain a +1 trait bonus on Knowledge (nobility) and Diplomacy checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
+  },
+  {
     "id": "simple-disciple",
     "name": "Simple Disciple",
     "source": "Ultimate Campaign",
@@ -8755,6 +9365,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "sky-spirit-worshiper",
+    "name": "Sky Spirit Worshiper",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have seen the sky spirits that roam above and know that the world is rife with unexplainable and terrifying mysteries.\n\nBenefit: You gain a +2 trait bonus on saves against fear effects.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "skymetal-affinity",
     "name": "Skymetal Affinity",
     "source": "People of the Stars",
@@ -8778,6 +9396,22 @@
     "category": "Race",
     "requirement": "Halfling",
     "text": "You know how to get contraband across borders.\n\nBenefit(s): When hiding a Medium or smaller creature from an opponent actively searching you or your cargo, both you and the creature to be smuggled can attempt Stealth checks and select the higher of the two results for your smuggled ally to use while hiding.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "slaver",
+    "name": "Slaver",
+    "source": "Sargava, the Lost Colony",
+    "category": "Race",
+    "text": "You gain a +2 trait bonus on Intimidate checks to influence primitives, but you suffer a -2 penalty on Bluff or Diplomacy checks to influence them.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "slayer-of-the-deep",
+    "name": "Slayer of the Deep",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have hunted monsters and know how to take advantage of their weaknesses.\n\nBenefit: You gain a +1 trait bonus on damage rolls made against creatures of the aberration type.",
     "origin": "d20pfsrd"
   },
   {
@@ -8810,6 +9444,28 @@
     "category": "Race",
     "requirement": "Kobold, Red-Scaled",
     "text": "You've spent so much of your life around fires that smoke no longer affects you the way it does other creatures.\n\nBenefit: Your vision isn't impaired by non-magical smoke, and you gain a +5 trait bonus on Fortitude saves to avoid coughing and choking because of smoke inhalation. This trait confers no benefits against magically created smoke, such as that produced by pyrotechnics.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "smuggler",
+    "name": "Smuggler",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have learned how to dodge the tax collectors and inspectors.\n\nBenefit: You gain a +1 trait bonus on Bluff and Sleight of Hand checks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Sleight of Hand": 1,
+        "Bluff": 1
+      }
+    }
+  },
+  {
+    "id": "snake-bleeder",
+    "name": "Snake Bleeder",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were a vassal of the nagas, and they taught you much regarding how they concoct their various poisons.\n\nBenefit: You gain a +2 trait bonus on Craft (alchemy) checks when brewing poisons, and Craft (alchemy) becomes a class skill for you.",
     "origin": "d20pfsrd"
   },
   {
@@ -8939,6 +9595,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "sound-of-mind",
+    "name": "Sound of Mind",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "Your tranquil mind is especially resistant to manipulation.\n\nBenefit: You gain a +2 trait bonus on saving throws against mind-affecting effects.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "spark-of-creation",
     "name": "Spark of Creation",
     "source": "Champions of Purity",
@@ -9037,6 +9701,14 @@
     "text": "You are so attuned to the spiritual world that it is hard to get the jump on you. You gain a +2 trait bonus on Perception checks to avoid being surprised and to detect invisible or incorporeal creatures."
   },
   {
+    "id": "spirit-talker",
+    "name": "Spirit Talker",
+    "source": "Sargava, the Lost Colony",
+    "category": "Religion",
+    "text": "You gain a +1 racial bonus on Will saves against divine spells and spell-like effects employed against you by clerics or paladins of non-shamanistic gods or faiths but you suffer a -1 penalty on Will saves against divine spells cast by devotees of shamanistic faiths.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "spirits-in-the-stone",
     "name": "Spirits in the Stone",
     "source": "Legacy of Fire Player's Guide",
@@ -9051,6 +9723,14 @@
     "source": "Haunted Heroes Handbook",
     "category": "Magic",
     "text": "Benefit(s): You gain a +4 trait bonus on checks to notice haunts, and when interacting with someone who is possessed by an incorporeal undead creature, you gain a +2 trait bonus on Bluff, Diplomacy, Intimidate, and Sense Motive checks against that target.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "spiritual-forester",
+    "name": "Spiritual Forester",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You grew up in a small settlement and have learned much about the woods as well as about their supernatural inhabitants.\n\nBenefit: You gain a +1 trait bonus on Knowledge (nature) and Knowledge (planes) checks, and one of these skills becomes a class skill for you.",
     "origin": "d20pfsrd"
   },
   {
@@ -9077,6 +9757,19 @@
     "category": "Religion",
     "text": "You were born with the ability to delay the passage to death's door.\n\nBenefit(s) Once per day, you can use stabilize as a spell-like ability, but with a range of touch.",
     "origin": "d20pfsrd"
+  },
+  {
+    "id": "stable",
+    "name": "Stable",
+    "source": "Advanced Player's Guide",
+    "category": "Regional",
+    "text": "You are especially adept at not losing your footing.\n\nBenefit: You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Acrobatics": 1
+      }
+    }
   },
   {
     "id": "stage-magic",
@@ -9181,6 +9874,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "storm-hunter",
+    "name": "Storm Hunter",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You learned to hunt in the relentless winds and still make your arrows fly true.\n\nBenefit: When fighting in windy weather, you treat the wind category as one level lower for the purposes of determining penalties on ranged attacks made with normal weapons.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "storm-pilot",
     "name": "Storm Pilot",
     "source": "Blood of the Elements",
@@ -9264,6 +9965,15 @@
     "source": "Goblins of Golarion",
     "category": "Religion",
     "text": "The blood of the barghests is strong in you.\n\nBenefit: Once per day as a free action, you can gain a +2 trait bonus on any Strength check or Strength-based skill check.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "strength-of-the-land",
+    "name": "Strength of the Land",
+    "source": "Dwarves of Golarion",
+    "category": "Magic",
+    "requirement": "Dwarf",
+    "text": "You gain a +1 trait bonus on caster level checks while touching the ground or unworked stone. This includes dispel checks and checks to overcome spell resistance.",
     "origin": "d20pfsrd"
   },
   {
@@ -9569,6 +10279,14 @@
     }
   },
   {
+    "id": "swamp-rebel",
+    "name": "Swamp Rebel",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You grew up hiding in the swamps from the monstrous overlords who enslaved you and your people.\n\nBenefit: You gain a +2 trait bonus on Stealth checks in swampy terrain, and Stealth becomes a class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "swamp-survivor",
     "name": "Swamp Survivor",
     "source": "Dragonslayer's Handbook",
@@ -9711,6 +10429,14 @@
     "category": "Regional",
     "requirement": "Regional",
     "text": "You have learned the secret of creating potions using advanced scientific techniques so strange that some might consider them alien.\n\nBenefit(s): When brewing a potion, you can increase its base creation cost by 10% to brew it in half the normal amount of time. This trait does not grant the ability to brew potions.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "temple-guard",
+    "name": "Temple Guard",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were a stalwart guard of one of the magnificent temple cities, and your resolve proved to be of great use during bandit raids.\n\nBenefit: You gain a +1 trait bonus on attacks of opportunity made with polearm weapons.",
     "origin": "d20pfsrd"
   },
   {
@@ -9979,6 +10705,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "town-gossip",
+    "name": "Town Gossip",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "text": "Choose a community that you've lived in for at least 5 years. You gain a +2 trait bonus on Diplomacy checks while in that community.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "toxophilite",
     "name": "Toxophilite",
     "source": "Blood of Angels",
@@ -10134,6 +10868,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "true-believer",
+    "name": "True Believer",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You were raised in a devout home and your dedication to your cause makes your divine abilities particularly potent.\n\nBenefit: You gain a +2 trait bonus on concentration checks made while casting divine spells.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "true-name-caller",
     "name": "True Name Caller",
     "source": "Demon Hunter's Handbook",
@@ -10220,6 +10962,14 @@
     "source": "People of the Wastes",
     "category": "Magic",
     "text": "Your exposure to eldritch phenomena has caused your skin to develop a strange pattern.\n\nBenefit(s): Once per day as you cast a spell whose casting time is 1 round or less, you can roll 1d4-2 (no minimum) and add the result to that spell's effective caster level. In an area of primal magic, the minimum result of this roll is 0, not -1.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "two-world-magic",
+    "name": "Two-World Magic",
+    "source": "Sargava, the Lost Colony",
+    "category": "Magic",
+    "text": "Select one 0-level spell from a class spell list other than your own. This spell is a 0-level spell on your class spell list (or a 1st-level spell if your class doesn't have 0-level spells). For example, if you are a druid, you could select mage hand and thereafter prepare it as a 0-level druid spell; if you are a sorcerer, you could select know direction as a 0-level sorcerer spell known.",
     "origin": "d20pfsrd"
   },
   {
@@ -10320,6 +11070,14 @@
     }
   },
   {
+    "id": "underworld-explorer",
+    "name": "Underworld Explorer",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You are familiar with the byways and passages of the underworld.\n\nBenefit: You gain a +1 trait bonus on Knowledge (dungeoneering) checks, and a +1 trait bonus on Survival checks made in a specific area. One of these skills becomes class skill for you.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "undine-loyalty",
     "name": "Undine Loyalty",
     "source": "Bastards of Golarion",
@@ -10361,6 +11119,14 @@
     "category": "Campaign",
     "requirement": "Curse Of The Crimson Throne",
     "text": "You spent a period of time enslaved by a crimelord.\n\nTortured: The crimelord tortured you and left you for dead on a garbage heap after you made one too many errors. Your scars and memories have honed your reaction speed and make you rather jumpy. You gain a +1 bonus on Reflex saves.\n\nReligious: You found a holy symbol of the god you worship today while on a job for the crimelord and, intrigued by it, you snuck off to attend services. When he found out, he beat you to within an inch of your life and broke your holy symbol. Your faith let you block out the pain, and you escaped his control and took shelter in the church, where you spent the rest of your youth. You gain a +2 bonus on Concentration checks.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "unhinged-mentality",
+    "name": "Unhinged Mentality",
+    "source": "Faiths of Corruption",
+    "category": "Religion",
+    "text": "You have goddess-granted madness.\n\nBenefit: This madness gives you a +2 trait bonus on saves against confusion, insanity, and fear effects.",
     "origin": "d20pfsrd"
   },
   {
@@ -10587,6 +11353,19 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "veteran-jungle-guide",
+    "name": "Veteran Jungle Guide",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You have traveled to the jungle on numerous occasions, and your prowess in traversing the jungle wilderness makes you a formidable guide and explorer.\n\nBenefit: You gain a +1 trait bonus on Perception checks, and a +1 trait bonus on Survival checks in jungle terrain. One of these skills becomes a class skill for you.",
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Perception": 1
+      }
+    }
+  },
+  {
     "id": "veteran-of-battle",
     "name": "Veteran of Battle",
     "source": "Ultimate Campaign",
@@ -10648,6 +11427,14 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "vindictive-strike",
+    "name": "Vindictive Strike",
+    "source": "Faiths of Corruption",
+    "category": "Religion",
+    "text": "Once per day during a combat encounter, you can choose to gain a +1 trait bonus on a single attack roll against the creature that last hit you.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "voice-of-monsters",
     "name": "Voice of Monsters",
     "source": "Ultimate Campaign",
@@ -10698,6 +11485,14 @@
     "source": "Quests & Campaigns",
     "category": "Social",
     "text": "Your childhood was brightened by the new places you constantly saw as you traveled with your parents, who were merchants. Still excited by travel, you gain great energy when traveling overland.\n\nBenefit(s): Treat your base land speed as 10 feet higher when determining your overland speed.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "wardbreaker",
+    "name": "Wardbreaker",
+    "source": "Champions of Corruption",
+    "category": "Regional",
+    "text": "You have studied techniques designed to pierce magical protections.\n\nBenefit(s): Once per day, you can attempt a melee touch attack against an opponent that you believe has a deflection bonus to AC. If your attack is successful, your foe's deflection bonus to AC is halved (to a minimum of +0) for a number of rounds equal to your Charisma modifier. You can use this ability twice per day at 10th level and three times per day at 20th level.\n\nPick up Champions of Corruption AND support this site!",
     "origin": "d20pfsrd"
   },
   {
@@ -10777,6 +11572,14 @@
     "source": "People of the Wastes",
     "category": "Social",
     "text": "You have spent most of your life learning how to survive in wastelands, and a lack of normal survival resources apparent in the environment is not a problem for you.\n\nBenefit(s): When you gain this trait, pick one type of wasteland from the following list: blighted, Abyssal, desert, or waterlogged. You gain a +2 trait bonus on Survival checks in that type of wasteland terrain. (The GM determines whether terrain falls into the chosen type of wasteland.) Once you choose a type of wasteland terrain to gain this benefit in, you cannot change it later.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "wastes-explorer",
+    "name": "Wastes Explorer",
+    "source": "Dragon Empires Primer",
+    "category": "Regional",
+    "text": "You belong to one of the nomadic tribes that wander the desert wastes and you are adept at navigating the seemingly endless desert.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) checks and Survival checks made in the desert.",
     "origin": "d20pfsrd"
   },
   {
@@ -10906,6 +11709,14 @@
     "source": "Bastards of Golarion",
     "category": "Regional",
     "text": "Though most outsiders expect your mind to be conflicted, full of self-doubt, and mired in resentment and suspicion, you're truly comfortable in your skin.\n\nBenefit(s): You gain a +2 trait bonus on saving throws against charms and compulsions.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "wicked-leader",
+    "name": "Wicked Leader",
+    "source": "Champions of Corruption",
+    "category": "Social",
+    "text": "Benefit(s): You gain a +1 trait bonus on Charisma checks against evil creatures.\n\nIf you select the Leadership feat or the Vile Leadership feat at any point when you meet the prerequisites for that feat, you can recruit a cohort who is up to 1 level lower than you (instead of the normal requirement that your cohort must be 2 or more levels lower than you are) as long as your cohort is evil.\n\nPick up Champions of Corruption AND support this site!",
     "origin": "d20pfsrd"
   },
   {

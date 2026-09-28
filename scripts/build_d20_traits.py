@@ -11,7 +11,7 @@ import json, os, re, sys
 from collections import Counter
 from bs4 import BeautifulSoup
 from common import text, slug
-from build_d20_feats import book_name, fix_notice
+from build_d20_feats import book_name, take_notices
 from build_traits import effects_of, skill_names
 
 ORIGIN = 'd20pfsrd'
@@ -34,16 +34,7 @@ def parse_page(html):
     url = (re.match(r'<!-- (\S+) -->', html) or [None, ''])[1]
     for s in art.find_all(['script', 'style']):
         s.decompose()
-    box = art.find('div', class_='section15')
-    notices = []
-    if box:
-        for p in box.find_all('p') + list(box.find_next_siblings('p')):
-            n = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
-            if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15'):
-                notices.append(fix_notice(n))
-            if p.parent is not box:
-                p.decompose()
-        box.decompose()
+    notices = take_notices(art)
     name = re.sub(r'\s*\((?:[^)]*traits?)\)\s*$', '', art.find('h1').get_text(' ', strip=True).replace('’', "'"), flags=re.I)
     art.find('h1').decompose()
     for b in art.find_all('div', class_='breadcrumbs'):

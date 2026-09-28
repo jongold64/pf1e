@@ -2,6 +2,7 @@
 import sys, html, json, os, re
 from psrd_tree import load
 from common import text
+from foundry import load_notices, find_notices, book_key
 
 # Section 15 notices missing from PSRD-Data's OGL list for books whose content we use.
 # Wording copied from the official Pathfinder Reference Document (legacy.aonprd.com/openGameLicense.html).
@@ -38,17 +39,21 @@ for name in sorted(os.listdir(data_dir)):
         used |= {r['source'] for r in records if r.get('origin')}
         # Races whose alternate traits / favored class options came from d20pfsrd pages list those books.
         used |= {b for r in records for b in r.get('d20_sources', [])}
-here = os.path.dirname(__file__)
-notices = json.load(open(os.path.join(here, 'ogl_notices.json'), encoding='utf-8'))
-if os.path.exists(os.path.join(here, 'd20_feat_notices.json')):
-    for book, lines in json.load(open(os.path.join(here, 'd20_feat_notices.json'), encoding='utf-8')).items():
-        notices[book] = notices.get(book, []) + [n for n in lines if n not in notices.get(book, [])]
+notices = load_notices()  # ogl_notices.json + d20_feat_notices.json
 have = {re.sub(r'\W', '', n.lower()) for n in out}
+# A book PSRD's own notices already cover, worded differently ("Advanced Player's Guide. Copyright 2010" vs
+# "Pathfinder RPG Advanced Player's Guide © 2010"), isn't listed again: same title and year.
+def title_year(n):
+    year = re.search(r'(?:©|Copyright)\s*(\d{4})', n)
+    return book_key(re.split(r'\s*(?:©|\.? Copyright|, Copyright)', n)[0].strip().rstrip('.')), year and year.group(1)
+
+
+psrd_books = {title_year(n) for n in out}
 added = 0
 for book in sorted(used):
-    for n in notices.get(book, []):
+    for n in find_notices(notices, book):
         k = re.sub(r'\W', '', n.lower())
-        if k not in have:
+        if k not in have and title_year(n) not in psrd_books:
             have.add(k)
             out.append(n)
             added += 1

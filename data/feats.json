@@ -5402,6 +5402,28 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "blade-binder",
+    "name": "Blade Binder",
+    "source": "The Pathfinder Chronicles Campaign Setting",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Base attack bonus +4, proficiency with khopesh or temple sword.",
+    "prerequisites": [
+      {
+        "type": "bab",
+        "value": 4
+      },
+      {
+        "type": "other",
+        "text": "proficiency with khopesh or temple sword"
+      }
+    ],
+    "benefit": "You receive a +2 bonus on CMB checks made to bind an opponent's weapon, as well as any opposed checks to maintain the bind. This bonus stacks with the +2 bonus from wielding a khopesh or temple sword. If you succeed in blade binding your opponent, your opponent becomes flat-footed until he either wrestles his blade free or drops his weapon.",
+    "special": "A monk may add Blade Binder to their bonus feat list at 6th level.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "bladed-brush",
     "name": "Bladed Brush",
     "source": "Paths of the Righteous",
@@ -6021,6 +6043,29 @@
     ],
     "benefit": "Whenever you score a critical hit, your opponent is permanently blinded. A successful Fortitude save reduces this to dazzled for 1d4 rounds. The DC of this Fortitude save is equal to 10 + your base attack bonus. This feat has no effect on creatures that do not rely on eyes for sight or creatures with more than two eyes (although multiple critical hits might cause blindness, at the GM's discretion). Blindness can be cured by heal, regeneration, remove blindness, or similar abilities.",
     "special": "You can only apply the effects of one critical feat to a given critical hit unless you possess Critical Mastery."
+  },
+  {
+    "id": "blinding-flash",
+    "name": "Blinding Flash",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "You can temporarily blind your opponent by using your weapon or shield to flash sunlight into its eyes.",
+    "prerequisites_text": "Dex 13, Combat Expertise.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 13
+      },
+      {
+        "type": "feat",
+        "feat": "Combat Expertise"
+      }
+    ],
+    "benefit": "As a move action, you can expertly angle the blade of your weapon or shield to reflect light into an opponent's eyes, dazzling your foe for 1 round. This feat functions as a gaze attack, and the target must make a Fortitude save (DC 10 + 1/2 your character level + your Dex modifier) to resist the effect. This is a sight-dependent effect, and does not work on creatures that are already blinded or creatures that do not rely on sight as their primary sense. You must be wielding a weapon or shield with a polished or reflective surface in order to use this feat. You must be in an area of bright light to use this feat.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "blinding-light",
@@ -12251,6 +12296,28 @@
     "description": "You can call in favors when necessary.",
     "prerequisites": [],
     "benefit": "Whenever you are in a settlement that is the size of a small town or larger, you can purchase (but not sell) items through your contacts. Treat your current settlement as though it were a metropolis to determine its base value and available magic items. You pay a 5% markup for such items, and orders take 3d6 days to be delivered. You can pay an additional 1,000 gp to have your item magically delivered to you in 1d3 days instead.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "consecrate-spell",
+    "name": "Consecrate Spell",
+    "source": "Blood of Angels",
+    "types": [
+      "Metamagic"
+    ],
+    "description": "You infuse spells with heavenly power, drastically increasing their effectiveness against would-be heralds of evil.",
+    "prerequisites_text": "Aasimar, able to prepare or cast consecrate.",
+    "prerequisites": [
+      {
+        "type": "race",
+        "race": "aasimar"
+      },
+      {
+        "type": "other",
+        "text": "able to prepare or cast consecrate"
+      }
+    ],
+    "benefit": "A consecrated spell is treated as a maximized spell against evil creatures and creatures with the evil subtype. Against all other creatures, this feat does not modify the spell in any way (for example, a consecrated fireball acts as a normal fireball against neutral or good creatures). This feat does not stack with Maximize Spell.\n\nLevel Increase: +2 (a consecrated spell uses up a spell slot two levels higher than the spell's actual level.)",
     "origin": "d20pfsrd"
   },
   {
@@ -22795,6 +22862,37 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "elephant-stomp",
+    "name": "Elephant Stomp",
+    "source": "Sargava, the Lost Colony",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites_text": "Str 13, Power Attack, Improved Overrun, base attack bonus +1.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "str",
+        "value": 13
+      },
+      {
+        "type": "feat",
+        "feat": "Power Attack"
+      },
+      {
+        "type": "feat",
+        "feat": "Improved Overrun"
+      },
+      {
+        "type": "bab",
+        "value": 1
+      }
+    ],
+    "benefit": "When you overrun an opponent and your maneuver check exceeds your opponent's CMD by 5 or more, instead of moving through your opponent's space and knocking her prone, you may stop in the space directly in front of the opponent (or the nearest adjacent space) and make one attack with an unarmed strike or a natural weapon against that opponent as an immediate action.",
+    "normal": "When your overrun maneuver check exceeds your opponent's CMD by 5 or more, you move through the target's space and she is knocked prone.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "elf-magic-defense",
     "name": "Elf-Magic Defense",
     "source": "Trail of the Hunted",
@@ -27333,6 +27431,33 @@
     "benefit": "Whenever an ally who also has this feat successfully feints an opponent, that opponent also loses his Dexterity bonus to AC against the next attack you make against him before the end of the feinting ally's next turn."
   },
   {
+    "id": "feinting-flurry",
+    "name": "Feinting Flurry",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "Your subtle flourishes mislead your enemy, tricking it into changing its footing.",
+    "prerequisites_text": "Dex 15, flurry of blows class feature, Combat Expertise.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 15
+      },
+      {
+        "type": "class_feature",
+        "feature": "flurry of blows"
+      },
+      {
+        "type": "feat",
+        "feat": "Combat Expertise"
+      }
+    ],
+    "benefit": "While using flurry of blows to make melee attacks, you can forgo your first attack to make a Bluff check to feint.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "feline-grace",
     "name": "Feline Grace",
     "source": "Advanced Race Guide",
@@ -28684,6 +28809,23 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "flame-tested-survivor",
+    "name": "Flame-Tested Survivor",
+    "source": "Legacy of Fire Player's Guide",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Knocked unconscious or killed by fire damage at least 10 times.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Knocked unconscious or killed by fire damage at least 10 times"
+      }
+    ],
+    "benefit": "Your history with fire has attracted the attention of a powerful but mysterious guardian spirit from the Elemental Plane of Water. This spirit grants you fire resistance 5, and you gain a +2 bonus on all saving throws made to resist fire effects.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "flanking-foil",
     "name": "Flanking Foil",
     "source": "Ultimate Combat",
@@ -29634,6 +29776,17 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "footslasher",
+    "name": "Footslasher",
+    "source": "Rival Guide",
+    "types": [
+      "Combat"
+    ],
+    "prerequisites": [],
+    "benefit": "If you damage a foe that is of a larger size category than you with a weapon that does piercing or slashing damage, you can attempt to damage the creature's feet in a way that impedes its movement. Attacking a foe in this way is a standard action-you cannot use Footslasher as part of a full-attack action. When you use Footslasher, you take a -2 penalty on your attack roll, but if you hit and deal at least 1 point of damage to the target, it is affected as if by caltrops-its speed is reduced by half. This penalty lasts for 24 hours, or until the creature is successfully treated with a DC 15 Heal check or receives at least 1 point of magical healing. Footslasher does not stack with itself-once a foe has been wounded by this attack, its speed cannot be further reduced by additional attacks (or by damage from caltrops).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "force-dash",
     "name": "Force Dash",
     "source": "Advanced Class Guide",
@@ -29930,6 +30083,24 @@
       }
     ],
     "benefit": "During a kingdom's Event phase, once an event's type and danger level has been determined, you may choose to roll twice on the applicable kingdom or settlement table and choose either result. You must declare you are using this feat before the results of the initial roll are revealed.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "fortune-teller",
+    "name": "Fortune Teller",
+    "source": "The Inner Sea World Guide",
+    "types": [
+      "General"
+    ],
+    "description": "As a result of being raised in a land steeped in tradition and superstition, you are skilled at communicating with the spirit world.",
+    "prerequisites_text": "Ability to cast divination spells.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Ability to cast divination spells"
+      }
+    ],
+    "benefit": "Upon taking this feat, choose a focus item for your divination magic-a crystal ball, runes, a harrow deck, or some such item. Whenever you cast a spell from the divination school, you may use this focus item instead of the spell's material component, as long as the cost of the material component is no more than 1,000 gp. If you choose to perform the spell using your focus item and the spell's normal material component (regardless of that component's cost), you cast the spell at +1 caster level.",
     "origin": "d20pfsrd"
   },
   {
@@ -34958,6 +35129,36 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "healers-touch",
+    "name": "Healer's Touch",
+    "source": "Legacy of Fire Player's Guide",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Cure a cumulative total of 1,000 points of damage for other creatures using healing spells. Dealing damage slows progress toward this goal achievement; for every 1 point of damage you deal to another creature, reduce your cumulative healing total by 2.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Cure a cumulative total of 1"
+      },
+      {
+        "type": "other",
+        "text": "000 points of damage for other creatures using healing spells. Dealing damage slows progress toward this goal achievement"
+      },
+      {
+        "type": "other",
+        "text": "for every 1 point of damage you deal to another creature"
+      },
+      {
+        "type": "other",
+        "text": "reduce your cumulative healing total by 2"
+      }
+    ],
+    "benefit": "When you cast a healing spell to heal a target other than yourself, the spell is maximized as though using the Maximize Spell effect. This does not increase your casting time for the spell. When you cast a healing spell to damage a target, the spell is not maximized but its saving throw DC increases by +4.",
+    "note": "There may be an opposite version of this feat allowing casters using negative energy to heal undead.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "healing-potion",
     "name": "Healing Potion",
     "source": "Potions & Poisons",
@@ -35615,6 +35816,35 @@
     "prerequisites": [],
     "benefit": "You can dismiss any pit spell (such as create pit, hungry pit, spiked pit, and similar spells with 'pit' in their names) or wall spell (such as wall of fire, wall of ice, and similar spells with 'wall' in their names) you cast. The spells must have a duration of at least 1 round. This ability follows the normal rules for dismissing spells, allowing you to dismiss conjured pits and walls as a standard action.",
     "normal": "Several pit and wall spells cannot be dismissed without the use of this feat.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "history-of-scars",
+    "name": "History of Scars",
+    "source": "Legacy of Fire Player's Guide",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Take a cumulative total of 1,000 points of damage. Magical healing offsets this running total; for every 5 points of magical healing you receive, reduce your cumulative damage total by 1.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Take a cumulative total of 1"
+      },
+      {
+        "type": "other",
+        "text": "000 points of damage. Magical healing offsets this running total"
+      },
+      {
+        "type": "other",
+        "text": "for every 5 points of magical healing you receive"
+      },
+      {
+        "type": "other",
+        "text": "reduce your cumulative damage total by 1"
+      }
+    ],
+    "benefit": "Your thick scars impart a -2 penalty on all Charisma-based skill checks, but increase your natural armor bonus by +2.",
     "origin": "d20pfsrd"
   },
   {
@@ -36543,6 +36773,47 @@
     ],
     "benefit": "For the purposes of using item mastery feats, you treat your implements as magic items with all spells that you know from each implement's associated implement school functioning as their effective construction requirements. When using an implement to activate an item mastery feat, you can spend a number of points of mental focus equal to half of the feat's base Fortitude save bonus prerequisite to activate the feat without counting the use against the item mastery feat's total number of daily uses.",
     "special": "An occultist who has this feat can select item mastery feats in place of focus powers, provided he meets the feats' prerequisites.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "imposing-bearing",
+    "name": "Imposing Bearing",
+    "source": "Armor Master's Handbook",
+    "types": [
+      "Armor Mastery"
+    ],
+    "description": "Your armor allows you to push your opponents around.",
+    "prerequisites_text": "Poised Bearing, base attack bonus +11 or fighter level 8th, armor training class feature, proficiency with heavy armor.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Poised Bearing"
+      },
+      {
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 11
+          },
+          {
+            "type": "class_level",
+            "class": "fighter",
+            "value": 8
+          }
+        ],
+        "text": "base attack bonus +11 or fighter level 8th"
+      },
+      {
+        "type": "class_feature",
+        "feature": "armor training"
+      },
+      {
+        "type": "other",
+        "text": "proficiency with heavy armor"
+      }
+    ],
+    "benefit": "You treat your size as two categories larger for the purposes of determining the size of creatures against which you can attempt bull rush, drag, overrun, and trip combat maneuvers.",
     "origin": "d20pfsrd"
   },
   {
@@ -37585,6 +37856,42 @@
       }
     ],
     "benefit": "Whenever an ally who also has this feat successfully feints against an opponent, that opponent provokes an attack of opportunity from you."
+  },
+  {
+    "id": "improved-feinting-flurry",
+    "name": "Improved Feinting Flurry",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "Your first melee attack throws your opponent completely off guard.",
+    "prerequisites_text": "Dex 17, flurry of blows class feature, Combat Expertise, Feinting Flurry, base attack bonus +6.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 17
+      },
+      {
+        "type": "class_feature",
+        "feature": "flurry of blows"
+      },
+      {
+        "type": "feat",
+        "feat": "Combat Expertise"
+      },
+      {
+        "type": "feat",
+        "feat": "Feinting Flurry"
+      },
+      {
+        "type": "bab",
+        "value": 6
+      }
+    ],
+    "benefit": "While using Feinting Flurry, if you successfully feint, your opponent is denied its Dexterity bonus to AC until the end of your turn.",
+    "normal": "A successful feint causes your opponent to be denied its Dexterity bonus to AC against your next attack.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "improved-fiendish-darkness",
@@ -51401,7 +51708,7 @@
         "text": "ability to cast plane shift or gate as a spell or spell-like ability"
       }
     ],
-    "benefit": "Choose one of the planes below. The alignment of the plane must be within one step of your alignment. You gain a +2 bonus on saves against spells and spell-like abilities with the associated descriptor, and you cast spells with that descriptor at +1 caster level.\n\nPlane Alignment Descriptor\n\nHeaven LG Light\n\nNirvana NG Good\n\nElysium CG Emotion\n\nAxis LN Lawful\n\nThe Boneyard N Death\n\nThe Maelstrom CN Chaotic\n\nHell LE Pain\n\nAbaddon NE Evil\n\nThe Abyss CE Fear\n\nPathfinder Player Companion: Demon Hunter's Handbook © 2013, Paizo Publishing, LLC; Authors: Philip Minchin, F. Wesley Schneider, and Jerome Virnich.",
+    "benefit": "Choose one of the planes below. The alignment of the plane must be within one step of your alignment. You gain a +2 bonus on saves against spells and spell-like abilities with the associated descriptor, and you cast spells with that descriptor at +1 caster level.\n\nPlane Alignment Descriptor\n\nHeaven LG Light\n\nNirvana NG Good\n\nElysium CG Emotion\n\nAxis LN Lawful\n\nThe Boneyard N Death\n\nThe Maelstrom CN Chaotic\n\nHell LE Pain\n\nAbaddon NE Evil\n\nThe Abyss CE Fear",
     "origin": "d20pfsrd"
   },
   {
@@ -56144,6 +56451,46 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "quivering-palm-adept",
+    "name": "Quivering Palm Adept",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "Your quivering palm strikes are more potent than most.",
+    "prerequisites_text": "Quivering palm class feature.",
+    "prerequisites": [
+      {
+        "type": "class_feature",
+        "feature": "quivering palm"
+      }
+    ],
+    "benefit": "Add +2 to the saving throw DC against your quivering palm attacks.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "quivering-palm-versatility",
+    "name": "Quivering Palm Versatility",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "You can alter the way you apply a quivering palm's vibrations to an opponent's body to cause extreme pain, put it in a coma, or destroy its memories.",
+    "prerequisites_text": "Quivering palm class feature, base attack bonus +13.",
+    "prerequisites": [
+      {
+        "type": "class_feature",
+        "feature": "quivering palm"
+      },
+      {
+        "type": "bab",
+        "value": 13
+      }
+    ],
+    "benefit": "After successfully using your quivering palm attack on a creature, you can produce one of the following effects instead of killing the creature, as long as you do so within a number of days equal to your monk level.\n\nComa: The subject falls unconscious and is helpless for a number of days equal to your monk level.\n\nMemory Loss: The subject falls unconscious for 24 hours and awakens with huge gaps in its memory. The target's memories of the recent past (a number of consecutive days equal to your monk level) are completely obliterated, and can only be restored by a wish or miracle spell.\n\nPain: The subject takes 1d6 points of nonlethal damage per monk level you possess.\n\nYou must choose the desired effect before the quivering palm's attack roll is made. Unless the target succeeds at its Fortitude save against your quivering palm attack, it succumbs to the desired effect when you will it (a free action).\n\nThis feat is otherwise subject to all of the limits and conditions of quivering palm.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "racial-heritage",
     "name": "Racial Heritage",
     "source": "Advanced Player's Guide",
@@ -57344,6 +57691,28 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "reckless-aim",
+    "name": "Reckless Aim",
+    "source": "Blood of Fiends",
+    "types": [
+      "Combat"
+    ],
+    "description": "Your lack of regard for others proves a boon when you fire projectiles into melee.",
+    "prerequisites_text": "Point-Blank Shot, Precise Shot.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Point-Blank Shot"
+      },
+      {
+        "type": "feat",
+        "feat": "Precise Shot"
+      }
+    ],
+    "benefit": "When you shoot or throw ranged weapons at an opponent engaged in melee, you can choose to take a -1 penalty to your AC and gain a +2 competence bonus on your attack roll. However, when you roll a natural 1 on a ranged attack roll made with this bonus, you automatically hit a random adjacent creature that threatens your intended target.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "reckless-moves",
     "name": "Reckless Moves",
     "source": "Champions of Corruption",
@@ -57725,6 +58094,50 @@
     ],
     "benefit": "When you craft a magic weapon, magic armor, or magic shield, you can add a fortifying element to the item.\n\nThis increases the item's total construction cost by 10%. If it's a weapon, when it becomes broken, the penalty to attack and damage rolls is reduced to -1 (this can never reduce a broken weapon's penalty to attack and damage to 0 or a positive number). If it's a suit of armor or a shield, when it becomes broken, the bonus it grants to AC is reduced by one-quarter, rounding down. Other drawbacks of the broken condition to weapons, armor, and shields still apply as normal.",
     "normal": "A broken weapon imposes a -2 penalty on attack and damage rolls. The bonus a broken suit of armor or a broken shield grants to AC is halved.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "reject-poison",
+    "name": "Reject Poison",
+    "source": "Faiths of Corruption",
+    "types": [
+      "General"
+    ],
+    "description": "You are a careful poisoner, and know how to protect yourself against exposure to the ill effects of most substances.",
+    "prerequisites_text": "Dex 13, poison use class feature, worshiper of an evil god.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 13
+      },
+      {
+        "type": "class_feature",
+        "feature": "poison use"
+      },
+      {
+        "type": "other",
+        "text": "worshiper of an evil god"
+      }
+    ],
+    "benefit": "Whenever a creature attempts to poison you with a poison you have previously used or undergone the effects of, you have a 20% chance of naturally rejecting the poison's effects on you, negating its effects and wasting its use.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "relentless-butcher",
+    "name": "Relentless Butcher",
+    "source": "Legacy of Fire Player's Guide",
+    "types": [
+      "Achievement"
+    ],
+    "prerequisites_text": "Confirm at least 50 critical hits.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Confirm at least 50 critical hits"
+      }
+    ],
+    "benefit": "When you confirm a critical hit, that opponent must make a Fortitude save (DC = 10 + your Strength or Dexterity modifier) or be stunned for 1 round.",
     "origin": "d20pfsrd"
   },
   {
@@ -58940,6 +59353,28 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "roof-runner",
+    "name": "Roof Runner",
+    "source": "Curse of the Crimson Throne Player's Guide",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Dex 13, Acrobatic",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "dex",
+        "value": 13
+      },
+      {
+        "type": "feat",
+        "feat": "Acrobatic"
+      }
+    ],
+    "benefit": "You gain a +2 bonus on Climb and Acrobatics check, and may take 10 on Climb checks even when distracted. If you fall, you automatically reduce the damage taken by the fall by one die, as if you had fallen 10 less feet. This reduction in damage stacks with the Acrobatics check to further reduce falling damage.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "rouse-emotions",
     "name": "Rouse Emotions",
     "source": "Cohorts and Companions",
@@ -59878,9 +60313,31 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "scent-of-fear-monster",
+    "name": "Scent of Fear (Monster)",
+    "source": "Classic Monsters Revisited",
+    "types": [
+      "Monster"
+    ],
+    "description": "All bugbears smell fear, but some sense it far more keenly than others. These bugbears gain advantages against most foes and prove particularly dangerous against those whose spirits are curdled by terror.",
+    "prerequisites_text": "Possess the scent ability, any evil.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Possess the scent ability"
+      },
+      {
+        "type": "other",
+        "text": "any evil"
+      }
+    ],
+    "benefit": "You can track by smell and automatically pinpoint the location of opponents by scent alone if they are within 30 feet. In addition, you gain a +2 morale bonus on attack rolls against shaken or frightened opponents, and you can detect them at twice the normal scent range (120 feet, pinpoint at 60 feet). You gain a +2 bonus on all Will saves as long as a shaken or frightened target is in range. You cannot be surprised by anyone who is shaken or frightened within range of your enhanced sense of smell.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "scholar",
     "name": "Scholar",
-    "source": "Adventurer's Guide",
+    "source": "The Inner Sea World Guide",
     "types": [
       "General"
     ],
@@ -63581,6 +64038,28 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "silent-as-stone",
+    "name": "Silent as Stone",
+    "source": "Dungeon Denizens Revisited",
+    "types": [
+      "Monster"
+    ],
+    "description": "You move over stone with such natural poise that you are nearly noiseless. You are skilled in taking down a single foe in a party in absolute silence.",
+    "prerequisites_text": "Roper, Stealthy.",
+    "prerequisites": [
+      {
+        "type": "other",
+        "text": "Roper"
+      },
+      {
+        "type": "feat",
+        "feat": "Stealthy"
+      }
+    ],
+    "benefit": "You gain a +4 bonus to all Stealth checks in rocky environments and may use Stealth at no penalty while climbing. If you attack with your strands in the surprise round, you may automatically choke the victim and cover his mouth with a strand to quell any sound. If you hit with a strand in the surprise round, on your next turn make a Stealth check at -5 opposed by the Perception check of nearby creatures; if you succeed, you silently drag your opponent 10 feet toward you, and your target's allies are unaware your target is missing (barring precautions or activities that would make this obvious, such as being tied together, your target carrying the only light source, your target speaking before the attack, and so on).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "silent-kill",
     "name": "Silent Kill",
     "source": "Advanced Class Guide",
@@ -64280,6 +64759,28 @@
       }
     ],
     "benefit": "You heal 1 hit point per 10 minutes as long as you are surrounded by at least 5 feet of dirt or stone on all sides and take no actions.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "sleeper-hold",
+    "name": "Sleeper Hold",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "By maintaining a grapple hold on your opponent, you can cause it to lose consciousness.",
+    "prerequisites_text": "Greater Grapple, base attack bonus +8.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Greater Grapple"
+      },
+      {
+        "type": "bab",
+        "value": 8
+      }
+    ],
+    "benefit": "You must declare that you are using this feat before you make a combat maneuver check to maintain a grapple (thus a failed check to maintain the grapple ruins the attempt). If you maintain a grapple for a number of consecutive rounds equal to your opponent's Constitution bonus (minimum 1 round), you can attempt to knock out your opponent. The victim must succeed at a Fortitude save (DC 10 + 1/2 your character level + your Str modifier) or else it falls unconscious for 1d4 rounds. Each successive round you attempt this, the target takes a cumulative -1 penalty on its saving throw. When you use this feat, you take an additional -2 penalty to your AC. Creatures that are immune to bleed damage, stunning, or critical hits are immune to this ability.",
     "origin": "d20pfsrd"
   },
   {
@@ -65703,6 +66204,24 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "sow-terror",
+    "name": "Sow Terror",
+    "source": "Classic Monsters Revisited",
+    "types": [
+      "Monster"
+    ],
+    "description": "Bugbears are stealthy, and sometimes they use their skill at furtiveness to inspire dread in their prey.",
+    "prerequisites_text": "Stealthy.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Stealthy"
+      }
+    ],
+    "benefit": "Anytime you win an opposed Stealth check by 5 or more you might sow terror as a standard action. You do so by scraping your nails slightly on a solid surface, causing a board to creak ever so lightly, or rapping on a window pane. The victim cannot detect the source of the sound and dismisses it as the wind or some other mundane source, but the idea that something might be lurking nearby festers in the victim's subconscious. The victim must roll a Will save (DC 10 + 1/2 your character level + your Charisma modifier) or become shaken for 1d4 rounds.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "spark-of-the-uncanny",
     "name": "Spark of the Uncanny",
     "source": "Wilderness Origins",
@@ -66464,6 +66983,27 @@
       }
     ],
     "benefit": "You can combine your bardic performance and your spellcasting in two ways.\n\nFirst, you can conceal the activity of casting a bard spell by masking it in a performance. As a swift action, you may combine your casting time of a spell with a Perform check. Observers must make a Perception or Sense Motive check opposed by your Perform check to realize you are also casting a spell. This uses 1 round of your bardic performance ability, regardless of the spell's casting time.\n\nSecond, as a move action, you can use 1 round of bardic performance to maintain a bard spell with a duration of concentration. You can cast another spell in the same round you are using bardic magic to maintain concentration; if you do this, your concentration on the maintained spell ends when you end the bardic performance the spell is part of."
+  },
+  {
+    "id": "spider-climber",
+    "name": "Spider Climber",
+    "source": "Advanced Race Guide",
+    "types": [
+      "General"
+    ],
+    "prerequisites_text": "Character level 3rd, drow.",
+    "prerequisites": [
+      {
+        "type": "character_level",
+        "value": 3
+      },
+      {
+        "type": "race",
+        "race": "drow"
+      }
+    ],
+    "benefit": "You can cast spider climb once per day as a spell-like ability, using your character level as the caster level. Furthermore, you gain a +4 bonus on saving throws against the web special attacks of spiders and the effects of web and other similar spells (such as the web cloud spell).",
+    "origin": "d20pfsrd"
   },
   {
     "id": "spider-step",
@@ -68784,6 +69324,29 @@
     "origin": "d20pfsrd"
   },
   {
+    "id": "stone-magic",
+    "name": "Stone Magic",
+    "source": "Giants Revisited",
+    "types": [
+      "Monster"
+    ],
+    "description": "Knowledgeable even among stone giant elders, you have unlocked greater mastery over earth and stone.",
+    "prerequisites_text": "Cha 17, stone giant elder (age 700 years or older).",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "cha",
+        "value": 17
+      },
+      {
+        "type": "other",
+        "text": "stone giant elder (age 700 years or older)"
+      }
+    ],
+    "benefit": "In addition to the usual spell-like abilities of a stone giant elder, you gain the ability to use passwall, spike stones, statue, stoneskin, and wall of stone once per day as spell-like abilities (caster level 10th, the save DCs are Charisma-based).",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "stone-read",
     "name": "Stone Read",
     "source": "Inner Sea Gods",
@@ -70381,6 +70944,28 @@
     "benefit": "Creatures that you summon shed light as a light spell. They are immune to blinding or dazzling effects, and their natural weapons are treated as magical for overcoming damage reduction."
   },
   {
+    "id": "sunlit-strike",
+    "name": "Sunlit Strike",
+    "source": "Blood of Angels",
+    "types": [
+      "General"
+    ],
+    "description": "Your melee blows deal extra damage to creatures sensitive to light, making you adept at hunting foul monsters of the night.",
+    "prerequisites_text": "Arcane Strike, daylight spell-like ability.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Arcane Strike"
+      },
+      {
+        "type": "other",
+        "text": "daylight spell-like ability"
+      }
+    ],
+    "benefit": "Whenever you successfully hit an enemy that is vulnerable to light (such as by the light blindness, light sensitivity, or sunlight powerlessness universal monster rules) with a melee weapon you've imbued with your Arcane Strike feat, you deal an additional 1d6 points of damage to the target of your attack. The struck creature must also succeed at a Fortitude saving throw (DC 10 + 1/2 your character level + your Strength modifier) or become staggered for 1 round.",
+    "origin": "d20pfsrd"
+  },
+  {
     "id": "superintendant",
     "name": "Superintendant",
     "source": "Quests & Campaigns",
@@ -70475,6 +71060,29 @@
       }
     ],
     "benefit": "Each time you cast a summoning spell that conjures more than one creature, add one to the total number of creatures summoned."
+  },
+  {
+    "id": "supernal-feast",
+    "name": "Supernal Feast",
+    "source": "Blood of Angels",
+    "types": [
+      "General"
+    ],
+    "description": "You sup on the blood of your ancestors to fuel your fury.",
+    "prerequisites_text": "Con 15, aasimar.",
+    "prerequisites": [
+      {
+        "type": "ability",
+        "ability": "con",
+        "value": 15
+      },
+      {
+        "type": "race",
+        "race": "aasimar"
+      }
+    ],
+    "benefit": "Whenever you are adjacent to a good outsider that takes bleed or blood drain damage, you gain 1 temporary hit point as you bathe in the celestial being's gore. Furthermore, as a full-round action, you can feast on the fallen body of a good outsider that has been dead no longer than 24 hours. When you do, you regain 1 temporary hit point per Hit Die the outsider possessed at a rate of 1 hit point per minute. Temporary hit points gained from this feat last 1d4 hours.",
+    "origin": "d20pfsrd"
   },
   {
     "id": "supernatural-spy",
@@ -78243,6 +78851,33 @@
       }
     ],
     "benefit": "You gain a +1 bonus on ranged attack rolls for each ally with this feat who made a ranged attack since the end of your last turn against a target within 15 feet of your target, to a maximum of +4. These allies don't provide cover against your attacks.",
+    "origin": "d20pfsrd"
+  },
+  {
+    "id": "vulpine-pounce",
+    "name": "Vulpine Pounce",
+    "source": "Dragon Empires Primer",
+    "types": [
+      "Combat"
+    ],
+    "description": "You can change shape mid-charge and pounce on an opponent in the same round.",
+    "prerequisites_text": "Swift Kitsune Shapechanger, base attack bonus +10, kitsune.",
+    "prerequisites": [
+      {
+        "type": "feat",
+        "feat": "Swift Kitsune Shapechanger"
+      },
+      {
+        "type": "bab",
+        "value": 10
+      },
+      {
+        "type": "race",
+        "race": "kitsune"
+      }
+    ],
+    "benefit": "When you change shape into your kitsune form and use the charge action in the same round, you can make a full attack against your opponent.",
+    "special": "A kitsune may select this feat any time she would gain a feat.",
     "origin": "d20pfsrd"
   },
   {

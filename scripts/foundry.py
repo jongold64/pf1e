@@ -57,9 +57,31 @@ def load_sources():
 
 def load_notices():
     """OGL Section 15 notices per book ({title: [notice, ...]}), from scripts/ogl_notices.json
-    (made by extract_ogl_notices.py). Content from a book without notices is left out."""
-    path = os.path.join(os.path.dirname(__file__), 'ogl_notices.json')
-    return json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {}
+    (made by extract_ogl_notices.py) plus scripts/d20_feat_notices.json (read from d20pfsrd pages by the d20 builders).
+    Content from a book without notices is left out."""
+    here = os.path.dirname(__file__)
+    notices = {}
+    for name in ('ogl_notices.json', 'd20_feat_notices.json'):
+        path = os.path.join(here, name)
+        if os.path.exists(path):
+            for book, lines in json.load(open(path, encoding='utf-8')).items():
+                notices[book] = notices.get(book, []) + [n for n in lines if n not in notices.get(book, [])]
+    return notices
+
+
+def book_key(title):
+    """A book title for matching across sources: 'Pathfinder Chronicles: Faction Guide' = 'Faction Guide'."""
+    t = re.sub(r"^pathfinder (?:chronicles|campaign setting|player companion|companion|roleplaying game|rpg|adventure path)[:,]?\s+",
+               '', title.lower().replace('’', "'"))
+    return re.sub(r'[^a-z0-9]', '', t)
+
+
+def find_notices(notices, book):
+    """The notices for a book, matching its title exactly or by book_key."""
+    if book in notices:
+        return notices[book]
+    k = book_key(book)
+    return next((lines for title, lines in notices.items() if book_key(title) == k), [])
 
 
 def paizo_source(doc, books):

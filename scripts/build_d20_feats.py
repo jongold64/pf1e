@@ -50,6 +50,23 @@ def fix_notice(notice):
     return notice
 
 
+def take_notices(art):
+    """The Section 15 notices on a page, removed from it. They're paragraphs or divs in the "section15" box, or (older
+    or broken pages) paragraphs and divs right after it."""
+    notices = []
+    for box in art.find_all('div', class_='section15'):
+        parts = [box] + [el for el in box.find_next_siblings() if el.name in ('p', 'div')]
+        for part in parts:
+            leaves = [el for el in [part, *part.find_all(['p', 'div'])] if not el.find(['p', 'div'])]
+            for el in leaves:
+                n = re.sub(r'\s+', ' ', el.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
+                if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15') and fix_notice(n) not in notices:
+                    notices.append(fix_notice(n))
+        for part in parts:
+            part.decompose()
+    return notices
+
+
 def book_name(notice):
     """'Pathfinder Roleplaying Game Occult Adventures © 2015, Paizo Inc.; ...' -> 'Occult Adventures'."""
     notice = fix_notice(notice)
@@ -67,18 +84,7 @@ def parse_page(html):
     url = (re.match(r'<!-- (\S+) -->', html) or [None, ''])[1]
     for s in art.find_all(['script', 'style']):
         s.decompose()
-    # The notices are paragraphs in the "section15" box, or (older pages) paragraphs right after it.
-    box = art.find('div', class_='section15')
-    notices = []
-    if box:
-        paras = box.find_all('p') + [p for p in box.find_next_siblings('p')]
-        for p in paras:
-            n = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
-            if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15'):
-                notices.append(fix_notice(n))
-            if p.parent is not box:
-                p.decompose()
-        box.decompose()
+    notices = take_notices(art)
     title = art.find('h1').get_text(' ', strip=True).replace('’', "'")
     # A trailing bracket holds the feat's types and, for racial feats, its race: "Blundering Defense (Combat, Halfling)".
     m = re.match(r'^(.*?)\s*\(([^)]*)\)$', title)
@@ -121,7 +127,9 @@ def main():
     key = lambda n: re.sub(r'[^a-z0-9]', '', n.lower())
     have = {key(f['name']) for f in feats}
     pages = sorted(os.listdir(CACHE))
-    new, notices, skipped = {}, {}, {'no Paizo notice': 0, 'mythic or caravan': 0, 'duplicate': 0, 'unreadable': 0, 'no benefit': 0}
+    # The notices file is shared with build_d20_traits.py and build_d20_races.py, so it's added to, not replaced.
+    notices = json.load(open(NOTICES, encoding='utf-8')) if os.path.exists(NOTICES) else {}
+    new, skipped = {}, {'no Paizo notice': 0, 'mythic or caravan': 0, 'duplicate': 0, 'unreadable': 0, 'no benefit': 0}
     for name in pages:
         rec = parse_page(open(os.path.join(CACHE, name), encoding='utf-8').read())
         if not rec:

@@ -170,8 +170,12 @@ Books after 2015 come from the Foundry VTT Pathfinder 1e system's packs, a parti
 out its long paths, so `foundry.py` reads files with `git cat-file` (first read of a pack downloads it, slowly).
 - Only Paizo books are used (`paizo_source`: code PZO..., no other publisher in `module/registry/sources.mjs`), and
   only books with an OGL Section 15 notice in `scripts/ogl_notices.json` (made by `extract_ogl_notices.py` from the
-  Archives of Nethys license page, plus `MANUAL_NOTICES`). `build_license.py` appends the notices for books the data
-  uses. Records from Foundry carry `"origin": "Foundry VTT pf1"`.
+  Archives of Nethys license page, plus `MANUAL_NOTICES`) or `scripts/d20_feat_notices.json` (read from d20pfsrd pages;
+  `load_notices` merges both, `find_notices` matches titles with `book_key`, so "Pathfinder Chronicles: Faction Guide" =
+  "Faction Guide"). `build_license.py` appends the notices for books the data uses, skipping ones PSRD's own list has
+  for the same title and year. The d20 builders add to `d20_feat_notices.json` (never replace it) and read notices
+  with `take_notices` (paragraphs or divs in or just after the "section15" box). Records from Foundry carry
+  `"origin": "Foundry VTT pf1"`.
 - `build_foundry_spells.py` runs after `build_spells.py`: adds spells PSRD lacks (names matched ignoring spaces and
   punctuation; Foundry's "(APG)"-style tags dropped) and adds Foundry class levels missing from PSRD spells (occult
   classes, unchained summoner).
