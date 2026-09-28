@@ -58,7 +58,9 @@ for s in spells:
     if not s['levels'] or not s.get('school'):
         errors.append(f"spell {s['id']} has no class list or school")
 unknown_lists = {c for s in spells for c in s['levels'] if c not in class_ids}
-if unknown_lists - {'elementalist-wizard'}:
+# The elementalist wizard is a PSRD spell list with no class; the others are Foundry spell lists for classes
+# data/classes.json doesn't have yet (occult classes, unchained summoner).
+if unknown_lists - {'elementalist-wizard', 'medium', 'mesmerist', 'occultist', 'psychic', 'spiritualist', 'summoner-unchained'}:
     errors.append(f'spell lists for unknown classes: {sorted(unknown_lists)}')
 print(f'{len(races)} races, {len(classes)} classes, {len(feats)} feats, {len(armor)} armor, '
       f'{len(magic_items)} magic items, {len(spells)} spells, {len(equipment)} pieces of equipment, {len(weapons)} weapons')

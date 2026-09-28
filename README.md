@@ -10,7 +10,7 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | `data/feats.json` | 1,227 feats, including 162 mythic feats |
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
 | `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items). Items with several prices have `price_options`, read from the price text or from a price table in the description (bag of holding types, with each type's weight) |
-| `data/spells.json` | 1,536 spells with school, class spell levels, components, range, duration, saves and text (mythic spells left out) |
+| `data/spells.json` | 2,858 spells with school, class spell levels, components, range, duration, saves and text: 1,536 from PSRD-Data (mythic spells left out) plus 1,322 from later Paizo books via the Foundry VTT Pathfinder 1e data (marked `"origin": "Foundry VTT pf1"`) |
 | `data/equipment.json` | 825 pieces of mundane gear in 12 categories (adventuring gear, tools, clothing, alchemical items, animals, vehicles, services, ...), with price, weight and versions such as common/masterwork |
 | `data/weapons.json` | 241 weapons: simple, martial, exotic, firearms and technological, with proficiency, damage by size, critical, range, type, special qualities, price and weight (siege engines left out) |
 | `LICENSE-OGL.txt` | The Open Game License 1.0a and Section 15 copyright notices. **Ship this with your app.** |

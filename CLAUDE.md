@@ -150,9 +150,20 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 
 ## Data build commands
 
-Requires Python 3.9+ and `pip install beautifulsoup4`, plus the PSRD-Data book databases. On this
+Requires Python 3.9+ and `pip install beautifulsoup4 pyyaml`, plus the PSRD-Data book databases. On this
 machine they're in `C:\Users\jongo\Projects\PSRD-Data` (the `.db` files only, downloaded from the repo;
 `git clone --depth 1 https://github.com/devonjones/PSRD-Data.git` also works).
+
+Books after 2015 come from the Foundry VTT Pathfinder 1e system's packs, a partial clone at
+`C:\Users\jongo\Projects\foundryvtt-pathfinder1` (`FOUNDRY` env var; see `scripts/foundry.py`). Windows can't check
+out its long paths, so `foundry.py` reads files with `git cat-file` (first read of a pack downloads it, slowly).
+- Only Paizo books are used (`paizo_source`: code PZO..., no other publisher in `module/registry/sources.mjs`), and
+  only books with an OGL Section 15 notice in `scripts/ogl_notices.json` (made by `extract_ogl_notices.py` from the
+  Archives of Nethys license page, plus `MANUAL_NOTICES`). `build_license.py` appends the notices for books the data
+  uses. Records from Foundry carry `"origin": "Foundry VTT pf1"`.
+- `build_foundry_spells.py` runs after `build_spells.py`: adds spells PSRD lacks (names matched ignoring spaces and
+  punctuation; Foundry's "(APG)"-style tags dropped) and adds Foundry class levels missing from PSRD spells (occult
+  classes, unchained summoner). `validate.py` allows spell lists for those not-yet-built classes.
 
 ```
 python scripts/build_all.py path/to/PSRD-Data     # rebuild everything, then validate
