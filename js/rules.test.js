@@ -14,7 +14,8 @@ import { classCounts, babList } from './rules.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
-import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost } from './weapons.js';
+import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
+         flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
 
 const results = [];
@@ -597,6 +598,40 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Small size: +1 attack, Small damage dice', `${weaponAttack({ weapon: ls, bab: [1], mod, sizeAttack: 1, size: 'Small' }).attacks[0]} ` +
         weaponAttack({ weapon: ls, bab: [1], mod, sizeAttack: 1, size: 'Small' }).damage, '6 1d6+4');
   check('greatsword two-handed Str', weaponAttack({ weapon: weapon('Greatsword'), bab: [1], mod }).damage, '2d6+6');
+  check('a Str penalty isn\'t multiplied two-handed', strToDamage(weapon('Greatsword'), -1), -1);
+
+  // Combat options
+  const pa = { powerAttack: true, deadlyAim: true, rapidShot: true };
+  const paLs = weaponAttack({ weapon: ls, bab: [1], mod, haveFeats: ['Power Attack'], options: pa });
+  check('Power Attack at BAB +1: -1 attack, +2 damage', `${paLs.attacks[0]} ${paLs.damage}`, '4 1d8+6');
+  check('Power Attack two-handed: +3 damage', weaponAttack({ weapon: weapon('Greatsword'), bab: [1], mod, haveFeats: ['Power Attack'], options: pa }).damage, '2d6+9');
+  check('Power Attack at BAB +8: -3 / +6', weaponAttack({ weapon: ls, bab: [8, 3], mod, haveFeats: ['Power Attack'], options: pa }).attacks.join('/') +
+        ' ' + weaponAttack({ weapon: ls, bab: [8, 3], mod, haveFeats: ['Power Attack'], options: pa }).damage, '9/4 1d8+10');
+  check('Power Attack switched on without the feat does nothing', weaponAttack({ weapon: ls, bab: [1], mod, options: pa }).damage, '1d8+4');
+  check('Power Attack doesn\'t apply to a bow', weaponAttack({ weapon: weapon('Longbow'), bab: [1], mod, haveFeats: ['Power Attack'], options: pa }).damage, '1d8');
+  const bow = weaponAttack({ weapon: weapon('Longbow'), bab: [6, 1], mod: { str: 0, dex: 3 }, haveFeats: ['Deadly Aim', 'Rapid Shot'], options: pa });
+  check('Deadly Aim + Rapid Shot at BAB +6', `${bow.attacks.join('/')} ${bow.damage}`, '5/5/0 1d8+4');
+  check('two-weapon penalties', ['00', '01', '10', '11'].map(k => Object.values(twoWeaponPenalties(k[0] === '1', k[1] === '1')).join('/')).join(' '),
+        '-6/-10 -4/-4 -4/-8 -2/-2');
+  const twf = twoWeaponAttack({ bab: [6, 1], mod, haveFeats: ['Two-Weapon Fighting', 'Improved Two-Weapon Fighting'],
+                                main: { weapon: ls }, off: { weapon: weapon('Shortsword') } });
+  check('longsword + short sword, TWF and Improved TWF', `${twf.main.attacks.join('/')} ${twf.main.damage}; ${twf.off.attacks.join('/')} ${twf.off.damage}`,
+        '8/3 1d8+4; 8/3 1d6+2');
+  const twoLong = twoWeaponAttack({ bab: [1], mod, main: { weapon: ls }, off: { weapon: ls } });
+  check('two longswords without the feat: -6 / -10', `${twoLong.main.attacks[0]} ${twoLong.off.attacks[0]}`, '-1 -5');
+  const tbs = weapon('Two-Bladed Sword');
+  const dbl = twoWeaponAttack({ bab: [1], mod, haveFeats: ['Two-Weapon Fighting', 'Double Slice'], main: { weapon: tbs, end: 0 }, off: { weapon: tbs, end: 1 } });
+  check('two-bladed sword as two weapons, Double Slice', `${dbl.main.attacks[0]} ${dbl.main.damage}; ${dbl.off.attacks[0]} ${dbl.off.damage}`, '3 1d8+4; 3 1d8+4');
+  check('dwarven urgrosh other end', weaponAttack({ weapon: weapon('Dwarven Urgrosh'), bab: [1], mod, hand: 'off', end: 1 }).damage, '1d6+2');
+  check('double weapon held two-handed shows one end', weaponAttack({ weapon: tbs, bab: [1], mod }).damage, '1d8+6');
+  check('monk 1 flurry', flurryBabs('monk', 1, 0, 0).map(b => b - 2).join('/'), '-1/-1');
+  check('monk 8 flurry matches the class table', flurryBabs('monk', 8, 6, 6).map(b => b - 2).join('/'), '6/6/1/1');
+  check('monk 15 flurry matches the class table', flurryBabs('monk', 15, 11, 11).map(b => b - 2).join('/'), '13/13/8/8/3/3');
+  check('fighter 4 / monk 4 flurry', flurryBabs('monk', 4, 3, 7).join('/'), '8/8/3');
+  check('brawler 1 has no flurry', flurryBabs('brawler', 1, 1, 1), null);
+  check('brawler 8 flurry', flurryBabs('brawler', 8, 8, 8).join('/'), '8/8/3/3');
+  const flurry = weaponAttack({ weapon: weapon('Quarterstaff'), bab: flurryBabs('monk', 1, 0, 0), mod, hand: 'flurry', penalty: -2 });
+  check('flurry with a quarterstaff: full Str, not 1-1/2', `${flurry.attacks.join('/')} ${flurry.damage}`, '3/3 1d6+4');
 
   check('longsword price', weaponCost(ls), 15);
   check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);

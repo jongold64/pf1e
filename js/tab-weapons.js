@@ -3,7 +3,8 @@
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
-import { proficiencyTest, weaponAttack, weaponCost } from './weapons.js';
+import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
+         powerAttackStep } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
 
 let selectedId = null;
@@ -65,31 +66,124 @@ function renderList(app) {
   renderPanel(app);
 }
 
+const attackText = a => a.attacks.map(signed).join('/');
+const usedText = a => (a.used.length ? ` <span class="muted">(${esc(a.used.join(', '))})</span>` : '');
+
+// Everything weaponAttack needs that comes from the character rather than the weapon.
+function combatContext(app, view) {
+  const proficient = proficiencyTest(view.classes, view.race);
+  // Unarmed strike damage from the monk or brawler table (the higher class level).
+  const unarmedFrom = view.counts.filter(e => ['monk', 'brawler'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
+  const unarmed = unarmedFrom ? unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'] : null;
+  // Flurry of blows: monk (from 1st level) or brawler's flurry (from 2nd). Monk levels count as BAB for it.
+  const flurryFrom = view.counts.find(e => e.cls.id === 'monk') || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
+  const flurry = flurryFrom ? {
+    kind: flurryFrom.cls.id,
+    name: flurryFrom.cls.id === 'monk' ? 'Flurry of blows' : "Brawler's flurry",
+    babs: flurryBabs(flurryFrom.cls.id, flurryFrom.level, flurryFrom.cls.progression[flurryFrom.level - 1].bab[0], view.stats.bab[0]),
+  } : null;
+  return { proficient, unarmed, flurry, armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
+}
+
+function attackArgs(app, view, ctx, e) {
+  const w = app.data.weaponsById.get(e.id);
+  return {
+    weapon: w, entry: e, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.race.size] ?? 0,
+    size: view.race.size, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
+    armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
+    options: app.state.combat,
+    // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
+    powerBab: view.stats.bab[0],
+  };
+}
+
+// The Combat options card: Power Attack, Deadly Aim and Rapid Shot switches (only for feats the character has)
+// and two-weapon fighting with the weapons chosen for each hand.
+function renderCombat(app, view, ctx) {
+  const { state, data } = app;
+  const have = new Set(view.haveFeats);
+  const step = powerAttackStep(view.stats.bab[0]);
+  const switches = [
+    ['powerAttack', 'Power Attack', `−${step} melee attack, +${2 * step} damage (+${3 * step} two-handed, +${step} off-hand)`],
+    ['deadlyAim', 'Deadly Aim', `−${step} ranged attack, +${2 * step} damage`],
+    ['rapidShot', 'Rapid Shot', 'one more ranged attack, −2 on all of them'],
+  ].filter(([, feat]) => have.has(feat));
+  $('combat-switches').innerHTML = switches.map(([key, feat, what]) =>
+    `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span></label>`).join('')
+    || '<p class="hint">Power Attack, Deadly Aim and Rapid Shot switches appear here once you have those feats.</p>';
+
+  // Hands: every carried weapon except ranged ones; the off hand can also be the other end of a double weapon.
+  const melee = state.weapons.map((e, i) => [i, e, data.weaponsById.get(e.id)]).filter(([, , w]) => w && w.group !== 'ranged');
+  const name = (e, w) => `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`;
+  const mainOpts = melee.map(([i, e, w]) => [String(i), name(e, w)]);
+  const mainIndex = state.combat.main === '' ? null : Number(state.combat.main);
+  const mainEntry = mainIndex !== null ? state.weapons[mainIndex] : null;
+  const mainWeapon = mainEntry && data.weaponsById.get(mainEntry.id);
+  const offOpts = [
+    ...(mainWeapon && isDouble(mainWeapon) ? [[`${mainIndex}:1`, `Other end of the ${mainWeapon.name}`]] : []),
+    ...melee.filter(([i, , w]) => i !== mainIndex && w.group !== 'two-handed').map(([i, e, w]) => [String(i), name(e, w)]),
+  ];
+  const select = (id, opts, value) => `<select id="${id}"><option value="">—</option>${opts.map(([v, t]) =>
+    `<option value="${v}"${v === value ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  $('twf-hands').innerHTML = melee.length
+    ? `<label>Main hand ${select('twf-main', mainOpts, state.combat.main)}</label>
+       <label>Off hand ${select('twf-off', offOpts, state.combat.off)}</label>`
+    : '<p class="hint">Add melee weapons below to fight with two.</p>';
+
+  const offValue = offOpts.some(([v]) => v === state.combat.off) ? state.combat.off : '';
+  if (!mainWeapon || !offValue) { $('twf-result').innerHTML = ''; return; }
+  const [offIndex, offEnd] = offValue.split(':').map(Number);
+  const offEntry = state.weapons[offIndex];
+  // Each hand keeps its own proficiency and unarmed damage.
+  const offArgs = attackArgs(app, view, ctx, offEntry);
+  const r = twoWeaponAttack({
+    ...attackArgs(app, view, ctx, mainEntry),
+    main: { weapon: mainWeapon, entry: mainEntry, end: 0 },
+    off: { weapon: offArgs.weapon, entry: offEntry, end: offEnd || 0, proficient: offArgs.proficient,
+           unarmedDamage: offArgs.unarmedDamage },
+  });
+  const off = r.off;
+  $('twf-result').innerHTML = `<dl class="facts attack-line">
+      <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}</dd>
+      <dt>Off hand</dt><dd><b>${esc(attackText(off))}</b>, ${esc(off.damage)}${usedText(off)}</dd>
+    </dl>
+    <p class="hint">Penalties ${r.penalties.main} main hand, ${r.penalties.off} off hand
+      (${r.offLight ? 'light off-hand weapon' : 'off-hand weapon isn\'t light'}${have.has('Two-Weapon Fighting') ? ', Two-Weapon Fighting' : ', no Two-Weapon Fighting feat'}).
+      Off-hand damage adds ${have.has('Double Slice') ? 'full Strength (Double Slice)' : 'half Strength'}.</p>`;
+}
+
 // The character's weapons, each with its quality, feats, proficiency, attack bonus and damage.
 export function renderMyWeapons(app, view) {
   const { state, data } = app;
   if (!data.weaponsById) return;
-  const proficient = proficiencyTest(view.classes, view.race);
+  const ctx = combatContext(app, view);
   const have = new Set(view.haveFeats);
-  const armorPenalty = armorAttackPenalty(view.gear, view.haveFeats);
-  const monk = view.counts.find(e => e.cls.id === 'monk');
-  const monkUnarmed = monk ? monk.cls.progression[monk.level - 1]?.other?.['Unarmed Damage'] : null;
+  const armorPenalty = ctx.armorPenalty;
   $('my-weapons-count').textContent = state.weapons.length ? `${state.weapons.length}` : '';
   const notes = [];
   if (armorPenalty) notes.push(`Your armor or shield gives ${armorPenalty} on attack rolls (see the Armor tab).`);
   if (view.race.size === 'Small') notes.push('Small characters use Small weapon damage and get +1 on attack rolls.');
   $('my-weapons-note').textContent = notes.join(' ');
+  renderCombat(app, view, ctx);
 
   $('my-weapons').innerHTML = state.weapons.map((e, i) => {
     const w = data.weaponsById.get(e.id);
     if (!w) return '';
-    const byRules = proficient(w);
+    const byRules = ctx.proficient(w);
     const isProficient = byRules || !!e.proficient;
-    const a = weaponAttack({
-      weapon: w, entry: e, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.race.size] ?? 0,
-      size: view.race.size, haveFeats: view.haveFeats, proficient: isProficient, armorPenalty,
-      unarmedDamage: w.id === 'unarmed-strike' && monkUnarmed ? monkUnarmed : null,
-    });
+    const args = attackArgs(app, view, ctx, e);
+    const a = weaponAttack(args);
+    // Extra lines: a flurry with monk weapons, and a double weapon used as two weapons.
+    const extra = [];
+    if (ctx.flurry?.babs && isMonkWeapon(w)) {
+      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: -2 });
+      extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}</dd>`);
+    }
+    if (isDouble(w)) {
+      const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: e, end: 0 }, off: { weapon: w, entry: e, end: 1 } });
+      extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
+        <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}</dd>`);
+    }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat)).map(([key, feat, what]) =>
       `<label class="check-row small"><input type="checkbox" data-weapon-flag="${key}" data-index="${i}" ${e[key] ? 'checked' : ''}> ${esc(feat)} (${what})</label>`).join('');
@@ -99,8 +193,9 @@ export function renderMyWeapons(app, view) {
         <button type="button" class="link" data-remove-weapon="${i}">remove</button>
       </div>
       <dl class="facts attack-line">
-        <dt>Attack</dt><dd><b>${esc(a.attacks.map(signed).join('/'))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'})</span></dd>
+        <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span></dd>
         <dt>Damage</dt><dd><b>${esc(a.damage)}</b></dd>
+        ${extra.join('')}
         <dt>Critical</dt><dd>${esc(w.critical || '—')}</dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
@@ -125,6 +220,7 @@ function changeEntry(app, index, changes) {
 }
 
 export function initWeaponsTab(app) {
+  initCombat(app);
   $('weapon-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
   $('weapon-search').addEventListener('input', () => renderList(app));
   $('weapon-category').addEventListener('change', e => {
@@ -142,7 +238,9 @@ export function initWeaponsTab(app) {
   });
   $('my-weapons').addEventListener('click', e => {
     const remove = e.target.closest('[data-remove-weapon]');
-    if (remove) app.update({ weapons: app.state.weapons.filter((_, i) => i !== Number(remove.dataset.removeWeapon)) });
+    // Removing a weapon moves the others up the list, so the two-weapon choices are cleared.
+    if (remove) app.update({ weapons: app.state.weapons.filter((_, i) => i !== Number(remove.dataset.removeWeapon)),
+                             combat: { ...app.state.combat, main: '', off: '' } });
     const show = e.target.closest('[data-show-weapon]');
     if (show) showWeapon(app, show.dataset.showWeapon);
   });
@@ -154,6 +252,17 @@ export function initWeaponsTab(app) {
     }
     const flag = e.target.dataset.weaponFlag;
     if (flag) changeEntry(app, Number(e.target.dataset.index), { [flag]: e.target.checked });
+  });
+}
+
+function initCombat(app) {
+  $('combat-switches').addEventListener('change', e => {
+    const key = e.target.dataset.combat;
+    if (key) app.update({ combat: { ...app.state.combat, [key]: e.target.checked } });
+  });
+  $('twf-hands').addEventListener('change', e => {
+    if (e.target.id === 'twf-main') app.update({ combat: { ...app.state.combat, main: e.target.value, off: '' } });
+    if (e.target.id === 'twf-off') app.update({ combat: { ...app.state.combat, off: e.target.value } });
   });
 }
 

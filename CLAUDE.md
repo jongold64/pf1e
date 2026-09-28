@@ -59,6 +59,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   the weapon entry's flag is ticked. `state.weapons` entries are `{ id, enh, masterwork, focus, greaterFocus,
   spec, greaterSpec, proficient }`; `weaponCost` = price + 300 masterwork + enh² × 2,000 (counted on the
   Equipment tab).
+- Combat options (Weapons tab, `state.combat`): Power Attack / Deadly Aim / Rapid Shot switches (count only with
+  the feat; step from real BAB via `powerBab`), and two-weapon fighting with `main`/`off` as indexes into
+  `state.weapons` ("2:1" = other end of double weapon 2, which counts as light). `weaponAttack` takes `hand`
+  ('one' | 'main' | 'off' | 'flurry'), `end` (double weapon damage "1d8/1d6"), `penalty` and `options`;
+  `twoWeaponAttack` applies Table 8-7 penalties and Improved/Greater TWF off-hand attacks; `flurryBabs` gives
+  monk flurry (monk levels as BAB, matches the class table's Flurry column) and brawler's flurry attacks.
 - Rules text is rendered by `paragraphs()` in `dom.js`: blank lines split paragraphs, single line breaks
   are kept, and runs of 2+ "a | b" lines (tables flattened by the build) become HTML tables.
 - Armor: `js/armor.js` (`armorEffects`, `speedInArmor`, `proficiencyWarnings`) turns worn armor/shield +

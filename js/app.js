@@ -86,6 +86,9 @@ const state = {
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
   magicItems: [],  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'
   weapons: [],     // [{ id, enh, masterwork, focus, greaterFocus, spec, greaterSpec, proficient }] from data/weapons.json
+  // Combat options on the Weapons tab: Power Attack / Deadly Aim / Rapid Shot switched on, and the weapons used
+  // for two-weapon fighting as indexes into `weapons` ("2", or "2:1" for the other end of double weapon 2).
+  combat: { main: '', off: '' },
 };
 
 // Shared with the tab modules.
@@ -162,6 +165,10 @@ function load() {
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])) }));
+  const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
+  const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
+  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot'].filter(k => c[k] === true).map(k => [k, true])),
+                   main: hand(c.main), off: hand(c.off) };
 }
 
 function syncDerived() {

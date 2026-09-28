@@ -44,7 +44,8 @@ export function proficiencyTest(clsOrList, race) {
 // Crossbows, firearms and technological weapons: none.
 export function strToDamage(weapon, strMod) {
   const name = lower(weapon.name);
-  if (weapon.group === 'two-handed') return Math.floor(strMod * 1.5);
+  // 1-1/2 times a Str bonus; a Str penalty isn't multiplied.
+  if (weapon.group === 'two-handed') return strMod > 0 ? Math.floor(strMod * 1.5) : strMod;
   if (weapon.group !== 'ranged') return strMod;
   if (weapon.firearm || weapon.category === 'Technological Weapons' ||
       /crossbow|pistol|musket|rifle|blunderbuss|gun|cannon|launcher|blowgun|dart gun/.test(name)) return 0;
@@ -60,12 +61,26 @@ export function formatDamage(dice, bonus) {
   return `${m[1]}${bonus > 0 ? '+' : ''}${bonus}${m[2]}`;
 }
 
+export const isDouble = weapon => (weapon.special || []).some(s => lower(s) === 'double');
+export const isMonkWeapon = weapon => weapon.id === 'unarmed-strike' || (weapon.special || []).some(s => lower(s) === 'monk');
+// Light weapons (and unarmed strikes, and the other end of a double weapon) are "light" off-hand weapons.
+export const isLight = weapon => weapon.group === 'light' || weapon.group === 'unarmed';
+
+// Power Attack and Deadly Aim: -1 attack / +2 damage, one step more at BAB +4 and every +4 after.
+export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
+
 // Attack bonuses (one per iterative attack) and damage for a carried weapon.
 // entry: { enh (0-5), masterwork, focus, greaterFocus, spec, greaterSpec } — the Focus/Spec flags only
 // count if the character has that feat. armorPenalty is the check penalty that applies to attacks when
 // not proficient with worn armor (0 or less).
+// hand: 'one' (the usual way to wield it), 'main' / 'off' (fighting with two weapons, or each end of a double
+// weapon), or 'flurry' (monk or brawler flurry: full Str to damage). end: which end of a double weapon (0 or 1).
+// penalty: added to every attack (two-weapon fighting, flurry, Rapid Shot).
+// options: { powerAttack, deadlyAim, rapidShot } when chosen; each only counts if the character has the feat
+// and the weapon allows it. powerBab is the base attack bonus the Power Attack / Deadly Aim step comes from.
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
-                               proficient = true, armorPenalty = 0, unarmedDamage = null }) {
+                               proficient = true, armorPenalty = 0, unarmedDamage = null,
+                               hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0] }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -76,16 +91,93 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const focus = (entry.focus && has.has('Weapon Focus') ? 1 : 0) + (entry.greaterFocus && has.has('Greater Weapon Focus') ? 1 : 0);
   const spec = (entry.spec && has.has('Weapon Specialization') ? 2 : 0) + (entry.greaterSpec && has.has('Greater Weapon Specialization') ? 2 : 0);
   const itemBonus = enh > 0 ? enh : entry.masterwork ? 1 : 0;  // masterwork: +1 to attack only
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty;
+
+  // Strength to damage depends on how the weapon is held.
+  let strDamage;
+  if (hand === 'off') strDamage = mod.str > 0 && !has.has('Double Slice') ? Math.floor(mod.str / 2) : mod.str;
+  else if ((hand === 'main' || hand === 'flurry') && melee) strDamage = mod.str;
+  else strDamage = strToDamage(weapon, mod.str);
+
+  // Power Attack (melee) / Deadly Aim (ranged). Damage +50% with a weapon in two hands, halved off-hand.
+  const step = powerAttackStep(powerBab);
+  const used = [];
+  let powerHit = 0, powerDamage = 0;
+  if (melee && options.powerAttack && has.has('Power Attack')) {
+    powerHit = -step;
+    powerDamage = hand === 'off' ? step : weapon.group === 'two-handed' && hand !== 'main' ? 3 * step : 2 * step;
+    used.push('Power Attack');
+  }
+  if (!melee && options.deadlyAim && has.has('Deadly Aim')) {
+    powerHit = -step;
+    powerDamage = 2 * step;
+    used.push('Deadly Aim');
+  }
+  // Rapid Shot: one more ranged attack at the highest bonus, and -2 on all of them.
+  let attackBabs = bab;
+  let rapid = 0;
+  if (!melee && options.rapidShot && has.has('Rapid Shot')) {
+    attackBabs = [bab[0], ...bab];
+    rapid = -2;
+    used.push('Rapid Shot');
+  }
+
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
-  const dice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
-  const damageBonus = strToDamage(weapon, mod.str) + enh + spec;
+  const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
+  // A double weapon lists each end's damage ("1d8/1d6").
+  const ends = String(allDice ?? '').split('/');
+  const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
+  const damageBonus = strDamage + enh + spec + powerDamage;
   return {
-    attacks: bab.map(b => b + toHit),
+    attacks: attackBabs.map(b => b + toHit),
     abilityUsed,
     damage: formatDamage(dice, damageBonus),
-    parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec },
+    used,
+    parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
+             penalty, powerHit, powerDamage, strDamage },
   };
+}
+
+// Attack penalties for fighting with two weapons (Core Rulebook Table 8-7), for the main hand and the off hand.
+export function twoWeaponPenalties(offLight, hasTwoWeaponFighting) {
+  const main = (offLight ? -4 : -6) + (hasTwoWeaponFighting ? 2 : 0);
+  const off = (offLight ? -8 : -10) + (hasTwoWeaponFighting ? 6 : 0);
+  return { main, off };
+}
+
+// Off-hand attacks: one, a second at -5 with Improved Two-Weapon Fighting and a third at -10 with Greater.
+export function offHandBabs(firstBab, haveFeats) {
+  const has = new Set(haveFeats);
+  const out = [firstBab];
+  if (has.has('Improved Two-Weapon Fighting')) out.push(firstBab - 5);
+  if (has.has('Improved Two-Weapon Fighting') && has.has('Greater Two-Weapon Fighting')) out.push(firstBab - 10);
+  return out;
+}
+
+// Full attack with two weapons: main is { weapon, entry, end }, off likewise (the same weapon with end 1 for a
+// double weapon, whose other end counts as a light weapon). common holds the weaponAttack arguments shared by both.
+export function twoWeaponAttack({ main, off, bab, haveFeats = [], ...common }) {
+  const offLight = isLight(off.weapon) || off.end === 1;
+  const pen = twoWeaponPenalties(offLight, haveFeats.includes('Two-Weapon Fighting'));
+  return {
+    offLight,
+    penalties: pen,
+    main: weaponAttack({ ...common, ...main, bab, haveFeats, hand: 'main', penalty: pen.main, powerBab: bab[0] }),
+    off: weaponAttack({ ...common, ...off, bab: offHandBabs(bab[0], haveFeats), haveFeats, hand: 'off', penalty: pen.off,
+                        powerBab: bab[0] }),
+  };
+}
+
+// Base attack bonuses for a flurry (before its -2 penalty). kind 'monk': monk levels count as BAB for the flurry,
+// extra attacks at 1st, 8th and 15th level. kind 'brawler': normal BAB, extra attacks at 2nd, 8th and 15th.
+// classLevel is the monk or brawler level; classBab the BAB those levels give; bab the character's total BAB.
+export function flurryBabs(kind, classLevel, classBab, bab) {
+  if (kind === 'brawler' && classLevel < 2) return null;
+  const first = kind === 'monk' ? bab - classBab + classLevel : bab;
+  const list = [first];
+  for (let b = first - 5; b > 0 && list.length < 4; b -= 5) list.push(b);
+  const extra = classLevel >= 15 ? 3 : classLevel >= 8 ? 2 : 1;
+  return list.flatMap((b, i) => (i < extra ? [b, b] : [b]));
 }
 
 // Price of a carried weapon: base, plus masterwork (300 gp) and the enhancement bonus squared × 2,000 gp for
