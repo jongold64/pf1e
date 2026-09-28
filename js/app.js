@@ -87,6 +87,8 @@ const state = {
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   armorId: '',     // worn armor (data/armor.json id), '' for none
   armorEnh: 0,     // its magic enhancement bonus, 0-5
+  armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
+  shieldMw: false,
   shieldId: '',
   shieldEnh: 0,
   gold: null,      // gold the character has; null means the class's average starting gold
@@ -149,6 +151,8 @@ function load(saved) {
   const worn = (id, category) => data.armorById.get(id) && (data.armorById.get(id).category === 'shield') === (category === 'shield');
   if (!worn(state.armorId, 'armor')) state.armorId = '';
   if (!worn(state.shieldId, 'shield')) state.shieldId = '';
+  state.armorMw = state.armorMw === true;
+  state.shieldMw = state.shieldMw === true;
   for (const k of ['armorEnh', 'shieldEnh']) {
     if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
@@ -615,8 +619,8 @@ function computeView() {
   const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const gear = armorEffects({
-    armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh,
-    shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh,
+    armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
+    shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
   });
   const stats = characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice: state.flexible,

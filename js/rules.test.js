@@ -426,6 +426,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const magic = armorEffects({ armor: chainmail, armorEnh: 1 });
   check('+1 chainmail bonus', magic.armorBonus, 7);
   check('+1 chainmail check penalty (masterwork)', magic.checkPenalty, -4);
+  const mwChain = armorEffects({ armor: armorById('chainmail'), armorMw: true });
+  check('masterwork chainmail: check penalty -4, no AC bonus', `${mwChain.checkPenalty} ${mwChain.armorBonus}`, '-4 6');
+  check('masterwork chainmail costs 150 + 150', armorCost(armorById('chainmail'), 0, true), 300);
   check('+1 padded check penalty stays 0', armorEffects({ armor: armorById('padded'), armorEnh: 1 }).checkPenalty, 0);
   const plateTower = armorEffects({ armor: armorById('full-plate'), shield: armorById('tower-shield') });
   check('full plate + tower shield: lowest max Dex', plateTower.maxDex, 1);

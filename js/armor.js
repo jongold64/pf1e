@@ -15,18 +15,19 @@ const PROFICIENCY = {
 
 // Combined effect of worn armor and a shield (either can be null). `armorEnh` / `shieldEnh` are magic
 // enhancement bonuses (+1 to +5); magic armor is always masterwork, which lowers its check penalty by 1.
-export function armorEffects({ armor = null, shield = null, armorEnh = 0, shieldEnh = 0 } = {}) {
-  const penalty = (item, enh) => (item ? Math.min(0, item.check_penalty + (enh > 0 ? 1 : 0)) : 0);
+// armorMw / shieldMw: masterwork but not magic (magic armor is always masterwork).
+export function armorEffects({ armor = null, shield = null, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false } = {}) {
+  const penalty = (item, enh, mw) => (item ? Math.min(0, item.check_penalty + (enh > 0 || mw ? 1 : 0)) : 0);
   const caps = [armor?.max_dex, shield?.max_dex].filter(v => v !== null && v !== undefined);
   return {
     armorBonus: armor ? armor.bonus + armorEnh : 0,
     shieldBonus: shield ? shield.bonus + shieldEnh : 0,
     maxDex: caps.length ? Math.min(...caps) : null,
-    checkPenalty: penalty(armor, armorEnh) + penalty(shield, shieldEnh),
+    checkPenalty: penalty(armor, armorEnh, armorMw) + penalty(shield, shieldEnh, shieldMw),
     spellFailure: (armor?.spell_failure || 0) + (shield?.spell_failure || 0),
     // Medium and heavy armor slow the wearer.
     slows: armor ? armor.category === 'medium' || armor.category === 'heavy' : false,
-    armor, shield, armorEnh, shieldEnh,
+    armor, shield, armorEnh, shieldEnh, armorMw, shieldMw,
   };
 }
 
@@ -68,13 +69,13 @@ export function speedInArmor(baseSpeed, effects, race) {
 // proficient with it, and a tower shield always gives -2 on attacks (Core Rulebook).
 export function armorAttackPenalty(effects, haveFeats) {
   const have = new Set(haveFeats);
-  const { armor, shield, armorEnh = 0, shieldEnh = 0 } = effects;
-  const penalty = (item, enh) => Math.min(0, item.check_penalty + (enh > 0 ? 1 : 0));
+  const { armor, shield, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false } = effects;
+  const penalty = (item, enh, mw) => Math.min(0, item.check_penalty + (enh > 0 || mw ? 1 : 0));
   let total = 0;
-  if (armor && !have.has(PROFICIENCY[armor.category])) total += penalty(armor, armorEnh);
+  if (armor && !have.has(PROFICIENCY[armor.category])) total += penalty(armor, armorEnh, armorMw);
   if (shield) {
     const need = shield.id === 'tower-shield' ? 'Tower Shield Proficiency' : PROFICIENCY.shield;
-    if (!have.has(need)) total += penalty(shield, shieldEnh);
+    if (!have.has(need)) total += penalty(shield, shieldEnh, shieldMw);
     if (shield.id === 'tower-shield') total -= 2;
   }
   return total;

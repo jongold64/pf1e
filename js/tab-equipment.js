@@ -81,11 +81,12 @@ export async function renderEquipment(app, view) {
   if (document.activeElement !== $('gold')) $('gold').value = gold;
 
   const totals = equipmentTotals(state.inventory, data.gearById, {
-    armor: view.gear.armor, armorEnh: state.armorEnh, shield: view.gear.shield, shieldEnh: state.shieldEnh,
+    armor: view.gear.armor, armorEnh: state.armorEnh, armorMw: state.armorMw,
+    shield: view.gear.shield, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
     size: view.race.size,
   });
   const sizeFactor = sizeWeightFactor(view.race.size);
-  const armorSpend = armorCost(view.gear.armor, state.armorEnh) + armorCost(view.gear.shield, state.shieldEnh);
+  const armorSpend = armorCost(view.gear.armor, state.armorEnh, state.armorMw) + armorCost(view.gear.shield, state.shieldEnh, state.shieldMw);
   const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
@@ -112,11 +113,11 @@ export async function renderEquipment(app, view) {
 
   const count = state.inventory.reduce((n, e) => n + e.qty, 0);
   $('inventory-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
-  const worn = [[view.gear.armor, state.armorEnh], [view.gear.shield, state.shieldEnh]].filter(([a]) => a);
+  const worn = [[view.gear.armor, state.armorEnh, state.armorMw], [view.gear.shield, state.shieldEnh, state.shieldMw]].filter(([a]) => a);
   $('inventory-rows').innerHTML = [
-    ...worn.map(([a, enh]) => `<tr class="worn"><td><b>${esc(enh ? `+${enh} ` : '')}${esc(a.name)}</b>
+    ...worn.map(([a, enh, mw]) => `<tr class="worn"><td><b>${esc(enh ? `+${enh} ` : mw ? 'Masterwork ' : '')}${esc(a.name)}</b>
         <div class="breakdown">worn · change it on the Armor tab</div></td><td>1</td>
-        <td>${esc(formatGp(armorCost(a, enh)))}</td><td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
+        <td>${esc(formatGp(armorCost(a, enh, mw)))}</td><td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
     ...state.inventory.map((e, i) => {
       const item = data.gearById.get(e.id);
       if (!item) return '';

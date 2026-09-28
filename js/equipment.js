@@ -15,11 +15,11 @@ export function startingGold(cls, classes = []) {
   return parent?.starting_wealth?.average_gp ?? null;
 }
 
-// Price of worn armor or a shield: base price, plus masterwork (150 gp) and the enhancement bonus squared
-// × 1,000 gp for magic armor (Core Rulebook, Magic Armor).
-export function armorCost(armor, enh = 0) {
+// Price of worn armor or a shield: base price, plus masterwork (150 gp; magic armor is always masterwork) and the
+// enhancement bonus squared × 1,000 gp for magic armor (Core Rulebook, Magic Armor).
+export function armorCost(armor, enh = 0, mw = false) {
   if (!armor) return 0;
-  return (armor.price_gp || 0) + (enh > 0 ? 150 + enh * enh * 1000 : 0);
+  return (armor.price_gp || 0) + (enh > 0 || mw ? 150 : 0) + (enh > 0 ? enh * enh * 1000 : 0);
 }
 
 // Price and weight of one inventory entry: an item, or one of its versions (e.g. a masterwork backpack).
@@ -68,7 +68,7 @@ export function sizeWeightFactor(size) {
 // Totals for the inventory ([{ id, variant, qty }]) plus worn armor and shield ({ armor, armorEnh, shield, shieldEnh,
 // size }). Items with no listed price or weight count as 0 and are listed in `unpriced` / `unweighed`.
 export function equipmentTotals(inventory, itemsById, worn = {}) {
-  let cost = armorCost(worn.armor, worn.armorEnh) + armorCost(worn.shield, worn.shieldEnh);
+  let cost = armorCost(worn.armor, worn.armorEnh, worn.armorMw) + armorCost(worn.shield, worn.shieldEnh, worn.shieldMw);
   let weight = ((worn.armor?.weight_lbs || 0) + (worn.shield?.weight_lbs || 0)) * sizeWeightFactor(worn.size);
   const unpriced = [];
   const unweighed = [];

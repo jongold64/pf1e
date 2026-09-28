@@ -30,17 +30,22 @@
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button type="button" role="tab" data-tab="character">Character</button>
-      <button type="button" role="tab" data-tab="feats">Feats</button>
       <button type="button" role="tab" data-tab="skills">Skills</button>
-      <button type="button" role="tab" data-tab="spells">Spells</button>
-      <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
+      <button type="button" role="tab" data-tab="feats">Feats</button>
       <button type="button" role="tab" data-tab="armor">Armor</button>
       <button type="button" role="tab" data-tab="weapons">Weapons</button>
+      <button type="button" role="tab" data-tab="spells">Spells</button>
+      <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
     </nav>
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
+      <section class="card wide results">
+        <h2>Results</h2>
+        <dl id="results"></dl>
+      </section>
+
       <section class="card wide search-card">
         <form id="search-form" class="search-row" role="search">
           <input id="global-search" type="search" autocomplete="off"
@@ -119,10 +124,6 @@
         </div>
       </section>
 
-      <section class="card wide results">
-        <h2>Results</h2>
-        <dl id="results"></dl>
-      </section>
     </main>
 
     <!-- Feats -->
@@ -222,13 +223,13 @@
       <section class="card">
         <h2>Armor</h2>
         <select id="armor-select" aria-label="Armor"></select>
-        <label class="row enh-row">Magic bonus <select id="armor-enh"></select></label>
+        <label class="row enh-row">Quality <select id="armor-enh"></select></label>
         <div id="armor-info" class="info"></div>
       </section>
       <section class="card">
         <h2>Shield</h2>
         <select id="shield-select" aria-label="Shield"></select>
-        <label class="row enh-row">Magic bonus <select id="shield-enh"></select></label>
+        <label class="row enh-row">Quality <select id="shield-enh"></select></label>
         <div id="shield-info" class="info"></div>
       </section>
       <section class="card wide">

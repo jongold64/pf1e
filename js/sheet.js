@@ -28,8 +28,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const abilities = table(['Ability', 'Score', 'Modifier'],
     ABILITIES.map(a => [ABILITY_NAMES[a], stats.scores[a], signed(stats.mod[a])]));
 
-  const worn = [[view.gear.armor, state.armorEnh], [view.gear.shield, state.shieldEnh]].filter(([a]) => a)
-    .map(([a, enh]) => `${enh ? `+${enh} ` : ''}${a.name}`).join(', ');
+  const worn = [[view.gear.armor, state.armorEnh, state.armorMw], [view.gear.shield, state.shieldEnh, state.shieldMw]].filter(([a]) => a)
+    .map(([a, enh, mw]) => `${enh ? `+${enh} ` : mw ? 'Masterwork ' : ''}${a.name}`).join(', ');
   const defense = facts([
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],

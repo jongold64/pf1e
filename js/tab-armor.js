@@ -38,15 +38,17 @@ export function initArmorTab(app) {
     `<optgroup label="${label}">${data.armor.filter(a => a.category === cat).map(option).join('')}</optgroup>`).join('');
   $('shield-select').innerHTML = '<option value="">No shield</option>' +
     data.armor.filter(a => a.category === 'shield').map(option).join('');
-  const enh = Array.from({ length: ENHANCEMENT_MAX + 1 }, (_, i) =>
-    `<option value="${i}">${i ? `+${i}` : 'None'}</option>`).join('');
+  // None, Masterwork (-1 check penalty, +150 gp), then +1 to +5 (always masterwork).
+  const enh = '<option value="0">None</option><option value="mw">Masterwork</option>' +
+    Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}</option>`).join('');
   $('armor-enh').innerHTML = enh;
   $('shield-enh').innerHTML = enh;
 
   $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value }));
   $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value }));
-  $('armor-enh').addEventListener('change', e => app.update({ armorEnh: Number(e.target.value) }));
-  $('shield-enh').addEventListener('change', e => app.update({ shieldEnh: Number(e.target.value) }));
+  const quality = v => (v === 'mw' ? { enh: 0, mw: true } : { enh: Number(v), mw: false });
+  $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ armorEnh: q.enh, armorMw: q.mw }); });
+  $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ shieldEnh: q.enh, shieldMw: q.mw }); });
 }
 
 export function renderArmorTab(app, view) {
@@ -54,8 +56,8 @@ export function renderArmorTab(app, view) {
   const { gear, stats } = view;
   $('armor-select').value = state.armorId;
   $('shield-select').value = state.shieldId;
-  $('armor-enh').value = state.armorEnh;
-  $('shield-enh').value = state.shieldEnh;
+  $('armor-enh').value = !state.armorEnh && state.armorMw ? 'mw' : state.armorEnh;
+  $('shield-enh').value = !state.shieldEnh && state.shieldMw ? 'mw' : state.shieldEnh;
   $('armor-enh').disabled = !gear.armor;
   $('shield-enh').disabled = !gear.shield;
   $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) : '<p>Unarmored.</p>';
