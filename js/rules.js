@@ -136,46 +136,78 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
   return { ability, score: scores[ability], firstLevel, extraSlotName: hasExtra ? slot.name : null, rows };
 }
 
-// Everything the results panel shows for a single-class character of `level` (1-20).
-// favoredHp is true if the favored class bonus goes to HP (it applies at every level).
+// Levels in each class, in the order the classes were first taken: [{ cls, level }].
+// `classLevels` is the character's class at each level, e.g. [fighter, fighter, rogue].
+export function classCounts(classLevels) {
+  const out = [];
+  for (const cls of classLevels) {
+    const entry = out.find(e => e.cls.id === cls.id);
+    if (entry) entry.level += 1;
+    else out.push({ cls, level: 1 });
+  }
+  return out;
+}
+
+// Attack bonuses from a total base attack bonus: an extra attack at +6, +11 and +16 (e.g. 11 -> [11, 6, 1]).
+export function babList(total) {
+  const out = [total];
+  for (let b = total - 5; b > 0 && out.length < 4; b -= 5) out.push(b);
+  return out;
+}
+
+// Everything the results panel shows. A single-class character can be given as { cls, level }; a
+// multiclass one as `classLevels` (the class at each level, first level first).
+// Base attack bonus and base saves add up across classes (Core Rulebook, Multiclassing). HP is the first
+// class's full hit die at 1st level, then the average for each later level's class.
+// favoredHp is true if the favored class bonus goes to HP; it counts only levels in the favored class
+// (`favoredClassId`, which defaults to the first class).
 // featBonuses holds the numbers feats add ({ hp, fort, ref, will, dodgeAc }, see featEffects in feats.js).
 // gear is what worn armor and a shield do (armorEffects in armor.js); leave it out for no armor.
-export function characterStats({ race, cls, level = 1, baseScores, flexibleChoice, increases = [],
-                                 favoredHp = false, featBonuses = {}, gear = null }) {
+export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
+                                 flexibleChoice, increases = [], favoredHp = false, featBonuses = {}, gear = null }) {
+  const levels = classLevels || Array.from({ length: level }, () => cls);
+  const total = levels.length;
+  const counts = classCounts(levels);
   const g = { armorBonus: 0, shieldBonus: 0, maxDex: null, ...gear };
   const fb = { hp: 0, fort: 0, ref: 0, will: 0, dodgeAc: 0, ...featBonuses };
   const racial = finalScores(baseScores, race, flexibleChoice);
-  const inc = levelIncreases(level, increases);
+  const inc = levelIncreases(total, increases);
   const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a]]));
   const mod = Object.fromEntries(ABILITIES.map(a => [a, abilityModifier(scores[a])]));
-  const row = cls.progression[level - 1];
+  const rowFor = e => e.cls.progression[e.level - 1];
+  const sum = key => counts.reduce((n, e) => n + (rowFor(e)[key] || 0), 0);
 
   // Full hit die at 1st level, the average after that. A Con penalty can't make a level give less than 1 HP.
-  let hp = Math.max(1, hitDieSize(cls) + mod.con);
-  hp += (level - 1) * Math.max(1, averageHpPerLevel(cls) + mod.con);
-  if (favoredHp) hp += level;
+  let hp = 0;
+  levels.forEach((c, i) => { hp += Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + mod.con); });
+  const favored = favoredClassId || levels[0].id;
+  if (favoredHp) hp += levels.filter(c => c.id === favored).length;
   hp += fb.hp;
 
-  // Monks add Wis (if positive) plus their level-based AC bonus, but only with no armor and no shield.
+  // Monks add Wis (if positive) plus their monk-level AC bonus, but only with no armor and no shield.
   let classAc = 0;
-  if (cls.id === 'monk' && !g.armor && !g.shield) {
-    classAc = Math.max(0, mod.wis) + signedNumber(row.other?.['AC Bonus']);
+  const monk = counts.find(e => e.cls.id === 'monk');
+  if (monk && !g.armor && !g.shield) {
+    classAc = Math.max(0, mod.wis) + signedNumber(rowFor(monk).other?.['AC Bonus']);
   }
   const size = SIZE_AC[race?.size] ?? 0;
   // Armor's max Dex caps a Dex bonus to AC; a Dex penalty always applies.
   const dexAc = g.maxDex === null ? mod.dex : Math.min(mod.dex, g.maxDex);
   const armorAc = g.armorBonus + g.shieldBonus;
   const ac = 10 + armorAc + dexAc + size + classAc + fb.dodgeAc;
+  const bab = counts.reduce((n, e) => n + rowFor(e).bab[0], 0);
 
   return {
+    level: total,
+    classCounts: counts,
     increases: inc,
     scores,
     mod,
     hp,
-    bab: row.bab,
-    fort: row.fort + mod.con + fb.fort,
-    ref: row.ref + mod.dex + fb.ref,
-    will: row.will + mod.wis + fb.will,
+    bab: babList(bab),
+    fort: sum('fort') + mod.con + fb.fort,
+    ref: sum('ref') + mod.dex + fb.ref,
+    will: sum('will') + mod.wis + fb.will,
     ac,
     dexAc,
     touch: ac - armorAc,

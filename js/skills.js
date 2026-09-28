@@ -49,7 +49,13 @@ export function skillInfo(name) {
 
 // A class's class skills as a test function: isClassSkill('Knowledge (arcana)'), isClassSkill('Craft (alchemy)').
 // Class data uses a few shorthand forms: "Craft (any)", "Knowledge (all)", "Perform (oratory, sing, ...)".
-export function classSkillTest(cls) {
+// Pass a list of classes for a multiclass character: a skill is a class skill if any of them has it.
+export function classSkillTest(clsOrList) {
+  if (Array.isArray(clsOrList)) {
+    const tests = clsOrList.map(c => classSkillTest(c));
+    return name => tests.some(t => t(name));
+  }
+  const cls = clsOrList;
   const entries = (cls.class_skills || []).map(s => s.skill);
   const exact = new Set();
   const families = new Map();  // base name -> null (any specialty) or a set of allowed specialties
@@ -75,19 +81,23 @@ export function classSkillTest(cls) {
   };
 }
 
-// Skill ranks gained at each level up to `level`. Each level gives class ranks + Int modifier (at least 1),
+// Skill ranks gained at each level. Each level gives that level's class ranks + Int modifier (at least 1),
 // using Int as it is at that level (so an Int increase at 4th level only helps from 4th level on),
-// plus 1 for humans (Skilled) and 1 if the favored class bonus goes to skill ranks.
-export function skillRanksAvailable({ race, cls, level, baseScores, flexibleChoice, increases = [], favoredSkill = false }) {
+// plus 1 for humans (Skilled) and 1 for levels in the favored class if its bonus goes to skill ranks.
+// Pass { cls, level } for a single class, or `classLevels` (the class at each level) and `favoredClassId`.
+export function skillRanksAvailable({ race, cls, level, classLevels = null, favoredClassId = null, baseScores,
+                                      flexibleChoice, increases = [], favoredSkill = false }) {
+  const levels = classLevels || Array.from({ length: level }, () => cls);
+  const favored = favoredClassId || levels[0].id;
   const racial = finalScores(baseScores, race, flexibleChoice);
   const skilled = (race?.traits || []).some(t => t.name === 'Skilled' && /additional skill rank/i.test(t.text));
   let total = 0;
-  for (let lv = 1; lv <= level; lv++) {
-    const int = racial.int + levelIncreases(lv, increases).int;
-    total += Math.max(1, cls.skill_ranks_per_level + abilityModifier(int));
+  levels.forEach((c, i) => {
+    const int = racial.int + levelIncreases(i + 1, increases).int;
+    total += Math.max(1, c.skill_ranks_per_level + abilityModifier(int));
     if (skilled) total += 1;
-    if (favoredSkill) total += 1;
-  }
+    if (favoredSkill && c.id === favored) total += 1;
+  });
   return total;
 }
 

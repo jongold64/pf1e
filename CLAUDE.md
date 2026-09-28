@@ -12,7 +12,7 @@ Data for a Pathfinder 1e character builder: Python scripts in `scripts/` convert
 artifacts — change the scripts and rebuild rather than hand-editing them. The README documents the
 output record schemas and known data gaps.
 
-On top of the data is a static web app (single-class builder, levels 1-20) with tabs: Character (race,
+On top of the data is a static web app (character builder, levels 1-20, multiclass and prestige classes) with tabs: Character (race,
 class, point buy, results, global search), Feats, Skills, Spells (per day + class spell list), Magic Items
 (browse by category with a details panel), Armor, Weapons (attack bonus and damage per carried weapon),
 and Equipment (inventory + gold + weight; armor and weapons are kept separate from it). Every tab except Character has its own search
@@ -67,10 +67,22 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   and no shield.
 - Search: `js/search.js` ranks names (exact, prefix, word prefix, substring, all words); `search-ui.js`
   builds the index from all data and `app.openResult()` routes each type to its tab or a details dialog.
-- Level N values come from `progression[N - 1]` of a class record (`bab` is the full iterative list,
-  e.g. `[11, 6, 1]`); monk AC reads `other['AC Bonus']` from that row. HP uses the fixed average after
-  1st level (half the die + 1), and the favored class bonus applies at every level. Multiclassing is
-  not supported yet, so prestige classes stay filtered out.
+- Multiclassing: `state.classLevels` is the class id at each character level (1st first); `state.level` and
+  `state.cls` (first class) are kept in step by `syncDerived()`. `classCounts(classLevels)` gives
+  `[{ cls, level }]`. `characterStats` (and `featSlots`, `skillRanksAvailable`) accept `classLevels`, or
+  `{ cls, level }` for one class: BAB and base saves add up per class, iterative attacks come from total BAB
+  (`babList`), HP is the first class's full die then each level's class average, favored class bonus counts
+  only levels in `favoredClassId`. Class N values come from `progression[N - 1]` of that class. Class bonus
+  feat slots are per class (`class-fighter-L2`); old saves with `class-L2` ids and a single `cls`/`level` are
+  migrated in `load()`. Prestige classes can't be 1st level; NPC classes are filtered out.
+- Spellcasting across classes: `js/multiclass.js` — `castingClasses(counts, state.casterChoices)` gives each
+  casting class's effective level, adding prestige classes' `caster_advance` levels (from the build: 'arcane',
+  'divine', 'alchemist' or 'any' per progression row) to a matching class (the first, or the player's choice).
+  Caster level = effective level (minus 3 for classes whose spells start at 4th). Feat prerequisites use
+  `featContext({ counts, casting })`: `levelsIn(ctx, 'fighter')` for class levels, class features from any class.
+- Prestige requirements: `js/prestige.js` parses the class's requirement lines (BAB, Feats, Skills, Spells,
+  Special class features, martial proficiency; alignment/languages/story ones are "?") and checks them
+  against the character before its first level in the prestige class (`prestigeCheck` in app.js).
 - Spells: `spellsPerDay` in `rules.js` combines the class table (`spells_per_day`/`spells_known`) with
   bonus spells from the casting ability. `CASTING_ABILITY` and `EXTRA_SLOTS` (cleric domain, shaman
   spirit magic, wizard school, druid domain) are hand-entered because the data doesn't carry them:

@@ -334,3 +334,18 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .check-row.small { min-height: 36px; font-size: 0.9rem; margin: 0; }
 .check-row.small input { width: 20px; height: 20px; }
 .tag.type-weapon { background: #6b3a3a; }
+
+/* Classes card */
+.class-levels { list-style: none; padding: 0; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 12px; }
+.class-levels li { display: flex; align-items: center; gap: 6px; }
+.class-levels label { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 0.95rem; white-space: nowrap; }
+.class-levels select { flex: 1; min-width: 0; }
+.favored-row { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: flex-start; margin-top: 10px; }
+.favored-row > label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.favored-row select { width: auto; }
+.favored-row fieldset { margin-top: 0; }
+#caster-choices { margin-top: 8px; }
+#caster-choices select { width: auto; }
+.class-block { border-top: 1px solid var(--border); padding: 6px 0; }
+.class-block summary { font-weight: 600; color: var(--text); }
+h3.spell-class { margin: 14px 0 2px; font-size: 1.05rem; }

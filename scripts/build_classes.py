@@ -48,6 +48,14 @@ def parse_progression(tbl_html):
                 row['ref'] = to_int(v)
             elif h.startswith('will'):
                 row['will'] = to_int(v)
+            elif ('spells per day' in h or 'extracts per day' in h) and re.search(r'\+1 level of', v, re.I):
+                # Prestige classes: "+1 level of existing arcane spellcasting class/+1 level of existing divine
+                # spellcasting class" -> ['arcane', 'divine']; "+1 level of divine spellcasting class" -> ['divine'];
+                # "+1 level of alchemist" -> ['alchemist']; 'any' when no tradition is named.
+                row['caster_advance'] = [
+                    'arcane' if 'arcane' in part.lower() else 'divine' if 'divine' in part.lower()
+                    else 'alchemist' if re.search(r'extract|alchemist', part, re.I) else 'any'
+                    for part in v.split('/') if re.search(r'\+1 level of', part, re.I)]
             elif h == 'special' or h.endswith('/ special'):
                 row['special'] = [x.strip() for x in re.split(r',(?![^()]*\))', v) if x.strip() and x.strip() not in ('-', '—')]
             elif 'spells per day' in h or 'spells known' in h or re.match(r'^(0|\d+(st|nd|rd|th))$', h.split(' / ')[-1]):

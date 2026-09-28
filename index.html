@@ -31,7 +31,7 @@
       <section class="card wide search-card">
         <form id="search-form" class="search-row" role="search">
           <input id="global-search" type="search" autocomplete="off"
-                 placeholder="Find anything by name: races, classes, feats, skills, spells, armor, magic items"
+                 placeholder="Find anything by name: races, classes, feats, spells, gear…"
                  aria-label="Search everything by name">
           <button type="submit" class="primary">Search</button>
         </form>
@@ -45,16 +45,24 @@
         <div id="race-info" class="info"></div>
       </section>
 
-      <section class="card">
-        <h2>Class</h2>
-        <select id="class"></select>
-        <label class="row level-row">Level <select id="level"></select></label>
+      <section class="card wide">
+        <h2>Classes <span id="class-summary" class="count"></span></h2>
+        <p class="hint">Pick a class for each level. Prestige classes can't be taken at 1st level.</p>
+        <ol id="class-levels" class="class-levels"></ol>
+        <div class="slot-buttons">
+          <button type="button" id="add-level">Add a level</button>
+          <button type="button" id="remove-level">Remove last level</button>
+        </div>
+        <div class="favored-row">
+          <label>Favored class <select id="favored-class"></select></label>
+          <fieldset>
+            <legend>Favored class bonus (for each level in that class)</legend>
+            <label><input type="radio" name="favored" value="hp" checked> +1 hit point</label>
+            <label><input type="radio" name="favored" value="skill"> +1 skill rank</label>
+          </fieldset>
+        </div>
+        <div id="caster-choices"></div>
         <div id="class-info" class="info"></div>
-        <fieldset>
-          <legend>Favored class bonus</legend>
-          <label><input type="radio" name="favored" value="hp" checked> +1 hit point per level</label>
-          <label><input type="radio" name="favored" value="skill"> +1 skill rank per level</label>
-        </fieldset>
       </section>
 
       <section class="card wide">
@@ -127,15 +135,7 @@
       </section>
       <section class="card wide" id="spells-card" hidden>
         <h2>Spells per day</h2>
-        <p id="spells-summary" class="hint"></p>
-        <label id="extra-slot-row" class="check-row" hidden>
-          <input type="checkbox" id="extra-slot"> <span id="extra-slot-label"></span>
-        </label>
-        <table class="spells" id="spells-table">
-          <thead id="spells-head"></thead>
-          <tbody id="spells-body"></tbody>
-        </table>
-        <p id="spells-note" class="hint"></p>
+        <div id="spells-tables"></div>
       </section>
       <section class="card wide" id="my-spells-card" hidden>
         <h2>My spells <span id="my-spells-count" class="count"></span></h2>
@@ -144,6 +144,7 @@
       </section>
       <section class="card wide" id="spell-list-card">
         <h2 id="spell-list-title">Spell list</h2>
+        <label id="spell-class-row" class="row" hidden>Spell list for <select id="spell-class"></select></label>
         <form class="search-row tab-search" id="spell-filter-form" role="search">
           <input id="spell-filter" type="search" autocomplete="off" placeholder="Search spells by name" aria-label="Search spells">
           <button type="submit" class="primary">Search</button>

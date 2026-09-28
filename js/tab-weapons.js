@@ -69,10 +69,11 @@ function renderList(app) {
 export function renderMyWeapons(app, view) {
   const { state, data } = app;
   if (!data.weaponsById) return;
-  const proficient = proficiencyTest(view.cls, view.race);
+  const proficient = proficiencyTest(view.classes, view.race);
   const have = new Set(view.haveFeats);
   const armorPenalty = armorAttackPenalty(view.gear, view.haveFeats);
-  const monkUnarmed = view.cls.id === 'monk' ? view.cls.progression[state.level - 1]?.other?.['Unarmed Damage'] : null;
+  const monk = view.counts.find(e => e.cls.id === 'monk');
+  const monkUnarmed = monk ? monk.cls.progression[monk.level - 1]?.other?.['Unarmed Damage'] : null;
   $('my-weapons-count').textContent = state.weapons.length ? `${state.weapons.length}` : '';
   const notes = [];
   if (armorPenalty) notes.push(`Your armor or shield gives ${armorPenalty} on attack rolls (see the Armor tab).`);

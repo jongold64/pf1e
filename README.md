@@ -6,7 +6,7 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | File | Contents |
 |---|---|
 | `data/races.json` | 43 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary) |
-| `data/classes.json` | 55 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC |
+| `data/classes.json` | 55 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC. Prestige classes include requirements and which levels add spellcasting to another class (`caster_advance`) |
 | `data/feats.json` | 1,227 feats, including 162 mythic feats |
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
 | `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items) |
@@ -24,7 +24,8 @@ Intrigue, Ultimate Wilderness and others) and Player Companion / Campaign Settin
 
 ## The character builder app
 
-`index.html` is a character builder for a single class at levels 1-20 that uses this data. Its tabs:
+`index.html` is a character builder for levels 1-20 that uses this data, with a class for each level
+(multiclassing and prestige classes, whose requirements are checked). Its tabs:
 Character (race, class, point buy, results, and a search box that finds anything by name), Feats (with
 prerequisite checks), Skills, Spells (spells per day and the class spell list), Magic Items (every magic
 item by category, with a details panel; items can be added to the character), Armor (worn armor and

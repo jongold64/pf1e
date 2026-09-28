@@ -10,6 +10,10 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs } from './dom.js';
+import { classCounts, babList } from './rules.js';
+import { castingClasses, advanceSlots } from './multiclass.js';
+import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
+import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost } from './weapons.js';
 
 const results = [];
@@ -183,26 +187,26 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 // Feat slots
 {
   const ids = (r, c, level) => featSlots({ race: race(r), cls: cls(c), level }).map(s => s.id).join(' ');
-  check('human fighter 1 slots', ids('human', 'fighter', 1), 'L1 race class-L1');
-  check('elf wizard 5 slots', ids('elf', 'wizard', 5), 'L1 L3 L5 class-L5');
+  check('human fighter 1 slots', ids('human', 'fighter', 1), 'L1 race class-fighter-L1');
+  check('elf wizard 5 slots', ids('elf', 'wizard', 5), 'L1 L3 L5 class-wizard-L5');
   check('human fighter 20 has 22 feats', featSlots({ race: race('human'), cls: cls('fighter'), level: 20 }).length, 22);
-  check('monk 6 slots', ids('dwarf', 'monk', 6), 'L1 L3 L5 class-L1 class-L2 class-L6');
-  check('inquisitor 3 teamwork slot', ids('dwarf', 'inquisitor', 3), 'L1 L3 class-L3');
+  check('monk 6 slots', ids('dwarf', 'monk', 6), 'L1 L3 L5 class-monk-L1 class-monk-L2 class-monk-L6');
+  check('inquisitor 3 teamwork slot', ids('dwarf', 'inquisitor', 3), 'L1 L3 class-inquisitor-L3');
 }
 
 // What class bonus slots accept
 {
   const slot = (c, level, id) => featSlots({ race: race('dwarf'), cls: cls(c), level }).find(s => s.id === id);
-  const fighterSlot = slot('fighter', 1, 'class-L1');
+  const fighterSlot = slot('fighter', 1, 'class-fighter-L1');
   check('fighter slot takes Power Attack', slotAccepts(fighterSlot, feat('Power Attack')), true);
   check('fighter slot refuses Toughness', slotAccepts(fighterSlot, feat('Toughness')), false);
-  const wizSlot = slot('wizard', 5, 'class-L5');
+  const wizSlot = slot('wizard', 5, 'class-wizard-L5');
   check('wizard slot takes Empower Spell', slotAccepts(wizSlot, feat('Empower Spell')), true);
   check('wizard slot takes Spell Mastery', slotAccepts(wizSlot, feat('Spell Mastery')), true);
   check('wizard slot refuses Toughness', slotAccepts(wizSlot, feat('Toughness')), false);
-  check('monk level 2 slot takes Dodge', slotAccepts(slot('monk', 6, 'class-L2'), feat('Dodge')), true);
-  check('monk level 2 slot refuses Mobility', slotAccepts(slot('monk', 6, 'class-L2'), feat('Mobility')), false);
-  check('monk level 6 slot takes Mobility', slotAccepts(slot('monk', 6, 'class-L6'), feat('Mobility')), true);
+  check('monk level 2 slot takes Dodge', slotAccepts(slot('monk', 6, 'class-monk-L2'), feat('Dodge')), true);
+  check('monk level 2 slot refuses Mobility', slotAccepts(slot('monk', 6, 'class-monk-L2'), feat('Mobility')), false);
+  check('monk level 6 slot takes Mobility', slotAccepts(slot('monk', 6, 'class-monk-L6'), feat('Mobility')), true);
   check('general slot takes anything', slotAccepts({ kind: 'general' }, feat('Toughness')), true);
   const missing = monkFeatList(20).filter(n => !feat(n));
   check('every monk bonus feat exists in the data', missing.join(', '), '');
@@ -596,6 +600,90 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('longsword price', weaponCost(ls), 15);
   check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);
   check('+2 longsword: 15 + 300 + 8,000', weaponCost(ls, { enh: 2 }), 8315);
+}
+
+// Multiclassing
+{
+  const f = cls('fighter'), r = cls('rogue'), w = cls('wizard'), c = cls('cleric');
+  const levels = [f, f, f, r, r];
+  check('class counts', classCounts(levels).map(e => `${e.cls.id} ${e.level}`).join(', '), 'fighter 3, rogue 2');
+  check('babList 11', babList(11).join('/'), '11/6/1');
+  check('babList 0', babList(0).join('/'), '0');
+  check('babList 20', babList(20).join('/'), '20/15/10/5');
+
+  const s = characterStats({ race: race('human'), classLevels: levels, baseScores: scores(10, 10, 10, 10, 10, 10), flexibleChoice: 'str' });
+  check('fighter 3 / rogue 2 BAB (3 + 1)', s.bab.join('/'), '4');
+  check('fighter 3 / rogue 2 Fort (3 + 0)', s.fort, 3);
+  check('fighter 3 / rogue 2 Ref (1 + 3)', s.ref, 4);
+  check('fighter 3 / rogue 2 Will (1 + 0)', s.will, 1);
+  check('fighter 3 / rogue 2 HP (10 + 6 + 6 + 5 + 5)', s.hp, 32);
+  const fav = (favoredClassId) => characterStats({ race: race('human'), classLevels: levels, baseScores: scores(10, 10, 10, 10, 10, 10),
+                                                   flexibleChoice: 'str', favoredHp: true, favoredClassId }).hp;
+  check('favored class fighter: +3 HP', fav('fighter'), 35);
+  check('favored class rogue: +2 HP', fav('rogue'), 34);
+  check('single-class call still works', characterStats({ race: race('dwarf'), cls: f, level: 20, baseScores: scores(15, 12, 14, 10, 12, 9) }).hp, 184);
+
+  check('skill ranks per level class (3 × 3 + 9 × 2)',
+        skillRanksAvailable({ race: race('human'), classLevels: levels, baseScores: scores(10, 10, 10, 10, 10, 10), flexibleChoice: 'str' }), 27);
+  check('favored skill ranks only for favored class levels',
+        skillRanksAvailable({ race: race('human'), classLevels: levels, favoredClassId: 'rogue', favoredSkill: true,
+                              baseScores: scores(10, 10, 10, 10, 10, 10), flexibleChoice: 'str' }), 29);
+  const both = classSkillTest([f, r]);
+  check('class skills combine: Acrobatics (rogue)', both('Acrobatics'), true);
+  check('class skills combine: Climb (both)', both('Climb'), true);
+  check('class skills combine: Spellcraft (neither)', both('Spellcraft'), false);
+
+  check('feat slots for fighter 3 / rogue 2',
+        featSlots({ race: race('human'), classLevels: levels }).map(x => x.id).join(' '), 'L1 L3 L5 race class-fighter-L1 class-fighter-L2');
+  const names = allFeats.map(x => x.name);
+  const ctxFor = lv => {
+    const counts = classCounts(lv);
+    const st = characterStats({ race: race('human'), classLevels: lv, baseScores: scores(16, 14, 10, 14, 14, 10), flexibleChoice: 'str' });
+    return featContext({ race: race('human'), counts, scores: st.scores, bab: st.bab[0],
+                         haveFeats: [...grantedFeatsFor(counts, names), ...proficiencyFeatsFor(counts.map(e => e.cls))] });
+  };
+  const fighter4 = { type: 'class_level', class: 'fighter', value: 4 };
+  check('fighter 3 / rogue 2 is not fighter level 4', checkPrereq(fighter4, ctxFor(levels), {}).status, 'unmet');
+  check('fighter 4 / rogue 1 is', checkPrereq(fighter4, ctxFor([f, f, f, f, r]), {}).status, 'met');
+  check('levelsIn counts one class', levelsIn(ctxFor(levels), 'rogue'), 2);
+  check('class feature from the second class (sneak attack)',
+        checkPrereq({ type: 'class_feature', feature: 'sneak attack' }, ctxFor(levels), {}).status, 'met');
+  check('proficiencies combine (wizard + fighter: heavy armor)', proficiencyFeatsFor([w, f]).includes('Armor Proficiency, Heavy'), true);
+
+  // Spellcasting across classes and prestige classes
+  const mt = cls('mystic-theurge'), ek = cls('eldritch-knight');
+  const theurge = classCounts([c, c, c, w, w, w, mt, mt]);
+  const cast = castingClasses(theurge);
+  check('mystic theurge 2 raises both cleric and wizard', cast.casting.map(x => `${x.cls.id} ${x.classLevel}->${x.effectiveLevel}`).join(', '),
+        'cleric 3->5, wizard 3->5');
+  const knight = classCounts([f, w, w, w, w, w, ek, ek, ek]);
+  check('eldritch knight 3 adds 2 (none at 1st)', castingClasses(knight).casting.map(x => `${x.cls.id} ${x.effectiveLevel}`).join(), 'wizard 7');
+  const sorcWiz = classCounts([w, w, w, cls('sorcerer'), cls('sorcerer'), cls('sorcerer'), ek, ek]);
+  check('advance goes to the first arcane class by default', castingClasses(sorcWiz).casting.map(x => `${x.cls.id} ${x.effectiveLevel}`).join(', '), 'wizard 4, sorcerer 3');
+  const slotKey = advanceSlots(sorcWiz)[0].key;
+  check('advance can go to another class', castingClasses(sorcWiz, { [slotKey]: 'sorcerer' }).casting.map(x => `${x.cls.id} ${x.effectiveLevel}`).join(', '), 'wizard 3, sorcerer 4');
+
+  // Prestige requirements
+  const aa = parseRequirement({ name: 'Feats', text: 'Point Blank Shot, Precise Shot, Weapon Focus (longbow or shortbow).' });
+  check('requirement feats', aa.map(p => p.feat).join(' | '), 'Point Blank Shot | Precise Shot | Weapon Focus');
+  check('requirement "A or B" feats', parseRequirement({ name: 'Feats', text: 'Alignment Channel or Elemental Channel.' })[0].type, 'any_of');
+  check('requirement skills', JSON.stringify(parseRequirement({ name: 'Skills', text: 'Disguise 2 ranks, Stealth 5 ranks.' })),
+        '[{"type":"skill","skill":"Disguise","ranks":2},{"type":"skill","skill":"Stealth","ranks":5}]');
+  check('requirement spells (two traditions)', parseRequirement({ name: 'Spells', text: 'Able to cast 2nd-level divine spells and 2nd-level arcane spells.' })
+        .map(p => `${p.tradition} ${p.level}`).join(', '), 'divine 2, arcane 2');
+  check('requirement alignment can\'t be checked', parseRequirement({ name: 'Alignment', text: 'Any evil.' })[0].type, 'text');
+
+  const before = [c, c, c, w, w, w];
+  const bctx = ctxFor(before);
+  const bcast = castingByTradition(castingClasses(classCounts(before)).casting, bctx.scores);
+  check('cleric 3 / wizard 3 casts 2nd-level spells of both kinds', `${bcast.arcane} ${bcast.divine}`, '2 2');
+  const mtCheck = checkRequirements(mt, { ...bctx, skillRanks: { 'Knowledge (arcana)': 3, 'Knowledge (religion)': 3 } }, bcast, false);
+  check('mystic theurge requirements met', mtCheck.status, 'met');
+  const noSkills = checkRequirements(mt, { ...bctx, skillRanks: {} }, bcast, false);
+  check('...not without the skill ranks', noSkills.status, 'unmet');
+  const ekWizard = checkRequirements(ek, ctxFor([w, w, w, w, w]), castingByTradition(castingClasses(classCounts([w, w, w, w, w])).casting,
+                                     ctxFor([w, w, w, w, w]).scores), false);
+  check('eldritch knight: wizard 5 lacks martial proficiency', ekWizard.parts.find(p => /martial/.test(p.why)).status, 'unmet');
 }
 
 const failed = results.filter(r => !r.pass);

@@ -4,6 +4,19 @@ import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { spellsPerDay } from './rules.js';
 
 let selectedId = null;
+let listClassId = null;  // which class's spell list is shown, for characters with several
+
+// The classes that have a spell list, and the one being shown, with its effective level (prestige classes can
+// raise it) and the highest spell level it can cast.
+function listClass(app, view) {
+  const withList = view.classes.filter(c => app.data.spells.some(s => s.levels[c.id] !== undefined));
+  const cls = withList.find(c => c.id === listClassId) || withList[0] || view.cls;
+  const cast = view.casting.casting.find(c => c.cls.id === cls.id);
+  const level = cast ? cast.effectiveLevel : (view.counts.find(e => e.cls.id === cls.id)?.level || 1);
+  const table = spellsPerDay({ cls, level, scores: view.stats.scores });
+  const castable = (table?.rows || []).filter(r => r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0));
+  return { withList, cls, level, table, maxLevel: castable.length ? Math.max(...castable.map(r => r.spellLevel)) : -1 };
+}
 
 const LEVEL_NAMES = ['Level 0 (cantrips / orisons)', ...Array.from({ length: 9 }, (_, i) => `Level ${i + 1}`)];
 
@@ -41,7 +54,7 @@ function spellDetails(app, spell, cls) {
 
 function renderPanel(app, view) {
   const spell = app.data.spells?.find(s => s.id === selectedId);
-  $('spell-panel').innerHTML = spell ? spellDetails(app, spell, view.cls)
+  $('spell-panel').innerHTML = spell ? spellDetails(app, spell, listClass(app, view).cls)
     : '<p class="hint">Choose a spell to see its details.</p>';
   document.querySelectorAll('#spell-list [data-spell]').forEach(b =>
     b.setAttribute('aria-current', String(b.dataset.spell === selectedId)));
@@ -57,10 +70,9 @@ function spellButton(app, s) {
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
 // spells they may know at each level (from the class table).
 function renderMySpells(app, view) {
-  const { cls } = view;
+  const { cls, table, maxLevel } = listClass(app, view);
   const byId = new Map(app.data.spells.map(s => [s.id, s]));
   const chosen = app.state.spells.map(id => byId.get(id)).filter(Boolean);
-  const table = spellsPerDay({ cls, level: app.state.level, scores: view.stats.scores });
   const hasList = app.data.spells.some(s => s.levels[cls.id] !== undefined);
   $('my-spells-card').hidden = !hasList && !chosen.length;
   if ($('my-spells-card').hidden) return;
@@ -72,7 +84,6 @@ function renderMySpells(app, view) {
     ? 'The spells your character knows. Your class table sets how many you can know at each spell level.'
     : 'The spells in your spellbook, or the ones you usually prepare. You prepare spells from these each day.';
 
-  const maxLevel = view.ctx.maxSpellLevel;
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {
     const spells = chosen.filter(s => s.levels[cls.id] === lv).sort((a, b) => a.name.localeCompare(b.name));
@@ -111,6 +122,7 @@ export function initSpellList(app) {
   $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
   $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
   $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
+  $('spell-class').addEventListener('change', e => { listClassId = e.target.value; renderSpellList(app, app.view); });
   $('spell-list').addEventListener('click', e => {
     const btn = e.target.closest('[data-spell]');
     if (!btn) return;
@@ -136,7 +148,10 @@ export async function renderSpellList(app, view) {
     await app.loadSpells();
     view = app.view;  // the character may have changed while loading
   }
-  const { cls } = view;
+  const { withList, cls, maxLevel } = listClass(app, view);
+  $('spell-class-row').hidden = withList.length < 2;
+  $('spell-class').innerHTML = withList.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+  $('spell-class').value = cls.id;
   renderMySpells(app, view);
   const all = app.data.spells;
   const onList = all.filter(s => s.levels[cls.id] !== undefined);
@@ -161,7 +176,6 @@ export async function renderSpellList(app, view) {
     return;
   }
 
-  const maxLevel = view.ctx.maxSpellLevel;
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {
     const spells = onList.filter(s => s.levels[cls.id] === lv && (!filter || s.name.toLowerCase().includes(filter)));

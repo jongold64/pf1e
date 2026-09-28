@@ -1,6 +1,6 @@
 // Feat rules: where feat slots come from, which feats a slot accepts, and prerequisite checks.
 // No page code here, so these functions can be tested on their own.
-import { spellsPerDay } from './rules.js';
+import { spellsPerDay, classCounts } from './rules.js';
 import { ranksFor } from './skills.js';
 
 const lower = s => String(s ?? '').toLowerCase();
@@ -52,21 +52,26 @@ function bonusFeatRule(cls, special) {
 }
 
 // Every feat slot a character has at `level`. Slot ids stay the same as the level changes,
-// so choices are kept when the level goes down and back up.
-export function featSlots({ race, cls, level }) {
+// so choices are kept when the level goes down and back up. General feats come at odd character levels;
+// class bonus feats come from each class at its own class level (id "class-fighter-L2").
+// Pass { cls, level } for a single class, or `classLevels` (the class at each level) for a multiclass character.
+export function featSlots({ race, cls, level, classLevels = null }) {
+  const levels = classLevels || Array.from({ length: level }, () => cls);
   const slots = [];
-  for (let lv = 1; lv <= level; lv += 2) {
+  for (let lv = 1; lv <= levels.length; lv += 2) {
     slots.push({ id: `L${lv}`, kind: 'general', level: lv, label: `Level ${lv}` });
   }
   if ((race?.traits || []).some(t => t.name === 'Bonus Feat')) {
     slots.push({ id: 'race', kind: 'race', level: 1, label: `${race.name} bonus feat` });
   }
-  for (const row of cls.progression.slice(0, level)) {
-    for (const special of row.special || []) {
-      const ruleId = bonusFeatRule(cls, special);
-      if (ruleId) {
-        slots.push({ id: `class-L${row.level}`, kind: 'class', level: row.level, ruleId,
-                     label: `${cls.name} bonus feat (level ${row.level})` });
+  for (const { cls: c, level: n } of classCounts(levels)) {
+    for (const row of c.progression.slice(0, n)) {
+      for (const special of row.special || []) {
+        const ruleId = bonusFeatRule(c, special);
+        if (ruleId) {
+          slots.push({ id: `class-${c.id}-L${row.level}`, kind: 'class', level: row.level, ruleId, clsId: c.id,
+                       label: `${c.name} bonus feat (level ${row.level})` });
+        }
       }
     }
   }
@@ -95,6 +100,16 @@ export function grantedFeats(cls, level, featNames) {
   return [...out];
 }
 
+// Free feats from every class a character has, at that class's level. counts: [{ cls, level }].
+export function grantedFeatsFor(counts, featNames) {
+  return [...new Set(counts.flatMap(e => grantedFeats(e.cls, e.level, featNames)))];
+}
+
+// Armor and shield proficiencies from every class (a new class adds its proficiencies).
+export function proficiencyFeatsFor(classes) {
+  return [...new Set(classes.flatMap(c => proficiencyFeats(c)))];
+}
+
 // Armor and shield proficiencies, read from the class's "Weapon and Armor Proficiency" text.
 // Returned as the feat names that feat prerequisites use.
 export function proficiencyFeats(cls) {
@@ -121,16 +136,33 @@ export function casterLevel(cls, level) {
 // Everything prerequisite checks need to know about the character.
 // `haveFeats` is every feat the character has (chosen, granted and proficiencies).
 // `skillRanks` ({ skill name: ranks }) is optional; without it skill prerequisites can't be checked.
-export function featContext({ race, cls, level, scores, bab, haveFeats, skillRanks = null }) {
-  const castable = (spellsPerDay({ cls, level, scores })?.rows || [])
-    .filter(r => r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0));
+// A multiclass character passes `counts` ([{ cls, level }]) and `casting` ([{ cls, effectiveLevel }], see
+// castingClasses in multiclass.js); a single-class one just { cls, level }.
+export function featContext({ race, cls, level, counts = null, casting = null, scores, bab, haveFeats, skillRanks = null }) {
+  const classes = counts || [{ cls, level }];
+  const casters = casting || classes.map(e => ({ cls: e.cls, effectiveLevel: e.level }));
+  let maxSpellLevel = -1;
+  for (const c of casters) {
+    const rows = spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores })?.rows || [];
+    for (const r of rows) {
+      if (r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0)) maxSpellLevel = Math.max(maxSpellLevel, r.spellLevel);
+    }
+  }
   return {
-    race, cls, level, scores, bab,
-    casterLevel: casterLevel(cls, level),
-    maxSpellLevel: castable.length ? Math.max(...castable.map(r => r.spellLevel)) : -1,
+    race, scores, bab, counts: classes,
+    cls: classes[0].cls,
+    level: classes.reduce((n, e) => n + e.level, 0),
+    casterLevel: Math.max(0, ...casters.map(c => casterLevel(c.cls, c.effectiveLevel))),
+    maxSpellLevel,
     skillRanks,
     haveFeats: new Set(haveFeats.map(lower)),
   };
+}
+
+// Levels a character has in a class, by id or name ("fighter", "Fighter").
+export function levelsIn(ctx, clsIdOrName) {
+  const want = lower(clsIdOrName);
+  return ctx.counts.find(e => e.cls.id === want || lower(e.cls.name) === want)?.level || 0;
 }
 
 // The data build leaves some prerequisites as text. These patterns are common enough to read here:
@@ -163,9 +195,12 @@ function classFeatureLevel(cls, feature) {
 // Checks one prerequisite. Returns { status: 'met' | 'unmet' | 'unknown', why }.
 // `slotRule` changes some checks for class bonus feats (e.g. warpriest level counts as BAB).
 export function checkPrereq(p, ctx, feat, slotRule = null) {
-  const fighterLevel = ctx.cls.id === 'fighter' || slotRule?.levelAsFighter
-    || (ctx.cls.id === 'swashbuckler' && hasType(feat, 'Combat')) ? ctx.level : 0;
-  const bab = slotRule?.levelAsBab ? Math.max(ctx.bab, ctx.level) : ctx.bab;
+  // Levels that count as fighter levels: fighter, swashbuckler (for combat feats), and the class of a bonus
+  // feat slot whose rule says so (warpriest). A slot rule's `classLevel` is that class's level.
+  const slotClassLevel = slotRule?.classLevel ?? ctx.level;
+  const fighterLevel = levelsIn(ctx, 'fighter') + (hasType(feat, 'Combat') ? levelsIn(ctx, 'swashbuckler') : 0)
+    + (slotRule?.levelAsFighter ? slotClassLevel : 0);
+  const bab = slotRule?.levelAsBab ? Math.max(ctx.bab, slotClassLevel) : ctx.bab;
   const result = (ok, why) => ({ status: ok ? 'met' : 'unmet', why });
 
   switch (p.type) {
@@ -180,13 +215,15 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
       return result(r.id === p.race || (r.subtypes || []).map(lower).includes(p.race), `Race: ${p.race}`);
     }
     case 'class_level': {
-      const isClass = p.class === ctx.cls.id || lower(p.class) === lower(ctx.cls.name);
-      const lv = isClass ? ctx.level : (p.class === 'fighter' ? fighterLevel : 0);
+      const lv = p.class === 'fighter' ? Math.max(fighterLevel, levelsIn(ctx, 'fighter')) : levelsIn(ctx, p.class);
       return result(lv >= p.value, `${p.class} level ${p.value}`);
     }
     case 'class_feature': {
-      const lv = classFeatureLevel(ctx.cls, p.feature);
-      return result(lv !== null && lv <= ctx.level, `Class feature: ${p.feature}`);
+      const has = ctx.counts.some(e => {
+        const lv = classFeatureLevel(e.cls, p.feature);
+        return lv !== null && lv <= e.level;
+      });
+      return result(has, `Class feature: ${p.feature}`);
     }
     case 'caster_level':
       return result(ctx.casterLevel >= p.value, `Caster level ${p.value}`);
@@ -218,7 +255,8 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
 // Checks all of a feat's prerequisites. The overall status is 'unmet' if any part is unmet,
 // otherwise 'unknown' if any part can't be checked, otherwise 'met'.
 export function checkFeat(feat, ctx, slot = null) {
-  const slotRule = slot?.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId] : null;
+  const rule = slot?.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId] : null;
+  const slotRule = rule && { ...rule, classLevel: slot.clsId ? levelsIn(ctx, slot.clsId) : ctx.level };
   if (slotRule?.waivePrereqs) return { status: 'met', parts: [], waived: true };
   const parts = (feat.prerequisites || []).map(p => ({ ...checkPrereq(p, ctx, feat, slotRule), p }));
   const status = parts.some(x => x.status === 'unmet') ? 'unmet'

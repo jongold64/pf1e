@@ -17844,6 +17844,9 @@
         "will": 1,
         "special": [
           "Imbue arrow"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17856,6 +17859,9 @@
         "will": 1,
         "special": [
           "Enhance arrows (elemental)"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17868,6 +17874,9 @@
         "will": 1,
         "special": [
           "Seeker arrow"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17892,6 +17901,9 @@
         "will": 2,
         "special": [
           "Phase arrow"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17904,6 +17916,9 @@
         "will": 2,
         "special": [
           "Enhance arrows (elemental burst)"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17916,6 +17931,9 @@
         "will": 3,
         "special": [
           "Hail of arrows"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -17940,6 +17958,9 @@
         "will": 3,
         "special": [
           "Arrow of death"
+        ],
+        "caster_advance": [
+          "any"
         ]
       }
     ],
@@ -18084,6 +18105,9 @@
         "will": 1,
         "special": [
           "Ranged legerdemain"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18096,6 +18120,9 @@
         "will": 1,
         "special": [
           "Sneak attack +1d6"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18108,6 +18135,9 @@
         "will": 2,
         "special": [
           "Impromptu sneak attack 1/day"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18120,6 +18150,9 @@
         "will": 2,
         "special": [
           "Sneak attack +2d6"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18132,6 +18165,9 @@
         "will": 3,
         "special": [
           "Tricky spells 3/day"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18144,6 +18180,9 @@
         "will": 3,
         "special": [
           "Sneak attack +3d6"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18157,6 +18196,9 @@
         "special": [
           "Impromptu sneak attack 2/day",
           "Tricky spells 4/day"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18169,6 +18211,9 @@
         "will": 4,
         "special": [
           "Sneak attack +4d6"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18182,6 +18227,9 @@
         "special": [
           "Invisible thief",
           "Tricky spells 5/day"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -18195,6 +18243,9 @@
         "special": [
           "Sneak attack +5d6",
           "surprise spells"
+        ],
+        "caster_advance": [
+          "any"
         ]
       }
     ],
@@ -18867,6 +18918,9 @@
           "Ability boost (Str +2)",
           "bloodline feat",
           "dragon bite"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18879,6 +18933,9 @@
         "will": 2,
         "special": [
           "Breath weapon"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18892,6 +18949,9 @@
         "special": [
           "Ability boost (Str +2)",
           "natural armor increase (+1)"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18917,6 +18977,9 @@
         "will": 3,
         "special": [
           "Ability boost (Con +2)"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18930,6 +18993,9 @@
         "special": [
           "Dragon form (1/day)",
           "natural armor increase (+1)"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18943,6 +19009,9 @@
         "special": [
           "Ability boost (Int +2)",
           "bloodline feat"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -18968,6 +19037,9 @@
         "special": [
           "Blindsense 60 ft.",
           "Dragon form (2/day)"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       }
     ],
@@ -19344,7 +19416,10 @@
         "fort": 1,
         "ref": 1,
         "will": 1,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 3,
@@ -19354,7 +19429,10 @@
         "fort": 2,
         "ref": 1,
         "will": 1,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 4,
@@ -19364,7 +19442,10 @@
         "fort": 2,
         "ref": 1,
         "will": 1,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 5,
@@ -19376,6 +19457,9 @@
         "will": 2,
         "special": [
           "Bonus combat feat"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -19386,7 +19470,10 @@
         "fort": 3,
         "ref": 2,
         "will": 2,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 7,
@@ -19396,7 +19483,10 @@
         "fort": 4,
         "ref": 2,
         "will": 2,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 8,
@@ -19406,7 +19496,10 @@
         "fort": 4,
         "ref": 3,
         "will": 3,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane"
+        ]
       },
       {
         "level": 9,
@@ -19418,6 +19511,9 @@
         "will": 3,
         "special": [
           "Bonus combat feat"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       },
       {
@@ -19430,6 +19526,9 @@
         "will": 3,
         "special": [
           "Spell critical"
+        ],
+        "caster_advance": [
+          "arcane"
         ]
       }
     ],
@@ -19552,6 +19651,9 @@
         "will": 1,
         "special": [
           "Stigmata"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19564,6 +19666,9 @@
         "will": 2,
         "special": [
           "Faith healing (empower)"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19576,6 +19681,9 @@
         "will": 2,
         "special": [
           "Divine wrath"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19601,6 +19709,9 @@
         "will": 3,
         "special": [
           "Versatile channel"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19613,6 +19724,9 @@
         "will": 4,
         "special": [
           "Divine judgment"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19625,6 +19739,9 @@
         "will": 4,
         "special": [
           "Faith healing (maximize)"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -19649,6 +19766,9 @@
         "will": 5,
         "special": [
           "Divine retribution"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       }
     ],
@@ -20008,6 +20128,9 @@
         "will": 1,
         "special": [
           "Secret"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20020,6 +20143,9 @@
         "will": 1,
         "special": [
           "Lore"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20032,6 +20158,9 @@
         "will": 2,
         "special": [
           "Secret"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20044,6 +20173,9 @@
         "will": 2,
         "special": [
           "Bonus language"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20056,6 +20188,9 @@
         "will": 3,
         "special": [
           "Secret"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20068,6 +20203,9 @@
         "will": 3,
         "special": [
           "Greater lore"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20080,6 +20218,9 @@
         "will": 4,
         "special": [
           "Secret"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20092,6 +20233,9 @@
         "will": 4,
         "special": [
           "Bonus language"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20104,6 +20248,9 @@
         "will": 5,
         "special": [
           "Secret"
+        ],
+        "caster_advance": [
+          "any"
         ]
       },
       {
@@ -20116,6 +20263,9 @@
         "will": 5,
         "special": [
           "True lore"
+        ],
+        "caster_advance": [
+          "any"
         ]
       }
     ],
@@ -20237,9 +20387,9 @@
         "special": [
           "Advanced mutagen"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 3,
@@ -20252,9 +20402,9 @@
         "special": [
           "Brutality (+2)"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 4,
@@ -20282,9 +20432,9 @@
         "special": [
           "Mutate 3/day"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 6,
@@ -20297,9 +20447,9 @@
         "special": [
           "Advanced mutagen"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 7,
@@ -20312,9 +20462,9 @@
         "special": [
           "Brutality (+4)"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 8,
@@ -20343,9 +20493,9 @@
         "special": [
           "Brutality (+6)"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       },
       {
         "level": 10,
@@ -20359,9 +20509,9 @@
           "Advanced mutagen",
           "mutate 5/day"
         ],
-        "other": {
-          "Extracts per Day": "+1 level of alchemist"
-        }
+        "caster_advance": [
+          "alchemist"
+        ]
       }
     ],
     "features": [
@@ -20727,6 +20877,10 @@
         "will": 1,
         "special": [
           "Combined spells (1st)"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       },
       {
@@ -20737,7 +20891,11 @@
         "fort": 1,
         "ref": 1,
         "will": 1,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane",
+          "divine"
+        ]
       },
       {
         "level": 3,
@@ -20749,6 +20907,10 @@
         "will": 2,
         "special": [
           "Combined spells (2nd)"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       },
       {
@@ -20759,7 +20921,11 @@
         "fort": 1,
         "ref": 1,
         "will": 2,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane",
+          "divine"
+        ]
       },
       {
         "level": 5,
@@ -20771,6 +20937,10 @@
         "will": 3,
         "special": [
           "Combined spells (3rd)"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       },
       {
@@ -20781,7 +20951,11 @@
         "fort": 2,
         "ref": 2,
         "will": 3,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane",
+          "divine"
+        ]
       },
       {
         "level": 7,
@@ -20793,6 +20967,10 @@
         "will": 4,
         "special": [
           "Combined spells (4th)"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       },
       {
@@ -20803,7 +20981,11 @@
         "fort": 3,
         "ref": 3,
         "will": 4,
-        "special": []
+        "special": [],
+        "caster_advance": [
+          "arcane",
+          "divine"
+        ]
       },
       {
         "level": 9,
@@ -20815,6 +20997,10 @@
         "will": 5,
         "special": [
           "Combined spells (5th)"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       },
       {
@@ -20827,6 +21013,10 @@
         "will": 5,
         "special": [
           "Spell synthesis"
+        ],
+        "caster_advance": [
+          "arcane",
+          "divine"
         ]
       }
     ],
@@ -20946,6 +21136,9 @@
         "special": [
           "Mystic harmony",
           "wild stride"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -20958,6 +21151,9 @@
         "will": 2,
         "special": [
           "Animal speech"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -20970,6 +21166,9 @@
         "will": 2,
         "special": [
           "Silverclaw"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -20995,6 +21194,9 @@
         "will": 3,
         "special": [
           "Woodforging"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21008,6 +21210,9 @@
         "special": [
           "Companion walk",
           "plant speech"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21020,6 +21225,9 @@
         "will": 4,
         "special": [
           "Ironpaw"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21045,6 +21253,9 @@
         "special": [
           "Companion soul",
           "favored terrain"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       }
     ],
@@ -21487,6 +21698,9 @@
         "special": [
           "Rage prophet mystery",
           "raging healer"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21499,6 +21713,9 @@
         "will": 2,
         "special": [
           "Indomitable caster"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21512,6 +21729,9 @@
         "special": [
           "Ragecaster (caster level)",
           "rage prophet mystery"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21537,6 +21757,9 @@
         "special": [
           "Enduring rage",
           "rage prophet mystery"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21549,6 +21772,9 @@
         "will": 4,
         "special": [
           "Ragecaster (save DC)"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21574,6 +21800,9 @@
         "will": 5,
         "special": [
           "Spirit warrior"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       },
       {
@@ -21587,6 +21816,9 @@
         "special": [
           "Greater rage",
           "rage prophet mystery"
+        ],
+        "caster_advance": [
+          "divine"
         ]
       }
     ],

@@ -55,7 +55,7 @@ export function renderArmorTab(app, view) {
   if (gear.maxDex !== null && stats.mod.dex > gear.maxDex) {
     warnings.push(`Your Dex bonus (${signed(stats.mod.dex)}) is capped at ${signed(gear.maxDex)} in this armor.`);
   }
-  if (view.cls.id === 'monk' && (gear.armor || gear.shield)) {
+  if (view.counts.some(e => e.cls.id === 'monk') && (gear.armor || gear.shield)) {
     warnings.push('Monks lose their Wisdom and monk AC bonus when wearing armor or using a shield.');
   }
   $('armor-warnings').innerHTML = warnings.map(w => `<p class="warning">${esc(w)}</p>`).join('');

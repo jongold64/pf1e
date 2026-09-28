@@ -5,7 +5,13 @@ const lower = s => String(s ?? '').toLowerCase();
 
 // Which weapons a class and race are proficient with, read from the class's "Weapon and Armor Proficiency"
 // text and the race's weapon familiarity trait. Returns a test function: proficient(weapon) -> true/false.
-export function proficiencyTest(cls, race) {
+// Pass a list of classes for a multiclass character: proficient if any class is.
+export function proficiencyTest(clsOrList, race) {
+  if (Array.isArray(clsOrList)) {
+    const tests = clsOrList.map(c => proficiencyTest(c, race));
+    return w => tests.some(t => t(w));
+  }
+  const cls = clsOrList;
   const classText = lower((cls.features || []).find(f => /proficien/i.test(f.name))?.text);
   const raceText = lower((race?.traits || []).filter(t => /weapon familiarity|familiarity/i.test(t.name)).map(t => t.text).join(' '));
   // "all simple weapons", "all simple and martial weapons"

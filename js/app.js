@@ -2,12 +2,15 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay,
+  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts,
 } from './rules.js';
 import {
-  BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeats, proficiencyFeats, featContext, checkFeat,
+  BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
   repeatable, featEffects,
 } from './feats.js';
+import { castingClasses } from './multiclass.js';
+import { checkRequirements, castingByTradition } from './prestige.js';
+import { proficiencyTest } from './weapons.js';
 import {
   SKILLS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
@@ -22,7 +25,7 @@ import { initSearch } from './search-ui.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
-const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate']];
+const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate'], ['prestige', 'Prestige']];
 const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'weapons', 'equipment'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
@@ -57,6 +60,10 @@ let tab = 'character';
 
 const state = {
   race: 'human',
+  classLevels: ['fighter'],  // class id at each character level, 1st level first
+  favoredClass: '',          // favored class id; '' means the first class
+  casterChoices: {},         // prestige spellcasting advance slot -> class id it raises (see multiclass.js)
+  // Kept in step with classLevels by syncDerived(), for code that wants the total level or first class.
   cls: 'fighter',
   level: 1,
   budget: 15,
@@ -87,10 +94,13 @@ const app = {
 
 // Saved characters survive a reload. Storage can be blocked (private browsing), so failures are ignored.
 function load() {
+  let saved = null;
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved) Object.assign(state, saved, { base: { ...state.base, ...saved.base } });
   } catch { /* start fresh */ }
+  // Saves from before multiclassing have one class and a level instead of a class for each level.
+  if (saved && !Array.isArray(saved.classLevels)) state.classLevels = [];
   for (const a of ABILITIES) {
     if (!(state.base[a] in POINT_COSTS)) state.base[a] = 10;
   }
@@ -118,6 +128,24 @@ function load() {
   for (const k of ['armorEnh', 'shieldEnh']) {
     if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
+  // Classes: older saves have one class and a level. The first level can't be a prestige class.
+  const byId = new Map(data.classes.map(c => [c.id, c]));
+  const firstBase = id => (byId.has(id) && byId.get(id).category !== 'prestige' ? id : data.classes[0].id);
+  let levels = Array.isArray(state.classLevels) ? state.classLevels.filter(id => byId.has(id)).slice(0, 20) : [];
+  if (!levels.length) levels = Array.from({ length: state.level }, () => firstBase(state.cls));
+  levels[0] = firstBase(levels[0]);
+  state.classLevels = levels;
+  // Bonus feats saved under the old single-class slot ids ("class-L4") belong to the first class.
+  for (const [slotId, featId] of Object.entries(state.feats)) {
+    const m = slotId.match(/^class-L(\d+)$/);
+    if (m) {
+      delete state.feats[slotId];
+      state.feats[`class-${levels[0]}-L${m[1]}`] ??= featId;
+    }
+  }
+  if (!levels.includes(state.favoredClass) || byId.get(state.favoredClass)?.category === 'prestige') state.favoredClass = '';
+  if (typeof state.casterChoices !== 'object' || state.casterChoices === null) state.casterChoices = {};
+  syncDerived();
   if (!(typeof state.gold === 'number' && state.gold >= 0)) state.gold = null;
   // Items the equipment data no longer has are skipped when shown.
   state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
@@ -132,6 +160,11 @@ function load() {
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])) }));
+}
+
+function syncDerived() {
+  state.level = state.classLevels.length;
+  state.cls = state.classLevels[0];
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -175,10 +208,8 @@ function showTab(name) {
 
 function buildControls() {
   $('race').innerHTML = groupedOptions(data.races, RACE_GROUPS);
-  $('class').innerHTML = groupedOptions(data.classes, CLASS_GROUPS);
   $('budget').innerHTML = BUDGETS.map(b => `<option value="${b.points}">${b.label}</option>`).join('');
   $('flexible').innerHTML = ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
-  $('level').innerHTML = Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
 
   const abilityOptions = '<option value="">— choose —</option>' +
     ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
@@ -203,21 +234,35 @@ function buildControls() {
 
   // A saved id that no longer exists in the data falls back to the first option.
   $('race').value = state.race;
-  $('class').value = state.cls;
   if (!$('race').value) $('race').selectedIndex = 0;
-  if (!$('class').value) $('class').selectedIndex = 0;
   state.race = $('race').value;
-  state.cls = $('class').value;
   if (state.favored !== 'skill') state.favored = 'hp';
 
   document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
   $('race').addEventListener('change', e => update({ race: e.target.value }));
-  $('class').addEventListener('change', e => update({ cls: e.target.value }));
-  $('level').addEventListener('change', e => update({ level: Number(e.target.value) }));
-  $('extra-slot').addEventListener('change', e =>
-    update({ extraSlots: { ...state.extraSlots, [state.cls]: e.target.checked } }));
+  // Classes: a class for each level
+  $('class-levels').addEventListener('change', e => {
+    const i = e.target.dataset.levelIndex;
+    if (i === undefined) return;
+    update({ classLevels: state.classLevels.map((id, j) => (j === Number(i) ? e.target.value : id)) });
+  });
+  $('add-level').addEventListener('click', () => {
+    if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, state.classLevels.at(-1)] });
+  });
+  $('remove-level').addEventListener('click', () => {
+    if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
+  });
+  $('favored-class').addEventListener('change', e => update({ favoredClass: e.target.value }));
+  $('caster-choices').addEventListener('change', e => {
+    const key = e.target.dataset.advance;
+    if (key) update({ casterChoices: { ...state.casterChoices, [key]: e.target.value } });
+  });
+  $('spells-tables').addEventListener('change', e => {
+    const id = e.target.dataset.extraSlot;
+    if (id) update({ extraSlots: { ...state.extraSlots, [id]: e.target.checked } });
+  });
   $('increase-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.increase);
     update({ increases: state.increases.map((a, j) => (j === i ? e.target.value : a)) });
@@ -376,6 +421,7 @@ function renderArmorSearch() {
 
 function update(changes) {
   Object.assign(state, changes);
+  syncDerived();
   save();
   render();
 }
@@ -383,27 +429,105 @@ function update(changes) {
 // Everything derived from the character, computed once per change and shared by all tabs.
 function computeView() {
   const race = data.races.find(r => r.id === state.race);
-  const cls = data.classes.find(c => c.id === state.cls);
-  // Feats the character has: chosen ones (only slots reached at this level), free ones from the
+  const byId = new Map(data.classes.map(c => [c.id, c]));
+  const classLevels = state.classLevels.map(id => byId.get(id));
+  const counts = classCounts(classLevels);
+  const classes = counts.map(e => e.cls);
+  const cls = classLevels[0];
+  // The favored class must be one the character has (and not a prestige class); otherwise the first class.
+  const favoredClassId = classes.some(c => c.id === state.favoredClass && c.category !== 'prestige') ? state.favoredClass : cls.id;
+  const casting = castingClasses(counts, state.casterChoices);
+  // Feats the character has: chosen ones (only slots reached at this level), free ones from each
   // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
   // prerequisite context can use the same stats that include feat bonuses.
-  const slots = featSlots({ race, cls, level: state.level });
+  const slots = featSlots({ race, classLevels });
   const chosen = slots.map(s => data.featsById.get(state.feats[s.id])).filter(Boolean);
-  const granted = grantedFeats(cls, state.level, data.feats.map(f => f.name));
-  const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeats(cls)];
+  const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
+  const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const gear = armorEffects({
     armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh,
     shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh,
   });
   const stats = characterStats({
-    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
+    race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice: state.flexible,
     increases: state.increases, favoredHp: state.favored === 'hp',
-    featBonuses: featEffects(chosen.map(f => f.name), state.level), gear,
+    featBonuses: featEffects(chosen.map(f => f.name), classLevels.length), gear,
   });
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
-  const ctx = featContext({ race, cls, level: state.level, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
+  const ctx = featContext({ race, counts, casting: casting.casting, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
+  // Prestige class requirements, checked against the levels before the first level of each one.
+  const requirements = new Map();
+  for (const e of counts.filter(x => x.cls.category === 'prestige')) {
+    const before = classLevels.slice(0, classLevels.findIndex(c => c.id === e.cls.id));
+    requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, stats.scores, haveFeats, skillRanks));
+  }
   const speed = speedInArmor(race.base_speed, gear, race);
-  return { race, cls, slots, chosen, granted, haveFeats, gear, stats, ctx, speed };
+  return {
+    race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
+    slots, chosen, granted, haveFeats, gear, stats, ctx, speed, requirements,
+  };
+}
+
+// A prestige class's requirements for the character as it was before taking it. BAB and spellcasting come
+// from those earlier levels; feats and skill ranks from the current choices (the app doesn't record when they
+// were taken).
+function prestigeCheck(prestige, before, race, scores, haveFeats, skillRanks) {
+  const counts = classCounts(before);
+  if (!counts.length) return { status: 'unmet', parts: [{ status: 'unmet', why: 'Needs a level in another class first' }] };
+  const bab = counts.reduce((n, e) => n + e.cls.progression[e.level - 1].bab[0], 0);
+  const casting = castingClasses(counts, state.casterChoices).casting;
+  const ctx = featContext({ race, counts, casting, scores, bab, haveFeats, skillRanks });
+  const martial = proficiencyTest(counts.map(e => e.cls), race)({ name: 'any martial weapon', proficiency: 'martial' });
+  return checkRequirements(prestige, ctx, castingByTradition(casting, scores), martial);
+}
+
+const STATUS_WORD = { met: 'met', unmet: 'not met', unknown: 'some can\'t be checked' };
+
+// The Classes card: a class for each level, favored class, where prestige spellcasting goes, and each
+// class's features (and requirements, for prestige classes).
+function renderClasses(view) {
+  const { counts, classLevels } = view;
+  $('class-summary').textContent = `${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')} (level ${classLevels.length})`;
+  const baseOptions = groupedOptions(data.classes.filter(c => c.category !== 'prestige'), CLASS_GROUPS);
+  const allOptions = groupedOptions(data.classes, CLASS_GROUPS);
+  $('class-levels').innerHTML = classLevels.map((c, i) => `<li>
+      <label>Level ${i + 1} <select data-level-index="${i}">${i === 0 ? baseOptions : allOptions}</select></label>
+      ${c.category === 'prestige' && view.requirements.get(c.id)
+        ? STATUS_ICON[view.requirements.get(c.id).status] : ''}
+    </li>`).join('');
+  $('class-levels').querySelectorAll('select').forEach((sel, i) => { sel.value = classLevels[i].id; });
+  $('add-level').disabled = classLevels.length >= 20;
+  $('remove-level').disabled = classLevels.length <= 1;
+
+  const favoredChoices = view.classes.filter(c => c.category !== 'prestige');
+  $('favored-class').innerHTML = favoredChoices.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+  $('favored-class').value = view.favoredClassId;
+
+  $('caster-choices').innerHTML = view.casting.slots.map(slot => {
+    const kind = slot.kind === 'any' ? 'spellcasting' : slot.kind === 'alchemist' ? 'alchemist extracts' : `${slot.kind} spellcasting`;
+    if (!slot.target) {
+      return `<p class="warning">${esc(slot.prestige.name)} adds a level of ${esc(kind)}, but you have no class it can go to.</p>`;
+    }
+    if (slot.targets.length < 2) {
+      return `<p class="hint">${esc(slot.prestige.name)} adds ${slot.levels} level${slot.levels === 1 ? '' : 's'} of ${esc(kind)} to ${esc(slot.target.name)}.</p>`;
+    }
+    return `<label class="row">${esc(slot.prestige.name)} adds ${esc(kind)} to
+      <select data-advance="${esc(slot.key)}">${slot.targets.map(t =>
+        `<option value="${esc(t.id)}"${t.id === slot.target.id ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>`;
+  }).join('');
+
+  $('class-info').innerHTML = counts.map(e => {
+    const features = e.cls.progression.slice(0, e.level)
+      .map(r => `<li><b>${r.level}</b> ${(r.special || []).map(esc).join(', ') || '—'}</li>`).join('');
+    const req = view.requirements.get(e.cls.id);
+    const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
+      <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
+    return `<details class="class-block"${req && req.status !== 'met' ? ' open' : ''}>
+      <summary>${esc(e.cls.name)} ${e.level} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
+      ${reqHtml}
+      <ol class="features">${features}</ol>
+    </details>`;
+  }).join('');
 }
 
 function render() {
@@ -412,8 +536,6 @@ function render() {
 
   // Controls changed from elsewhere (e.g. "Make my character a dwarf" in search) show their new value.
   $('race').value = state.race;
-  $('class').value = state.cls;
-  $('level').value = state.level;
   $('budget').value = state.budget;
   $('flexible').value = state.flexible;
   INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
@@ -427,16 +549,8 @@ function render() {
     <p>${esc(race.size)} ${esc(race.type || '')} · Speed ${race.base_speed ?? '?'} ft.</p>
     <p>${traits.map(t => esc(t.name)).join(', ')}</p>`;
 
-  // Class info: features gained at every level up to the current one
-  const features = cls.progression.slice(0, state.level)
-    .map(r => `<li><b>${r.level}</b> ${(r.special || []).map(esc).join(', ') || '—'}</li>`).join('');
-  $('class-info').innerHTML = `
-    <p>Hit die ${esc(cls.hit_die)} · ${cls.skill_ranks_per_level} + Int skill ranks per level</p>
-    <details>
-      <summary>Class features by level</summary>
-      <ol class="features">${features}</ol>
-    </details>`;
-  $('subtitle').textContent = `${race.name} ${cls.name} ${state.level}`;
+  renderClasses(view);
+  $('subtitle').textContent = `${race.name} ${view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`;
 
   // Point buy
   const spent = pointsSpent(state.base);
@@ -479,9 +593,9 @@ function render() {
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
 
-  renderSkills(race, cls, stats.scores, view.chosen.map(f => f.name));
+  renderSkills(race, view.classes, stats.scores, view.chosen.map(f => f.name));
   renderFeats(view.slots, view.granted, view.ctx);
-  renderSpells(cls, stats.scores);
+  renderSpells(view);
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
   if (tab === 'equipment') renderEquipment(app, view);
@@ -490,12 +604,12 @@ function render() {
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 
-function renderSkills(race, cls, scores, featNames) {
-  const isClassSkill = classSkillTest(cls);
+function renderSkills(race, classes, scores, featNames) {
+  const isClassSkill = classSkillTest(classes);
   const racial = racialSkillBonuses(race);
   const available = skillRanksAvailable({
-    race, cls, level: state.level, baseScores: state.base, flexibleChoice: state.flexible,
-    increases: state.increases, favoredSkill: state.favored === 'skill',
+    race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,
+    flexibleChoice: state.flexible, increases: state.increases, favoredSkill: state.favored === 'skill',
   });
   const names = skillRowNames();
   const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);
@@ -580,7 +694,7 @@ function featDetails(f, check) {
 function renderFeats(slots, granted, ctx) {
   const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
-  $('granted-feats').textContent = granted.length ? `Free from your class: ${granted.join(', ')}.` : '';
+  $('granted-feats').textContent = granted.length ? `Free from your class${view.classes.length > 1 ? 'es' : ''}: ${granted.join(', ')}.` : '';
 
   $('feat-slots').innerHTML = slots.map(slot => {
     const f = data.featsById.get(state.feats[slot.id]);
@@ -656,36 +770,35 @@ function renderPicker() {
 
 const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
 
-function renderSpells(cls, scores) {
-  const spells = spellsPerDay({ cls, level: state.level, scores, extraSlot: extraSlotOn(cls.id) });
-  $('spells-card').hidden = !spells;
-  $('no-spells').hidden = !!spells;
-  $('no-spells-text').textContent = spells ? '' : `${cls.name}s don't cast spells.`;
-  if (!spells) return;
+function renderSpells(view) {
+  const tables = view.casting.casting.map(c => ({
+    c, spells: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores, extraSlot: extraSlotOn(c.cls.id) }),
+  }));
+  $('spells-card').hidden = !tables.length;
+  $('no-spells').hidden = tables.length > 0;
+  $('no-spells-text').textContent = tables.length ? ''
+    : view.classes.length > 1 ? 'None of your classes cast spells.' : `${view.cls.name}s don't cast spells.`;
+  $('spells-tables').innerHTML = tables.map(({ c, spells }) => spellTable(c, spells)).join('');
+}
 
+// Spells per day for one casting class (at its effective level, which prestige classes can raise).
+function spellTable(c, spells) {
+  const { cls } = c;
   const abilityName = ABILITY_NAMES[spells.ability];
-  $('spells-summary').textContent = `Casts with ${abilityName} (${spells.score}).`;
-
+  const raised = c.effectiveLevel !== c.classLevel
+    ? ` Casts as a level ${c.effectiveLevel} ${cls.name.toLowerCase()} (${c.classLevel} ${cls.name.toLowerCase()} + ${c.effectiveLevel - c.classLevel} from prestige classes).` : '';
   const slot = EXTRA_SLOTS[cls.id];
-  $('extra-slot-row').hidden = !slot?.optional;
-  if (slot?.optional) {
-    $('extra-slot-label').textContent = slot.label;
-    $('extra-slot').checked = extraSlotOn(cls.id);
-  }
-
-  $('spells-table').hidden = spells.rows.length === 0;
+  const extraBox = slot?.optional ? `<label class="check-row"><input type="checkbox" data-extra-slot="${esc(cls.id)}"
+      ${extraSlotOn(cls.id) ? 'checked' : ''}> ${esc(slot.label)}</label>` : '';
+  const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
+    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${extraBox}`;
   if (spells.rows.length === 0) {
-    $('spells-note').textContent = `${cls.name}s start casting spells at level ${spells.firstLevel}.`;
-    return;
+    return `${head}<p class="hint">${esc(cls.name)}s start casting spells at level ${spells.firstLevel}.</p>`;
   }
-
   const showKnown = spells.rows.some(r => r.known !== null);
   const extraName = spells.extraSlotName;
-  $('spells-head').innerHTML = `<tr><th>Spell level</th><th>Class</th><th>${esc(abilityName.slice(0, 3))}</th>` +
-    (extraName ? `<th>${esc(extraName)}</th>` : '') + '<th>Per day</th>' + (showKnown ? '<th>Known</th>' : '') + '</tr>';
-
   const dash = v => (v === null ? '—' : v);
-  $('spells-body').innerHTML = spells.rows.map(r => {
+  const rows = spells.rows.map(r => {
     // Level 0 spells (cantrips/orisons) are cast at will.
     let total = r.spellLevel === 0 ? (r.base === null ? 'At will' : `${r.base} prepared`) : dash(r.total);
     if (!r.canCast) total = `<span class="warning">Needs ${abilityName.slice(0, 3)} ${10 + r.spellLevel}</span>`;
@@ -698,11 +811,15 @@ function renderSpells(cls, scores) {
       ${showKnown ? `<td>${dash(r.known)}</td>` : ''}
     </tr>`;
   }).join('');
-
   const notes = [];
   if (spells.rows[0].spellLevel === 0) notes.push('Level 0 spells (cantrips and orisons) can be cast any number of times.');
   if (cls.id === 'arcanist') notes.push(`Arcanists also have a "spells prepared" table, which isn't in the data yet.`);
-  $('spells-note').textContent = notes.join(' ');
+  return `${head}
+    <table class="spells">
+      <thead><tr><th>Spell level</th><th>Class</th><th>${esc(abilityName.slice(0, 3))}</th>${extraName ? `<th>${esc(extraName)}</th>` : ''}<th>Per day</th>${showKnown ? '<th>Known</th>' : ''}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="hint">${esc(notes.join(' '))}</p>`;
 }
 
 // A details window with action buttons: actions are [{ label, primary, run }].
@@ -736,8 +853,12 @@ function openResult(type, id) {
       ${paragraphs(c.summary || '')}
       ${facts([['Hit die', c.hit_die], ['Skill ranks per level', c.skill_ranks_per_level], ['Alignment', c.alignment]])}
       ${featureNames ? `<h4>Class features</h4><p>${esc(featureNames)}</p>` : ''}`,
-    [{ label: `Make my character ${/^[aeiou]/i.test(c.name) ? 'an' : 'a'} ${c.name}`, primary: true,
-       run: () => { update({ cls: id }); showTab('character'); } }]);
+    [
+      ...(state.classLevels.length < 20 ? [{ label: `Add a level of ${c.name}`, primary: true,
+        run: () => { update({ classLevels: [...state.classLevels, id] }); showTab('character'); } }] : []),
+      ...(c.category !== 'prestige' ? [{ label: `Make every level ${c.name}`,
+        run: () => { update({ classLevels: state.classLevels.map(() => id) }); showTab('character'); } }] : []),
+    ]);
   } else if (type === 'feat') {
     const f = data.featsById.get(id);
     openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)),
@@ -787,9 +908,9 @@ async function start() {
       'start the local server (python -m http.server 8000) and open http://localhost:8000/ instead.';
     return;
   }
-  // Prestige classes need levels in other classes first, and multiclassing isn't supported yet.
-  // NPC classes (adept, aristocrat, commoner, expert, warrior) aren't offered.
-  data.classes = data.classes.filter(c => c.category !== 'prestige' && c.category !== 'npc');
+  // NPC classes (adept, aristocrat, commoner, expert, warrior) aren't offered. Prestige classes are, but not
+  // at 1st level.
+  data.classes = data.classes.filter(c => c.category !== 'npc');
   // Mythic feats need mythic tiers, which the builder doesn't support.
   data.feats = data.feats.filter(f => !(f.types || []).includes('Mythic'));
   data.featsById = new Map(data.feats.map(f => [f.id, f]));

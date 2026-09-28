@@ -15,6 +15,16 @@
   <h1>Rules checks</h1>
   <p id="summary">Running…</p>
   <ul id="list"></ul>
+  <script>
+    // If a check crashes, say so instead of staying on "Running…".
+    const crashed = message => {
+      const el = document.getElementById('summary');
+      el.className = 'fail';
+      el.textContent = `The checks stopped with an error: ${message}`;
+    };
+    window.addEventListener('error', e => crashed(`${e.message} (${e.filename}:${e.lineno})`));
+    window.addEventListener('unhandledrejection', e => crashed(e.reason && e.reason.stack || e.reason));
+  </script>
   <script type="module" src="js/rules.test.js"></script>
 </body>
 </html>
