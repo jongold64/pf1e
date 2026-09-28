@@ -25,6 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
+import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
@@ -86,8 +87,12 @@ const state = {
   budget: 15,
   base: Object.fromEntries(ABILITIES.map(a => [a, 10])),
   flexible: 'str',
+  flexible2: 'dex',  // second +2 for Dual Talent (a human alternate trait)
+  alternates: [],    // alternate racial traits taken (names from the race's alternate_traits)
   increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
-  favored: 'hp',
+  // Favored class bonus at each character level: 'hp', 'skill' or 'option' (the race's favored class option);
+  // missing means 'hp'. Only levels in the favored class count.
+  favoredPicks: [],
   extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
   feats: {},       // feat slot id (see featSlots) -> feat id
   featChoices: {}, // feat slot id -> { feat: feat id, value } for CHOICE_FEATS (weapon id, skill name or school)
@@ -147,7 +152,15 @@ function load(saved) {
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
   if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
   if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
-  if (state.favored !== 'skill') state.favored = 'hp';
+  if (!ABILITIES.includes(state.flexible2)) state.flexible2 = DEFAULTS.flexible2;
+  // Saves from before per-level favored class choices had one choice for every level.
+  if (!Array.isArray(saved?.favoredPicks)) {
+    state.favoredPicks = state.favored === 'skill' ? (state.classLevels || []).map(() => 'skill') : [];
+  }
+  state.favoredPicks = state.favoredPicks.slice(0, 20).map(p => (['hp', 'skill', 'option'].includes(p) ? p : 'hp'));
+  delete state.favored;
+  const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
+  state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
   // Saves from before multiclassing have one class and a level instead of a class for each level.
   if (saved && !Array.isArray(saved.classLevels)) state.classLevels = [];
   for (const a of ABILITIES) {
@@ -386,6 +399,7 @@ function buildControls() {
   $('race').innerHTML = groupedOptions(data.races, RACE_GROUPS);
   $('budget').innerHTML = BUDGETS.map(b => `<option value="${b.points}">${b.label}</option>`).join('');
   $('flexible').innerHTML = ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
+  $('flexible2').innerHTML = $('flexible').innerHTML;
 
   const abilityOptions = '<option value="">— choose —</option>' +
     ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
@@ -412,12 +426,18 @@ function buildControls() {
   $('race').value = state.race;
   if (!$('race').value) $('race').selectedIndex = 0;
   state.race = $('race').value;
-  if (state.favored !== 'skill') state.favored = 'hp';
 
   document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
-  $('race').addEventListener('change', e => update({ race: e.target.value }));
+  // A new race drops the old one's alternate traits (favored class options that don't exist fall back to +1 HP).
+  $('race').addEventListener('change', e => update({ race: e.target.value, alternates: [] }));
+  // Alternate racial traits: a tick box each.
+  $('race-alternates').addEventListener('change', e => {
+    const name = e.target.dataset.alternate;
+    if (name === undefined) return;
+    update({ alternates: e.target.checked ? [...state.alternates, name] : state.alternates.filter(n => n !== name) });
+  });
   // Hit point tracker: pick an amount (negative damage, positive healing), then Apply; Full resets.
   const amount = () => Math.trunc(Number($('hp-amount').value) || 0);
   // The box starts empty; the buttons set the number (and it empties again when it's back to 0).
@@ -466,6 +486,13 @@ function buildControls() {
   });
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
+    const f = e.target.dataset.favoredIndex;
+    if (f !== undefined) {
+      const picks = state.classLevels.map((_, j) => state.favoredPicks[j] || 'hp');
+      picks[Number(f)] = e.target.value;
+      update({ favoredPicks: picks });
+      return;
+    }
     const i = e.target.dataset.levelIndex;
     if (i === undefined) return;
     update({ classLevels: state.classLevels.map((id, j) => (j === Number(i) ? e.target.value : id)) });
@@ -477,6 +504,11 @@ function buildControls() {
     if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
   });
   $('favored-class').addEventListener('change', e => update({ favoredClass: e.target.value }));
+  // "Every level": the same favored class bonus at every level.
+  $('favored-summary').addEventListener('click', e => {
+    const all = e.target.closest('[data-favored-all]')?.dataset.favoredAll;
+    if (all) update({ favoredPicks: state.classLevels.map(() => all) });
+  });
   $('caster-choices').addEventListener('change', e => {
     const key = e.target.dataset.advance;
     if (key) update({ casterChoices: { ...state.casterChoices, [key]: e.target.value } });
@@ -491,8 +523,7 @@ function buildControls() {
   });
   $('budget').addEventListener('change', e => update({ budget: Number(e.target.value) }));
   $('flexible').addEventListener('change', e => update({ flexible: e.target.value }));
-  document.querySelectorAll('input[name="favored"]').forEach(r =>
-    r.addEventListener('change', e => update({ favored: e.target.value })));
+  $('flexible2').addEventListener('change', e => update({ flexible2: e.target.value }));
   $('ability-rows').addEventListener('click', e => {
     const btn = e.target.closest('button[data-ability]');
     if (!btn) return;
@@ -698,6 +729,11 @@ function loadText(load) {
   return `${name} (${load.weight} lbs.; light up to ${load.capacity.light}, medium ${load.capacity.medium}, heavy ${load.capacity.heavy})`;
 }
 
+// The racial +2 choice: one ability, or two with Dual Talent (a human alternate trait).
+function flexibleFor(race) {
+  return race.dual_talent ? [state.flexible, state.flexible2] : state.flexible;
+}
+
 // Trait save bonuses added to the feat bonuses characterStats takes.
 function withTraitSaves(fb, traitFx) {
   return { ...fb, fort: (fb.fort || 0) + traitFx.saves.fort, ref: (fb.ref || 0) + traitFx.saves.ref, will: (fb.will || 0) + traitFx.saves.will };
@@ -705,7 +741,8 @@ function withTraitSaves(fb, traitFx) {
 
 // Everything derived from the character, computed once per change and shared by all tabs.
 function computeView() {
-  const race = data.races.find(r => r.id === state.race);
+  // The race with its chosen alternate racial traits swapped in (everything below reads this one).
+  const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   const byId = new Map(data.classes.map(c => [c.id, c]));
   const classLevels = state.classLevels.map(id => byId.get(id));
   const counts = classCounts(classLevels);
@@ -713,6 +750,8 @@ function computeView() {
   const cls = classLevels[0];
   // The favored class must be one the character has (and not a prestige class); otherwise the first class.
   const favoredClassId = classes.some(c => c.id === state.favoredClass && c.category !== 'prestige') ? state.favoredClass : cls.id;
+  const favoredPicks = favoredChoices(race, classLevels, favoredClassId, state.favoredPicks);
+  const flexibleChoice = flexibleFor(race);
   const casting = castingClasses(counts, state.casterChoices);
   // Feats the character has: chosen ones (only slots reached at this level), free ones from each
   // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
@@ -736,8 +775,8 @@ function computeView() {
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
   const statsWith = gearNow => characterStats({
-    race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice: state.flexible,
-    increases: state.increases, favoredHp: state.favored === 'hp',
+    race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
+    increases: state.increases, favoredPicks,
     featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear: gearNow,
   });
   // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
@@ -770,7 +809,7 @@ function computeView() {
     if (!contexts.has(key)) {
       const before = classLevels.slice(0, lv);
       const beforeCounts = classCounts(before);
-      const beforeStats = characterStats({ race, classLevels: before, baseScores: state.base, flexibleChoice: state.flexible,
+      const beforeStats = characterStats({ race, classLevels: before, baseScores: state.base, flexibleChoice,
                                            increases: state.increases });
       const feats = [
         ...slots.filter(s => s.charLevel <= lv && s.id !== except).map(s => data.featsById.get(state.feats[s.id])?.name).filter(Boolean),
@@ -795,7 +834,7 @@ function computeView() {
     speed = Math.min(speed ?? Infinity, slowedSpeed(race.base_speed));
   }
   return {
-    race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
+    race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
     load,
   };
@@ -813,6 +852,56 @@ function prestigeCheck(prestige, before, race, ctx) {
 
 const STATUS_WORD = { met: 'met', unmet: 'not met', unknown: 'some can\'t be checked' };
 
+// Alternate racial traits (Race card): a tick box for each, what it replaces, and its text. One that replaces a
+// trait another chosen alternate already replaces can't be ticked. Redrawn only when the race or the choices change,
+// keeping the list open or closed as it was.
+function renderAlternates(baseRace) {
+  const box = $('race-alternates');
+  const alts = baseRace.alternate_traits || [];
+  const key = `${baseRace.id}|${state.alternates.join('|')}`;
+  if (box.dataset.key === key) return;
+  box.dataset.key = key;
+  if (!alts.length) {
+    box.innerHTML = '';
+    return;
+  }
+  const wasOpen = box.querySelector('details')?.open || false;
+  box.innerHTML = `<details${wasOpen ? ' open' : ''}><summary>Alternate racial traits
+      <span class="count">${state.alternates.length ? `${state.alternates.length} taken` : `${alts.length} to choose from`}</span></summary>
+    <p class="hint">Each one replaces the standard traits it names. Two that replace the same trait can't both be taken.</p>
+    <ul class="alt-list">${alts.map(a => {
+      const taken = state.alternates.includes(a.name);
+      const conflict = taken ? '' : alternateConflict(baseRace, a, state.alternates);
+      const replaces = replacedTraits(baseRace, a);
+      return `<li class="${taken ? 'taken' : ''}"><label class="check-row"><input type="checkbox" data-alternate="${esc(a.name)}"
+          ${taken ? 'checked' : ''}${conflict ? ' disabled' : ''}> <b>${esc(a.name)}</b>
+          <small class="muted">${replaces.length ? `replaces ${esc(replaces.join(', '))}` : 'see text for what it replaces'}</small></label>
+        ${conflict ? `<p class="hint">Not available: ${esc(conflict)}.</p>` : ''}
+        <p class="alt-text">${esc(a.text)}</p></li>`;
+    }).join('')}</ul></details>`;
+}
+
+// Favored class bonuses: how many levels went to each choice, the race's option for the favored class (with its
+// total when the text starts with a number), and buttons to set every level at once.
+function renderFavoredSummary(view) {
+  const picks = view.favoredPicks.filter(Boolean);
+  const fav = view.classes.find(c => c.id === view.favoredClassId);
+  const option = favoredOption(view.race, fav);
+  const n = k => picks.filter(p => p === k).length;
+  const parts = [n('hp') && `+${n('hp')} hit point${n('hp') === 1 ? '' : 's'}`,
+                 n('skill') && `+${n('skill')} skill rank${n('skill') === 1 ? '' : 's'}`,
+                 n('option') && `racial option ×${n('option')}${favoredOptionTotal(option, n('option')) ? ` (${favoredOptionTotal(option, n('option'))} in all)` : ''}`]
+    .filter(Boolean);
+  $('favored-summary').innerHTML = `<p><b>Favored class bonus</b> (one for each ${esc(fav.name)} level, chosen beside
+      each level above): ${esc(parts.join(', ') || 'none')}.</p>
+    ${option ? `<p class="hint"><b>${esc(view.race.name)} option for ${esc(fav.name)}:</b> ${esc(option.text)}</p>`
+      : `<p class="hint">${esc(view.race.name)} has no favored class option for ${esc(fav.name)}.</p>`}
+    <div class="slot-buttons"><span class="muted">Every level:</span>
+      <button type="button" data-favored-all="hp">+1 hit point</button>
+      <button type="button" data-favored-all="skill">+1 skill rank</button>
+      ${option ? '<button type="button" data-favored-all="option">Racial option</button>' : ''}</div>`;
+}
+
 // The Classes card: a class for each level, favored class, where prestige spellcasting goes, and each
 // class's features (and requirements, for prestige classes).
 function renderClasses(view) {
@@ -824,14 +913,21 @@ function renderClasses(view) {
       <label>Level ${i + 1} <select data-level-index="${i}">${i === 0 ? baseOptions : allOptions}</select></label>
       ${c.category === 'prestige' && view.requirements.get(c.id)
         ? STATUS_ICON[view.requirements.get(c.id).status] : ''}
+      ${view.favoredPicks[i] ? `<select data-favored-index="${i}" aria-label="Favored class bonus at level ${i + 1}">
+        <option value="hp">+1 hit point</option><option value="skill">+1 skill rank</option>
+        ${favoredOption(view.race, c) ? '<option value="option">Racial option</option>' : ''}</select>` : ''}
     </li>`).join('');
-  $('class-levels').querySelectorAll('select').forEach((sel, i) => { sel.value = classLevels[i].id; });
+  $('class-levels').querySelectorAll('select[data-level-index]').forEach((sel, i) => { sel.value = classLevels[i].id; });
+  $('class-levels').querySelectorAll('select[data-favored-index]').forEach(sel => {
+    sel.value = view.favoredPicks[Number(sel.dataset.favoredIndex)];
+  });
   $('add-level').disabled = classLevels.length >= 20;
   $('remove-level').disabled = classLevels.length <= 1;
 
   const favoredChoices = view.classes.filter(c => c.category !== 'prestige');
   $('favored-class').innerHTML = favoredChoices.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   $('favored-class').value = view.favoredClassId;
+  renderFavoredSummary(view);
 
   $('caster-choices').innerHTML = view.casting.slots.map(slot => {
     const kind = slot.kind === 'any' ? 'spellcasting' : slot.kind === 'alchemist' ? 'alchemist extracts' : `${slot.kind} spellcasting`;
@@ -868,19 +964,21 @@ function render() {
   $('race').value = state.race;
   $('budget').value = state.budget;
   $('flexible').value = state.flexible;
+  $('flexible2').value = state.flexible2;
   INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
-  document.querySelector(`input[name="favored"][value="${state.favored}"]`).checked = true;
 
   // Race info: each item opens a popup explaining it. Redrawn only when the race changes, so an open
   // popup isn't left pointing at a button that no longer exists.
-  if ($('race-info').dataset.race !== race.id) {
+  const raceKey = `${race.id}|${(race.alternates || []).join('|')}`;
+  if ($('race-info').dataset.race !== raceKey) {
     raceItems = raceTerms(race);
-    $('race-info').dataset.race = race.id;
+    $('race-info').dataset.race = raceKey;
     $('race-info').innerHTML = `
       ${race.incomplete ? '<p class="warning">Some of this race\'s traits are missing from the source data.</p>' : ''}
       ${termButtons(raceItems)}`;
   }
 
+  renderAlternates(data.races.find(r => r.id === state.race));
   renderClasses(view);
   $('subtitle').textContent = `${race.name} ${view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`;
   renderCharacterBar();
@@ -893,7 +991,8 @@ function render() {
 
   // Ability rows
   $('flexible-row').hidden = !race.flexible_ability_bonus;
-  const adj = racialAdjustments(race, state.flexible);
+  $('flexible2-row').hidden = !race.dual_talent;
+  const adj = racialAdjustments(race, view.flexibleChoice);
   for (const a of ABILITIES) {
     $(`base-${a}`).textContent = state.base[a];
     $(`base-${a}`).title = `Costs ${POINT_COSTS[state.base[a]]} points`;
@@ -997,7 +1096,7 @@ function renderSkills(race, classes, scores, featNames) {
   const racial = racialSkillBonuses(race);
   const available = skillRanksAvailable({
     race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,
-    flexibleChoice: state.flexible, increases: state.increases, favoredSkill: state.favored === 'skill',
+    flexibleChoice: view.flexibleChoice, increases: state.increases, favoredPicks: view.favoredPicks,
   });
   const names = skillRowNames();
   const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);

@@ -5,7 +5,7 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 
 | File | Contents |
 |---|---|
-| `data/races.json` | 65 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary), plus 22 "other" from later Paizo books via the Foundry data (Planar Adventures, Ultimate Wilderness, Blood of the Sea, Inner Sea Races, ...; no alternate traits or favored class options) |
+| `data/races.json` | 65 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary), plus 22 "other" from later Paizo books via the Foundry data (Planar Adventures, Ultimate Wilderness, Blood of the Sea, Inner Sea Races, ...). Alternate racial traits and favored class options for the PSRD races come from the Advanced Race Guide and later PSRD books; 13 of the later-book races get theirs from d20pfsrd.com pages (Paizo entries only; recorded in `d20_sources`), the others have none in print or no page |
 | `data/classes.json` | 67 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC from PSRD-Data, plus 12 from the Foundry data: 6 occult (Occult Adventures), 4 unchained (Pathfinder Unchained), shifter and vigilante. Prestige classes include requirements and which levels add spellcasting to another class (`caster_advance`) |
 | `data/feats.json` | 1,227 feats, including 162 mythic feats; plus 2,095 Paizo feats from later books (Ultimate Wilderness, Ultimate Intrigue, Occult Adventures, Horror Adventures, Player Companions, ...) taken from d20pfsrd.com (marked `"origin": "d20pfsrd"`) |
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |

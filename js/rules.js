@@ -36,7 +36,10 @@ export function racialAdjustments(race, flexibleChoice) {
   const adj = Object.fromEntries(ABILITIES.map(a => [a, 0]));
   if (!race) return adj;
   for (const [a, v] of Object.entries(race.ability_modifiers || {})) adj[a] += v;
-  if (race.flexible_ability_bonus && ABILITIES.includes(flexibleChoice)) adj[flexibleChoice] += 2;
+  // flexibleChoice is one ability, or two for Dual Talent (an alternate trait: +2 to two different abilities).
+  const picks = [flexibleChoice].flat().filter(a => ABILITIES.includes(a));
+  if (race.flexible_ability_bonus && !race.dual_talent && picks[0]) adj[picks[0]] += 2;
+  if (race.dual_talent) [...new Set(picks)].slice(0, 2).forEach(a => { adj[a] += 2; });
   return adj;
 }
 
@@ -176,11 +179,12 @@ export function babList(total) {
 // Base attack bonus and base saves add up across classes (Core Rulebook, Multiclassing). HP is the first
 // class's full hit die at 1st level, then the average for each later level's class.
 // favoredHp is true if the favored class bonus goes to HP; it counts only levels in the favored class
-// (`favoredClassId`, which defaults to the first class).
+// (`favoredClassId`, which defaults to the first class). favoredPicks (from favoredChoices in race-options.js), if
+// given, is the choice at each level instead ('hp', 'skill', 'option' or null).
 // featBonuses holds the numbers feats add ({ hp, fort, ref, will, dodgeAc }, see featEffects in feats.js).
 // gear is what worn armor and a shield do (armorEffects in armor.js); leave it out for no armor.
 export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
-                                 flexibleChoice, increases = [], favoredHp = false, featBonuses = {}, gear = null }) {
+                                 flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const total = levels.length;
   const counts = classCounts(levels);
@@ -197,7 +201,8 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   let hp = 0;
   levels.forEach((c, i) => { hp += Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + mod.con); });
   const favored = favoredClassId || levels[0].id;
-  if (favoredHp) hp += levels.filter(c => c.id === favored).length;
+  if (favoredPicks) hp += favoredPicks.filter(p => p === 'hp').length;
+  else if (favoredHp) hp += levels.filter(c => c.id === favored).length;
   hp += fb.hp;
 
   // Monks add Wis (if positive) plus their monk-level AC bonus, but only with no armor and no shield.

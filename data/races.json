@@ -6650,9 +6650,74 @@
         "text": "Aphorites have darkvision 60 feet."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Eternal Smith",
+        "text": "Some aphorites retain knowledge of the techniques axiomites used to create arms to defend Axis. Aphorites with this racial trait choose either Craft (armor), Craft (bows), or Craft (weapons). When crafting items with the chosen skill, aphorites with this racial trait use the item's gp value as its sp value when determining crafting progress (they do not multiply the item's gp cost by 10 to determine its sp cost). This racial trait replaces the spell-like ability racial trait."
+      },
+      {
+        "name": "Planar Envoy",
+        "text": "Reflecting their original role as translators and intermediaries, some aphorites are especially skilled at communication. Aphorites with this racial trait begin play speaking Common and either Abyssal, Aquan, Auran, Celestial, Ignan, Infernal, or Terran. Aphorites with this racial trait and a high Intelligence score can choose any languages at character creation (except for secret languages, such as Druidic). They learn two languages rather than one each time they gain a rank in Linguistics. This racial trait modifies languages and replaces skilled."
+      },
+      {
+        "name": "Share Knowledge",
+        "text": "Certain aphorites have a sliver of their creators' ability to combine their collective intellect and solve problems they could not solve on their own. When an aphorite with this racial trait successfully uses the aid another action to aid a character on a Knowledge check the aphorite is trained in, the character receives a +4 bonus instead of the normal +2 bonus. As a result of this increased openness, aphorites with this racial trait don't receive a +2 bonus on saves against mind-affecting effects. This racial trait modifies aphorite resistances."
+      },
+      {
+        "name": "Urban Memories",
+        "text": "With vague memories of the Perfect City resting somewhere deep in their minds, aphorites with this racial trait gain a +2 racial bonus on Knowledge (local) checks and can cast urban grace once per day as a spell-like ability (caster level equal to the aphorite's character level). This racial trait replaces the spell-like ability racial trait."
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Alchemist",
+        "text": "Add 1 foot to the range increment of the alchemist's thrown splash weapons (including the alchemist's bombs). This option has no effect unless the alchemist has selected it 5 times (or another increment of 5)."
+      },
+      {
+        "class": "Cleric",
+        "text": "Add a +1/2 bonus on Knowledge (planes) checks relating to Axis and creatures with the lawful subtype."
+      },
+      {
+        "class": "Fighter",
+        "text": "Add 1 to the fighter's CMD when resisting disarm or trip attempts."
+      },
+      {
+        "class": "Investigator",
+        "text": "Gain a +1/4 bonus on damage rolls for critical hits made while using studied combat."
+      },
+      {
+        "class": "Inquisitor",
+        "text": "Add 1/4 to the number of times per day the inquisitor can change her most recent teamwork feat."
+      },
+      {
+        "class": "Magus",
+        "text": "Add one spell from the magus spell list to the magus's spellbook. This spell must be at least 1 level below the highest spell level he can cast."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add 1 foot to the range of the ranger's hunter's bond ability when granting a bonus to allies. This option has no effect unless the ranger has selected it 5 times (or another increment of 5)."
+      },
+      {
+        "class": "Rogue",
+        "text": "Add a +1 bonus on Disable Device and Use Magic Device checks related to glyphs, scrolls, symbols, and other magical writings."
+      },
+      {
+        "class": "Warpriest",
+        "text": "Add 1/2 to the number of times per day the warpriest can use blessings, but he can use these additional blessings on only those from the Artifice, Community, Knowledge, Law, Magic, or Rune domains."
+      },
+      {
+        "class": "Witch",
+        "text": "The witch gains 1/6 of a new witch hex."
+      },
+      {
+        "class": "Wizard",
+        "text": "Add 1/3 to the wizard's caster level when casting spells with the lawful descriptor or spells that create magical glyphs, runes, or symbols."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Planar Adventures"
+    ]
   },
   {
     "id": "aquatic-elf",
@@ -6743,9 +6808,63 @@
         "text": "Aquatic elves can breathe both water and air."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Deep Sea Dweller",
+        "text": "Aquatic elves who live far beneath the surface have adapted to the inhospitable conditions of the ocean depths. Aquatic elves with this racial trait gain darkvision with a range of 60 feet and cold resistance 5. This racial trait replaces low-light vision and elven immunities."
+      },
+      {
+        "name": "Surface Features",
+        "text": "Some aquatic elves appear almost indistinguishable from surface elves. Their coloring, height, and weight all suggest those of a surface elf, and the webbing between their digits is almost transparent. Aquatic elves with this racial trait gain a +4 bonus on Bluff and Disguise checks when attempting to pass themselves off as surface elves. This racial trait replaces keen senses."
+      },
+      {
+        "name": "Surfacer Antagonist",
+        "text": "Aquatic elves generally distrust humans, but for some, the suspicion has become festering hatred. Those who have lost loved ones to human aggression or have watched humans loot artifacts from venerated undersea ruins view all humans as enemies. Aquatic elves with this racial trait receive a +1 bonus on attack rolls against humans. This racial trait replaces elven magic."
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Arcanist",
+        "text": "Add 1/4 to the arcanist's caster level when casting spells with the water descriptor."
+      },
+      {
+        "class": "Cavalier",
+        "text": "Add 1 skill rank to the cavalier's mount. If the cavalier ever replaces his mount, the new mount gains these bonus skill ranks."
+      },
+      {
+        "class": "Druid",
+        "text": "Add 1 hit point to the druid's animal companion. If the druid ever replaces her animal companion, the new animal companion gains these bonus hit points. For a druid whose nature bond gives her a cleric domain, select one cleric domain power at 1st level that is normally usable a number of times per day equal to 3 + the druid's Wisdom modifier. The druid adds 1/2 to the number of uses per day of that domain power."
+      },
+      {
+        "class": "Fighter",
+        "text": "Choose a weapon from the following list: rapier, short sword, trident, or any weapon with \"elven\" in its name. Gain a +1/2 bonus on critical hit confirmation rolls made while using that type of weapon (maximum bonus +4). This bonus does not stack with those gained through Critical Focus and similar effects."
+      },
+      {
+        "class": "Magus",
+        "text": "Add one spell from the cleric, druid, or wizard spell list with the water descriptor to the magus's spellbook. This spell must be at least 1 level below the highest spell level he can cast. This spell is treated as 1 level higher unless it also appears on the magus spell list."
+      },
+      {
+        "class": "Ranger",
+        "text": "Choose a weapon from the following list: longbow, shortbow, or any weapon with \"elven\" in its name. Reduce the penalty on ranged attack rolls underwater made with this weapon by 1."
+      },
+      {
+        "class": "Summoner",
+        "text": "As long as the summoner's eidolon has a swim speed, add 5 feet to its swim speed (max +20 feet)."
+      },
+      {
+        "class": "Witch",
+        "text": "When casting a witch spell underwater, add 1/3 to the effective caster level of the spell for the purpose of determining the spell's duration."
+      },
+      {
+        "class": "Wizard",
+        "text": "Add 1 to the wizard's caster level check when attempting to cast a spell with the fire descriptor underwater."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Blood of the Sea",
+      "The Inner Sea World Guide"
+    ]
   },
   {
     "id": "being-of-ib",
@@ -6925,9 +7044,25 @@
         "text": "Cecaelia can breathe both water and air."
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Dexterous Tentacles",
+        "text": "Occasionally a cecaelia is born with unusually long and agile tentacles. These tentacles allow the cecaelia to sense a greater area and to hold small items. A cecaelias with this racial trait increases the range of her tentacle sense to 30 feet. In addition, a cecaelia with this racial trait can attempt Sleight of Hand checks with her tentacles rather than her hands but with a -4 penalty. This racial trait replaces ink cloud."
+      },
+      {
+        "name": "Garrulous",
+        "text": "Some cecaelias have an inherent gift for language. They gain a +2 racial bonus on Diplomacy and Linguistics checks, and they learn two languages each time they gain a rank in Linguistics. This ability replaces ink cloud."
+      },
+      {
+        "name": "Tripping Tentacles",
+        "text": "Cecaelias born with rubbery, resilient tentacles can't use them to detect movement in the water but can use them to attack other creatures more easily. Cecaelias with this racial trait receive a +4 racial bonus on combat maneuver checks to trip an opponent. This racial trait replaces tentacle sense."
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Blood of the Sea"
+    ]
   },
   {
     "id": "duskwalker",
@@ -7012,9 +7147,94 @@
         "text": "In a duskwalker's hands, any weapon can strike true against spectral beings. A duskwalker's non-magical weapons deal half damage to incorporeal creatures, as if they were magic weapons, and her magic weapons can deal critical hits and precision damage, even if they do not have the ghost touch property. Once per day as a standard action, a duskwalker can focus her natural revulsion toward undead. If she does so, she treats all weapons she wields as if they had the ghost touch property for 1 minute."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Abandoned",
+        "text": "Some duskwalker children are shunned and feared by their communities, forced to steal and scavenge to survive. Duskwalkers with this racial trait gain a +2 racial bonus on Stealth and Survival checks. This racial trait replaces skilled."
+      },
+      {
+        "name": "Fosterling",
+        "text": "Those duskwalker children fortunate enough to be taken in by warm-hearted families grow up surrounded by parents, siblings, and pets. Duskwalkers with this racial trait gain a +2 racial bonus on Diplomacy and Handle Animal checks. This racial trait replaces skilled."
+      },
+      {
+        "name": "Olethros’s Agent",
+        "text": "A few duskwalkers take on more of their patrons' aspects than others. A duskwalker blessed by an olethros is an agent of fate beyond compare. Once per day as a free action, upon making a successful attack, a duskwalker with this racial trait can ignore an amount of DR equal to 10 + his Charisma modifier for that attack. This racial trait replaces ward against corruption."
+      },
+      {
+        "name": "Yamaraj’s Bailiff",
+        "text": "Duskwalkers tied to the mighty yamarajes can draw upon a fraction of the final judges' sagacity. Duskwalkers with this racial trait can use their Wisdom modifier when attempting Bluff and Diplomacy checks instead of their Charisma modifier. This racial trait replaces ward against corruption."
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Antipaladin",
+        "text": "Add 1/2 points of damage to the antipaladin's touch of corruption ability (whether using it to heal or harm)."
+      },
+      {
+        "class": "Arcanist",
+        "text": "Add 1/4 to the arcanist's caster level when casting spells of the necromancy school."
+      },
+      {
+        "class": "Bard",
+        "text": "Add 1/2 to the bard's bardic Knowledge bonus."
+      },
+      {
+        "class": "Cleric",
+        "text": "Add 1/2 point of damage when using positive energy against undead."
+      },
+      {
+        "class": "Fighter",
+        "text": "Add 2 to the fighter's Constitution score for the purpose of determining death from negative hit points."
+      },
+      {
+        "class": "Investigator",
+        "text": "Add a +1/3 bonus on inspiration rolls applied to Heal, Knowledge and Linguistics checks."
+      },
+      {
+        "class": "Kineticist",
+        "text": "Increase the capacity of the kineticist's internal buffer by 1/6 point."
+      },
+      {
+        "class": "Monk",
+        "text": "Add 1/4 point to the monk's ki pool."
+      },
+      {
+        "class": "Paladin",
+        "text": "Add 1/2 point to hit points restored by the paladin's lay on hands ability (whether using it to heal or harm)."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add 1/5 to the ranger's favored enemy bonus against undead. The ranger must have favored enemy (undead) to select this option."
+      },
+      {
+        "class": "Rogue",
+        "text": "The rogue gains 1/6 of a new rogue talent."
+      },
+      {
+        "class": "Skald",
+        "text": "Add 1/2 to the skald's bardic Knowledge bonus."
+      },
+      {
+        "class": "Spiritualist",
+        "text": "Add 1 foot to the spiritualist's phantom's base speed. In combat, this option has no effect unless the spiritualist has selected it 5 times (or another increment of 5)."
+      },
+      {
+        "class": "Vigilante",
+        "text": "Add 1/4 to the penalty inflicted by startling appearance, and a +1/2 bonus on the Intimidate check for frightening appearance."
+      },
+      {
+        "class": "Witch",
+        "text": "Add 1/4 to the witch's caster level when casting spells of the necromancy school."
+      },
+      {
+        "class": "Wizard",
+        "text": "Add 1/4 to the wizard's caster level when casting spells of the necromancy school."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Planar Adventures"
+    ]
   },
   {
     "id": "ganzi",
@@ -7115,8 +7335,48 @@
       }
     ],
     "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "favored_class_options": [
+      {
+        "class": "Arcanist",
+        "text": "Add 1/2 to the arcanist's effective caster level when casting spells with the chaotic descriptor."
+      },
+      {
+        "class": "Bard",
+        "text": "Add 1/2 to the bard's bardic knowledge bonus."
+      },
+      {
+        "class": "Druid",
+        "text": "The druid gains a +1 bonus on Knowledge (nature) or Knowledge (planes) checks related to extraplanar flora and fauna."
+      },
+      {
+        "class": "Hunter",
+        "text": "The hunter's animal companion is specially trained for extraplanar expeditions and gains a +1 bonus on Stealth and Acrobatics checks while on a plane other than the Material Plane."
+      },
+      {
+        "class": "Investigator",
+        "text": "Increase the total number of points in the investigator's inspiration pool by 1/3."
+      },
+      {
+        "class": "Oracle",
+        "text": "Add one spell known of the enchantment school from the cleric or wizard spell list. This spell must be at least 1 level below the highest spell level the oracle can cast."
+      },
+      {
+        "class": "Rogue",
+        "text": "Add a +1/2 bonus on Stealth checks while on a plane other than the Material Plane."
+      },
+      {
+        "class": "Sorcerer",
+        "text": "Choose a bloodline power from the abyssal or protean bloodlines that the sorcerer can use. The sorcerer treats her class level as though it were 1/2 higher (to a maximum of +4) when determining the effects of that power."
+      },
+      {
+        "class": "Wizard",
+        "text": "Add 1/3 to the wizard's effective caster level when casting a spell with the chaotic descriptor."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Planar Adventures"
+    ]
   },
   {
     "id": "ghoran",
@@ -7194,9 +7454,86 @@
         "text": "As a full-round action, a ghoran can expel the seed from an orifice in its abdomen. If planted in fertile ground and left undisturbed for 2d6 days, the seed grows into a healthy duplicate of the original ghoran, save that the duplicate can reallocate all skill ranks upon sprouting. Once a ghoran expels this seed, it gains 1 negative level, and it dies as soon as the duplicate sprouts. This duplicate replaces the previous ghoran character."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Creator’s Legacy",
+        "text": "Infused with the druidic magic of their creator, ghorans quickly take to nature-based spells and spellcasting. Ghoran bloodragers and sorcerers with the verdant bloodline treat their Charisma score as 2 points higher for sorcerer spells and class abilities. Ghoran clerics and druids with the Plant domain use their domain powers and spells at +1 caster level. This doesn't give the ghoran early access to level-based powers; it affects only powers that could already be used without this trait. This replaces past-life knowledge. Source PZO1140"
+      },
+      {
+        "name": "Disgusting",
+        "text": "Some ghorans' link to their past lives becomes corrupted, causing their taste to become particularly disgusting. Such ghorans gain a +2 racial bonus on Escape Artist and combat maneuver checks to escape a grapple against any creature that has a bite attack with the grab ability. This racial trait replaces delicious and past-life knowledge. Source PZO9280"
+      },
+      {
+        "name": "Fecund Earth",
+        "text": "Ghorans were created to provide nourishment to creatures, but Ghorus also intended for the ghorans to help the land around them to grow and thrive. Once per day, a ghoran with this racial trait can cast plant growth as a spell-like ability with a caster level equal to the ghoran's character level. This replaces past-life knowledge and nature magic. Source PPC:WO"
+      },
+      {
+        "name": "Intoxicating Aroma",
+        "text": "Some ghorans have an incredibly distracting scent. Once per day, as a spell-like ability, a ghoran with this racial trait can emit an intoxicating aroma that causes creatures within 30 feet to be fascinated for 1d4 rounds. Each target creature within range can attempt a Will save (DC = 10 + half the ghoran's character level + the ghoran's Charisma modifier) to negate the effect. This replaces natural magic. Source PPC:WO"
+      },
+      {
+        "name": "Magical Absorption",
+        "text": "Many ghorans are resistant to magic or able to dispel it. Some ghorans even gain nourishment from absorbing magic. Whenever such a ghoran succeeds at a saving throw against a spell or spell-like ability, she regains 1 hit point per level of the spell, though this affects the ghoran only if she is above 0 hit points. A ghoran can use this ability a number of times per day equal to her level. This replaces past-life knowledge and nature magic. Source PPC:WO"
+      },
+      {
+        "name": "Martial Recollection (Ex)",
+        "text": "The personal history of many ghorans is scarred with desperate struggles for survival, and memories of that conflict are deeply ingrained within their seeds. Whenever ghorans with this racial trait grow new bodies from their seeds, they reselect all combat feats known instead of reallocating skill ranks. This alters seed and replaces nature magic."
+      },
+      {
+        "name": "Natural Camouflage",
+        "text": "Some ghorans evolve by reseeding themselves in different locations. With each new seed, these ghorans take on some of the traits of the areas surrounding their new growth. Ghorans with this racial trait choose one terrain from the ranger's favored terrain list other than planes, urban, or water. These ghorans gain a +4 racial bonus on Stealth checks when in their chosen terrain. This replaces natural armor. Source PPC:WO"
+      },
+      {
+        "name": "Occult Scion",
+        "text": "Created in part from an esoteric ritual, many ghorans are innately sensitive to psychic powers and influences. The ghoran gains Psychic Sensitivity as a bonus feat and treats Knowledge (arcana) and Knowledge (planes) as class skills. This replaces past-life knowledge. Source PZO1140"
+      },
+      {
+        "name": "Spelleater",
+        "text": "Ghorans were originally created to survive and thrive in a magic-blasted wasteland, and over the centuries some ghorans have adapted greater abilities to overcome magic in general. Once per day, the ghoran can cast dispel magic as a spell-like ability, with a caster level equal to the ghoran's character level. If the ghoran's favored class is a spellcasting class, the ghoran gains a +2 racial bonus on dispel checks. This replaces past-life knowledge and nature magic. Source PZO1140"
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Druid",
+        "text": "When casting spells that target plants or plant creatures, add 1/3 to the effective caster level, but only for the purpose of determining duration. Source PZO1140"
+      },
+      {
+        "class": "Hunter",
+        "text": "Add 1 skill rank to the hunter's plant companion. If the hunter replaces her plant companion, the new plant companion gains these bonus skill ranks. Source PZO1140"
+      },
+      {
+        "class": "Mesmerist",
+        "text": "Choose one mind-affecting mesmerist trick that the mesmerist knows. The mesmerist can affect intelligent plant creatures with that trick or spell as if they weren't immune to mind-affecting effects. Source PZO1140"
+      },
+      {
+        "class": "Ranger",
+        "text": "Add a +1/4 bonus on initiative checks and Survival checks when the ranger is in a favored terrain. Source PZO1140"
+      },
+      {
+        "class": "Rogue",
+        "text": "Choose one type of ranger favored enemy (or one subtype in case of either humanoid or outsider). The rogue adds 1/2 to her sneak attack damage when using sneak attack against creatures of the chosen type (maximum +3). Source PZO1140"
+      },
+      {
+        "class": "Shaman",
+        "text": "Add one spell from the druid spell list that isn't on the shaman spell list to the list of spells she knows. This spell must be at least 1 level lower than the highest-level spell the shaman can cast. Source PZO1140"
+      },
+      {
+        "class": "Shifter",
+        "text": "Add 1/5 to the shifter's natural armor bonus when using wild shape to assume a major form. Source PZO1140"
+      },
+      {
+        "class": "Sorcerer",
+        "text": "When casting sorcerer/wizard spells that are also on the druid spell list, add 1/3 to the effective class level, but only for the purpose of determining durations. Source PZO1140"
+      },
+      {
+        "class": "Witch",
+        "text": "Add 1/4 to the witch's caster level when attempting dispel checks using dispel magic, break enchantment, and similar effects. Source PZO1140"
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Inner Sea Bestiary"
+    ]
   },
   {
     "id": "gnoll",
@@ -7477,7 +7814,8 @@
       },
       {
         "name": "Lashunta",
-        "text": "Lashunta are humanoid with the lashunta subtype."
+        "text": "Lashunta are humanoid with the lashunta subtype.",
+        "kind": "type"
       },
       {
         "name": "Medium",
@@ -7511,9 +7849,17 @@
         "text": "Male and female lashunta have very different body and personality types, more so than most humanoid species. Female lashunta, though beautiful and commanding (+2 Charisma), lack the males' rugged builds (-2 Constitution)."
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Insidious Telepathy",
+        "text": "Some lashunta have a knack for manipulating the minds of those they communicate with telepathically. They gain a +1 racial bonus on Charisma-based skill checks to influence any creature with whom they are telepathically communicating. If a lashunta telepathically issues a command to a charmed or dominated creature, she gains a +1 racial bonus on Charisma checks to compel the creature to follow that order. This racial trait replaces lashunta magic. Source PZO9280"
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Inner Sea Bestiary"
+    ]
   },
   {
     "id": "lashunta-male",
@@ -7550,7 +7896,8 @@
       },
       {
         "name": "Lashunta",
-        "text": "Lashunta are humanoid with the lashunta subtype."
+        "text": "Lashunta are humanoid with the lashunta subtype.",
+        "kind": "type"
       },
       {
         "name": "Medium",
@@ -7584,9 +7931,17 @@
         "text": "Male and female lashunta have very different body and personality types, more so than most humanoid species. Male lashunta are muscular (+2 Strength) and often brash and unobservant (-2 Wisdom)."
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Insidious Telepathy",
+        "text": "Some lashunta have a knack for manipulating the minds of those they communicate with telepathically. They gain a +1 racial bonus on Charisma-based skill checks to influence any creature with whom they are telepathically communicating. If a lashunta telepathically issues a command to a charmed or dominated creature, she gains a +1 racial bonus on Charisma checks to compel the creature to follow that order. This racial trait replaces lashunta magic. Source PZO9280"
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Inner Sea Bestiary"
+    ]
   },
   {
     "id": "lizardfolk",
@@ -7738,9 +8093,62 @@
         "text": "Locathahs have the aquatic subtype but can breathe both water and air."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Blunt Head",
+        "text": "Some locathahs develop blunt, flat heads with sharp, needlelike teeth and well-muscled jaws. This head shape reduces their swim speed to 40 feet but provides the locathah with a bite attack. This is a primary natural attack that deals 1d4 points of piercing damage. This racial trait modifies fast swimmer."
+      },
+      {
+        "name": "Coastal Emissary",
+        "text": "Locathahs who dwell in sunlit coastal waters develop close ties with surface dwellers and become skilled negotiators. Once per day when attempting a Diplomacy or Sense Motive check, a locathah with this racial trait can roll twice and use the better result. This racial trait replaces low-light vision."
+      },
+      {
+        "name": "Deep Dweller",
+        "text": "Locathahs living in deeper waters than coastal shallows have adapted to operating in darkness. Locathahs who have this racial trait gain darkvision with a range of 60 feet and light sensitivity. This racial trait replaces low-light vision."
+      },
+      {
+        "name": "Powerful Smell",
+        "text": "Although all locathahs have a distinctly fishy odor out of the water, some locathahs have slimier skin that exudes a strong scent both above and below the waves. Locathahs who have this racial trait emit a terrible scent as a 15-foot aura that nearly every other creature finds offensive. This is a poison effect. All living creatures (except other locathahs and creatures with the stench ability) within the aura must succeed at a Fortitude saving throw (DC 10 + half the locathah's character level + the locathah's Constitution modifier) or be sickened for 5 rounds. Creatures that succeed at the saving throw cannot be sickened by the same locathah's powerful smell for 24 hours. A delay poison or neutralize poison spell or similar effect removes the effect from the sickened creature. Due to their smell, locathahs with this racial trait have a -4 penalty on Stealth checks. This racial trait replaces natural armor."
+      },
+      {
+        "name": "Strong Limbs",
+        "text": "Some locathahs have powerful legs that are very useful on land but limit their mobility underwater. These locathahs have a base land speed of 20 feet and a swim speed of 40 feet. This racial trait modifies fast swimmer and slow speed."
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Cavalier",
+        "text": "Add 1 hit point to the cavalier's mount. If the cavalier ever replaces his mount, the new mount gains these bonus hit points."
+      },
+      {
+        "class": "Druid",
+        "text": "Add 1 skill rank to the druid's animal companion. If the druid ever replaces her animal companion, the new animal companion gains these bonus skill ranks."
+      },
+      {
+        "class": "Investigator",
+        "text": "Add a +1/2 bonus on Bluff checks to feint and a +1/2 bonus on Diplomacy checks to gather information."
+      },
+      {
+        "class": "Monk",
+        "text": "Add 1/4 point to the monk's ki pool."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add 1 skill rank to the ranger's animal companion. If the ranger ever replaces his animal companion, the new animal companion gains these bonus skill ranks."
+      },
+      {
+        "class": "Rogue",
+        "text": "Choose a piercing melee weapon. Add a +1/2 bonus on critical hit confirmation rolls with that weapon (maximum bonus +4). This bonus does not stack with Critical Focus."
+      },
+      {
+        "class": "Slayer",
+        "text": "Gain 1/6 of a new slayer talent."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Blood of the Sea"
+    ]
   },
   {
     "id": "ogre",
@@ -8002,9 +8410,21 @@
         "text": "Sahuagin can communicate telepathically with sharks to a distance of 100 feet. This communication is limited to simple concepts, such as \"attack,\" \"come,\" and \"defend.\""
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Sahuagin Song",
+        "text": "Sahuagin with this racial trait gain a +2 racial bonus on Perform (sing) checks and a +1 racial bonus on saves against language-dependent effects. This replaces speak with sharks. Source PPC:HftF"
+      },
+      {
+        "name": "Stoic Defender",
+        "text": "Once per day when a sahuagin with this racial trait takes damage, he can focus on remaining steadfast. For 1 minute, the sahuagin gains a +2 racial bonus to AC and a +2 racial bonus on Will saves. This replaces blood frenzy. Source PPC:HftF"
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Blood of the Sea"
+    ]
   },
   {
     "id": "syrinx",
@@ -8090,9 +8510,17 @@
         "text": "Syrinx can speak with all birds of the animal creature type and birdlike magical beasts (like phoenixes and thunderbirds)."
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Oppressive",
+        "text": "Syrinxes often have a natural talent for sensing how to unsettle and oppress other creatures. As a swift action, a syrinx can attempt a Sense Motive check against a DC of 10 + a creature's Hit Dice + its Charisma modifier or a DC of 10 + the creature's Bluff modifier, whichever is higher. On a success, syrinx gains a +4 racial bonus on Intimidate checks against that target and a +1 racial bonus to the DC of any fear effects she uses against that target. This racial trait replaces nocturnal and pride. Source PZO9280"
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Inner Sea Bestiary"
+    ]
   },
   {
     "id": "triaxian",
@@ -8163,9 +8591,17 @@
         "text": "Choose summer or winter. If summer is chosen, the triaxian can exist comfortably in conditions between 90 and 110 degrees Fahrenheit without having to attempt Fortitude saves due to the environment. If winter is chosen, the triaxian can exist comfortably in conditions between 40 and 0 degrees Fahrenheit without having to attempt Fortitude saves. When in conditions of severe cold or heat, Triaxians have to attempt Fortitude saves only once per hour instead of once every 10 minutes. Transitional Triaxians do not have this ability."
       }
     ],
-    "alternate_traits": [],
+    "alternate_traits": [
+      {
+        "name": "Transitional Lore",
+        "text": "Transitional triaxians are often instilled from a young age with the lore they need to prepare for the next winter or summer; they gain a +1 racial bonus on Knowledge (nature) and Survival checks. This racial trait replaces seasoned. Source PZO9280"
+      }
+    ],
     "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "The Frozen Stars"
+    ]
   },
   {
     "id": "triton",
@@ -8354,8 +8790,77 @@
         "text": "When slain, a vine leshy explodes in a burst of fertile energies. All plant creatures within 30 feet of the slain leshy regain hit 1d8 points, and vines quickly infest the area. If the terrain can support vines, the undergrowth is dense enough to make the region into difficult terrain for 24 hours, after which the plant life diminishes to a normal level; otherwise, this plant life has no significant effect on movement and withers and dies within an hour."
       }
     ],
-    "alternate_traits": [],
-    "favored_class_options": [],
-    "origin": "Foundry VTT pf1"
+    "alternate_traits": [
+      {
+        "name": "Agile",
+        "text": "Vine leshys are quicker but less tough than a typical vine leshy. Replace the leshy's +2 racial bonus to Constitution with a +2 racial bonus to Dexterity. This alters the vine leshy's ability scores."
+      },
+      {
+        "name": "Curiosity",
+        "text": "Vine leshys bearing gregarious spirits are more suited to learn about other cultures. They always treat Diplomacy and Linguistics as class skills, and they gain a +2 racial bonus on Diplomacy and Linguistics checks. This replaces pass without trace and plantspeech. Source PPC:WO"
+      },
+      {
+        "name": "Grapevine",
+        "text": "A vine leshy made from a grapevine can produce magically infused fruit that can heal her allies. She can cast goodberry once per day as a spell-like ability, with a caster level equal to her character level. This replaces pass without trace."
+      },
+      {
+        "name": "Lashvine",
+        "text": "Some vine leshys can sprout whip-like appendages. These individuals gain proficiency with whips and scorpion whips. As a free action, the vine leshy can turn one hand into a lashvine. A lashvine is a primary natural attack that deals 1d3 points of bludgeoning damage. A lashvine cannot hold items, wield weapons, or perform fine manipulation. This replaces change shape and verdant burst. Source PPC:WO"
+      },
+      {
+        "name": "Poisonous",
+        "text": "Vine leshys made from poison ivy vines carry natural poison in their bodies. As a swift action, the leshy can imbue its vines with this irritating substance. The next time the leshy hits a creature with an unarmed strike, the creature is affected by the following poison. Vine Leshy Toxin: Unarmed strike-injury; save Fort DC 10 + half the vine leshy's Hit Dice + the leshy's Constitution modifier; frequency 1/round for 6 rounds; effect sickened for 1 round; cure 1 save. The leshy can use this ability a number of times per day equal to its Constitution modifier (minimum 1). A vine leshy is immune to its own poison, but not to those of other vine leshys. This replaces plantspeech and change shape."
+      },
+      {
+        "name": "Seasoned Spirit",
+        "text": "Longlived vine leshys are less flexible, but they have established stronger bonds with the natural world. These leshys can spend an hour in concentration to cast speak with plants as a spell-like ability with a caster level equal to their character level. This alters plantspeech and replaces climber and unassuming foliage. Source PPC:WO"
+      },
+      {
+        "name": "Swamp Leshy",
+        "text": "Some vine leshys are made from plants that naturally grow in swamps. These leshys gain a +2 racial bonus on Swim checks and a +4 racial bonus on Stealth checks in swamps. This replaces climber and alters unassuming foliage."
+      },
+      {
+        "name": "Writhing Eye",
+        "text": "Some vine leshys can grow thin vines that serve as sensory organs. Growing or controlling the vine is a full-round action that provokes attacks of opportunity. The vine can extend up to 15 feet and is small enough to pass through a keyhole. A leshy can perceive, using all of her senses, within 20 feet of the vine's tip. This replaces darkvision and low-light vision. Source PPC:WO"
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Alchemist",
+        "text": "Add 1/4 to the alchemist's natural armor bonus when using his mutagen."
+      },
+      {
+        "class": "Bard",
+        "text": "Add a +1/3 bonus to Perform (oratory) checks, including checks using versatile performance, as long as the bard first spends at least 10 minutes telling a story."
+      },
+      {
+        "class": "Druid",
+        "text": "Add a +1/2 bonus to the druid's wild empathy or plant empathy checks."
+      },
+      {
+        "class": "Kineticist",
+        "text": "Gain 1/5 of the Extra Wild Talent feat. This feat must be spent on a wood-element talent."
+      },
+      {
+        "class": "Oracle",
+        "text": "An oracle with the nature or wood mystery adds one spell from the druid's spell list that isn't on the cleric spell list to the oracle's spell list; she still must select this spell as one of her spells known in order to cast it. This spell must be at least 1 level lower than the highest spell level the oracle can cast."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add a +1/2 bonus to Knowledge (nature) checks in the ranger's favored terrain."
+      },
+      {
+        "class": "Rogue",
+        "text": "Add a +1/2 bonus to Climb checks and on Stealth checks in forests."
+      },
+      {
+        "class": "Shaman",
+        "text": "Shamans with the nature or wood spirit add one spell from the druid's spell list that isn't on the shaman spell list to the shaman's spell list; she still must select this spell as one of her spells known in order to cast it. This spell must be at least 1 level lower than the highest spell level the shaman can cast."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Ultimate Wilderness"
+    ]
   }
 ]

@@ -72,6 +72,9 @@ def main():
         traits = traits_from(desc)
         for t in traits:
             kind = next((k for pattern, k in KINDS if re.search(pattern, t['name'], re.I)), None)
+            # "Lashunta: Lashunta are humanoid with the lashunta subtype." is the type, under the race's name.
+            if not kind and re.fullmatch(r'[^.]* (?:is|are) (?:an? )?\w+ with the \w+ subtypes?\.', t['text'].strip(), re.I):
+                kind = 'type'
             if kind:
                 t['kind'] = kind
             if kind == 'ability_scores' and mods:

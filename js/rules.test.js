@@ -10,7 +10,7 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs } from './dom.js';
-import { classCounts, babList } from './rules.js';
+import { classCounts, babList, racialAdjustments } from './rules.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -23,6 +23,7 @@ import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
+import { replacedTraits, raceWithAlternates, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
@@ -971,6 +972,49 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Luck of Heroes does not help an extra action', spendHeroPoint(2, 'extra-action', { haveFeats: ['Luck of Heroes'], d20: 20 }).points, 1);
   const anti = featSlots({ race: race('dwarf'), cls: cls('wizard'), level: 1, antihero: true });
   check('an antihero gets a bonus feat at 1st level', anti.map(s => s.id).join(' '), 'antihero L1');
+}
+
+{
+  // Alternate racial traits and favored class options
+  const dwarf = race('dwarf'), human = race('human'), halfling = race('halfling');
+  const alt = (r, name) => r.alternate_traits.find(a => a.name === name);
+  check('Ancient Enmity replaces Hatred', replacedTraits(dwarf, alt(dwarf, 'Ancient Enmity')).join(), 'Hatred');
+  check('Gift of Tongues replaces two gnome traits', replacedTraits(race('gnome'), alt(race('gnome'), 'Gift of Tongues')).join(), 'Defensive Training,Hatred');
+  const enmity = raceWithAlternates(dwarf, ['Ancient Enmity']);
+  check('the alternate takes the replaced trait\'s place', `${enmity.traits.some(t => t.name === 'Hatred')} ${enmity.traits.some(t => t.name === 'Ancient Enmity')}`, 'false true');
+  check('no alternates: the same race', raceWithAlternates(dwarf, []), dwarf);
+  check('unknown alternates are ignored', raceWithAlternates(dwarf, ['Nope']), dwarf);
+  check('two alternates replacing the same trait conflict', alternateConflict(dwarf, alt(dwarf, 'Deep Warrior'), ['Ancient Enmity']), '');
+  const second = dwarf.alternate_traits.find(a => a.name !== 'Ancient Enmity' && replacedTraits(dwarf, a).includes('Hatred'));
+  check('another alternate replacing Hatred is blocked', !!(second && alternateConflict(dwarf, second, ['Ancient Enmity'])), true);
+  const focused = raceWithAlternates(human, ['Focused Study']);
+  check('Focused Study removes the human bonus feat slot', featSlots({ race: focused, cls: cls('fighter'), level: 1 }).some(s => s.id === 'race'), false);
+  const fleet = raceWithAlternates(halfling, ['Fleet of Foot']);
+  check('Fleet of Foot: base speed 30', fleet.base_speed, 30);
+  const dual = raceWithAlternates(human, ['Dual Talent']);
+  check('Dual Talent replaces the +2, bonus feat and Skilled', replacedTraits(human, alt(human, 'Dual Talent')).length, 3);
+  const dualAdj = racialAdjustments(dual, ['str', 'con']);
+  check('Dual Talent: +2 to two abilities', `${dualAdj.str} ${dualAdj.con} ${dualAdj.dex}`, '2 2 0');
+  check('Dual Talent: the same ability twice counts once', racialAdjustments(dual, ['str', 'str']).str, 2);
+  check('human without Dual Talent: one +2', racialAdjustments(human, 'str').str, 2);
+  const leshy = race('vine-leshy');
+  const agile = racialAdjustments(raceWithAlternates(leshy, ['Agile']), 'str');
+  check('vine leshy Agile: +2 Dex instead of +2 Con', `${agile.con} ${agile.dex}`, '0 2');
+  const lashunta = race('lashunta-male');
+  check('a race type is never replaced (Lashunta)', replacedTraits(lashunta, alt(lashunta, 'Insidious Telepathy')).join(), 'Lashunta Magic');
+  check('"+2 Natural Armor" is matched by "natural armor"', replacedTraits(race('ghoran'), alt(race('ghoran'), 'Natural Camouflage')).join(), '+2 Natural Armor');
+  check('human fighter option', favoredOption(human, cls('fighter'))?.class, 'Fighter');
+  check('unchained rogue uses the rogue option', favoredOption(human, cls('rogue-unchained'))?.class, 'Rogue');
+  check('option total: 5 × +1/4 = +1 1/4', favoredOptionTotal({ text: 'Add +1/4 to the natural armor bonus.' }, 5), '+1 1/4');
+  check('option total: 4 × 1/6 = +2/3', favoredOptionTotal({ text: 'Gain 1/6 of a new rage power.' }, 4), '+2/3');
+  check('option total: 3 × +1 = +3', favoredOptionTotal({ text: 'Add +1 to the total number of rage rounds per day.' }, 3), '+3');
+  check('option total: percent kept', favoredOptionTotal({ text: 'Reduce arcane spell failure chance by +1%. Once the total reaches 10%, ...' }, 5), '+5%');
+  const f = cls('fighter'), w = cls('wizard');
+  const picks = favoredChoices(human, [f, w, f, f], 'fighter', ['skill', 'skill', 'option', undefined]);
+  check('favored choices: only favored class levels, missing = hp', picks.join(), 'skill,,option,hp');
+  const base = { race: human, classLevels: [f, w, f, f], favoredClassId: 'fighter', baseScores: scores(10, 10, 10, 10, 10, 10), flexibleChoice: 'str' };
+  check('favored picks: 1 HP level', characterStats({ ...base, favoredPicks: picks }).hp - characterStats(base).hp, 1);
+  check('favored picks: 1 skill rank level', skillRanksAvailable({ ...base, favoredPicks: picks }) - skillRanksAvailable(base), 1);
 }
 
 const failed = results.filter(r => !r.pass);

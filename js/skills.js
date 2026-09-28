@@ -86,7 +86,7 @@ export function classSkillTest(clsOrList) {
 // plus 1 for humans (Skilled) and 1 for levels in the favored class if its bonus goes to skill ranks.
 // Pass { cls, level } for a single class, or `classLevels` (the class at each level) and `favoredClassId`.
 export function skillRanksAvailable({ race, cls, level, classLevels = null, favoredClassId = null, baseScores,
-                                      flexibleChoice, increases = [], favoredSkill = false }) {
+                                      flexibleChoice, increases = [], favoredSkill = false, favoredPicks = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const favored = favoredClassId || levels[0].id;
   const racial = finalScores(baseScores, race, flexibleChoice);
@@ -96,7 +96,7 @@ export function skillRanksAvailable({ race, cls, level, classLevels = null, favo
     const int = racial.int + levelIncreases(i + 1, increases).int;
     total += Math.max(1, c.skill_ranks_per_level + abilityModifier(int));
     if (skilled) total += 1;
-    if (favoredSkill && c.id === favored) total += 1;
+    if (favoredPicks ? favoredPicks[i] === 'skill' : favoredSkill && c.id === favored) total += 1;
   });
   return total;
 }

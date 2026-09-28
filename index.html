@@ -68,6 +68,7 @@
         <select id="race"></select>
         <p class="hint term-hint">Tap or point at an item to see what it does.</p>
         <div id="race-info" class="info"></div>
+        <div id="race-alternates" class="race-alternates"></div>
         <div class="hp-tracker">
           <div class="hp-now"><span>Current hit points</span><b id="hp-current"></b><span id="hp-max"></span>
             <span id="hp-status" class="warning"></span></div>
@@ -96,11 +97,7 @@
         </div>
         <div class="favored-row">
           <label>Favored class <select id="favored-class"></select></label>
-          <fieldset>
-            <legend>Favored class bonus (for each level in that class)</legend>
-            <label><input type="radio" name="favored" value="hp" checked> +1 hit point</label>
-            <label><input type="radio" name="favored" value="skill"> +1 skill rank</label>
-          </fieldset>
+          <div id="favored-summary" class="favored-summary"></div>
         </div>
         <div id="caster-choices"></div>
         <div id="class-info" class="info"></div>
@@ -116,6 +113,9 @@
         </div>
         <label id="flexible-row" class="row" hidden>Racial +2 to
           <select id="flexible"></select>
+        </label>
+        <label id="flexible2-row" class="row" hidden>Dual Talent: second +2 to
+          <select id="flexible2"></select>
         </label>
         <table class="abilities">
           <thead>

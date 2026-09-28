@@ -34,8 +34,10 @@ data_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), 'data')
 used = set()
 for name in sorted(os.listdir(data_dir)):
     if name.endswith('.json'):
-        used |= {r['source'] for r in json.load(open(os.path.join(data_dir, name), encoding='utf-8'))
-                 if isinstance(r, dict) and r.get('origin')}
+        records = [r for r in json.load(open(os.path.join(data_dir, name), encoding='utf-8')) if isinstance(r, dict)]
+        used |= {r['source'] for r in records if r.get('origin')}
+        # Races whose alternate traits / favored class options came from d20pfsrd pages list those books.
+        used |= {b for r in records for b in r.get('d20_sources', [])}
 here = os.path.dirname(__file__)
 notices = json.load(open(os.path.join(here, 'ogl_notices.json'), encoding='utf-8'))
 if os.path.exists(os.path.join(here, 'd20_feat_notices.json')):

@@ -521,3 +521,18 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .hero-note { margin: 0 0 8px; font-weight: 600; }
 .hero-note:empty { display: none; }
 .hero-points ul { margin: 6px 0; padding-left: 20px; }
+
+/* Alternate racial traits (Race card): a collapsible list of tick boxes with each trait's text. */
+.race-alternates details { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.race-alternates summary { font-weight: 700; cursor: pointer; }
+.alt-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.alt-list li { padding: 8px 0; border-top: 1px solid var(--border); }
+.alt-list li.taken .check-row b { color: var(--accent); }
+.alt-list .check-row { align-items: baseline; flex-wrap: wrap; }
+.alt-list .alt-text { margin: 4px 0 0; font-size: 0.9rem; }
+.alt-list .hint { margin: 4px 0 0; }
+/* Favored class bonus: a choice beside each favored class level, and a summary under the favored class. */
+.class-levels li:has(select[data-favored-index]) { flex-wrap: wrap; }
+.class-levels select[data-favored-index] { flex: 1 1 100%; font-size: 0.9rem; }
+.favored-summary { flex-basis: 100%; }
+.favored-summary p { margin: 4px 0; }

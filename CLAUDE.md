@@ -141,6 +141,17 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   without `kind` are the ones to list as racial traits. The Race card lists size, type, speed and every
   trait as buttons (`js/race-terms.js`: `raceTerms` adds general size/type/speed rules text to the race's
   own trait text); hovering, focusing or tapping one opens a popup card.
+- Alternate racial traits and favored class options (`js/race-options.js`): `state.alternates` (names);
+  `replacedTraits` reads "replaces X and Y" / "lose the X" against the race's trait names (stemmed; type/size/languages
+  never replaced); `raceWithAlternates` returns the race with them swapped in, and computeView uses that race for
+  everything (skills, AC, bonus feat, speed "base speed of N feet", Dual Talent → `dual_talent` + `state.flexible2`,
+  "Replace the +2 ... to Con with a +2 ... to Dex" ability swaps). Two alternates replacing the same trait conflict.
+  Favored class bonus is per level: `state.favoredPicks[i]` 'hp' | 'skill' | 'option' (old saves' single `favored`
+  migrated in `load()`); `favoredChoices` → `view.favoredPicks` feed `characterStats`/`skillRanksAvailable`
+  (`favoredPicks`); the option's text is shown (and totalled by `favoredOptionTotal`), not applied. Unchained classes
+  use the original class's options. The later-book races get both from d20pfsrd (`build_d20_races.py`, cache
+  `d20pfsrd-races`, `PAGES` map; third-party "3rd Party ..." sections and "[JBE:...]"-tagged entries skipped;
+  `d20_sources` on the race puts those books' notices in the license).
 
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every

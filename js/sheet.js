@@ -3,6 +3,7 @@
 import { esc, signed } from './dom.js';
 import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative, channelEnergy, layOnHands, smite } from './rules.js';
 import { spellContext, spellLines } from './spell-math.js';
+import { favoredOption, favoredOptionTotal } from './race-options.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const ORDINAL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -60,7 +61,15 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     || '<li>None</li>'}</ul>` + (view.traits.length ? `<p><b>Traits:</b> ${esc(view.traits.map(t => t.name).join(', '))}</p>` : '');
 
   const traits = (race.traits || []).filter(t => !t.kind).map(t => t.name);
-  const racial = `<p>${esc(traits.join(', ') || '—')}</p>`;
+  // Favored class bonus: how many levels went to HP, skill ranks and the race's option (with its text).
+  const fav = view.classes.find(c => c.id === view.favoredClassId);
+  const option = favoredOption(race, fav);
+  const n = k => view.favoredPicks.filter(p => p === k).length;
+  const favored = [n('hp') && `+${n('hp')} HP`, n('skill') && `+${n('skill')} skill ranks`,
+                   n('option') && option && `${option.text} (×${n('option')}${favoredOptionTotal(option, n('option')) ? `, ${favoredOptionTotal(option, n('option'))} in all` : ''})`]
+    .filter(Boolean).join('; ');
+  const racial = `<p>${esc(traits.join(', ') || '—')}</p>
+    <p><b>Favored class:</b> ${esc(fav.name)}${favored ? ` — ${esc(favored)}` : ''}</p>`;
   const features = view.counts.map(e => {
     const specials = e.cls.progression.slice(0, e.level).flatMap(r => (r.special || []).map(s => `${s} (${r.level})`));
     return `<p><b>${esc(e.cls.name)} ${e.level}:</b> ${esc(specials.join(', ') || '—')}</p>`;
