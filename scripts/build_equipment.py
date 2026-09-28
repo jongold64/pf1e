@@ -135,6 +135,14 @@ def main():
         if also:
             best['also_in'] = also
         out.append(best)
+    # "Backpack, Masterwork" duplicates the Masterwork version of "Backpack" (a variant from the Ultimate Equipment
+    # table), so the separate entry is dropped. The app moves saved ones to the base item's variant.
+    with_mw = {i['name'].lower() for i in out if any(v['name'].lower() == 'masterwork' for v in i.get('variants', []))}
+    dropped = [i['name'] for i in out if re.fullmatch(r'(.+), masterwork', i['name'].lower())
+               and re.fullmatch(r'(.+), masterwork', i['name'].lower()).group(1) in with_mw]
+    out = [i for i in out if i['name'] not in dropped]
+    if dropped:
+        print('Masterwork duplicates dropped (the base item has a Masterwork version):', ', '.join(dropped))
     # Ids must be unique ("Rope" and "rope" or two items slugging alike).
     ids = Counter(i['id'] for i in out)
     for i in out:

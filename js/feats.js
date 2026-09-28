@@ -78,6 +78,15 @@ export function featSlots({ race, cls, level, classLevels = null }) {
   return slots;
 }
 
+// Feats taken for one weapon, skill or school of magic ("Weapon Focus (longsword)"). The choice is stored per slot.
+export const CHOICE_FEATS = {
+  'Weapon Focus': 'weapon', 'Greater Weapon Focus': 'weapon', 'Weapon Specialization': 'weapon',
+  'Greater Weapon Specialization': 'weapon', 'Improved Critical': 'weapon', 'Exotic Weapon Proficiency': 'weapon',
+  'Martial Weapon Proficiency': 'weapon', 'Skill Focus': 'skill', 'Spell Focus': 'school', 'Greater Spell Focus': 'school',
+};
+export const SPELL_SCHOOLS = ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion',
+  'necromancy', 'transmutation'];
+
 // Character level a feat slot is reached at. General and racial slots already count character levels; a class
 // bonus feat at class level n comes with the character's n-th level in that class.
 export function slotCharacterLevel(slot, classLevels) {

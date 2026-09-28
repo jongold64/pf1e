@@ -15109,6 +15109,28 @@
       "requirements": "Craft Wondrous Item, secret chest",
       "cost": "1,250 gp (type I), 2,500 gp (type II), 3,700 gp (type III), 5,000 gp (type IV)"
     },
+    "price_options": [
+      {
+        "label": "Type I",
+        "price_gp": 2500.0,
+        "weight_lbs": 15
+      },
+      {
+        "label": "Type II",
+        "price_gp": 5000.0,
+        "weight_lbs": 25
+      },
+      {
+        "label": "Type III",
+        "price_gp": 7400.0,
+        "weight_lbs": 35
+      },
+      {
+        "label": "Type IV",
+        "price_gp": 10000.0,
+        "weight_lbs": 60
+      }
+    ],
     "also_in": [
       "Ultimate Equipment"
     ]
@@ -17558,6 +17580,23 @@
       "requirements": "Craft Wondrous Item, overland flight",
       "cost": "10,000 gp (5 ft. by 5 ft.), 17,500 gp (5 ft. by 10 ft.), 30,000 gp (10 ft. by 10 ft.)"
     },
+    "price_options": [
+      {
+        "label": "5 ft. by 5 ft.",
+        "price_gp": 20000.0,
+        "weight_lbs": 8
+      },
+      {
+        "label": "5 ft. by 10 ft.",
+        "price_gp": 35000.0,
+        "weight_lbs": 10
+      },
+      {
+        "label": "10 ft. by 10 ft.",
+        "price_gp": 60000.0,
+        "weight_lbs": 15
+      }
+    ],
     "also_in": [
       "Ultimate Equipment"
     ]
@@ -18819,6 +18858,28 @@
       "requirements": "Craft Wondrous Item, scrying (plus any additional spells put into item)",
       "cost": "21,000 gp (standard), 25,000 (with see invisibility), 25,500 gp (with detect thoughts), 35,000 gp (with telepathy), 40,000 gp (with true seeing)"
     },
+    "price_options": [
+      {
+        "label": "Crystal ball",
+        "price_gp": 42000.0
+      },
+      {
+        "label": "Crystal ball with see invisibility",
+        "price_gp": 50000.0
+      },
+      {
+        "label": "Crystal ball with telepathy",
+        "price_gp": 70000.0
+      },
+      {
+        "label": "Crystal ball with true seeing",
+        "price_gp": 80000.0
+      },
+      {
+        "label": "Crystal ball with detect thoughts (Will DC 13 negates)",
+        "price_gp": 51000.0
+      }
+    ],
     "also_in": [
       "Ultimate Equipment"
     ]
@@ -23434,7 +23495,73 @@
     "price_gp": null,
     "weight": null,
     "weight_lbs": null,
-    "description": "These crystalline stones always float in the air and must be within 3 feet of their owner to be of any use. When a character first acquires a stone, she must hold it and then release it, whereupon it takes up a circling orbit 1d3 feet from her head. Thereafter, a stone must be grasped or netted to separate it from its owner. The owner may voluntarily seize and stow a stone (to keep it safe while she is sleeping, for example), but she loses the benefits of the stone during that time. Ioun stones have AC 24, 10 hit points, and hardness 5. The powers of each stone vary depending on its color and shape (see the table on page 306).\n\nRegeneration from the pearly white ioun stone works like a ring of regeneration. It only cures damage taken while the character is using the stone. The pale lavender and lavender-and-green stones work like a rod of absorption, but absorbing a spell requires a readied action, and these stones cannot be used to empower spells. Stored spells in the vibrant purple stone must be placed by a spellcaster but can be used by anyone (see ring of minor spell storing). See table on next page.\n\nColor | Shape | Effect | Price\nClear | Spindle | Sustains creature without food or water | 4,000 gp\nDusty rose | Prism | +1 insight bonus to AC | 5,000 gp\nDeep red | Sphere | +2 enhancement bonus to Dexterity | 8,000 gp\nIncandescent blue | Sphere | +2 enhancement bonus to Wisdom | 8,000 gp\nPale blue | Rhomboid | +2 enhancement bonus to Strength | 8,000 gp\nPink | Rhomboid | +2 enhancement bonus to Constitution | 8,000 gp\nPink and green | Sphere | +2 enhancement bonus to Charisma | 8,000 gp\nScarlet and blue | Sphere | +2 enhancement bonus to Intelligence | 8,000 gp\nDark blue | Rhomboid | Alertness (as the feat) | 10,000 gp\nIridescent | Spindle | Sustains creature without air | 18,000 gp\nPale lavender | Ellipsoid | Absorbs spells of 4th level or lower 1 | 20,000 gp\nPearly white | Spindle | Regenerate 1 point of damage per 10 minutes | 20,000 gp\nOrange | Prism | +1 caster level | 30,000 gp\nPale green | Prism | +1 competence bonus on attack rolls, saves, skill checks, and ability checks | 30,000 gp\nVibrant purple | Prism | Stores three levels of spells, as a ring of spell storing | 36,000 gp\nLavender and green | Ellipsoid | Absorbs spells of 8th level or lower 2 | 40,000 gp\n1 After absorbing 20 spell levels, the stone burns out and turns to dull gray, forever useless. 2 After absorbing 50 spell levels, the stone burns out and turns dull gray, forever useless."
+    "description": "These crystalline stones always float in the air and must be within 3 feet of their owner to be of any use. When a character first acquires a stone, she must hold it and then release it, whereupon it takes up a circling orbit 1d3 feet from her head. Thereafter, a stone must be grasped or netted to separate it from its owner. The owner may voluntarily seize and stow a stone (to keep it safe while she is sleeping, for example), but she loses the benefits of the stone during that time. Ioun stones have AC 24, 10 hit points, and hardness 5. The powers of each stone vary depending on its color and shape (see the table on page 306).\n\nRegeneration from the pearly white ioun stone works like a ring of regeneration. It only cures damage taken while the character is using the stone. The pale lavender and lavender-and-green stones work like a rod of absorption, but absorbing a spell requires a readied action, and these stones cannot be used to empower spells. Stored spells in the vibrant purple stone must be placed by a spellcaster but can be used by anyone (see ring of minor spell storing). See table on next page.\n\nColor | Shape | Effect | Price\nClear | Spindle | Sustains creature without food or water | 4,000 gp\nDusty rose | Prism | +1 insight bonus to AC | 5,000 gp\nDeep red | Sphere | +2 enhancement bonus to Dexterity | 8,000 gp\nIncandescent blue | Sphere | +2 enhancement bonus to Wisdom | 8,000 gp\nPale blue | Rhomboid | +2 enhancement bonus to Strength | 8,000 gp\nPink | Rhomboid | +2 enhancement bonus to Constitution | 8,000 gp\nPink and green | Sphere | +2 enhancement bonus to Charisma | 8,000 gp\nScarlet and blue | Sphere | +2 enhancement bonus to Intelligence | 8,000 gp\nDark blue | Rhomboid | Alertness (as the feat) | 10,000 gp\nIridescent | Spindle | Sustains creature without air | 18,000 gp\nPale lavender | Ellipsoid | Absorbs spells of 4th level or lower 1 | 20,000 gp\nPearly white | Spindle | Regenerate 1 point of damage per 10 minutes | 20,000 gp\nOrange | Prism | +1 caster level | 30,000 gp\nPale green | Prism | +1 competence bonus on attack rolls, saves, skill checks, and ability checks | 30,000 gp\nVibrant purple | Prism | Stores three levels of spells, as a ring of spell storing | 36,000 gp\nLavender and green | Ellipsoid | Absorbs spells of 8th level or lower 2 | 40,000 gp\n1 After absorbing 20 spell levels, the stone burns out and turns to dull gray, forever useless. 2 After absorbing 50 spell levels, the stone burns out and turns dull gray, forever useless.",
+    "price_options": [
+      {
+        "label": "Clear",
+        "price_gp": 4000.0
+      },
+      {
+        "label": "Dusty rose",
+        "price_gp": 5000.0
+      },
+      {
+        "label": "Deep red",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Incandescent blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pale blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pink",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pink and green",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Scarlet and blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Dark blue",
+        "price_gp": 10000.0
+      },
+      {
+        "label": "Iridescent",
+        "price_gp": 18000.0
+      },
+      {
+        "label": "Pale lavender",
+        "price_gp": 20000.0
+      },
+      {
+        "label": "Pearly white",
+        "price_gp": 20000.0
+      },
+      {
+        "label": "Orange",
+        "price_gp": 30000.0
+      },
+      {
+        "label": "Pale green",
+        "price_gp": 30000.0
+      },
+      {
+        "label": "Vibrant purple",
+        "price_gp": 36000.0
+      },
+      {
+        "label": "Lavender and green",
+        "price_gp": 40000.0
+      }
+    ]
   },
   {
     "id": "ioun-stones",
@@ -23452,7 +23579,73 @@
     "construction": {
       "requirements": "Craft Wondrous Item, creator must be 12th level",
       "cost": "half the market price"
-    }
+    },
+    "price_options": [
+      {
+        "label": "Clear",
+        "price_gp": 4000.0
+      },
+      {
+        "label": "Dusty rose",
+        "price_gp": 5000.0
+      },
+      {
+        "label": "Deep red",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Incandescent blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pale blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pink",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Pink and green",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Scarlet and blue",
+        "price_gp": 8000.0
+      },
+      {
+        "label": "Dark blue",
+        "price_gp": 10000.0
+      },
+      {
+        "label": "Iridescent",
+        "price_gp": 18000.0
+      },
+      {
+        "label": "Pale lavender",
+        "price_gp": 20000.0
+      },
+      {
+        "label": "Pearly white",
+        "price_gp": 20000.0
+      },
+      {
+        "label": "Pale green",
+        "price_gp": 30000.0
+      },
+      {
+        "label": "Orange",
+        "price_gp": 30000.0
+      },
+      {
+        "label": "Vibrant purple",
+        "price_gp": 36000.0
+      },
+      {
+        "label": "Lavender and green",
+        "price_gp": 40000.0
+      }
+    ]
   },
   {
     "id": "ioun-torch",

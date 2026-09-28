@@ -4,7 +4,7 @@ import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
-         powerAttackStep, unarmedForSize } from './weapons.js';
+         powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
 
 let selectedId = null;
@@ -15,6 +15,7 @@ const WEAPON_FEATS = [
   ['greaterFocus', 'Greater Weapon Focus', '+1 attack'],
   ['spec', 'Weapon Specialization', '+2 damage'],
   ['greaterSpec', 'Greater Weapon Specialization', '+2 damage'],
+  ['impCrit', 'Improved Critical', 'double threat range'],
 ];
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const GROUP_TEXT = { unarmed: 'unarmed', light: 'light melee', 'one-handed': 'one-handed melee', 'two-handed': 'two-handed melee', ranged: 'ranged' };
@@ -83,13 +84,20 @@ function combatContext(app, view) {
     name: flurryFrom.cls.id === 'monk' ? 'Flurry of blows' : "Brawler's flurry",
     babs: flurryBabs(flurryFrom.cls.id, flurryFrom.level, flurryFrom.cls.progression[flurryFrom.level - 1].bab[0], view.stats.bab[0]),
   } : null;
-  return { proficient, unarmed, flurry, armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
+  // Weapon feats taken for a weapon on the Feats tab ("Weapon Focus (longsword)"). Once a feat has a weapon chosen,
+  // it applies to that weapon automatically; the tick boxes stay for feats with no weapon chosen.
+  const weaponChoices = view.featChoices.filter(c => c.kind === 'weapon' && c.value);
+  const chosenFor = feat => new Set(weaponChoices.filter(c => c.feat === feat).map(c => c.value));
+  const flagsFor = (e, w) => Object.fromEntries(WEAPON_FEATS.map(([key, feat]) =>
+    [key, chosenFor(feat).size ? chosenFor(feat).has(w.id) : !!e[key]]));
+  const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
+  return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor,
+           armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
-
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   return {
-    weapon: w, entry: e, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.race.size] ?? 0,
+    weapon: w, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.race.size] ?? 0,
     size: view.race.size, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
@@ -137,10 +145,11 @@ function renderCombat(app, view, ctx) {
   const offEntry = state.weapons[offIndex];
   // Each hand keeps its own proficiency and unarmed damage.
   const offArgs = attackArgs(app, view, ctx, offEntry);
+  const mainArgs = attackArgs(app, view, ctx, mainEntry);
   const r = twoWeaponAttack({
-    ...attackArgs(app, view, ctx, mainEntry),
-    main: { weapon: mainWeapon, entry: mainEntry, end: 0 },
-    off: { weapon: offArgs.weapon, entry: offEntry, end: offEnd || 0, proficient: offArgs.proficient,
+    ...mainArgs,
+    main: { weapon: mainWeapon, entry: mainArgs.entry, end: 0 },
+    off: { weapon: offArgs.weapon, entry: offArgs.entry, end: offEnd || 0, proficient: offArgs.proficient,
            unarmedDamage: offArgs.unarmedDamage },
   });
   const off = r.off;
@@ -181,13 +190,15 @@ export function renderMyWeapons(app, view) {
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}</dd>`);
     }
     if (isDouble(w)) {
-      const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: e, end: 0 }, off: { weapon: w, entry: e, end: 1 } });
+      const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
       extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
         <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}</dd>`);
     }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
-    const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat)).map(([key, feat, what]) =>
+    const flags = ctx.flagsFor(e, w);
+    const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
       `<label class="check-row small"><input type="checkbox" data-weapon-flag="${key}" data-index="${i}" ${e[key] ? 'checked' : ''}> ${esc(feat)} (${what})</label>`).join('');
+    const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
     return `<div class="weapon-card">
       <div class="weapon-head">
         <button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : '')}${esc(w.name)}</button>
@@ -197,7 +208,7 @@ export function renderMyWeapons(app, view) {
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span></dd>
         <dt>Damage</dt><dd><b>${esc(a.damage)}</b></dd>
         ${extra.join('')}
-        <dt>Critical</dt><dd>${esc(w.critical || '—')}</dd>
+        <dt>Critical</dt><dd>${esc((flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—')}</dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
       </dl>
@@ -207,6 +218,7 @@ export function renderMyWeapons(app, view) {
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
           ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}</option>`).join('')}
         </select></label>
+        ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
         ${featBoxes}
         ${byRules ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-flag="proficient" data-index="${i}" ${e.proficient ? 'checked' : ''}>
           Proficient anyway (e.g. from a feat or trait)</label>`}

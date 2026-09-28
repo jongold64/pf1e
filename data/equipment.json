@@ -205,17 +205,6 @@
     ]
   },
   {
-    "id": "backpack-masterwork",
-    "name": "Backpack, Masterwork",
-    "source": "Advanced Player's Guide",
-    "category": "Adventuring Gear",
-    "price": "50 gp",
-    "price_gp": 50.0,
-    "weight": "4 lbs.1",
-    "weight_lbs": 4,
-    "description": "This backpack has numerous pockets for storing various items that might be needed while adventuring. Hooks are included for attaching items such as canteens, pouches, or even a rolled-up blanket. It has padded bands that strap across the chest and the waist to distribute its weight more evenly. Like a common backpack, it can hold about 2 cubic feet of material in its main container. When wearing a masterwork backpack, treat your Strength score as +1 higher than normal when calculating your carrying capacity."
-  },
-  {
     "id": "bag-bear",
     "name": "Bag, Bear",
     "source": "Advanced Race Guide",
@@ -9778,17 +9767,6 @@
     ]
   },
   {
-    "id": "artisans-tools-masterwork",
-    "name": "Artisan's Tools, Masterwork",
-    "source": "Core Rulebook",
-    "category": "Tools and Skill Kits",
-    "price": "55 gp",
-    "price_gp": 55.0,
-    "weight": "5 lbs.",
-    "weight_lbs": 5,
-    "description": "These tools serve the same purpose as artisan's tools, but masterwork artisan's tools are the perfect tools for the job, so you get a +2 circumstance bonus on Craft checks made with them."
-  },
-  {
     "id": "balancing-pole",
     "name": "Balancing Pole",
     "source": "Ultimate Equipment",
@@ -10270,17 +10248,6 @@
     "also_in": [
       "Core Rulebook"
     ]
-  },
-  {
-    "id": "thieves-tools-masterwork",
-    "name": "Thieves' Tools, Masterwork",
-    "source": "Core Rulebook",
-    "category": "Tools and Skill Kits",
-    "price": "100 gp",
-    "price_gp": 100.0,
-    "weight": "2 lbs.",
-    "weight_lbs": 2,
-    "description": "This kit contains extra tools and tools of better make, which grant a +2 circumstance bonus on Disable Device checks."
   },
   {
     "id": "traveling-formula-book",

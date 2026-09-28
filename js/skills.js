@@ -132,10 +132,12 @@ export const SKILL_FEATS = {
   'Stealthy': ['Escape Artist', 'Stealth'],
 };
 
+// featNames can include "Skill Focus (Stealth)": +3, or +6 with 10 or more ranks.
 export function featSkillBonus(featNames, skillName, ranks) {
   let bonus = 0;
   for (const f of featNames) {
     if (SKILL_FEATS[f]?.includes(skillName)) bonus += ranks >= 10 ? 4 : 2;
+    if (f === `Skill Focus (${skillName})`) bonus += ranks >= 10 ? 6 : 3;
   }
   return bonus;
 }

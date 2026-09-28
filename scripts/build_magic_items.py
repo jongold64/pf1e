@@ -70,6 +70,42 @@ def price_options(price):
     return opts if len(opts) >= 2 else []
 
 
+def table_price_options(description):
+    """Items priced "see below" / "varies" whose description has a table with a price column (bag of holding,
+    carpet of flying, crystal ball, ioun stones): one option per row, with the row's weight if the table has one.
+    "Type I | 15 lbs. | 250 lbs. | 30 cubic ft. | 2,500 gp" -> {'label': 'Type I', 'price_gp': 2500, 'weight_lbs': 15}."""
+    lines = description.split('\n')
+    for k, line in enumerate(lines):
+        cells = [c.strip() for c in line.split('|')]
+        if len(cells) < 2:
+            continue
+        price_col = next((j for j, c in enumerate(cells) if re.search(r'\bprice\b', c, re.I) and 'modifier' not in c.lower()), None)
+        if price_col is None:
+            continue
+        weight_col = next((j for j, c in enumerate(cells) if re.fullmatch(r'(bag |item )?weight', c, re.I)), None)
+        opts = []
+        for row in lines[k + 1:]:
+            r = [c.strip() for c in row.split('|')]
+            if len(r) != len(cells):
+                break
+            gp = price_gp(r[price_col])
+            if gp is None:
+                continue
+            opt = {'label': r[0].rstrip(' *'), 'price_gp': gp}
+            if weight_col is not None and to_number(r[weight_col]) is not None:
+                opt['weight_lbs'] = to_number(r[weight_col])
+            opts.append((opt, r))
+        # Rows sharing a first cell (ioun stones of one colour) are told apart by the second.
+        labels = Counter(o['label'] for o, _ in opts)
+        for o, r in opts:
+            if labels[o['label']] > 1 and len(r) > 2:
+                o['label'] = f"{r[0]} {r[1].lower()}"
+        opts = [o for o, _ in opts]
+        if len(opts) >= 2:
+            return opts
+    return []
+
+
 def tidy(description):
     """Artifacts' "Destruction" sections carry a placeholder label "descriptor" in the source:
     "Destruction: descriptor The aegis is destroyed..." and a trailing "descriptor" line."""
@@ -188,6 +224,10 @@ def main():
                 'description': tidy(node_text(n)),
                 **({'construction': construction} if construction else {}),
             }
+            if item['price_gp'] is None and 'price_options' not in item:
+                opts = table_price_options(item['description'])
+                if opts:
+                    item['price_options'] = opts
             add(item, book)
 
     # Ids must be unique; an item name used in two categories gets the category in its id.

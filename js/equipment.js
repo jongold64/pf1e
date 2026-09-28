@@ -29,10 +29,13 @@ export function entryStats(item, variantName = null) {
   return { price_gp: src.price_gp ?? null, weight_lbs: src.weight_lbs ?? null };
 }
 
-// Price and weight of an owned magic item, or of one of its price options (e.g. a +2 ring of protection).
+// Price and weight of an owned magic item, or of one of its price options (e.g. a +2 ring of protection, a type II
+// bag of holding, which also has its own weight). An item with no price of its own uses its first option.
 export function magicItemStats(item, optionLabel = null) {
-  const option = optionLabel ? (item.price_options || []).find(o => o.label === optionLabel) : null;
-  return { price_gp: option ? option.price_gp : (item.price_gp ?? null), weight_lbs: item.weight_lbs ?? null };
+  const options = item.price_options || [];
+  const option = (optionLabel ? options.find(o => o.label === optionLabel) : null)
+    || (item.price_gp === null || item.price_gp === undefined ? options[0] : null);
+  return { price_gp: option ? option.price_gp : (item.price_gp ?? null), weight_lbs: option?.weight_lbs ?? item.weight_lbs ?? null };
 }
 
 // Special abilities are added to a magic weapon or armor; they can't be owned on their own.

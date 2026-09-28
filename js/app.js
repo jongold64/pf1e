@@ -6,7 +6,7 @@ import {
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
-  repeatable, featEffects, slotCharacterLevel,
+  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
@@ -75,6 +75,7 @@ const state = {
   favored: 'hp',
   extraSlots: {},  // class id -> true/false for optional extra spell slots (see EXTRA_SLOTS)
   feats: {},       // feat slot id (see featSlots) -> feat id
+  featChoices: {}, // feat slot id -> { feat: feat id, value } for CHOICE_FEATS (weapon id, skill name or school)
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   armorId: '',     // worn armor (data/armor.json id), '' for none
@@ -152,19 +153,25 @@ function load() {
   if (typeof state.casterChoices !== 'object' || state.casterChoices === null) state.casterChoices = {};
   syncDerived();
   if (!(typeof state.gold === 'number' && state.gold >= 0)) state.gold = null;
-  // Items the equipment data no longer has are skipped when shown.
+  // Items the equipment data no longer has are skipped when shown. The separate masterwork entries that were
+  // removed from the data become the base item's Masterwork version.
+  const MERGED = { 'backpack-masterwork': 'backpack', 'artisans-tools-masterwork': 'artisans-tools',
+                   'thieves-tools-masterwork': 'thieves-tools' };
   state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
-    .map(e => ({ id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
+    .map(e => (MERGED[e.id] ? { id: MERGED[e.id], variant: 'Masterwork', qty: e.qty }
+      : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
   state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
   state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'proficient'];
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])) }));
+  state.featChoices = Object.fromEntries(Object.entries(state.featChoices && typeof state.featChoices === 'object' ? state.featChoices : {})
+    .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
   state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot'].filter(k => c[k] === true).map(k => [k, true])),
@@ -334,6 +341,11 @@ function buildControls() {
       update({ feats: rest });
     }
   });
+  $('feat-slots').addEventListener('change', e => {
+    const slotId = e.target.dataset.featChoice;
+    if (!slotId) return;
+    update({ featChoices: { ...state.featChoices, [slotId]: { feat: state.feats[slotId], value: e.target.value } } });
+  });
   $('feat-list').addEventListener('click', e => {
     const pick = e.target.closest('[data-pick]');
     if (!pick) return;
@@ -452,6 +464,12 @@ function computeView() {
   // prerequisite context can use the same stats that include feat bonuses.
   const slots = featSlots({ race, classLevels });
   const chosen = slots.map(s => data.featsById.get(state.feats[s.id])).filter(Boolean);
+  // What each weapon/skill/school feat was taken for (a choice made for a feat since swapped out doesn't count).
+  const featChoices = slots.filter(s => CHOICE_FEATS[data.featsById.get(state.feats[s.id])?.name]).map(s => {
+    const f = data.featsById.get(state.feats[s.id]);
+    const saved = state.featChoices[s.id];
+    return { slotId: s.id, feat: f.name, kind: CHOICE_FEATS[f.name], value: saved?.feat === f.id ? saved.value : '' };
+  });
   const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const gear = armorEffects({
@@ -499,7 +517,7 @@ function computeView() {
   const speed = speedInArmor(race.base_speed, gear, race);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, gear, stats, ctx, contextAt, speed, requirements,
+    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements,
   };
 }
 
@@ -627,7 +645,8 @@ function render() {
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
 
-  renderSkills(race, view.classes, stats.scores, view.chosen.map(f => f.name));
+  renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
+    ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
   renderFeats(view.slots, view.granted, view.ctx);
   renderSpells(view);
   renderArmorTab(app, view);
@@ -725,6 +744,32 @@ function featDetails(f, check) {
     ${section('Special', f.special)}`;
 }
 
+// Weapon, skill or school a feat was taken for.
+function choiceLabel(c) {
+  if (c.kind === 'weapon') return data.weaponsById?.get(c.value)?.name.toLowerCase() || c.value;
+  return c.value;
+}
+
+function choiceSelect(c) {
+  const word = { weapon: 'weapon', skill: 'skill', school: 'school of magic' }[c.kind];
+  let options;
+  if (c.kind === 'weapon') {
+    if (!data.weapons) {
+      app.loadWeapons().then(() => render());
+      return '<p class="hint">Loading weapons…</p>';
+    }
+    options = data.weapons.map(w => [w.id, w.name]);
+  } else if (c.kind === 'skill') {
+    options = skillRowNames().map(n => [n, n]);
+  } else {
+    options = SPELL_SCHOOLS.map(s => [s, s[0].toUpperCase() + s.slice(1)]);
+  }
+  return `<label class="row feat-choice">For which ${word}?
+      <select data-feat-choice="${esc(c.slotId)}"><option value="">Choose…</option>${options.map(([v, t]) =>
+        `<option value="${esc(v)}"${v === c.value ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
+    ${c.value ? '' : `<p class="hint">Choose a ${word} so the feat's bonus can be counted.</p>`}`;
+}
+
 function renderFeats(slots, granted, ctx) {
   const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
@@ -737,11 +782,13 @@ function renderFeats(slots, granted, ctx) {
     if (f) {
       const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
       const wrongSlot = !slotAccepts(slot, f);
+      const choice = view.featChoices.find(c => c.slotId === slot.id);
       body = `
         <details class="chosen">
-          <summary>${STATUS_ICON[check.status]} ${esc(f.name)}</summary>
+          <summary>${STATUS_ICON[check.status]} ${esc(f.name)}${choice?.value ? ` (${esc(choiceLabel(choice))})` : ''}</summary>
           ${featDetails(f, check)}
         </details>
+        ${choice ? choiceSelect(choice) : ''}
         ${wrongSlot ? '<p class="warning">This feat isn\'t allowed in this slot.</p>' : ''}
         ${check.status === 'unmet' ? '<p class="warning">You don\'t meet all the prerequisites.</p>' : ''}
         <div class="slot-buttons">
@@ -830,6 +877,7 @@ function spellTable(c, spells) {
     return `${head}<p class="hint">${esc(cls.name)}s start casting spells at level ${spells.firstLevel}.</p>`;
   }
   const showKnown = spells.rows.some(r => r.known !== null);
+  const showPrepared = spells.rows.some(r => r.prepared !== null);
   const extraName = spells.extraSlotName;
   const dash = v => (v === null ? '—' : v);
   const rows = spells.rows.map(r => {
@@ -843,14 +891,15 @@ function spellTable(c, spells) {
       ${extraName ? `<td>${r.extra ? `+${r.extra}` : ''}</td>` : ''}
       <td class="total">${total}</td>
       ${showKnown ? `<td>${dash(r.known)}</td>` : ''}
+      ${showPrepared ? `<td>${dash(r.prepared)}</td>` : ''}
     </tr>`;
   }).join('');
   const notes = [];
   if (spells.rows[0].spellLevel === 0) notes.push('Level 0 spells (cantrips and orisons) can be cast any number of times.');
-  if (cls.id === 'arcanist') notes.push(`Arcanists also have a "spells prepared" table, which isn't in the data yet.`);
+  if (showPrepared) notes.push('Prepared: how many spells of each level you prepare each day from your spellbook; you cast them with your spells per day.');
   return `${head}
     <table class="spells">
-      <thead><tr><th>Spell level</th><th>Class</th><th>${esc(abilityName.slice(0, 3))}</th>${extraName ? `<th>${esc(extraName)}</th>` : ''}<th>Per day</th>${showKnown ? '<th>Known</th>' : ''}</tr></thead>
+      <thead><tr><th>Spell level</th><th>Class</th><th>${esc(abilityName.slice(0, 3))}</th>${extraName ? `<th>${esc(extraName)}</th>` : ''}<th>Per day</th>${showKnown ? '<th>Known</th>' : ''}${showPrepared ? '<th>Prepared</th>' : ''}</tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <p class="hint">${esc(notes.join(' '))}</p>`;

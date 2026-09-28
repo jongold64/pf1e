@@ -95,6 +95,15 @@ export const EXTRA_SLOTS = {
   druid: { name: 'Domain', optional: true, label: 'Chose a domain for Nature Bond', default: false },
 };
 
+// Arcanist spells prepared (Advanced Class Guide, Table: Arcanist Spells Prepared), by class level, from spell
+// level 0 up. The data build keeps only the spells-per-day table, so this is entered by hand.
+export const ARCANIST_PREPARED = [
+  [4, 2], [5, 2], [5, 3], [6, 3, 1], [6, 4, 2], [7, 4, 2, 1], [7, 5, 3, 2], [8, 5, 3, 2, 1], [8, 5, 4, 3, 2],
+  [9, 5, 4, 3, 2, 1], [9, 5, 5, 4, 3, 2], [9, 5, 5, 4, 3, 2, 1], [9, 5, 5, 4, 4, 3, 2], [9, 5, 5, 4, 4, 3, 2, 1],
+  [9, 5, 5, 4, 4, 4, 3, 2], [9, 5, 5, 4, 4, 4, 3, 2, 1], [9, 5, 5, 4, 4, 4, 3, 3, 2], [9, 5, 5, 4, 4, 4, 3, 3, 2, 1],
+  [9, 5, 5, 4, 4, 4, 3, 3, 3, 2], [9, 5, 5, 4, 4, 4, 3, 3, 3, 3],
+];
+
 // Bonus spells per day from a high casting ability (Core Rulebook Table 1-3). None for level 0.
 export function bonusSpells(abilityMod, spellLevel) {
   if (spellLevel < 1 || abilityMod < spellLevel) return 0;
@@ -116,7 +125,8 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
   const slot = EXTRA_SLOTS[cls.id];
   const hasExtra = !!slot && (!slot.optional || extraSlot);
 
-  const spellLevels = [...new Set([...Object.keys(perDay), ...Object.keys(known)])]
+  const prepared = cls.id === 'arcanist' ? Object.fromEntries((ARCANIST_PREPARED[level - 1] || []).map((n, sl) => [sl, n])) : {};
+  const spellLevels = [...new Set([...Object.keys(perDay), ...Object.keys(known), ...Object.keys(prepared)])]
     .map(Number).sort((a, b) => a - b);
   const rows = spellLevels.map(sl => {
     const canCast = scores[ability] >= 10 + sl;
@@ -130,6 +140,7 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
       extra,
       total: base === null ? null : (canCast ? base + bonus + extra : 0),
       known: known[sl] ?? null,
+      prepared: prepared[sl] ?? null,
       canCast,
     };
   });

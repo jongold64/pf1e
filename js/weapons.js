@@ -82,6 +82,14 @@ export function unarmedForSize(mediumDice, size) {
   return UNARMED_BY_SIZE[mediumDice]?.[size] || mediumDice;
 }
 
+// Improved Critical doubles the threat range: "19-20/×2" -> "17-20/×2", "×3" -> "19-20/×3".
+export function improvedCritical(w) {
+  if (!w.threat) return w.critical;
+  const doubled = 21 - 2 * (21 - w.threat);
+  const multiplier = String(w.critical || '').replace(/^\d+-20\//, '');
+  return `${doubled}-20/${multiplier}`;
+}
+
 // Power Attack and Deadly Aim: -1 attack / +2 damage, one step more at BAB +4 and every +4 after.
 export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 

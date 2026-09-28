@@ -18,7 +18,8 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, t
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
 import { racialAc } from './rules.js';
-import { unarmedForSize } from './weapons.js';
+import { unarmedForSize, improvedCritical } from './weapons.js';
+import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
 import { slotCharacterLevel } from './feats.js';
 
@@ -754,6 +755,27 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('fighter bonus feat 2 comes at character level 3 (fighter/rogue/fighter)',
         slotCharacterLevel({ kind: 'class', clsId: 'fighter', level: 2 }, fr), 3);
   check('general slots count character levels', slotCharacterLevel({ kind: 'general', level: 3 }, fr), 3);
+}
+
+{
+  // Data gaps
+  check('arcanist 1 prepares 4 cantrips and 2 first-level spells',
+        spellsPerDay({ cls: cls('arcanist'), level: 1, scores: scores(10, 10, 10, 16, 10, 10) }).rows.map(r => `${r.spellLevel}:${r.prepared}`).join(' '),
+        '0:4 1:2');
+  check('arcanist 20 prepares 3 ninth-level spells',
+        spellsPerDay({ cls: cls('arcanist'), level: 20, scores: scores(10, 10, 10, 30, 10, 10) }).rows.at(-1).prepared, 3);
+  check('wizard has no prepared column', spellsPerDay({ cls: cls('wizard'), level: 1, scores: scores(10, 10, 10, 16, 10, 10) }).rows[1].prepared, null);
+  check('Skill Focus: +3', featSkillBonus(['Skill Focus (Stealth)'], 'Stealth', 4), 3);
+  check('Skill Focus: +6 at 10 ranks', featSkillBonus(['Skill Focus (Stealth)'], 'Stealth', 10), 6);
+  check('Skill Focus for another skill', featSkillBonus(['Skill Focus (Stealth)'], 'Perception', 4), 0);
+  check('Improved Critical: longsword', improvedCritical(weapon('Longsword')), '17-20/×2');
+  check('Improved Critical: battleaxe', improvedCritical(weapon('Battleaxe')), '19-20/×3');
+  check('Improved Critical: rapier', improvedCritical(weapon('Rapier')), '15-20/×2');
+  check('no separate masterwork backpack', gearById.has('backpack-masterwork'), false);
+  const items = await fetch('data/magic-items.json').then(r => r.json());
+  const bag = items.find(i => i.name === 'Bag of Holding');
+  check('bag of holding type II', JSON.stringify(magicItemStats(bag, 'Type II')), '{"price_gp":5000,"weight_lbs":25}');
+  check('bag of holding without a type uses type I', magicItemStats(bag).price_gp, 2500);
 }
 
 {

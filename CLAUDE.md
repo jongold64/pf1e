@@ -98,10 +98,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   Special class features, martial proficiency; alignment/languages/story ones are "?") and checks them
   against the character before its first level in the prestige class (`prestigeCheck` in app.js).
 - Spells: `spellsPerDay` in `rules.js` combines the class table (`spells_per_day`/`spells_known`) with
-  bonus spells from the casting ability. `CASTING_ABILITY` and `EXTRA_SLOTS` (cleric domain, shaman
+  bonus spells from the casting ability (and `prepared` for the arcanist, from the hand-entered
+  `ARCANIST_PREPARED`). `CASTING_ABILITY` and `EXTRA_SLOTS` (cleric domain, shaman
   spirit magic, wizard school, druid domain) are hand-entered because the data doesn't carry them:
   the build's `to_int` keeps only the leading number of a table cell, so printed "+1" slots are lost.
-  The arcanist's "spells prepared" table is also missing from the data.
+  The arcanist's "spells prepared" table is also missing from the data (hence `ARCANIST_PREPARED`).
+- Feat choices: `CHOICE_FEATS` (feats.js) are taken for a weapon, skill or school. `state.featChoices[slotId]` is
+  `{ feat: feat id, value }` (ignored once the slot holds a different feat); `view.featChoices` lists them. Skill
+  Focus reaches skills as the name "Skill Focus (Stealth)"; weapon feats with a chosen weapon apply to it
+  automatically on the Weapons tab (`flagsFor` in tab-weapons.js; the per-weapon tick boxes remain for feats with
+  no weapon chosen), and Exotic/Martial Weapon Proficiency give proficiency with the chosen weapon.
 - Feats: `js/feats.js` holds feat logic (pure functions, tested alongside `rules.js`). `featSlots`
   derives slots from odd levels, the race's "Bonus Feat" trait and class-table entries like "Bonus
   feat" / "Teamwork feat"; `BONUS_FEAT_RULES` encodes each class's bonus-feat restrictions from its
