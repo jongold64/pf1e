@@ -484,3 +484,5 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-ac .cmb-box { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .defense-ac .cmb-box span { display: inline; }
 .defense-ac .cmb-box .roll-button { display: inline-block; margin: 0; }
+.channel-row { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
+.channel-row small { display: block; color: var(--muted); font-size: 0.8rem; }

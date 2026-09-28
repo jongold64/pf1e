@@ -256,6 +256,28 @@ export function hpStatus(hp, conScore) {
   return '';
 }
 
+// Channel energy for each class that has it (Core Rulebook cleric and paladin, antipaladin, warpriest; holy vindicator
+// levels add to the cleric's). Returns [{ source, energy, level, dice, dc, uses }]: dice = (effective cleric level + 1) / 2
+// d6, DC 10 + half the effective level + Cha (+2 Improved Channel), uses per day 3 + Cha for a cleric, or half the lay
+// on hands / touch of corruption / fervor uses for the others (2 of those per channel).
+export function channelEnergy(stats, haveFeats = []) {
+  const counts = stats.classCounts || [];
+  const lv = id => counts.find(e => e.cls.id === id)?.level || 0;
+  const cha = stats.mod.cha;
+  const out = [];
+  const add = (source, energy, level, uses) => {
+    if (level < 1) return;
+    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, uses: Math.max(0, uses),
+               dc: 10 + Math.floor(level / 2) + cha + (haveFeats.includes('Improved Channel') ? 2 : 0) });
+  };
+  if (lv('cleric')) add('Cleric', 'positive or negative', lv('cleric') + lv('holy-vindicator'), 3 + cha);
+  if (lv('paladin') >= 4) add('Paladin', 'positive', lv('paladin'), Math.floor((Math.floor(lv('paladin') / 2) + cha) / 2));
+  if (lv('antipaladin') >= 4) add('Antipaladin', 'negative', lv('antipaladin'), Math.floor((Math.floor(lv('antipaladin') / 2) + cha) / 2));
+  if (lv('warpriest') >= 4) add('Warpriest', 'positive or negative', lv('warpriest') - 3,
+                               Math.floor((Math.floor(lv('warpriest') / 2) + stats.mod.wis) / 2));
+  return out;
+}
+
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = []) {
   return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);

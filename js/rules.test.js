@@ -17,7 +17,7 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus } from './rules.js';
+import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
@@ -797,6 +797,17 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('current hp: full when not tracked, capped at max', `${currentHp(null, 20)} ${currentHp(25, 20)} ${currentHp(7, 20)}`, '20 20 7');
   check('damage and healing (healing stops at max)', `${changeHp(null, 20, -8)} ${changeHp(12, 20, 5)} ${changeHp(18, 20, 10)}`, '12 17 20');
   check('0 disabled, below 0 dying, -Con dead', ['5', '0', '-3', '-12'].map(h => hpStatus(Number(h), 12) || 'ok').join(' '), 'ok disabled dying dead');
+  const cl5 = characterStats({ race: race('human'), cls: cls('cleric'), level: 5, baseScores: scores(10, 10, 10, 10, 14, 14), flexibleChoice: 'wis' });
+  // Cleric 5, Cha 14 (+2): 3d6, DC 10 + 2 + 2 = 14, 3 + 2 = 5/day
+  check('cleric 5 channel energy', JSON.stringify(channelEnergy(cl5).map(c => [c.dice, c.dc, c.uses])), '[["3d6",14,5]]');
+  check('Improved Channel adds 2 to the DC', channelEnergy(cl5, ['Improved Channel'])[0].dc, 16);
+  const pal4 = characterStats({ race: race('human'), cls: cls('paladin'), level: 4, baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' });
+  // Paladin 4, Cha 16 (+3): 2d6, DC 10 + 2 + 3 = 15, lay on hands 2 + 3 = 5 uses -> 2 channels
+  check('paladin 4 channel energy', JSON.stringify(channelEnergy(pal4).map(c => [c.source, c.dice, c.dc, c.uses])), '[["Paladin","2d6",15,2]]');
+  const pal3 = characterStats({ race: race('human'), cls: cls('paladin'), level: 3, baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' });
+  check('paladin 3 has no channel yet', channelEnergy(pal3).length, 0);
+  const wp7 = characterStats({ race: race('human'), cls: cls('warpriest'), level: 7, baseScores: scores(14, 10, 10, 10, 14, 10), flexibleChoice: 'wis' });
+  check('warpriest 7 channels as cleric 4: 2d6', channelEnergy(wp7)[0].dice, '2d6');
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13

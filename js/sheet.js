@@ -1,7 +1,7 @@
 // The printable character sheet: everything on one page flow, black on white, built from the same numbers the
 // tabs show. app.js fills #print-sheet with buildSheet() just before printing.
 import { esc, signed } from './dom.js';
-import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative } from './rules.js';
+import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative, channelEnergy } from './rules.js';
 import { spellContext, spellLines } from './spell-math.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
@@ -39,6 +39,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`], ['Initiative', signed(init)],
     ['Base attack', formatBab(stats.bab)], ['CMB', signed(cmb)],
     ...maneuvers.map(m => [m.name, `CMB ${signed(m.cmb)}, CMD ${m.cmd}`]),
+    ...channelEnergy(stats, view.haveFeats).map(c => [`Channel energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`,
+      `${c.dice} ${c.energy}, DC ${c.dc}, ${c.uses}/day`]),
   ]) + table(['Weapon', 'Attack', 'Damage', 'Critical', 'Range'],
     weapons.map(w => [w.name + (w.proficient ? '' : ' (not proficient, −4)'), w.attack, w.damage, w.critical, w.range]))
     + (weapons.some(w => w.extra.length) ? `<ul class="sheet-list">${weapons.flatMap(w => w.extra.map(x => `<li>${esc(w.name)}: ${esc(x)}</li>`)).join('')}</ul>` : '');

@@ -69,7 +69,7 @@ export function rollSpec(spec, rng = randomDie) {
       }
       for (let i = 0; i < (g.times || 1); i++) {
         const dmg = g.damage ? rollDamage(g.damage, rng) : null;
-        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.heal ? 'healing' : 'damage'} ${dmg.text}`);
+        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}`);
       }
       continue;
     }
