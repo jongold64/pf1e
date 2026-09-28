@@ -71,6 +71,21 @@ function spellButton(app, s) {
 
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
 // spells they may know at each level (from the class table).
+// Roll buttons for one spell line. An attack spell gets Roll attack (attack and damage together), Roll damage
+// (every ray or attack) and Roll crit damage (×2); a spell with no attack roll gets Roll damage (or healing).
+function spellRollButtons(roll) {
+  const g = roll.groups[0];
+  if (!g.attacks.length) return rollButton(roll, g.heal ? 'Roll healing' : 'Roll damage');
+  if (!g.damage) return rollButton(roll, 'Roll attack');
+  const n = g.attacks.length;
+  return [
+    rollButton(roll, 'Roll attack'),
+    rollButton({ title: `${roll.title} ${g.heal ? 'healing' : 'damage'}`, groups: [{ attacks: [], damage: g.damage, times: n, heal: g.heal }] },
+      g.heal ? 'Roll healing' : n > 1 ? `Roll damage (×${n})` : 'Roll damage'),
+    rollButton({ title: `${roll.title} critical damage`, groups: [{ attacks: [], damage: g.damage, critMult: g.mult || 2 }] }, 'Roll crit damage'),
+  ].join(' ');
+}
+
 function renderMySpells(app, view) {
   const { cls, level, table, maxLevel } = listClass(app, view);
   const byId = new Map(app.data.spells.map(s => [s.id, s]));
@@ -93,7 +108,7 @@ function renderMySpells(app, view) {
     const lines = spellLines(s, ctx);
     const sr = srCheck(s, ctx);
     const numbers = lines.map(l => `<span class="spell-line">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}` +
-      `${l.roll ? ` ${rollButton(l.roll)}` : ''}</span>`);
+      `${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}</span>`);
     if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
     return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
       `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></span>` +
