@@ -805,11 +805,13 @@ function render() {
       <div><span>Touch</span><b>${stats.touch}</b></div>
       <div><span>Flat-footed</span><b>${stats.flatFooted}</b></div>
       <div><span>CMD</span><b>${cm.cmd}</b></div>
+      <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
+        ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}</div>
     </div>
     ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
-    ${rollRow('CMB', cm.cmb, { title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] }, 'defense-row first-cmb')}
-    ${cm.maneuvers.map(m => rollRow(m.name, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] })).join('')}`;
+    ${cm.maneuvers.map((m, i) => rollRow(`${m.name} (CMB)`, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] },
+      i === 0 ? 'defense-row first-cmb' : 'defense-row')).join('')}`;
 
   renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
