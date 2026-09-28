@@ -20,7 +20,8 @@ import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
-import { evalFormula, spellContext, spellLines } from './spell-math.js';
+import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
+import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
@@ -844,6 +845,31 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
                                  featChoices: [{ feat: 'Spell Focus', value: 'evocation' }] });
   check('Spell Focus (evocation) adds 1 to the DC', spellLines(sp('Fireball'), focused)[0].text.slice(0, 5), 'DC 18');
   check('hold person (wizard 3rd level): the save only', line('Hold Person').startsWith('DC 17 Will negates'), true);
+}
+
+{
+  // Dice rolling (with fixed "dice" so the results are known)
+  const dice = (...values) => () => values.shift();
+  check('roll 1d8+4', rollDamage('1d8+4', dice(5)).text, '1d8 (5) + 4 = 9');
+  check('damage is at least 1', rollDamage('1d4-3', dice(1)).total, 1);
+  check('fixed healing', rollDamage('110').total, 110);
+  check('several dice types', rollDamage('3d6+2d6', dice(1, 2, 3, 4, 5)).total, 15);
+  check('Fortitude save roll', rollSpec({ title: 'Fortitude save', check: 'Fortitude save', groups: [{ attacks: [5] }] }, dice(14)).lines[0],
+        'Fortitude save: d20 (14) + 5 = 19');
+  const crit = rollSpec({ title: 'Longsword', groups: [{ attacks: [6], damage: '1d8+4', threat: 19, mult: 2 }] }, dice(19, 10, 3, 4, 5)).lines[0];
+  check('critical threat is confirmed and critical damage rolled twice',
+        crit, 'Attack: d20 (19) + 6 = 25, critical threat! Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage). Damage 1d8 (3) + 4 = 7; critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
+  check('natural 1 misses', rollSpec({ title: 'x', groups: [{ attacks: [20], damage: '1d6' }] }, dice(1)).lines[0], 'Attack: d20 (1) + 20 = 21, natural 1: miss');
+  check('iterative attacks each roll', rollSpec({ title: 'x', groups: [{ attacks: [6, 1], damage: '1d6' }] }, dice(10, 2, 11, 3)).lines.length, 2);
+  check('magic missile: 3 missiles, no attack roll', rollSpec({ title: 'Magic Missile', groups: [{ attacks: [], damage: '1d4+1', times: 3 }] }, dice(1, 2, 3)).lines.length, 3);
+  const wizard = characterStats({ race: race('human'), cls: cls('wizard'), level: 5, baseScores: scores(10, 14, 10, 16, 10, 10), flexibleChoice: 'int' });
+  const spells2 = await fetch('data/spells.json').then(r => r.json());
+  const fireball = spells2.find(s => s.name === 'Fireball');
+  check('SR check: caster level 5', srCheck(fireball, spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wizard, size: 'Medium' })).bonus, 5);
+  check('SR check with Spell Penetration', srCheck(fireball, spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wizard, size: 'Medium',
+                                                                          haveFeats: ['Spell Penetration'] })).bonus, 7);
+  check('no SR check for a spell without spell resistance', srCheck(spells2.find(s => s.name === 'Mage Armor'),
+        spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wizard, size: 'Medium' })), null);
 }
 
 {

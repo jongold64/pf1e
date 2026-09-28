@@ -25,6 +25,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
+import { initRolls, rollButton } from './roll-ui.js';
 import { weaponSummaries } from './tab-weapons.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -759,16 +760,21 @@ function render() {
   const results = [
     ['Hit points', stats.hp],
     ['Base attack bonus', formatBab(stats.bab)],
-    ['Fortitude', signed(stats.fort)],
-    ['Reflex', signed(stats.ref)],
-    ['Will', signed(stats.will)],
-    ['Armor Class', stats.ac],
-    ['Touch AC', stats.touch],
-    ['Flat-footed AC', stats.flatFooted],
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`],
     ['Wearing', worn || 'no armor'],
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
+
+  // Armor Class and saving throws, in the Race card; each save has a Roll button.
+  const saveRow = (name, value) => `<div class="defense-row"><span>${name}</span><b>${esc(signed(value))}</b>
+    ${rollButton({ title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] })}</div>`;
+  $('race-defense').innerHTML = `
+    <div class="defense-ac">
+      <div><span>AC</span><b>${stats.ac}</b></div>
+      <div><span>Touch</span><b>${stats.touch}</b></div>
+      <div><span>Flat-footed</span><b>${stats.flatFooted}</b></div>
+    </div>
+    ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}`;
 
   renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
@@ -1129,6 +1135,7 @@ async function start() {
   save();
   buildControls();
   initCharacterBar();
+  initRolls();
   $('loading').hidden = true;
   $('app').hidden = false;
   render();

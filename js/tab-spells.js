@@ -2,7 +2,8 @@
 // panel for the spell being looked at.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { spellsPerDay } from './rules.js';
-import { spellContext, spellLines } from './spell-math.js';
+import { spellContext, spellLines, srCheck } from './spell-math.js';
+import { rollButton } from './roll-ui.js';
 
 let selectedId = null;
 let listClassId = null;  // which class's spell list is shown, for characters with several
@@ -86,12 +87,17 @@ function renderMySpells(app, view) {
     : 'The spells in your spellbook, or the ones you usually prepare. You prepare spells from these each day.';
 
   // Attack, damage and save DC for each spell, cast as this class.
-  const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.race.size, featChoices: view.featChoices });
+  const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.race.size, featChoices: view.featChoices,
+                             haveFeats: view.haveFeats });
   const row = s => {
     const lines = spellLines(s, ctx);
+    const sr = srCheck(s, ctx);
+    const numbers = lines.map(l => `<span class="spell-line">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}` +
+      `${l.roll ? ` ${rollButton(l.roll)}` : ''}</span>`);
+    if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
     return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
       `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></span>` +
-      (lines.length ? `<span class="spell-numbers">${lines.map(l => (l.label ? `<b>${esc(l.label)}:</b> ` : '') + esc(l.text)).join('<br>')}</span>` : '') +
+      (numbers.length ? `<span class="spell-numbers">${numbers.join('')}</span>` : '') +
       '</li>';
   };
   const groups = [];

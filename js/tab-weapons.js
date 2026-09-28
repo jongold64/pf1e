@@ -6,6 +6,7 @@ import { armorAttackPenalty } from './armor.js';
 import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
+import { rollButton } from './roll-ui.js';
 
 let selectedId = null;
 let listed = false;
@@ -68,6 +69,14 @@ function renderList(app) {
 }
 
 const attackText = a => a.attacks.map(signed).join('/');
+
+// Threat range and multiplier for the Roll buttons ("19-20/×2" -> 19, 2), with Improved Critical doubling the range.
+function critOf(w, flags, have) {
+  const threat = w.threat ? (flags.impCrit && have.has('Improved Critical') ? 21 - 2 * (21 - w.threat) : w.threat) : 20;
+  const mult = Number(String(w.multiplier ?? w.critical ?? '').match(/\d+/)?.[0]) || 2;
+  return { threat, mult };
+}
+const rollGroup = (label, a, crit) => ({ label, attacks: a.attacks, damage: a.damage, ...crit });
 const usedText = a => (a.used.length ? ` <span class="muted">(${esc(a.used.join(', '))})</span>` : '');
 
 // Everything weaponAttack needs that comes from the character rather than the weapon.
@@ -155,10 +164,15 @@ function renderCombat(app, view, ctx) {
            unarmedDamage: offArgs.unarmedDamage },
   });
   const off = r.off;
+  const spec = { title: 'Two-weapon full attack', groups: [
+    rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have)),
+    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have)),
+  ] };
   $('twf-result').innerHTML = `<dl class="facts attack-line">
       <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}</dd>
       <dt>Off hand</dt><dd><b>${esc(attackText(off))}</b>, ${esc(off.damage)}${usedText(off)}</dd>
     </dl>
+    <div class="slot-buttons">${rollButton(spec, 'Roll full attack')}</div>
     <p class="hint">Penalties ${r.penalties.main} main hand, ${r.penalties.off} off hand
       (${r.offLight ? 'light off-hand weapon' : 'off-hand weapon isn\'t light'}${have.has('Two-Weapon Fighting') ? ', Two-Weapon Fighting' : ', no Two-Weapon Fighting feat'}).
       Off-hand damage adds ${have.has('Double Slice') ? 'full Strength (Double Slice)' : 'half Strength'}.</p>`;
@@ -185,19 +199,23 @@ export function renderMyWeapons(app, view) {
     const isProficient = byRules || !!e.proficient;
     const args = attackArgs(app, view, ctx, e);
     const a = weaponAttack(args);
+    const flags = ctx.flagsFor(e, w);
+    const crit = critOf(w, flags, have);
+    const weaponName = `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`;
     // Extra lines: a flurry with monk weapons, and a double weapon used as two weapons.
     const extra = [];
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
-      extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}</dd>`);
+      extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}
+        ${rollButton({ title: `${weaponName}: ${ctx.flurry.name.toLowerCase()}`, groups: [rollGroup('', f, crit)] })}</dd>`);
     }
     if (isDouble(w)) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
       extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
-        <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}</dd>`);
+        <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}
+        ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, crit)] })}</dd>`);
     }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
-    const flags = ctx.flagsFor(e, w);
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
       `<label class="check-row small"><input type="checkbox" data-weapon-flag="${key}" data-index="${i}" ${e[key] ? 'checked' : ''}> ${esc(feat)} (${what})</label>`).join('');
     const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
@@ -207,7 +225,8 @@ export function renderMyWeapons(app, view) {
         <button type="button" class="link" data-remove-weapon="${i}">remove</button>
       </div>
       <dl class="facts attack-line">
-        <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span></dd>
+        <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>
+          ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</dd>
         <dt>Damage</dt><dd><b>${esc(a.damage)}</b></dd>
         ${extra.join('')}
         <dt>Critical</dt><dd>${esc((flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—')}</dd>

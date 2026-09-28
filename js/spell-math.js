@@ -82,16 +82,25 @@ export function evalFormula(formula, vars = {}) {
 
 // What the character needs to know about casting a spell as a given class: caster level, casting ability
 // modifier, BAB and attack modifiers, and school focus bonuses.
-export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [] }) {
+export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [] }) {
   const ability = CASTING_ABILITY[cls.id];
   const focus = {};
   for (const c of featChoices) {
     if ((c.feat === 'Spell Focus' || c.feat === 'Greater Spell Focus') && c.value) focus[c.value] = (focus[c.value] || 0) + 1;
   }
+  // Spell Penetration and Greater Spell Penetration: +2 each on caster level checks to overcome spell resistance.
+  const penetration = (haveFeats.includes('Spell Penetration') ? 2 : 0) + (haveFeats.includes('Greater Spell Penetration') ? 2 : 0);
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
-    sizeAttack: SIZE_AC[size] ?? 0, focus,
+    sizeAttack: SIZE_AC[size] ?? 0, focus, penetration,
   };
+}
+
+// The Roll button spec for a caster level check against spell resistance, or null if the spell allows none.
+export function srCheck(spell, ctx) {
+  if (!/^yes/i.test(spell.spell_resistance || '')) return null;
+  const bonus = ctx.cl + ctx.penetration;
+  return { title: `${spell.name}: caster level check vs. spell resistance`, check: 'Caster level check', groups: [{ attacks: [bonus] }], bonus };
 }
 
 const signed = n => (n >= 0 ? `+${n}` : `${n}`);
@@ -104,11 +113,13 @@ export function spellLines(spell, ctx) {
   const lines = [];
   for (const a of spell.actions || []) {
     const parts = [];
+    let attack = null;
     if (a.kind === 'ranged touch' || a.kind === 'ranged') {
-      parts.push(a.auto_hit ? 'hits automatically'
-        : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(ctx.bab + ctx.mod.dex + ctx.sizeAttack)}`);
+      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack;
+      parts.push(a.auto_hit ? 'hits automatically' : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(attack)}`);
     } else if (a.kind === 'melee touch' || a.kind === 'melee') {
-      parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(ctx.bab + ctx.mod.str + ctx.sizeAttack)}`);
+      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack;
+      parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(attack)}`);
     } else if (a.kind === 'maneuver') {
       parts.push('combat maneuver');
     }
@@ -117,17 +128,27 @@ export function spellLines(spell, ctx) {
       const harmless = a.harmless && !/touch|melee|ranged/.test(a.kind);
       parts.push(`DC ${dc} ${a.save_text || SAVES[a.save]}${harmless ? ' (harmless)' : ''}`);
     }
-    const damage = (a.damage || []).map(d => {
-      const amount = evalFormula(d.formula, vars);
-      return amount === null ? null : `${amount}${d.types?.length ? ` ${d.types.join('/')}` : ''}`;
-    }).filter(Boolean);
+    const amounts = (a.damage || []).map(d => ({ amount: evalFormula(d.formula, vars), types: d.types || [] }))
+      .filter(d => d.amount !== null);
+    const damage = amounts.map(d => `${d.amount}${d.types.length ? ` ${d.types.join('/')}` : ''}`);
+    const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
     if (damage.length) {
-      const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
       const what = a.kind === 'heal' ? 'heals ' : '';
       const unit = /missile/i.test(spell.name) ? 'missile' : /ray/i.test(spell.name) ? 'ray' : 'attack';
       parts.push(count > 1 ? `${count} ${unit}s of ${damage.join(' + ')}` : what + damage.join(' + '));
     }
-    if (parts.length) lines.push({ label: a.name && a.name !== 'Use' && a.name !== 'Cast' ? a.name : '', text: parts.join(', ') });
+    const label = a.name && a.name !== 'Use' && a.name !== 'Cast' ? a.name : '';
+    // What the Roll button rolls: an attack roll for each ray (natural 20 threatens a ×2 critical) and the damage,
+    // or just the damage (or healing) when there's no attack roll.
+    const rollDamage = amounts.map(d => d.amount).join('+') || null;
+    let roll = null;
+    if (attack !== null && (rollDamage || a.kind !== 'maneuver')) {
+      roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, check: 'Attack',
+               groups: [{ attacks: Array(count).fill(attack), damage: rollDamage, threat: 20, mult: 2, heal: a.kind === 'heal' }] };
+    } else if (rollDamage) {
+      roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, groups: [{ attacks: [], damage: rollDamage, times: count, heal: a.kind === 'heal' }] };
+    }
+    if (parts.length) lines.push({ label, text: parts.join(', '), roll });
   }
   // A save with no action data: the spell's own saving throw line.
   if (!lines.length && dc !== null && spell.saving_throw && !/^none/i.test(spell.saving_throw)) {

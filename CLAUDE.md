@@ -190,6 +190,11 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   10d6)" wording. `js/spell-math.js`: `evalFormula` (min/max/floor/ceil/clamp, dice at least 1), `spellContext`
   (caster level, casting modifier, Spell Focus schools) and `spellLines` (attack bonus = BAB + Dex/Str + size, DC =
   10 + spell level + modifier + focus, rays/missiles from `extra_attacks`). Shown under My spells and on the sheet.
+- Roll buttons: `rollButton(spec)` (roll-ui.js) puts a JSON spec in `data-roll`; one document click handler rolls it
+  with `rollSpec` (dice.js: d20 + bonus per attack, natural 20/1, threat range → confirmation roll and ×mult damage,
+  damage at least 1, `times` for missiles) and shows the result in `#roll-panel` (last 6 kept). Used for saves (Race
+  card, where AC and saves now live instead of the Results card), weapon attack lines (tab-weapons.js `critOf`/
+  `rollGroup`), and spells (`spellLines` returns `roll`; `srCheck` = caster level + 2 per Spell Penetration feat).
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.
