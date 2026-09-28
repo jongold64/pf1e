@@ -389,12 +389,14 @@ function buildControls() {
   $('race').addEventListener('change', e => update({ race: e.target.value }));
   // Hit point tracker: pick an amount (negative damage, positive healing), then Apply; Full resets.
   const amount = () => Math.trunc(Number($('hp-amount').value) || 0);
-  $('hp-minus').addEventListener('click', () => { $('hp-amount').value = amount() - 1; });
-  $('hp-plus').addEventListener('click', () => { $('hp-amount').value = amount() + 1; });
+  // The box starts empty; the buttons set the number (and it empties again when it's back to 0).
+  const setAmount = n => { $('hp-amount').value = n ? String(n) : ''; };
+  $('hp-minus').addEventListener('click', () => setAmount(amount() - 1));
+  $('hp-plus').addEventListener('click', () => setAmount(amount() + 1));
   $('hp-apply').addEventListener('click', () => {
     if (!amount()) return;
     const hp = changeHp(state.hpCurrent, view.stats.hp, amount());
-    $('hp-amount').value = 0;
+    setAmount(0);
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
