@@ -194,7 +194,10 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   // Armor's max Dex caps a Dex bonus to AC; a Dex penalty always applies.
   const dexAc = g.maxDex === null ? mod.dex : Math.min(mod.dex, g.maxDex);
   const armorAc = g.armorBonus + g.shieldBonus;
-  const ac = 10 + armorAc + dexAc + size + classAc + fb.dodgeAc;
+  // Racial natural armor (kept when flat-footed, lost against touch) and racial dodge bonuses.
+  const raceAc = racialAc(race);
+  const dodge = fb.dodgeAc + raceAc.dodge;
+  const ac = 10 + armorAc + dexAc + size + classAc + dodge + raceAc.natural;
   const bab = counts.reduce((n, e) => n + rowFor(e).bab[0], 0);
 
   return {
@@ -210,8 +213,25 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
     will: sum('will') + mod.wis + fb.will,
     ac,
     dexAc,
-    touch: ac - armorAc,
+    naturalArmor: raceAc.natural,
+    touch: ac - armorAc - raceAc.natural,
     // Flat-footed loses a Dex bonus and dodge bonuses, but a Dex penalty still applies.
-    flatFooted: ac - Math.max(0, dexAc) - fb.dodgeAc,
+    flatFooted: ac - Math.max(0, dexAc) - dodge,
   };
+}
+
+// Racial AC bonuses that always apply, read from the race's traits: "Kobolds have a +1 natural armor bonus.",
+// "Kasathas have a +2 dodge bonus to Armor Class." Conditional ones ("against giants", "when adjacent to…")
+// are left out.
+export function racialAc(race) {
+  const out = { natural: 0, dodge: 0 };
+  for (const t of race?.traits || []) {
+    const text = String(t.text || '');
+    if (/\b(against|when|while|if)\b/i.test(text)) continue;
+    const natural = text.match(/\b(?:have|has|gain|gains) a \+(\d+) (?:racial bonus to )?natural armor bonus\b/i);
+    if (natural) out.natural += Number(natural[1]);
+    const dodge = text.match(/\b(?:have|has|gain|gains) a \+(\d+) dodge bonus to (?:AC|Armor Class)\b/i);
+    if (dodge) out.dodge += Number(dodge[1]);
+  }
+  return out;
 }

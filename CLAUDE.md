@@ -86,6 +86,14 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   'divine', 'alchemist' or 'any' per progression row) to a matching class (the first, or the player's choice).
   Caster level = effective level (minus 3 for classes whose spells start at 4th). Feat prerequisites use
   `featContext({ counts, casting })`: `levelsIn(ctx, 'fighter')` for class levels, class features from any class.
+- Feats and prestige requirements are checked against the character as of the level they were taken:
+  `slotCharacterLevel` (feats.js) turns a slot into a character level (class bonus feat n = the n-th level in that
+  class), and `view.contextAt(level, exceptSlotId)` builds a feat context from the levels up to then (BAB, casting,
+  ability increases, feats in earlier or same-level slots, free class feats, skill ranks capped at that level).
+- Other rules details: racial natural armor / dodge bonuses that always apply are read from trait text
+  (`racialAc` in rules.js); monk/brawler unarmed damage uses the Small/Large column (`unarmedForSize`); arcane spell
+  failure is per class (`spellFailureByClass`: bard, skald, bloodrager, summoner, magus armor exceptions); armor and
+  weapons weigh half for Small characters (`sizeWeightFactor`); everyone is proficient with unarmed strikes.
 - Prestige requirements: `js/prestige.js` parses the class's requirement lines (BAB, Feats, Skills, Spells,
   Special class features, martial proficiency; alignment/languages/story ones are "?") and checks them
   against the character before its first level in the prestige class (`prestigeCheck` in app.js).

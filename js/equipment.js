@@ -55,11 +55,18 @@ export function magicItemTotals(owned, itemsById) {
   return { cost, weight: Math.round(weight * 100) / 100, unpriced };
 }
 
-// Totals for the inventory ([{ id, variant, qty }]) plus worn armor and shield ({ armor, armorEnh, shield, shieldEnh }).
-// Items with no listed price or weight count as 0 and are listed in `unpriced` / `unweighed`.
+// Listed weights are for Medium characters. Armor and weapons for Small characters weigh half as much and for
+// Large characters twice as much (Core Rulebook, Armor for Unusual Creatures and Weapon Size). General gear keeps
+// its listed weight here: only some items are lighter for Small characters, and the data doesn't mark which.
+export function sizeWeightFactor(size) {
+  return size === 'Small' ? 0.5 : size === 'Large' ? 2 : 1;
+}
+
+// Totals for the inventory ([{ id, variant, qty }]) plus worn armor and shield ({ armor, armorEnh, shield, shieldEnh,
+// size }). Items with no listed price or weight count as 0 and are listed in `unpriced` / `unweighed`.
 export function equipmentTotals(inventory, itemsById, worn = {}) {
   let cost = armorCost(worn.armor, worn.armorEnh) + armorCost(worn.shield, worn.shieldEnh);
-  let weight = (worn.armor?.weight_lbs || 0) + (worn.shield?.weight_lbs || 0);
+  let weight = ((worn.armor?.weight_lbs || 0) + (worn.shield?.weight_lbs || 0)) * sizeWeightFactor(worn.size);
   const unpriced = [];
   const unweighed = [];
   for (const entry of inventory) {

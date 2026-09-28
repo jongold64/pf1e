@@ -6,7 +6,7 @@ import {
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
-  repeatable, featEffects,
+  repeatable, featEffects, slotCharacterLevel,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
@@ -346,7 +346,7 @@ function buildControls() {
     if (!item?.open) return;
     const f = data.featsById.get(item.dataset.feat);
     const slot = view.slots.find(s => s.id === pickerSlotId);
-    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.ctx, slot)) +
+    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot)) +
       `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`;
   }, true);
   $('feat-search').addEventListener('input', renderPicker);
@@ -465,28 +465,50 @@ function computeView() {
   });
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
   const ctx = featContext({ race, counts, casting: casting.casting, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
+
+  // The character as it was at an earlier level, for feats taken then and for prestige class requirements:
+  // BAB, saves, spellcasting and ability increases from those levels, feats from slots reached by then (and free
+  // class feats), and skill ranks capped at that level (the app doesn't record which level each rank was bought at).
+  for (const s of slots) s.charLevel = slotCharacterLevel(s, classLevels);
+  // `except` leaves out the feat in one slot (the one being chosen), so it can't count toward its own replacement.
+  const contexts = new Map();
+  const contextAt = (lv, except = null) => {
+    const key = `${lv}|${except}`;
+    if (!contexts.has(key)) {
+      const before = classLevels.slice(0, lv);
+      const beforeCounts = classCounts(before);
+      const beforeStats = characterStats({ race, classLevels: before, baseScores: state.base, flexibleChoice: state.flexible,
+                                           increases: state.increases });
+      const feats = [
+        ...slots.filter(s => s.charLevel <= lv && s.id !== except).map(s => data.featsById.get(state.feats[s.id])?.name).filter(Boolean),
+        ...grantedFeatsFor(beforeCounts, data.feats.map(f => f.name)), ...proficiencyFeatsFor(beforeCounts.map(e => e.cls)),
+      ];
+      const ranks = Object.fromEntries(Object.entries(skillRanks).map(([n, r]) => [n, Math.min(r, lv)]));
+      contexts.set(key, featContext({ race, counts: beforeCounts, casting: castingClasses(beforeCounts, state.casterChoices).casting,
+                                     scores: beforeStats.scores, bab: beforeStats.bab[0], haveFeats: feats, skillRanks: ranks }));
+    }
+    return contexts.get(key);
+  };
+
   // Prestige class requirements, checked against the levels before the first level of each one.
   const requirements = new Map();
   for (const e of counts.filter(x => x.cls.category === 'prestige')) {
     const before = classLevels.slice(0, classLevels.findIndex(c => c.id === e.cls.id));
-    requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, stats.scores, haveFeats, skillRanks));
+    requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, before.length ? contextAt(before.length) : null));
   }
   const speed = speedInArmor(race.base_speed, gear, race);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, gear, stats, ctx, speed, requirements,
+    slots, chosen, granted, haveFeats, gear, stats, ctx, contextAt, speed, requirements,
   };
 }
 
-// A prestige class's requirements for the character as it was before taking it. BAB and spellcasting come
-// from those earlier levels; feats and skill ranks from the current choices (the app doesn't record when they
-// were taken).
-function prestigeCheck(prestige, before, race, scores, haveFeats, skillRanks) {
+// A prestige class's requirements for the character as it was before taking it (ctx from view.contextAt).
+function prestigeCheck(prestige, before, race, ctx) {
   const counts = classCounts(before);
   if (!counts.length) return { status: 'unmet', parts: [{ status: 'unmet', why: 'Needs a level in another class first' }] };
-  const bab = counts.reduce((n, e) => n + e.cls.progression[e.level - 1].bab[0], 0);
   const casting = castingClasses(counts, state.casterChoices).casting;
-  const ctx = featContext({ race, counts, casting, scores, bab, haveFeats, skillRanks });
+  const scores = ctx.scores;
   const martial = proficiencyTest(counts.map(e => e.cls), race)({ name: 'any martial weapon', proficiency: 'martial' });
   return checkRequirements(prestige, ctx, castingByTradition(casting, scores), martial);
 }
@@ -713,7 +735,7 @@ function renderFeats(slots, granted, ctx) {
     const rule = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
     let body;
     if (f) {
-      const check = checkFeat(f, ctx, slot);
+      const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
       const wrongSlot = !slotAccepts(slot, f);
       body = `
         <details class="chosen">
@@ -764,7 +786,7 @@ function renderPicker() {
     if (taken.has(f.id) && !repeatable(f)) continue;
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
-    const check = checkFeat(f, view.ctx, slot);
+    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
     if (hideUnmet && check.status === 'unmet') continue;
     matches.push({ f, check });
   }

@@ -17,6 +17,10 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
+import { racialAc } from './rules.js';
+import { unarmedForSize } from './weapons.js';
+import { spellFailureByClass } from './armor.js';
+import { slotCharacterLevel } from './feats.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -720,6 +724,36 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const ekWizard = checkRequirements(ek, ctxFor([w, w, w, w, w]), castingByTradition(castingClasses(classCounts([w, w, w, w, w])).casting,
                                      ctxFor([w, w, w, w, w]).scores), false);
   check('eldritch knight: wizard 5 lacks martial proficiency', ekWizard.parts.find(p => /martial/.test(p.why)).status, 'unmet');
+}
+
+{
+  // Rules accuracy
+  check('kobold +1 natural armor', JSON.stringify(racialAc(race('kobold'))), '{"natural":1,"dodge":0}');
+  check('kasatha +2 dodge', JSON.stringify(racialAc(race('kasatha'))), '{"natural":0,"dodge":2}');
+  check('dwarf: giant-only dodge bonus left out', JSON.stringify(racialAc(race('dwarf'))), '{"natural":0,"dodge":0}');
+  const kob = characterStats({ race: race('kobold'), cls: cls('fighter'), level: 1, baseScores: scores(10, 14, 10, 10, 10, 10) });
+  // Kobold: Dex 16 (+3), Small +1, natural +1 -> 15; touch 14; flat-footed 12
+  check('kobold AC / touch / flat-footed', `${kob.ac} ${kob.touch} ${kob.flatFooted}`, '15 14 12');
+  const kas = characterStats({ race: race('kasatha'), cls: cls('fighter'), level: 1, baseScores: scores(10, 10, 10, 10, 10, 10) });
+  check('kasatha dodge: AC / touch / flat-footed', `${kas.ac} ${kas.touch} ${kas.flatFooted}`, '13 13 10');
+  check('a monk is proficient with unarmed strikes', proficiencyTest(cls('monk'), race('human'))(weapon('Unarmed Strike')), true);
+  check('Small monk unarmed damage', ['1d6', '1d8', '1d10', '2d6', '2d8', '2d10'].map(d => unarmedForSize(d, 'Small')).join(' '),
+        '1d4 1d6 1d8 1d10 2d6 2d8');
+  check('Medium monk unarmed damage unchanged', unarmedForSize('1d8', 'Medium'), '1d8');
+  const leather = armorEffects({ armor: armorById('leather'), shield: armorById('light-steel-shield') });
+  const failure = counts => spellFailureByClass(leather, classCounts(counts)).map(e => `${e.cls.id} ${e.chance}`).join(', ');
+  check('leather + light shield: bard only the shield counts... none (bards can use shields)', failure([cls('bard')]), 'bard 0');
+  check('...magus: the shield counts', failure([cls('magus')]), 'magus 5');
+  check('...wizard: both', failure([cls('wizard')]), 'wizard 15');
+  check('...cleric: no arcane spells', failure([cls('cleric')]), '');
+  const chain = armorEffects({ armor: armorById('chainmail') });
+  check('magus 6 in chainmail (medium) fails, magus 7 doesn\'t',
+        `${spellFailureByClass(chain, classCounts(Array(6).fill(cls('magus'))))[0].chance} ${spellFailureByClass(chain, classCounts(Array(7).fill(cls('magus'))))[0].chance}`, '30 0');
+  check('Small armor weighs half', equipmentTotals([], new Map(), { armor: armorById('chainmail'), size: 'Small' }).weight, 20);
+  const fr = [cls('fighter'), cls('rogue'), cls('fighter'), cls('fighter')];
+  check('fighter bonus feat 2 comes at character level 3 (fighter/rogue/fighter)',
+        slotCharacterLevel({ kind: 'class', clsId: 'fighter', level: 2 }, fr), 3);
+  check('general slots count character levels', slotCharacterLevel({ kind: 'general', level: 3 }, fr), 3);
 }
 
 {

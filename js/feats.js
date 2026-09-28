@@ -78,6 +78,17 @@ export function featSlots({ race, cls, level, classLevels = null }) {
   return slots;
 }
 
+// Character level a feat slot is reached at. General and racial slots already count character levels; a class
+// bonus feat at class level n comes with the character's n-th level in that class.
+export function slotCharacterLevel(slot, classLevels) {
+  if (slot.kind !== 'class') return slot.level;
+  let seen = 0;
+  for (let i = 0; i < classLevels.length; i++) {
+    if (classLevels[i].id === slot.clsId && ++seen === slot.level) return i + 1;
+  }
+  return classLevels.length;
+}
+
 // Can this feat go in this slot at all (ignoring prerequisites)?
 export function slotAccepts(slot, feat) {
   if (slot.kind !== 'class') return true;

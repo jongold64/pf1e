@@ -1,6 +1,8 @@
 // Armor rules: what worn armor and a shield do to AC, skills, speed and spellcasting.
 // No page code here, so these functions can be tested on their own.
 
+import { ARCANE } from './multiclass.js';
+
 export const ENHANCEMENT_MAX = 5;
 
 // Proficiency a character needs for each armor category (feat names, as proficiencyFeats() returns them).
@@ -29,6 +31,27 @@ export function armorEffects({ armor = null, shield = null, armorEnh = 0, shield
 }
 
 export const NO_ARMOR = armorEffects();
+
+// Armor some classes can cast their own spells in without arcane spell failure, and whether a shield is fine too
+// (from each class's Spells / armor class features). A magus gets medium armor at 7th level and heavy at 13th.
+const SPELL_FAILURE_FREE = {
+  bard: () => ({ armor: ['light'], shield: true }),
+  skald: () => ({ armor: ['light', 'medium'], shield: true }),
+  bloodrager: () => ({ armor: ['light', 'medium'], shield: false }),
+  summoner: () => ({ armor: ['light'], shield: false }),
+  magus: level => ({ armor: level >= 13 ? ['light', 'medium', 'heavy'] : level >= 7 ? ['light', 'medium'] : ['light'], shield: false }),
+};
+
+// Arcane spell failure chance for each arcane class the character has ([{ cls, level }] from classCounts):
+// [{ cls, chance }]. Divine spells and alchemist extracts have none.
+export function spellFailureByClass(effects, counts) {
+  return counts.filter(e => ARCANE.has(e.cls.id)).map(e => {
+    const free = SPELL_FAILURE_FREE[e.cls.id]?.(e.level) || { armor: [], shield: false };
+    const armorPart = effects.armor && !free.armor.includes(effects.armor.category) ? effects.armor.spell_failure || 0 : 0;
+    const shieldPart = effects.shield && !free.shield ? effects.shield.spell_failure || 0 : 0;
+    return { cls: e.cls, chance: armorPart + shieldPart };
+  });
+}
 
 // Speed in armor. The armor table lists speeds for 30 ft. and 20 ft. creatures; other speeds are left as
 // they are (the table doesn't cover them). Races with "Slow and Steady" (dwarves) are never slowed by armor.

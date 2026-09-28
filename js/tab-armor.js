@@ -1,8 +1,17 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { ENHANCEMENT_MAX, proficiencyWarnings } from './armor.js';
+import { ENHANCEMENT_MAX, proficiencyWarnings, spellFailureByClass } from './armor.js';
 
 const GROUPS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor']];
+
+// "20%", or per class when the character casts arcane spells ("Bard none, Wizard 20%").
+function spellFailureText(gear, counts) {
+  if (!gear.spellFailure) return 'none';
+  const byClass = spellFailureByClass(gear, counts);
+  if (!byClass.length) return `${gear.spellFailure}% (doesn't matter: only arcane spells are affected)`;
+  return byClass.map(e => `${e.cls.name} spells ${e.chance ? `${e.chance}%` : 'none'}`).join(', ') +
+    (byClass.some(e => e.chance < gear.spellFailure) ? ' (some classes can cast in some armor, see their class features)' : '');
+}
 
 // Stats and rules text for one armor or shield (also used by search results).
 export function armorDetails(a) {
@@ -66,9 +75,7 @@ export function renderArmorTab(app, view) {
     ['Flat-footed AC', stats.flatFooted],
     ['Dex bonus to AC', signed(stats.dexAc)],
     ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none'],
-    ['Arcane spell failure', gear.spellFailure
-      ? `${gear.spellFailure}% (only for arcane spells; some classes can cast in light armor, see their class features)`
-      : 'none'],
+    ['Arcane spell failure', spellFailureText(gear, view.counts)],
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
       (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : '')],
   ];

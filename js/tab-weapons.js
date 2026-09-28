@@ -4,7 +4,7 @@ import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
-         powerAttackStep } from './weapons.js';
+         powerAttackStep, unarmedForSize } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
 
 let selectedId = null;
@@ -74,7 +74,8 @@ function combatContext(app, view) {
   const proficient = proficiencyTest(view.classes, view.race);
   // Unarmed strike damage from the monk or brawler table (the higher class level).
   const unarmedFrom = view.counts.filter(e => ['monk', 'brawler'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
-  const unarmed = unarmedFrom ? unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'] : null;
+  const unarmed = unarmedFrom
+    ? unarmedForSize(unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'], view.race.size) : null;
   // Flurry of blows: monk (from 1st level) or brawler's flurry (from 2nd). Monk levels count as BAB for it.
   const flurryFrom = view.counts.find(e => e.cls.id === 'monk') || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
   const flurry = flurryFrom ? {

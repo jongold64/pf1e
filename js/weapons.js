@@ -30,6 +30,8 @@ export function proficiencyTest(clsOrList, race) {
     return re.test(classText) || re.test(raceText);
   };
   return w => {
+    // Everyone is proficient with unarmed strikes (Core Rulebook, Unarmed Attacks).
+    if (w.id === 'unarmed-strike') return true;
     if (w.firearm && firearms) return true;
     if (w.proficiency === 'simple' && simple) return true;
     if (w.proficiency === 'martial' && martial) return true;
@@ -65,6 +67,20 @@ export const isDouble = weapon => (weapon.special || []).some(s => lower(s) === 
 export const isMonkWeapon = weapon => weapon.id === 'unarmed-strike' || (weapon.special || []).some(s => lower(s) === 'monk');
 // Light weapons (and unarmed strikes, and the other end of a double weapon) are "light" off-hand weapons.
 export const isLight = weapon => weapon.group === 'light' || weapon.group === 'unarmed';
+
+// Monk and brawler unarmed damage: the class table gives Medium damage; Small and Large characters use these
+// columns (Core Rulebook, Table 3-11: Small or Large Monk Unarmed Damage).
+const UNARMED_BY_SIZE = {
+  '1d6': { Small: '1d4', Large: '1d8' },
+  '1d8': { Small: '1d6', Large: '2d6' },
+  '1d10': { Small: '1d8', Large: '2d8' },
+  '2d6': { Small: '1d10', Large: '3d6' },
+  '2d8': { Small: '2d6', Large: '3d8' },
+  '2d10': { Small: '2d8', Large: '4d8' },
+};
+export function unarmedForSize(mediumDice, size) {
+  return UNARMED_BY_SIZE[mediumDice]?.[size] || mediumDice;
+}
 
 // Power Attack and Deadly Aim: -1 attack / +2 damage, one step more at BAB +4 and every +4 after.
 export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
