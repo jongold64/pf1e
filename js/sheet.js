@@ -1,7 +1,7 @@
 // The printable character sheet: everything on one page flow, black on white, built from the same numbers the
 // tabs show. app.js fills #print-sheet with buildSheet() just before printing.
 import { esc, signed } from './dom.js';
-import { ABILITIES, formatBab, spellsPerDay, combatManeuvers } from './rules.js';
+import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative } from './rules.js';
 import { spellContext, spellLines } from './spell-math.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
@@ -20,7 +20,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
   const { cmb, cmd } = combatManeuvers(stats, race.size);
-  const init = stats.mod.dex + (view.haveFeats.includes('Improved Initiative') ? 4 : 0);
+  const init = initiative(stats, view.haveFeats);
 
   const header = `<header class="sheet-header"><h1>${esc(name)}</h1>
     <p>${esc(race.name)} ${esc(classes)} · level ${view.level} · ${esc(race.size)} ${esc(race.type || '')}</p></header>`;

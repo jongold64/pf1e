@@ -236,6 +236,11 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   };
 }
 
+// Initiative: Dex modifier, +4 with Improved Initiative.
+export function initiative(stats, haveFeats = []) {
+  return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);
+}
+
 // Combat Maneuver Bonus and Defense (Core Rulebook, Combat Maneuvers). The size modifier is the reverse of the AC
 // one (Small -1). CMD adds everything touch AC counts besides Dex and size (dodge, deflection, a monk's AC bonus),
 // so it starts from touch AC: touch - size AC bonus + size CMD modifier + BAB + Str.

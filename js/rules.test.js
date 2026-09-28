@@ -17,7 +17,7 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers } from './rules.js';
+import { racialAc, combatManeuvers, initiative } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
@@ -787,6 +787,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const ftr = characterStats({ race: race('human'), cls: cls('fighter'), level: 4, baseScores: scores(16, 14, 10, 10, 10, 10), flexibleChoice: 'str' });
   // BAB 4, Str 18 (+4), Dex +2: CMB 8, CMD 10 + 4 + 4 + 2 = 20
   check('human fighter 4 CMB / CMD', JSON.stringify(combatManeuvers(ftr, 'Medium')), '{"cmb":8,"cmd":20}');
+  check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13
   check('halfling monk 1 CMB / CMD (Small, monk Wis to CMD)', JSON.stringify(combatManeuvers(hm, 'Small')), '{"cmb":-2,"cmd":13}');

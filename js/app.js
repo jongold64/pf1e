@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts,
+  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -758,13 +758,15 @@ function render() {
 
   // Results
   const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
+  const init = initiative(stats, view.haveFeats);
   const results = [
-    ['Hit points', stats.hp],
-    ['Base attack bonus', formatBab(stats.bab)],
-    ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`],
-    ['Wearing', worn || 'no armor'],
+    ['Hit points', esc(stats.hp)],
+    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
+    ['Base attack bonus', esc(formatBab(stats.bab))],
+    ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
+    ['Wearing', esc(worn || 'no armor')],
   ];
-  $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
+  $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
   // Armor Class and saving throws, in the Race card; each save has a Roll button.
   const saveRow = (name, value) => `<div class="defense-row"><span>${name}</span><b>${esc(signed(value))}</b>
