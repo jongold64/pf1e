@@ -870,6 +870,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const crit = rollSpec({ title: 'Longsword', groups: [{ attacks: [6], damage: '1d8+4', threat: 19, mult: 2 }] }, dice(19, 10, 3, 4, 5)).lines[0];
   check('critical threat is confirmed and critical damage rolled twice',
         crit, 'Attack: d20 (19) + 6 = 25, critical threat! Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage). Damage 1d8 (3) + 4 = 7; critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
+  check('damage only', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4' }] }, dice(6)).lines[0], 'damage 1d8 (6) + 4 = 10');
+  check('critical damage ×3', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4', critMult: 3 }] }, dice(1, 2, 3)).lines[0],
+        'critical damage (×3) 1d8 (1) + 4 + 1d8 (2) + 4 + 1d8 (3) + 4 = 18');
   check('natural 1 misses', rollSpec({ title: 'x', groups: [{ attacks: [20], damage: '1d6' }] }, dice(1)).lines[0], 'Attack: d20 (1) + 20 = 21, natural 1: miss');
   check('iterative attacks each roll', rollSpec({ title: 'x', groups: [{ attacks: [6, 1], damage: '1d6' }] }, dice(10, 2, 11, 3)).lines.length, 2);
   check('magic missile: 3 missiles, no attack roll', rollSpec({ title: 'Magic Missile', groups: [{ attacks: [], damage: '1d4+1', times: 3 }] }, dice(1, 2, 3)).lines.length, 3);

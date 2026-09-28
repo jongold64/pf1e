@@ -61,6 +61,12 @@ export function rollSpec(spec, rng = randomDie) {
     const prefix = g.label ? `${g.label}: ` : '';
     if (!g.attacks?.length) {
       // No attack roll: damage (a fireball, magic missiles), or just a check or save with no damage.
+      // `critMult` rolls critical damage: the damage rolled that many times and added up.
+      if (g.critMult && g.damage) {
+        const dmg = rollDamage(g.damage, rng, g.critMult);
+        if (dmg) lines.push(`${prefix}critical damage (×${g.critMult}) ${dmg.text}`);
+        continue;
+      }
       for (let i = 0; i < (g.times || 1); i++) {
         const dmg = g.damage ? rollDamage(g.damage, rng) : null;
         if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.heal ? 'healing' : 'damage'} ${dmg.text}`);

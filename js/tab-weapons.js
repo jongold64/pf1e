@@ -227,9 +227,11 @@ export function renderMyWeapons(app, view) {
       <dl class="facts attack-line">
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>
           ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</dd>
-        <dt>Damage</dt><dd><b>${esc(a.damage)}</b></dd>
+        <dt>Damage</dt><dd><b>${esc(a.damage)}</b>
+          ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage }] }, 'Roll damage')}</dd>
         ${extra.join('')}
-        <dt>Critical</dt><dd>${esc((flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—')}</dd>
+        <dt>Critical</dt><dd>${esc((flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—')}
+          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult }] }, 'Roll crit damage') : ''}</dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
       </dl>
