@@ -34,6 +34,9 @@ export const BONUS_FEAT_RULES = {
             allowed: f => hasType(f, 'Metamagic', 'Item Creation') || f.name === 'Spell Mastery' },
   monk: { note: 'Must be from the monk bonus feat list. Prerequisites are waived.',
           allowed: (f, slotLevel) => monkFeatList(slotLevel).includes(f.name), waivePrereqs: true },
+  // The unchained monk uses the same bonus feat list.
+  'monk-unchained': { note: 'Must be from the monk bonus feat list. Prerequisites are waived.',
+                      allowed: (f, slotLevel) => monkFeatList(slotLevel).includes(f.name), waivePrereqs: true },
   teamwork: { note: 'Must be a teamwork feat.', allowed: f => hasType(f, 'Teamwork') },
   rangerStyle: { note: 'Must be from your combat style\'s list (not checked). Prerequisites are waived.',
                  allowed: null, waivePrereqs: true },
@@ -115,6 +118,8 @@ export function grantedFeats(cls, level, featNames) {
       const s = lower(special);
       if (known.has(s)) out.add(known.get(s));
       if (s === 'unarmed strike') out.add('Improved Unarmed Strike');
+      // The unchained rogue's finesse training gives Weapon Finesse at 1st level.
+      if (s === 'finesse training' && known.has('weapon finesse')) out.add('Weapon Finesse');
     }
   }
   return [...out];

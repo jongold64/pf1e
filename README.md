@@ -5,8 +5,8 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 
 | File | Contents |
 |---|---|
-| `data/races.json` | 43 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary) |
-| `data/classes.json` | 55 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC. Prestige classes include requirements and which levels add spellcasting to another class (`caster_advance`) |
+| `data/races.json` | 65 races: 7 core, 16 featured, 14 uncommon, 6 other (Bestiary), plus 22 "other" from later Paizo books via the Foundry data (Planar Adventures, Ultimate Wilderness, Blood of the Sea, Inner Sea Races, ...; no alternate traits or favored class options) |
+| `data/classes.json` | 67 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC from PSRD-Data, plus 12 from the Foundry data: 6 occult (Occult Adventures), 4 unchained (Pathfinder Unchained), shifter and vigilante. Prestige classes include requirements and which levels add spellcasting to another class (`caster_advance`) |
 | `data/feats.json` | 1,227 feats, including 162 mythic feats |
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
 | `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items). Items with several prices have `price_options`, read from the price text or from a price table in the description (bag of holding types, with each type's weight) |

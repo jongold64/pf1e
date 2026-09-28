@@ -39,6 +39,7 @@ const SPELL_FAILURE_FREE = {
   skald: () => ({ armor: ['light', 'medium'], shield: true }),
   bloodrager: () => ({ armor: ['light', 'medium'], shield: false }),
   summoner: () => ({ armor: ['light'], shield: false }),
+  'summoner-unchained': () => ({ armor: ['light'], shield: false }),
   magus: level => ({ armor: level >= 13 ? ['light', 'medium', 'heavy'] : level >= 7 ? ['light', 'medium'] : ['light'], shield: false }),
 };
 

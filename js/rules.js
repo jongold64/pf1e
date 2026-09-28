@@ -84,7 +84,12 @@ export const CASTING_ABILITY = {
   cleric: 'wis', druid: 'wis', hunter: 'wis', inquisitor: 'wis', investigator: 'int', magus: 'int',
   oracle: 'cha', paladin: 'cha', ranger: 'wis', shaman: 'wis', skald: 'cha', sorcerer: 'cha',
   summoner: 'cha', warpriest: 'wis', witch: 'int', wizard: 'int',
+  // Classes from later books (Foundry data).
+  medium: 'cha', mesmerist: 'cha', occultist: 'int', psychic: 'int', spiritualist: 'wis', 'summoner-unchained': 'cha',
 };
+
+// Classes with a monk's AC bonus and unarmed strike table.
+export const MONK_IDS = ['monk', 'monk-unchained'];
 
 // Classes with one extra slot per spell level they can cast (1st and up). The class tables in the
 // data don't include these. `optional` slots depend on a choice the player makes.
@@ -197,7 +202,7 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
 
   // Monks add Wis (if positive) plus their monk-level AC bonus, but only with no armor and no shield.
   let classAc = 0;
-  const monk = counts.find(e => e.cls.id === 'monk');
+  const monk = counts.find(e => MONK_IDS.includes(e.cls.id));
   if (monk && !g.armor && !g.shield) {
     classAc = Math.max(0, mod.wis) + signedNumber(rowFor(monk).other?.['AC Bonus']);
   }
@@ -248,7 +253,8 @@ export function racialAc(race) {
   for (const t of race?.traits || []) {
     const text = String(t.text || '');
     if (/\b(against|when|while|if)\b/i.test(text)) continue;
-    const natural = text.match(/\b(?:have|has|gain|gains) a \+(\d+) (?:racial bonus to )?natural armor bonus\b/i);
+    // "have a +1 natural armor bonus", "granting them a +1 natural armor bonus", "grants a +2 natural armor bonus"
+    const natural = text.match(/\b(?:have|has|gain|gains|granting \w+|grants?) a \+(\d+) (?:racial bonus to )?natural armor bonus\b/i);
     if (natural) out.natural += Number(natural[1]);
     const dodge = text.match(/\b(?:have|has|gain|gains) a \+(\d+) dodge bonus to (?:AC|Armor Class)\b/i);
     if (dodge) out.dodge += Number(dodge[1]);

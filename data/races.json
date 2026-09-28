@@ -6455,5 +6455,1907 @@
         "kind": "languages"
       }
     ]
+  },
+  {
+    "id": "adaro",
+    "name": "Adaro",
+    "plural": "Adaros",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": 2,
+      "str": 2,
+      "dex": 2,
+      "int": -2
+    },
+    "size": "Medium",
+    "base_speed": 10,
+    "type": "monstrous humanoid",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "blindsense",
+      "low-light vision",
+      "darkvision",
+      "keen scent (2 rp)"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan",
+        "Common"
+      ],
+      "bonus": [
+        "Abyssal",
+        "Aklo",
+        "Draconic",
+        "Giant",
+        "Infernal",
+        "Undercommon"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Constitution, +2 Strength, +2 Dexterity, -2 Intelligence",
+        "text": "Adaros are terrifying physically, but their rampant bloodlust hampers their intellect.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Adaros are monstrous humanoids with the aquatic subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Adaros are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Adaros have a base speed of 10 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Adaros begin play speaking Aquan and Common. Adaros with high Intelligence scores can choose from the following: Abyssal, Aklo, Draconic, Giant, Infernal, and Undercommon.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Adaros have a +2 natural armor bonus."
+      },
+      {
+        "name": "Swim Speed",
+        "text": "Adaros have a swim speed of 50 feet."
+      },
+      {
+        "name": "Powerful Bite (3 RP)",
+        "text": "Adaros have a natural bite attack that deals 1d6 points of damage. This bite is a primary attack, or a secondary attack if the creature is wielding manufactured weapons."
+      },
+      {
+        "name": "Rain Frenzy (4 RP)",
+        "text": "Adaros revere storms, and their lust for blood is amplified exponentially while it is raining. While fighting in the rain or during other stormy weather, adaros act as though affected by the rage spell. An adaro gains this benefit even if it is underwater, but only as long as it remains within its swim speed of the water's surface."
+      },
+      {
+        "name": "Poison Use",
+        "text": "Adaros are skilled with poison and never risk accidentally poisoning themselves when applying poison to weapons."
+      },
+      {
+        "name": "Speak with Sharks (1 RP)",
+        "text": "Adaros can communicate telepathically with sharks to a distance of 100 feet. This communication is limited to simple concepts, such as \"attack,\" \"come,\" and \"defend.\""
+      },
+      {
+        "name": "Blindsense",
+        "text": "Adaros have blindsense with a range of 30 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Adaros benefit from low-light vision."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Adaros have darkvision with a range of 60 feet."
+      },
+      {
+        "name": "Keen Scent (2 RP)",
+        "text": "Adaros can detect creatures by scent in a 180-foot radius underwater and can detect blood in the water at ranges of up to a mile."
+      },
+      {
+        "name": "Amphibious",
+        "text": "Adaros have the aquatic subtype, but they can breathe both water and air."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "aphorite",
+    "name": "Aphorite",
+    "plural": "Aphorites",
+    "source": "Planar Adventures",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": -2,
+      "int": 2,
+      "str": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "outsider",
+    "subtypes": [
+      "native"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [],
+      "bonus": [
+        "Abyssal",
+        "Aquan",
+        "Auran",
+        "Celestial",
+        "Ignan",
+        "Infernal",
+        "Terran"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Dexterity, +2 Intelligence, +2 Strength",
+        "text": "Aphorites are strong and intelligent, but move and react somewhat stiffly. They gain +2 Strength and Intelligence but suffer -2 Dexterity",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Aphorites are outsiders with the native subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Aphorites are Medium creatures and have no bonuses of penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Aphorites have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Aphorites speak Common and either Celestial or Infernal. An aphorite with a high Intelligence score can choose from the following as bonus languages: Abyssal, Aquan, Auran, Celestial, Ignan, Infernal, or Terran.",
+        "kind": "languages"
+      },
+      {
+        "name": "Aphorite Resistances",
+        "text": "Aphorites have electricity resistance 5 and a +2 bonus on saves versus poison and mind-affecting effects."
+      },
+      {
+        "name": "Crystalline Dust (Su)",
+        "text": "An aphorite can manifest a haze of crystalline dust that forms into indistinct runes and glyphs surrounding its body. This effect grants the aphorite a 20% miss chance against melee and ranged attacks. Activating this dust is a move action, but it can be maintained each round as a free action. The effect cannot be disrupted, but it ends immediately if the aphorite is killed, paralyzed, stunned, knocked unconscious, or otherwise prevented from taking a free action to maintain it each round. An aphorite can use this ability a number of rounds per day equal to its Hit Dice, but the rounds do not need to be consecutive."
+      },
+      {
+        "name": "Skilled",
+        "text": "Aphorites gain a +2 racial bonus on checks with a single Craft skill of their choice."
+      },
+      {
+        "name": "Spell-Like Abilities",
+        "text": "Aphorites can use Protection From Chaos once per day as a spell-like ability (caster level equal to the aphorite's class level)."
+      },
+      {
+        "name": "Senses",
+        "text": "Aphorites have darkvision 60 feet."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "aquatic-elf",
+    "name": "Aquatic Elf",
+    "plural": "Aquatic Elfs",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": 2,
+      "con": -2,
+      "int": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "elf",
+      "aquatic"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Elven"
+      ],
+      "bonus": [
+        "Celestial",
+        "Draconic",
+        "Gnoll",
+        "Gnome",
+        "Goblin",
+        "Orc",
+        "Sylvan"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Dexterity, -2 Constitution, +2 Intelligence",
+        "text": "Aquatic elves are nimble, both in body and mind, but their form is frail. They gain +2 Dexterity, +2 Intelligence, and -2 Constitution.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Medium",
+        "text": "Aquatic elves are Medium creatures and thus receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Type",
+        "text": "Aquatic elves are Humanoids with the elf and aquatic subtypes. Creatures with the aquatic subtype can move in water without making Swim checks. Aquatic creatures always treat Swim as a class skill.",
+        "kind": "type"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Aquatic elves have a base speed of 30 feet and a swim speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Aquatic elves begin play speaking Common and Elven. Elves with high Intelligence scores can choose from the following: Celestial, Draconic, Gnoll, Gnome, Goblin, Orc, and Sylvan.",
+        "kind": "languages"
+      },
+      {
+        "name": "Elven Immunities",
+        "text": "Aquatic elves are immune to magic sleep effects and gain a +2 racial saving throw bonus against enchantment spells and effects."
+      },
+      {
+        "name": "Keen Senses",
+        "text": "Aquatic elves receive a +2 racial bonus on Perception checks."
+      },
+      {
+        "name": "Elven Magic",
+        "text": "Aquatic elves receive a +2 racial bonus on caster level checks made to overcome spell resistance. In addition, aquatic elves receive a +2 racial bonus on Spellcraft skill checks made to identify the properties of magic items."
+      },
+      {
+        "name": "Weapon Familiarity",
+        "text": "Aquatic elves are proficient with rapiers, shortswords, tridents, and treat any weapon with the word \"elven\" in its name as a martial weapon."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Aquatic elves can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Amphibious",
+        "text": "Aquatic elves can breathe both water and air."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "being-of-ib",
+    "name": "Being of Ib",
+    "plural": "Being of Ibs",
+    "source": "Strange Aeons #3: Dreams of the Yellow King",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": -2,
+      "wis": 4,
+      "str": -4
+    },
+    "size": "Medium",
+    "base_speed": 20,
+    "type": "aberration",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "darkvision",
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "-2 Constitution, +4 Wisdom, -4 Strength",
+        "text": "Beings of Ib are frail and weak, yet profoundly faithful and devoted.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "A being of Ib is an aberration with the aquatic subtype. It can move in water without attempting Swim checks and can breathe underwater. It always treats Swim as a class skill.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Beings of Ib are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "A being of Ib has a land speed of 20 feet and a swim speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "A being of Ib cannot speak, but is entirely capable of learning and understanding languages. The creatures' language, Ib, is a combination of hand gestures and facial expressions.",
+        "kind": "languages"
+      },
+      {
+        "name": "Amorphous",
+        "text": "Although a being of Ib's body is solid and it cannot adjust its shape, its slimy skin and internal structures (skeleton and organs alike) are strangely composed of the same alien matter. This lack of any real single weak point means that the being of Ib is immune to precision damage (such as sneak attacks) and critical hits."
+      },
+      {
+        "name": "Darkvision",
+        "text": "A being of Ib has darkvision to 60 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "A being of Ib can see twice as far as a human in dim light."
+      },
+      {
+        "name": "Voiceless (Ex)",
+        "text": "An Ib shade has no voice and cannot speak or take any verbal action as a result. An Ib shade that gains a level in a spellcasting class automatically replaces any verbal components required by its spells with thought components."
+      },
+      {
+        "name": "Amphibious",
+        "text": "A being of Ib is able to survive indefinitely on land."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "cecaelia",
+    "name": "Cecaelia",
+    "plural": "Cecaelias",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": 2,
+      "int": -2,
+      "wis": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "monstrous humanoid",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan",
+        "Common"
+      ],
+      "bonus": [
+        "Aklo",
+        "Celestial",
+        "Draconic",
+        "Elven",
+        "Giant",
+        "Gnome",
+        "Halfling"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Dexterity, -2 Intelligence, +2 Wisdom",
+        "text": "Cecaelias are nimble and have a canny insight, but they tend to be flighty.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Cecaelias are monstrous humanoids with the aquatic subtype. Cecaelias are amphibious and can breathe both air and water.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Cecaelias are Medium creatures, and they have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Cecaelias have no trouble moving about on land using their tentacles and have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Cecaelias begin play speaking Aquan and Common. Cecaelias with a high Intelligence score can choose from the following: Aklo, Celestial, Draconic, Elven, Giant, Gnome, and Halfling.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Cecaelias have a +2 natural armor bonus."
+      },
+      {
+        "name": "Ink Cloud (3 RP)",
+        "text": "Once per hour as a standard action, a cecaelia can emit a 10-foot-radius sphere of ink while underwater. This ink cloud provides total concealment and persists for 1 minute."
+      },
+      {
+        "name": "Stable Tentacles (4 RP)",
+        "text": "Cecaelias cannot be tripped."
+      },
+      {
+        "name": "Swim Speed",
+        "text": "Cecaelias have a swim speed of 40 feet."
+      },
+      {
+        "name": "Jet (1 RP)",
+        "text": "Cecaelias can swim 200 feet backward as a full-round action. A cecaelia must move in a straight line when jetting and does not provoke attacks of opportunity when she uses jet."
+      },
+      {
+        "name": "Tentacle Attacks (3 RP)",
+        "text": "Cecaelias have two tentacle attacks that deal 1d4 points of damage. These attacks are primary natural attacks and have a reach of 10 feet. This extended reach only applies to the cecaelia's tentacle attacks and not to any other attacks she makes."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Cecaelias have darkvision with a range of 60 feet."
+      },
+      {
+        "name": "Tentacle Sense (1 RP)",
+        "text": "While swimming and not grappled or grappling, a cecaelia can spread her tentacles wide to form a sensory net around herself as a swift action. This grants blindsight to a range of 10 feet and lasts as long as the cecaelia concentrates or until the cecaelia attacks with a tentacle or moves."
+      },
+      {
+        "name": "Amphibious",
+        "text": "Cecaelia can breathe both water and air."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "duskwalker",
+    "name": "Duskwalker",
+    "plural": "Duskwalkers",
+    "source": "Planar Adventures",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "con": -2,
+      "dex": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "outsider",
+    "subtypes": [
+      "native"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Abyssal",
+        "Celestial",
+        "Infernal"
+      ],
+      "bonus": [
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Dwarven",
+        "Elven",
+        "Halfling",
+        "Infernal",
+        "Protean"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, -2 Constitution, +2 Dexterity",
+        "text": "Duskwalkers are agile and wise, but their bodies are fragile.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Duskwalker are Outsider with the native subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Duskwalkers are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Duskwalkers have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Duskwalkers begin play speaking Common and one of the following: Abyssal, Celestial or Infernal. Duskwalkers with high Intelligence scores can choose from the following bonus languages: Abyssal, Celestial, Draconic, Dwarven, Elven, Halfling, Infernal, or Protean.",
+        "kind": "languages"
+      },
+      {
+        "name": "Ward against Corruption (Ex)",
+        "text": "Duskwalkers gain a +2 racial bonus on saving throws against negative energy and death effects, as well as the spell-like and supernatural abilities of undead and sahkils. They are immune to all abilities that would transform their bodies or souls into undead."
+      },
+      {
+        "name": "Skilled",
+        "text": "Duskwalkers gain a +2 racial bonus on Knowledge (religion) and Heal checks."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Duskwalkers can see in the dark up to 60 feet."
+      },
+      {
+        "name": "Ghost Hunter (Su)",
+        "text": "In a duskwalker's hands, any weapon can strike true against spectral beings. A duskwalker's non-magical weapons deal half damage to incorporeal creatures, as if they were magic weapons, and her magic weapons can deal critical hits and precision damage, even if they do not have the ghost touch property. Once per day as a standard action, a duskwalker can focus her natural revulsion toward undead. If she does so, she treats all weapons she wields as if they had the ghost touch property for 1 minute."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "ganzi",
+    "name": "Ganzi",
+    "plural": "Ganzis",
+    "source": "Planar Adventures",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "cha": 2,
+      "int": -2,
+      "con": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "outsider",
+    "subtypes": [
+      "native"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Abyssal",
+        "Celestial",
+        "Protean"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Charisma, -2 Intelligence, +2 Constitution",
+        "text": "Ganzis are passionate, creative, and resilient, but they have difficulty focusing on intellectual pursuits. They gain +2 Constitution and Charisma, but suffer -2 to Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Ganzi are outsiders with the native subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Ganzis are Medium creatures and have no bonuses of penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Ganzis have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Ganzis begin play speaking Common and one of the following: Abyssal, Celestial, or Protean. Ganzis with high Intelligence scores can select any of those languages as bonus languages, along with Aklo, Aquan, Auran, Ignan, Sylvan, or Terran.",
+        "kind": "languages"
+      },
+      {
+        "name": "Maelstrom Resistance",
+        "text": "Ganzis have acid resistance 5, electricity resistance 5, and sonic resistance 5, and they gain a +2 racial bonus on saving throws against spells of the polymorph subschool."
+      },
+      {
+        "name": "Skilled",
+        "text": "Ganzis gain a +2 racial bonus on Sense Motive and Survival checks."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Ganzis have darkvision 60 feet."
+      },
+      {
+        "name": "Ganzi Oddity",
+        "text": "As creatures infused with the entropic forces of the Maelstrom, all ganzis have a distinct and unusual oddity that manifests as a physical or magical ability that sets the ganzi apart. Typically, a ganzi's oddity is chosen from the most common manifestations of entropy listed below, but other, more unique oddities can certainly exist. The numbers listed for each option can be used to randomly determine what form of ganzi oddity a particular Ganzi might have, at the GM's option, but the quibble ability is the most common.\n\n1-2: Chaos Champion (Su) Ganzis with a lineage linked to the einherji often become crusaders for the forces of entropy and excel in combat against lawful beings. The ganzi can smite law once per day as a swift action, targeting a lawful foe. She adds her Charisma modifier as a bonus on attack rolls and gains a bonus on damage rolls equal to her Hit Dice. Once activated, smite law persists until the target is dead or the ganzi rests, whichever comes first.\n\n3-4: Entropic Flesh (Ex) Ganzis with lineages that link strongly to chaos beasts retain some of their ancestors' immunity to transformation. In addition to gaining a +2 bonus on Escape Artist checks and to CMD against grapple combat maneuvers, when such ganzis are affected by a hostile transmutation effect (such as polymorphing or petrification), they can attempt a new saving throw at the start of their next turn to end the effect. They gain a +4 bonus on this second saving throw, but if they fail, the transmutation effect persists as long as it normally would.\n\n5-6: Prehensile Tail (Ex) Ganzis with lineages that are particularly influenced by the presence of proteans often have colorful feathers, scales, or skin, and a long serpentine tail. This tail can be used to carry items. While ganzis with this oddity cannot wield weapons with their tails, they can use their tails to retrieve small, stowed objects carried on their persons as a swift action.\n\n7-14: Quibble (Su) For most ganzis, the influence of chaos is relatively subtle and manifests as an ability to infect others with entropy and unexpected luck (be it good luck or bad). Once per day as an immediate action, a ganzi can twist probability and alter the luck of a single creature within 20 feet, forcing it to reroll a single d20 roll it has just made. The target must take the second result, even if it is worse. A ganzi can use this ability after the target has rolled but must use it before the GM declares whether the roll was a success or failure. Unwilling creatures can resist a ganzi's quibble with a successful Will save (DC = 10 + half the ganzi's level + the ganzi's Charisma modifier). This is a curse effect.\n\n15-18: Spell-Like Ability (Sp) Ganzis whose chaotic influences rise from regions other than the Maelstrom or its inhabitants often manifest an oddity that duplicates the effects of a specific spell. Such ganzis gain one of the following spell-like abilities, usable once per day at a caster level equal to the ganzi's HD: alter self, blur, detect thoughts, hideous laughter, minor image, shatter, or spider climb.\n\n19-20: Weaponplay (Ex) Ganzis with lineages that link to the valkyries manifest their heritage in their skill in combat. Such ganzis are always proficient with all simple and martial weapons, and they can qualify for feats normally available only to fighters (such as Weapon Specialization) even if they don't have any fighter class levels."
+      },
+      {
+        "name": "1–2: Chaos Champion (Su)",
+        "text": "Ganzis with a lineage linked to the einherji often become crusaders for the forces of entropy and excel in combat against lawful beings. The ganzi can smite law once per day as a swift action, targeting a lawful foe. She adds her Charisma modifier as a bonus on attack rolls and gains a bonus on damage rolls equal to her Hit Dice. Once activated, smite law persists until the target is dead or the ganzi rests, whichever comes first."
+      },
+      {
+        "name": "3–4: Entropic Flesh (Ex)",
+        "text": "Ganzis with lineages that link strongly to chaos beasts retain some of their ancestors' immunity to transformation. In addition to gaining a +2 bonus on Escape Artist checks and to CMD against grapple combat maneuvers, when such ganzis are affected by a hostile transmutation effect (such as polymorphing or petrification), they can attempt a new saving throw at the start of their next turn to end the effect. They gain a +4 bonus on this second saving throw, but if they fail, the transmutation effect persists as long as it normally would."
+      },
+      {
+        "name": "5–6: Prehensile Tail (Ex)",
+        "text": "Ganzis with lineages that are particularly influenced by the presence of proteans often have colorful feathers, scales, or skin, and a long serpentine tail. This tail can be used to carry items. While ganzis with this oddity cannot wield weapons with their tails, they can use their tails to retrieve small, stowed objects carried on their persons as a swift action."
+      },
+      {
+        "name": "7–14: Quibble (Su)",
+        "text": "For most ganzis, the influence of chaos is relatively subtle and manifests as an ability to infect others with entropy and unexpected luck (be it good luck or bad). Once per day as an immediate action, a ganzi can twist probability and alter the luck of a single creature within 20 feet, forcing it to reroll a single d20 roll it has just made. The target must take the second result, even if it is worse. A ganzi can use this ability after the target has rolled but must use it before the GM declares whether the roll was a success or failure. Unwilling creatures can resist a ganzi's quibble with a successful Will save (DC = 10 + half the ganzi's level + the ganzi's Charisma modifier). This is a curse effect."
+      },
+      {
+        "name": "15–18: Spell-Like Ability (Sp)",
+        "text": "Ganzis whose chaotic influences rise from regions other than the Maelstrom or its inhabitants often manifest an oddity that duplicates the effects of a specific spell. Such ganzis gain one of the following spell-like abilities, usable once per day at a caster level equal to the ganzi's HD: alter self, blur, detect thoughts, hideous laughter, minor image, shatter, or spider climb."
+      },
+      {
+        "name": "19–20: Weaponplay (Ex)",
+        "text": "Ganzis with lineages that link to the valkyries manifest their heritage in their skill in combat. Such ganzis are always proficient with all simple and martial weapons, and they can qualify for feats normally available only to fighters (such as Weapon Specialization) even if they don't have any fighter class levels."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "ghoran",
+    "name": "Ghoran",
+    "plural": "Ghorans",
+    "source": "Ultimate Wilderness",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": -2,
+      "cha": 2,
+      "con": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "plant",
+    "subtypes": [],
+    "senses": [],
+    "languages": {
+      "starting": [
+        "Common",
+        "Sylvan"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "-2 Intelligence, +2 Charisma, +2 Constitution",
+        "text": "Ghorans are hardy, guileful, and eager to explore their emotions, but they process complex thoughts slowly.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Ghorans have the plant type but lack the immunities to mind-affecting, paralysis, poison, polymorph, sleep, and stunning effects that type usually has. The plant type features immunities that, when granted to a player character race, can be disruptive and overpowered.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Ghorans are Medium creatures and receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Ghorans have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Ghorans begin play speaking Common and Sylvan. Ghorans with high Intelligence scores can choose any languages they want (except secret languages such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "+2 Natural Armor",
+        "text": "Ghorans have tough, rugged skin and so gain a +2 Natural Armor bonus to AC."
+      },
+      {
+        "name": "Past-Life Knowledge(Ex)",
+        "text": "Ghorans have memories encoded in their seeds. They treat all Knowledge skills as class skills."
+      },
+      {
+        "name": "Natural Magic (Sp)",
+        "text": "Ghorans with a Charisma score of 11 or higher gain the following spell-like abilities: 1/day-detect poison, goodberry (created berries bud from the ghoran's own body), and purify food and drink. The caster level is equal to the ghoran's level. The DC for these spells is equal to 10 + the spell's level + the ghoran's Charisma bonus."
+      },
+      {
+        "name": "Light Dependent",
+        "text": "Ghorans are heavily light dependent and so take 1d4 points of Constitution damage each day they go without exposure to sunlight."
+      },
+      {
+        "name": "Delicious (Ex)",
+        "text": "Ghorans take a -2 penalty on Escape Artist and combat maneuver checks to escape a grapple against a creature that has a bite attack with the grab ability."
+      },
+      {
+        "name": "Seed (Ex)",
+        "text": "As a full-round action, a ghoran can expel the seed from an orifice in its abdomen. If planted in fertile ground and left undisturbed for 2d6 days, the seed grows into a healthy duplicate of the original ghoran, save that the duplicate can reallocate all skill ranks upon sprouting. Once a ghoran expels this seed, it gains 1 negative level, and it dies as soon as the duplicate sprouts. This duplicate replaces the previous ghoran character."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "gnoll",
+    "name": "Gnoll",
+    "plural": "Gnolls",
+    "source": "Advanced Race Guide",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": 2,
+      "con": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Gnoll"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Strength, +2 Constitution",
+        "text": "+2 Str, +2 Con",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Humanoid (gnoll)",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Medium",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Normal",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Xenophobic (racial only)",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Gnolls have a +1 natural armor bonus."
+      },
+      {
+        "name": "Darkvision",
+        "text": "60 ft"
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "grindylow",
+    "name": "Grindylow",
+    "plural": "Grindylows",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "cha": -2,
+      "int": -2,
+      "dex": 4,
+      "wis": -2
+    },
+    "size": "Small",
+    "base_speed": 15,
+    "type": "aberration",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan"
+      ],
+      "bonus": [
+        "Aklo",
+        "Common",
+        "Goblin"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Charisma, -2 Intelligence, +4 Dexterity, -2 Wisdom",
+        "text": "Grindylows are cruel, ignorant, and thoughtless, but they have a startling inherent agility.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Grindylows are aberrations with the aquatic subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Small",
+        "text": "Grindylows are Small creatures. They gain a +1 size bonus to AC, a +1 size bonus on attack rolls, a -1 penalty on combat maneuver checks and to their CMD, and a +4 size bonus on Stealth checks.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Grindylows can scuttle about on land with their tentacles and have a base speed of 15 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Grindylows begin play speaking Aquan. Grindylows with high Intelligence scores can choose from the following: Aklo, Common, and Goblin.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Grindylows have tough, rubbery skin that grants a +2 natural armor bonus."
+      },
+      {
+        "name": "Swim Speed",
+        "text": "Grindylows have a swim speed of 30 feet."
+      },
+      {
+        "name": "Jet (1 RP)",
+        "text": "Grindylows can swim 200 feet backward as a full-round action. A grindylow must move in a straight line when jetting and does not provoke attacks of opportunity when using this ability."
+      },
+      {
+        "name": "Sneaky",
+        "text": "Grindylows have a +4 racial bonus on Stealth checks."
+      },
+      {
+        "name": "Bite",
+        "text": "Grindylows have a natural bite attack that deals 1d3 points of damage. This bite is a primary attack, or a secondary attack if the creature is wielding manufactured weapons."
+      },
+      {
+        "name": "Tangling Tentacles",
+        "text": "(4 RP): Grindylows have constantly writhing tentacles that reach out to tug at and trip adjacent foes. During the grindylow's turn, it can make a single trip attack against any adjacent foe as a swift action. The grindylow gains a +4 racial bonus on trip attacks with its tangling tentacles, and if it fails to trip a foe, that creature can't attempt to trip the grindylow in retaliation."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Grindylows have darkvision with a range of 60 feet."
+      },
+      {
+        "name": "Amphibious",
+        "text": "Grindylows have the aquatic subtype, but they can breathe both water and air."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "kuru",
+    "name": "Kuru",
+    "plural": "Kurus",
+    "source": "Isles of the Shackles",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": 2,
+      "dex": 2,
+      "int": -2
+    },
+    "size": "Medium",
+    "base_speed": 40,
+    "type": "humanoid",
+    "subtypes": [
+      "kuru"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Kuru"
+      ],
+      "bonus": [
+        "Abyssal",
+        "Common",
+        "Polyglot",
+        "Undercommon"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Constitution, +2 Dexterity, -2 Intelligence",
+        "text": "Kuru are abnormally fast and hardy, but bloodlust clouds their thinking. Kura gain +2 Dexterity, +2 Constitution, and -2 Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Kuru are Humanoid creatures with both the kuru subtypes.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Kuru are Medium creatures and thus receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Kuru have a base speed of 40 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Kuru begin play speaking Kuru. Kuru with high Intelligence scores can choose bonus languages from the following: Abyssal, Common, Polyglot, Undercommon.",
+        "kind": "languages"
+      },
+      {
+        "name": "Blood Courage (Ex)",
+        "text": "Once per day when a kuru makes a saving throw against a fear effect, he can roll the saving throw twice and take the better result. He must decide to use this ability before the saving throw is attempted."
+      },
+      {
+        "name": "Cannibalistic Vitality (Ex)",
+        "text": "When a kuru hits a living creature with its bite attack, he gains 1 temporary hit point by ingesting the target's blood. This ability does not work on creatures that do not have blood."
+      },
+      {
+        "name": "Bite Attack",
+        "text": "Kuru possess a natural bite attack that deals 1d6 points of damage."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Kuru can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Light Sensitivity",
+        "text": "Kuru are especially sensitive to bright light (kuru have light sensitivity)."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "lashunta-female",
+    "name": "Lashunta (Female)",
+    "plural": "Lashunta (Female)s",
+    "source": "Inner Sea Races",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": 2,
+      "con": -2,
+      "cha": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Lashunta"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [
+        "Elven",
+        "Lashunta"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Intelligence, -2 Constitution, +2 Charisma",
+        "text": "Lashunta are almost universally intelligent and eager to learn. As a result, lashunta gain a +2 bonus to Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Lashunta",
+        "text": "Lashunta are humanoid with the lashunta subtype."
+      },
+      {
+        "name": "Medium",
+        "text": "Lashunta are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Lashunta have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Lashunta begin play speaking Elven and Lashunta. Lashunta with high Intelligence scores can choose any languages they want (except Druidic and other secret languages).",
+        "kind": "languages"
+      },
+      {
+        "name": "Knowledgeable",
+        "text": "A lashunta gains a +2 racial bonus to any one Knowledge skill."
+      },
+      {
+        "name": "Lashunta Magic",
+        "text": "A lashunta possessing an Intelligence score of 11 or higher gains the following spell-like abilities: At will-daze, mage hand; 1/day-detect thoughts. The caster level for these effects is equal to the lashunta's class levels."
+      },
+      {
+        "name": "Limited Telepathy",
+        "text": "A lashunta is able to mentally communicate with any creature within 30 feet with whom she shares a language. Otherwise this ability is identical to the telepathy ability."
+      },
+      {
+        "name": "Sexual Dimorphism",
+        "text": "Male and female lashunta have very different body and personality types, more so than most humanoid species. Female lashunta, though beautiful and commanding (+2 Charisma), lack the males' rugged builds (-2 Constitution)."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "lashunta-male",
+    "name": "Lashunta (Male)",
+    "plural": "Lashunta (Male)s",
+    "source": "Inner Sea Races",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": 2,
+      "int": 2,
+      "wis": -2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Lashunta"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [
+        "Elven",
+        "Lashunta"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Strength, +2 Intelligence, -2 Wisdom",
+        "text": "Lashunta are almost universally intelligent and eager to learn. As a result, lashunta gain a +2 bonus to Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Lashunta",
+        "text": "Lashunta are humanoid with the lashunta subtype."
+      },
+      {
+        "name": "Medium",
+        "text": "Lashunta are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Lashunta have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Lashunta begin play speaking Elven and Lashunta. Lashunta with high Intelligence scores can choose any languages they want (except Druidic and other secret languages).",
+        "kind": "languages"
+      },
+      {
+        "name": "Knowledgeable",
+        "text": "A lashunta gains a +2 racial bonus to any one Knowledge skill."
+      },
+      {
+        "name": "Lashunta Magic",
+        "text": "A lashunta possessing an Intelligence score of 11 or higher gains the following spell-like abilities: At will-daze, mage hand; 1/day-detect thoughts. The caster level for these effects is equal to the lashunta's class levels."
+      },
+      {
+        "name": "Limited Telepathy",
+        "text": "A lashunta is able to mentally communicate with any creature within 30 feet with whom she shares a language. Otherwise this ability is identical to the telepathy ability."
+      },
+      {
+        "name": "Sexual Dimorphism",
+        "text": "Male and female lashunta have very different body and personality types, more so than most humanoid species. Male lashunta are muscular (+2 Strength) and often brash and unobservant (-2 Wisdom)."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "lizardfolk",
+    "name": "Lizardfolk",
+    "plural": "Lizardfolks",
+    "source": "Advanced Race Guide",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": 2,
+      "str": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Reptillian"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Constitution, +2 Strength",
+        "text": "Lizardfolk are strong and hardy. They gain +2 Strength and +2 Constitution.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Lizardfolk are Humanoid creatures with both the reptilian subtypes.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Lizardfolk are Medium creatures and thus receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Lizardfolk start knowing their racial language only.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Lizardfolk have tough scaly skin, granting them a +1 natural armor bonus."
+      },
+      {
+        "name": "Swim",
+        "text": "Lizardfolk have a swim speed of 30 feet."
+      },
+      {
+        "name": "Natural Attacks - Bite",
+        "text": "Lizardfolk gain a natural bite attack, dealing damage equivalent to that of a creature two size categories lower than normal for their size (1d2 for Small races, 1d3 for Medium, etc.). The bite is a primary attack, or a secondary attack if the creature is wielding manufactured weapons."
+      },
+      {
+        "name": "Natural Attacks - Claws",
+        "text": "Lizardfolk receive two claw attacks. These are primary natural attacks. The damage is based on the creature's size (1d4 for Medium creatures.)"
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "locathah",
+    "name": "Locathah",
+    "plural": "Locathahs",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "int": -2,
+      "dex": 2
+    },
+    "size": "Medium",
+    "base_speed": 10,
+    "type": "humanoid",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan",
+        "Common"
+      ],
+      "bonus": [
+        "Aklo",
+        "Draconic",
+        "Elven",
+        "Giant",
+        "Gnome",
+        "Goblin",
+        "Halfling"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, -2 Intelligence, +2 Dexterity",
+        "text": "Locathahs are agile and intuitive, but they are more interested in travel and experiences than in academia.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Locathahs are humanoids with the aquatic subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Locathahs are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Slow Speed",
+        "text": "Locathahs have a base speed of 10 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Locathahs begin play speaking Aquan and Common. Locathahs with a high Intelligence score can choose from the following: Aklo, Draconic, Elven, Giant, Gnome, Goblin, and Halfling.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Locathahs have thick scales that provide a +2 natural armor bonus."
+      },
+      {
+        "name": "Fast Swimmer (5 RP)",
+        "text": "Locathahs have a swim speed of 60 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Locathahs live in areas where sunlight illuminates the water, and they have low-light vision."
+      },
+      {
+        "name": "Amphibious",
+        "text": "Locathahs have the aquatic subtype but can breathe both water and air."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "ogre",
+    "name": "Ogre",
+    "plural": "Ogres",
+    "source": "Advanced Race Guide",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": -2,
+      "con": 2,
+      "cha": -2,
+      "str": 4
+    },
+    "size": "Large",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "giant"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "-2 Intelligence, +2 Constitution, -2 Charisma, +4 Strength",
+        "text": "+4 Str, +2 Con, -2 Int, -2 Cha",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Humanoid (giant)",
+        "kind": "type"
+      },
+      {
+        "name": "Large",
+        "text": "Large",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Normal",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Xenophobic (racial only)",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Ogres have a +3 natural armor bonus."
+      },
+      {
+        "name": "Darkvision",
+        "text": "60 ft"
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "reborn-samsaran",
+    "name": "Reborn Samsaran",
+    "plural": "Reborn Samsarans",
+    "source": "Occult Bestiary",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": -2,
+      "wis": 2,
+      "int": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "samsaran"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Samsaran"
+      ],
+      "bonus": [
+        "any human language",
+        "Abyssal",
+        "Aquan",
+        "Auran",
+        "Celestial",
+        "Draconic",
+        "Giant",
+        "Ignan",
+        "Infernal",
+        "Nagaji",
+        "Tengu",
+        "Terran"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Constitution, +2 Wisdom, +2 Intelligence",
+        "text": "Reborn samsarans are insightful and learn quickly, but their bodies tend to be frail. They gain +2 Intelligence, +2 Wisdom, and -2 Constitution.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Reborn samsarans are humanoids with the samsaran subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Reborn samsarans are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Reborn samsarans have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Reborn samsarans begin play speaking Common and Samsaran. Samsarans with high Intelligence scores can choose from the following: any human language, Abyssal, Aquan, Auran, Celestial, Draconic, Giant, Ignan, Infernal, Nagaji, Tengu, and Terran.",
+        "kind": "languages"
+      },
+      {
+        "name": "Psychic Attunement",
+        "text": "Reborn samsarans receive Psychic Virtuoso as a bonus feat at 1st level. Those who can't use occult skill unlocks at 1st level instead gain the Psychic Sensitivity feat as a bonus feat."
+      },
+      {
+        "name": "Reborn Magic",
+        "text": "A reborn samsaran with a Charisma score of 11 or higher can cast the following spells (as per the psychic magic universal monster rule, using his Charisma modifier to determine the DCs): burst of insight (1 PE), detect psychic significance (0 PE), object reading (2 PE), and psychic reading (1 PE). The caster level is equal to the reborn samsaran's level. The reborn samsaran has a reservoir of 5 PE per day."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Reborn samsarans can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Aura Transparency (Ex)",
+        "text": "A reborn samsaran has difficulty hiding his psychic signatures. The DC of any skill check made to read his aura decreases by 5, and the check takes one-tenth as long as normal to perform."
+      },
+      {
+        "name": "Psychic Learning (Su)",
+        "text": "When a reborn samsaran expends psychic energy to cast psychic reading to identify a humanoid's class, he temporarily treats two of the target's class skills as if they were class skills for him. He can use these skills untrained and gains a +2 insight bonus on such checks. These benefits last for 24 hours or until the reborn samsaran spends psychic energy to cast psychic reading again."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "sahuagin",
+    "name": "Sahuagin",
+    "plural": "Sahuagins",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "str": 2,
+      "cha": -2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "monstrous humanoid",
+    "subtypes": [
+      "aquatic"
+    ],
+    "senses": [
+      "blindsense",
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan",
+        "Common"
+      ],
+      "bonus": [
+        "Aboleth",
+        "Abyssal",
+        "Aklo",
+        "Draconic",
+        "Giant",
+        "Goblin",
+        "Infernal"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, +2 Strength, -2 Charisma",
+        "text": "While sahuagin are powerful and cunning, they are repulsive creatures.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Sahuagin are monstrous humanoids with the aquatic subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Sahuagin are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Sahuagin have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Sahuagin begin play speaking Aquan and Common. Sahuagin with high Intelligence scores can choose from the following: Aboleth, Abyssal, Aklo, Draconic, Giant, Goblin, and Infernal.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Sahuagin have a +3 natural armor bonus."
+      },
+      {
+        "name": "Fast Swimmer (5 RP)",
+        "text": "Sahuagin have a swim speed of 60 feet."
+      },
+      {
+        "name": "Bite",
+        "text": "Sahuagin have a natural bite attack that deals 1d4 points of damage. This bite is a primary attack, or a secondary attack if the creature is wielding manufactured weapons."
+      },
+      {
+        "name": "Claws",
+        "text": "Sahuagin have two claw attacks that deal 1d4 points of damage. These are primary natural attacks."
+      },
+      {
+        "name": "Blood Frenzy",
+        "text": "Once per day, whenever a sahuagin takes damage, it can fly into a frenzy for 1 minute; gaining a +2 racial bonus to Constitution and Strength but a -2 penalty to AC."
+      },
+      {
+        "name": "Blindsense",
+        "text": "Sahuagin have blindsense with a range of 30 feet."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Sahuagin have darkvision with a range of 60 feet."
+      },
+      {
+        "name": "Light Blindness",
+        "text": "Sahuagin have the light blindness trait."
+      },
+      {
+        "name": "Speak with Sharks",
+        "text": "Sahuagin can communicate telepathically with sharks to a distance of 100 feet. This communication is limited to simple concepts, such as \"attack,\" \"come,\" and \"defend.\""
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "syrinx",
+    "name": "Syrinx",
+    "plural": "Syrinxs",
+    "source": "Inner Sea Races",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "dex": -2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Syrinx"
+    ],
+    "senses": [
+      "low-light vision",
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Syrinx"
+      ],
+      "bonus": [
+        "Auran",
+        "Celestial",
+        "Strix",
+        "Infernal"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, -2 Dexterity",
+        "text": "Syrinx are contemplative and patient, traits that make them somewhat slow to act. As a result, syrinx gain a +2 bonus to Wisdom but suffer a -2 penalty to Dexterity.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Syrinx are humanoids with the Syrinx subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Syrinx are Medium creatures and receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Syrinx have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Syrinx begin play speaking Syrinx. Syrinx with high Intelligence scores can choose from the following: Auran, Celestial, Strix, or Infernal.",
+        "kind": "languages"
+      },
+      {
+        "name": "Pride",
+        "text": "Syrinx receive a +2 racial bonus on saving throws against mind-affecting effects."
+      },
+      {
+        "name": "Nocturnal",
+        "text": "Syrinx gain a +2 racial bonus on Perception and Stealth checks at night."
+      },
+      {
+        "name": "Flight",
+        "text": "Syrinx have a fly speed of 60 feet with average maneuverability."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Syrinx can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Syrinx have darkvision and so can see perfectly in the dark up to 60 feet."
+      },
+      {
+        "name": "Speak with Avians",
+        "text": "Syrinx can speak with all birds of the animal creature type and birdlike magical beasts (like phoenixes and thunderbirds)."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "triaxian",
+    "name": "Triaxian",
+    "plural": "Triaxians",
+    "source": "Inner Sea Races",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "str": -2,
+      "con": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Triaxian"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, -2 Strength, +2 Constitution",
+        "text": "Triaxians are a hardy and wily race, as befits their constantly changing environment, but their lean forms have trouble maintaining large amounts of muscle mass. They gain +2 Constitution, +2 Wisdom, -2 Strength",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Triaxians are humanoids with the triaxian subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Triaxians are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Triaxians have a base speed of 30 ft.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Triaxians speak Triaxian. Triaxians with high Intelligence scores can choose any languages (except secret languages, such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Triaxians can see twice as far as humans in dim light."
+      },
+      {
+        "name": "Bonus Feat",
+        "text": "Triaxians select one extra feat at 1st level."
+      },
+      {
+        "name": "Keen Senses",
+        "text": "Triaxians' unique ear construction grants them a +2 bonus on Perception checks."
+      },
+      {
+        "name": "Seasoned (Ex)",
+        "text": "Choose summer or winter. If summer is chosen, the triaxian can exist comfortably in conditions between 90 and 110 degrees Fahrenheit without having to attempt Fortitude saves due to the environment. If winter is chosen, the triaxian can exist comfortably in conditions between 40 and 0 degrees Fahrenheit without having to attempt Fortitude saves. When in conditions of severe cold or heat, Triaxians have to attempt Fortitude saves only once per hour instead of once every 10 minutes. Transitional Triaxians do not have this ability."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "triton",
+    "name": "Triton",
+    "plural": "Tritons",
+    "source": "Blood of the Sea",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": 2,
+      "cha": 2,
+      "dex": -2
+    },
+    "size": "Medium",
+    "base_speed": 5,
+    "type": "outsider",
+    "subtypes": [
+      "water"
+    ],
+    "senses": [
+      "darkvision",
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Aquan",
+        "Common"
+      ],
+      "bonus": [
+        "Aboleth",
+        "Aklo",
+        "Celestial",
+        "Draconic",
+        "Elven",
+        "Gnome",
+        "Sylvan"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Strength, +2 Charisma, -2 Dexterity",
+        "text": "Tritons are strong and have forceful personalities, but they are not very nimble.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Tritons are native outsiders with the water subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Tritons are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Tritons are ungainly out of the water and have a base speed of only 5 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Tritons begin play speaking Aquan and Common. Tritons with a high Intelligence score can choose from the following: Aboleth, Aklo, Celestial, Draconic, Elven, Gnome, and Sylvan.",
+        "kind": "languages"
+      },
+      {
+        "name": "Swim Speed",
+        "text": "Tritons have a swim speed of 40 feet."
+      },
+      {
+        "name": "Spell-Like Ability",
+        "text": "Tritons can cast summon nature's ally II once per day to summon either a small water elemental or 1d3 dolphins only."
+      },
+      {
+        "name": "Natural Armor",
+        "text": "Tritons have a +2 natural armor bonus."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Tritons have darkvision with a range of 60 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Tritons have low-light vision."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "vine-leshy",
+    "name": "Vine Leshy",
+    "plural": "Vine Leshys",
+    "source": "Ultimate Wilderness",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": -2,
+      "con": 2,
+      "wis": 2
+    },
+    "size": "Small",
+    "base_speed": 20,
+    "type": "plant",
+    "subtypes": [
+      "leshy"
+    ],
+    "senses": [
+      "darkvision",
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Sylvan"
+      ],
+      "bonus": [
+        "Aquan",
+        "Auran",
+        "Aklo",
+        "Elven",
+        "Gnome",
+        "Goblin",
+        "Terran",
+        "Undercommon"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Intelligence, +2 Constitution, +2 Wisdom",
+        "text": "Vine leshys are hardy and insightful, but sometimes forgetful. They gain a +2 bonus to Constitution and Wisdom but suffer a -2 penalty to Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Vine leshys are plants with the leshy subtype but lack the immunities to mind-affecting effects, paralysis, poison, polymorph, sleep, and stunning that the plant type usually grants, and they lack the immunity to electricity and sonic that the leshy subtype usually grants.",
+        "kind": "type"
+      },
+      {
+        "name": "Small",
+        "text": "Vine leshys are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a -1 penalty on combat maneuver checks and to their Combat Maneuver Defense, and a +4 size bonus on Stealth checks.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Vine leshys have a base speed of 20 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Vine leshys begin play speaking Common and Sylvan. Vine leshys with high Intelligence scores can choose from the following: Aquan, Auran, Aklo, Elven, Gnome, Goblin, Terran, or Undercommon.",
+        "kind": "languages"
+      },
+      {
+        "name": "Unassuming Foliage",
+        "text": "Vine leshys gain a +4 racial bonus on Stealth checks in forests."
+      },
+      {
+        "name": "Climber",
+        "text": "Vine leshys gain a +2 racial bonus on Climb checks."
+      },
+      {
+        "name": "Pass without Trace",
+        "text": "Vine leshys have pass without trace as a constant spell-like ability (caster level 2nd)."
+      },
+      {
+        "name": "Plantspeech",
+        "text": "Vine leshys can speak with vines as if subject to a continual speak with plants spell."
+      },
+      {
+        "name": "Darkvision",
+        "text": "Vine leshys can see in the dark up to 60 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Vine leshys can see twice as far as humans under conditions of dim light."
+      },
+      {
+        "name": "Change Shape",
+        "text": "Vine leshys can transform into vines, with results similar to tree shape. In this form, the leshy appears as a particularly healthy Small vine. The leshy can assume plant form or revert to its true form as a swift action."
+      },
+      {
+        "name": "Verdant Burst",
+        "text": "When slain, a vine leshy explodes in a burst of fertile energies. All plant creatures within 30 feet of the slain leshy regain hit 1d8 points, and vines quickly infest the area. If the terrain can support vines, the undergrowth is dense enough to make the region into difficult terrain for 24 hours, after which the plant life diminishes to a normal level; otherwise, this plant life has no significant effect on movement and withers and dies within an hour."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
   }
 ]

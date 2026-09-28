@@ -21,6 +21,13 @@ const TYPE_TEXT = {
     + 'normally. Spells that affect only humanoids, such as charm person and hold person, don\'t work on them.',
   fey: 'Fey are creatures with a strong tie to nature or to some other force or place. They aren\'t humanoids, '
     + 'so spells that affect only humanoids, such as charm person and hold person, don\'t work on them.',
+  aberration: 'Aberrations have bizarre anatomy, strange abilities or an alien outlook. They aren\'t humanoids, so '
+    + 'spells that affect only humanoids, such as charm person and hold person, don\'t work on them.',
+  'monstrous humanoid': 'Monstrous humanoids are similar to humanoids but have monstrous or animalistic features, often '
+    + 'with supernatural abilities. Spells that affect only humanoids, such as charm person and hold person, don\'t '
+    + 'work on them.',
+  plant: 'Plant creatures are living plants. A player race of this type lists what it is immune to in its traits. It '
+    + 'isn\'t a humanoid, so spells that affect only humanoids, such as charm person, don\'t work on it.',
   construct: 'Constructs are built rather than born. A player race of this type lists what it is immune to in its '
     + 'traits. It isn\'t a humanoid, so spells that affect only humanoids, such as charm person, don\'t work on it.',
 };

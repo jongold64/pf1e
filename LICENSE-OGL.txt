@@ -325,6 +325,7 @@ Grippli from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., publ
 Soul Eater from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by David Cook.
 Pathfinder Campaign Setting: Inner Sea Gods © 2014, Paizo Publishing, LLC; Authors: Sean K Reynolds, with Amanda Hamon, James Jacobs, John Ling, Mark Moreland, David N. Ross, F. Wesley Schneider, Amber E. Scott, Tork Shaw, James L. Sutter, Jerome Virnich.
 Pathfinder Campaign Setting: Inner Sea Intrigue © 2016, Paizo Inc.; Authors: David N. Ross, with Ross Byers.
+Pathfinder Campaign Setting: Inner Sea Magic. © 2011, Paizo Publishing, LLC; Authors: Jesse Benner, Jason Nelson, Sean K Reynolds, Owen K.C. Stephens, Russ Taylor.
 Daemon, The Oinodaemon from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Troll, Ice from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley, based on original material by Russell Cole.
 Pathfinder Campaign Setting: Inner Sea Monster Codex © 2015, Paizo Inc.; Authors: John Compton, Paris Crenshaw, Mike Myler, Tork Shaw, and Larry Wilhelm.
@@ -349,6 +350,8 @@ Quickwood from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pu
 Pathfinder Adventure Path #117: Assault on Longshadow © 2017, Paizo Inc.; Authors: Benjamin Bruck and Thurston Hillman, with Liz Courts, Paris Crenshaw, and Jason Keeley.
 Quickling from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Adventure Path #119: Prisoner of the Blight © 2017, Paizo Inc.; Authors: Amanda Hamon Kunz, with Paris Crenshaw, Crystal Frasier, Jason Keeley, Isabelle Lee, and Larry Wilhelm.
+Juju Zombie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
+Pathfinder Campaign Setting: Isles of the Shackles © 2012, Paizo Publishing, LLC; Author: Mike Shel.
 Pathfinder Adventure Path #35: War of the River Kings. © 2010, Paizo Publishing, LLC; Author: Jason Nelson.
 Pathfinder Player Companion: Knights of the Inner Sea © 2012, Paizo Publishing, LLC. All Rights Reserved. Paizo Publishing, LLC, the Paizo golem logo, Pathfinder, Pathfinder Society, and GameMastery are registered trademarks of Paizo Publishing, LLC; Pathfinder Adventure Path, Pathfinder Campaign Setting, Pathfinder Module, Pathfinder Player Companion, Pathfinder Roleplaying Game, and Pathfinder Tales are trademarks of Paizo Publishing, LLC.
 Pathfinder Player Companion: Kobolds of Golarion © 2013, Paizo Publishing, LLC; Authors: Tork Shaw, Mat Smith, and Jerome Virnich.
@@ -387,11 +390,13 @@ Forlarren from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pu
 Troll, Rock from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene. Yellow Musk Creeper from the Tome of Horrors Complete © 2011,
 Pathfinder Player Companion: Mythic Origins © 2013, Paizo Publishing, LLC; Authors: Dennis Baker, Philip Minchin, and Russ Taylor
 Pathfinder Roleplaying Game Occult Adventures © 2015, Paizo Inc.; Authors: John Bennett, Logan Bonner, Robert Brookes, Jason Bulmahn, Ross Byers, John Compton, Adam Daigle, Jim Groves, Thurston Hillman, Eric Hindley, Brandon Hodge, Ben McFarland, Erik Mona, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Alex Riggs, Robert Schwalb, Mark Seifter, Russ Taylor, and Steve Townshend.
+Pathfinder Campaign Setting: Occult Bestiary © 2015, Paizo Inc.; Authors: Josh Colon, John Compton, Paris Crenshaw, Adam Daigle, Eleanor Ferron, James Jacobs, Joe Homes, Mikko Kallio, Mike Kimmel, Ron Lundeen, Kate Marshall, Kalervo Oikarinen, Stephen Radney-MacFarland, and F. Wesley Schneider.
 Pathfinder Campaign Setting: Numeria, Land of Fallen Stars © 2014, Paizo Inc.; Authors: Jim Groves and Russ Taylor.
 Pathfinder Player Companion: Occult Origins © 2015, Paizo Inc.; Authors: Robert Brookes, Ben McFarland, Jason Nelson, and Mark Seifter.
 Pathfinder Campaign Setting: Occult Realms © 2015, Paizo Inc.; Authors: Robert Brookes, Thurston Hillman, Thomas M. Reed, and Mark Seifter.
 Kobold Quarterly Issue 14 © 2010, Open Design LLC, www.koboldquarterly.com.
 Pathfinder Player Companion: Pathfinder Society Primer © 2013, Paizo Publishing, LLC; Authors: John Compton and Mark Moreland.
+Pathfinder Roleplaying Game Pathfinder Unchained © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, Ross Beyers, Logan Bonner, Jason Bulmahn, Robert Emerson, Tim Hitchcock, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Robert Schwalb, Mark Seifter, and Russ Taylor.
 . Pathfinder Player Companion: Paths of the Righteous © 2016, Paizo Inc.; Authors: Alexander Augunas, John Compton, Jenny Jarzabski, Isabelle Lee, Stephen Rowe, and Owen K.C. Stephens.
 Pathfinder Player Companion: People of the River © 2014, Paizo Inc.; Authors: Tim Akers, Jason Brick, Ethan Day-Jones, James Jacobs, Nick Salestrom, David Schwartz, and William Thrasher.
 Pathfinder Player Companion: People of the Sands © 2013, Paizo Publishing, LLC; Authors: Shaun Hocking, Rob McCreary, and Jason Nelson.
@@ -457,11 +462,14 @@ Zombie, Brine from the Tome of Horrors Complete © 2011, Necromancer Games, Inc.
 Pathfinder Adventure Path #56: Raiders of the Fever Sea © 2012, Paizo Publishing, LLC; Author: Greg A. Vaughan.
 Pathfinder Player Companion: Spymaster’s Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, David N. Ross, and Owen K.C. Stephens.
 Pathfinder Adventure Path #110: The Thrushmoor Terror © 2016, Paizo Inc.; Authors: Tito Leati, with James Jacobs, Michelle Jones, and Christopher Rowe.
+Necrophidius from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Simon Tillbrook.
+Pathfinder Adventure Path #111: Dreams of the Yellow King © 2016, Paizo Inc.; Authors: Ron Lundeen, with Liz Courts, James Jacobs, Todd Stewart, and Wendy N. Wagner.
 Phycomid from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Adventure Path #113: What Grows Within © 2016, Paizo Inc.; Authors: John Compton, with Adam Daigle, Arinn Dembo, and James Jacobs.
 Pathfinder Module: The Dragon’s Demand © 2013, Paizo Publishing, LLC; Author: Mike Shel.
 Pathfinder Campaign Setting: The First World, Realm of the Fey © 2016, Paizo Inc.; Author: James L. Sutter
 Pathfinder Player Companion: The Harrow Handbook © 2014, Paizo Inc.; Authors: Crystal Frasier, Will McCardell, and David Schwartz.
+Pathfinder Campaign Setting: The Inner Sea World Guide. © 2011, Paizo Publishing, LLC; Authors: Keith Baker, Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Leandra Christine Schneider, David Schwartz, Amber E. Scott, Stan!, Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, and JD Wiker.
 Rot Grub from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene and Clark Peterson, based on original material by Gary Gygax.
 Pathfinder Adventure Path #140: Eulogy for Roslar’s Coffer © 2019, Paizo Inc.; Authors: Jason Keeley, with Eleanor Ferron, Sarah E. Hood, Lyz Liddell, Luis Loza, Crystal Malarsky, Jen McTeague, and Mikhail Rekun.
 Animal Lord, Cat Lord from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.

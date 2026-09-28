@@ -72,7 +72,7 @@ export function parseRequirement({ name, text }) {
 
 // Highest spell level each tradition can cast, from the casting classes ([{ cls, effectiveLevel }]).
 export function castingByTradition(casting, scores) {
-  const out = { arcane: -1, divine: -1, alchemist: -1 };
+  const out = { arcane: -1, divine: -1, psychic: -1, alchemist: -1 };
   for (const c of casting) {
     const kind = tradition(c.cls.id);
     if (!kind) continue;

@@ -197,6 +197,12 @@ export function twoWeaponAttack({ main, off, bab, haveFeats = [], ...common }) {
 // classLevel is the monk or brawler level; classBab the BAB those levels give; bab the character's total BAB.
 export function flurryBabs(kind, classLevel, classBab, bab) {
   if (kind === 'brawler' && classLevel < 2) return null;
+  if (kind === 'monk-unchained') {
+    // Unchained monk: one more attack at the highest bonus (two from 11th level), no penalty.
+    const list = [bab];
+    for (let b = bab - 5; b > 0 && list.length < 4; b -= 5) list.push(b);
+    return [...Array(classLevel >= 11 ? 2 : 1).fill(bab), ...list];
+  }
   const first = kind === 'monk' ? bab - classBab + classLevel : bab;
   const list = [first];
   for (let b = first - 5; b > 0 && list.length < 4; b -= 5) list.push(b);

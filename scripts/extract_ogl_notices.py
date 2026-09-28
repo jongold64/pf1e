@@ -14,8 +14,22 @@ from foundry import load_sources
 
 OUT = os.path.join(os.path.dirname(__file__), 'ogl_notices.json')
 
-# Copied from the book's own Section 15 (the Archives of Nethys page doesn't list these books).
-MANUAL_NOTICES = {}
+# Copied from the book's own Section 15 (the Archives of Nethys page doesn't list these books), read from the PDFs.
+MANUAL_NOTICES = {
+    'Inner Sea Magic': [
+        'Advanced Bestiary. © 2004, Green Ronin Publishing, LLC; Author: Matthew Sernett.',
+        'Marid from the Tome of Horrors III. © 2005, Necromancer Games, Inc.; Author: Scott Greene.',
+        'Pathfinder Campaign Setting: Inner Sea Magic. © 2011, Paizo Publishing, LLC; Authors: Jesse Benner, '
+        'Jason Nelson, Sean K Reynolds, Owen K.C. Stephens, Russ Taylor.',
+    ],
+    'The Inner Sea World Guide': [
+        'Pathfinder Campaign Setting: The Inner Sea World Guide. © 2011, Paizo Publishing, LLC; Authors: Keith Baker, '
+        'Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, '
+        'James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, '
+        'Sean K Reynolds, F. Wesley Schneider, Leandra Christine Schneider, David Schwartz, Amber E. Scott, Stan!, '
+        'Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, and JD Wiker.',
+    ],
+}
 
 norm = lambda s: re.sub(r'[^a-z0-9]', '', html.unescape(s).lower().replace('&', 'and'))
 

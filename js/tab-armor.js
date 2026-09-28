@@ -1,6 +1,7 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, spellFailureByClass } from './armor.js';
+import { MONK_IDS } from './rules.js';
 
 const GROUPS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor']];
 
@@ -64,7 +65,7 @@ export function renderArmorTab(app, view) {
   if (gear.maxDex !== null && stats.mod.dex > gear.maxDex) {
     warnings.push(`Your Dex bonus (${signed(stats.mod.dex)}) is capped at ${signed(gear.maxDex)} in this armor.`);
   }
-  if (view.counts.some(e => e.cls.id === 'monk') && (gear.armor || gear.shield)) {
+  if (view.counts.some(e => MONK_IDS.includes(e.cls.id)) && (gear.armor || gear.shield)) {
     warnings.push('Monks lose their Wisdom and monk AC bonus when wearing armor or using a shield.');
   }
   $('armor-warnings').innerHTML = warnings.map(w => `<p class="warning">${esc(w)}</p>`).join('');

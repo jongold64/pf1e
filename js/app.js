@@ -28,7 +28,8 @@ import { buildSheet } from './sheet.js';
 import { weaponSummaries } from './tab-weapons.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
-const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate'], ['prestige', 'Prestige']];
+const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
+                      ['alternate', 'Alternate'], ['prestige', 'Prestige']];
 const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'weapons', 'equipment'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.

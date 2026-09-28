@@ -4,13 +4,18 @@ import { CASTING_ABILITY, spellsPerDay } from './rules.js';
 
 // Arcane and divine casters (Core Rulebook and later books). Alchemists and investigators make extracts,
 // which only "+1 level of alchemist" advances (master chymist) raise.
-export const ARCANE = new Set(['arcanist', 'bard', 'bloodrager', 'magus', 'skald', 'sorcerer', 'summoner', 'witch', 'wizard']);
+export const ARCANE = new Set(['arcanist', 'bard', 'bloodrager', 'magus', 'skald', 'sorcerer', 'summoner', 'summoner-unchained',
+                               'witch', 'wizard']);
 export const DIVINE = new Set(['antipaladin', 'cleric', 'druid', 'hunter', 'inquisitor', 'oracle', 'paladin', 'ranger',
                                'shaman', 'warpriest']);
+// Occult Adventures' psychic magic is neither arcane nor divine (no arcane spell failure; "arcane spells" prestige
+// requirements aren't met by it).
+export const PSYCHIC = new Set(['medium', 'mesmerist', 'occultist', 'psychic', 'spiritualist']);
 const EXTRACTS = new Set(['alchemist', 'investigator']);
 
 export function tradition(clsId) {
-  return ARCANE.has(clsId) ? 'arcane' : DIVINE.has(clsId) ? 'divine' : EXTRACTS.has(clsId) ? 'alchemist' : null;
+  return ARCANE.has(clsId) ? 'arcane' : DIVINE.has(clsId) ? 'divine' : PSYCHIC.has(clsId) ? 'psychic'
+    : EXTRACTS.has(clsId) ? 'alchemist' : null;
 }
 
 // Which casting classes a prestige class's advance can go to ('arcane', 'divine', 'alchemist' or 'any').

@@ -163,7 +163,21 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   uses. Records from Foundry carry `"origin": "Foundry VTT pf1"`.
 - `build_foundry_spells.py` runs after `build_spells.py`: adds spells PSRD lacks (names matched ignoring spaces and
   punctuation; Foundry's "(APG)"-style tags dropped) and adds Foundry class levels missing from PSRD spells (occult
-  classes, unchained summoner). `validate.py` allows spell lists for those not-yet-built classes.
+  classes, unchained summoner).
+- `build_foundry_classes.py` (after `build_classes.py`) rebuilds each class table: BAB/saves from "high/med/low"
+  with the Core Rulebook formulas, spells from Foundry's `casterProgression` tables in `module/config.mjs` (checked to
+  match PSRD for sorcerer, bard, paladin, inquisitor, summoner, arcanist, alchemist; prepared casters' cantrips go under
+  per day, known-only 0-level spells kept before 1st-level spells start), features from the linked class abilities at
+  the level first gained. `REPEATS` adds repeated features the app needs (unchained monk bonus feats), `OTHER_FROM`
+  copies table columns (unchained monk uses the monk's AC bonus / unarmed damage), `SOURCE_FIXES` (vigilante has no
+  source). The "Weapon and Armor Proficiency" feature is written from `weaponProf`/`armorProf` in the wording the app's
+  proficiency parsers read. Categories: 'occult', 'unchained', 'base'.
+- `build_foundry_races.py` (after `build_races.py`) reads traits from "<strong>Name</strong>: text" list items in the
+  description, sets `kind` for the standard ones, ability modifiers from `changes`, size/speed/type from the fields.
+  Bestiary 5 and 6 races are left out: their notices aren't on the Archives of Nethys page.
+- App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
+  monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
+  BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.
 
 ```
 python scripts/build_all.py path/to/PSRD-Data     # rebuild everything, then validate

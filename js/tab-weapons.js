@@ -1,7 +1,7 @@
 // Weapons tab: the character's weapons with attack bonus and damage, and every weapon (by category) with a
 // side panel for the weapon being looked at.
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { SIZE_AC } from './rules.js';
+import { SIZE_AC, MONK_IDS } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
@@ -74,14 +74,16 @@ const usedText = a => (a.used.length ? ` <span class="muted">(${esc(a.used.join(
 function combatContext(app, view) {
   const proficient = proficiencyTest(view.classes, view.race);
   // Unarmed strike damage from the monk or brawler table (the higher class level).
-  const unarmedFrom = view.counts.filter(e => ['monk', 'brawler'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
+  const unarmedFrom = view.counts.filter(e => [...MONK_IDS, 'brawler'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
   const unarmed = unarmedFrom
     ? unarmedForSize(unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'], view.race.size) : null;
   // Flurry of blows: monk (from 1st level) or brawler's flurry (from 2nd). Monk levels count as BAB for it.
-  const flurryFrom = view.counts.find(e => e.cls.id === 'monk') || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
+  const flurryFrom = view.counts.find(e => MONK_IDS.includes(e.cls.id)) || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
   const flurry = flurryFrom ? {
     kind: flurryFrom.cls.id,
-    name: flurryFrom.cls.id === 'monk' ? 'Flurry of blows' : "Brawler's flurry",
+    name: flurryFrom.cls.id === 'brawler' ? "Brawler's flurry" : 'Flurry of blows',
+    // The unchained monk's flurry has no attack penalty.
+    penalty: flurryFrom.cls.id === 'monk-unchained' ? 0 : -2,
     babs: flurryBabs(flurryFrom.cls.id, flurryFrom.level, flurryFrom.cls.progression[flurryFrom.level - 1].bab[0], view.stats.bab[0]),
   } : null;
   // Weapon feats taken for a weapon on the Feats tab ("Weapon Focus (longsword)"). Once a feat has a weapon chosen,
@@ -186,7 +188,7 @@ export function renderMyWeapons(app, view) {
     // Extra lines: a flurry with monk weapons, and a double weapon used as two weapons.
     const extra = [];
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
-      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: -2 });
+      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}</dd>`);
     }
     if (isDouble(w)) {
@@ -241,7 +243,7 @@ export function weaponSummaries(app, view) {
     const flags = ctx.flagsFor(e, w);
     const extra = [];
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
-      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: -2 });
+      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`${ctx.flurry.name} ${attackText(f)} (${f.damage})`);
     }
     if (isDouble(w)) {

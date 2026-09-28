@@ -19,6 +19,7 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, t
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers } from './rules.js';
 import { exportData, importData } from './storage.js';
+import { tradition } from './multiclass.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
@@ -792,6 +793,35 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('import reads an export', importData(JSON.parse(JSON.stringify(exported))).race, 'elf');
   check('import accepts a bare saved character', importData({ race: 'dwarf', classLevels: ['fighter'] }).race, 'dwarf');
   check('import refuses other JSON', importData({ hello: 1 }), null);
+}
+
+{
+  // Classes from later books (Foundry data)
+  const psy = spellsPerDay({ cls: cls('psychic'), level: 1, scores: scores(10, 10, 10, 16, 10, 10) });
+  check('psychic casts with Int', psy.ability, 'int');
+  check('psychic 1: 3 + 1 bonus first-level spells, 4 knacks and 2 first known',
+        psy.rows.map(r => `${r.spellLevel}:${r.total ?? '-'}/${r.known}`).join(' '), '0:-/4 1:4/2');
+  check('psychic magic is its own tradition', `${tradition('psychic')} ${tradition('medium')} ${tradition('summoner-unchained')}`, 'psychic psychic arcane');
+  check('medium 1 knows two knacks, no 1st-level spells yet',
+        spellsPerDay({ cls: cls('medium'), level: 1, scores: scores(10, 10, 10, 10, 10, 16) }).rows.map(r => `${r.spellLevel}:${r.known}`).join(' '), '0:2');
+  check('kineticist: light armor only', proficiencyFeats(cls('kineticist')).join(', '), 'Armor Proficiency, Light');
+  check('vigilante: shields but not tower shields', proficiencyFeats(cls('vigilante')).includes('Shield Proficiency') &&
+        !proficiencyFeats(cls('vigilante')).includes('Tower Shield Proficiency'), true);
+  check('unchained monk proficient with a kama', proficiencyTest(cls('monk-unchained'), race('human'))(weapon('Kama')), true);
+  check('unchained rogue gets Weapon Finesse free', grantedFeats(cls('rogue-unchained'), 1, allFeats.map(f => f.name)).includes('Weapon Finesse'), true);
+  const um4 = characterStats({ race: race('human'), cls: cls('monk-unchained'), level: 4, baseScores: scores(10, 14, 10, 10, 14, 10), flexibleChoice: 'wis' });
+  check('unchained monk 4 AC: 10 + 2 Dex + 3 Wis + 1 monk', um4.ac, 16);
+  check('unchained monk bonus feat slots', featSlots({ race: race('dwarf'), cls: cls('monk-unchained'), level: 6 }).filter(s => s.kind === 'class').map(s => s.id).join(' '),
+        'class-monk-unchained-L1 class-monk-unchained-L2 class-monk-unchained-L6');
+  check('unchained monk flurry: one extra attack at full BAB', flurryBabs('monk-unchained', 1, 1, 1).join('/'), '1/1');
+  check('unchained monk 11 flurry: two extra attacks', flurryBabs('monk-unchained', 11, 11, 11).join('/'), '11/11/11/6/1');
+  check('duskwalker ability changes', JSON.stringify(finalScores(scores(10, 10, 10, 10, 10, 10), race('duskwalker'))),
+        '{"str":10,"dex":12,"con":8,"int":10,"wis":12,"cha":10}');
+  check('duskwalker racial skills', JSON.stringify(racialSkillBonuses(race('duskwalker'))), '{"Knowledge (religion)":2,"Heal":2}');
+  check('ogre is Large, vine leshy Small', `${race('ogre').size} ${race('vine-leshy').size}`, 'Large Small');
+  check('every new race has size, speed and ability changes', races.filter(r => r.origin).every(r => r.size && r.base_speed && Object.keys(r.ability_modifiers).length), true);
+  check('occultist 4 casts 2nd-level psychic spells', castingByTradition(castingClasses(classCounts(Array(4).fill(cls('occultist')))).casting,
+        scores(10, 10, 10, 16, 10, 10)).psychic, 2);
 }
 
 {

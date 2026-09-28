@@ -2571,6 +2571,39 @@
     "description": "You can observe magical auras. Each round, you may examine a single creature or object that you can see as a free action. In the case of a magic item, you learn its functions (including any curse effects), how to activate its functions (if appropriate), and how many charges are left (if it uses charges). In the case of an object or creature with active spells cast upon it, you learn each spell, its effect, and its caster level.\n\nAn attended object may attempt a Will save to resist this effect if its holder so desires. If the save succeeds, you learn nothing about the object except what you can discern by looking at it. An object that makes its save cannot be affected by any other analyze dweomer spells for 24 hours.\n\nAnalyze dweomer does not function when used on an artifact."
   },
   {
+    "id": "ancestral-memory",
+    "name": "Ancestral Memory",
+    "source": "The Inner Sea World Guide",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 5,
+      "cleric": 5,
+      "druid": 4,
+      "hunter": 4,
+      "investigator": 5,
+      "oracle": 5,
+      "shaman": 5,
+      "warpriest": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Petition your ancestors for aid, gaining a +5 bonus to Intelligence-based skill checks.",
+    "description": "When you cast this spell, you open your mind to the vast experiences of your ancestors in the hope of learning something pertinent about your current situation. The chance of successfully finding an ancestral memory that is pertinent is equal to 70% + your caster level. Failure indicates you merely gain a +5 insight bonus on all Intelligence-based skill checks for the duration of the spell.\n\nSuccess indicates that you not only gain the +5 insight bonus on all Intelligence-based skill checks, but that one of your ancestors came across a situation or problem similar to one you are currently facing. In this case, the GM provides you with some specific information to assist you in overcoming your problem.\n\nFor example, a character might encounter a clay golem deep underground, and finds that her magic weapon and spells seem to be useless against the creature. She successfully casts ancestral memory, and \"remembers\" the proper type of weapons and spells that work against such creatures.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "ancestral-regression",
     "name": "Ancestral Regression",
     "source": "Advanced Race Guide",
@@ -4622,6 +4655,34 @@
     "spell_resistance": "yes",
     "summary": "Imbue all manufactured weapons in range with magic.",
     "description": "You imbue all manufactured weapons carried by allies within range with magic, granting each weapon a +1 enhancement bonus on attack rolls and damage rolls per 5 caster levels (maximum +4).",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "arodens-spellbane",
+    "name": "Aroden's Spellbane",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 9,
+      "sorcerer": 9,
+      "wizard": 9
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (cold iron scepter worth at least 1,000 gp)",
+    "range": "10 ft.",
+    "effects": [
+      [
+        "Area",
+        "10-ft.-radius emanation, centered on you"
+      ]
+    ],
+    "duration": "1 hour/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Create an area to completely block out spells of your choosing.",
+    "description": "One of many spells originally created by the Last Azlanti before he became a god, Aroden's spellbane creates an area within which spells selected by you simply do not function.\n\nSelect one spell per five caster levels at the time of casting.\n\nThe spells selected cannot be changed after the spell is cast. Aroden's spellbane otherwise functions like antimagic field, except its emanation only prevents the functioning of the selected spells. Only the exact spells mentioned are affected-a spellbane set to prevent the casting of summon nature's ally II would not prevent castings of summon nature's ally I or summon nature's ally III. If you move into an area where a previously cast spell you have selected as a banned spell is in effect, that spell is affected as if by antimagic field. If the spell affects a summoned creature that has spell resistance, you must make a caster level check against the creature's spell resistance to make it wink out.\n\nAroden's spellbane can even negate an antimagic field, another Aroden's spellbane, or any spell that specifies immunity to antimagic field (such as Wall of Force, prismatic sphere, and prismatic wall). Multiple spellbane effects can overlap.\n\nTheir effects stack, preventing the functioning of every spell targeted by any of the multiple spellbane emanations. Spell effects created by artifacts or deities cannot be suppressed by Aroden's spellbane.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -7904,6 +7965,62 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "bladed-dash",
+    "name": "Bladed Dash",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 2,
+      "magus": 2,
+      "skald": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Make a magically-powered charge attack.",
+    "description": "Both Quantium and Jalmeray claim that this spell was born in their arcane universities. Regardless of the spell's origin, it quickly spread throughout the Inner Sea and beyond as spellcasting sword-fighters learned of its existence.\n\nWhen you cast this spell, you immediately move up to 30 feet in a straight line any direction, momentarily leaving a multi-hued cascade of images behind you. This movement does not provoke attacks of opportunity. You may make a single melee attack at your highest base attack bonus against any one creature you are adjacent to at any point along this 30 feet. You gain a circumstance bonus on your attack roll equal to your Intelligence or Charisma modifier, whichever is higher.\n\nYou must end the bonus movement granted by this spell in an unoccupied square. If no such space is available along the trajectory, the spell fails. Despite the name, the spell works with any melee weapon.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "bladed-dash-greater",
+    "name": "Bladed Dash, Greater",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 5,
+      "magus": 5,
+      "skald": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "As Bladed Dash, except allowing you to make an attack against every creature you pass through during the dash.",
+    "description": "This spell functions like bladed dash, save that you can make a single melee attack against every creature you pass during the 30 feet of your dash. You cannot attack an individual creature more than once with spell.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "blasphemy",
     "name": "Blasphemy",
     "source": "Core Rulebook",
@@ -7930,6 +8047,38 @@
     "spell_resistance": "yes",
     "summary": "Kills, paralyzes, weakens, or dazes nonevil subjects.",
     "description": "Any nonevil creature within the area of a blasphemy spell suffers the following ill effects.\n\nHD | Effect\nEqual to caster level | Dazed\nUp to caster level -1 | Weakened, dazed\nUp to caster level -5 | Paralyzed, weakened, dazed\nUp to caster level -10 | Killed, paralyzed, weakened, dazed\n\nThe effects are cumulative and concurrent. A successful Will save reduces or eliminates these effects. Creatures affected by multiple effects make only one save and apply the result to all the effects.\n\nDazed: The creature can take no actions for 1 round, though it defends itself normally. Save negates.\n\nWeakened: The creature's Strength score decreases by 2d6 points for 2d4 rounds. Save for half.\n\nParalyzed: The creature is paralyzed and helpless for 1d10 minutes. Save reduces the paralyzed effect to 1 round.\n\nKilled: Living creatures die. Undead creatures are destroyed. Save negates. If the save is successful, the creature instead takes 3d6 points of damage + 1 point per caster level (maximum +25).\n\nFurthermore, if you are on your home plane when you cast this spell, nonevil extraplanar creatures within the area are instantly banished back to their home planes. Creatures so banished cannot return for at least 24 hours. This effect takes place regardless of whether the creatures hear the blasphemy or not. The banishment effect allows a Will save (at a -4 penalty) to negate.\n\nCreatures whose Hit Dice exceed your caster level are unaffected by blasphemy."
+  },
+  {
+    "id": "blast-barrier",
+    "name": "Blast Barrier",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "sonic",
+    "levels": {
+      "arcanist": 3,
+      "druid": 4,
+      "hunter": 3,
+      "ranger": 3,
+      "sorcerer": 3,
+      "witch": 4,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (handful of snow, earth, or gravel)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "1-ft.-thick wall up to 10 ft. high by 20 ft. wide"
+      ]
+    ],
+    "duration": "concentration, up to 1 round/2 levels",
+    "saving_throw": "Reflex half (see below)",
+    "spell_resistance": "yes",
+    "summary": "Create a rippling but unstable wall from the earth.",
+    "description": "Originally used by the winter witches on the field of battle in the early days of Irrisen, blast barrier has entered the oral traditions of many northern barbarian tribes as legends of winter witches possessing powers to bend the very ground of a battlefield to their will. Blast barrier, however, has proven to be an exceptionally versatile spell as far as terrains are concerned, for it works equally well in swamps, deserts, or any region where the ground is soft or easy to shape.\n\nWhen you cast blast barrier, you cause a rippling wall of loose earth, mud, snow, sand, or gravel to spring up in a designated space within the spell's range. This wall provides total cover to all Large or smaller creatures and objects. The barrier can only spring up in an area of natural, unworked ground. The energy that forms the wall's matrix is unstable, and you must concentrate to maintain the wall's shape. A blast barrier has an AC of 9, hardness 0, and 5 hit points per caster level. When a blast barrier reaches 0 hit points, or when you cease concentrating on maintaining it, the energies that maintain the barrier's shape fail with explosive results, sending sharp chunks of the materials comprising the wall and magical energy out along both sides. Any creature that is adjacent to a blast barrier when it explodes takes 2d6 points of slashing damage and 1d6 points of sonic damage per 3 caster levels (maximum 6d6). A successful Reflex save halves the total damage done. Spell resistance applies as well.\n\nThis instability can make using a blast barrier risky, but many of the spellcasters that pioneered the spell became experts at its tactical applications, often using the barriers to cover an escape while lobbing spells and parting shots, hoping to trigger the barrier's destruction just as their would-be pursuers approached.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "blast-of-wind",
@@ -11780,6 +11929,36 @@
     "spell_resistance": "yes",
     "summary": "Surround yourself with an aura of nothingness.",
     "description": "This spell surrounds you with an aura of nothingness that channels the mysterious energies of the Dark Tapestry. Creatures adjacent to you when this spell is cast and at the start of your turn take 2d6 points of damage. In addition, creatures affected by your aura are fatigued, cannot breathe, and cannot speak or cast spells with somatic components. Creatures adjacent to you are allowed a Reflex save to halve the damage and negate the fatigue effect, but cannot breathe or speak regardless of whether their save is successful as long as they are adjacent to you.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "call-weapon",
+    "name": "Call Weapon",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 1,
+      "hunter": 1,
+      "magus": 1,
+      "ranger": 1,
+      "skald": 1
+    },
+    "casting_time": "1 swift action",
+    "components": "V, S",
+    "range": "30 ft.",
+    "effects": [
+      [
+        "Target",
+        "one melee weapon wielded by an ally"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Summon an ally's weapon from a distance.",
+    "description": "This spell first rose to prominence among the elves of Kyonin in the war to retake their ancestral land from the demon lord Treerazer and his minions. Elite units of elven magi entered battle with this spell prepared to shield fallen comrades or stand firm against fell foes. As the elven presence returned to the world, this spell spread throughout the Inner Sea and beyond.\n\nWhen you cast this spell, you cause a weapon wielded by an ally within 30 feet to telekinetically fly across the space between you and into your open hand. This extra energy persists in the weapon for the rest of the round, granting you a +2 circumstance bonus on attack rolls and weapon damage rolls made during the same round you cast this spell.\n\nIf the ally targeted for this spell is unwilling to give up her weapon, the spell fails. An unconscious or dying ally is considered a \"willing\" target so long as the weapon to be called is still in contact with the ally's body.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -17744,6 +17923,36 @@
     "spell_resistance": "no",
     "summary": "Sense creatures suffering from fear, then teleport close to them.",
     "description": "You gain the ability to detect fear, as per sense fear (see page 127), but you sense creatures within medium range. Once per round as a standard action, you can teleport to a creature suffering from a fear effect within the spell's range if you are aware of the creature and its rough location. You can carry objects with you so long as you don't transport more than your maximum load. You arrive in a random open space within 20 feet of the creature and immediately begin sensing the location of creatures with a fear condition from your new location. Once you teleport to a new location with this spell, you can take no additional actions for the round, as if casting dimension door. You can't teleport if there are no creatures suffering from a fear effect in range.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "crusaders-edge",
+    "name": "Crusader's Edge",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "good",
+    "levels": {
+      "cleric": 4,
+      "inquisitor": 4,
+      "oracle": 4,
+      "paladin": 4,
+      "warpriest": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (dried blood from an evil outsider, sprinkled on the weapon)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "melee weapon touched"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "no",
+    "summary": "Grant a weapon the evil outsider bane quality and nauseate evil outsiders with a critical hit.",
+    "description": "This spell was created by the paladins of the Mendevian Crusades, and co-opted by inquisitors and rangers dedicated to tracking and fighting demons, devils, and other evil extraplanar creatures.\n\nWhen you cast this spell on a melee weapon you imbue it with a powerful holy energy, granting the weapon the bane weapon quality against evil outsiders. Furthermore, whenever you score a successful critical hit against an outsider with the evil subtype, you not only deal normal critical damage with the weapon but also nauseate the outsider for 1d3 rounds-the outsider can reduce this nauseated condition to sickened for 1 round with a successful Fortitude save.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -25402,6 +25611,36 @@
     "description": "This spell functions like eagle's splendor, except that it affects multiple creatures."
   },
   {
+    "id": "eaglesoul",
+    "name": "Eaglesoul",
+    "source": "Inner Sea Magic",
+    "school": "conjuration",
+    "subschool": "summoning",
+    "descriptors": "good",
+    "levels": {
+      "cleric": 6,
+      "oracle": 6,
+      "paladin": 4,
+      "summoner": 5,
+      "warpriest": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (vellum inscribed with good outsider's name)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 hour/level (see below)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Infuse yourself with power from a good-aligned outsider.",
+    "description": "As the Inner Sea's bravest men and women answered the call of what became the Second Mendevian Crusade, constructing the wardstones that eventually kept the brutal chaos of the Worldwound at bay, they realized that they needed help beyond traditional magics.\n\nLegends say that the first eaglesoul spell was created when an agathion avoral joined his own spirit with that of a courageous paladin who was about to be overwhelmed on the field of battle. The holy knight used the combined might of the agathion's great strength and his own to win the day for the crusaders. Now, although the spell is still in use chiefly among those that patrol the borders of the Worldwound, other champions of good have carried it with them to all corners of the Inner Sea region.\n\nWhen you cast this spell, you reach into the great beyond and beseech a good-aligned outsider for their aid against evil.\n\nThe outsider infuses a small portion of its own power into you, making you a powerful force for good. You gain a +2 morale bonus on all Perception checks made against evil creatures, a +2 bonus on Initiative checks, and detect evil as a constant spell-like ability.\n\nIn addition, once during the spell's duration you can call forth a surge of holy power when fighting an evil creature.\n\nDoing so is a swift action that shortens the spell's remaining duration so that its remaining hours of duration become rounds of duration. For the rest of this duration, the surge of power grants you the following benefits:\n\nA +2 sacred bonus to AC\n\nA +4 sacred bonus to Strength\n\nResistance 5 to acid and fire\n\nA +5 sacred bonus on all Intimidate checks made against evil creatures\n\nFast healing 2\n\nAny critical threat roll made against an evil creature with a weapon you wield is automatically confirmed.\n\nAlthough this surge of power can be activated against any evil opponent, this ability activates automatically as soon as you attack any evil outsider, regardless of whether you hit or not, and regardless of whether you actually recognize that the target is in fact an evil outsider. In such cases the activation is a free action.\n\nNongood spellcasters can cast this spell, but doing so causes them to be sickened (for spellcasters who are neither good nor evil) or staggered (for spellcasters who are evil) for the spell's duration.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "ear-piercing-scream",
     "name": "Ear-Piercing Scream",
     "source": "Ultimate Magic",
@@ -25983,6 +26222,64 @@
     "spell_resistance": "yes",
     "summary": "Coerce a target, cloud its memory of the encounter",
     "description": "As part of casting this spell, you can attempt a single Intimidate skill check to make a target act friendly toward you. If you succeed, the target assists you normally, but Egorian diplomacy clouds the memory of any threats or pressure you applied. The target remembers assisting you, but can't remember why, and its attitude toward you doesn't worsen as a result of being intimidated. Whether a creature fails or succeeds at its saving throw, it becomes immune to further castings of Egorian diplomacy for 24 hours.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "eldritch-conduit",
+    "name": "Eldritch Conduit",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a small mirror)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Create a conduit with which you can cast area effect spells from.",
+    "description": "Originally created by a disciple of the archwizard Nex, this spell was used to turn enemy soldiers in Geb's undead armies into conduits capable of blasting spell energy back into the far reaches of the Gebite lines. Since then, it has become a favorite among arcane casters with an understanding of battlefield tactics.\n\nIf the target of this spell fails to resist its effects with a Will save, he becomes outlined in faint radiance, as if via faerie fire. At any time before the eldritch conduit expires, you may cast another spell with an area effect of cone, cylinder, line, or sphere and use the subject of the eldritch conduit as the point of origin for that spell. Doing so ends the spell immediately. The target must be within close range (25 feet + 5 feet/2 levels) in order for you to use the conduit-if the target moves out of range, the eldritch conduit effect persists but cannot be utilized by you until you get back within range.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "eldritch-conduit-greater",
+    "name": "Eldritch Conduit, Greater",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 6,
+      "sorcerer": 6,
+      "witch": 6,
+      "wizard": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a small mirror)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Area",
+        "one creature/level, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Use Eldritch Conduit on more creatures at greater range.",
+    "description": "This spell functions like eldritch conduit save for the differences listed above and that the target must be within medium range (100 ft. + 10 ft./level) in order for you to use the conduit. Using a creature as a conduit for a spell ends the greater eldritch conduit effect on that creature, but does not end the effect for other eldritch conduits.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -31533,6 +31830,34 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "fleshcurdle",
+    "name": "Fleshcurdle",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": "polymorph",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (scrap of pickled flesh)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one living or undead creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "Warp a creature's flesh, penalizing it in attack, defense, or movement.",
+    "description": "You warp the target creature's flesh, discoloring it and causing it to become misshapen and impairing its function. When you cast this spell, you must choose one of three types of effects to inflict on the target-movement, attacks, or defense.\n\nAttacks: One of the creature's natural attacks takes a -2 penalty on attack and damage rolls, only scores a critical hit on a natural 20, and only deals x2 damage on a confirmed critical hit.\n\nDefense: The creature's natural armor bonus decreases by -4, to a minimum bonus of +0.\n\nMovement: One of the creature's movement speeds (chosen by you) is halved.\n\nMost undead are susceptible to fleshcurdle, but amorphous creatures and creatures without flesh are immune (such as elementals, oozes, plants, gaseous or incorporeal creatures, and skeletons).",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "fleshwarping-swarm",
     "name": "Fleshwarping Swarm",
     "source": "Inner Sea Races",
@@ -32498,6 +32823,37 @@
     "spell_resistance": "yes",
     "summary": "Hand pushes creatures away.",
     "description": "This spell functions as interposing hand, except that it can also pursue and bull rush one opponent you select. The forceful hand gets one bull rush attack per round. This attack does not provoke an attack of opportunity. Its CMB for bull rush checks uses your caster level in place of its base attack bonus, with a +8 bonus for its Strength score (27), and a +1 bonus for being Large. The hand always moves with the opponent to push them back as far as possible. It has no movement limit for this purpose. Directing the spell to a new target is a move action. Forceful hand prevents the opponent from moving closer to you without first succeeding on a bull rush attack, moving both the forceful hand and the target closer to you. The forceful hand can instead be directed to interpose itself, as interposing hand does."
+  },
+  {
+    "id": "forceful-strike",
+    "name": "Forceful Strike",
+    "source": "Inner Sea Magic",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "cleric": 4,
+      "inquisitor": 4,
+      "magus": 4,
+      "oracle": 4,
+      "paladin": 4,
+      "warpriest": 4
+    },
+    "casting_time": "1 swift action",
+    "components": "V, S",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "1 creature"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Fortitude partial",
+    "spell_resistance": "yes",
+    "summary": "Strike a creature with great force, dealing extra damage and knocking it back.",
+    "description": "You cast this spell as you strike a creature with a melee weapon, unarmed strike, or natural attack to unleash a concussive blast of force. You deal normal weapon damage from the blow, but also deal an additional amount of force damage equal to 1d4 points per caster level (maximum of 10d4). The force of the blow may be enough to knock the target backward as well. To determine if the target is pushed back, make a combat maneuver check with a bonus equal to your caster level to resolve a bull rush attempt against the creature struck. You do not move as a result of this free bull rush, but it can push the target back if it defeats the target's CMD. A successful Fortitude save halves the force damage and negates the bull rush effect.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "foresight",
@@ -34021,6 +34377,69 @@
     "description": "This spell functions similarly to lesser geas, except that it affects a creature of any HD and allows no saving throw.\n\nIf the subject is prevented from obeying the geas/quest for 24 hours, it takes a -3 penalty to each of its ability scores. Each day, another -3 penalty accumulates, up to a total of -12. No ability score can be reduced to less than 1 by this effect. The ability score penalties are removed 24 hours after the subject resumes obeying the geas/quest.\n\nA remove curse spell ends a geas/quest spell only if its caster level is at least two higher than your caster level. Break enchantment does not end a geas/quest, but limited wish, miracle, and wish do.\n\nBards, sorcerers, and wizards usually refer to this spell as geas, while clerics call the same spell quest."
   },
   {
+    "id": "gebs-hammer",
+    "name": "Geb's Hammer",
+    "source": "Inner Sea Magic",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "sorcerer": 4,
+      "witch": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a leather glove coated in dried embalming herbs)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "sphere of undead remains composed of 3 or more destroyed undead"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Draw the remains of nearby destroyed undead, throwing them as a single mass of flesh at your enemy.",
+    "description": "Centuries of war with Nex trained the necromancers of Geb to extract every last resource from the mindless undead that make up most of Geb's rank-and-file troops.\n\nWhen you cast this spell, you draw the remains of nearby destroyed undead together and fuse them into a mass of flesh and bone you can then hurl at any foes within range. Three corpses within range of the spell are required for the spell to function. Geb's hammer can be directed to attack one foe within range per round as a move action. It uses your caster level as its base attack bonus, modified by your Intelligence, Wisdom, or Charisma modifier (whichever one is highest). On a hit, the corpse hammer deals 1d6 points of damage per three caster levels (to a maximum of 6d6 points of damage).\n\nGeb's hammer also has secondary effects based on the nature of the three bodies you use to create it. If the majority used to create Geb's hammer (at least two) were skeletal, the jagged bits of bone cause the corpse hammer to deal slashing damage and increase Geb's hammer's critical threat range to 19-20. On the other hand, if the majority were fleshy (at least two), the increased mass causes Geb's hammer to deal bludgeoning damage and increase its critical hit damage to x3.\n\nUndead that have been destroyed by positive energy or a similar effect that does not leave a corpse, like a disintegrate spell, cannot be used to form Geb's hammer.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "geniekind",
+    "name": "Geniekind",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": "polymorph",
+    "descriptors": null,
+    "levels": {
+      "arcanist": 5,
+      "cleric": 5,
+      "druid": 5,
+      "hunter": 5,
+      "oracle": 5,
+      "sorcerer": 5,
+      "summoner": 5,
+      "warpriest": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a pinch of dust, embers, wind-blown sand or drops of water, depending on the genie type)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Gain the power and influence of a genie.",
+    "description": "Keleshite wizards and clerics have always sought to emulate the genies that they bind. The geniekind spell is the result of attempts to gain the power and influence of these proud outsiders without entirely forsaking the caster's own form.\n\nUpon casting this spell, you must choose one type of genie to transform into, selecting from djinni, efreeti, marid, or shaitan. You retain your basic physical appearance but shift in some way to become more akin to the genie type you chose. While under the effects of geniekind, you gain a +2 racial bonus on all saving throws against paralysis, poison, sleep, and stunning effects, and a +4 enhancement bonus to your natural armor bonus. You also gain a +2 enhancement bonus to Constitution and a +5 bonus on all Diplomacy checks made when interacting with creatures of the same elemental subtype as your chosen genie. In addition, you gain other abilities depending upon the type of genie you choose to assume the form of, as detailed below.\n\nDjinni: You gain the ability to fly at a speed of 60 feet with perfect maneuverability. When flying, your lower torso trails away into a vortex of wind and smoke. You gain resist electricity 10.\n\nEfreeti: Your flesh turns a deep red and you grow large horns on your head. Your unarmed strikes and any melee weapon you wield deal +1d6 points of fire damage. You gain resist fire 10.\n\nMarid: Your flesh turns blue and you gain webbed fingers and toes. You gain a swim speed of 60 feet and can breathe water. You gain resist cold 10.\n\nShaitan: Your flesh gains the coloration of stone and your hair appears to be sculpted from fine crystals. You gain a burrow speed of 60 feet and resist acid 10.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "genius-avaricious",
     "name": "Genius Avaricious",
     "source": "Council of Thieves #6: The Twice-Damned Prince",
@@ -35155,6 +35574,38 @@
     "spell_resistance": "yes",
     "summary": "2d4 berries each cure 1 hp (max 8 hp/24 hours).",
     "description": "Casting goodberry makes 2d4 freshly picked berries magical. You (as well as any other druid of 3rd or higher level) can immediately discern which berries are affected. Each transmuted berry provides nourishment as if it were a normal meal for a Medium creature. The berry also cures 1 point of damage when eaten, subject to a maximum of 8 points of such curing in any 24-hour period."
+  },
+  {
+    "id": "gorums-armor",
+    "name": "Gorum's Armor",
+    "source": "The Inner Sea World Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bloodrager": 1,
+      "cleric": 1,
+      "inquisitor": 1,
+      "magus": 1,
+      "oracle": 1,
+      "shaman": 1,
+      "warpriest": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (1 iron spike)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "1 suit of metal armor or 1 metal shield"
+      ]
+    ],
+    "duration": "10 minutes/level",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "Make a suit of armor or shield erupt in thousands of spikes, causing damage to natural attacks against you.",
+    "description": "The targeted suit of armor or shield sprouts thousands of tiny iron spikes like porcupine quills. These do not harm the armor's wearer (though donning or removing armor under the effects of this spell takes twice as long), but they act as armor spikes or shield spikes (as appropriate). Any creature attacking the wearer with natural weapons takes 1 point of piercing damage for each attack that hits. At 5th level, the spikes gain a +1 enhancement bonus on attack and damage rolls; this bonus increases to +2 at 10th level. At 15th level, the spikes also gain the anarchic weapon quality.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "gozrehs-trident",
@@ -36659,6 +37110,38 @@
     "spell_resistance": "yes",
     "summary": "Transform the target into a \"harmless\" animal.",
     "description": "You transform the target into a harmless animal of the same approximate body type. The form assumed must be one considered unobtrusive by local communities, such as a cat, a dog, a hunting hawk, a horse, or a rat. This transformation can reduce the target by up to two size categories, but cannot make an animal smaller than Tiny. It cannot increase the size of the target or give it new natural attacks or new forms of movement. The spell otherwise functions as beast shape II.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "harrowing",
+    "name": "Harrowing",
+    "source": "The Inner Sea World Guide",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 3,
+      "bard": 3,
+      "shaman": 3,
+      "skald": 3,
+      "sorcerer": 3,
+      "witch": 3,
+      "wizard": 3
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, F (a Harrow deck)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one creature"
+      ]
+    ],
+    "duration": "1 day/level or until fulfilled",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Use a Harrow deck to predict the future.",
+    "description": "You use a Harrow deck to tell a fortune for yourself or someone else. If you cast harrowing on another creature, you must remain adjacent to the target for the duration of the casting time. A harrowing must describe one set of events or course of action (for example, \"hunting down the pirate king,\" or \"traveling to Viperwall to search for a magic sword\") that the target of the spell intends to undertake at some point during the spell's duration.\n\nIf you have access to a Harrow deck, draw nine cards when this spell is cast. If you do not have a Harrow deck, you can simulate the draws by rolling a d6 and a d10 for each of the nine cards, as detailed on page 293 of this book. Record the ability score and alignment associated with each card. Each of these cards grants a luck bonus or a penalty on a specific type of d20 check; the magnitude of the penalty or bonus depends upon how closely that particular card's alignment matches the target creature's alignment. If the card and target's alignments are identical, that card provides a +2 luck bonus on the associated suit's check. If the card and target's alignments are of the opposite alignment (see below), the card inflicts a -1 penalty on that associated check. If the card has any other alignment, it provides a +1 luck bonus on the associated suit's check.\n\nWhile penalties persist on all associated checks for as long as the harrowing persists, the bonuses are one-use bonuses that the harrowed character can \"spend\" at any time to modify that card's associated check. You can spend a bonus to modify an appropriate roll after the die is rolled, but cannot spend the bonus once you know the result of the roll. Since all of the bonuses granted by a harrowing are luck bonuses, they do not stack with each other. Penalties, on the other hand, do stack.\n\nOnce you spend all of the bonuses granted by a harrowing, or once the spell's duration ends, the spell ends and the penalties are removed.\n\nA single creature can only be under the effects of one harrowing at a time. If it is subjected to a second harrowing while a previous harrowing is still in effect, the new harrowing automatically fails.\n\nAssociated Suit Checks\nSuit | Associated Check\nHammer (Str) | Attack rolls (ranged and melee)\nKey (Dex) | Reflex saving throws\nShield (Con) | Fortitude saving throws\nBook (Int) | Skill checks\nStar (Wis) | Will saving throws\nCrown (Cha) | Any d20 roll\n\nOpposition Alignments\nAlignment | Opposition\nLG | CE\nNG | NE\nCG | LE\nLN | CN\nN | LG, LE, CG, or CE (pick one when spell is cast)\nCN | LN\nLE | CG\nNE | NG\nCE | LG",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -39503,6 +39986,34 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "hungry-darkness",
+    "name": "Hungry Darkness",
+    "source": "Inner Sea Magic",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "darkness, force",
+    "levels": {
+      "arcanist": 7,
+      "sorcerer": 7,
+      "wizard": 7
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a bat's tooth)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "60-ft.-radius spread"
+      ]
+    ],
+    "duration": "1 round/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Create an area of massive darkness filled with unseen chewing teeth and ravenous maws.",
+    "description": "This spell creates an area of intense blackness, as deeper darkness, but filled with unseen chewing teeth and ravenous maws. Any creatures beginning its turn within the hungry darkness is gnawed and slashed by these unseen fangs of force, dealing 3d6 points of force damage and 2 points of Constitution damage per round. Once a creature leaves the cloud, it continues to take 1d6 points of bleed damage each round until it receives magical healing or enters an area of bright light. Spell resistance can prevent damage from the hungry darkness but not against the darkness it creates.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "hungry-earth",
     "name": "Hungry Earth",
     "source": "Monster Codex",
@@ -39674,6 +40185,34 @@
     "spell_resistance": "none",
     "summary": "Treat enemies as favored for 1 round/level.",
     "description": "With a single primal howl, you strike fear in your opponents. Until the end of the spell's duration, you treat those affected by it as if they were your favored enemy, gaining a +2 bonus on weapon attack and damage rolls against them, and a +2 bonus on Bluff, Knowledge, Perception, Sense Motive, and Survival checks against them. If an affected creature is already one of your favored enemies, it is shaken instead. This is a mind-affecting fear effect."
+  },
+  {
+    "id": "hunters-lore",
+    "name": "Hunter's Lore",
+    "source": "Inner Sea Magic",
+    "school": "divination",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "hunter": 2,
+      "inquisitor": 2,
+      "ranger": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a scrap of paper torn from a book about monsters)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Make untrained Knowledge checks to identify monsters, and take 20 on Knowledge checks you are already trained in.",
+    "description": "Inquisitors and rangers alike learned long ago that knowledge of an enemy grants power over that enemy. This spell was created so that almost any enemy could have its vulnerabilities known and exploited.\n\nFor the duration of this spell you may spend a full-round action to take 20 on any Knowledge skill checks made to identify a foe's weaknesses, provided the foe in question is within line of sight and provided that you have at least one rank in that particular Knowledge skill. This spell allows you to make untrained Knowledge checks to determine a monster's weaknesses as if you had ranks in that skill, but you cannot take 20 on these checks.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "huntmasters-spear",
@@ -40996,6 +41535,38 @@
     "spell_resistance": "yes (harmless)",
     "summary": "Transfer spells to subject.",
     "description": "You transfer some of your currently prepared spells, and the ability to cast them, to another creature. Only a creature with an Intelligence score of at least 5 and a Wisdom score of at least 9 can receive this boon. Only cleric spells from the schools of abjuration, divination, and conjuration (healing) can be transferred. The number and level of spells that the subject can be granted depends on its Hit Dice; even multiple castings of imbue with spell ability can't exceed this limit.\n\nHD of Recipient | Spells Imbued\n2 or lower | One 1st-level spell\n3-4 | One or two 1st-level spells\n5 or higher | One or two 1st-level spells and one 2nd-level spell\n\nThe transferred spell's variable characteristics (range, duration, area, and the like) function according to your level, not the level of the recipient.\n\nOnce you cast imbue with spell ability, you cannot prepare a new 4th-level spell to replace it until the recipient uses the imbued spells or is slain, or until you dismiss the imbue with spell ability spell. In the meantime, you remain responsible to your deity or your principles for the use to which the spell is put. If the number of 4th-level spells you can cast decreases, and that number drops below your current number of active imbue with spell ability spells, the more recently cast imbued spells are dispelled.\n\nTo cast a spell with a verbal component, the subject must be able to speak. To cast a spell with a somatic component, it must be able to move freely. To cast a spell with a material component or focus, it must have the materials or focus."
+  },
+  {
+    "id": "impart-mind",
+    "name": "Impart Mind",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 6,
+      "cleric": 6,
+      "magus": 5,
+      "oracle": 6,
+      "sorcerer": 6,
+      "warpriest": 6,
+      "wizard": 6
+    },
+    "casting_time": "2 rounds",
+    "components": "V, S, M (diamond dust worth at least 1,000 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "permanent nonintelligent magic item touched"
+      ]
+    ],
+    "duration": "1 hour/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Impart a portion of your intellect and personality into a magical item.",
+    "description": "This spell grants the target magic item temporary intelligence by siphoning off a tiny portion of your own mind to infuse the object. Only permanent magic items may be enhanced by this spell-one-use items and charged items cannot be affected by impart mind. Intelligent magic items cannot be affected by impart mind.\n\nWhen you cast impart mind on a magic item, the item gains an Intelligence, Wisdom, and Charisma score of 10 and gains your alignment. You have no special control over the item once it becomes intelligent, although since it has your alignment, personality conflicts with items you wield won't be a problem. Determine the item's ego normally, as per the rules on intelligent items in the Core Rulebook.\n\nAn item made intelligent via impart mind communicates via speech and has normal senses to a range of 60 feet. It speaks and reads one language known by you-if you know multiple languages, you may choose which language the item knows.\n\nWhen you cast impart mind on an item, roll once on Table 15-24 on page 534 of the Core Rulebook to randomly determine the item's power-add your caster level to this roll. By expending additional diamond dust in excess of the 1,000 gp worth of material components required to cast this spell, you can gain further bonuses on the d% roll made to determine the item's power. Every additional 100 gp in diamond dust you use in excess grants a cumulative +1 bonus to the roll, up to a maximum additional bonus equal to your caster level. If the item gains the ability to cast a spell, determine the spell it can cast randomly from spells you know of the appropriate level. If the item gains ranks in a skill, it gains ranks in a random skill in which you have at least 1 rank.\n\nIf you roll above 100, then you can choose one item power on Table 15-24 in the Core Rulebook to grant the item, and the item gains a special purpose. Roll once on Tables 15-25 and 15-26 on page 534 of the Core Rulebook to determine what the item's special purpose and dedicated powers are. These d% rolls are not modified by your caster level or any additional powdered gems you used to cast the spell.\n\nOnce this spell ends, the item reverts to its previous nature-if you cast this spell on the item again, it gains entirely different powers as determined by a new set of rolls.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "impenetrable-veil",
@@ -44513,6 +45084,38 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "khains-army",
+    "name": "Khain's Army",
+    "source": "Inner Sea Magic",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "evil",
+    "levels": {
+      "arcanist": 5,
+      "cleric": 5,
+      "oracle": 5,
+      "sorcerer": 5,
+      "warpriest": 5,
+      "witch": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a handful of ghoul's teeth)/DF",
+    "range": "5 ft.",
+    "effects": [
+      [
+        "Effect",
+        "1d4+1 ghouls and 1 ghast"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Fortitude half (see text)",
+    "spell_resistance": "no",
+    "summary": "Create a small squad of ghouls led by a ghast, charged with necromantic energy.",
+    "description": "Originally created by the priest-king of Nemret Noktoria, the ghoul Kortash Khain, for use by his minions to bolster their forces in battles against their enemies, Khain's army has become a favorite of many necromancers throughout Osirion and beyond. By scattering a handful of ghoul's teeth across the ground, you cause 1d4+1 ghouls led by a single ghast to rise up from the ground around you. The ghouls and their ghast leader must appear in squares adjacent to you, but after that they follow your spoken commands unerringly.\n\nIf one of the ghouls is destroyed while the spell's duration is still in effect, it bursts into a spray of rotten flesh and necromantic energy that deals 1d6 points of negative energy damage to all adjacent targets-this energy heals undead targets as typical for negative energy damage. If the ghast is destroyed in this manner, it deals twice as much negative energy damage as a ghoul. A successful Fortitude save halves the negative energy damage dealt. When this spell's duration expires, any remaining undead created by this spell crumble apart into dust and blow away without dealing any additional negative energy damage.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "ki-arrow",
     "name": "Ki Arrow",
     "source": "Ultimate Magic",
@@ -44659,6 +45262,35 @@
     "spell_resistance": "yes (harmless)",
     "summary": "Instantly switch places with a single ally.",
     "description": "This spell allows you to switch places with an ally. When you cast this spell, choose a single ally within range. You teleport to your ally's space while your ally teleports to your former space."
+  },
+  {
+    "id": "kiss-of-the-first-world",
+    "name": "Kiss of the First World",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 4,
+      "druid": 4,
+      "hunter": 4,
+      "skald": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (diamond dust worth 100 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "living or undead creature touched"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Imbue a creature with raw energy from the First World.",
+    "description": "This spell-a favorite of fey spellcasters-is traditionally bestowed with a kiss, though all that's really required to gift someone with a kiss of the First World is a touch. This spell infuses a living creature with a surge of positive energy from the First World, filling the target with the raw energies of life. The exact effects of this spell vary, depending on the nature of the creature touched. Constructs are immune to the effects of this spell.\n\nLiving Creature: A living creature gains a 20-foot increase to his base land speed and a +2 insight bonus on all Charisma-based skill checks. In addition, the creature gains fast healing 2. Fire, acid, and negative energy cause this fast healing to stop functioning on the round following the attack.\n\nUndead Creature: An undead creature targeted by this spell is staggered for the duration of this spell. It does not gain the benefits of any channel resistance it might normally enjoy, and the save DCs for any of its special attacks (but not spell-like abilities or spells) are reduced by 2.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "knell-of-the-depths",
@@ -45865,6 +46497,36 @@
     "spell_resistance": null,
     "summary": "Creates a soaring beacon of light.",
     "description": "You create a glorious beam of brilliant radiance that acts as a +1 holy lance suitable for your size. You must have a free hand when casting the spell and, once you call the lance into being, you cannot switch it to another hand or put it down without prematurely ending the spell. As a standard action while holding a light lance, you can choose not to make an attack and instead hold the lance aloft as a beacon of light and truth, creating an area of bright light with a radius of 90 feet. If you choose to do this for one or more additional rounds the lance also casts a spear of brilliant light up into the sky that grows progressively more visible as it continues to climb toward the heavens. Under cover of night or other darkness, if nothing obstructs the beam, it becomes visible for an additional 2 miles during each round in which you continue to aim your lance skyward (2 miles in the second round, 4 miles in the third round, and so on)."
+  },
+  {
+    "id": "light-of-iomedae",
+    "name": "Light of Iomedae",
+    "source": "Inner Sea Magic",
+    "school": "conjuration",
+    "subschool": null,
+    "descriptors": "good, light",
+    "levels": {
+      "cleric": 3,
+      "inquisitor": 3,
+      "oracle": 3,
+      "paladin": 2,
+      "warpriest": 3
+    },
+    "casting_time": "1 minute",
+    "components": "V, S, DF",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "all undead in a 10-foot-radius spread"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will partial",
+    "spell_resistance": "yes",
+    "summary": "Illuminate all undead creatures in the area and make them more vulnerable to positive energy.",
+    "description": "With this spell, you create shafts of blue light that illuminate all undead creatures in the area. Affected undead take a -20 penalty on all Stealth checks. Invisible undead are not made visible by this effect, but the light does make it easy to pinpoint the exact squares in which such undead are located (they still retain the 50% miss chance granted by invisibility).\n\nThe light of Iomedae increases light levels by one step in a 5-foot radius around an affected undead creature. Once an undead is affected, it remains illuminated as long as remains within the spell's range, even if it leaves the spell's original radius, until the spell's duration ends.\n\nAffected undead must also make a Will save when they are first illuminated by the light of Iomedae. Those who fail this save lose all benefits of channel resistance and take a -2 penalty on all saving throws made against positive energy effects.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "light-prison",
@@ -47437,6 +48099,41 @@
     "spell_resistance": "yes",
     "summary": "Enchant an area to confuse those who travel within it.",
     "description": "Creatures in the area of this spell are subject to a subtle enchantment that confounds their senses of direction, interferes with recognizing landmarks, and causes them to misjudge distances and angles. Creatures that enter the area must succeed at a new Survival check to avoid becoming lost immediately, whether or not they succeed at their saving throws. Those that fail the save take a penalty on such Survival checks equal to double your caster level, treat all squares they enter as difficult terrain for as long as they are in the area and for 1 hour per caster level thereafter, lose the benefit of all effects that allow them to ignore difficult terrain, and take a -4 penalty to Dexterity. Lost passage can be made permanent with permanency at a cost of 10,000 gp.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "lovers-vengeance",
+    "name": "Lover's Vengeance",
+    "source": "The Inner Sea World Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "arcanist": 3,
+      "bard": 3,
+      "cleric": 3,
+      "oracle": 3,
+      "shaman": 3,
+      "skald": 3,
+      "sorcerer": 3,
+      "warpriest": 3,
+      "witch": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 minute",
+    "components": "V, M (a piece of jewelry worth at least 100 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "up to 1 day/level (D) or until discharged",
+    "saving_throw": "Will negates",
+    "spell_resistance": "no",
+    "summary": "Inspire yourself or a lover into a rage against someone who wronged you.",
+    "description": "You inspire yourself or a lover to a vengeful rage against a chosen enemy, who must be a creature that has wronged you in some way. If cast on you, the next time you are in combat with that enemy, you gain the benefits of a rage spell. If cast on a lover, he or she gains the benefits of a rage spell the next time the lover is in combat against your enemy. This variant of the spell must be cast within 1 hour of an intimate encounter with the target. The rage effect lasts 1 round per level. If the creature that triggers the rage effect is one of your lovers or ex-lovers, the benefits granted by the rage spell double. This spell counts as a contingency spell on the target for the purpose of multiple contingent effects. Worshipers of Calistria are fond of using this spell, and many keep the effect running whenever possible.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -49403,6 +50100,33 @@
     "description": "Marks of Forbiddance magically brand two creatures, preventing them from committing violence against one another. When you cast this spell choose one enemy and one ally within range. Both targets become branded with the sigil of forbiddance. Until the end of the spell's duration, in order for the two targets to attack one another, even with a targeted spell, each attacker must attempt a Will save. If the save succeeds, that target can attack the other normally. If the save fails, the target can't follow through with the attack and the action is lost. This spell does not prevent the targets from attacking each other with area of effect spells or abilities."
   },
   {
+    "id": "martial-marionette",
+    "name": "Martial Marionette",
+    "source": "Inner Sea Magic",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "bard": 3,
+      "skald": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a marionette's crossbar)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "1 creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Take partial control of an opponent's limbs.",
+    "description": "When you cast this spell, you take partial control of an opponent's limbs, making it difficult for him to attack you.\n\nAny attacks made against you by the target of the spell take a -2 penalty due to the erratic and random motions the spell forces onto any efforts to strike you. In addition, any creature suffering the effects of this spell cannot flank you and cannot aid other opponents in flanking you.\n\nAs long as the affected creature is adjacent to you, you can cause the creature's limbs to flail into the path of other attacks against you as an immediate action. This provides partial cover against that attack, granting you a +2 bonus to AC and a +1 bonus on Reflex saves.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "martial-telekinesis",
     "name": "Martial Telekinesis",
     "source": "Inner Sea Races",
@@ -49432,6 +50156,35 @@
     "spell_resistance": "yes",
     "summary": "As the combat maneuver version of telekinesis, with some additional changes",
     "description": "You mingle the power of your mind and body to exert force beyond your reach. This spell functions as the combat maneuver version of telekinesis, except as noted above. Alternatively, you can inflict a telekinetic unarmed strike with this spell, using your own unarmed strike damage and applying your primary spellcasting ability score modifier to the damage in place of your Strength modifier.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "martyrs-bargain",
+    "name": "Martyr's Bargain",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": "good",
+    "levels": {
+      "cleric": 2,
+      "oracle": 2,
+      "paladin": 2,
+      "warpriest": 2
+    },
+    "casting_time": "1 immediate action",
+    "components": "V",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Delay the effects of damage dealt to you.",
+    "description": "Among the faithful followers of the gods of purity-whether they be the servants of Desna in Nidal, zealous followers of Milani struggling against Cheliax's government, paladins of Iomedae fighting against the horrors of the Worldwound, or simply those that fight evil the world over-martyr's bargain represents true faith and true sacrifice.\n\nYou cast this spell as an immediate action when you are subject to a spell or spell-like ability that deals hit point damage, after attack rolls and saving throws have been rolled but before the damage itself is determined. The damage dealt by the spell and any related effects are then delayed for you (and you only) for a number of rounds equal to your caster level.\n\nAt the end of that time (or immediately if martyr's bargain is dispelled), the delayed damage takes effect on you as it would have at the time it was cast, but is maximized as if affected by the Maximize Spell metamagic feat. Spells and spell-like abilities that were already maximized gain no additional benefit from this spell. Nothing can prevent this delayed damage from affecting you.\n\nYou can be affected by only one martyr's bargain spell at a time. If you cast this spell while you are already under the effects of a previous martyr's bargain, the previous spell effect ends and you immediately take the damage it had delayed.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -52482,6 +53235,36 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "music-of-the-spheres",
+    "name": "Music of the Spheres",
+    "source": "Inner Sea Magic",
+    "school": "conjuration",
+    "subschool": "healing",
+    "descriptors": "sonic",
+    "levels": {
+      "bard": 5,
+      "cleric": 6,
+      "oracle": 6,
+      "skald": 5,
+      "warpriest": 6
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a stick of incense treated with special balms)",
+    "range": "20 ft.",
+    "effects": [
+      [
+        "Area",
+        "20-ft.-radius spherical emanation, centered on you"
+      ]
+    ],
+    "duration": "concentration, up to 1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Amplify music of the spheres to grant fast healing, resistance, and saving throw bonuses to all creatures in the area.",
+    "description": "As any scholar of Desnan lore or astrologer can tell you, the music of the spheres is the harmonic constant that plays under and through all of reality. It is this constant song, this otherworldly music, that keeps the laws of reality constant and the connections between the planes of existence strong.\n\nWith this spell, one can amplify the underlying music of the spheres in the spell's area of effect to infuse yourself and all creatures within 20 feet of you, friend and foe alike. All creatures that begin their turn within the area of this spell's effect gain fast healing 5, resistance 10 to all energy types, and a +3 sacred bonus on all saving throws against poison and disease. Any creature that enters the area of effect does not gain the benefits of the music of the spheres until it begins its turn in that area. You must maintain concentration on the amplification of the music or the effects immediately end, but you can move around to prevent enemies from gaining the benefits of this spell.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "mutagenic-touch",
     "name": "Mutagenic Touch",
     "source": "Ultimate Combat",
@@ -54596,6 +55379,33 @@
     "spell_resistance": "yes",
     "summary": "Sphere inflicts negative levels.",
     "description": "You create a small weightless sphere of pure negative energy. As a move action, you can move it up to 30 feet per round in any direction. If it enters a space with a living creature, it stops moving for the round and that creature gains one negative level (Fortitude negates). Any creature passing through or ending its turn in the space occupied by the sphere gains one negative level (Fortitude negates). Twenty-four hours after gaining a negative level from the sphere, the subject must make a Fortitude saving throw (the DC of this save is equal to the DC of this spell) for each negative level. If the save succeeds, that negative level is removed. If it fails, that negative level becomes permanent.\n\nIf more than one orb (from different castings of the spell) enters the same space, the orbs automatically fuse together. The resulting orb uses the higher of the two orbs' DCs as its DC and whichever duration has more time left. If the orbs are from different casters, each must make an opposed Intelligence check to move the sphere.\n\nAn undead creature that passes through or ends its turn in the space occupied by the orb gains 2d4 × 5 temporary hit points for 1 hour."
+  },
+  {
+    "id": "orchids-drop",
+    "name": "Orchid's Drop",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 3,
+      "investigator": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a much-diluted drop of sun orchid nectar worth 500 gp)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 hour/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Add a potent healing effect to your mutagens.",
+    "description": "Alchemists have tried for centuries to recreate Artokus Kirran's feat of genius that created the sun orchid elixir.\n\nAlthough they have yet to unlock the elixir's exact formula, their efforts have not been entirely wasted. One by-product of their experiments was the orchid's drop formula. This extract, distilled from a much-diluted drop of the nectar of a sun orchid flower, can transform an alchemist's mutagen into a potent healing tonic.\n\nAs long as you're under the effects of orchid's drop, drinking a dose of your mutagen heals you of 2d10 points of damage. For the spell's duration, you gain a +2 alchemical bonus on all saving throws.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "orders-wrath",
@@ -60445,6 +61255,37 @@
     "spell_resistance": "no",
     "summary": "Gain a +4 bonus to a random ability score and a -2 penalty to another one.",
     "description": "You take a mental journey through the doors of perception to enter an altered state of consciousness. Despite this hallucinatory transmigration being entirely unreal, your mind and body fully react to it. You gain a +4 alchemical bonus to a random ability score, as well as a corresponding -2 penalty. If the bonus applies to Strength, the penalty applies to Intelligence, and vice versa. If the bonus applies to Dexterity, the penalty applies to Wisdom, and vice versa. If the bonus applies to Constitution, the penalty applies to Charisma, and vice versa. Each round as a standard action, you can explore the nooks and crannies of your imagination to further alter your corporal self. If you do so, attempt a Will save against the spell's save DC. If you succeed, randomly select another ability score and change the alchemical bonus and associated penalty accordingly. If you fail, you are dazed for 1 round instead as your mind reels from learning unexpected truths about yourself.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "pugwampis-grace",
+    "name": "Pugwampi's Grace",
+    "source": "Inner Sea Magic",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "arcanist": 3,
+      "bard": 2,
+      "skald": 2,
+      "sorcerer": 3,
+      "witch": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a pugwampi's hair)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "one creature (see below)"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Force the unluck effect of a pugwampi onto an unwilling creature.",
+    "description": "Hated by adventurers throughout the Inner Sea region, the gremlins known as pugwampis infect those around them with a malignant form of unluck-an effect that this spell emulates. If the target fails its Will save, it becomes infused with the so-called \"grace of the pugwampi.\" A creature affected by this spell must roll two d20s whenever a situation calls for a d20 roll (such as an attack roll, a skill check, or a saving throw) and must use the lower of the two results generated. As with the aura shed by actual pugwampies, this spell has no effect on animals, gremlins, or gnolls. The effects of this spell are negated as long as a target gains any sort of luck bonus to a d20 roll (such as those granted by a luckstone or divine favor), but the spell's duration is not impacted by these effects. If the luck bonus goes away before the pugwampi's grace effect ends, the unluck returns and remains until the spell's normal duration runs out.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -68644,6 +69485,38 @@
     "description": "The target's shadow becomes a flexible tether to its current square. The creature can move up to 5 feet from that square without penalty. Moving farther than 5 feet from the tether point requires the target to make a bull rush combat maneuver check against a CMB of 10 + 1/2 your caster level + your Intelligence modifier (if a witch or wizard) or Charisma modifier (if a bard or sorcerer). The target takes a -1 penalty for every 5 feet of distance between it and its tethered square. Failing this check means the target's move is wasted and it cannot move farther away. If it fails this check by 10 or more, it is pulled 5 feet toward the tether square and is knocked prone. If it beats the check by 10 or more, the spell ends. This spell does not work on creatures that do not cast shadows or reflections. If the target uses a teleportation effect or leaves the current plane, the spell ends."
   },
   {
+    "id": "shadow-barbs",
+    "name": "Shadow Barbs",
+    "source": "Inner Sea Magic",
+    "school": "illusion",
+    "subschool": "shadow",
+    "descriptors": "darkness",
+    "levels": {
+      "arcanist": 4,
+      "cleric": 4,
+      "inquisitor": 4,
+      "oracle": 4,
+      "sorcerer": 4,
+      "warpriest": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a single link from a spiked chain)",
+    "range": "0 ft.",
+    "effects": [
+      [
+        "Effect",
+        "spiked chain-like shadowy weapon"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates (see text)",
+    "spell_resistance": "no",
+    "summary": "Create a vicious spiked chain enshrouded in shadow.",
+    "description": "This spell, developed originally by priests of Zon-Kuthon in Nidal's early years, has recently crossed the boundary between divine and arcane magic. Although it still bears some of the stigma of being associated with the Midnight Lord, it's rapidly becoming a favorite spell of magi and other martially minded arcane spellcasters.\n\nWhen you cast this spell, you create a shadowy spiked chain that shimmers and pulses with darkness. The chain exists as long as you carry it; if you ever drop the chain, give it to another, or are disarmed, it immediately vanishes and the spell's duration ends.\n\nThe chain radiates darkness in a 10-foot-radius spread around you, reducing the illumination level in this area by one step, but not below the level of dim light.\n\nYou can wield the shadow barbs as a spiked chain as if you were fully proficient with spiked chains. Any additional abilities or feats that you possess that apply to spiked chains apply to the shadow barbs as well. The weapon functions as a +2 vicious spiked chain. Its enhancement bonus increases to +3 at caster level 11th, to +4 at caster level 15th, and finally to +5 at caster level 19th. When the spell effect ends, you can make a Will save against the spell-if successful, all of the damage caused to you by the shadow barbs' vicious weapon quality vanishes, unless you are dead or unconscious at the time the spell ends, in which case you automatically fail this Will save and the vicious weapon damage remains.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "shadow-body",
     "name": "Shadow Body",
     "source": "Occult Adventures",
@@ -70274,6 +71147,40 @@
     "description": "A dim, blue glow surrounds the subjects, protecting them from attacks, granting them resistance to spells cast by chaotic creatures, and slowing chaotic creatures when they strike the subjects. This abjuration has four effects.\n\nFirst, each warded creature gains a +4 deflection bonus to AC and a +4 resistance bonus on saves. Unlike protection from chaos, this benefit applies against all attacks, not just against attacks by chaotic creatures.\n\nSecond, a warded creature gains spell resistance 25 against chaotic spells and spells cast by chaotic creatures.\n\nThird, the abjuration protects you from possession and mental influence, just as protection from chaos does.\n\nFinally, if a chaotic creature succeeds on a melee attack against a warded creature, the attacker is slowed (Will save negates, as the slow spell, but against shield of law's save DC)."
   },
   {
+    "id": "shield-of-the-dawnflower",
+    "name": "Shield of the Dawnflower",
+    "source": "The Inner Sea World Guide",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "fire, good, light",
+    "levels": {
+      "bard": 4,
+      "cleric": 4,
+      "hunter": 4,
+      "magus": 4,
+      "oracle": 4,
+      "paladin": 4,
+      "ranger": 4,
+      "skald": 4,
+      "warpriest": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, DF",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "see text",
+    "spell_resistance": "no",
+    "summary": "Create a protective shield of sunlight.",
+    "description": "You create a disk of sunlight on one arm. Any creature that strikes you with a melee attack deals normal damage, but also takes 1d6 points of fire damage + 1 point per caster level (maximum +15). Creatures with reach weapons are not subject to this damage if they attack you. The shield provides illumination as if it were a continual flame spell. You can only have one instance of this spell in effect at a time. It does not stack with similar damaging aura spells such as fire shield.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "shield-of-the-dawnflower-greater",
     "name": "Shield of the Dawnflower, Greater",
     "source": "Inner Sea Gods",
@@ -70492,6 +71399,32 @@
     "spell_resistance": "yes (object)",
     "summary": "Cudgel or quarterstaff becomes +1 weapon (2d6 damage) for 1 min./level.",
     "description": "Your own nonmagical club or quarterstaff becomes a weapon with a +1 enhancement bonus on attack and damage rolls. A quarterstaff gains this enhancement for both ends of the weapon. It deals damage as if it were two size categories larger (a Small club or quarterstaff so transmuted deals 1d8 points of damage, a Medium 2d6, and a Large 3d6), +1 for its enhancement bonus. These effects only occur when the weapon is wielded by you. If you do not wield it, the weapon behaves as if unaffected by this spell."
+  },
+  {
+    "id": "shining-cord",
+    "name": "Shining Cord",
+    "source": "Inner Sea Magic",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "force",
+    "levels": {
+      "magus": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a small length fine of silver chain worth 100 gp)",
+    "range": "30 ft.",
+    "effects": [
+      [
+        "Target",
+        "1 creature"
+      ]
+    ],
+    "duration": "1 round/level or instantaneous (see below)",
+    "saving_throw": "Fortitude partial (see below)",
+    "spell_resistance": "yes",
+    "summary": "Ensare a creature with a silver cord, allowing you to predict its actions and keep you close together.",
+    "description": "When you cast this spell, you make a ranged touch attack against a single opponent within 30 feet. If you hit, a thin silver strand extends from your body to its, forming a connection that allows you to anticipate its actions. For the duration of the spell, you receive a +5 insight bonus on all Perception and Sense Motive checks opposed by the target.\n\nYou gain a +5 insight bonus on all Spellcraft checks made to identify your opponent's spell as part of a counterspelling attempt. Finally, you gain a +2 dodge bonus to your AC against attacks made against you by the target.\n\nLastly, if either you or the target moves more than 30 feet away from the other, the cord crackles with a surge of light and sends a blast of force along its length to the other end.\n\nThis blast deals 1d6 points of damage per two caster levels (maximum 10d6) and stuns the one who moved out of range for 1 round-a successful Fortitude save halves the damage and negates the stun effect. This blast ends the spell and severs the connection between you and your target.\n\nAlthough the shining cord makes a visible connection between you and your target, creatures can move through it without ill effect. The cord even passes through solid objects as necessary to maintain the connection between you and the target.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "shock-shield",
@@ -71227,6 +72160,38 @@
     "spell_resistance": "no",
     "summary": "Creates a double of a weak creature.",
     "description": "This spell functions as simulacrum, except you can't create a simulacrum of a creature whose HD or levels exceed your caster level, and it has no magical abilities. The creature is not under your control, though it recognizes you are its creator."
+  },
+  {
+    "id": "siphon-magic",
+    "name": "Siphon Magic",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 5,
+      "cleric": 5,
+      "oracle": 5,
+      "sorcerer": 5,
+      "warpriest": 5,
+      "witch": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a coiled length of copper wire wrapped around the palm)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "creature touched"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Transfer a magical effect from another creature to yourself.",
+    "description": "This spell attempts to transfer a magical effect from a creature you touch to yourself. When you touch the creature, siphon magic attempts to end one ongoing spell that has been cast on that creature, as if via a targeted dispel magic. If you know the specific spell effect you wish to target, you can name that spell effect to target that specific spell; otherwise siphon magic begins with the highest-level spell in effect and works its way down through all spells affecting the target until it dispels one or runs out of effects, as per dispel magic.\n\nIf siphon magic successfully ends a spell effect on the target, the remaining duration of that spell effect is transferred to you. That spell effect plays out for the rest of its duration as if you had been the original target. If the spell allows a saving throw to resist the effect, you gain a saving throw as if the spell were just being cast upon you, although this does not \"reset\" the spell's duration.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "siphon-might",
@@ -72242,6 +73207,33 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "song-of-kyonin",
+    "name": "Song of Kyonin",
+    "source": "Inner Sea Magic",
+    "school": "conjuration",
+    "subschool": "healing",
+    "descriptors": null,
+    "levels": {
+      "bard": 4,
+      "skald": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Target",
+        "up to 3 creatures, no two of which can be more than 30 ft. apart"
+      ]
+    ],
+    "duration": "1 round/level or until performance ends or changes (see text)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Enhance your bardic performance to grant fast healing to three creatures.",
+    "description": "Certain elven bards of Kyonin are known for the restorative power of their performances-mostly as a result of this spell. You must have a bardic performance in effect to cast this spell (although this spell is called song of Kyonin, the bardic performance need not be singing). As long as that performance continues, up to 3 creatures affected by the performance gain fast healing 2. When this bardic performance ends or you change to a different bardic performance, the fast healing granted by this spell ends as well, but all creatures affected by this spell heal 1d8 points of damage + 1 point per caster level (maximum +15) and are cured of any of the following conditions: exhausted, fatigued, nauseated, paralyzed, sickened, or stunned.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "songbird",
     "name": "Songbird",
     "source": "Planar Adventures",
@@ -73251,6 +74243,62 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "spell-absorption",
+    "name": "Spell Absorption",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 5,
+      "sorcerer": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 round",
+    "components": "V, S, M (a prism)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Use a counterspelled spell's energy in order to regain the use of your own spells.",
+    "description": "If you successfully counterspell a 3rd-level or lower level spell (through either dispel magic or normal means) while spell absorption is in effect, you absorb the countered spell and use it to regain spells you have already cast. If you're a wizard, you regain the use of any single spell that you have cast since the last time you prepared spells. If you're a sorcerer, you regain a single spell slot. The spell recovered or spell slot regained must be of an equal level or lower than the spell you counterspelled.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "spell-absorption-greater",
+    "name": "Spell Absorption, Greater",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 8,
+      "sorcerer": 8,
+      "wizard": 8
+    },
+    "casting_time": "1 round",
+    "components": "V, S, M (a prism)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Use Spell Absorption with higher level spells.",
+    "description": "This spell functions as spell absorption, save that you can absorb countered spells of 6th level or lower.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "spell-gauge",
     "name": "Spell Gauge",
     "source": "Inner Sea Gods",
@@ -73697,6 +74745,36 @@
     "spell_resistance": "yes",
     "summary": "Target takes 1d6 damage for each spell affecting it",
     "description": "You disrupt any spell energy affecting your target, causing that energy to crackle with power and harm the target. The target takes 1d6 points of damage for each spell with a duration of 1 round or greater currently affecting it. The spells themselves are not dispelled or modified.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "spellscar",
+    "name": "Spellscar",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 8,
+      "cleric": 8,
+      "oracle": 8,
+      "sorcerer": 8,
+      "wizard": 8
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a pinch of sand from the Spellscar Desert)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Area",
+        "two 10-ft. cubes per level (S)"
+      ]
+    ],
+    "duration": "10 minutes/level (D)",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Cause spells cast within an area to trigger primal magic effects.",
+    "description": "This potent spell invokes the same sort of magical devastation that created the Mana Wastes so long ago- albeit on a much more localized (and thankfully temporary) scale. Within the area you choose to affect with spellscar, the terrain takes on a strange pale hue, as if colors were muted. Periodically, ripples of vibrant color wriggle through the terrain. Within this area, any spell, spell-like ability, or magic item activation automatically triggers a primal magic event-a spellcaster can avoid triggering such an event by making a concentration check (DC 15 + twice the spell's level), but non-spellcasters who activate magic items have no such option.\n\nYou gain a +4 insight bonus on concentration checks made to avoid triggering primal magic events while within a spellscar you have created, and if you do trigger a primal magic event, you may roll d% twice and pick which of the two results you wish to have occur.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -78039,6 +79117,37 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "suppress-primal-magic",
+    "name": "Suppress Primal Magic",
+    "source": "Inner Sea Magic",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 4,
+      "cleric": 4,
+      "oracle": 4,
+      "sorcerer": 4,
+      "warpriest": 4,
+      "wizard": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a pinch of sand from the Spellscar Desert)",
+    "range": "10 ft.",
+    "effects": [
+      [
+        "Area",
+        "10-ft.-radius emanation centered on you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Suppress the effects of primal magic.",
+    "description": "Nexian wizards first created this spell while researching the nature of the Mana Wastes, hoping to create small zones within the magic-starved region where their own spells could still function reliably. The best the Nexians could manage was this spell-a method to temporarily stabilize magic so that spellcasting within a small area can be accomplished without fear of triggering primal magic events. In the area of effect of this spell, primal magic events cannot be triggered.\n\nThe emanation grants a +4 circumstance bonus on all saving throws against effects generated by primal magic outside of the spell's effect that expand into the area.\n\nUnfortunately, suppressed primal magic tends to build up around the emanation created by this spell. When suppress primal magic's duration ends (or when the spell is dispelled), a primal magic event is immediately triggered at the center of the emanation if that point is still in an area where primal magic is active. The CR of this event is equal to the caster level of the recently ended suppress primal magic spell. The original caster of the suppress primal magic spell can attempt to negate this triggered primal magic event by making a DC 20 Will save-most spellcasters instead relocate to an area not affected by primal magic if they can so that they can end the spell's effect safely.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "suppressing-stone",
     "name": "Suppressing Stone",
     "source": "Inner Sea Races",
@@ -79888,6 +80997,39 @@
     "description": "Upon drinking an extract created with this formula, you make a significant change to your magical reserve that modifies the nature of all bombs you create and throw during this extract's duration. This effect on your magical reserve has no effect on any discoveries that you use to modify your bombs, but you can only have one admixture effect (formula with the word \"bomb admixture\" in its title) active at a time. If you drink another bomb admixture, the effects of the former bomb admixture end and the new one becomes active.\n\nWhen you throw bombs, they can only hit a direct target; they do not splash. However, the bomb deals its base damage plus double your Intelligence modifier instead of just its base damage plus your Intelligence modifier."
   },
   {
+    "id": "tattoo-potion",
+    "name": "Tattoo Potion",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "alchemist": 2,
+      "arcanist": 2,
+      "bard": 2,
+      "investigator": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "witch": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 minute",
+    "components": "V, S, M (a potion to be tattooed, special inks worth 500 gp)",
+    "range": "one potion",
+    "effects": [
+      [
+        "Effect",
+        "one spell tattoo"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Mix a potion that creates a magical chest tattoo when drunk.",
+    "description": "When you cast this spell, you mix special tattoo inks into a potion of your choice. Once you finish casting tattoo potion, the potion begins bubbling and fizzing-if no one drinks the potion within 1 minute of the spell being cast, the potion bubbles away into vapor and is destroyed.\n\nWhen a potion under the effects of tattoo potion is imbibed, the effects of the potion do not occur. Instead, the potion transforms into a spell tattoo (see page 16) on the drinker's chest tattoo slot-if the drinker already has a magic tattoo in this location, the tattoo potion is wasted. Once the potion transforms into a spell tattoo, it remains in place permanently until it is used as a spell tattoo.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "tears-to-wine",
     "name": "Tears to Wine",
     "source": "Arcane Anthology",
@@ -80482,6 +81624,34 @@
     "spell_resistance": "yes",
     "summary": "(Downtime Spell) Teleport a building to a different lot.",
     "description": "You instantly teleport a building in a settlement you control to another lot or series of lots in the same settlement district. The building to be teleported must be unoccupied, and the area to which you wish to move the building must be cleared and unoccupied during the casting of this spell. A building cannot be teleported to an area it would not normally be able to occupy, such as an area adjacent to a prohibited building type. If you don't wholly own the structure, all of the structure's owners must consent to the structure's teleportation before the spell is cast; otherwise, it fails immediately. This spell only functions on buildings that occupy a number of lots equal to one-fourth your caster level (so, for instance, a 16th-level caster could use this spell on a building that occupies up to 4 lots).",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "teleport-trap",
+    "name": "Teleport Trap",
+    "source": "The Inner Sea World Guide",
+    "school": "abjuration",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 7,
+      "sorcerer": 7,
+      "wizard": 7
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S, M (powdered lodestone and silver worth 100 gp per 40-ft. cube)",
+    "range": "medium (100 ft. + 10 ft./level)",
+    "effects": [
+      [
+        "Area",
+        "one 40-ft. cube/level (S)"
+      ]
+    ],
+    "duration": "1 day/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Create a trap that redirects teleport attempts into an area of your choosing.",
+    "description": "Teleport trap wards an area, redirecting all teleportation into or out of the area to a specific point within the area determined by you at the time of casting. The destination must be an open space on a solid surface. The spell's area overlaps walls and other solid and liquid objects (preventing intruders from bypassing the ward by teleporting into a wall or through similar means). A teleporting creature that is affected by a teleport trap can resist the effect with a Will save-if the save is successful, the creature simply doesn't teleport at all (but the use of the teleport effect is still consumed)-either to the intended location or the teleport trap's actual destination. A DC 27 Knowledge (arcana) allows such a creature to recognize the teleport trap's presence, but does not reveal the trap's linked destination.\n\nAt your discretion, the teleport trap can exclude a category of creatures, such as an alignment, a type of creature, or creatures that carry a specific item or know a password (though this only works if the creature is teleporting out of the area, not into it). You select this option and the conditions at the time you cast the spell. Overly complicated conditions may cause the spell to fail entirely. Multiple castings of teleport trap can be linked to cover a larger area, allowing teleported creatures to be directed to a single point within the combined area of the spells.\n\nTeleport trap can be made permanent at the cost of 7,000 gp. A single permanency spell can be used on all teleport traps that share a linked destination, but the gold piece cost must be paid for each individual spell.\n\nThe Pathfinders of the Grand Lodge make use of permanent teleport traps in several key locations, trapping would-be intruders in a small wing of jail cells. At least one crypt of the Whispering Tyrant makes use of the spell as well, trapping grave robbers in coffin-sized stone cysts, there to die a slow and agonizing death from thirst and starvation.",
     "origin": "Foundry VTT pf1"
   },
   {
@@ -82756,6 +83926,37 @@
     "description": "You bestow your regenerative abilities on the target. Your regeneration stops functioning for the duration of the spell, and the target gains your regeneration. For example, if you have regeneration 5 (acid or fire), your target gains regeneration 5 (acid or fire). This regeneration overlaps (does not stack) with any regeneration the creature already has, including other castings of this spell. This spell has no effect if you don't have the regeneration ability or your regeneration isn't functioning when you cast the spell."
   },
   {
+    "id": "transfer-tattoo",
+    "name": "Transfer Tattoo",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "bard": 1,
+      "skald": 1,
+      "sorcerer": 1,
+      "witch": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (tattooing needle)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one magic tattoo"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "Transfer a magical tattoo from one creature to another.",
+    "description": "With this spell, you can transfer one magic tattoo from one creature to another. A target that isn't willing to have his tattoo removed or to receive the transferred tattoo can resist this spell with a Fortitude save-if successful, the transfer fails and the caster of this spell is staggered for 1 round by the backlash of magical energy. A tattoo can be transferred from a dead creature in this manner to a living host, provided the body has been dead no longer than one hour per caster level.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "transfiguring-touch",
     "name": "Transfiguring Touch",
     "source": "Inner Sea Intrigue",
@@ -84071,6 +85272,40 @@
     "spell_resistance": "no",
     "summary": "Increase construct hardness or DR.",
     "description": "This spell increases the target's DR/adamantine by 5 or its hardness by 5. If the target does not have DR/adamantine or hardness, this spell has no effect."
+  },
+  {
+    "id": "unbreakable-heart",
+    "name": "Unbreakable Heart",
+    "source": "The Inner Sea World Guide",
+    "school": "enchantment",
+    "subschool": "compulsion",
+    "descriptors": "mind-affecting",
+    "levels": {
+      "bard": 1,
+      "cleric": 1,
+      "hunter": 1,
+      "oracle": 1,
+      "paladin": 1,
+      "ranger": 1,
+      "skald": 1,
+      "warpriest": 1,
+      "witch": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Effect",
+        "1 creature"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Give a +4 bonus on saves against effects which rely on negative emotions.",
+    "description": "The target creature gains a +4 morale bonus on saving throws against mind-affecting effects that rely on negative emotions (such as crushing despair, rage, or fear effects) or that would force him to harm an ally (such as confusion). If the target is already under such an effect when receiving this spell, that effect is suppressed for the duration of this spell. It does not affect mind-affecting effects based on positive emotions (such as good hope or the inspire courage bard ability). A creature can still be charmed or otherwise magically controlled while under this spell's effects, but if such a creature ever receives a new saving throw against that effect as a result of being ordered to attempt to harm or otherwise oppose a true ally, he can roll that saving throw twice and take the better result as his actual roll. Calm emotions counters and dispels unbreakable heart.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "uncanny-reminder",
@@ -85869,6 +87104,36 @@
     "description": "You surround yourself with a veil of positive energy, making it harder for undead creatures to harm you. When under the effect of this spell, you gain a +2 sacred bonus to AC and a+2 sacred bonus on saves. Both of these bonuses apply only against attacks or effects created by undead creatures. You can dismiss this spell before its normal duration as a swift action on your turn to deal a number of points of positive energy damage equal to your level to all undead creatures within 5 feet of you."
   },
   {
+    "id": "vengeful-comets",
+    "name": "Vengeful Comets",
+    "source": "Inner Sea Magic",
+    "school": "evocation",
+    "subschool": null,
+    "descriptors": "cold",
+    "levels": {
+      "arcanist": 3,
+      "druid": 3,
+      "hunter": 3,
+      "sorcerer": 3,
+      "wizard": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "long (400 ft. + 40 ft./level)",
+    "effects": [
+      [
+        "Effect",
+        "1 comet per 4 levels"
+      ]
+    ],
+    "duration": "1 round/level or until completely discharged (see below)",
+    "saving_throw": "none",
+    "spell_resistance": "yes",
+    "summary": "Create a group of orbiting comets that can immediately strike those who target you with spells.",
+    "description": "This spell causes a number of miniature comets (up to one per four caster levels) to orbit in the air above your head. Bits of snow and cold wind drift down from the orbiting comets, granting you a circumstance bonus equal to the number of comets on all saving throws against fire effects.\n\nThe actual use for the comets, though, is to make vengeful strikes against foes who dare to target you with offensive spells. As an immediate action whenever you are affected by a spell cast by another creature, you can fire one of your vengeful comets as a bolt of icy retribution (provided the source of the offensive spell is within range of your vengeful comet, of course). The comet requires a ranged touch attack to hit. If it hits, a comet deals 1d6 points of bludgeoning damage and 3d6 points of cold damage to the target, plus an additional amount of cold damage equal to the level of the spell you are retaliating against. If the spell you're retaliating against had the fire descriptor, you may opt to fire two comets instead of one.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "vengeful-outrage",
     "name": "Vengeful Outrage",
     "source": "Ultimate Magic",
@@ -86246,6 +87511,33 @@
     "spell_resistance": "no",
     "summary": "Armor or shield gains a +1 enhancement per four levels.",
     "description": "This functions as magic vestment, except it only affects armor or a shield you are wearing or carrying. If the armor or shield is worn or carried by anyone other than you, the spell has no effect, but resumes its effect when you are wearing or carrying it again."
+  },
+  {
+    "id": "vex-giant",
+    "name": "Vex Giant",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "hunter": 3,
+      "ranger": 3
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a fragment from a Large or larger weapon)",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "1 round/level",
+    "saving_throw": "none",
+    "spell_resistance": "no",
+    "summary": "Gain increased senses against a target larger than you.",
+    "description": "The giants and their kin have long plagued the peoples of Varisia, particularly the Shoanti of the Storval Plateau. Among the various tactics and methods the Shoanti have developed to fight against their enemies, this spell is one of the most widespread today.\n\nWhen you cast vex giant, your senses and reflexes become particularly honed against a single target within 60 feet, provided the target is at least one size category larger than you. You may select your focused foe as a free action when you cast this spell-switching your focus to a different foe within 60 feet is a move action. If a foe moves beyond 60 feet from you, you lose your focus on that foe, although you may regain it by moving within 60 feet and spending a move action. Although the name of the spell is vex giant, it works equally well on any foe that's at least one size category larger than you.\n\nAgainst a foe you are focused on, you do not provoke attacks of opportunity by moving through their threatened area. Additionally, the first successful melee attack you make against the foe in a round deals an additional 1d6 points of damage. Finally, you gain a +4 insight bonus on all combat maneuver checks made against your focused foe.",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "vexing-miscalculation",
@@ -86783,6 +88075,36 @@
     "spell_resistance": "no",
     "summary": "Illusory hellscape makes creatures shaken.",
     "description": "You overlay a realistic illusion of a terrifying hellscape upon an area. Structures, equipment, and creatures within the area are not hidden, though environmental features take on an infernal appearance. While you are prepared for these images and are not affected by them, any other creature within the area must make a Will save or become shaken and also take a -2 penalty on saves versus fear effects; the fear and penalty persists as long as the creature remains in the area. Devils and any lawful evil creatures suffer no negative effects from this spell."
+  },
+  {
+    "id": "vision-of-lamashtu",
+    "name": "Vision of Lamashtu",
+    "source": "The Inner Sea World Guide",
+    "school": "illusion",
+    "subschool": "phantasm",
+    "descriptors": "evil, mind-affecting",
+    "levels": {
+      "cleric": 7,
+      "inquisitor": 6,
+      "oracle": 7,
+      "shaman": 7,
+      "witch": 7
+    },
+    "casting_time": "10 minutes",
+    "components": "V, S",
+    "range": "unlimited",
+    "effects": [
+      [
+        "Target",
+        "one living creature"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "Will negates (see text)",
+    "spell_resistance": "yes",
+    "summary": "As nightmare, but can deliver a second spell when the target awakens.",
+    "description": "This spell functions exactly as the spell nightmare. In addition to the effects of that spell, you can cause a second spell to be delivered when the target wakes at the nightmare's conclusion.\n\nYou must have this second spell prepared, and it must be cast immediately after vision of Lamashtu (effectively adding the two spells' casting times). This second spell \"rides along\" with the nightmare, affecting the target as soon as it wakes from its fitful sleep. Any spell can be sent along with the nightmare, so long as it is of 6th level or lower, affects one target (which is always the nightmare's recipient), and does not deal hit point damage. The second spell's range is irrelevant for the purposes of vision of Lamashtu, and even touch attacks can be delivered in this manner (you must still make a successful touch attack in order to affect the target, though, with the act of touching occurring within the context of the victim's nightmare). The target is allowed to save against the second spell if a save is allowed. For example, a cleric of Lamashtu could send bestow curse along as part of a vision of Lamashtu, but not blade barrier (affects an area), destruction (too high level), or inflict moderate wounds (deals hit point damage).",
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "visualization-of-the-body",
@@ -88699,6 +90021,38 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "weaponwand",
+    "name": "Weaponwand",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "bard": 1,
+      "cleric": 1,
+      "inquisitor": 1,
+      "magus": 1,
+      "oracle": 1,
+      "skald": 1,
+      "warpriest": 1
+    },
+    "casting_time": "1 round",
+    "components": "V, S, F (a magic wand)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one weapon"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates (object)",
+    "spell_resistance": "yes",
+    "summary": "Merge a wand with your weapon, allowing you to wield the wand at the same time you use your weapon.",
+    "description": "When you cast this spell on a weapon, you cause a portion of the weapon to open like the skin of a partially peeled apple, revealing a space large enough to insert a single wand within.\n\nAs part of the spell's casting, you can insert a single wand into the weapon, at which point the weapon returns to its original form with the wand held inside of it without negatively impacting the weapon's integrity. For the spell's duration, a character who wields the transmuted weapon is also considered to be wielding the wand as well. You can attack normally with the weapon or use the weapon as if it were the encased wand. If the effect created by the wand requires an attack roll to successfully strike a foe, you may make the attack roll as if you were making an attack with the weapon at its highest bonus (including any bonuses the weapon would normally receive) rather than just a normal attack with the wand-doing so does not allow you to add the weapon's damage to the wand's attack roll, but instead allows you to use your skill with the weapon to boost your chance of hitting with the spell.\n\nAt the end of the spell's duration, the encased wand is ejected from the weapon. If you have a free hand, you may catch the weapon as a free action; otherwise, the wand drops to the ground. If the weapon housing the wand is broken or destroyed during the duration of weaponwand, the encased wand is similarly broken or destroyed.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "web",
     "name": "Web",
     "source": "Core Rulebook",
@@ -90212,6 +91566,33 @@
     "spell_resistance": "yes",
     "summary": "+30 foot land and fly speed (if any) to your allies.",
     "description": "You can call upon the spirits of the air to grant agility to your allies. Each target gains a +30 foot enhancement bonus to its land speed and fly speed (if any). Each target can also move (and charge) through difficult terrain without penalty.",
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "zone-of-foul-flames",
+    "name": "Zone of Foul Flames",
+    "source": "Inner Sea Magic",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "druid": 4,
+      "hunter": 4
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (a sliver of tree bark from a burnt tree from the Uskwood)",
+    "range": "close (25 ft. + 5 ft./2 levels)",
+    "effects": [
+      [
+        "Area",
+        "20-ft.-radius spread"
+      ]
+    ],
+    "duration": "1 minute/level",
+    "saving_throw": "Will negates",
+    "spell_resistance": "yes",
+    "summary": "Create an area that returns fire spells and effects back onto their caster.",
+    "description": "The twisted druids of the Uskwood forsook fire in ages past for the glory of Zon-Kuthon. Despite this aversion, these servants of Nidal know well the sting of flame, and have learned to turn it back on those that wield it. This spell creates a zone where magical fire effects twist and lash out against those who create the effects. A zone of foul flames looks unremarkable to the casual observer, but a Perception check (DC = 20 + the caster's level) reveals a faint rippling effect in the area, as if of heat distortions in the air.\n\nWhenever a creature casts a spell with the fire descriptor or activates a magical fire effect (as from a magic item or a special attack) while that creature is located in a zone of foul flames, that creature takes full fire damage from the effect.\n\nIf the effect allows a saving throw to reduce the damage, the victim may attempt the same saving throw to reduce the damage. All creatures in a zone of foul flames gain a +4 circumstance bonus on all saving throws against fire effects, except for those made by a creature attempting to save against fire damage from his own magic. Nonmagical fire in a zone of foul flames burns half as brightly but is otherwise not affected.",
     "origin": "Foundry VTT pf1"
   },
   {
