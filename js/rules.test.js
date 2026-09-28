@@ -15,6 +15,7 @@ import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost } from './weapons.js';
+import { raceTerms } from './race-terms.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -684,6 +685,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const ekWizard = checkRequirements(ek, ctxFor([w, w, w, w, w]), castingByTradition(castingClasses(classCounts([w, w, w, w, w])).casting,
                                      ctxFor([w, w, w, w, w]).scores), false);
   check('eldritch knight: wizard 5 lacks martial proficiency', ekWizard.parts.find(p => /martial/.test(p.why)).status, 'unmet');
+}
+
+{
+  // Items under the Race picker, each with an explanation
+  const dwarf = raceTerms(race('dwarf'));
+  check('dwarf items start with size, type, speed', dwarf.slice(0, 3).map(i => i.label).join(' | '), 'Medium | Humanoid | Speed 20 ft.');
+  check('size explains the rule', /no size bonuses/.test(dwarf[0].text.join(' ')), true);
+  check('speed uses the race\'s own trait', dwarf[2].title, 'Slow and Steady');
+  check('languages come last', dwarf.at(-1).label, 'Languages');
+  check('every trait is listed once', dwarf.length, race('dwarf').traits.length - 1 + 2);
+  check('every item of every race has text', races.every(r => raceTerms(r).every(i => i.label && i.text.length && i.text.every(Boolean))), true);
+  check('native outsider explained', raceTerms(race('aasimar'))[1].text.join(' ').includes('native'), true);
 }
 
 const failed = results.filter(r => !r.pass);

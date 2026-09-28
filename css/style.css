@@ -349,3 +349,22 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .class-block { border-top: 1px solid var(--border); padding: 6px 0; }
 .class-block summary { font-weight: 600; color: var(--text); }
 h3.spell-class { margin: 14px 0 2px; font-size: 1.05rem; }
+
+/* Race card: items that open a popup explaining them */
+.terms { display: flex; flex-wrap: wrap; gap: 6px; }
+button.term {
+  min-height: 36px; padding: 4px 10px; border-radius: 16px; font-size: 0.9rem;
+  background: var(--card); color: var(--text); cursor: help; text-align: left;
+}
+button.term[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.term-hint { margin: 8px 0 0; }
+.term-pop {
+  position: fixed; z-index: 50; width: max-content; max-width: min(360px, calc(100vw - 32px));
+  max-height: 50vh; overflow-y: auto; padding: 10px 14px;
+  background: var(--card); color: var(--text); border: 1px solid var(--accent); border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); font-size: 0.95rem;
+}
+.term-pop h3 { margin: 0 0 6px; font-size: 1rem; color: var(--accent); }
+.term-pop p { margin: 0 0 6px; }
+.term-pop p:last-child { margin-bottom: 0; }
+.favored-row select, #caster-choices select { max-width: 100%; }

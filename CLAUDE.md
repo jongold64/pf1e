@@ -109,7 +109,9 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   skill buttons) isn't covered by tests.html, so check it in a browser after changes, including
   switching through every class.
 - Race traits with a `kind` (ability_scores, size, speed, type, languages) are structured facts; traits
-  without `kind` are the ones to list as racial traits.
+  without `kind` are the ones to list as racial traits. The Race card lists size, type, speed and every
+  trait as buttons (`js/race-terms.js`: `raceTerms` adds general size/type/speed rules text to the race's
+  own trait text); hovering, focusing or tapping one opens a popup card.
 
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every

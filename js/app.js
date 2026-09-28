@@ -22,6 +22,7 @@ import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-ite
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
+import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 
 const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -57,6 +58,7 @@ const loadGear = () => loadOnce('gear', 'data/equipment.json', gear => {
 let view = null;
 let pickerSlotId = null;
 let tab = 'character';
+let raceItems = [];
 
 const state = {
   race: 'human',
@@ -242,6 +244,7 @@ function buildControls() {
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
   $('race').addEventListener('change', e => update({ race: e.target.value }));
+  initTermPopover($('race-info'), () => raceItems);
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
     const i = e.target.dataset.levelIndex;
@@ -541,13 +544,15 @@ function render() {
   INCREASE_LEVELS.forEach((_, i) => { document.querySelector(`[data-increase="${i}"]`).value = state.increases[i]; });
   document.querySelector(`input[name="favored"][value="${state.favored}"]`).checked = true;
 
-  // Race info
-  // Ability scores, size, speed, type and languages are shown elsewhere, so list only the other traits.
-  const traits = (race.traits || []).filter(t => !t.kind);
-  $('race-info').innerHTML = `
-    ${race.incomplete ? '<p class="warning">Some of this race\'s traits are missing from the source data.</p>' : ''}
-    <p>${esc(race.size)} ${esc(race.type || '')} · Speed ${race.base_speed ?? '?'} ft.</p>
-    <p>${traits.map(t => esc(t.name)).join(', ')}</p>`;
+  // Race info: each item opens a popup explaining it. Redrawn only when the race changes, so an open
+  // popup isn't left pointing at a button that no longer exists.
+  if ($('race-info').dataset.race !== race.id) {
+    raceItems = raceTerms(race);
+    $('race-info').dataset.race = race.id;
+    $('race-info').innerHTML = `
+      ${race.incomplete ? '<p class="warning">Some of this race\'s traits are missing from the source data.</p>' : ''}
+      ${termButtons(raceItems)}`;
+  }
 
   renderClasses(view);
   $('subtitle').textContent = `${race.name} ${view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`;
