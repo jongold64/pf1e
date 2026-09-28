@@ -925,6 +925,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const fx = traitEffects([trait('Reactionary'), trait('Resilient'), trait('Suspicious')]);
   check('Reactionary +2 initiative, Resilient +1 Fort, Suspicious +1 Sense Motive (class skill)',
         `${fx.initiative} ${fx.saves.fort} ${fx.skills['Sense Motive']} ${fx.classSkills.has('Sense Motive')}`, '2 1 1 true');
+  const flawSlots = featSlots({ race: race('dwarf'), cls: cls('wizard'), level: 1, flaws: [{ name: 'Feeble' }, { name: '' }, { name: 'Third' }] });
+  check('a named flaw gives a bonus feat slot (at most two; empty ones don\'t count)', flawSlots.map(s => s.id).join(' '), 'flaw-1 L1');
   check('trait bonuses don\'t stack: highest counts', traitEffects([trait('Resilient'), trait('Resilient')]).saves.fort, 1);
   const withTrait = skillTotal({ name: 'Sense Motive', ranks: 1, scores: scores(10, 10, 10, 10, 10, 10), isClassSkill: true,
                                  traitBonuses: fx.skills });

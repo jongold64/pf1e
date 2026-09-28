@@ -202,6 +202,8 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   UI: tab-traits.js (Traits card + picker on the Feats tab), no category or count checks (user's choice).
 - House rules: `state.houseRules` flags (HOUSE_RULES in app.js). Max Healing -> `setRollOptions` -> `rollSpec` rolls
   healing groups (heal: true) at maximum. Encumbrance and Action Points are switches only so far.
+  Flaws: `state.flaws` (two typed { name, effect }); each named flaw adds a `flaw-N` general feat slot at 1st level
+  (`featSlots({ flaws })`), only while the Flaws rule is on. The penalty isn't applied.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.

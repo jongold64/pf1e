@@ -503,3 +503,9 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 #trait-search { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin: 8px 0;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 #trait-list { border-top: 1px solid var(--border); }
+
+/* Flaws (house rule) */
+.flaw-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; }
+.flaw-row label { display: flex; align-items: center; gap: 8px; flex: 1 1 260px; }
+.flaw-row input { flex: 1; min-width: 0; font: inherit; min-height: 44px; padding: 0 10px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg); color: var(--text); }

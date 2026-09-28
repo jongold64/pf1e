@@ -58,9 +58,13 @@ function bonusFeatRule(cls, special) {
 // so choices are kept when the level goes down and back up. General feats come at odd character levels;
 // class bonus feats come from each class at its own class level (id "class-fighter-L2").
 // Pass { cls, level } for a single class, or `classLevels` (the class at each level) for a multiclass character.
-export function featSlots({ race, cls, level, classLevels = null }) {
+// flaws (Flaws house rule): the named flaws taken, each giving a bonus feat at 1st level (at most two).
+export function featSlots({ race, cls, level, classLevels = null, flaws = [] }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const slots = [];
+  flaws.slice(0, 2).forEach((f, i) => {
+    if (f?.name?.trim()) slots.push({ id: `flaw-${i + 1}`, kind: 'general', level: 1, label: `Bonus feat for a flaw (${f.name.trim()})` });
+  });
   for (let lv = 1; lv <= levels.length; lv += 2) {
     slots.push({ id: `L${lv}`, kind: 'general', level: lv, label: `Level ${lv}` });
   }

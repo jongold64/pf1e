@@ -89,6 +89,7 @@ const state = {
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
+  flaws: [],       // Flaws house rule: up to two { name, effect } (typed in); each gives a bonus feat
   armorId: '',     // worn armor (data/armor.json id), '' for none
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
@@ -155,6 +156,8 @@ function load(saved) {
   }
   if (!Array.isArray(state.specialties)) state.specialties = [];
   state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
+  state.flaws = (Array.isArray(state.flaws) ? state.flaws : []).slice(0, 2)
+    .map(f => ({ name: String(f?.name || '').slice(0, 60), effect: String(f?.effect || '').slice(0, 200) }));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 3)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
@@ -427,6 +430,15 @@ function buildControls() {
   });
   initTermPopover($('race-info'), () => raceItems);
   initTraits(app);
+  // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
+  $('flaw-rows').addEventListener('change', e => {
+    const i = Number(e.target.dataset.flaw);
+    const field = e.target.dataset.flawField;
+    if (!field) return;
+    const flaws = [0, 1].map(j => ({ ...(state.flaws[j] || { name: '', effect: '' }) }));
+    flaws[i][field] = e.target.value.slice(0, field === 'name' ? 60 : 200);
+    update({ flaws });
+  });
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
     const i = e.target.dataset.levelIndex;
@@ -635,7 +647,7 @@ function computeView() {
   // Feats the character has: chosen ones (only slots reached at this level), free ones from each
   // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
   // prerequisite context can use the same stats that include feat bonuses.
-  const slots = featSlots({ race, classLevels });
+  const slots = featSlots({ race, classLevels, flaws: state.houseRules.flaws ? state.flaws : [] });
   const chosen = slots.map(s => data.featsById.get(state.feats[s.id])).filter(Boolean);
   // What each weapon/skill/school feat was taken for (a choice made for a feat since swapped out doesn't count).
   const featChoices = slots.filter(s => CHOICE_FEATS[data.featsById.get(state.feats[s.id])?.name]).map(s => {
@@ -874,6 +886,7 @@ function render() {
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
+  renderFlaws();
   renderSpells(view);
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
@@ -999,6 +1012,21 @@ function choiceSelect(c) {
       <select data-feat-choice="${esc(c.slotId)}"><option value="">Choose…</option>${options.map(([v, t]) =>
         `<option value="${esc(v)}"${v === c.value ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
     ${c.value ? '' : `<p class="hint">Choose a ${word} so the feat's bonus can be counted.</p>`}`;
+}
+
+// Flaws card (Flaws house rule): two lines to type a flaw and its penalty; each named flaw adds a bonus feat slot.
+function renderFlaws() {
+  $('flaws-card').hidden = !state.houseRules.flaws;
+  if ($('flaws-card').hidden) return;
+  const active = document.activeElement?.dataset?.flawField ? document.activeElement : null;
+  if (active && $('flaw-rows').contains(active)) return;  // don't redraw while typing
+  $('flaw-rows').innerHTML = [0, 1].map(i => {
+    const f = state.flaws[i] || { name: '', effect: '' };
+    return `<div class="flaw-row"><label>Flaw ${i + 1} <input type="text" data-flaw="${i}" data-flaw-field="name" maxlength="60"
+        value="${esc(f.name)}" placeholder="e.g. Feeble"></label>
+      <label>Penalty <input type="text" data-flaw="${i}" data-flaw-field="effect" maxlength="200"
+        value="${esc(f.effect)}" placeholder="e.g. -2 on Strength-based checks"></label></div>`;
+  }).join('');
 }
 
 function renderFeats(slots, granted, ctx) {
