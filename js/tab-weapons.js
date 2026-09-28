@@ -1,7 +1,7 @@
 // Weapons tab: the character's weapons with attack bonus and damage, and every weapon (by category) with a
 // side panel for the weapon being looked at.
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { SIZE_AC, MONK_IDS } from './rules.js';
+import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
@@ -102,7 +102,7 @@ function combatContext(app, view) {
   const flagsFor = (e, w) => Object.fromEntries(WEAPON_FEATS.map(([key, feat]) =>
     [key, chosenFor(feat).size ? chosenFor(feat).has(w.id) : !!e[key]]));
   const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
-  return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor,
+  return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
 function attackArgs(app, view, ctx, e) {
@@ -208,6 +208,12 @@ export function renderMyWeapons(app, view) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}
         ${rollButton({ title: `${weaponName}: ${ctx.flurry.name.toLowerCase()}`, groups: [rollGroup('', f, crit)] })}</dd>`);
+    }
+    // Smite evil / smite good: the same attacks with +Cha to hit and +class level to damage.
+    for (const sm of ctx.smites) {
+      const sa = weaponAttack({ ...args, penalty: sm.attack, bonusDamage: sm.damage });
+      extra.push(`<dt>${esc(sm.name)}</dt><dd><b>${esc(attackText(sa))}</b>, ${esc(sa.damage)}
+        ${rollButton({ title: `${weaponName}: ${sm.name.toLowerCase()}`, groups: [rollGroup('', sa, crit)] }, sm.name)}</dd>`);
     }
     if (isDouble(w)) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });

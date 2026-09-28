@@ -104,7 +104,7 @@ export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 // and the weapon allows it. powerBab is the base attack bonus the Power Attack / Deadly Aim step comes from.
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
                                proficient = true, armorPenalty = 0, unarmedDamage = null,
-                               hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0] }) {
+                               hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0 }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -151,7 +151,8 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // A double weapon lists each end's damage ("1d8/1d6").
   const ends = String(allDice ?? '').split('/');
   const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
-  const damageBonus = strDamage + enh + spec + powerDamage;
+  // bonusDamage: extra damage such as smite evil's (+paladin level).
+  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage;
   return {
     attacks: attackBabs.map(b => b + toHit),
     abilityUsed,

@@ -290,6 +290,22 @@ export function layOnHands(stats) {
   return out;
 }
 
+// Smite evil (paladin) / smite good (antipaladin): +Cha bonus (if any) on attack rolls, +class level on damage (the
+// first hit against evil outsiders, evil dragons and undead deals +2 per level instead), and +Cha deflection bonus to
+// AC against the target. Uses: 1 at 1st level, +1 at 4th and every 3 levels after. Returns [{ name, attack, damage,
+// firstHit, deflection, uses }].
+export function smite(stats) {
+  const counts = stats.classCounts || [];
+  const out = [];
+  for (const [id, name] of [['paladin', 'Smite evil'], ['antipaladin', 'Smite good']]) {
+    const level = counts.find(e => e.cls.id === id)?.level || 0;
+    if (!level) continue;
+    const cha = Math.max(0, stats.mod.cha);
+    out.push({ name, attack: cha, damage: level, firstHit: 2 * level, deflection: cha, uses: 1 + Math.floor((level - 1) / 3) });
+  }
+  return out;
+}
+
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = []) {
   return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);

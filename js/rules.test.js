@@ -17,7 +17,7 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands } from './rules.js';
+import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
@@ -808,6 +808,10 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('paladin 3 has no channel yet', channelEnergy(pal3).length, 0);
   // Paladin 4, Cha 16 (+3): lay on hands 2d6, 2 + 3 = 5 per day
   check('paladin 4 lay on hands', JSON.stringify(layOnHands(pal4)), '[{"name":"Lay on hands","dice":"2d6","uses":5,"heals":true}]');
+  // Paladin 4, Cha 16 (+3): smite +3 attack, +4 damage (+8 first hit), +3 deflection, 2/day (1 + 1 at 4th)
+  check('paladin 4 smite evil', JSON.stringify(smite(pal4)), '[{"name":"Smite evil","attack":3,"damage":4,"firstHit":8,"deflection":3,"uses":2}]');
+  const lsw = weaponAttack({ weapon: weapon('Longsword'), bab: [4], mod: pal4.mod, penalty: 3, bonusDamage: 4 });
+  check('smite on a longsword: +3 to hit, +4 damage', `${lsw.attacks[0]} ${lsw.damage}`, '9 1d8+6');
   check('paladin 1 has no lay on hands yet', layOnHands(characterStats({ race: race('human'), cls: cls('paladin'), level: 1,
         baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' })).length, 0);
   const wp7 = characterStats({ race: race('human'), cls: cls('warpriest'), level: 7, baseScores: scores(14, 10, 10, 10, 14, 10), flexibleChoice: 'wis' });

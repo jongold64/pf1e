@@ -3,7 +3,7 @@ import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
-  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, SIZE_AC,
+  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -821,6 +821,9 @@ function render() {
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
         <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
     }).join('')}
+    ${smite(stats).map(sm => `<div class="defense-row channel-row"><span>${esc(sm.name)}<small>+${sm.attack} attack, +${sm.damage} damage
+      (+${sm.firstHit} on the first hit against ${sm.name === 'Smite evil' ? 'evil outsiders, evil dragons and undead' : 'good outsiders, good dragons, and good clerics and paladins'}),
+      +${sm.deflection} deflection to AC against the target · roll it on the Weapons tab</small></span><b>${sm.uses}/day</b></div>`).join('')}
     ${cm.maneuvers.map((m, i) => rollRow(`${m.name} (CMB)`, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] },
       i === 0 ? 'defense-row first-cmb' : 'defense-row')).join('')}`;
 
