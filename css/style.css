@@ -457,3 +457,20 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-row.first-cmb { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
 .abilities td[id^="mod-"] { white-space: nowrap; }
 .abilities button.roll-button { width: auto; padding: 2px 10px; font-size: 0.85rem; }
+
+/* Hit point tracker */
+.hp-tracker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-bottom: 12px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.hp-tracker .hint { flex-basis: 100%; margin: 0; }
+.hp-now { display: flex; align-items: baseline; gap: 8px; }
+.hp-now > span:first-child { color: var(--muted); }
+.hp-now b { font-size: 2rem; line-height: 1; }
+.hp-now b.hurt { color: var(--bad); }
+.hp-now #hp-status { font-weight: 700; text-transform: uppercase; }
+.hp-change { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hp-change .base { display: inline-flex; align-items: center; gap: 6px; }
+.hp-change .base button { width: 44px; padding: 0; font-size: 1.3rem; }
+#hp-amount { width: 5em; text-align: center; min-height: 44px; font: inherit; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg); color: var(--text); }
+/* In the Race card the tracker sits above AC and saves. */
+.card .hp-tracker { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }

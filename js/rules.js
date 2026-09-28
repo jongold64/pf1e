@@ -236,6 +236,26 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   };
 }
 
+// Current hit points: `current` is what was saved (null = full); it can't be above the maximum (e.g. after the
+// character loses a level or Con).
+export function currentHp(current, max) {
+  return current === null || current === undefined ? max : Math.min(current, max);
+}
+
+// Applying damage (negative) or healing (positive): healing stops at the maximum.
+export function changeHp(current, max, amount) {
+  return Math.min(max, currentHp(current, max) + amount);
+}
+
+// What 0 or fewer hit points means (Core Rulebook, Injury and Death): 0 disabled, below 0 dying, and dead at a
+// negative amount equal to the Constitution score.
+export function hpStatus(hp, conScore) {
+  if (hp <= -conScore) return 'dead';
+  if (hp < 0) return 'dying';
+  if (hp === 0) return 'disabled';
+  return '';
+}
+
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = []) {
   return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);

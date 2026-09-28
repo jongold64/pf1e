@@ -17,7 +17,7 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers, initiative } from './rules.js';
+import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
@@ -794,6 +794,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('rogue with Agile Maneuvers: BAB 3 + Dex 4', combatManeuvers(agile, 'Medium', ['Agile Maneuvers']).cmb, 7);
   const monk5 = characterStats({ race: race('human'), cls: cls('monk'), level: 5, baseScores: scores(14, 10, 10, 10, 10, 10), flexibleChoice: 'str' });
   check('monk 5 maneuver training: level 5 instead of BAB 3', combatManeuvers(monk5, 'Medium').cmb, 8);
+  check('current hp: full when not tracked, capped at max', `${currentHp(null, 20)} ${currentHp(25, 20)} ${currentHp(7, 20)}`, '20 20 7');
+  check('damage and healing (healing stops at max)', `${changeHp(null, 20, -8)} ${changeHp(12, 20, 5)} ${changeHp(18, 20, 10)}`, '12 17 20');
+  check('0 disabled, below 0 dying, -Con dead', ['5', '0', '-3', '-12'].map(h => hpStatus(Number(h), 12) || 'ok').join(' '), 'ok disabled dying dead');
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13

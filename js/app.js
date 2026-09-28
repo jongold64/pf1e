@@ -3,6 +3,7 @@ import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  currentHp, changeHp, hpStatus,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -66,6 +67,7 @@ let raceItems = [];
 
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
+  hpCurrent: null,           // current hit points during play; null means full
   race: 'human',
   classLevels: ['fighter'],  // class id at each character level, 1st level first
   favoredClass: '',          // favored class id; '' means the first class
@@ -116,6 +118,7 @@ function load(saved) {
   Object.assign(state, structuredClone(DEFAULTS));
   if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
   state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
+  if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
   if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
   if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
@@ -384,6 +387,17 @@ function buildControls() {
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 
   $('race').addEventListener('change', e => update({ race: e.target.value }));
+  // Hit point tracker: pick an amount (negative damage, positive healing), then Apply; Full resets.
+  const amount = () => Math.trunc(Number($('hp-amount').value) || 0);
+  $('hp-minus').addEventListener('click', () => { $('hp-amount').value = amount() - 1; });
+  $('hp-plus').addEventListener('click', () => { $('hp-amount').value = amount() + 1; });
+  $('hp-apply').addEventListener('click', () => {
+    if (!amount()) return;
+    const hp = changeHp(state.hpCurrent, view.stats.hp, amount());
+    $('hp-amount').value = 0;
+    update({ hpCurrent: hp >= view.stats.hp ? null : hp });
+  });
+  $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
   initTermPopover($('race-info'), () => raceItems);
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
@@ -757,10 +771,16 @@ function render() {
 
   // Results
   const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
+  // Hit point tracker: current hit points (full unless damage has been applied) and what they mean at 0 or below.
+  const hpNow = currentHp(state.hpCurrent, stats.hp);
+  $('hp-current').textContent = hpNow;
+  $('hp-max').textContent = `of ${stats.hp}`;
+  $('hp-status').textContent = hpStatus(hpNow, stats.scores.con);
+  $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats);
   const cm = combatManeuvers(stats, race.size, view.haveFeats);
   const results = [
-    ['Hit points', esc(stats.hp)],
+    ['Maximum hit points', esc(stats.hp)],
     ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
     ['Base attack bonus', esc(formatBab(stats.bab))],
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
