@@ -22,6 +22,7 @@ import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, c
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
+import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
@@ -950,6 +951,26 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('every trait is listed once', dwarf.length, race('dwarf').traits.length - 1 + 2);
   check('every item of every race has text', races.every(r => raceTerms(r).every(i => i.label && i.text.length && i.text.every(Boolean))), true);
   check('native outsider explained', raceTerms(race('aasimar'))[1].text.join(' ').includes('native'), true);
+}
+
+{
+  // Hero points (Action Points house rule, Advanced Player's Guide)
+  const fortune = ["Hero's Fortune"];
+  check('hero points start at 1 whatever the level', heroPointsAfter(null, { levelsGained: 5 }), 1);
+  check('each level gained adds 1', heroPointsAfter(1, { levelsGained: 1 }), 2);
+  check('at most 3; extra points are lost', heroPointsAfter(2, { levelsGained: 4 }), 3);
+  check('losing levels takes none away', heroPointsAfter(2, { levelsGained: -3 }), 2);
+  check("Hero's Fortune: +1 when taken and at most 5", `${heroPointsAfter(3, { gotFortune: true, haveFeats: fortune })} ${heroPointMax(fortune)}`, '4 5');
+  check('Blood of Heroes: 2 per level', heroPointsAfter(1, { levelsGained: 1, haveFeats: [...fortune, 'Blood of Heroes'] }), 3);
+  check('the count stays between 0 and the maximum', `${clampHeroPoints(-1, [])} ${clampHeroPoints(9, [])}`, '0 3');
+  check('a reroll costs 1', spendHeroPoint(2, 'reroll').points, 1);
+  check('cheating death costs 2', spendHeroPoint(2, 'cheat-death').points, 0);
+  check('cheating death needs 2 points', spendHeroPoint(1, 'cheat-death').spent, 0);
+  check('Luck of Heroes keeps the point on 16+ for a reroll', spendHeroPoint(2, 'reroll', { haveFeats: ['Luck of Heroes'], d20: 16 }).points, 2);
+  check('Luck of Heroes: 15 spends it', spendHeroPoint(2, 'reroll', { haveFeats: ['Luck of Heroes'], d20: 15 }).points, 1);
+  check('Luck of Heroes does not help an extra action', spendHeroPoint(2, 'extra-action', { haveFeats: ['Luck of Heroes'], d20: 20 }).points, 1);
+  const anti = featSlots({ race: race('dwarf'), cls: cls('wizard'), level: 1, antihero: true });
+  check('an antihero gets a bonus feat at 1st level', anti.map(s => s.id).join(' '), 'antihero L1');
 }
 
 const failed = results.filter(r => !r.pass);

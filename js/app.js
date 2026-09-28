@@ -30,6 +30,8 @@ import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
+import { HERO_POINT_USES, heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
+import { randomDie } from './dice.js';
 import { weaponSummaries } from './tab-weapons.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -71,6 +73,8 @@ let raceItems = [];
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   hpCurrent: null,           // current hit points during play; null means full
+  heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
+  antihero: false,           // Action Points house rule: no hero points, a bonus feat at 1st level instead
   houseRules: {},            // house rules switched on: encumbrance, maxHealing, actionPoints, flaws, extraTrait
   race: 'human',
   classLevels: ['fighter'],  // class id at each character level, 1st level first
@@ -111,7 +115,7 @@ const state = {
 const HOUSE_RULES = [
   ['encumbrance', 'Encumbrance', 'Encumbrance: what you carry (armor, weapons, equipment, magic items; not coins) sets your load; a medium or heavy load limits Dex, adds a check penalty and slows you.'],
   ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
-  ['actionPoints', 'Action Points', 'Action Points: not set up yet.'],
+  ['actionPoints', 'Action Points', "Action Points: Pathfinder's hero points (Advanced Player's Guide), in the Race card: 1 to start, 1 more each level gained, at most 3, and at most 1 spent a round."],
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
   ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
 ];
@@ -136,6 +140,8 @@ function load(saved) {
   if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
   state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
+  if (!Number.isInteger(state.heroPoints) || state.heroPoints < 0) state.heroPoints = null;
+  state.antihero = state.antihero === true;
   const hr = state.houseRules && typeof state.houseRules === 'object' ? state.houseRules : {};
   state.houseRules = Object.fromEntries(HOUSE_RULES.filter(([k]) => hr[k] === true).map(([k]) => [k, true]));
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
@@ -425,6 +431,24 @@ function buildControls() {
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
+  $('hero-points').addEventListener('click', e => {
+    const add = e.target.closest('[data-hero-add]');
+    if (add) {
+      heroNote = '';
+      update({ heroPoints: clampHeroPoints((state.heroPoints ?? 1) + Number(add.dataset.heroAdd), view.haveFeats) });
+    }
+    const use = e.target.closest('[data-hero-use]');
+    if (use) {
+      const luck = HERO_POINT_USES.find(u => u.id === use.dataset.heroUse)?.luck && view.haveFeats.includes('Luck of Heroes');
+      const r = spendHeroPoint(state.heroPoints ?? 1, use.dataset.heroUse, { haveFeats: view.haveFeats, d20: luck ? randomDie(20) : null });
+      heroNote = r.note;
+      update({ heroPoints: r.points });
+    }
+  });
+  $('hero-points').addEventListener('change', e => {
+    if (e.target.id === 'antihero') update({ antihero: e.target.checked });
+  });
   $('house-rules').addEventListener('click', e => {
     const key = e.target.closest('[data-house-rule]')?.dataset.houseRule;
     if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
@@ -623,11 +647,32 @@ function renderArmorSearch() {
 }
 
 function update(changes) {
+  const before = { level: state.level, fortune: !!view?.haveFeats.includes("Hero's Fortune") };
   Object.assign(state, changes);
   syncDerived();
-  save();
   render();
+  // Hero points (Action Points house rule) earned by this change: levels gained, or Hero's Fortune just taken.
+  if (heroPointsOn()) {
+    const points = heroPointsAfter(state.heroPoints, {
+      levelsGained: state.level - before.level,
+      gotFortune: !before.fortune && view.haveFeats.includes("Hero's Fortune"),
+      haveFeats: view.haveFeats,
+    });
+    if (points !== state.heroPoints) {
+      state.heroPoints = points;
+      render();
+    }
+  }
+  save();
 }
+
+// Hero points count while the Action Points house rule is on, unless the character is an antihero.
+function heroPointsOn() {
+  return !!state.houseRules.actionPoints && !state.antihero;
+}
+
+// Last hero point spent (what it does), shown under the buttons until another hero point button is pressed.
+let heroNote = '';
 
 // Total weight carried (for the Encumbrance house rule): worn armor and shield, weapons, equipment and magic items.
 // Returns null while data it needs is still loading (it starts the loads and draws again when they're done).
@@ -672,7 +717,8 @@ function computeView() {
   // Feats the character has: chosen ones (only slots reached at this level), free ones from each
   // class, and armor/shield proficiencies. Feats don't change ability scores or BAB, so the
   // prerequisite context can use the same stats that include feat bonuses.
-  const slots = featSlots({ race, classLevels, flaws: state.houseRules.flaws ? state.flaws : [] });
+  const slots = featSlots({ race, classLevels, flaws: state.houseRules.flaws ? state.flaws : [],
+                           antihero: !!state.houseRules.actionPoints && state.antihero });
   const chosen = slots.map(s => data.featsById.get(state.feats[s.id])).filter(Boolean);
   // What each weapon/skill/school feat was taken for (a choice made for a feat since swapped out doesn't count).
   const featChoices = slots.filter(s => CHOICE_FEATS[data.featsById.get(state.feats[s.id])?.name]).map(s => {
@@ -934,6 +980,7 @@ function render() {
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
   renderFlaws();
+  renderHeroPoints();
   renderSpells(view);
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
@@ -1062,6 +1109,33 @@ function choiceSelect(c) {
 }
 
 // Flaws card (Flaws house rule): two lines to type a flaw and its penalty; each named flaw adds a bonus feat slot.
+// Hero points card (Action Points house rule), in the Race card under the hit points.
+function renderHeroPoints() {
+  const box = $('hero-points');
+  box.hidden = !state.houseRules.actionPoints;
+  if (box.hidden) return;
+  const antihero = `<label class="check-row"><input type="checkbox" id="antihero"${state.antihero ? ' checked' : ''}>
+    Antihero: no hero points, a bonus feat at 1st level instead (Feats tab)</label>`;
+  if (state.antihero) {
+    box.innerHTML = `<h3>Hero points</h3>${antihero}`;
+    return;
+  }
+  const points = state.heroPoints ?? 1;
+  const max = heroPointMax(view.haveFeats);
+  box.innerHTML = `<h3>Hero points</h3>
+    <div class="hero-count"><b>${points}</b><span class="muted">of ${max} at most</span>
+      <span class="base"><button type="button" data-hero-add="-1" aria-label="One fewer hero point">−</button>
+        <button type="button" data-hero-add="1" aria-label="One more hero point (awarded by the GM)">+</button></span></div>
+    <p class="hint">Spend one (no action; at most 1 a round, cheating death takes 2). + is for points the GM awards; each
+      level gained adds ${view.haveFeats.includes('Blood of Heroes') ? 2 : 1} by itself.</p>
+    <div class="hero-uses">${HERO_POINT_USES.map(u => `<button type="button" data-hero-use="${u.id}" title="${esc(u.text)}"
+      ${points < u.cost ? 'disabled' : ''}>${esc(u.label)}${u.cost > 1 ? ` (${u.cost})` : ''}</button>`).join('')}</div>
+    <p id="hero-note" class="hero-note">${esc(heroNote)}</p>
+    <details><summary>What each use does</summary><ul>${HERO_POINT_USES.map(u =>
+      `<li><b>${esc(u.label)}${u.cost > 1 ? ` (${u.cost} points)` : ''}:</b> ${esc(u.text)}</li>`).join('')}</ul></details>
+    ${antihero}`;
+}
+
 function renderFlaws() {
   $('flaws-card').hidden = !state.houseRules.flaws;
   if ($('flaws-card').hidden) return;

@@ -213,7 +213,10 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   items; not coins; Small/Large armor and weapon weights) -> `carryingCapacity(str, size)` / `encumbrance(weight,
   capacity)` (rules.js); computeView merges the load's max Dex and check penalty with the armor's (worse counts) and
   slows speed with `slowedSpeed` (Slow and Steady exempt); `view.load` shows in Results and on the Equipment tab.
-  Action Points is a switch only so far.
+  Action Points = Pathfinder hero points (APG; `js/hero-points.js`): `state.heroPoints` (null until first counted, then
+  1), `update()` adds 1 per level gained (2 with Blood of Heroes) and 1 when Hero's Fortune is taken, max 3 (5 with
+  Hero's Fortune); spend buttons per use (`HERO_POINT_USES`; cheat death costs 2; Luck of Heroes d20 > 15 keeps the
+  point on a reroll or before-roll bonus); `state.antihero` = no hero points and an `antihero` 1st-level feat slot.
   Flaws: `state.flaws` (two typed { name, effect }); each named flaw adds a `flaw-N` general feat slot at 1st level
   (`featSlots({ flaws })`), only while the Flaws rule is on. The penalty isn't applied.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained

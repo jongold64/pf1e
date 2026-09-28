@@ -59,12 +59,14 @@ function bonusFeatRule(cls, special) {
 // class bonus feats come from each class at its own class level (id "class-fighter-L2").
 // Pass { cls, level } for a single class, or `classLevels` (the class at each level) for a multiclass character.
 // flaws (Flaws house rule): the named flaws taken, each giving a bonus feat at 1st level (at most two).
-export function featSlots({ race, cls, level, classLevels = null, flaws = [] }) {
+// antihero (Action Points house rule): a character that gives up hero points gets a bonus feat at 1st level.
+export function featSlots({ race, cls, level, classLevels = null, flaws = [], antihero = false }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const slots = [];
   flaws.slice(0, 2).forEach((f, i) => {
     if (f?.name?.trim()) slots.push({ id: `flaw-${i + 1}`, kind: 'general', level: 1, label: `Bonus feat for a flaw (${f.name.trim()})` });
   });
+  if (antihero) slots.push({ id: 'antihero', kind: 'general', level: 1, label: 'Antihero bonus feat (no hero points)' });
   for (let lv = 1; lv <= levels.length; lv += 2) {
     slots.push({ id: `L${lv}`, kind: 'general', level: lv, label: `Level ${lv}` });
   }

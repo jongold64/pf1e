@@ -34,6 +34,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],
     ['Armor', worn || 'none'],
+    // Action Points house rule: hero points now, or none for an antihero.
+    ...(state.houseRules.actionPoints ? [['Hero points', state.antihero ? 'none (antihero)' : String(state.heroPoints ?? 1)]] : []),
   ]);
   const offense = facts([
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`], ['Initiative', signed(init)],
