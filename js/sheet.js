@@ -2,6 +2,7 @@
 // tabs show. app.js fills #print-sheet with buildSheet() just before printing.
 import { esc, signed } from './dom.js';
 import { ABILITIES, formatBab, spellsPerDay, combatManeuvers } from './rules.js';
+import { spellContext, spellLines } from './spell-math.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const ORDINAL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -69,13 +70,21 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
       t.rows.map(r => [ORDINAL[r.spellLevel], !r.canCast ? '—' : r.spellLevel === 0 && r.base === null ? 'at will' : (r.total ?? '—'),
         ...(showKnown ? [r.known ?? '—'] : []), ...(showPrepared ? [r.prepared ?? '—'] : [])]));
   }).join('');
-  const castingIds = view.casting.casting.map(c => c.cls.id);
+  // Chosen spells by level, each with its attack, damage and save DC as cast by the class it's on the list of.
+  const contexts = view.casting.casting.map(c => spellContext({ cls: c.cls, effectiveLevel: c.effectiveLevel, stats,
+                                                                size: race.size, featChoices: view.featChoices }));
   const chosen = (data.spells ? state.spells.map(id => data.spells.find(s => s.id === id)).filter(Boolean) : []).map(s => {
-    const levels = castingIds.map(id => s.levels[id]).filter(v => v !== undefined);
-    return { name: s.name, level: levels.length ? Math.min(...levels) : null };
+    const ctx = contexts.filter(c => s.levels[c.cls.id] !== undefined).sort((a, b) => s.levels[a.cls.id] - s.levels[b.cls.id])[0];
+    return { name: s.name, level: ctx ? s.levels[ctx.cls.id] : null,
+             lines: ctx ? spellLines(s, ctx).map(l => (l.label ? `${l.label}: ` : '') + l.text) : [] };
   });
-  const byLevel = [...new Set(chosen.map(s => s.level))].sort((a, b) => (a ?? 99) - (b ?? 99)).map(lv =>
-    `<p><b>${lv === null ? 'Other' : ORDINAL[lv]}:</b> ${esc(chosen.filter(s => s.level === lv).map(s => s.name).sort().join(', '))}</p>`).join('');
+  const byLevel = [...new Set(chosen.map(s => s.level))].sort((a, b) => (a ?? 99) - (b ?? 99)).map(lv => {
+    const here = chosen.filter(s => s.level === lv).sort((a, b) => a.name.localeCompare(b.name));
+    const plain = here.filter(s => !s.lines.length).map(s => s.name);
+    return `<p><b>${lv === null ? 'Other' : ORDINAL[lv]}:</b> ${esc(plain.join(', '))}</p>` +
+      (here.some(s => s.lines.length) ? `<ul class="sheet-spell-lines">${here.filter(s => s.lines.length)
+        .map(s => `<li><b>${esc(s.name)}</b>: ${esc(s.lines.join('; '))}</li>`).join('')}</ul>` : '');
+  }).join('');
 
   const inventory = state.inventory.map(e => {
     const item = data.gearById?.get(e.id);

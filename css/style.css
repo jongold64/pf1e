@@ -412,5 +412,15 @@ h3.sub-heading { margin: 14px 0 6px; font-size: 1rem; }
   .sheet-table { width: 100%; border-collapse: collapse; }
   .sheet-table th, .sheet-table td { border-bottom: 1px solid #999; padding: 1px 4px; text-align: left; }
   .sheet-list { margin: 0; padding-left: 18px; columns: 2; }
+  .sheet-spell-lines { margin: 0 0 4px; padding-left: 18px; }
+  .sheet-spell-lines li { break-inside: avoid; }
   .sheet-footer { font-size: 8pt; color: #444; margin-top: 12px; }
 }
+
+/* My spells: one row per spell with its attack, damage and save DC */
+.my-spell-rows { list-style: none; padding: 0; margin: 6px 0; }
+.my-spell-rows li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.my-spell-rows li:last-child { border-bottom: 0; }
+.spell-row { display: inline-flex; align-items: center; }
+.spell-numbers { color: var(--muted); font-size: 0.92rem; }
+.spell-numbers b { color: var(--text); font-weight: 600; }

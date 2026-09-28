@@ -20,6 +20,7 @@ import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
+import { evalFormula, spellContext, spellLines } from './spell-math.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
@@ -822,6 +823,27 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('every new race has size, speed and ability changes', races.filter(r => r.origin).every(r => r.size && r.base_speed && Object.keys(r.ability_modifiers).length), true);
   check('occultist 4 casts 2nd-level psychic spells', castingByTradition(castingClasses(classCounts(Array(4).fill(cls('occultist')))).casting,
         scores(10, 10, 10, 16, 10, 10)).psychic, 2);
+}
+
+{
+  // Spell attack, damage and save DC
+  check('fireball at CL 5 and 12', `${evalFormula('(min(10, @cl))d6', { cl: 5 })} ${evalFormula('(min(10, @cl))d6', { cl: 12 })}`, '5d6 10d6');
+  check('cure light wounds at CL 3', evalFormula('1d8 + min(5, @cl)', { cl: 3 }), '1d8+3');
+  check('heal at CL 11', evalFormula('min(150, @cl * 10)', { cl: 11 }), '110');
+  check('per two levels: at least one die', `${evalFormula('(min(5, floor(@cl / 2)))d8', { cl: 1 })} ${evalFormula('(min(5, floor(@cl / 2)))d8', { cl: 6 })}`, '1d8 3d8');
+  check('formula it can\'t read', evalFormula('sizeRoll(1, 6, @size)', {}), null);
+  const allSpells = await fetch('data/spells.json').then(r => r.json());
+  const sp = name => allSpells.find(s => s.name === name);
+  const wiz = characterStats({ race: race('human'), cls: cls('wizard'), level: 5, baseScores: scores(10, 14, 10, 16, 10, 10), flexibleChoice: 'int' });
+  const wctx = spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wiz, size: 'Medium', featChoices: [] });
+  const line = name => spellLines(sp(name), wctx).map(l => l.text).join(' | ');
+  check('wizard 5 fireball: DC 10 + 3 + 4 Int', line('Fireball'), 'DC 17 Reflex half, 5d6 fire');
+  check('wizard 5 magic missile: 3 missiles', line('Magic Missile'), 'hits automatically, 3 missiles of 1d4+1 force');
+  check('wizard 5 scorching ray: ranged touch BAB 2 + Dex 2, one ray', line('Scorching Ray'), 'ranged touch +4, 4d6 fire');
+  const focused = spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wiz, size: 'Medium',
+                                 featChoices: [{ feat: 'Spell Focus', value: 'evocation' }] });
+  check('Spell Focus (evocation) adds 1 to the DC', spellLines(sp('Fireball'), focused)[0].text.slice(0, 5), 'DC 18');
+  check('hold person (wizard 3rd level): the save only', line('Hold Person').startsWith('DC 17 Will negates'), true);
 }
 
 {

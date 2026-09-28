@@ -2,6 +2,7 @@
 // panel for the spell being looked at.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { spellsPerDay } from './rules.js';
+import { spellContext, spellLines } from './spell-math.js';
 
 let selectedId = null;
 let listClassId = null;  // which class's spell list is shown, for characters with several
@@ -70,7 +71,7 @@ function spellButton(app, s) {
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
 // spells they may know at each level (from the class table).
 function renderMySpells(app, view) {
-  const { cls, table, maxLevel } = listClass(app, view);
+  const { cls, level, table, maxLevel } = listClass(app, view);
   const byId = new Map(app.data.spells.map(s => [s.id, s]));
   const chosen = app.state.spells.map(id => byId.get(id)).filter(Boolean);
   const hasList = app.data.spells.some(s => s.levels[cls.id] !== undefined);
@@ -84,6 +85,15 @@ function renderMySpells(app, view) {
     ? 'The spells your character knows. Your class table sets how many you can know at each spell level.'
     : 'The spells in your spellbook, or the ones you usually prepare. You prepare spells from these each day.';
 
+  // Attack, damage and save DC for each spell, cast as this class.
+  const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.race.size, featChoices: view.featChoices });
+  const row = s => {
+    const lines = spellLines(s, ctx);
+    return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
+      `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></span>` +
+      (lines.length ? `<span class="spell-numbers">${lines.map(l => (l.label ? `<b>${esc(l.label)}:</b> ` : '') + esc(l.text)).join('<br>')}</span>` : '') +
+      '</li>';
+  };
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {
     const spells = chosen.filter(s => s.levels[cls.id] === lv).sort((a, b) => a.name.localeCompare(b.name));
@@ -94,8 +104,7 @@ function renderMySpells(app, view) {
     const notYet = lv > maxLevel && spells.length ? ' · can\'t cast yet' : '';
     groups.push(`<div class="my-spell-level">
       <h3>${LEVEL_NAMES[lv]} <span class="count${over ? ' over' : ''}">${count}${notYet}</span></h3>
-      ${spells.length ? `<ul class="chip-list">${spells.map(s => `<li><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
-        `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></li>`).join('')}</ul>`
+      ${spells.length ? `<ul class="my-spell-rows">${spells.map(row).join('')}</ul>`
         : '<p class="hint">None chosen yet.</p>'}
     </div>`);
   }
@@ -103,8 +112,7 @@ function renderMySpells(app, view) {
   const off = chosen.filter(s => s.levels[cls.id] === undefined);
   if (off.length) {
     groups.push(`<div class="my-spell-level"><h3>Not on the ${esc(cls.name.toLowerCase())} list <span class="count over">${off.length}</span></h3>
-      <ul class="chip-list">${off.map(s => `<li><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
-        `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></li>`).join('')}</ul></div>`);
+      <ul class="my-spell-rows">${off.map(row).join('')}</ul></div>`);
   }
   $('my-spells').innerHTML = groups.join('') ||
     '<p class="hint">No spells yet. Choose a spell below, then "Add to my spells".</p>';

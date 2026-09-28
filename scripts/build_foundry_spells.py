@@ -134,6 +134,69 @@ def record(doc, book, taken):
     }
 
 
+ACTION_KINDS = {'rsak': 'ranged touch', 'msak': 'melee touch', 'rwak': 'ranged', 'twak': 'ranged', 'mwak': 'melee',
+                'rcman': 'maneuver', 'mcman': 'maneuver', 'heal': 'heal', 'spellsave': 'save', 'save': 'save'}
+# "1d6 points of fire damage per caster level", "1d8/two levels damage", "1d6 damage per two levels".
+PER_LEVEL = [re.compile(r'\b1d(?P<die>\d+)\s+(?:points? of\s+)?(?:(?P<type>[a-z]+)\s+)?damage\s*(?:/|per)\s*'
+                        r'(?P<per>two |three |four )?(?:caster\s+)?levels?', re.I),
+             re.compile(r'\b1d(?P<die>\d+)\s*(?:/|per)\s*(?P<per>two |three |four )?(?:caster\s+)?levels?\s+'
+                        r'(?:(?P<type>[a-z]+)\s+)?damage', re.I)]
+
+
+def damage_from_text(summary, description):
+    """A damage formula from wording like "1d6 points of fire damage per caster level (maximum 10d6)", or None.
+    The maximum must be stated (in the summary or the full text)."""
+    for text in (summary or '', description or ''):
+        for pattern in PER_LEVEL:
+            m = pattern.search(text)
+            if not m:
+                continue
+            cap = re.search(rf"max(?:imum)?(?: of)?\.?\s*(\d+)d{m.group('die')}\b", (summary or '') + ' ' + (description or ''), re.I)
+            if not cap:
+                return None
+            per = {'two ': 2, 'three ': 3, 'four ': 4}.get((m.group('per') or '').lower(), 1)
+            cl = '@cl' if per == 1 else f'floor(@cl / {per})'
+            kind = (m.group('type') or '').lower()
+            return {'formula': f"(min({cap.group(1)}, {cl}))d{m.group('die')}",
+                    'types': [kind] if kind and kind not in ('of', 'points', 'point') else []}
+    return None
+
+
+def actions(doc, summary=None, description=None):
+    """What a spell does that the app can put numbers on: [{name, kind, damage: [{formula, types}], extra_attacks,
+    auto_hit, save, save_text, harmless}]. Formulas are Foundry's (roll formulas using @cl for caster level); a spell
+    with no damage formula gets one read from its summary when it says "1d6 damage per level (max 10d6)"."""
+    out = []
+    for a in (doc['system'].get('actions') or {}).values():
+        kind = ACTION_KINDS.get(a.get('actionType'))
+        parts = [{'formula': str(p['formula']).strip(), 'types': [t for t in p.get('types') or [] if t != 'untyped']}
+                 for p in (a.get('damage') or {}).get('parts') or [] if str(p.get('formula') or '').strip()]
+        save = a.get('save') or {}
+        if not parts and not save.get('type') and kind in (None, 'save'):
+            continue
+        act = {'name': a.get('name') or 'Use', 'kind': kind or 'other'}
+        if parts:
+            act['damage'] = parts
+        extra = ((a.get('extraAttacks') or {}).get('formula') or {}).get('count')
+        if extra:
+            act['extra_attacks'] = str(extra)
+        if str(a.get('attackBonus') or '').strip() == '100':
+            act['auto_hit'] = True  # magic missile
+        if save.get('type'):
+            act.update({'save': save['type'], 'save_text': save.get('description') or ''})
+            if save.get('harmless'):
+                act['harmless'] = True
+        out.append(act)
+    if not any(a.get('damage') for a in out):
+        dmg = damage_from_text(summary, description)
+        if dmg:
+            if out:
+                out[0]['damage'] = [dmg]
+            else:
+                out.append({'name': 'Use', 'kind': 'other', 'damage': [dmg]})
+    return out
+
+
 def clean_name(name):
     """Foundry tells same-named spells apart with a book tag: 'Malediction (APG)' -> 'Malediction'."""
     return re.sub(r'\s*\([A-Z0-9]{2,5}\)$', '', name.strip())
@@ -162,6 +225,11 @@ def main():
             continue
         existing = by_key.get(key(doc['name']))
         if existing:
+            acts = actions(doc, existing.get('summary'), existing.get('description'))
+            if acts:
+                existing['actions'] = acts
+            else:
+                existing.pop('actions', None)
             # Occult and unchained classes' spell levels for spells PSRD already has.
             for cls, lv in ((doc['system'].get('learnedAt') or {}).get('class') or {}).items():
                 cid = words(cls)
@@ -170,6 +238,9 @@ def main():
                     levels_added[cid] += 1
             continue
         rec = record(doc, book, {s['id'] for s in spells})
+        acts = actions(doc, rec['summary'], rec['description'])
+        if acts:
+            rec['actions'] = acts
         if not rec['levels']:
             skipped['no class spell list'] += 1  # only on a domain or bloodline list
             continue
@@ -178,7 +249,9 @@ def main():
         added.append(rec)
     spells.sort(key=lambda s: s['name'].lower())
     json.dump(spells, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
-    print(f'{len(added)} spells added from Foundry ({len(spells)} in all)')
+    print(f'{len(added)} spells added from Foundry ({len(spells)} in all); '
+          f"{sum(1 for s in spells if s.get('actions'))} with attack/damage/save details, "
+          f"{sum(1 for s in spells if any(a.get('damage') for a in s.get('actions', [])))} with damage or healing formulas")
     for b, n in Counter(r['source'] for r in added).most_common():
         print(f'  {n:5} {b}')
     print('class levels added to existing spells:', dict(levels_added.most_common()))

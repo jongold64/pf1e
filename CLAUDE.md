@@ -183,6 +183,13 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   Halfling)" bracket stripped into types), parses prerequisites with `build_feats.parse_prereqs`, marks them
   `"origin": "d20pfsrd"` and saves each book's notices to `scripts/d20_feat_notices.json` for `build_license.py`.
   Pages with no notice (about 45 new feats) are left out.
+- Spell numbers: `build_foundry_spells.py` gives each spell Foundry matches (PSRD ones too) `actions`:
+  `[{ name, kind ('ranged touch' | 'melee touch' | 'ranged' | 'melee' | 'maneuver' | 'heal' | 'save' | 'other'),
+  damage: [{ formula, types }], extra_attacks, auto_hit, save, save_text, harmless }]`. Formulas are Foundry roll
+  formulas with `@cl`; when Foundry has none, `damage_from_text` reads "1d6 ... damage per caster level (maximum
+  10d6)" wording. `js/spell-math.js`: `evalFormula` (min/max/floor/ceil/clamp, dice at least 1), `spellContext`
+  (caster level, casting modifier, Spell Focus schools) and `spellLines` (attack bonus = BAB + Dex/Str + size, DC =
+  10 + spell level + modifier + focus, rays/missiles from `extra_attacks`). Shown under My spells and on the sheet.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.
