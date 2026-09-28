@@ -10087,6 +10087,16 @@
     "description": "With this prayer you provide long-lasting succor to a wounded creature. For as long as the effect lasts, the target receives a +2 morale bonus on saving throws against fear and death effects. At any time while the spell is in effect, the target can choose to end the spell as a swift action for a burst of healing energy. The target loses the saving throw bonus, but is healed of 1d8 points of damage +1 point per caster level (maximum +10).",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8 + min(10, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal",
         "save": "will",
@@ -15399,6 +15409,16 @@
     "origin": "Foundry VTT pf1",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d3",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "save",
         "save": "will",
@@ -16838,7 +16858,19 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": "As heal, but only cures 4d8 damage +1/level (max +25).",
-    "description": "Positive energy infuses and cleanses your body. This spell cures 4d8 points of damage + 1 point per caster level (maximum +25) and ends any and all of the following adverse conditions affecting you: ability damage, blinded, confused, dazzled, deafened, diseased, exhausted, fatigued, nauseated, poisoned, and sickened. In addition, cleanse functions as break enchantment upon a single additional effect of your choice that is affecting you and that can be legally affected by this effect.\n\nIf used by undead or other creatures healed by negative energy, the spell cleanses with negative energy rather than positive."
+    "description": "Positive energy infuses and cleanses your body. This spell cures 4d8 points of damage + 1 point per caster level (maximum +25) and ends any and all of the following adverse conditions affecting you: ability damage, blinded, confused, dazzled, deafened, diseased, exhausted, fatigued, nauseated, poisoned, and sickened. In addition, cleanse functions as break enchantment upon a single additional effect of your choice that is affecting you and that can be legally affected by this effect.\n\nIf used by undead or other creatures healed by negative energy, the spell cleanses with negative energy rather than positive.",
+    "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "4d8 + min(25, @cl)",
+            "types": []
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "cleansing-fire",
@@ -21718,6 +21750,16 @@
     "origin": "Foundry VTT pf1",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8 + min(10, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal",
         "save": "will",
@@ -24607,7 +24649,19 @@
     "spell_resistance": "no",
     "summary": "Turn a potion into a pool of necromantic energy.",
     "description": "This spell allows you to turn a potion into a temporary pool of necromantic energy. Only a potion created using a conjuration (healing) spell can be affected by this spell. An affected potion turns dark red and reveals a necromantic aura if detect magic is cast on it while it remains under this spell's effects. When you drink a potion affected by this spell, you do not gain the potion's normal effect. Instead, the first necromancy spell you cast within the next minute is cast at a higher caster level. The bonus to caster level is equal to the spell level of the spell used to create the potion that deathwine affects. For example, a 5th-level wizard who drinks deathwine made from a potion of cure serious wounds would cast his next necromancy spell as an 8th-level caster, as cure serious wounds is a 3 rd-level spell. In addition, any undead creature (or other creature healed by negative energy) that drinks a potion affected by deathwine is healed of 1d8 points of damage. Any potion not imbibed before this spell's duration expires is destroyed at the end of the deathwine's duration.",
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8",
+            "types": []
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "debilitating-pain",
@@ -42063,6 +42117,16 @@
     "description": "You create one or more bolts of negative energy infused with shadow pulled from the Shadow Plane. You can fire one bolt, plus one for every four levels beyond 5th (to a maximum of three bolts at 13th level) at the same or different targets, but all bolts must be aimed at targets within 30 feet of each other and require a ranged touch attack to hit. Each bolt deals 4d6 points of damage to a living creature or heals 4d6 points of damage to an undead creature. Furthermore, the bolt's energy spreads over the skin of creature, possibly blinding it for a short time. Any creature struck by a bolt must succeed at a Reflex saving throw or become blinded for 1 round.",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "4d6",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "save",
         "save": "ref",
@@ -44582,6 +44646,14 @@
       {
         "name": "Use",
         "kind": "heal",
+        "damage": [
+          {
+            "formula": "min(150, @cl * 10)",
+            "types": [
+              "positive"
+            ]
+          }
+        ],
         "save": "will",
         "save_text": "Will negates",
         "harmless": true
@@ -44663,6 +44735,16 @@
     "description": "You unleash a blast of holy flames that washes over all creatures in the area in a glorious display of divine power. This deals damage to evil creatures and heals good creatures in the area. The amount of damage dealt and the number of hit points restored in each case is 1d8 points per 2 caster levels (maximum 5d8). Half of the damage this spell deals to evil creatures is fire damage, and half of the damage is pure divine power that is therefore not subject to reduction by energy resistance to fire-based attacks. Neutral enemies within the spell's area of effect also take the fire damage, but do not take the divine damage. Neutral allies within the area are healed by half as much as good creatures. A successful Reflex saving throw halves the damage taken in all cases.",
     "origin": "Foundry VTT pf1",
     "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "(min(5, floor(@cl / 2)))d8",
+            "types": []
+          }
+        ]
+      },
       {
         "name": "Use",
         "kind": "heal",
@@ -44817,7 +44899,19 @@
     "saving_throw": null,
     "spell_resistance": null,
     "summary": "This spell grants you temporary immunity to fire damage as protection from energy.",
-    "description": "This spell grants you temporary immunity to fire damage as protection from energy. As a standard action, you may sacrifice 12 points of remaining energy absorption from the spell to heal a touched creature of 1d8 points of damage. Healing a creature provokes an attack of opportunity. When the spell has absorbed 12 points of fire damage per caster level (to a maximum of 120 points at 10th level), it is discharged."
+    "description": "This spell grants you temporary immunity to fire damage as protection from energy. As a standard action, you may sacrifice 12 points of remaining energy absorption from the spell to heal a touched creature of 1d8 points of damage. Healing a creature provokes an attack of opportunity. When the spell has absorbed 12 points of fire damage per caster level (to a maximum of 120 points at 10th level), it is discharged.",
+    "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8",
+            "types": []
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "heart-of-the-mammoth",
@@ -51473,6 +51567,16 @@
     "description": "Instant restoration channels planar energy into a summoned creature. This spell can be cast as an immediate action when a summoned creature you control drops to 0 or fewer hit points. Rather than immediately disappear, the creature is healed for 4d8 hp + 1 hit point per caster level (maximum 4d8+10 hit points). If this healing brings your summoned creature's hit point total to 1 or more hit points, it remains as if its hit points had never dropped to 0 or fewer. Creatures slain by death effects cannot be saved by instant restoration. A summoner can target his eidolon with this spell.",
     "origin": "Foundry VTT pf1",
     "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "4d8 + min(10, @cl)",
+            "types": []
+          }
+        ]
+      },
       {
         "name": "Use",
         "kind": "heal"
@@ -64642,6 +64746,16 @@
     "description": "Despite its name, this powerful ward does not grant the target multiple lives, but rather gives the target the ability to get out of trouble and relieves harmful effects and conditions. For the spell's duration, the target can use any of the following abilities as an immediate action, but only up to a total of nine times, at which point the spell ends.\n\nCat's Luck: The target can use this ability when it fails a saving throw. The target can reroll the failed saving throw, but must take the new result even if it is worse.\n\nFortitude: The target uses this ability when a critical hit or sneak attack is scored against it. The critical hit or sneak attack is negated and the damage is instead rolled normally.\n\nRejuvenate: The target uses this ability when it is reduced to 0 or fewer hit points. The target is instantly healed 3d6 points of damage. If enough hit points are regained to bring the target to positive hit points, it does not fall unconscious. If it is not enough to leave the target with positive hit points, the target automatically stabilizes. Both of these effects work even if the damage was originally enough to kill the target.\n\nShake Off: The target uses this ability when it is under the effects of any of the following conditions: blinded, confused, cowering, dazed, dazzled, entangled, exhausted, fatigued, frightened, nauseated, panicked, shaken, sickened, or staggered. Using this ability ends one of those conditions.\n\nShimmy Out: The target uses this ability when it is grappled or pinned. The target automatically escapes the grapple as if it had succeeded at an Escape Artist check to escape the grapple.\n\nStay Up: The target uses this ability when it is tripped or otherwise knocked prone. The target steadies itself and stays upright.",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "3d6",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "save",
         "save": "will",
@@ -65974,7 +66088,19 @@
     "spell_resistance": "no",
     "summary": "Add a potent healing effect to your mutagens.",
     "description": "Alchemists have tried for centuries to recreate Artokus Kirran's feat of genius that created the sun orchid elixir.\n\nAlthough they have yet to unlock the elixir's exact formula, their efforts have not been entirely wasted. One by-product of their experiments was the orchid's drop formula. This extract, distilled from a much-diluted drop of the nectar of a sun orchid flower, can transform an alchemist's mutagen into a potent healing tonic.\n\nAs long as you're under the effects of orchid's drop, drinking a dose of your mutagen heals you of 2d10 points of damage. For the spell's duration, you gain a +2 alchemical bonus on all saving throws.",
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "2d10",
+            "types": []
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "orders-wrath",
@@ -68820,14 +68946,18 @@
     "description": "You conjure a pillar of positive energy in a single 5-foot square within range that radiates light as if it were a sunrod. Living creatures adjacent to the pillar can spend a standard action to touch the pillar and heal 2d8 points of damage + 1 point per caster level (maximum +20). Creatures can move into the square containing the pillar, but if an undead creature moves into the pillar it takes 1d6 points of damage per caster level (maximum 10d6). Undead creatures vulnerable to bright light take 1d8 points if damage per caster level (maximum 10d8). A creature cannot benefit or suffer more than once from a single casting of this spell.",
     "actions": [
       {
-        "name": "Use",
+        "name": "Heal",
         "kind": "heal",
         "damage": [
           {
-            "formula": "(min(10, @cl))d6",
+            "formula": "2d8 + min(20, @cl)",
             "types": []
           }
         ]
+      },
+      {
+        "name": "Use",
+        "kind": "heal"
       }
     ]
   },
@@ -73208,6 +73338,16 @@
     "origin": "Foundry VTT pf1",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "3d8 + min(20, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal",
         "save": "will",
@@ -75270,6 +75410,16 @@
     "description": "The subject's severed body members (fingers, toes, hands, feet, arms, legs, tails, or even heads of multiheaded creatures), broken bones, and ruined organs grow back. After the spell is cast, the physical regeneration is complete in 1 round if the severed members are present and touching the creature. It takes 2d10 rounds otherwise.\n\nRegenerate also cures 4d8 points of damage + 1 point per caster level (maximum +35), rids the subject of exhaustion and fatigue, and eliminates all nonlethal damage the subject has taken. It has no effect on nonliving creatures (including undead).",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "4d8 + min(35, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal",
         "save": "fort",
@@ -76284,6 +76434,16 @@
     "description": "When you touch an undead creature, you channel negative energy that heals 1d8 points of damage + 1 point per caster level (maximum +5). This spell has no effect on living creatures, except those that are healed by negative energy are also healed by the spell.",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8 + min(5, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "save",
         "save": "will",
@@ -76320,6 +76480,16 @@
     "summary": "Heals undead of 1d8 hp + 1/level; affects 1 undead/level.",
     "description": "This spell functions as repair undead, except as noted above, and it cures 1d8 points of damage + 1 point per caster level (maximum +20) on each selected creature.",
     "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8 + min(20, @cl)",
+            "types": []
+          }
+        ]
+      },
       {
         "name": "Use",
         "kind": "save",
@@ -77591,6 +77761,16 @@
     "summary": "Gain second wind when close to death.",
     "description": "Resurgent transformation grants you the ability to recover from deadly wounds with restored vitality and a will to fight, but at a price. Once cast, resurgent transformation lies dormant for up to 1 hour per level until you are reduced to one-quarter hit points or less. Once triggered, you immediately gain a +4 enhancement bonus to Constitution and Strength, damage reduction 5/-, and the benefits of a haste spell. In addition, you heal 4d8 points of damage + 1 point per caster level (maximum +25). Resurgent transformation can even save you from death by healing the damage from an otherwise mortal wound, though it does not prevent death from massive damage or from causes other than hit point loss. Your mental faculties are impaired by this magical transformation, however, causing 1d4 points of Intelligence and Wisdom damage.\n\nThe advantages from your transformation persist for 1 round per caster level after the spell is triggered. Once the spell ends, it takes a heavy toll, leaving you exhausted and inflicting 1d4 points of Constitution damage. Utilizing more than one resurgent transformation in a day is particularly risky. The expiration of a second resurgent transformation in a 24-hour period inflicts an additional 1d4 points of Constitution damage and results in death from system shock unless you succeed at a DC 15 Fortitude save, made after the Constitution damage has been applied.\n\nIf the spell expires or is dispelled before the transformation has been triggered, no adverse effects result.",
     "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "4d8 + min(25, @cl)",
+            "types": []
+          }
+        ]
+      },
       {
         "name": "Use",
         "kind": "heal"
@@ -87190,6 +87370,16 @@
     "origin": "Foundry VTT pf1",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "1d8 + min(15, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal"
       }
@@ -94246,6 +94436,16 @@
     "origin": "Foundry VTT pf1",
     "actions": [
       {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "2d8 + min(25, @cl)",
+            "types": []
+          }
+        ]
+      },
+      {
         "name": "Use",
         "kind": "heal",
         "save": "will",
@@ -94783,6 +94983,16 @@
     "summary": "Triggered rune heals living creatures.",
     "description": "This spell functions as symbol of death, except all creatures within 60 feet of the symbol of healing instead are bathed in positive energy and heal 2d8 points + 1 point of damage per caster level (maximum +15). Undead and other creatures harmed by positive energy instead take 2d8 points of damage + 1 point per caster level (maximum +15); a Will save reduces this damage by half. A creature can only be healed or harmed by the symbol once in any 24-hour period. Once triggered, the symbol remains active for 10 minutes per caster level.\n\nSymbol of healing can be made permanent with a permanency spell by a caster of 10th level or higher for the cost of 10,000 gp.",
     "actions": [
+      {
+        "name": "Heal",
+        "kind": "heal",
+        "damage": [
+          {
+            "formula": "2d8 + min(15, @cl)",
+            "types": []
+          }
+        ]
+      },
       {
         "name": "Use",
         "kind": "heal",

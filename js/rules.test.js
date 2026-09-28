@@ -855,6 +855,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const focused = spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wiz, size: 'Medium',
                                  featChoices: [{ feat: 'Spell Focus', value: 'evocation' }] });
   check('Spell Focus (evocation) adds 1 to the DC', spellLines(sp('Fireball'), focused)[0].text.slice(0, 5), 'DC 18');
+  const cleric9 = characterStats({ race: race('human'), cls: cls('cleric'), level: 9, baseScores: scores(10, 10, 10, 10, 16, 10), flexibleChoice: 'wis' });
+  const cctx = spellContext({ cls: cls('cleric'), effectiveLevel: 9, stats: cleric9, size: 'Medium' });
+  const heal = name => spellLines(sp(name), cctx).find(l => l.roll?.groups[0].heal);
+  check('cleanse heals 4d8 + CL (read from its text)', heal('Cleanse')?.text, 'heals 4d8+9');
+  check('healing roll button is marked as healing', heal('Cure Moderate Wounds')?.roll.groups[0].damage, '2d8+9');
   check('hold person (wizard 3rd level): the save only', line('Hold Person').startsWith('DC 17 Will negates'), true);
 }
 

@@ -162,6 +162,39 @@ def damage_from_text(summary, description):
     return None
 
 
+HEAL_WORD = r'(?:heals?|healed|healing|cures?|cured|restores?|restored)'
+# "4d8 damage +1/level (max +25)", "1d8 points of damage + 1 point per caster level (maximum +10)", "3d8 + 1 per caster
+# level (maximum +20)": dice plus caster level with a cap.
+HEAL_PLUS_CL = re.compile(HEAL_WORD + r'[^.]{0,60}?\b(\d+d\d+)\s*(?:points?|hp|hit points)?(?:\s*of)?(?:\s*damage)?(?:\s+to the target)?\s*'
+                          r'\+\s*1\s*(?:point|hit point|hp)?(?:\s+of damage)?\s*(?:/|per)\s*(?:caster\s+)?level\s*'
+                          r'\(max(?:imum)?\.?\s*(?:of\s*)?(?:\d+d\d+\s*\+\s*)?\+?(\d+)', re.I)
+# "1d8 points per 2 caster levels (maximum 5d8)"
+HEAL_PER_LEVELS = re.compile(HEAL_WORD + r'[^.]{0,60}?\b1d(\d+)\s*(?:points?|hit points)?(?:\s+of damage)?\s*per\s*(2|two|3|three)\s*'
+                             r'(?:caster\s+)?levels\s*\(max(?:imum)?\.?\s*(\d+)d\1\)', re.I)
+# "heals you of 2d10 points of damage": a fixed number of dice (not ability damage).
+HEAL_FLAT = re.compile(HEAL_WORD + r'\s+(?:you\s+|it\s+|them\s+|the target\s+|a touched creature\s+)?(?:of\s+|for\s+)?(\d+d\d+)\s*'
+                       r'(?:points? of damage|hit points|hp)\b(?!\s*(?:per|/|for each))', re.I)
+# Spells that heal the same as another one.
+HEAL_AS = {'Heal Mount': 'Heal'}
+
+
+def healing_from_text(summary, description):
+    """A healing formula from the spell's wording, or None (see the patterns above)."""
+    for text in (summary or '', description or ''):
+        m = HEAL_PLUS_CL.search(text)
+        if m:
+            return f"{m.group(1)} + min({m.group(2)}, @cl)"
+        m = HEAL_PER_LEVELS.search(text)
+        if m:
+            per = 2 if m.group(2).lower() in ('2', 'two') else 3
+            return f"(min({m.group(3)}, floor(@cl / {per})))d{m.group(1)}"
+    for text in (summary or '', description or ''):
+        m = HEAL_FLAT.search(text)
+        if m:
+            return m.group(1)
+    return None
+
+
 def actions(doc, summary=None, description=None):
     """What a spell does that the app can put numbers on: [{name, kind, damage: [{formula, types}], extra_attacks,
     auto_hit, save, save_text, harmless}]. Formulas are Foundry's (roll formulas using @cl for caster level); a spell
@@ -187,6 +220,11 @@ def actions(doc, summary=None, description=None):
             if save.get('harmless'):
                 act['harmless'] = True
         out.append(act)
+    # Healing the Foundry data has no formula for: read it from the spell's text.
+    if not any(a.get('kind') == 'heal' and a.get('damage') for a in out):
+        heal = healing_from_text(summary, description)
+        if heal:
+            out.insert(0, {'name': 'Heal', 'kind': 'heal', 'damage': [{'formula': heal, 'types': []}]})
     if not any(a.get('damage') for a in out):
         dmg = damage_from_text(summary, description)
         if dmg:
@@ -247,6 +285,13 @@ def main():
         spells.append(rec)
         by_key[key(rec['name'])] = rec
         added.append(rec)
+    by_name = {x['name']: x for x in spells}
+    for name, like in HEAL_AS.items():
+        if name in by_name and like in by_name:
+            heals = [a for a in by_name[like].get('actions', []) if a.get('kind') == 'heal' and a.get('damage')]
+            own = by_name[name].get('actions', [])
+            if heals and not any(a.get('kind') == 'heal' and a.get('damage') for a in own):
+                by_name[name]['actions'] = heals + [a for a in own if a.get('kind') != 'heal']
     spells.sort(key=lambda s: s['name'].lower())
     json.dump(spells, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
     print(f'{len(added)} spells added from Foundry ({len(spells)} in all); '
