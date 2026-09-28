@@ -20,29 +20,47 @@ def skill_names(data_dir):
     return sorted({s['skill'] for c in classes for s in c.get('class_skills', [])}, key=len, reverse=True)
 
 
+# A bonus that only applies sometimes ("While underground, ...", "... checks to gather information", "... saves against
+# poison") isn't counted: nothing conditional may come before it in its clause, and nothing may follow it but the end
+# of the clause. Traits offering "one of the following" bonuses are a choice, so they're skipped too.
+CONDITION_BEFORE = re.compile(r'\b(while|when|whenever|against|if|during|as long as|after|once per)\b', re.I)
+CLAUSE_END = re.compile(r'\s*(?:$|[,;.:)]|and\b|or\b)')
+
+
+def unconditional(sentence, m):
+    before = re.split(r';|, and\b', sentence[:m.start()])[-1]
+    return not CONDITION_BEFORE.search(before) and CLAUSE_END.match(sentence, m.end())
+
+
 def effects_of(body, skills):
-    t = re.sub(r'\s+', ' ', body)
     out = {}
-    for m in re.finditer(r'\+(\d+) trait bonus on (?:all )?(Fortitude|Reflex|Will) sav(?:es|ing throws)\b', t, re.I):
-        out.setdefault('saves', {})[SAVES[m.group(2).lower()]] = int(m.group(1))
-    m = re.search(r'\+(\d+) trait bonus on initiative checks', t, re.I)
-    if m:
-        out['initiative'] = int(m.group(1))
-    # "+1 trait bonus on Bluff and Intimidate checks" (only unconditional ones: nothing like "made to" / "against" after).
-    for m in re.finditer(r'\+(\d+) trait bonus on ([A-Z][A-Za-z ,()]+?) checks(?![^.]{0,20}\b(?:made to|to |against|when|while|involving|for)\b)', t):
-        names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(2))]
-        # Craft / Perform / Profession bonuses are for one specialty (Craft (alchemy)); left out rather than misapplied.
-        for n in names:
-            if n not in ('Craft', 'Perform', 'Profession'):
-                out.setdefault('skills', {})[n] = int(m.group(1))
-    for m in re.finditer(r'(?:and|,)\s+([A-Z][A-Za-z ()]+?) (?:is|are) (?:always )?(?:a )?class skills? for you', t):
-        names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(1))]
-        if not names and re.search(r'\b(?:it|that skill|one of these|this skill)\b', m.group(1), re.I):
-            names = list(out.get('skills', {}))
-        for n in [x for x in names if x not in ('Craft', 'Perform', 'Profession')]:
-            out.setdefault('class_skills', [])
-            if n not in out['class_skills']:
-                out['class_skills'].append(n)
+    if re.search(r'one of the following', body, re.I):
+        return out
+    for sentence in re.split(r'(?<=[.!?])\s+', re.sub(r'\s+', ' ', body)):
+        for m in re.finditer(r'\+(\d+) trait bonus on (?:all )?(Fortitude|Reflex|Will) sav(?:es|ing throws)\b', sentence, re.I):
+            if unconditional(sentence, m):
+                out.setdefault('saves', {})[SAVES[m.group(2).lower()]] = int(m.group(1))
+        m = re.search(r'\+(\d+) trait bonus on initiative checks', sentence, re.I)
+        if m and unconditional(sentence, m):
+            out['initiative'] = int(m.group(1))
+        # "+1 trait bonus on Bluff and Intimidate checks"
+        for m in re.finditer(r'\+(\d+) trait bonus on ([A-Z][A-Za-z ,()]+?) checks', sentence):
+            if not unconditional(sentence, m):
+                continue
+            names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(2))]
+            # Craft / Perform / Profession bonuses are for one specialty (Craft (alchemy)); left out rather than misapplied.
+            for n in names:
+                if n not in ('Craft', 'Perform', 'Profession'):
+                    out.setdefault('skills', {})[n] = int(m.group(1))
+        # "... and Perception is always a class skill for you"; "one of these (your choice)" is left to the player.
+        for m in re.finditer(r'(?:and|,|^)\s*([A-Z][A-Za-z ()]+?) (?:is|are) (?:always )?(?:a )?class skills? for you', sentence):
+            names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(1))]
+            if not names and re.search(r'\b(?:it|that skill|this skill)\b', m.group(1), re.I):
+                names = list(out.get('skills', {}))
+            for n in [x for x in names if x not in ('Craft', 'Perform', 'Profession')]:
+                out.setdefault('class_skills', [])
+                if n not in out['class_skills']:
+                    out['class_skills'].append(n)
     return out
 
 
@@ -62,7 +80,7 @@ def main():
             body = text(n['body'] or '') or clean(n['description'] or '')
             rec = {'id': slug(n['name']), 'name': clean(n['name']), 'source': book, 'category': category,
                    **({'requirement': requirement} if requirement else {}), 'text': body}
-            key = rec['name'].lower()
+            key = re.sub(r'[^a-z0-9]', '', rec['name'].lower())  # "Fast Talker" (UC) = "Fast-Talker" (APG)
             if key in found:
                 earlier = found[key]
                 if book == 'Ultimate Campaign':  # prefer the later reprint's wording

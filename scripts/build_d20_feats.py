@@ -37,12 +37,26 @@ BOOK_PREFIXES = r'^(Pathfinder (Roleplaying Game|RPG|Player Companion|Companion|
 SKIP_TYPES = {'Mythic', 'Caravan'}
 
 
+# Notices some pages give in shorthand, and titles the prefix stripping cuts too short.
+NOTICE_FIXES = {'PCh:FG.': 'Pathfinder Chronicles: Faction Guide.'}
+TITLE_FIXES = {'Primer': 'Pathfinder Society Primer'}
+
+
+def fix_notice(notice):
+    notice = notice.replace('’', "'")
+    for short, full in NOTICE_FIXES.items():
+        if notice.startswith(short):
+            notice = full + notice[len(short):]
+    return notice
+
+
 def book_name(notice):
     """'Pathfinder Roleplaying Game Occult Adventures © 2015, Paizo Inc.; ...' -> 'Occult Adventures'."""
+    notice = fix_notice(notice)
     title = re.split(r'\s*(?:©|\. Copyright|, Copyright| Copyright)', notice.replace('’', "'"))[0].strip().rstrip('.')
     for _ in range(2):
         title = re.sub(BOOK_PREFIXES, '', title).strip()
-    return title
+    return TITLE_FIXES.get(title, title)
 
 
 def parse_page(html):
@@ -61,7 +75,7 @@ def parse_page(html):
         for p in paras:
             n = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
             if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15'):
-                notices.append(n.replace('’', "'"))
+                notices.append(fix_notice(n))
             if p.parent is not box:
                 p.decompose()
         box.decompose()
@@ -113,7 +127,7 @@ def main():
         if not rec:
             skipped['unreadable'] += 1
             continue
-        paizo = [n for n in rec['notices'] if 'Paizo' in n]
+        paizo = [n for n in rec['notices'] if re.search(r'Paizo,? (?:Publishing|Inc)', n)]  # not "Paizo Fans United"
         if not paizo:
             skipped['no Paizo notice'] += 1
             continue

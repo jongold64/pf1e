@@ -183,6 +183,14 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   Halfling)" bracket stripped into types), parses prerequisites with `build_feats.parse_prereqs`, marks them
   `"origin": "d20pfsrd"` and saves each book's notices to `scripts/d20_feat_notices.json` for `build_license.py`.
   Pages with no notice (about 45 new feats) are left out.
+- Traits: `build_traits.py` (PSRD: APG and Ultimate Campaign, names compared letters-only) then `build_d20_traits.py`
+  (d20pfsrd pages cached in `C:\Users\jongo\Projects\d20pfsrd-traits` by `fetch_d20pfsrd_feats.py <cache> traits`).
+  Category and race/region/deity come from the page's folder; a trailing "(Dwarf)" in the name becomes the
+  requirement. "Paizo" alone isn't enough for a notice ("Paizo Fans United" made Wayfinder): it must say Paizo
+  Publishing / Paizo Inc. `effects_of` counts only unconditional bonuses: nothing like "while/when/against/if" before
+  it in its clause, nothing after it but the clause's end ("Diplomacy checks to gather information" isn't counted),
+  and no effects at all for "one of the following" choices. Short notice/book names are fixed in `NOTICE_FIXES` /
+  `TITLE_FIXES` (`build_d20_feats.py`).
 - Spell numbers: `build_foundry_spells.py` gives each spell Foundry matches (PSRD ones too) `actions`:
   `[{ name, kind ('ranged touch' | 'melee touch' | 'ranged' | 'melee' | 'maneuver' | 'heal' | 'save' | 'other'),
   damage: [{ formula, types }], extra_attacks, auto_hit, save, save_text, harmless }]`. Formulas are Foundry roll

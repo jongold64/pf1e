@@ -11,7 +11,7 @@ import json, os, re, sys
 from collections import Counter
 from bs4 import BeautifulSoup
 from common import text, slug
-from build_d20_feats import book_name
+from build_d20_feats import book_name, fix_notice
 from build_traits import effects_of, skill_names
 
 ORIGIN = 'd20pfsrd'
@@ -40,7 +40,7 @@ def parse_page(html):
         for p in box.find_all('p') + list(box.find_next_siblings('p')):
             n = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
             if re.search(r'©|Copyright \d{4}', n) and not n.startswith('Section 15'):
-                notices.append(n.replace('’', "'"))
+                notices.append(fix_notice(n))
             if p.parent is not box:
                 p.decompose()
         box.decompose()
@@ -55,6 +55,10 @@ def parse_page(html):
     parts = url.split('/traits/')[1].strip('/').split('/') if '/traits/' in url else []
     category = CATEGORIES.get(parts[0] if parts else '', 'Other')
     requirement = words(parts[1]) if len(parts) > 2 and category in ('Race', 'Regional', 'Religion', 'Campaign') else None
+    # "Tunnel Fighter (Dwarf)", "Fire-Tongued (Kobold, Red-Scaled)": the bracket is the race or other requirement.
+    m = re.match(r'^(.*?)\s*\(([^)]*)\)$', name.strip())
+    if m:
+        name, requirement = m.group(1), requirement or m.group(2)
     return {'name': name.strip(), 'category': category, 'requirement': requirement, 'text': re.sub(r'\n{3,}', '\n\n', body),
             'notices': notices}
 
@@ -77,7 +81,7 @@ def main():
         if rec['text'].startswith('Subpages') or len(rec['text']) < 40:
             skipped['index page'] += 1
             continue
-        paizo = [n for n in rec['notices'] if 'Paizo' in n]
+        paizo = [n for n in rec['notices'] if re.search(r'Paizo,? (?:Publishing|Inc)', n)]  # not "Paizo Fans United"
         if not paizo:
             skipped['no Paizo notice'] += 1
             continue

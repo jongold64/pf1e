@@ -628,7 +628,7 @@
   {
     "id": "advanced-defensive-combat-training",
     "name": "Advanced Defensive Combat Training",
-    "source": "PCh:FG",
+    "source": "Faction Guide",
     "types": [
       "Combat",
       "Faction"
@@ -14891,7 +14891,7 @@
   {
     "id": "cut-your-losses",
     "name": "Cut Your Losses",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -23435,7 +23435,7 @@
   {
     "id": "energy-attunement",
     "name": "Energy Attunement",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -23817,7 +23817,7 @@
   {
     "id": "esoteric-advantage",
     "name": "Esoteric Advantage",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -37138,7 +37138,7 @@
   {
     "id": "improved-day-job",
     "name": "Improved Day Job",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -39401,7 +39401,7 @@
   {
     "id": "improved-underhanded-teamwork",
     "name": "Improved Underhanded Teamwork",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "Combat",
       "Teamwork"
@@ -41839,7 +41839,7 @@
   {
     "id": "ki-diversity",
     "name": "Ki Diversity",
-    "source": "PCh:FG",
+    "source": "Faction Guide",
     "types": [
       "Combat",
       "Faction"
@@ -43721,7 +43721,7 @@
   {
     "id": "let-them-come",
     "name": "Let Them Come",
-    "source": "PCh:FG",
+    "source": "Faction Guide",
     "types": [
       "Combat",
       "Faction"
@@ -52454,7 +52454,7 @@
   {
     "id": "patient-strike",
     "name": "Patient Strike",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "Combat"
     ],
@@ -53777,7 +53777,7 @@
   {
     "id": "planned-spontaneity",
     "name": "Planned Spontaneity",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -55864,7 +55864,7 @@
   {
     "id": "quick-preparation",
     "name": "Quick Preparation",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -57898,7 +57898,7 @@
   {
     "id": "renown",
     "name": "Renown",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -71789,7 +71789,7 @@
   {
     "id": "tapestry-traveler",
     "name": "Tapestry Traveler",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -76089,7 +76089,7 @@
   {
     "id": "uncanny-activation",
     "name": "Uncanny Activation",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
@@ -76372,7 +76372,7 @@
   {
     "id": "underhanded-teamwork",
     "name": "Underhanded Teamwork",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "Combat",
       "Teamwork"
@@ -77726,7 +77726,7 @@
   {
     "id": "versatile-spontaneity",
     "name": "Versatile Spontaneity",
-    "source": "Primer",
+    "source": "Pathfinder Society Primer",
     "types": [
       "General"
     ],
