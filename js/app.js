@@ -312,7 +312,8 @@ function fillSheet() {
   const skills = [...$('skill-rows').querySelectorAll('tr[data-row-skill]')].map(tr => ({
     name: tr.dataset.rowSkill,
     ranks: Number(tr.querySelector('.value')?.textContent) || 0,
-    total: tr.querySelector('.total')?.textContent.trim() || '',
+    // Just the number, not the Roll button's text.
+    total: tr.querySelector('.total')?.firstChild?.textContent.trim() || '',
   }));
   const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent, dt.nextElementSibling?.textContent || '']);
   $('print-sheet').innerHTML = buildSheet({
@@ -847,7 +848,8 @@ function renderSkills(race, classes, scores, featNames) {
         <span class="value">${ranks}</span>
         <button type="button" data-skill="${esc(name)}" data-skill-step="1" aria-label="More ranks in ${esc(name)}">+</button>
       </span></td>
-      <td class="total">${t.usable ? signed(t.total) : '<span class="muted" title="Needs at least 1 rank">—</span>'}</td>
+      <td class="total">${t.usable ? `${signed(t.total)}${rollButton({ title: `${name} check`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}`
+        : '<span class="muted" title="Needs at least 1 rank">—</span>'}</td>
     </tr>`;
   }).join('');
 }

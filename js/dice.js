@@ -71,7 +71,9 @@ export function rollSpec(spec, rng = randomDie) {
       const atk = rollD20(bonus, rng);
       const n = g.attacks.length > 1 ? ` ${i + 1}` : '';
       if (!g.damage) {
-        lines.push(`${prefix}${spec.check || 'Roll'}${n}: ${atk.text}${atk.natural === 20 ? ' (natural 20)' : atk.natural === 1 ? ' (natural 1)' : ''}`);
+        // Skill checks have no automatic success or failure, so naturals aren't pointed out (spec.plain).
+        const natural = spec.plain ? '' : atk.natural === 20 ? ' (natural 20)' : atk.natural === 1 ? ' (natural 1)' : '';
+        lines.push(`${prefix}${spec.check || 'Roll'}${n}: ${atk.text}${natural}`);
         return;
       }
       if (atk.natural === 1) {
