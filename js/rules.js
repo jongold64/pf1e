@@ -306,6 +306,39 @@ export function smite(stats) {
   return out;
 }
 
+// Carrying capacity (Core Rulebook Table 7-4): the most a character can carry as a heavy load, by Strength; light is
+// a third of it and medium two thirds. Above 29, each +10 Strength multiplies by 4. Size multiplies it (bipeds).
+const HEAVY_LOAD = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 115, 130, 150, 175, 200, 230, 260, 300, 350, 400, 460, 520, 600,
+  700, 800, 920, 1040, 1200, 1400];
+const SIZE_CARRY = { Fine: 1 / 8, Diminutive: 1 / 4, Tiny: 1 / 2, Small: 3 / 4, Medium: 1, Large: 2, Huge: 4 };
+export function carryingCapacity(str, size = 'Medium') {
+  let heavy;
+  if (str < 1) heavy = 0;
+  else if (str <= 29) heavy = HEAVY_LOAD[str];
+  else heavy = HEAVY_LOAD[20 + ((str - 20) % 10)] * 4 ** Math.floor((str - 20) / 10);
+  heavy *= SIZE_CARRY[size] ?? 1;
+  return { light: Math.floor(heavy / 3), medium: Math.floor(heavy * 2 / 3), heavy: Math.floor(heavy) };
+}
+
+// The load a weight makes and what it does (Core Rulebook Table 7-5): medium caps Dex at +3 with a -3 check penalty,
+// heavy at +1 with -6; both slow the character like medium or heavy armor. Above heavy the character is overloaded
+// (can barely move). { load, maxDex, checkPenalty, slows }
+export function encumbrance(weight, capacity) {
+  if (weight <= capacity.light) return { load: 'light', maxDex: null, checkPenalty: 0, slows: false };
+  if (weight <= capacity.medium) return { load: 'medium', maxDex: 3, checkPenalty: -3, slows: true };
+  if (weight <= capacity.heavy) return { load: 'heavy', maxDex: 1, checkPenalty: -6, slows: true };
+  return { load: 'overloaded', maxDex: 0, checkPenalty: -6, slows: true };
+}
+
+// Speed slowed by medium/heavy armor or load (Core Rulebook Table 7-6): 30 -> 20, 20 -> 15, otherwise two thirds
+// rounded to 5 feet.
+export function slowedSpeed(speed) {
+  if (speed === null || speed === undefined) return speed;
+  if (speed === 30) return 20;
+  if (speed === 20) return 15;
+  return Math.max(5, Math.round(speed * 2 / 3 / 5) * 5);
+}
+
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = [], traitBonus = 0) {
   return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0) + traitBonus;

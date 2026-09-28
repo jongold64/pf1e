@@ -201,7 +201,11 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   `withTraitSaves` into characterStats' featBonuses), initiative, skill totals (`traitBonuses`) and class skills.
   UI: tab-traits.js (Traits card + picker on the Feats tab), no category or count checks (user's choice).
 - House rules: `state.houseRules` flags (HOUSE_RULES in app.js). Max Healing -> `setRollOptions` -> `rollSpec` rolls
-  healing groups (heal: true) at maximum. Encumbrance and Action Points are switches only so far.
+  healing groups (heal: true) at maximum. Encumbrance: `carriedWeight` (worn armor/shield, weapons, inventory, magic
+  items; not coins; Small/Large armor and weapon weights) -> `carryingCapacity(str, size)` / `encumbrance(weight,
+  capacity)` (rules.js); computeView merges the load's max Dex and check penalty with the armor's (worse counts) and
+  slows speed with `slowedSpeed` (Slow and Steady exempt); `view.load` shows in Results and on the Equipment tab.
+  Action Points is a switch only so far.
   Flaws: `state.flaws` (two typed { name, effect }); each named flaw adds a `flaw-N` general feat slot at 1st level
   (`featSlots({ flaws })`), only while the Flaws rule is on. The penalty isn't applied.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained

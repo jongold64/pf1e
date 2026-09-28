@@ -100,6 +100,9 @@ export async function renderEquipment(app, view) {
     ['Magic items', formatGp(magic.cost)],
     ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>`],
     ['Weight carried', formatLbs(totals.weight + magic.weight + weaponWeight)],
+    // Encumbrance house rule: the load and the limits for this character's Strength and size.
+    ...(view.load ? [['Load', `${view.load.load[0].toUpperCase()}${view.load.load.slice(1)} (light up to ${view.load.capacity.light} lbs., `
+      + `medium ${view.load.capacity.medium}, heavy ${view.load.capacity.heavy})`]] : []),
   ].map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === 'Left' ? v : esc(v)}</dd>`).join('');
   const notes = [sizeFactor === 1 ? 'Weights are for Medium characters.'
     : `Armor and weapons weigh ${sizeFactor < 1 ? 'half' : 'twice'} as much for ${view.race.size} characters (counted here). ` +

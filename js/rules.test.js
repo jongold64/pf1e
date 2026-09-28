@@ -17,7 +17,8 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite } from './rules.js';
+import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
+         carryingCapacity, encumbrance, slowedSpeed } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -820,6 +821,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
         baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' })).length, 0);
   const wp7 = characterStats({ race: race('human'), cls: cls('warpriest'), level: 7, baseScores: scores(14, 10, 10, 10, 14, 10), flexibleChoice: 'wis' });
   check('warpriest 7 channels as cleric 4: 2d6', channelEnergy(wp7)[0].dice, '2d6');
+  check('carrying capacity Str 10, 18, 30', ['10', '18', '30'].map(s => JSON.stringify(carryingCapacity(Number(s)))).join(' '),
+        '{"light":33,"medium":66,"heavy":100} {"light":100,"medium":200,"heavy":300} {"light":533,"medium":1066,"heavy":1600}');
+  check('Small carries three quarters', carryingCapacity(10, 'Small').heavy, 75);
+  check('loads', [30, 50, 90, 120].map(w => encumbrance(w, carryingCapacity(10)).load).join(' '), 'light medium heavy overloaded');
+  check('medium load: max Dex +3, -3 check penalty', JSON.stringify(encumbrance(50, carryingCapacity(10))), '{"load":"medium","maxDex":3,"checkPenalty":-3,"slows":true}');
+  check('slowed speeds', [30, 20, 40, 15].map(slowedSpeed).join(' '), '20 15 25 10');
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13

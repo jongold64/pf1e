@@ -3,7 +3,7 @@ import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
-  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC,
+  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -21,6 +21,7 @@ import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
+import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
@@ -108,7 +109,7 @@ const state = {
 
 // House rules the player can switch on (Character tab): [key, button label, what it does].
 const HOUSE_RULES = [
-  ['encumbrance', 'Encumbrance', 'Encumbrance: not set up yet.'],
+  ['encumbrance', 'Encumbrance', 'Encumbrance: what you carry (armor, weapons, equipment, magic items; not coins) sets your load; a medium or heavy load limits Dex, adds a check penalty and slows you.'],
   ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
   ['actionPoints', 'Action Points', 'Action Points: not set up yet.'],
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
@@ -628,6 +629,30 @@ function update(changes) {
   render();
 }
 
+// Total weight carried (for the Encumbrance house rule): worn armor and shield, weapons, equipment and magic items.
+// Returns null while data it needs is still loading (it starts the loads and draws again when they're done).
+function carriedWeight(armorGear, size) {
+  const need = [];
+  if (state.inventory.length && !data.gearById) need.push(loadGear());
+  if (state.weapons.length && !data.weaponsById) need.push(loadWeapons());
+  if (state.magicItems.length && !data.itemsById) need.push(loadItems());
+  if (need.length) {
+    Promise.all(need).then(() => render());
+    return null;
+  }
+  const worn = equipmentTotals(state.inventory, data.gearById || new Map(),
+                               { armor: armorGear.armor, shield: armorGear.shield, size });
+  const weapons = state.weapons.reduce((n, e) => n + (data.weaponsById?.get(e.id)?.weight_lbs || 0), 0) * sizeWeightFactor(size);
+  const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById).weight : 0;
+  return Math.round((worn.weight + weapons + magic) * 100) / 100;
+}
+
+// "Medium (95 lbs.; light up to 76, medium 153, heavy 230)"
+function loadText(load) {
+  const name = load.load[0].toUpperCase() + load.load.slice(1);
+  return `${name} (${load.weight} lbs.; light up to ${load.capacity.light}, medium ${load.capacity.medium}, heavy ${load.capacity.heavy})`;
+}
+
 // Trait save bonuses added to the feat bonuses characterStats takes.
 function withTraitSaves(fb, traitFx) {
   return { ...fb, fort: (fb.fort || 0) + traitFx.saves.fort, ref: (fb.ref || 0) + traitFx.saves.ref, will: (fb.will || 0) + traitFx.saves.will };
@@ -657,18 +682,34 @@ function computeView() {
   });
   const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
-  const gear = armorEffects({
+  const armorGear = armorEffects({
     armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
     shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
   });
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
-  const stats = characterStats({
+  const statsWith = gearNow => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice: state.flexible,
     increases: state.increases, favoredHp: state.favored === 'hp',
-    featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear,
+    featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear: gearNow,
   });
+  // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
+  // (the worse of the two counts, they don't add up). Strength doesn't depend on gear, so it comes from a first pass.
+  let gear = armorGear;
+  let load = null;
+  if (state.houseRules.encumbrance) {
+    const weight = carriedWeight(armorGear, race.size);
+    if (weight !== null) {
+      const capacity = carryingCapacity(statsWith(armorGear).scores.str, race.size);
+      const enc = encumbrance(weight, capacity);
+      load = { ...enc, weight, capacity };
+      const caps = [armorGear.maxDex, enc.maxDex].filter(v => v !== null && v !== undefined);
+      gear = { ...armorGear, maxDex: caps.length ? Math.min(...caps) : null,
+               checkPenalty: Math.min(armorGear.checkPenalty, enc.checkPenalty) };
+    }
+  }
+  const stats = statsWith(gear);
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
   const ctx = featContext({ race, counts, casting: casting.casting, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
 
@@ -702,10 +743,15 @@ function computeView() {
     const before = classLevels.slice(0, classLevels.findIndex(c => c.id === e.cls.id));
     requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, before.length ? contextAt(before.length) : null));
   }
-  const speed = speedInArmor(race.base_speed, gear, race);
+  let speed = speedInArmor(race.base_speed, gear, race);
+  // A medium or heavy load slows like medium or heavy armor (not both); dwarves' Slow and Steady ignores it.
+  if (load?.slows && !(race.traits || []).some(t => t.name === 'Slow and Steady')) {
+    speed = Math.min(speed ?? Infinity, slowedSpeed(race.base_speed));
+  }
   return {
     race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
+    load,
   };
 }
 
@@ -842,6 +888,7 @@ function render() {
     ['Base attack bonus', esc(formatBab(stats.bab))],
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
     ['Wearing', esc(worn || 'no armor')],
+    ...(view.load ? [['Load', `<span class="${view.load.load === 'light' ? '' : 'warning'}">${esc(loadText(view.load))}</span>`]] : []),
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
