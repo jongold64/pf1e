@@ -31,7 +31,9 @@ prerequisite checks), Skills, Spells (spells per day and the class spell list), 
 item by category, with a details panel; items can be added to the character), Armor (worn armor and
 shield, applied to AC, skills and speed), Weapons (attack bonus and damage for each weapon you carry) and
 Equipment (an inventory with gold and weight). Spells can be
-added to the character too. Every tab has its own search box as well.
+added to the character too. Every tab has its own search box as well. The bar above the tabs keeps several
+characters (saved in the browser), exports one to a .json file and imports it on another device, and prints a
+full character sheet.
 To try it on your computer, run this from the repo folder (needs Python 3) and open http://localhost:8000/
 in a browser:
 

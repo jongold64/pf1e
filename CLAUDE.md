@@ -34,13 +34,22 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 - `js/rules.js` holds all rules math as pure functions (point-buy costs, modifiers, racial
   adjustments, level-based ability increases, `characterStats`). Put new calculations here and add checks to `js/rules.test.js`.
 - `js/app.js` owns the page: loads races/classes/feats/armor at start (spells and magic items load on
-  first use via `loadSpells`/`loadItems`/`loadGear`), keeps one `state` object saved to
-  `localStorage`, computes a shared `view` (stats, gear, feat context) in `computeView()`, and re-renders
+  first use via `loadSpells`/`loadItems`/`loadGear`), keeps one `state` object (the open character) saved to
+  `localStorage` through `js/storage.js`, computes a shared `view` (stats, gear, feat context) in `computeView()`, and re-renders
   on each change via `update()` → `render()`. Tabs are `<main class="tab-panel">` elements switched by
   `showTab()`; the open tab is kept in the URL hash (`#spells`). Tab modules get an `app` object
   (`state`, `data`, `update`, `view`, `showTab`, `openDetail`, `openResult`): `tab-armor.js`,
   `tab-spells.js`, `tab-items.js`, `tab-weapons.js`, `tab-equipment.js`, `search-ui.js`. Shared DOM helpers are in
   `dom.js`. The Feats, Skills and Armor tab searches live in `app.js` (`initTabSearches`).
+- Saved characters (`js/storage.js`): a roster `pf1e-builder-characters` = `{ current, characters: [{ id, label }] }`
+  and each character under `pf1e-builder-character:<id>`. The pre-roster key `pf1e-builder-character` is migrated
+  into the first character only when no roster exists, so test pages that preload a character must clear
+  localStorage first. `load(saved)` resets `state` to `DEFAULTS` and repairs the saved object (used for startup,
+  switching, New/Duplicate and Import); `save()` writes the open character. Export/import is a .json file
+  (`exportData`/`importData`, format tag `pf1e-builder-character`).
+- Printing: the Print button (or the browser's print, via `beforeprint`) fills `#print-sheet` from `js/sheet.js`
+  `buildSheet` (weapon lines from `weaponSummaries` in tab-weapons.js, skill totals and money read from the
+  rendered tabs); print CSS hides everything else. `combatManeuvers` (rules.js) gives CMB/CMD for the sheet.
 - Equipment: `js/equipment.js` has money and weight rules (`startingGold` with the alternate-class
   fallback, `WEALTH_BY_LEVEL`, `armorCost` = base + 150 masterwork + enh² × 1,000, `equipmentTotals`,
   `formatGp`). Inventory entries are `{ id, variant, qty }`; `variant` picks one of an item's `variants`
@@ -136,7 +145,8 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved
-  by an older version still loading (`load()` migrates or drops old fields).
+  by an older version still loading (`load()` migrates or drops old fields). `msedge --print-to-pdf` shows the
+  printed sheet (copy `#print-sheet` into a page that links css/style.css; the Read tool shows the PDF).
 
 ## Data build commands
 

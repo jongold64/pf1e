@@ -228,6 +228,38 @@ export function renderMyWeapons(app, view) {
   }).join('') || '<p class="hint">No weapons yet. Choose one below and add it.</p>';
 }
 
+// Plain-text attack lines for each carried weapon (for the printed sheet).
+export function weaponSummaries(app, view) {
+  if (!app.data.weaponsById) return [];
+  const ctx = combatContext(app, view);
+  const have = new Set(view.haveFeats);
+  return app.state.weapons.map(e => {
+    const w = app.data.weaponsById.get(e.id);
+    if (!w) return null;
+    const args = attackArgs(app, view, ctx, e);
+    const a = weaponAttack(args);
+    const flags = ctx.flagsFor(e, w);
+    const extra = [];
+    if (ctx.flurry?.babs && isMonkWeapon(w)) {
+      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: -2 });
+      extra.push(`${ctx.flurry.name} ${attackText(f)} (${f.damage})`);
+    }
+    if (isDouble(w)) {
+      const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
+      extra.push(`As two weapons ${attackText(d2.main)} (${d2.main.damage}) and ${attackText(d2.off)} (${d2.off.damage})`);
+    }
+    return {
+      name: `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`,
+      attack: attackText(a) + (a.used.length ? ` (${a.used.join(', ')})` : ''),
+      damage: a.damage,
+      critical: (flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—',
+      range: w.range_ft ? `${w.range_ft} ft.` : '',
+      extra,
+      proficient: args.proficient,
+    };
+  }).filter(Boolean);
+}
+
 function changeEntry(app, index, changes) {
   app.update({ weapons: app.state.weapons.map((e, i) => (i === index ? { ...e, ...changes } : e)) });
 }

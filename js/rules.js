@@ -231,6 +231,15 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   };
 }
 
+// Combat Maneuver Bonus and Defense (Core Rulebook, Combat Maneuvers). The size modifier is the reverse of the AC
+// one (Small -1). CMD adds everything touch AC counts besides Dex and size (dodge, deflection, a monk's AC bonus),
+// so it starts from touch AC: touch - size AC bonus + size CMD modifier + BAB + Str.
+export function combatManeuvers(stats, size) {
+  const sizeMod = -(SIZE_AC[size] ?? 0);
+  const bab = stats.bab[0];
+  return { cmb: bab + stats.mod.str + sizeMod, cmd: stats.touch + sizeMod + sizeMod + bab + stats.mod.str };
+}
+
 // Racial AC bonuses that always apply, read from the race's traits: "Kobolds have a +1 natural armor bonus.",
 // "Kasathas have a +2 dodge bonus to Armor Class." Conditional ones ("against giants", "when adjacent to…")
 // are left out.

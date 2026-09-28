@@ -15,6 +15,19 @@
   <p id="loading">Loading rules data…</p>
 
   <div id="app" hidden>
+    <div class="char-bar">
+      <label class="char-pick">Character <select id="char-select"></select></label>
+      <label class="char-pick">Name <input id="char-name" type="text" maxlength="60" autocomplete="off"></label>
+      <div class="char-buttons">
+        <button type="button" id="char-new">New</button>
+        <button type="button" id="char-copy">Duplicate</button>
+        <button type="button" id="char-delete">Delete</button>
+        <button type="button" id="char-export">Export</button>
+        <button type="button" id="char-import">Import</button>
+        <button type="button" id="char-print">Print</button>
+        <input type="file" id="char-file" accept=".json,application/json" hidden>
+      </div>
+    </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button type="button" role="tab" data-tab="character">Character</button>
       <button type="button" role="tab" data-tab="feats">Feats</button>
@@ -301,5 +314,6 @@
   </footer>
 
   <script type="module" src="js/app.js"></script>
+  <div id="print-sheet" class="print-sheet"></div>
 </body>
 </html>

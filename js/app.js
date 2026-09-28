@@ -23,8 +23,10 @@ import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from 
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
+import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
+import { buildSheet } from './sheet.js';
+import { weaponSummaries } from './tab-weapons.js';
 
-const STORAGE_KEY = 'pf1e-builder-character';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['alternate', 'Alternate'], ['prestige', 'Prestige']];
 const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'weapons', 'equipment'];
@@ -61,6 +63,7 @@ let tab = 'character';
 let raceItems = [];
 
 const state = {
+  name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   race: 'human',
   classLevels: ['fighter'],  // class id at each character level, 1st level first
   favoredClass: '',          // favored class id; '' means the first class
@@ -92,19 +95,29 @@ const state = {
   combat: { main: '', off: '' },
 };
 
+// A fresh character, for "New" and for resetting before a saved one is loaded.
+const DEFAULTS = structuredClone(state);
+// The saved characters (see storage.js) and which one is open.
+let roster = null;
+let currentId = null;
+
 // Shared with the tab modules.
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult,
   get view() { return view; },
 };
 
-// Saved characters survive a reload. Storage can be blocked (private browsing), so failures are ignored.
-function load() {
-  let saved = null;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved) Object.assign(state, saved, { base: { ...state.base, ...saved.base } });
-  } catch { /* start fresh */ }
+// Puts a saved character (or null for a new one) into `state`, repairing anything an older version saved
+// differently or that the data no longer has.
+function load(saved) {
+  for (const k of Object.keys(state)) delete state[k];
+  Object.assign(state, structuredClone(DEFAULTS));
+  if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
+  state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
+  if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
+  if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
+  if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
+  if (state.favored !== 'skill') state.favored = 'hp';
   // Saves from before multiclassing have one class and a level instead of a class for each level.
   if (saved && !Array.isArray(saved.classLevels)) state.classLevels = [];
   for (const a of ABILITIES) {
@@ -198,7 +211,117 @@ function extraSlotOn(clsId) {
 }
 
 function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* not saved */ }
+  saveCharacter(roster, currentId, state, characterLabel(state));
+}
+
+// "Valeros", or "Human Fighter 1" / "Elf Wizard 3 / Fighter 2" for a character without a name.
+function characterLabel(s) {
+  if (s.name?.trim()) return s.name.trim();
+  const race = data.races.find(r => r.id === s.race);
+  const byId = new Map(data.classes.map(c => [c.id, c]));
+  const counts = classCounts(s.classLevels.map(id => byId.get(id)).filter(Boolean));
+  return `${race?.name || ''} ${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`.trim();
+}
+
+// The character bar: pick a saved character, name it, add, copy, delete, export, import and print.
+function renderCharacterBar() {
+  $('char-select').innerHTML = roster.characters.map(c =>
+    `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}</option>`).join('');
+  $('char-select').value = currentId;
+  if (document.activeElement !== $('char-name')) $('char-name').value = state.name;
+  $('char-name').placeholder = characterLabel({ ...state, name: '' });
+}
+
+function switchCharacter(id, character = undefined) {
+  currentId = id;
+  roster.current = id;
+  saveRoster(roster);
+  load(character === undefined ? loadCharacter(id) : character);
+  save();
+  pickerSlotId = null;
+  render();
+}
+
+function addCharacter(character) {
+  const id = newId();
+  roster.characters.push({ id, label: '' });
+  switchCharacter(id, character);
+}
+
+function initCharacterBar() {
+  $('char-select').addEventListener('change', e => { save(); switchCharacter(e.target.value); });
+  $('char-name').addEventListener('input', e => update({ name: e.target.value.slice(0, 60) }));
+  $('char-new').addEventListener('click', () => { save(); addCharacter(null); });
+  $('char-copy').addEventListener('click', () => {
+    save();
+    addCharacter({ ...structuredClone(state), name: `${characterLabel(state)} (copy)` });
+  });
+  $('char-delete').addEventListener('click', () => {
+    if (!confirm(`Delete ${characterLabel(state)}? This can't be undone.`)) return;
+    removeCharacter(roster, currentId);
+    if (roster.characters.length) switchCharacter(roster.characters[0].id);
+    else addCharacter(null);
+  });
+  $('char-export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(exportData(state), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${characterLabel(state).replace(/[^\w\- ]+/g, '').trim() || 'character'}.json`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  $('char-import').addEventListener('click', () => $('char-file').click());
+  $('char-file').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    let character = null;
+    try { character = importData(JSON.parse(await file.text())); } catch { character = null; }
+    if (!character) {
+      alert('That file isn\'t a character exported from this app.');
+      return;
+    }
+    save();
+    addCharacter(character);
+  });
+  $('char-print').addEventListener('click', printSheet);
+  // Printing from the browser menu (Ctrl+P) gets the sheet too, with whatever data is loaded.
+  window.addEventListener('beforeprint', fillSheet);
+}
+
+// The printed sheet needs the gear, weapons, magic items and spells data, and their tabs drawn.
+async function printSheet() {
+  $('char-print').disabled = true;
+  try {
+    await Promise.all([loadGear(), state.weapons.length ? loadWeapons() : null, state.magicItems.length ? loadItems() : null,
+                       state.spells.length ? loadSpells() : null, state.featChoices && Object.keys(state.featChoices).length ? loadWeapons() : null]);
+    render();
+    await renderEquipment(app, view);
+    fillSheet();
+    window.print();
+  } finally {
+    $('char-print').disabled = false;
+  }
+}
+
+function fillSheet() {
+  const skills = [...$('skill-rows').querySelectorAll('tr[data-row-skill]')].map(tr => ({
+    name: tr.dataset.rowSkill,
+    ranks: Number(tr.querySelector('.value')?.textContent) || 0,
+    total: tr.querySelector('.total')?.textContent.trim() || '',
+  }));
+  const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent, dt.nextElementSibling?.textContent || '']);
+  $('print-sheet').innerHTML = buildSheet({
+    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn,
+    featLabel: slot => {
+      const f = data.featsById.get(state.feats[slot.id]);
+      if (!f) return null;
+      const c = view.featChoices.find(x => x.slotId === slot.id);
+      return c?.value ? `${f.name} (${choiceLabel(c)})` : f.name;
+    },
+  });
 }
 
 function groupedOptions(items, groups) {
@@ -603,6 +726,7 @@ function render() {
 
   renderClasses(view);
   $('subtitle').textContent = `${race.name} ${view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`;
+  renderCharacterBar();
 
   // Point buy
   const spent = pointsSpent(state.base);
@@ -998,8 +1122,12 @@ async function start() {
   data.feats = data.feats.filter(f => !(f.types || []).includes('Mythic'));
   data.featsById = new Map(data.feats.map(f => [f.id, f]));
   data.armorById = new Map(data.armor.map(a => [a.id, a]));
-  load();
+  roster = openRoster();
+  currentId = roster.current;
+  load(loadCharacter(currentId));
+  save();
   buildControls();
+  initCharacterBar();
   $('loading').hidden = true;
   $('app').hidden = false;
   render();

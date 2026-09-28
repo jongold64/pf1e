@@ -17,7 +17,8 @@ import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
 import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
-import { racialAc } from './rules.js';
+import { racialAc, combatManeuvers } from './rules.js';
+import { exportData, importData } from './storage.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
@@ -776,6 +777,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const bag = items.find(i => i.name === 'Bag of Holding');
   check('bag of holding type II', JSON.stringify(magicItemStats(bag, 'Type II')), '{"price_gp":5000,"weight_lbs":25}');
   check('bag of holding without a type uses type I', magicItemStats(bag).price_gp, 2500);
+}
+
+{
+  // Using the app: combat maneuvers for the sheet, export/import format
+  const ftr = characterStats({ race: race('human'), cls: cls('fighter'), level: 4, baseScores: scores(16, 14, 10, 10, 10, 10), flexibleChoice: 'str' });
+  // BAB 4, Str 18 (+4), Dex +2: CMB 8, CMD 10 + 4 + 4 + 2 = 20
+  check('human fighter 4 CMB / CMD', JSON.stringify(combatManeuvers(ftr, 'Medium')), '{"cmb":8,"cmd":20}');
+  const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
+  // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13
+  check('halfling monk 1 CMB / CMD (Small, monk Wis to CMD)', JSON.stringify(combatManeuvers(hm, 'Small')), '{"cmb":-2,"cmd":13}');
+  const exported = exportData({ race: 'elf', classLevels: ['wizard'] });
+  check('export has a format tag', exported.format, 'pf1e-builder-character');
+  check('import reads an export', importData(JSON.parse(JSON.stringify(exported))).race, 'elf');
+  check('import accepts a bare saved character', importData({ race: 'dwarf', classLevels: ['fighter'] }).race, 'dwarf');
+  check('import refuses other JSON', importData({ hello: 1 }), null);
 }
 
 {
