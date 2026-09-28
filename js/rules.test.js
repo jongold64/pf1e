@@ -786,11 +786,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   // Using the app: combat maneuvers for the sheet, export/import format
   const ftr = characterStats({ race: race('human'), cls: cls('fighter'), level: 4, baseScores: scores(16, 14, 10, 10, 10, 10), flexibleChoice: 'str' });
   // BAB 4, Str 18 (+4), Dex +2: CMB 8, CMD 10 + 4 + 4 + 2 = 20
-  check('human fighter 4 CMB / CMD', JSON.stringify(combatManeuvers(ftr, 'Medium')), '{"cmb":8,"cmd":20}');
+  check('human fighter 4 CMB / CMD', JSON.stringify(combatManeuvers(ftr, 'Medium')), '{"cmb":8,"cmd":20,"maneuvers":[]}');
+  const trip = combatManeuvers(ftr, 'Medium', ['Improved Trip', 'Greater Trip']).maneuvers[0];
+  check('Improved + Greater Trip: +4 CMB, +2 CMD against trips', `${trip.name} ${trip.cmb} ${trip.cmd}`, 'Trip 12 22');
+  check('Agile Maneuvers uses Dex if higher', combatManeuvers(ftr, 'Medium', ['Agile Maneuvers']).cmb, 8);
+  const agile = characterStats({ race: race('human'), cls: cls('rogue'), level: 4, baseScores: scores(10, 16, 10, 10, 10, 10), flexibleChoice: 'dex' });
+  check('rogue with Agile Maneuvers: BAB 3 + Dex 4', combatManeuvers(agile, 'Medium', ['Agile Maneuvers']).cmb, 7);
+  const monk5 = characterStats({ race: race('human'), cls: cls('monk'), level: 5, baseScores: scores(14, 10, 10, 10, 10, 10), flexibleChoice: 'str' });
+  check('monk 5 maneuver training: level 5 instead of BAB 3', combatManeuvers(monk5, 'Medium').cmb, 8);
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13
-  check('halfling monk 1 CMB / CMD (Small, monk Wis to CMD)', JSON.stringify(combatManeuvers(hm, 'Small')), '{"cmb":-2,"cmd":13}');
+  check('halfling monk 1 CMB / CMD (Small, monk Wis to CMD)', JSON.stringify(combatManeuvers(hm, 'Small')), '{"cmb":-2,"cmd":13,"maneuvers":[]}');
   const exported = exportData({ race: 'elf', classLevels: ['wizard'] });
   check('export has a format tag', exported.format, 'pf1e-builder-character');
   check('import reads an export', importData(JSON.parse(JSON.stringify(exported))).race, 'elf');

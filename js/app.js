@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative,
+  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -759,10 +759,14 @@ function render() {
   // Results
   const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
   const init = initiative(stats, view.haveFeats);
+  const cm = combatManeuvers(stats, race.size, view.haveFeats);
   const results = [
     ['Hit points', esc(stats.hp)],
     ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
     ['Base attack bonus', esc(formatBab(stats.bab))],
+    // Combat maneuvers: the general CMB, then any maneuver the character has an Improved/Greater feat for.
+    ['Combat maneuvers (CMB)', `${esc(signed(cm.cmb))}${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}`],
+    ...cm.maneuvers.map(m => [`${m.name}`, `${esc(signed(m.cmb))}${rollButton({ title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] })}`]),
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
     ['Wearing', esc(worn || 'no armor')],
   ];
@@ -776,7 +780,9 @@ function render() {
       <div><span>AC</span><b>${stats.ac}</b></div>
       <div><span>Touch</span><b>${stats.touch}</b></div>
       <div><span>Flat-footed</span><b>${stats.flatFooted}</b></div>
+      <div><span>CMD</span><b>${cm.cmd}</b></div>
     </div>
+    ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}`;
 
   renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),

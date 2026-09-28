@@ -244,10 +244,25 @@ export function initiative(stats, haveFeats = []) {
 // Combat Maneuver Bonus and Defense (Core Rulebook, Combat Maneuvers). The size modifier is the reverse of the AC
 // one (Small -1). CMD adds everything touch AC counts besides Dex and size (dodge, deflection, a monk's AC bonus),
 // so it starts from touch AC: touch - size AC bonus + size CMD modifier + BAB + Str.
-export function combatManeuvers(stats, size) {
+// haveFeats adds: Agile Maneuvers (Dex instead of Str for CMB, if higher), and Improved / Greater <maneuver> feats
+// (+2 each on that maneuver's CMB; Improved also +2 to CMD against it), listed in `maneuvers`.
+// A monk from 3rd level uses monk level in place of the monk levels' BAB for CMB (maneuver training).
+export const MANEUVERS = ['Bull Rush', 'Dirty Trick', 'Disarm', 'Drag', 'Grapple', 'Overrun', 'Reposition', 'Steal',
+  'Sunder', 'Trip'];
+export function combatManeuvers(stats, size, haveFeats = []) {
   const sizeMod = -(SIZE_AC[size] ?? 0);
   const bab = stats.bab[0];
-  return { cmb: bab + stats.mod.str + sizeMod, cmd: stats.touch + sizeMod + sizeMod + bab + stats.mod.str };
+  const monk = (stats.classCounts || []).find(e => e.cls.id === 'monk' && e.level >= 3);
+  const cmbBab = monk ? bab - monk.cls.progression[monk.level - 1].bab[0] + monk.level : bab;
+  const ability = haveFeats.includes('Agile Maneuvers') ? Math.max(stats.mod.str, stats.mod.dex) : stats.mod.str;
+  const cmb = cmbBab + ability + sizeMod;
+  const cmd = stats.touch + sizeMod + sizeMod + bab + stats.mod.str;
+  const maneuvers = MANEUVERS.map(name => {
+    const improved = haveFeats.includes(`Improved ${name}`);
+    const greater = haveFeats.includes(`Greater ${name}`);
+    return improved || greater ? { name, cmb: cmb + (improved ? 2 : 0) + (greater ? 2 : 0), cmd: cmd + (improved ? 2 : 0) } : null;
+  }).filter(Boolean);
+  return { cmb, cmd, maneuvers };
 }
 
 // Racial AC bonuses that always apply, read from the race's traits: "Kobolds have a +1 natural armor bonus.",

@@ -19,7 +19,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const { state, data } = app;
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
-  const { cmb, cmd } = combatManeuvers(stats, race.size);
+  const { cmb, cmd, maneuvers } = combatManeuvers(stats, race.size, view.haveFeats);
   const init = initiative(stats, view.haveFeats);
 
   const header = `<header class="sheet-header"><h1>${esc(name)}</h1>
@@ -38,6 +38,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const offense = facts([
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`], ['Initiative', signed(init)],
     ['Base attack', formatBab(stats.bab)], ['CMB', signed(cmb)],
+    ...maneuvers.map(m => [m.name, `CMB ${signed(m.cmb)}, CMD ${m.cmd}`]),
   ]) + table(['Weapon', 'Attack', 'Damage', 'Critical', 'Range'],
     weapons.map(w => [w.name + (w.proficient ? '' : ' (not proficient, −4)'), w.attack, w.damage, w.critical, w.range]))
     + (weapons.some(w => w.extra.length) ? `<ul class="sheet-list">${weapons.flatMap(w => w.extra.map(x => `<li>${esc(w.name)}: ${esc(x)}</li>`)).join('')}</ul>` : '');
