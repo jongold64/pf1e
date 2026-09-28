@@ -20,6 +20,7 @@ import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
+import { traitEffects, traitSlotCount } from './traits.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
@@ -914,6 +915,20 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
                                                                           haveFeats: ['Spell Penetration'] })).bonus, 7);
   check('no SR check for a spell without spell resistance', srCheck(spells2.find(s => s.name === 'Mage Armor'),
         spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wizard, size: 'Medium' })), null);
+}
+
+{
+  // Traits
+  const allTraits = await fetch('data/traits.json').then(r => r.json());
+  const trait = name => allTraits.find(t => t.name === name);
+  check('two trait slots, three with Extra Campaign Trait', `${traitSlotCount({})} ${traitSlotCount({ extraTrait: true })}`, '2 3');
+  const fx = traitEffects([trait('Reactionary'), trait('Resilient'), trait('Suspicious')]);
+  check('Reactionary +2 initiative, Resilient +1 Fort, Suspicious +1 Sense Motive (class skill)',
+        `${fx.initiative} ${fx.saves.fort} ${fx.skills['Sense Motive']} ${fx.classSkills.has('Sense Motive')}`, '2 1 1 true');
+  check('trait bonuses don\'t stack: highest counts', traitEffects([trait('Resilient'), trait('Resilient')]).saves.fort, 1);
+  const withTrait = skillTotal({ name: 'Sense Motive', ranks: 1, scores: scores(10, 10, 10, 10, 10, 10), isClassSkill: true,
+                                 traitBonuses: fx.skills });
+  check('Sense Motive: 1 rank + 3 class + 1 trait', withTrait.total, 5);
 }
 
 {

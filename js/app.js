@@ -24,6 +24,8 @@ import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from 
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
+import { traitEffects, traitSlotCount } from './traits.js';
+import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
@@ -86,6 +88,7 @@ const state = {
   featChoices: {}, // feat slot id -> { feat: feat id, value } for CHOICE_FEATS (weapon id, skill name or school)
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
+  traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
   armorId: '',     // worn armor (data/armor.json id), '' for none
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
@@ -152,6 +155,8 @@ function load(saved) {
   }
   if (!Array.isArray(state.specialties)) state.specialties = [];
   state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
+  state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 3)
+    .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
   for (const [name, ranks] of Object.entries(state.skills)) {
     const known = SKILLS.some(s => s.name === name && !s.family) || state.specialties.includes(name);
@@ -421,6 +426,7 @@ function buildControls() {
     if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
   });
   initTermPopover($('race-info'), () => raceItems);
+  initTraits(app);
   // Classes: a class for each level
   $('class-levels').addEventListener('change', e => {
     const i = e.target.dataset.levelIndex;
@@ -610,6 +616,11 @@ function update(changes) {
   render();
 }
 
+// Trait save bonuses added to the feat bonuses characterStats takes.
+function withTraitSaves(fb, traitFx) {
+  return { ...fb, fort: (fb.fort || 0) + traitFx.saves.fort, ref: (fb.ref || 0) + traitFx.saves.ref, will: (fb.will || 0) + traitFx.saves.will };
+}
+
 // Everything derived from the character, computed once per change and shared by all tabs.
 function computeView() {
   const race = data.races.find(r => r.id === state.race);
@@ -638,10 +649,13 @@ function computeView() {
     armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
     shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
   });
+  // Chosen traits (only as many as there are slots) and what they add.
+  const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);
+  const traitFx = traitEffects(chosenTraits);
   const stats = characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice: state.flexible,
     increases: state.increases, favoredHp: state.favored === 'hp',
-    featBonuses: featEffects(chosen.map(f => f.name), classLevels.length), gear,
+    featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear,
   });
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
   const ctx = featContext({ race, counts, casting: casting.casting, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
@@ -679,7 +693,7 @@ function computeView() {
   const speed = speedInArmor(race.base_speed, gear, race);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements,
+    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
   };
 }
 
@@ -808,7 +822,7 @@ function render() {
   $('hp-max').textContent = `of ${stats.hp}`;
   $('hp-status').textContent = hpStatus(hpNow, stats.scores.con);
   $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
-  const init = initiative(stats, view.haveFeats);
+  const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
   const cm = combatManeuvers(stats, race.size, view.haveFeats);
   const results = [
     ['Maximum hit points', esc(stats.hp)],
@@ -859,6 +873,7 @@ function render() {
   renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
   renderFeats(view.slots, view.granted, view.ctx);
+  renderTraits(app);
   renderSpells(view);
   renderArmorTab(app, view);
   if (tab === 'spells') renderSpellList(app, view);
@@ -869,7 +884,9 @@ function render() {
 }
 
 function renderSkills(race, classes, scores, featNames) {
-  const isClassSkill = classSkillTest(classes);
+  // Class skills from the classes, plus any a chosen trait makes a class skill.
+  const byClass = classSkillTest(classes);
+  const isClassSkill = name => byClass(name) || view.traitFx.classSkills.has(name);
   const racial = racialSkillBonuses(race);
   const available = skillRanksAvailable({
     race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,
@@ -911,11 +928,13 @@ function renderSkills(race, classes, scores, featNames) {
     }
 
     const ranks = state.skills[name] || 0;
-    const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty });
+    const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty,
+                            traitBonuses: view.traitFx.skills });
     const parts = [`${abbr(info.ability)} ${signed(t.abilityMod)}`];
     if (t.classBonus) parts.push(`class +${t.classBonus}`);
     if (t.racial) parts.push(`race ${signed(t.racial)}`);
     if (t.feat) parts.push(`feats +${t.feat}`);
+    if (t.trait) parts.push(`trait +${t.trait}`);
     if (t.armor) parts.push(`armor ${t.armor}`);
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
@@ -1192,11 +1211,12 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
       fetch('data/armor.json').then(r => r.json()),
+      fetch('data/traits.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -1210,6 +1230,7 @@ async function start() {
   data.feats = data.feats.filter(f => !(f.types || []).includes('Mythic'));
   data.featsById = new Map(data.feats.map(f => [f.id, f]));
   data.armorById = new Map(data.armor.map(a => [a.id, a]));
+  data.traitsById = new Map(data.traits.map(t => [t.id, t]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

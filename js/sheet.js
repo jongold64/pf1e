@@ -20,7 +20,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
   const { cmb, cmd, maneuvers } = combatManeuvers(stats, race.size, view.haveFeats);
-  const init = initiative(stats, view.haveFeats);
+  const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
 
   const header = `<header class="sheet-header"><h1>${esc(name)}</h1>
     <p>${esc(race.name)} ${esc(classes)} · level ${view.level} · ${esc(race.size)} ${esc(race.type || '')}</p></header>`;
@@ -55,7 +55,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
 
   const feats = view.slots.map(s => featLabel(s)).filter(Boolean);
   const featList = `<ul class="sheet-list">${[...feats, ...view.granted.map(n => `${n} (class)`)].map(n => `<li>${esc(n)}</li>`).join('')
-    || '<li>None</li>'}</ul>`;
+    || '<li>None</li>'}</ul>` + (view.traits.length ? `<p><b>Traits:</b> ${esc(view.traits.map(t => t.name).join(', '))}</p>` : '');
 
   const traits = (race.traits || []).filter(t => !t.kind).map(t => t.name);
   const racial = `<p>${esc(traits.join(', ') || '—')}</p>`;

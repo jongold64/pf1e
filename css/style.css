@@ -495,3 +495,11 @@ button.house-rule .yn { display: inline-grid; place-items: center; width: 30px; 
 button.house-rule.on { border-color: var(--accent); color: var(--accent); }
 button.house-rule.on .yn { background: var(--accent); color: #fff; }
 #house-rules-note { margin: 8px 0 0; }
+
+/* Trait picker: styled like the feat picker */
+dialog#trait-picker { width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 16px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); }
+dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
+#trait-search { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin: 8px 0;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+#trait-list { border-top: 1px solid var(--border); }

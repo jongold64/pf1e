@@ -307,8 +307,8 @@ export function smite(stats) {
 }
 
 // Initiative: Dex modifier, +4 with Improved Initiative.
-export function initiative(stats, haveFeats = []) {
-  return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0);
+export function initiative(stats, haveFeats = [], traitBonus = 0) {
+  return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0) + traitBonus;
 }
 
 // Combat Maneuver Bonus and Defense (Core Rulebook, Combat Maneuvers). The size modifier is the reverse of the AC

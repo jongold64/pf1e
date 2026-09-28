@@ -134,6 +134,11 @@
 
     <!-- Feats -->
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
+      <section class="card wide" id="traits-card">
+        <h2>Traits <span id="trait-count" class="count"></span></h2>
+        <ul id="trait-slots" class="feat-slots"></ul>
+        <p id="trait-note" class="hint"></p>
+      </section>
       <section class="card wide" id="feats-card">
         <h2>Feats <span id="feat-count" class="count"></span></h2>
         <form class="search-row tab-search" id="feat-tab-search-form" role="search">
@@ -320,6 +325,17 @@
     </div>
     <p id="picker-count" class="hint"></p>
     <div id="feat-list"></div>
+  </dialog>
+
+  <dialog id="trait-picker" aria-labelledby="trait-picker-title">
+    <div class="picker-head">
+      <h2 id="trait-picker-title"></h2>
+      <button type="button" id="trait-picker-close">Close</button>
+    </div>
+    <input id="trait-search" type="search" placeholder="Search traits by name or race/region" autocomplete="off">
+    <div class="picker-filters"><select id="trait-category" aria-label="Trait category"></select></div>
+    <p id="trait-picker-count" class="hint"></p>
+    <div id="trait-list"></div>
   </dialog>
 
   <dialog id="detail-dialog" aria-labelledby="detail-title">

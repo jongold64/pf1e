@@ -195,6 +195,13 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   damage at least 1, `times` for missiles) and shows the result in `#roll-panel` (last 6 kept). Used for saves, CMB and maneuver feats (Race
   card, where AC, CMD, saves and CMB live instead of the Results card), ability checks (Mod column), skills, initiative, weapon attack lines (tab-weapons.js `critOf`/
   `rollGroup`), and spells (`spellLines` returns `roll`; `srCheck` = caster level + 2 per Spell Penetration feat).
+- Traits: `build_traits.py` (PSRD APG + Ultimate Campaign; UC wording preferred) -> data/traits.json with `effects`.
+  `state.traits` is a trait id per slot; `traitSlotCount(houseRules)` = 2, or 3 with the Extra Campaign Trait house
+  rule. `traitEffects` (traits.js, highest bonus per thing since trait bonuses don't stack) feeds saves (via
+  `withTraitSaves` into characterStats' featBonuses), initiative, skill totals (`traitBonuses`) and class skills.
+  UI: tab-traits.js (Traits card + picker on the Feats tab), no category or count checks (user's choice).
+- House rules: `state.houseRules` flags (HOUSE_RULES in app.js). Max Healing -> `setRollOptions` -> `rollSpec` rolls
+  healing groups (heal: true) at maximum. Encumbrance and Action Points are switches only so far.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.
