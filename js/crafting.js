@@ -102,12 +102,13 @@ export function spellItemPrice(kind, spellLevel, casterLevel) {
   return { base: info.perLevel * (spellLevel === 0 ? 0.5 : spellLevel) * casterLevel, errors };
 }
 
-// A made potion, scroll or wand ({ kind, spellLevel, cl }): its market price and what it cost to make (half).
+// A potion, scroll or wand the character has ({ kind, spellLevel, cl, bought? }): its market price, and what it
+// cost: the full price when bought or found, half when the character made it.
 export function craftedItemPrice(e) {
   return spellItemPrice(e.kind, e.spellLevel, e.cl).base;
 }
 export function craftedItemCost(e) {
-  return craftCost(craftedItemPrice(e));
+  return e.bought ? craftedItemPrice(e) : craftCost(craftedItemPrice(e));
 }
 
 // Cost to make: half the base price, plus anything paid in full (the masterwork weapon or armor).

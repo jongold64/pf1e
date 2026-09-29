@@ -189,7 +189,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   them; archetype features show their own text.
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits ("Take this trait" fills the first empty trait slot; a note when all slots are full).
-- Magic item creation (Core Rulebook, `js/crafting.js` + the Crafting card `js/tab-crafting.js` on the Magic Items tab):
+- Magic gear builder (`js/tab-crafting.js`, one module, two cards in `CARDS`): the **Craft tab** ("craft" mode, below)
+  and the **Magic Items tab's "Add magic gear" card** ("buy" mode: treasure or purchases, no feat/requirement/DC, cost =
+  market price; potions/scrolls/wands of any spell at its lowest class level and lowest caster level (`marketSpell`),
+  stored with `bought: true`, which `craftedItemCost` charges in full). The Weapons tab also has a special ability
+  picker per weapon (`abilityPicker`, market price, needs +1). "Craft this item" in an item's details opens the Craft
+  tab (`craftListedItem`).
+- Magic item creation (Core Rulebook, `js/crafting.js` + the Craft tab's card):
   magic weapon/armor (enhancement + special abilities; `abilityOptions` reads "+1 bonus" / "+3,750 gp" prices, with
   fortification and spell resistance versions; `magicArmsPrice` = (enh + bonuses)² × 2,000 or 1,000 + flat prices,
   at least +1 before abilities, at most +5/+10, caster level max(3 × enh, abilities' CL)), potions/scrolls/wands from

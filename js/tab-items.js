@@ -53,7 +53,7 @@ export function renderMyItems(app) {
   const owned = app.state.magicItems;
   const byId = app.data.itemsById;
   if (!byId) return;
-  renderCrafting(app);
+  renderCrafting(app, 'buy');
   const count = owned.reduce((n, e) => n + e.qty, 0) + app.state.craftedItems.reduce((n, e) => n + e.qty, 0);
   $('my-items-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
   $('my-items-rows').innerHTML = owned.map((e, i) => {
@@ -71,7 +71,7 @@ export function renderMyItems(app) {
       <td>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</td>
       <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
   }).join('') + app.state.craftedItems.map((e, i) => `<tr><td>${esc(SPELL_ITEMS[e.kind].label)} of ${esc(e.spellName)}
-        <div class="breakdown">caster level ${e.cl} · crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})</div></td>
+        <div class="breakdown">caster level ${e.cl} · ${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div></td>
       <td><span class="base">
         <button type="button" data-made-qty="${i}" data-step="-1" aria-label="One fewer">−</button>
         <span class="value">${e.qty}</span>

@@ -36,6 +36,7 @@
       <button type="button" role="tab" data-tab="weapons">Weapons</button>
       <button type="button" role="tab" data-tab="spells">Spells</button>
       <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
+      <button type="button" role="tab" data-tab="craft">Craft</button>
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
     </nav>
 
@@ -207,11 +208,12 @@
 
     <!-- Magic items -->
     <main class="tab-panel" id="tab-magic-items" role="tabpanel" hidden>
-      <section class="card wide" id="craft-card">
-        <h2>Crafting</h2>
-        <p class="hint">Make a magic weapon, armor, potion, scroll, wand or any item in the list, using the Core Rulebook's
-          item creation rules. Choose a listed item below and press "Craft this item" to plan it here.</p>
-        <div id="craft-body"></div>
+      <section class="card wide" id="buy-card">
+        <h2>Add magic gear</h2>
+        <p class="hint">Treasure or purchases: make a weapon or armor magic, or add potions, scrolls and wands, at their
+          market price (no feats or checks needed). Items in the list below have their own Add buttons. To make items
+          yourself, use the Craft tab.</p>
+        <div id="buy-body"></div>
       </section>
       <section class="card wide" id="my-items-card">
         <h2>My magic items <span id="my-items-count" class="count"></span></h2>
@@ -232,6 +234,18 @@
           <div class="browser-list" id="item-list" aria-label="Magic items"></div>
           <aside class="browser-panel" id="item-panel" aria-live="polite"></aside>
         </div>
+      </section>
+    </main>
+
+    <!-- Craft: making magic items with the Core Rulebook's item creation rules -->
+    <main class="tab-panel" id="tab-craft" role="tabpanel" hidden>
+      <section class="card wide" id="craft-card">
+        <h2>Craft</h2>
+        <p class="hint">Make a magic weapon, armor, potion, scroll, wand or any listed magic item yourself, using the Core
+          Rulebook's item creation rules: you need the item creation feat, the requirements add to the Spellcraft DC, and
+          making it costs half its price. To plan a listed item, press "Craft this item" in its details on the Magic
+          Items tab.</p>
+        <div id="craft-body"></div>
       </section>
     </main>
 

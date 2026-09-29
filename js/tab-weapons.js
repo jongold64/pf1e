@@ -3,6 +3,8 @@
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
+import { abilityPicker, chosenAbility } from './tab-crafting.js';
+import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
@@ -256,6 +258,9 @@ export function renderMyWeapons(app, view) {
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
           ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}</option>`).join('')}
         </select></label>
+        ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {
+          option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
+          disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
         ${featBoxes}
         ${byRules ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-flag="proficient" data-index="${i}" ${e.proficient ? 'checked' : ''}>
@@ -327,6 +332,12 @@ export function initWeaponsTab(app) {
                              combat: { ...app.state.combat, main: '', off: '' } });
     const show = e.target.closest('[data-show-weapon]');
     if (show) showWeapon(app, show.dataset.showWeapon);
+    // Special abilities (treasure or purchases, at market price): remove one.
+    const rm = e.target.closest('[data-wab-remove]');
+    if (rm) {
+      const i = Number(rm.dataset.w);
+      changeEntry(app, i, { abilities: (app.state.weapons[i].abilities || []).filter((_, j) => j !== Number(rm.dataset.wabRemove)) });
+    }
   });
   $('my-weapons').addEventListener('change', e => {
     const quality = e.target.dataset.weaponQuality;
@@ -336,6 +347,23 @@ export function initWeaponsTab(app) {
     }
     const flag = e.target.dataset.weaponFlag;
     if (flag) changeEntry(app, Number(e.target.dataset.index), { [flag]: e.target.checked });
+    // Special abilities: add one, or pick another version of one (fortification, spell resistance...).
+    const t = e.target;
+    if (t.dataset.wabAdd !== undefined && t.value) {
+      const i = Number(t.dataset.w);
+      const opts = abilityOptions(app.data.itemsById.get(t.value));
+      const { cl, ...ability } = chosenAbility(app, { id: t.value, option: opts[0]?.label || '' }) || {};
+      if (ability.id) changeEntry(app, i, { abilities: [...(app.state.weapons[i].abilities || []), ability] });
+    }
+    if (t.dataset.wabOption !== undefined) {
+      const i = Number(t.dataset.w);
+      const abilities = (app.state.weapons[i].abilities || []).map((a, j) => {
+        if (j !== Number(t.dataset.wabOption)) return a;
+        const { cl, ...b } = chosenAbility(app, { id: a.id, option: t.value }) || a;
+        return b;
+      });
+      changeEntry(app, i, { abilities });
+    }
   });
 }
 
@@ -355,6 +383,8 @@ export async function renderWeaponsTab(app) {
     $('weapon-list').innerHTML = '<p class="hint">Loading weapons…</p>';
     await app.loadWeapons();
   }
+  // Special abilities come from the magic item data.
+  if (!app.data.itemsById) await app.loadItems();
   renderMyWeapons(app, app.view);
   if (listed) return;
   listed = true;

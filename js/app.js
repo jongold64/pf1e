@@ -20,6 +20,7 @@ import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js
 import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
+import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
@@ -40,7 +41,7 @@ import { weaponSummaries } from './tab-weapons.js';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
                       ['alternate', 'Alternate'], ['prestige', 'Prestige']];
-const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'armor', 'weapons', 'equipment'];
+const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
@@ -118,7 +119,7 @@ const state = {
   shieldAbilities: [],
   armorCrafted: false,  // made by the character (its magic costs half)
   shieldCrafted: false,
-  craftedItems: [],     // potions, scrolls and wands the character made: [{ kind, spellId, spellName, spellLevel, cl, qty }]
+  craftedItems: [],     // potions, scrolls and wands: [{ kind, spellId, spellName, spellLevel, cl, qty, bought? }] (made, or bought)
   gold: null,      // gold the character has; null means the class's average starting gold
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
@@ -261,7 +262,8 @@ function load(saved) {
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
       && Number.isInteger(e.spellLevel) && Number.isInteger(e.cl) && e.cl > 0 && Number.isInteger(e.qty) && e.qty > 0)
-    .map(({ kind, spellId, spellName, spellLevel, cl, qty }) => ({ kind, spellId, spellName, spellLevel, cl, qty }));
+    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
+                                                                          ...(bought === true ? { bought: true } : {}) }));
   state.featChoices = Object.fromEntries(Object.entries(state.featChoices && typeof state.featChoices === 'object' ? state.featChoices : {})
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
@@ -421,6 +423,7 @@ function showTab(name) {
   if (location.hash.slice(1) !== name) history.replaceState(null, '', `#${name}`);
   if (name === 'spells') renderSpellList(app, view);
   if (name === 'magic-items') renderItemsTab(app);
+  if (name === 'craft') renderCrafting(app, 'craft');
   if (name === 'equipment') renderEquipmentTab(app);
   if (name === 'weapons') renderWeaponsTab(app);
 }
@@ -1219,6 +1222,7 @@ function render() {
   if (tab === 'spells') renderSpellList(app, view);
   if (tab === 'equipment') renderEquipment(app, view);
   if (tab === 'magic-items') renderMyItems(app);
+  if (tab === 'craft') renderCrafting(app, 'craft');
   if (tab === 'weapons') renderMyWeapons(app, view);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
