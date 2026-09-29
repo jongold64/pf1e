@@ -493,9 +493,13 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .channel-row small { display: block; color: var(--muted); font-size: 0.8rem; }
 
 /* House rules: Y/N buttons */
-.house-rule-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-button.house-rule { display: inline-flex; align-items: center; gap: 10px; border-radius: 22px; padding: 0 6px 0 14px; }
-button.house-rule .yn { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+/* The buttons' text follows the card's width (cqi = 1% of it), so on a tablet the row shrinks a little to stay on one
+   line; never larger than the page text or smaller than about 11px (a phone still wraps). */
+.house-rules { container-type: inline-size; }
+.house-rule-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+button.house-rule { display: inline-flex; align-items: center; gap: 0.55em; border-radius: 22px; padding: 0 0.35em 0 0.85em;
+  white-space: nowrap; font-size: 1rem; font-size: clamp(0.78rem, 1.85cqi, 15.3px); }
+button.house-rule .yn { display: inline-grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: 50%;
   background: var(--border); font-weight: 700; }
 button.house-rule.on { border-color: var(--accent); color: var(--accent); }
 button.house-rule.on .yn { background: var(--accent); color: #fff; }
