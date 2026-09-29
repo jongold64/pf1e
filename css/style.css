@@ -557,3 +557,16 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 .features button.term { min-height: 30px; padding: 2px 9px; font-size: 0.85rem; }
 .features button.term-gone { color: var(--muted); }
 .features button.term-arch { color: var(--accent); font-weight: 600; }
+
+/* Crafting card (Magic Items tab). */
+#craft-body label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+#craft-body select { max-width: 100%; }
+.craft-abilities { margin: 8px 0; }
+.craft-abilities li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 3px 0; }
+.craft-reqs li { padding: 2px 0; }
+.craft-reqs .req-met { color: var(--good, #1a7f37); }
+.craft-reqs .req-unmet { color: var(--bad, #b3261e); }
+.craft-extra { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.craft-extra .base { display: inline-flex; align-items: center; gap: 6px; }
+.craft-extra .base button { width: 40px; padding: 0; }
+.craft-done { font-weight: 600; color: var(--accent); }

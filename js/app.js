@@ -25,6 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
+import { cleanAbilities } from './crafting.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -52,7 +53,10 @@ function loadOnce(name, file, prepare = x => x) {
   return pending[name];
 }
 // Mythic spells are already left out of the data file.
-const loadSpells = () => loadOnce('spells', 'data/spells.json');
+const loadSpells = () => loadOnce('spells', 'data/spells.json', spells => {
+  data.spellsById = new Map(spells.map(s => [s.id, s]));
+  return spells;
+});
 const loadItems = () => loadOnce('items', 'data/magic-items.json', items => {
   data.itemsById = new Map(items.map(i => [i.id, i]));
   return items;
@@ -110,6 +114,11 @@ const state = {
   shieldMw: false,
   shieldId: '',
   shieldEnh: 0,
+  armorAbilities: [],   // special abilities on the worn armor ([{ id, name, option?, bonus? | gp? }])
+  shieldAbilities: [],
+  armorCrafted: false,  // made by the character (its magic costs half)
+  shieldCrafted: false,
+  craftedItems: [],     // potions, scrolls and wands the character made: [{ kind, spellId, spellName, spellLevel, cl, qty }]
   gold: null,      // gold the character has; null means the class's average starting gold
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
@@ -137,7 +146,7 @@ let currentId = null;
 
 // Shared with the tab modules.
 const app = {
-  state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult,
+  state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
   get view() { return view; },
 };
 
@@ -236,12 +245,23 @@ function load(saved) {
   state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
   state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
-    .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient'];
+    .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,
+                 ...(e.crafted === true ? { crafted: true } : {}) }));
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
-                 ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])) }));
+                 ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])),
+                 ...(cleanAbilities(e.abilities).length ? { abilities: cleanAbilities(e.abilities) } : {}) }));
+  // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.
+  state.armorAbilities = cleanAbilities(state.armorAbilities);
+  state.shieldAbilities = cleanAbilities(state.shieldAbilities);
+  state.armorCrafted = state.armorCrafted === true;
+  state.shieldCrafted = state.shieldCrafted === true;
+  state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
+    .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
+      && Number.isInteger(e.spellLevel) && Number.isInteger(e.cl) && e.cl > 0 && Number.isInteger(e.qty) && e.qty > 0)
+    .map(({ kind, spellId, spellName, spellLevel, cl, qty }) => ({ kind, spellId, spellName, spellLevel, cl, qty }));
   state.featChoices = Object.fromEntries(Object.entries(state.featChoices && typeof state.featChoices === 'object' ? state.featChoices : {})
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
@@ -755,6 +775,16 @@ function loadText(load) {
 function kiTradesFor(cls) {
   const original = UNCHAINED_FROM[cls.id] && data.classes.find(c => c.id === UNCHAINED_FROM[cls.id]);
   return original ? kiPowerTrades(original, cls, chosenArchetypes(cls.id)).trades : [];
+}
+
+// A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
+function skillTotalFor(name) {
+  const isClassSkill = classSkillTest(view.classes)(name) || view.traitFx.classSkills.has(name);
+  const featNames = [...view.chosen.map(f => f.name),
+    ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
+  return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
+                      racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
+                      traitBonuses: view.traitFx.skills });
 }
 
 // The archetypes chosen for a class, as records.

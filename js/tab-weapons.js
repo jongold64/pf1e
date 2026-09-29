@@ -3,7 +3,7 @@
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
-import { proficiencyTest, weaponAttack, weaponCost, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
+import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -134,7 +134,7 @@ function renderCombat(app, view, ctx) {
 
   // Hands: every carried weapon except ranged ones; the off hand can also be the other end of a double weapon.
   const melee = state.weapons.map((e, i) => [i, e, data.weaponsById.get(e.id)]).filter(([, , w]) => w && w.group !== 'ranged');
-  const name = (e, w) => `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`;
+  const name = (e, w) => weaponLabel(w, e);
   const mainOpts = melee.map(([i, e, w]) => [String(i), name(e, w)]);
   const mainIndex = state.combat.main === '' ? null : Number(state.combat.main);
   const mainEntry = mainIndex !== null ? state.weapons[mainIndex] : null;
@@ -201,7 +201,7 @@ export function renderMyWeapons(app, view) {
     const a = weaponAttack(args);
     const flags = ctx.flagsFor(e, w);
     const crit = critOf(w, flags, have);
-    const weaponName = `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`;
+    const weaponName = weaponLabel(w, e);
     // Extra lines: a flurry with monk weapons, and a double weapon used as two weapons.
     const extra = [];
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
@@ -227,7 +227,7 @@ export function renderMyWeapons(app, view) {
     const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
     return `<div class="weapon-card">
       <div class="weapon-head">
-        <button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : '')}${esc(w.name)}</button>
+        <button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>
         <button type="button" class="link" data-remove-weapon="${i}">remove</button>
       </div>
       <dl class="facts attack-line">
@@ -278,7 +278,7 @@ export function weaponSummaries(app, view) {
       extra.push(`As two weapons ${attackText(d2.main)} (${d2.main.damage}) and ${attackText(d2.off)} (${d2.off.damage})`);
     }
     return {
-      name: `${e.enh > 0 ? `+${e.enh} ` : e.masterwork ? 'Masterwork ' : ''}${w.name}`,
+      name: weaponLabel(w, e),
       attack: attackText(a) + (a.used.length ? ` (${a.used.join(', ')})` : ''),
       damage: a.damage,
       critical: (flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—',

@@ -1,4 +1,5 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
+import { magicPrefix } from './crafting.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, spellFailureByClass } from './armor.js';
 import { MONK_IDS } from './rules.js';
@@ -44,8 +45,9 @@ export function initArmorTab(app) {
   $('armor-enh').innerHTML = enh;
   $('shield-enh').innerHTML = enh;
 
-  $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value }));
-  $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value }));
+  // Another armor or shield doesn't keep the special abilities put on the old one.
+  $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value, armorAbilities: [], armorCrafted: false }));
+  $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value, shieldAbilities: [], shieldCrafted: false }));
   const quality = v => (v === 'mw' ? { enh: 0, mw: true } : { enh: Number(v), mw: false });
   $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ armorEnh: q.enh, armorMw: q.mw }); });
   $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ shieldEnh: q.enh, shieldMw: q.mw }); });
@@ -60,8 +62,11 @@ export function renderArmorTab(app, view) {
   $('shield-enh').value = !state.shieldEnh && state.shieldMw ? 'mw' : state.shieldEnh;
   $('armor-enh').disabled = !gear.armor;
   $('shield-enh').disabled = !gear.shield;
-  $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) : '<p>Unarmored.</p>';
-  $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) : '<p>No shield.</p>';
+  // Special abilities (added with the Crafting card on the Magic Items tab).
+  const abilities = list => (list.length ? `<p><b>Special abilities:</b> ${esc(magicPrefix(0, false, list))}
+    <small class="muted">(add or change them with the Crafting card on the Magic Items tab)</small></p>` : '');
+  $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) : '<p>Unarmored.</p>';
+  $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) : '<p>No shield.</p>';
 
   const warnings = proficiencyWarnings(gear, view.haveFeats);
   if (gear.maxDex !== null && stats.mod.dex > gear.maxDex) {

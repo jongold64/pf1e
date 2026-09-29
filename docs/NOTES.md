@@ -189,6 +189,19 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   them; archetype features show their own text.
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits ("Take this trait" fills the first empty trait slot; a note when all slots are full).
+- Magic item creation (Core Rulebook, `js/crafting.js` + the Crafting card `js/tab-crafting.js` on the Magic Items tab):
+  magic weapon/armor (enhancement + special abilities; `abilityOptions` reads "+1 bonus" / "+3,750 gp" prices, with
+  fortification and spell resistance versions; `magicArmsPrice` = (enh + bonuses)² × 2,000 or 1,000 + flat prices,
+  at least +1 before abilities, at most +5/+10, caster level max(3 × enh, abilities' CL)), potions/scrolls/wands from
+  spells the character can cast (spontaneous casters: "My spells" only; price 50/25/750 × spell level (0 = ½) × CL,
+  CL from the class's lowest to the character's own), and listed items (`listedCost`: the item's "Cost" line per
+  version, else half the price). DC 5 + item CL + 5 per unmet requirement (+5 rushed); requirements from the item's
+  requirement line (`parseRequirements`: feats, spells, "X, Y, or Z" choices, caster level, "three times the bonus",
+  skill ranks, else "I meet this" boxes). About 800 listed items (mostly Ultimate Equipment) have no requirement line
+  in PSRD-Data: the player counts unmet ones with a stepper. Costs: crafted weapons/armor pay half the magic part
+  (`crafted` flag; `weaponCost`/`armorCost`), crafted listed items `{ crafted: true }` count at `listedCost`, and
+  `state.craftedItems` (potions/scrolls/wands) at half their price. Weapon/armor names come from `magicPrefix`
+  (`weaponLabel`). Special abilities don't change attack/damage numbers yet (shown by name).
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved

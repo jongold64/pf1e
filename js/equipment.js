@@ -1,6 +1,8 @@
 // Equipment rules: money, what the inventory and worn armor cost, and what they weigh.
 // No page code here, so these functions can be tested on their own.
 
+import { magicPart, listedCost } from './crafting.js';
+
 // Core Rulebook Table 12-4, Character Wealth by Level (for characters made above 1st level).
 export const WEALTH_BY_LEVEL = {
   2: 1000, 3: 3000, 4: 6000, 5: 10500, 6: 16000, 7: 23500, 8: 33000, 9: 46000, 10: 62000, 11: 82000,
@@ -17,9 +19,12 @@ export function startingGold(cls, classes = []) {
 
 // Price of worn armor or a shield: base price, plus masterwork (150 gp; magic armor is always masterwork) and the
 // enhancement bonus squared × 1,000 gp for magic armor (Core Rulebook, Magic Armor).
-export function armorCost(armor, enh = 0, mw = false) {
+// Special abilities add their bonus equivalent (or flat price); a crafted armor's magic part costs half (Core
+// Rulebook, Magic Item Creation), the masterwork armor itself full price.
+export function armorCost(armor, enh = 0, mw = false, abilities = [], crafted = false) {
   if (!armor) return 0;
-  return (armor.price_gp || 0) + (enh > 0 || mw ? 150 : 0) + (enh > 0 ? enh * enh * 1000 : 0);
+  const magic = magicPart(enh, abilities, 1000);
+  return (armor.price_gp || 0) + (enh > 0 || mw || abilities.length ? 150 : 0) + (crafted ? magic / 2 : magic);
 }
 
 // Price and weight of one inventory entry: an item, or one of its versions (e.g. a masterwork backpack).
@@ -52,7 +57,9 @@ export function magicItemTotals(owned, itemsById) {
     const item = itemsById.get(entry.id);
     if (!item) continue;
     const { price_gp, weight_lbs } = magicItemStats(item, entry.option);
-    if (price_gp === null) unpriced.push(item.name); else cost += price_gp * entry.qty;
+    // A crafted item costs its creation cost (its "Cost" line, else half the price).
+    const each = entry.crafted ? listedCost(item, entry.option || null, price_gp) : price_gp;
+    if (each === null || each === undefined) unpriced.push(item.name); else cost += each * entry.qty;
     weight += (weight_lbs || 0) * entry.qty;
   }
   return { cost, weight: Math.round(weight * 100) / 100, unpriced };

@@ -1,6 +1,7 @@
 // Weapon rules: proficiency, attack bonus and damage for a carried weapon, and its price.
 // No page code here, so these functions can be tested on their own.
 
+import { magicPart, magicPrefix } from './crafting.js';
 const lower = s => String(s ?? '').toLowerCase();
 
 // Which weapons a class and race are proficient with, read from the class's "Weapon and Armor Proficiency"
@@ -213,7 +214,17 @@ export function flurryBabs(kind, classLevel, classBab, bab) {
 
 // Price of a carried weapon: base, plus masterwork (300 gp) and the enhancement bonus squared × 2,000 gp for
 // a magic weapon (Core Rulebook, Magic Weapons). Magic weapons are always masterwork.
+// Special abilities add their bonus equivalent (or flat price); a crafted weapon's magic part costs half (Core
+// Rulebook, Magic Item Creation), the masterwork weapon itself full price.
 export function weaponCost(weapon, entry = {}) {
   const enh = entry.enh || 0;
-  return (weapon.price_gp || 0) + (enh > 0 || entry.masterwork ? 300 : 0) + enh * enh * 2000;
+  const abilities = entry.abilities || [];
+  const magic = magicPart(enh, abilities, 2000);
+  return (weapon.price_gp || 0) + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0) + (entry.crafted ? magic / 2 : magic);
+}
+
+// "+1 flaming Longsword", "Masterwork Dagger", "Club".
+export function weaponLabel(weapon, entry = {}) {
+  const prefix = magicPrefix(entry.enh || 0, entry.masterwork, entry.abilities || []);
+  return prefix ? `${prefix} ${weapon.name}` : weapon.name;
 }

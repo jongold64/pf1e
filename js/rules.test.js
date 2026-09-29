@@ -10,6 +10,7 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
+import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { classCounts, babList, racialAdjustments } from './rules.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1068,6 +1069,39 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('ordinal', `${ordinal(1)} ${ordinal(2)} ${ordinal(3)} ${ordinal(11)} ${ordinal(12)} ${ordinal(22)}`, '1st 2nd 3rd 11th 12th 22nd');
   check('the unchained barbarian is offered barbarian archetypes, not rogue ones',
         archetypesFor('barbarian-unchained', archetypes).every(a => ['barbarian', 'barbarian-unchained'].includes(a.class)), true);
+}
+
+{
+  // Magic item creation (Core Rulebook)
+  const p1 = magicArmsPrice({ kind: 'weapon', enh: 1, abilities: [{ bonus: 1 }], abilityCls: [10] });
+  check('+1 flaming weapon: +2 in all, 8,000 gp magic, caster level 10', `${p1.effective} ${p1.base} ${p1.casterLevel}`, '2 8000 10');
+  check('armor bonuses cost half as much: +3 armor 9,000 gp', magicArmsPrice({ kind: 'armor', enh: 3 }).base, 9000);
+  check('abilities need +1 enhancement first', magicArmsPrice({ kind: 'weapon', enh: 0, abilities: [{ bonus: 1 }] }).errors.length, 1);
+  check('at most +10 in all', magicArmsPrice({ kind: 'weapon', enh: 5, abilities: [{ bonus: 5 }, { bonus: 1 }] }).errors.length, 1);
+  check('+3 enhancement needs caster level 9', magicArmsPrice({ kind: 'weapon', enh: 3 }).casterLevel, 9);
+  check('flat-priced abilities add their gp', magicArmsPrice({ kind: 'armor', enh: 1, abilities: [{ gp: 3750 }] }).base, 4750);
+  check('potion: 50 × spell level × caster level', spellItemPrice('potion', 1, 1).base, 50);
+  check('0-level spell counts as 1/2', spellItemPrice('scroll', 0, 1).base, 12.5);
+  check('wand: 750 × 2 × 3', spellItemPrice('wand', 2, 3).base, 4500);
+  check('potions hold 3rd-level spells at most', spellItemPrice('potion', 4, 7).errors.length, 1);
+  check('cost: half the base price + masterwork item in full', craftCost(8000, 315), 4315);
+  check('time: 1 day per 1,000 gp', craftTime(8000, 'item').days, 8);
+  check('time: potions of 250 gp or less take 2 hours', craftTime(50, 'potion').hours, 2);
+  check('time: rushing halves it', craftTime(8000, 'item', true).hours, 32);
+  check('DC: 5 + CL + 5 per unmet requirement + 5 rushed', craftDC(10, 1, true), 25);
+  check('fortification comes in light/moderate/heavy', abilityOptions({ id: 'fortification', price: 'varies' }).map(o => o.bonus).join(), '1,3,5');
+  check('spell resistance versions', abilityOptions({ id: 'x', price: '+2 bonus (SR 13), +3 bonus (SR 15)' }).length, 2);
+  check('a flat ability price', abilityOptions({ id: 'x', price: '+3,750 gp' })[0].gp, 3750);
+  const reqs = parseRequirements('Craft Magic Arms and Armor and flame blade, flame strike, or fireball', ['Craft Magic Arms and Armor'],
+                                 new Map([['flame blade', 'fb'], ['flame strike', 'fs'], ['fireball', 'fire']]));
+  check('requirements: the feat, then any one of three spells', reqs.map(r => r.type + (r.options ? r.options.length : '')).join(), 'feat,spells3');
+  const status = checkCraftRequirements(reqs, { haveFeats: [], canCast: id => id === 'fire', casterLevel: 5, skillRanks: () => 0 });
+  check('requirements checked: feat missing, one spell castable', status.map(r => r.status).join(), 'unmet,met');
+  check('listed cost line per version', listedCost({ construction: { cost: '500 gp (+1), 2,000 gp (+2)' } }, '+2', 4000), 2000);
+  check('no cost line: half the price', listedCost({ construction: {} }, null, 1000), 500);
+  check('crafted weapon: magic at half, masterwork in full', weaponCost({ price_gp: 15 }, { enh: 1, abilities: [{ bonus: 1 }], crafted: true }), 4315);
+  check('bought weapon: full price', weaponCost({ price_gp: 15 }, { enh: 1, abilities: [{ bonus: 1 }] }), 8315);
+  check('magic part of a mundane item is 0', magicPart(0, [], 2000), 0);
 }
 
 const failed = results.filter(r => !r.pass);

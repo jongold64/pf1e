@@ -18,7 +18,7 @@ characters from it.
 ## File layout
 
 - `index.html`, `css/style.css`, `js/` — the app. `js/app.js` owns the page (state, `computeView()`, render);
-  `js/rules.js`, `feats.js`, `skills.js`, `weapons.js`, `armor.js`, `equipment.js`, `race-options.js`, `archetypes.js`,
+  `js/rules.js`, `feats.js`, `skills.js`, `weapons.js`, `armor.js`, `equipment.js`, `race-options.js`, `archetypes.js`, `crafting.js`,
   `hero-points.js`, `traits.js`, `spell-math.js`, `dice.js` hold the rules as pure functions; `js/tab-*.js`
   draw the tabs.
 - `tests.html` + `js/rules.test.js` — the browser test page.

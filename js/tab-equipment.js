@@ -3,12 +3,19 @@ import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost } from './weapons.js';
+import { craftedItemCost, magicPrefix } from './crafting.js';
 
 let selectedId = null;
 let listed = false;
 
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLowerCase()})` : item.name);
+
+// "+1 fortification (light) Chainmail", "Masterwork Breastplate".
+function armorLabel(armor, enh, mw, abilities = []) {
+  const prefix = magicPrefix(enh, mw, abilities);
+  return prefix ? `${prefix} ${armor.name}` : armor.name;
+}
 
 function gearDetails(item) {
   const versions = item.variants || [];
@@ -86,8 +93,12 @@ export async function renderEquipment(app, view) {
     size: view.race.size,
   });
   const sizeFactor = sizeWeightFactor(view.race.size);
-  const armorSpend = armorCost(view.gear.armor, state.armorEnh, state.armorMw) + armorCost(view.gear.shield, state.shieldEnh, state.shieldMw);
-  const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
+  const armorSpend = armorCost(view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities, state.armorCrafted)
+    + armorCost(view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities, state.shieldCrafted);
+  const listed = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
+  // Potions, scrolls and wands the character made count at their crafting cost.
+  const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0);
+  const magic = { ...listed, cost: listed.cost + made };
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponWeight = carried.reduce((sum, [w]) => sum + (w.weight_lbs || 0), 0) * sizeFactor;
@@ -116,11 +127,12 @@ export async function renderEquipment(app, view) {
 
   const count = state.inventory.reduce((n, e) => n + e.qty, 0);
   $('inventory-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
-  const worn = [[view.gear.armor, state.armorEnh, state.armorMw], [view.gear.shield, state.shieldEnh, state.shieldMw]].filter(([a]) => a);
+  const worn = [[view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities, state.armorCrafted],
+                [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities, state.shieldCrafted]].filter(([a]) => a);
   $('inventory-rows').innerHTML = [
-    ...worn.map(([a, enh, mw]) => `<tr class="worn"><td><b>${esc(enh ? `+${enh} ` : mw ? 'Masterwork ' : '')}${esc(a.name)}</b>
-        <div class="breakdown">worn · change it on the Armor tab</div></td><td>1</td>
-        <td>${esc(formatGp(armorCost(a, enh, mw)))}</td><td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
+    ...worn.map(([a, enh, mw, abilities, crafted]) => `<tr class="worn"><td><b>${esc(armorLabel(a, enh, mw, abilities))}</b>
+        <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div></td><td>1</td>
+        <td>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}</td><td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
     ...state.inventory.map((e, i) => {
       const item = data.gearById.get(e.id);
       if (!item) return '';

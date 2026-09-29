@@ -4,6 +4,7 @@ import { esc, signed } from './dom.js';
 import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative, channelEnergy, layOnHands, smite } from './rules.js';
 import { spellContext, spellLines } from './spell-math.js';
 import { favoredOption, favoredOptionTotal } from './race-options.js';
+import { magicPrefix } from './crafting.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const ORDINAL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -29,8 +30,9 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const abilities = table(['Ability', 'Score', 'Modifier'],
     ABILITIES.map(a => [ABILITY_NAMES[a], stats.scores[a], signed(stats.mod[a])]));
 
-  const worn = [[view.gear.armor, state.armorEnh, state.armorMw], [view.gear.shield, state.shieldEnh, state.shieldMw]].filter(([a]) => a)
-    .map(([a, enh, mw]) => `${enh ? `+${enh} ` : mw ? 'Masterwork ' : ''}${a.name}`).join(', ');
+  const worn = [[view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities],
+                [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities]].filter(([a]) => a)
+    .map(([a, enh, mw, abilities]) => [magicPrefix(enh, mw, abilities || []), a.name].filter(Boolean).join(' ')).join(', ');
   const defense = facts([
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],

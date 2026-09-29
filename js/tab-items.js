@@ -2,6 +2,8 @@
 // side panel for the item being looked at.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
+import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
+import { initCrafting, renderCrafting, craftListedItem } from './tab-crafting.js';
 
 let selectedId = null;
 let listed = false;
@@ -17,7 +19,8 @@ function addButtons(item) {
     ? options.map(o => `<button type="button" class="primary" data-add-item="${esc(item.id)}" data-option="${esc(o.label)}">
         Add ${esc(o.label)} (${esc(formatGp(o.price_gp))})</button>`).join('')
     : `<button type="button" class="primary" data-add-item="${esc(item.id)}">Add to my magic items</button>`;
-  return `<div class="slot-buttons">${buttons}</div>`;
+  const craft = itemKind(item) ? `<button type="button" data-craft-item="${esc(item.id)}">Craft this item</button>` : '';
+  return `<div class="slot-buttons">${buttons}${craft}</div>`;
 }
 
 function itemDetails(item) {
@@ -50,24 +53,35 @@ export function renderMyItems(app) {
   const owned = app.state.magicItems;
   const byId = app.data.itemsById;
   if (!byId) return;
-  const count = owned.reduce((n, e) => n + e.qty, 0);
+  renderCrafting(app);
+  const count = owned.reduce((n, e) => n + e.qty, 0) + app.state.craftedItems.reduce((n, e) => n + e.qty, 0);
   $('my-items-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
   $('my-items-rows').innerHTML = owned.map((e, i) => {
     const item = byId.get(e.id);
     if (!item) return '';
     const s = magicItemStats(item, e.option);
+    const each = e.crafted ? listedCost(item, e.option || null, s.price_gp) : s.price_gp;
     return `<tr><td><button type="button" class="link item-link" data-show-item="${esc(item.id)}">${esc(entryName(item, e.option))}</button>
-        <div class="breakdown">${esc(item.category)}${item.slot && !['none', 'slotless'].includes(item.slot) ? ` · ${esc(item.slot)}` : ''}</div></td>
+        <div class="breakdown">${esc(item.category)}${item.slot && !['none', 'slotless'].includes(item.slot) ? ` · ${esc(item.slot)}` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div></td>
       <td><span class="base">
         <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
         <span class="value">${e.qty}</span>
         <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
       </span></td>
-      <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</td>
+      <td>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</td>
       <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
-  }).join('') || '<tr><td colspan="4" class="hint">No magic items yet. Choose one below, then add it.</td></tr>';
-  const totals = magicItemTotals(owned, byId);
-  $('my-items-total').textContent = owned.length
+  }).join('') + app.state.craftedItems.map((e, i) => `<tr><td>${esc(SPELL_ITEMS[e.kind].label)} of ${esc(e.spellName)}
+        <div class="breakdown">caster level ${e.cl} · crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})</div></td>
+      <td><span class="base">
+        <button type="button" data-made-qty="${i}" data-step="-1" aria-label="One fewer">−</button>
+        <span class="value">${e.qty}</span>
+        <button type="button" data-made-qty="${i}" data-step="1" aria-label="One more">+</button>
+      </span></td>
+      <td>${esc(formatGp(craftedItemCost(e) * e.qty))}</td><td>—</td></tr>`).join('')
+    || '<tr><td colspan="4" class="hint">No magic items yet. Choose one below, then add it.</td></tr>';
+  const listedTotals = magicItemTotals(owned, byId);
+  const totals = { ...listedTotals, cost: listedTotals.cost + app.state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0) };
+  $('my-items-total').textContent = owned.length || app.state.craftedItems.length
     ? `Total ${formatGp(totals.cost)}, ${formatLbs(totals.weight)} (counted in gold and weight on the Equipment tab).` +
       (totals.unpriced.length ? ` No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.` : '')
     : '';
@@ -96,7 +110,10 @@ export function initItemsTab(app) {
   $('item-panel').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-item]');
     if (btn) addItem(app, btn.dataset.addItem, btn.dataset.option);
+    const craft = e.target.closest('[data-craft-item]');
+    if (craft) craftListedItem(app, craft.dataset.craftItem);
   });
+  initCrafting(app);
   $('my-items-rows').addEventListener('click', e => {
     const step = e.target.closest('[data-item-qty]');
     if (step) {
@@ -106,6 +123,12 @@ export function initItemsTab(app) {
     }
     const show = e.target.closest('[data-show-item]');
     if (show) showItem(app, show.dataset.showItem);
+    const made = e.target.closest('[data-made-qty]');
+    if (made) {
+      const items = app.state.craftedItems.map(x => ({ ...x }));
+      items[Number(made.dataset.madeQty)].qty += Number(made.dataset.step);
+      app.update({ craftedItems: items.filter(x => x.qty > 0) });
+    }
   });
 }
 
