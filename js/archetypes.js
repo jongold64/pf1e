@@ -33,10 +33,11 @@ export function phraseParts(p) {
   return { base: featureBase(s), owned: featureBase(s, true), nums, levels };
 }
 
-// Pathfinder Unchained: the unchained barbarian and rogue can take the original class's archetypes as long as the
+// Pathfinder Unchained: the unchained classes can take the original class's archetypes as long as the
 // features they replace or change still exist; danger sense counts as trap sense for this (it "can be replaced by any
 // archetype class feature that replaces trap sense").
-export const UNCHAINED_FROM = { 'barbarian-unchained': 'barbarian', 'rogue-unchained': 'rogue' };
+export const UNCHAINED_FROM = { 'barbarian-unchained': 'barbarian', 'rogue-unchained': 'rogue', 'monk-unchained': 'monk',
+                                'summoner-unchained': 'summoner' };
 const SAME_AS = { 'trap sense': 'danger sense' };
 
 // The archetypes a class can take: its own, and for an unchained class the original class's.
