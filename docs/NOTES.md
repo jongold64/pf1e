@@ -174,6 +174,10 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `ArchetypeDisplay.aspx?FixedName=...`); the "Source" line gives the book, and an archetype is kept only if that
   book's notice is known (`find_notices`). Features are "<b>Name</b>: text" paragraphs split on double `<br>`, read by
   `feature_record` (level, replaces/alters, class skills, proficiency). Records carry `"origin": "aonprd"`.
+- Unchained barbarian and rogue (no archetypes of their own): `UNCHAINED_FROM` offers the original class's archetypes
+  (`archetypesFor`); `unchainedGaps` greys out ones that replace or change a feature the unchained table doesn't have
+  (names only, since unchained tables list each feature once without steps), and danger sense counts as trap sense
+  (`SAME_AS`, per Pathfinder Unchained). Unnumbered table entries match any step number.
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits.
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /

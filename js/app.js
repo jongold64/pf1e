@@ -25,7 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
-import { classWithArchetypes, archetypeConflict } from './archetypes.js';
+import { classWithArchetypes, archetypeConflict, archetypesFor, unchainedGaps, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
@@ -164,7 +164,8 @@ function load(saved) {
   // Archetypes: only ones that exist, for the class they're filed under.
   const arch = state.archetypes && typeof state.archetypes === 'object' && !Array.isArray(state.archetypes) ? state.archetypes : {};
   state.archetypes = Object.fromEntries(Object.entries(arch)
-    .map(([cid, ids]) => [cid, (Array.isArray(ids) ? ids : []).filter(id => data.archetypesById.get(id)?.class === cid)])
+    .map(([cid, ids]) => [cid, (Array.isArray(ids) ? ids : [])
+      .filter(id => [cid, UNCHAINED_FROM[cid]].includes(data.archetypesById.get(id)?.class))])
     .filter(([, ids]) => ids.length));
   const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
   state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
@@ -931,8 +932,12 @@ function renderFavoredSummary(view) {
 // another race, can't be picked.
 function archetypePicker(cls, level, openFeatures) {
   const base = data.classes.find(c => c.id === cls.id);
-  const all = data.archetypes.filter(a => a.class === cls.id);
+  const all = archetypesFor(cls.id, data.archetypes);
   if (!all.length) return '';
+  const original = UNCHAINED_FROM[cls.id] && data.classes.find(c => c.id === UNCHAINED_FROM[cls.id]);
+  // An original-class archetype on an unchained class: "Rogue archetype", and why it doesn't fit, if it doesn't.
+  const from = a => (a.class !== cls.id ? ` · ${original.name} archetype` : '');
+  const gaps = a => (a.class !== cls.id ? unchainedGaps(original, base, a) : []);
   const chosen = chosenArchetypes(cls.id);
   const raceName = data.races.find(r => r.id === state.race)?.name;
   const taken = chosen.map(a => {
@@ -941,14 +946,18 @@ function archetypePicker(cls, level, openFeatures) {
       return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}>
         <summary>${esc(f.name)}</summary>${paragraphs(f.text)}</details>`;
     }).join('');
-    return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
+    return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${esc(from(a))}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
         <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
       ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
       ${feats}</li>`;
   }).join('');
   const options = all.filter(a => !chosen.includes(a)).map(a => {
-    const why = a.race && a.race !== raceName ? `${a.race} only` : archetypeConflict(base, a, chosen);
-    return `<option value="${esc(a.id)}"${why ? ' disabled' : ''}>${esc(a.name)}${a.race ? ` (${esc(a.race)})` : ''}${why ? ` — ${esc(why)}` : ''}</option>`;
+    const missing = gaps(a);
+    const why = a.race && a.race !== raceName ? `${a.race} only`
+      : missing.length ? `changes ${missing.slice(0, 2).join(', ')}, which the ${cls.name} doesn't have`
+      : archetypeConflict(base, a, chosen);
+    const label = `${a.name}${a.race ? ` (${a.race})` : ''}${from(a) ? ` (${original.name})` : ''}${why ? ` — ${why}` : ''}`;
+    return `<option value="${esc(a.id)}"${why ? ' disabled' : ''}>${esc(label)}</option>`;
   }).join('');
   return `<div class="archetypes"><h4>Archetypes</h4>
     ${taken ? `<ul class="arch-list">${taken}</ul>` : '<p class="hint">None taken. An archetype swaps some class features for its own.</p>'}
@@ -1487,18 +1496,24 @@ function openResult(type, id) {
     ]);
   } else if (type === 'archetype') {
     const a = data.archetypesById.get(id);
+    // The class that takes it: the archetype's own, or the unchained version of it the character has.
+    const target = state.classLevels.includes(a.class) ? a.class
+      : Object.keys(UNCHAINED_FROM).find(u => UNCHAINED_FROM[u] === a.class && state.classLevels.includes(u)) || a.class;
     const cls = data.classes.find(c => c.id === a.class);
-    const has = state.classLevels.includes(a.class);
-    const taken = (state.archetypes[a.class] || []).includes(id);
+    const targetCls = data.classes.find(c => c.id === target);
+    const has = state.classLevels.includes(target);
+    const taken = (state.archetypes[target] || []).includes(id);
+    const missing = target !== a.class ? unchainedGaps(cls, targetCls, a) : [];
     const why = a.race && a.race !== data.races.find(r => r.id === state.race)?.name ? `${a.race} only`
-      : archetypeConflict(cls, a, chosenArchetypes(a.class));
+      : missing.length ? `it changes ${missing.slice(0, 2).join(', ')}, which the ${targetCls.name} doesn't have`
+      : archetypeConflict(targetCls, a, chosenArchetypes(target));
     const feats = a.features.map(f => `<li><b>${esc(f.name)}</b> ${esc(f.text)}</li>`).join('');
     openDetail(a.name, `<p class="hint">${esc(cls.name)} archetype · ${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}</p>
       ${paragraphs(a.description || '')}<ul class="plain-list">${feats}</ul>
       ${!taken && has && why ? `<p class="warning">Can't be taken now: ${esc(why)}.</p>` : ''}`,
     taken ? [{ label: 'Go to Classes', primary: true, run: () => showTab('character') }]
       : has ? (why ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => {
-        update({ archetypes: { ...state.archetypes, [a.class]: [...(state.archetypes[a.class] || []), id] } });
+        update({ archetypes: { ...state.archetypes, [target]: [...(state.archetypes[target] || []), id] } });
         showTab('character');
       } }])
       : [{ label: `Add a level of ${cls.name}`, primary: true, run: () => {

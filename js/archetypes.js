@@ -33,6 +33,34 @@ export function phraseParts(p) {
   return { base: featureBase(s), owned: featureBase(s, true), nums, levels };
 }
 
+// Pathfinder Unchained: the unchained barbarian and rogue can take the original class's archetypes as long as the
+// features they replace or change still exist; danger sense counts as trap sense for this (it "can be replaced by any
+// archetype class feature that replaces trap sense").
+export const UNCHAINED_FROM = { 'barbarian-unchained': 'barbarian', 'rogue-unchained': 'rogue' };
+const SAME_AS = { 'trap sense': 'danger sense' };
+
+// The archetypes a class can take: its own, and for an unchained class the original class's.
+export function archetypesFor(classId, all) {
+  return all.filter(a => a.class === classId || a.class === UNCHAINED_FROM[classId]);
+}
+
+// For an original-class archetype on an unchained class: the features it replaces or changes that the unchained class
+// doesn't have (names only; the unchained table lists each feature once, without steps). Empty means it fits.
+export function unchainedGaps(original, unchained, arch) {
+  const names = new Set((unchained.progression || []).flatMap(r => (r.special || []).map(s => featureBase(s))));
+  const has = b => names.has(b) || names.has(SAME_AS[b]) || [...names].some(n => n.startsWith(`${b} `) || b.startsWith(`${n} `));
+  const gaps = [];
+  for (const f of arch.features || []) {
+    for (const p of [...(f.replaces || []), ...(f.alters || [])]) {
+      // "trap sense (for a core rogue) or danger sense (for an unchained rogue)": either option will do.
+      const options = p.replace(/\([^)]*\)/g, ' ').split(/\s+or\s+/).map(phraseParts);
+      const inOriginal = options.some(parts => (original.progression || []).some(r => (r.special || []).some(s => matches(parts, s, r.level))));
+      if (inOriginal && !options.some(parts => has(parts.base) || has(parts.owned))) gaps.push(p);
+    }
+  }
+  return [...new Set(gaps)];
+}
+
 function specialNumber(s) {
   const m = String(s).match(/[+]?(\d+)/);
   return m ? Number(m[1]) : null;
@@ -41,8 +69,10 @@ function specialNumber(s) {
 function matches(parts, special, level) {
   const sb = featureBase(special);
   const same = b => b && (sb === b || sb.startsWith(`${b} `) || (b.startsWith(`${sb} `) && sb.length > 3));
-  if (!sb || !(same(parts.base) || same(parts.owned))) return false;
-  if (parts.nums.size && !parts.nums.has(specialNumber(special))) return false;
+  const alias = b => SAME_AS[b] && same(SAME_AS[b]);
+  if (!sb || !(same(parts.base) || same(parts.owned) || alias(parts.base) || alias(parts.owned))) return false;
+  // A table entry without a step number (unchained tables list "sneak attack" once) matches any step.
+  if (parts.nums.size && specialNumber(special) !== null && !parts.nums.has(specialNumber(special))) return false;
   if (parts.levels.size && !parts.levels.has(level)) return false;
   return true;
 }

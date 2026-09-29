@@ -23,7 +23,7 @@ import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
-import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency } from './archetypes.js';
+import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency, archetypesFor, unchainedGaps } from './archetypes.js';
 import { replacedTraits, raceWithAlternates, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
@@ -1047,6 +1047,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Rogue Talents (extra choices) is listed where rogue talents start', featureLevel(cls('rogue'), arch('rogue-scout').features.find(f => f.name === 'Rogue Talents')), 2);
   check('Hedge Witch Major Hexes (extra choices) is listed where major hexes start', featureLevel(cls('witch'), arch('witch-hedge-witch').features.find(f => f.name === 'Major Hexes')), 10);
   check('every archetype belongs to a known class', archetypes.every(a => classes.some(c => c.id === a.class)), true);
+  const ur = cls('rogue-unchained');
+  check('the unchained rogue is offered rogue archetypes', archetypesFor('rogue-unchained', archetypes).some(a => a.class === 'rogue'), true);
+  check('a rogue archetype replacing trap sense fits the unchained rogue (danger sense)', unchainedGaps(cls('rogue'), ur, arch('rogue-scout')).length, 0);
+  check('...and replaces danger sense there', replacedEntries(ur, { features: [{ name: 'x', replaces: ['trap sense'] }] }).map(e => e.name).join(), 'Danger Sense');
+  check('the unchained barbarian is offered barbarian archetypes, not rogue ones',
+        archetypesFor('barbarian-unchained', archetypes).every(a => ['barbarian', 'barbarian-unchained'].includes(a.class)), true);
 }
 
 const failed = results.filter(r => !r.pass);
