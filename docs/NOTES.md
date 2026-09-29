@@ -166,6 +166,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
   archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
   and feature fold-outs stay open across redraws.
+- Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the
+  race from the heading, Monster Codex ones via `MC_CLASSES`; `NOT_ARCHETYPES` skips the antipaladin's "Class
+  Features") then `build_aon_archetypes.py`: every other Paizo archetype from the Archives of Nethys (d20pfsrd lacks
+  the occult classes and its archetype folders mix publishers). Pages are cached in
+  `C:\Users\jongo\Projects\aonprd-archetypes` (the class list page `Archetypes.aspx?Class=Name`, then
+  `ArchetypeDisplay.aspx?FixedName=...`); the "Source" line gives the book, and an archetype is kept only if that
+  book's notice is known (`find_notices`). Features are "<b>Name</b>: text" paragraphs split on double `<br>`, read by
+  `feature_record` (level, replaces/alters, class skills, proficiency). Records carry `"origin": "aonprd"`.
+- Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
+  doesn't clash) and traits.
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved

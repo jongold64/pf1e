@@ -29,6 +29,10 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_traits.py', 'data/traits.json'),
                     # Archetypes read the class ids and race names, so they also come after the classes.
                     ('build_archetypes.py', 'data/archetypes.json'),
+                    # Later Paizo archetypes from the Archives of Nethys pages cached in ../../aonprd-archetypes
+                    # (build_aon_archetypes.py downloads what's missing when run on its own).
+                    *([('build_aon_archetypes.py', 'data/archetypes.json')]
+                      if os.path.isdir(os.path.join(here, '..', '..', 'aonprd-archetypes')) else []),
                     # Paizo traits PSRD lacks, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py (d20pfsrd-traits).
                     *([('build_d20_traits.py', 'data/traits.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-traits')) else []),

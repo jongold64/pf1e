@@ -113,6 +113,24 @@ def proficiency_changes(body):
     return out
 
 
+def feature_record(name, body):
+    name = re.sub(r'\s+([,)])', r'\1', re.sub(r'\(\s+', '(', name)).replace('’', "'")  # "( Sp , Su )" -> "(Sp, Su)"
+    rec = {'name': name, 'text': body}
+    lv = re.search(r'\bat ' + ORDINAL + r' level\b', body, re.I)
+    if lv:
+        rec['level'] = int(lv.group(1))
+    rep, alt = replace_info(body)
+    if rep:
+        rec['replaces'] = rep
+    if alt:
+        rec['alters'] = alt
+    if re.fullmatch(r'class skills?|skills', name, re.I):
+        rec['class_skills'] = class_skill_changes(body)
+    elif re.fullmatch(r'(?:weapon and armor |armor and weapon |weapon |armor )?proficienc(?:y|ies)', name, re.I):
+        rec['proficiency'] = proficiency_changes(body)
+    return rec
+
+
 def feature(n):
     body = text(n['body'] or '') or clean(n.get('description') or '')
     for ch in n.get('children') or []:  # tables or sub-sections inside a feature

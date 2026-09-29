@@ -6,7 +6,7 @@ export const SEARCH_TYPES = ['race', 'class', 'feat', 'skill', 'spell', 'armor',
 export const TYPE_LABELS = {
   race: 'Race', class: 'Class', feat: 'Feat', skill: 'Skill', spell: 'Spell', armor: 'Armor', weapon: 'Weapon',
   equipment: 'Equipment',
-  'magic-item': 'Magic item',
+  'magic-item': 'Magic item', archetype: 'Archetype', trait: 'Trait',
 };
 
 // Lowercase, without accents or punctuation, so "Mage's" matches "mages".

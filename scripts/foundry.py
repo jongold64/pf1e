@@ -73,6 +73,10 @@ def book_key(title):
     """A book title for matching across sources: 'Pathfinder Chronicles: Faction Guide' = 'Faction Guide'."""
     t = re.sub(r"^pathfinder (?:chronicles|campaign setting|player companion|companion|roleplaying game|rpg|adventure path)[:,]?\s+",
                '', title.lower().replace('’', "'"))
+    t = t.replace('&', ' and ')
+    # Adventure Path volumes go by two numbers ("Pathfinder #95: Anvil of Fire" = "Giantslayer #5: Anvil of Fire"),
+    # so only the title after the number counts.
+    t = re.sub(r'^.*#\d+:\s*', '', t)
     return re.sub(r'[^a-z0-9]', '', t)
 
 

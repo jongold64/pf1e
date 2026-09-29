@@ -1485,6 +1485,30 @@ function openResult(type, id) {
       ...(c.category !== 'prestige' ? [{ label: `Make every level ${c.name}`,
         run: () => { update({ classLevels: state.classLevels.map(() => id) }); showTab('character'); } }] : []),
     ]);
+  } else if (type === 'archetype') {
+    const a = data.archetypesById.get(id);
+    const cls = data.classes.find(c => c.id === a.class);
+    const has = state.classLevels.includes(a.class);
+    const taken = (state.archetypes[a.class] || []).includes(id);
+    const why = a.race && a.race !== data.races.find(r => r.id === state.race)?.name ? `${a.race} only`
+      : archetypeConflict(cls, a, chosenArchetypes(a.class));
+    const feats = a.features.map(f => `<li><b>${esc(f.name)}</b> ${esc(f.text)}</li>`).join('');
+    openDetail(a.name, `<p class="hint">${esc(cls.name)} archetype · ${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}</p>
+      ${paragraphs(a.description || '')}<ul class="plain-list">${feats}</ul>
+      ${!taken && has && why ? `<p class="warning">Can't be taken now: ${esc(why)}.</p>` : ''}`,
+    taken ? [{ label: 'Go to Classes', primary: true, run: () => showTab('character') }]
+      : has ? (why ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => {
+        update({ archetypes: { ...state.archetypes, [a.class]: [...(state.archetypes[a.class] || []), id] } });
+        showTab('character');
+      } }])
+      : [{ label: `Add a level of ${cls.name}`, primary: true, run: () => {
+        if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, a.class] });
+        showTab('character');
+      } }]);
+  } else if (type === 'trait') {
+    const t = data.traitsById.get(id);
+    openDetail(t.name, `<p class="hint">${esc(t.category)} trait${t.requirement ? ` (${esc(t.requirement)})` : ''} · ${esc(t.source)}</p>
+      ${paragraphs(t.text)}`, [{ label: 'Go to Feats (traits)', primary: true, run: () => showTab('feats') }]);
   } else if (type === 'feat') {
     const f = data.featsById.get(id);
     openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)),
