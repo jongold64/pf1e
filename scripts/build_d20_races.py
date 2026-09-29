@@ -24,7 +24,14 @@ PAGES = {
     'lashunta-female': 'lashunta-11-rp', 'lizardfolk': 'lizardfolk-8-rp', 'locathah': 'locathah', 'ogre': 'ogre-23-rp',
     'sahuagin': 'sahuagin-22-rp', 'syrinx': 'syrinx-16-rp', 'triaxian': 'triaxian-10-rp', 'triton': 'triton-11-rp',
     'vine-leshy': 'vine-leshy',
+    # Bestiary 5 and 6 races (and Shabti), once their notices were found.
+    'android': 'android-16-rp', 'astomoi': 'race-points-unknown_astomoi', 'caligni': 'race-points-unknown_caligni',
+    'deep-one-hybrid': 'deep-one-hybrid', 'monkey-goblin': 'monkey-goblin-10-rp', 'munavri': 'race-points-unknown_munavri',
+    'naiad': 'naiad-characters', 'orang-pendak': 'orang-pendak', 'reptoid': 'race-points-unknown_reptoid',
+    'rougarou': 'rougarou-player-characters', 'shabti': 'advanced-races-11-20-rp_shabti', 'skinwalker': 'skinwalkers-10-rp',
+    'yaddithian': 'yaddithian-characters',
 }
+FRACTIONS = {'¼': '1/4', '½': '1/2', '¾': '3/4', '⅓': '1/3', '⅔': '2/3', '⅕': '1/5', '⅙': '1/6', '⅛': '1/8'}
 SECTIONS = {'alternate racial traits': 'alternate_traits', 'favored class options': 'favored_class_options'}
 
 
@@ -81,7 +88,17 @@ def main():
             print('no Paizo notice for', r['id'])
             continue
         alts = [{'name': n, 'text': t} for n, t in found.get('alternate_traits', [])]
-        fcos = [{'class': n, 'text': t} for n, t in found.get('favored_class_options', [])]
+        fcos = []
+        for n, t in found.get('favored_class_options', []):
+            # "Barbarian and Bloodrager: Add +1 ..." shares one option between classes (the bold part is only
+            # "Barbarian"); fractions printed as ¼ or ½ become 1/4 and 1/2.
+            t = re.sub(r'([¼½¾⅓⅔⅕⅙⅛])', lambda m: FRACTIONS[m.group(1)], t)
+            more = re.match(r'^((?:,\s*[A-Z][\w ()]*?)*,?\s*and\s+[A-Z][\w ()]*?)\s*:\s*', t)
+            names = [n] + ([x.strip() for x in re.split(r',|\band\b', more.group(1)) if x.strip()] if more else [])
+            # A number the page lost ("Add +? to ...") can't be shown correctly, so that option is left out.
+            if re.search(r'(?:\+|\bor )\?(?=\s)', t):
+                continue
+            fcos += [{'class': c, 'text': t[more.end():] if more else t} for c in names]
         if not alts and not fcos:
             continue
         r['alternate_traits'], r['favored_class_options'] = alts, fcos

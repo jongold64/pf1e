@@ -189,7 +189,8 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   proficiency parsers read. Categories: 'occult', 'unchained', 'base'.
 - `build_foundry_races.py` (after `build_races.py`) reads traits from "<strong>Name</strong>: text" list items in the
   description, sets `kind` for the standard ones, ability modifiers from `changes`, size/speed/type from the fields.
-  Bestiary 5 and 6 races are left out: their notices aren't on the Archives of Nethys page.
+  Bestiary 5 and 6 races use notices read from their d20pfsrd race pages (`MANUAL_NOTICES`). `KINDS` also marks size
+  traits named 'Medium'/'Small' and 'Speed (Slow)'.
 - Feats from later books come from d20pfsrd.com (Foundry has few feats). `fetch_d20pfsrd_feats.py` downloads every
   page under /feats/ except the third-party section (listed in the site's sitemap; the site answers some requests
   with status 404 but the real content) into `C:\Users\jongo\Projects\d20pfsrd-feats`, once. `build_d20_feats.py`

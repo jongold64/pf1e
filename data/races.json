@@ -6572,6 +6572,87 @@
     "origin": "Foundry VTT pf1"
   },
   {
+    "id": "android",
+    "name": "Android",
+    "plural": "Androids",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": 2,
+      "cha": -2,
+      "int": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "android"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [
+        "Common"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Dexterity, -2 Charisma, +2 Intelligence",
+        "text": "Androids have swift reflexes and are very intelligent, but have difficulty relating to others. As a result, androids gain a +2 bonus to Dexterity and Intelligence, but suffer a -2 penalty to Charisma.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Androids are humanoids with the android subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Androids are Medium creatures, and they have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Androids have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Androids begin play speaking Common. Androids with high Intelligence can choose any languages they want (except secret languages, such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "Exceptional Senses",
+        "text": "Androids have darkvision to a range of 60 feet and lowlight vision. They also gain a +2 racial bonus on Perception checks.."
+      },
+      {
+        "name": "Emotionless",
+        "text": "Androids have problems processing emotions properly, and thus take a -4 penalty on Sense Motive checks."
+      },
+      {
+        "name": "Constructed",
+        "text": "For the purposes of effects targeting creatures by type (such as a ranger's Favored Enemy and bane weapons), androids count as both humanoids and constructs. Androids gain a +4 racial bonus on all saving throws against mind-affecting effects, paralysis, poison, and stun effects, are not subject to fatigue or exhaustion, and are immune to disease and sleep effects. Androids can never gain morale bonuses, and are immune to fear effects and all emotion-based effects."
+      },
+      {
+        "name": "Nanite Surge",
+        "text": "An android's body is infused with nanites. Once per day as an immediate action, an android can cause her nanites to surge, granting a bonus equal to 3 + the android's character level on any one d20 roll; this ability must be activated before the roll is made. When an android uses this power, her circuitry-tattoos glow with light equivalent to that of a torch in illumination for 1 round."
+      }
+    ],
+    "alternate_traits": [
+      {
+        "name": "Repairing Nanites",
+        "text": "Some androids cannot prompt their nanites to aid them in any endeavor, but instead find that their nanites stitch their wounds together. The first time each day that such an android has taken an amount of damage greater than or equal to twice her Hit Dice, the nanites automatically activate, without an action. Her circuitry-tattoos glow with light equivalent to that of a torch for 1 round and she heals a number of hit points equal to twice her Hit Dice. This racial trait replaces nanite surge. Source PZO9280"
+      }
+    ],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Inner Sea Bestiary"
+    ]
+  },
+  {
     "id": "aphorite",
     "name": "Aphorite",
     "plural": "Aphorites",
@@ -6867,6 +6948,79 @@
     ]
   },
   {
+    "id": "astomoi",
+    "name": "Astomoi",
+    "plural": "Astomois",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": -2,
+      "wis": 2,
+      "int": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "astomoi"
+    ],
+    "senses": [
+      "scent"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "-2 Constitution, +2 Wisdom, +2 Intelligence",
+        "text": "Astomoi ever pursue enlightenment through self-denial and are psychically attuned to their surroundings, but their delicate bodies are more susceptible to the physical dangers of the world. They gain +2 Intelligence and +2 Wisdom but suffer -2 Constitution.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Astomoi are humanoids with the astomoi subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Astomoi are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Astomoi have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Astomoi begin play knowing Common, but as they have no mouths, they cannot speak. They have telepathy with a range of 100 feet. Astomoi with high Intelligence scores can choose any of the following languages: Abyssal, Aklo, Celestial, Elven, Gnome, Infernal, and Sylvan.",
+        "kind": "languages"
+      },
+      {
+        "name": "Scent",
+        "text": "Astomoi have the scent special ability."
+      },
+      {
+        "name": "Telepathic Senses",
+        "text": "Astomoi can't speak or see, but can mentally sense the area within 60 feet, as per darkvision, and can speak telepathically. An astomoi can't see anything beyond 60 feet. An astomoi must provide thought components for spells that normally require verbal components. It can use language-dependent abilities with its telepathy, but not abilities that depend on audible components."
+      },
+      {
+        "name": "Sensitive Breath",
+        "text": "Astomoi take a -2 penalty on saving throws against disease and inhaled poisons."
+      },
+      {
+        "name": "Mouthless",
+        "text": "Astomoi don't need to eat or drink to survive. Instead, they absorb the essence of food and drink; this consumes the nutrients of the meal as though it had been eaten, rendering the food useless to others. Astomoi consume potions and other ingested materials in the same fashion. Since they never actually ingest anything, they can't normally be exposed to ingested poisons."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "being-of-ib",
     "name": "Being of Ib",
     "plural": "Being of Ibs",
@@ -6938,6 +7092,68 @@
       {
         "name": "Amphibious",
         "text": "A being of Ib is able to survive indefinitely on land."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "caligni",
+    "name": "Caligni",
+    "plural": "Calignis",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": 2,
+      "con": 2,
+      "int": -2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Dark folk"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Dexterity, +2 Constitution, -2 Intelligence",
+        "text": "Caligni are quick and resilient, but generations of isolation and oppression have made them slow to accept new ideas. They gain +2 Dexterity and +2 Constitution but suffer -2 Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Caligni are humanoids with the dark folk subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Caligni are Medium creatures and thus have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Caligni have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "See in Darkness",
+        "text": "Caligni have the see in darkness special ability allowing them to see perfectly in darkness of any kind, including that created by deeper darkness."
+      },
+      {
+        "name": "Light Sensitivity",
+        "text": "Caligni are dazzled in areas of bright light."
+      },
+      {
+        "name": "Death Throes",
+        "text": "When a caligni is slain, its body combusts in a flash of searing light. All creatures within a 5-foot burst must succeed at a Fortitude save (DC = 10 + 1/2 the caligni's Hit Dice + the caligni's Constitution bonus) or be dazzled for 1d4 rounds. The corpse left behind is a third of the caligni's size, withered and unrecognizable as the individual. Raise dead and similar spells cast upon these remains restore a caligni as normal."
       }
     ],
     "alternate_traits": [],
@@ -7063,6 +7279,98 @@
     "d20_sources": [
       "Blood of the Sea"
     ]
+  },
+  {
+    "id": "deep-one-hybrid",
+    "name": "Deep One Hybrid",
+    "plural": "Deep One Hybrids",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": -2,
+      "wis": 2,
+      "con": 2
+    },
+    "size": "Medium",
+    "base_speed": 20,
+    "type": "humanoid",
+    "subtypes": [
+      "human",
+      "deepOne"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Aklo",
+        "Common"
+      ],
+      "bonus": [
+        "Abyssal",
+        "Aquan",
+        "Dwarven",
+        "Elven",
+        "Giant",
+        "Gnome",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Undercommon"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Dexterity, +2 Wisdom, +2 Constitution",
+        "text": "Deep one hybrids are hearty and devout, but tend to be somewhat slow and awkward in their movements. They gain +2 Constitution and +2 Wisdom but suffer -2 Dexterity.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Deep One Hybrids are Humanoids with the Human and Deep One subtypes.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Deep One Hybrids are Medium creatures and thus receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "A deep one hybrid's base speed is 20 feet, as it walks with a shuffling gait.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Deep one hybrids begin play speaking Aklo and Common. Hybrids with high Intelligence scores can choose from the following languages: Abyssal, Aquan, Dwarven, Elven, Giant, Gnome, Goblin, Halfling, Orc, and Undercommon.",
+        "kind": "languages"
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "A deep one hybrid can see twice as far as a human in starlight, moonlight, torchlight, and similar conditions of dim light."
+      },
+      {
+        "name": "Natural Armor",
+        "text": "A deep one hybrid's thick skin and dense fatty tissues grant it a +1 natural armor bonus to AC."
+      },
+      {
+        "name": "Final Change (Su)",
+        "text": "A deep one hybrid ages at the same rate as a half-orc. A mere 1d12 months after a deep one hybrid reaches venerable age (at 60 years old), it dies a painful, agonizing death, only to have its body transform into that of a mature deep one. This transformation functions as the reincarnate spell, with the newly formed deep one gaining the following modifications to its physical ability scores: +6 Strength, -2 Dexterity, and +6 Constitution."
+      },
+      {
+        "name": "Sea Longing (Ex)",
+        "text": "Every 24 hours a deep one hybrid spends in an area more than 10 miles from the sea, it must succeed at a DC 20 Will save or take 1 point of Wisdom drain."
+      },
+      {
+        "name": "Take to the Water (Ex)",
+        "text": "A deep one hybrid can hold its breath 10 times longer than a human can, and gains a +2 bonus on Initiative checks and Reflex saving throws while swimming. A deep one hybrid has a swim speed of 30 feet, and gains a +8 racial bonus on all Swim checks."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
   },
   {
     "id": "duskwalker",
@@ -8151,6 +8459,268 @@
     ]
   },
   {
+    "id": "monkey-goblin",
+    "name": "Monkey Goblin",
+    "plural": "Monkey Goblins",
+    "source": "Bestiary 6",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "dex": 4,
+      "cha": -2,
+      "wis": -2
+    },
+    "size": "Small",
+    "base_speed": 20,
+    "type": "humanoid",
+    "subtypes": [
+      "goblinoid"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Goblin"
+      ],
+      "bonus": [
+        "Common",
+        "Draconic",
+        "Dwarven",
+        "Gnoll",
+        "Gnome",
+        "Halfling",
+        "Orc"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+4 Dexterity, -2 Charisma, -2 Wisdom",
+        "text": "Monkey goblins are fast, but foolishly impulsive and disagreeable. As a result monkey goblins gain a +4 bonus to Dexterity, but suffer a -2 penalty to Wisdom and Charisma.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Goblinoid",
+        "text": "Monkey goblins are humanoids with the goblinoid subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Small",
+        "text": "Monkey goblins are Small creatures and thus gain a +1 size bonus to their AC and attack rolls, but suffer a -1 penalty to their CMD and on combat maneuver checks, and a +4 size bonus on Stealth checks.",
+        "kind": "size"
+      },
+      {
+        "name": "Speed (Slow)",
+        "text": "Monkey goblins have a base speed of 20 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Monkey goblins begin play speaking Goblin. Monkey goblins with high Intelligence scores can choose from the following: Common, Draconic, Dwarven, Gnoll, Gnome, Halfling, Orc.",
+        "kind": "languages"
+      },
+      {
+        "name": "Fearless",
+        "text": "Monkey goblins gain a +2 racial bonus on all saving throws against fear."
+      },
+      {
+        "name": "Acrobatic",
+        "text": "Monkey goblins gain a +2 racial bonus on Acrobatics and Stealth checks."
+      },
+      {
+        "name": "Natural Climber",
+        "text": "Monkey goblins have a climb speed of 30 feet."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Monkey goblins can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Prehensile Tail",
+        "text": "Monkey goblins have long, flexible tails that they can use to carry objects. They cannot wield weapons with their tails, but the tails do allow them to retrieve small objects stowed on their persons as a swift action."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "munavri",
+    "name": "Munavri",
+    "plural": "Munavris",
+    "source": "Bestiary 6",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "cha": 2,
+      "con": 2,
+      "wis": 2,
+      "dex": 4,
+      "int": 2,
+      "str": -2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "munavri"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [
+        "Munavri"
+      ],
+      "bonus": [
+        "Aklo",
+        "Aboleth",
+        "Aquan",
+        "Dark Folk",
+        "Draconic",
+        "Terran",
+        "Undercommon"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Charisma, +2 Constitution, +2 Wisdom, +4 Dexterity, +2 Intelligence, -2 Strength",
+        "text": "Descended from ancient humans who were forever changed by the harsh lands in the depths of the earth, munavris have exceptional abilities.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Munavris are humanoids with the munavri subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Munavris are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Normal Speed",
+        "text": "Munavris have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Munavris begin play speaking Munavri. Munavris with high Intelligence scores can choose from the following: Aklo, Aboleth, Aquan, Dark Folk, Draconic, Terran, and Undercommon.",
+        "kind": "languages"
+      },
+      {
+        "name": "Spell Resistance",
+        "text": "A munavri possesses an amount of spell resistance that's equal to 8 + her total number of class levels."
+      },
+      {
+        "name": "Senses",
+        "text": "Munavris have darkvision 120 feet."
+      },
+      {
+        "name": "Telepathy (Su)",
+        "text": "A munavri is able to mentally communicate with other munavris within 60 feet."
+      },
+      {
+        "name": "Light Blindness",
+        "text": "As deep underground dwellers, munavris suffer from light blindness. Abrupt exposure to any bright light blinds munavris for 1 round. On subsequent rounds, they are dazzled as long as they remain in the affected area."
+      },
+      {
+        "name": "Advanced Object Reading (Su)",
+        "text": "A munavri can instantly learn how to use almost any device. She can cast object reading at will, divining secrets of an object's history and its use. Once per day, she can select one weapon, suit of armor, or spell-trigger item on which she has cast object reading. For a number of minutes that equal her level, she is considered proficient with that item, or can make use of the spell-trigger device as if she were a spellcaster of the appropriate class."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "naiad",
+    "name": "Naiad",
+    "plural": "Naiads",
+    "source": "Bestiary 6",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": -2,
+      "cha": 2,
+      "dex": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "fey",
+    "subtypes": [
+      "water"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Sylvan"
+      ],
+      "bonus": [
+        "Aklo",
+        "Aquan",
+        "Dwarven",
+        "Elven",
+        "Giant",
+        "Gnome",
+        "Goblin",
+        "Halfling",
+        "Sylvan",
+        "any regional human tongue"
+      ]
+    },
+    "traits": [
+      {
+        "name": "-2 Strength, +2 Charisma, +2 Dexterity",
+        "text": "Naiads have elegant fey grace and beauty but have delicate builds.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Naiad are Fey with the Water subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Medium. Naiads are Medium creatures.",
+        "kind": "size"
+      },
+      {
+        "name": "Speed",
+        "text": "Naiads have a base speed of 30 feet and a swim speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Naiads begin play speaking Common and Sylvan. Naiads that have high Intelligence scores are able to choose from any of the following bonus languages: Aklo, Aquan, Dwarven, Elven, Giant, Gnome, Goblin, Halfling, Sylvan, and any regional human tongue.",
+        "kind": "languages"
+      },
+      {
+        "name": "Fey Nature",
+        "text": "Naiads have a +2 racial bonus on Handle Animal and Knowledge (nature) checks."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "All Naiads can see twice as far as humans can in dim light."
+      },
+      {
+        "name": "Inspiration (Su)",
+        "text": "A naiad can choose another intelligent creature to inspire by giving that creature a token (typically a lock of her hair). As long as the creature carries the naiad's token and retains her favor, that creature gains a +1 insight bonus on Will saving throws and Craft and Perform checks. The naiad retains a link to her token and its carrier as if she had cast a status spell on the carrier. The naiad can end this effect at any time as a free action. A single naiad can only inspire one other creature at a time in this manner."
+      },
+      {
+        "name": "Water Bond (Su)",
+        "text": "A naiad gains strength from a pond, lake, river, or other body of fresh water by bonding with it. While within 300 yards of her bonded body of water, she gains a +1 insight bonus to Armor Class and a +1 racial bonus on saving throws (these bonuses are not included in the stats above). Once per day as a full-round action that provokes attacks of opportunity, a naiad can forge a bond with a body of fresh water."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
     "id": "ogre",
     "name": "Ogre",
     "plural": "Ogres",
@@ -8210,6 +8780,94 @@
       {
         "name": "Darkvision",
         "text": "60 ft"
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "orang-pendak",
+    "name": "Orang-Pendak",
+    "plural": "Orang-Pendaks",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": 2,
+      "int": -2,
+      "wis": 2
+    },
+    "size": "Small",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "Orang-Pendak"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Sasquatch"
+      ],
+      "bonus": [
+        "Aklo",
+        "Common",
+        "Draconic",
+        "Goblin",
+        "Grippli",
+        "Sylvan",
+        "Vanaran",
+        "Vishkanya"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Strength, -2 Intelligence, +2 Wisdom",
+        "text": "Orang-pendaks are strong and intuitive, but not particularly clever. They gain +2 Strength and +2 Wisdom but suffer -2 Intelligence.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Orang-pendaks are humanoids with the orang-pendak subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Small",
+        "text": "Orang-pendaks are Small creatures and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls, a -1 penalty on combat maneuver checks and to CMD, and a +4 size bonus on Stealth checks.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Orang-pendaks have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Orang-pendaks begin play speaking Sasquatch. Orang-pendaks who have high Intelligence scores can choose from the following: Aklo, Common, Draconic, Goblin, Grippli, Sylvan, Vanaran, and Vishkanya. See the Linguistics skill page for more information about these languages.",
+        "kind": "languages"
+      },
+      {
+        "name": "Forest Walker (Ex)",
+        "text": "Orang-pendaks gain a +4 bonus on Climb and Stealth checks in forests and jungles."
+      },
+      {
+        "name": "Simian Empathy (Ex)",
+        "text": "Orang-pendaks gain a +4 racial bonus on Handle Animal and wild empathy checks with apes and monkeys."
+      },
+      {
+        "name": "Tear Apart (Ex)",
+        "text": "Orang-pendaks have powerful upper bodies and gain a +2 racial bonus on Strength checks to break or burst an object. This bonus also applies on combat maneuver checks to sunder with their unarmed attacks."
+      },
+      {
+        "name": "Own Two Feet (Ex)",
+        "text": "Orang-pendaks are extremely unnerved whenever they are riding another creature or on a vehicle, and they take a - 2 penalty on ability checks, attack rolls, damage rolls, saving throws, and skill checks when doing so."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Orang-pendaks can see twice as far as humans in conditions of dim light."
       }
     ],
     "alternate_traits": [],
@@ -8303,6 +8961,165 @@
       {
         "name": "Psychic Learning (Su)",
         "text": "When a reborn samsaran expends psychic energy to cast psychic reading to identify a humanoid's class, he temporarily treats two of the target's class skills as if they were class skills for him. He can use these skills untrained and gains a +2 insight bonus on such checks. These benefits last for 24 hours or until the reborn samsaran spends psychic energy to cast psychic reading again."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "reptoid",
+    "name": "Reptoid",
+    "plural": "Reptoids",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "str": 2,
+      "dex": -2,
+      "cha": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "shapechanger",
+      "Reptoid"
+    ],
+    "senses": [
+      "low-light vision"
+    ],
+    "languages": {
+      "starting": [
+        "Common",
+        "Reptoid"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Strength, -2 Dexterity, +2 Charisma",
+        "text": "Reptoids are both manipulative and strong, but they're deliberate in their movements. They gain +2 Strength and +2 Charisma but suffer -2 Dexterity.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Reptoid are humanoids with the Reptoid and shapechanger subtypes.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Reptoids are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Reptoids have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "All reptoids begin play speaking Common and Reptoid. Reptoids with high Intelligence scores can choose any languages they want (except for secret languages, such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "Scales",
+        "text": "When in its natural form, a reptoid has a +1 natural armor bonus."
+      },
+      {
+        "name": "Cold-Blooded (Ex)",
+        "text": "Reptoids receive a +2 racial saving throw bonus against mind-affecting effects and poison."
+      },
+      {
+        "name": "Natural Weapons (Ex)",
+        "text": "When in its natural form, a reptoid has a bite attack and two claw attacks that deal 1d3 points of damage each."
+      },
+      {
+        "name": "Low-Light Vision",
+        "text": "Reptoids can see twice as far as humans in dim light."
+      },
+      {
+        "name": "Change Shape (Su)",
+        "text": "A reptoid can assume the appearance of a specific single Medium humanoid. The reptoid always takes this specific form when it uses this ability. The reptoid gains a +10 racial bonus on Disguise checks to appear as that type of humanoid. This ability otherwise functions as alter self, except the reptoid does not adjust its ability scores. A reptoid can select a new humanoid form by spending 1 week preparing itself for the change, but can then no longer assume its previous humanoid form."
+      },
+      {
+        "name": "Mental Potency (Ex)",
+        "text": "A reptoid's mental effects can affect more powerful creatures or a greater number of creatures than normal. Both the Hit Die limit and the total number of Hit Dice affected by each enchantment or illusion spell it casts increase by 1. For enchantment and illusion spells it casts that target a number of creatures greater than one, the number of creatures affected also increases by one (so a spell that targets one creature per level would be affected, but a spell that targets only one creature would not be). This ability stacks with the mesmerist's ability of the same name."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
+  },
+  {
+    "id": "rougarou",
+    "name": "Rougarou",
+    "plural": "Rougarous",
+    "source": "Bestiary 6",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "wis": 2,
+      "int": -2,
+      "str": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "shapechanger"
+    ],
+    "senses": [],
+    "languages": {
+      "starting": [],
+      "bonus": [
+        "Aklo",
+        "Elven",
+        "Gnoll",
+        "Gnome",
+        "Goblin",
+        "Sylvan"
+      ]
+    },
+    "traits": [
+      {
+        "name": "+2 Wisdom, -2 Intelligence, +2 Strength",
+        "text": "+2 Strength, +2 Wisdom, -2 Intelligence. Rougarous are strong and alert, but simplistic.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Rougarou are humanoids with the shapechanger subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Medium. Rougarous are Medium creatures.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Rougarous have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Rougarous speak Common and their own racial language of Rougarou. Rougarous with high Intelligence scores can choose from these bonus languages: Aklo, Elven, Gnoll, Gnome, Goblin, or Sylvan.",
+        "kind": "languages"
+      },
+      {
+        "name": "Natural Weapon",
+        "text": "Rougarous have a bite attack that deals 1d4 points of damage. This is a secondary attack if a rougarou wields a manufactured weapon."
+      },
+      {
+        "name": "Senses",
+        "text": "Rougarous have low-light vision and the scent special ability."
+      },
+      {
+        "name": "Change Shape (Su)",
+        "text": "A rougarou can change shape once per day into a wolf as a standard action, as beast shape I. A rougarou can revert to its true form as a swift action."
       }
     ],
     "alternate_traits": [],
@@ -8424,6 +9241,308 @@
     "origin": "Foundry VTT pf1",
     "d20_sources": [
       "Blood of the Sea"
+    ]
+  },
+  {
+    "id": "shabti",
+    "name": "Shabti",
+    "plural": "Shabtis",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "con": 2,
+      "cha": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "outsider",
+    "subtypes": [
+      "native"
+    ],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Common"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Constitution, +2 Charisma",
+        "text": "Shabti have powerful bodies and presences to match. They gain +2 Constitution and +2 Charisma.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Shabti are outsiders with the native subtype.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Shabti are Medium creatures and receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Shabti have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Shabti begin play speaking Common. Those with high Intelligence scores can choose any languages they want (except secret languages, such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "Darkvision",
+        "text": "Shabti can see perfectly in the dark up to 60 feet."
+      },
+      {
+        "name": "Immortal",
+        "text": "Shabti do not age naturally and cannot die of old age. While some might come into being at age categories other than adulthood, they never leave their original age category. Spells and effects that cause aging affect a shabti as normal."
+      },
+      {
+        "name": "Immune to Undeath",
+        "text": "Shabti can't become undead. Spells and abilities that would transform a shabti into an undead creature have no effect."
+      },
+      {
+        "name": "Resist Level Drain",
+        "text": "A shabti takes no penalties from energy drain effects, though he can still be killed if he accrues more negative levels than he has Hit Dice. After 24 hours, any negative levels a shabti takes are automatically removed without the need for an additional saving throw."
+      },
+      {
+        "name": "Past Life Knowledge",
+        "text": "Shabti remember bits of their past lives. As a result, they treat all Knowledge skills as class skills."
+      },
+      {
+        "name": "Spell-Like Ability",
+        "text": "Shabti can use suggestion once per day as a spell-like ability, with the caster level equal to the shabti's class level."
+      },
+      {
+        "name": "Shattered Soul",
+        "text": "Shabti who are killed are exceptionally difficult to return to life. Those who attempt to return a shabti to life using raise dead, resurrection, or similar spells must succeed at a caster level check equal to 10 + the shabti's Hit Dice. If this check fails, the spell fails and the caster can't return the shabti to life for the next 24 hours (though the caster can try again after this period)."
+      }
+    ],
+    "alternate_traits": [
+      {
+        "name": "Blank Slate",
+        "text": "Some shabti are bereft of memories of their past lives but can accomplish great improvisations. Shabti with this racial trait can, once per day as a free action, treat any skill as though they had a number of ranks equal to half of their character levels for one skill check (minimum 1 rank). This racial trait replaces past life knowledge."
+      },
+      {
+        "name": "Facsimile",
+        "text": "A few shabti are made with such skill they are nearly perfect copies of a mortal. Shabti with this racial trait appear to be human, save perhaps for minor features like unusual skin color. They count as humanoid (human) as well as outsider (native) for all purposes (such as humanoid-affecting spells like charm person). This racial trait replaces immune to undeath and alters the native subtype."
+      },
+      {
+        "name": "Pharaonic Will",
+        "text": "Rather than working to influence others, some shabti focus inward. Once per day as an immediate action after failing a save against a charm, compulsion, or fear effect, a shabti with this racial trait can reroll the save with a +2 racial bonus. This racial trait replaces spell-like ability."
+      },
+      {
+        "name": "Soul Sympathy",
+        "text": "Crafted to suffer punishments intended for their masters, some shabti can use this mortal connection to serve as reciprocal conduits. As an immediate action after being afflicted by temporary negative levels, a shabti with this racial trait can force the creature that inflicted the negative levels to suffer the same cumulative penalties, hit point loss, and caster level reduction. The shabti can use this ability only on an enemy within 60 feet and can share penalties with only one creature at a time. The shabti can sever this link as a free action. This racial trait replaces resist level drain."
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Bard",
+        "text": "Add 1/2 to the bard's bardic knowledge bonus."
+      },
+      {
+        "class": "Bloodrager",
+        "text": "Add 1/4 to the bloodrager's effective class level when determining the power of her bloodrager bloodline powers."
+      },
+      {
+        "class": "Investigator",
+        "text": "Add 1/6 rounds to the duration of the investigator's studied combat."
+      },
+      {
+        "class": "Medium",
+        "text": "Add 1/5 to the bonus allies gain from shared séance. This doesn't increase the medium's séance boon."
+      },
+      {
+        "class": "Oracle",
+        "text": "Add one spell from the psychic spell list that isn't on the cleric spell list to the list of spells the oracle knows. This spell must be at least 1 level below the highest spell level the oracle can cast."
+      },
+      {
+        "class": "Paladin",
+        "text": "Add 1/2 to the paladin's level when determining the effect of smite evil against incorporeal and ethereal creatures."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add 1/4 to a single existing favored terrain bonus (maximum bonus +1 per favored terrain)."
+      },
+      {
+        "class": "Shaman",
+        "text": "Add one spell from the psychic spell list that isn't on the shaman spell list to the list of spells the shaman knows. This spell must be at least 1 level below the highest spell level the shaman can cast."
+      },
+      {
+        "class": "Skald",
+        "text": "Add 1/2 to the skald's bardic knowledge bonus."
+      },
+      {
+        "class": "Spiritualist",
+        "text": "Add 1 foot to the limit of etheric tether. This includes how far the spiritualist's phantom can be before needing to concentrate and before the tether is broken."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Pyramid of the Sky Pharaoh"
+    ]
+  },
+  {
+    "id": "skinwalker",
+    "name": "Skinwalker",
+    "plural": "Skinwalkers",
+    "source": "Bestiary 5",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": -2,
+      "wis": 2
+    },
+    "size": "Medium",
+    "base_speed": 30,
+    "type": "humanoid",
+    "subtypes": [
+      "shapechanger",
+      "skinwalker"
+    ],
+    "senses": [
+      "low-light vision (ex)"
+    ],
+    "languages": {
+      "starting": [],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "-2 Intelligence, +2 Wisdom",
+        "text": "Skinwalkers are well attuned to the natural order of things and value passion above reason. They gain +2 Wisdom, -2 Intelligence, and +2 to one physical ability score while shapechanged (1 RP). While in their bestial form, they gain a +2 racial bonus to either Strength, Dexterity, or Constitution (see Change Shape). Skinwalkers of specific heritages (see below) gain different ability score modifiers, as indicated.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Skinwalkers are humanoids with the skinwalker and shapechanger subtypes.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Skinwalkers are Medium creatures and have no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Skinwalkers have a base speed of 30 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Skinwalkers speak Common. Skinwalkers with high Intelligence scores can choose any languages they want (except secret languages, such as Druidic).",
+        "kind": "languages"
+      },
+      {
+        "name": "Animal-Minded",
+        "text": "Skinwalkers have a +2 racial bonus on Handle Animal and wild empathy checks. Skinwalkers of specific heritages gain a +2 bonus to different checks as indicated."
+      },
+      {
+        "name": "Spell-Like Ability",
+        "text": "Skinwalkers with a Wisdom score of 11 or higher can use speak with animals once per day as a spell-like ability. The caster level for this ability is equal to the skinwalker's character level. Skinwalkers of specific heritages gain other spell-like abilities."
+      },
+      {
+        "name": "Low-Light Vision (Ex)",
+        "text": "Skinwalkers can see twice as far as humans in conditions of dim light."
+      },
+      {
+        "name": "Change Shape",
+        "text": "A skinwalker can change shape to and from a bestial form as a standard action. In bestial form, a skinwalker gains a +2 racial bonus to either Strength, Dexterity, or Constitution. While in this form, a skinwalker also takes on an animalistic feature that provides a special effect. Each time a skinwalker assumes bestial form, she can choose to gain one of the following features:\n\n2 claw attacks that each deal 1d4 points of damage\n\nDarkvision to a range of 60 feet.\n\n+1 racial bonus to natural armor."
+      }
+    ],
+    "alternate_traits": [
+      {
+        "name": "Beast Talker",
+        "text": "Some skinwalkers' ability to communicate with animals is stronger than their ability to transform. Such skinwalkers can only use their change shape ability once per day for 1 minute per level, but they can use their speak with animals spell-like ability at will. This racial trait alters the change shape and spell-like ability racial traits. [Source PZO9280]"
+      }
+    ],
+    "favored_class_options": [
+      {
+        "class": "Alchemist",
+        "text": "While in bestial form, add +1/4 to the alchemist's natural armor bonus from mutagens or +5 minutes duration to mutagen use."
+      },
+      {
+        "class": "Barbarian",
+        "text": "Add +1 to the character's total number of rage rounds per day while in bestial form."
+      },
+      {
+        "class": "Bloodrager",
+        "text": "Add +1 to the character's total number of rage rounds per day while in bestial form."
+      },
+      {
+        "class": "Brawler",
+        "text": "Choose two of the following combat maneuvers: bullrush, dirty trick, grapple, or trip. Gain a +1 bonus to the character's CMD when resisting these two combat maneuvers."
+      },
+      {
+        "class": "Fighter",
+        "text": "Choose two of the following combat maneuvers: bullrush, dirty trick, grapple, or trip. Gain a +1 bonus to the character's CMD when resisting these two combat maneuvers."
+      },
+      {
+        "class": "Cleric",
+        "text": "Add +1/2 to the cleric's channeled energy total when affecting animals, magic beasts, and shapechangers."
+      },
+      {
+        "class": "Hunter",
+        "text": "Add +1 hit point or +1 skill rank to the hunter's animal companion. If the character ever replaces this companion, the new companion gains these bonus hit points and skill ranks."
+      },
+      {
+        "class": "Ranger",
+        "text": "Add +1 hit point or +1 skill rank to the hunter's animal companion. If the character ever replaces this companion, the new companion gains these bonus hit points and skill ranks."
+      },
+      {
+        "class": "Inquisitor",
+        "text": "Add +1/2 to Intimidate checks while in bestial form and +1/2 to Bluff checks to feint."
+      },
+      {
+        "class": "Investigator",
+        "text": "Add +1/2 to Intimidate checks while in bestial form and +1/2 to Bluff checks to feint."
+      },
+      {
+        "class": "Oracle",
+        "text": "Add +1/2 to the oracle's level for the purpose of determining the effects of the oracle's curse ability."
+      },
+      {
+        "class": "Rogue",
+        "text": "Add +1/2 to Intimidate checks while in bestial form and +1/2 to Bluff checks to feint."
+      },
+      {
+        "class": "Ninja",
+        "text": "Add +1/2 to Intimidate checks while in bestial form and +1/2 to Bluff checks to feint."
+      },
+      {
+        "class": "Skald",
+        "text": "Add +1/4 to the skald's total number of raging song rounds per day."
+      },
+      {
+        "class": "Slayer",
+        "text": "Add +1/4 to the slayer's studied target bonus on Perception and Survival checks. When the slayer gains the stalker class feature, this increase also adds to the studied target bonus on Stealth checks."
+      },
+      {
+        "class": "Sorcerer",
+        "text": "Add one spell known from the sorcerer/wizard spell list. This spell must have the curse, emotion, or polymorph descriptor, and be at least one level below the highest spell level the mage can cast."
+      },
+      {
+        "class": "Wizard",
+        "text": "Add one spell known from the sorcerer/wizard spell list. This spell must have the curse, emotion, or polymorph descriptor, and be at least one level below the highest spell level the mage can cast."
+      },
+      {
+        "class": "Warpriest",
+        "text": "Add 1/2 to the number of times per day the warpriest can use blessings, but the warpriest can use these additional blessings on only those from the Air, Animal, Charm, Magic, Plant, or Sun domains."
+      }
+    ],
+    "origin": "Foundry VTT pf1",
+    "d20_sources": [
+      "Bestiary 5",
+      "Blood of the Moon"
     ]
   },
   {
@@ -8862,5 +9981,86 @@
     "d20_sources": [
       "Ultimate Wilderness"
     ]
+  },
+  {
+    "id": "yaddithian",
+    "name": "Yaddithian",
+    "plural": "Yaddithians",
+    "source": "Bestiary 6",
+    "category": "other",
+    "summary": null,
+    "description": [],
+    "ability_modifiers": {
+      "int": 2,
+      "con": 2,
+      "wis": -2
+    },
+    "size": "Medium",
+    "base_speed": 20,
+    "type": "aberration",
+    "subtypes": [],
+    "senses": [
+      "darkvision"
+    ],
+    "languages": {
+      "starting": [
+        "Yaddithian"
+      ],
+      "bonus": []
+    },
+    "traits": [
+      {
+        "name": "+2 Intelligence, +2 Constitution, -2 Wisdom",
+        "text": "+2 Constitution, +2 Intelligence, -2 Wisdom.",
+        "kind": "ability_scores"
+      },
+      {
+        "name": "Type",
+        "text": "Yaddithians are Aberrations.",
+        "kind": "type"
+      },
+      {
+        "name": "Medium",
+        "text": "Yaddithians are Medium creatures and thus receive no bonuses or penalties due to their size.",
+        "kind": "size"
+      },
+      {
+        "name": "Base Speed",
+        "text": "Yaddithians have a land speed of 20 feet.",
+        "kind": "speed"
+      },
+      {
+        "name": "Languages",
+        "text": "Yaddithians begin play speaking Yaddithian. Those with high Intelligence scores can choose any language as a bonus language.",
+        "kind": "languages"
+      },
+      {
+        "name": "Darkvision",
+        "text": "Yaddithians can see in the dark up to 60 feet."
+      },
+      {
+        "name": "Claws",
+        "text": "A Yaddithian has two claws that deal 1d4 points of damage each."
+      },
+      {
+        "name": "Defensive Abilities",
+        "text": "Yaddithians have cold resistance 5 and the no breath ability."
+      },
+      {
+        "name": "Rugose",
+        "text": "A Yaddithian gains a +1 natural armor bonus."
+      },
+      {
+        "name": "Cosmic Mind (Ex)",
+        "text": "A Yaddithian gets a +2 racial bonus on Knowledge and Spellcraft checks. A yaddithian spellcaster who would store spells in a spellbook or familiar instead stores those spells in its mind (but must expend the normal resources to learn new spells)."
+      },
+      {
+        "name": "Long-Lived (Ex)",
+        "text": "Yaddithians live for thousands of years; they gain no benefit or penalty from aging and are immune to magical aging effects."
+      }
+    ],
+    "alternate_traits": [],
+    "favored_class_options": [],
+    "origin": "Foundry VTT pf1"
   }
 ]

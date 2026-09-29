@@ -38,6 +38,9 @@ MANUAL_NOTICES = {
     'Legacy of Fire #1: Howl of the Carrion King': ["Pathfinder 19: Howl of the Carrion King. Copyright 2009, Paizo Publishing, LLC; Author: Erik Mona."],
     'Guardians of Dragonfall': ["GameMastery Module J2: Guardians of Dragonfall, Copyright 2007, Paizo Publishing, LLC. Author: Anson Caralya."],
     'Pathfinder Chronicles: Guide to the River Kingdoms': ["Pathfinder Chronicles: Guide to the River Kingdoms © 2010, Paizo Publishing, LLC; Authors: Eric Bailey, Kevin Carter, Elaine Cunningham, Adam Daigle, Mike Ferguson, Joshua J. Frost, James Jacobs, Steve Kenson, Rob Manning, Colin McComb, Alison McKenzie, China Miéville, Brock Mitchel-Slentz, Jason Nelson, Richard Pett, Chris Pramas, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Neil Spicer, Lisa Stevens, Matthew Stinson, and John Wick."],
+    # Read from the Section 15 on d20pfsrd.com's pages for the Bestiary 5 and 6 player races.
+    'Bestiary 5': ["Pathfinder Roleplaying Game Bestiary 5 © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, John Bennett, Logan Bonner, Creighton Broadhurst, Robert Brookes, Benjamin Bruck, Jason Bulmahn, Adam Daigle, Thurston Hillman, Eric Hindley, Joe Homes, James Jacobs, Amanda Hamon Kunz, Ben McFarland, Jason Nelson, Thom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, Wes Schneider, David Schwartz, Mark Seifter, Mike Shel, James L. Sutter, and Linda Zayas-Palmer."],
+    'Bestiary 6': ["Pathfinder Roleplaying Game Bestiary 6 © 2017, Paizo Inc.; Authors: Robert Brookes, Benjamin Bruck, John Compton, Paris Crenshaw, Adam Daigle, Crystal Frasier, James Jacobs, Thurston Hillman, Tim Hitchcock, Brandon Hodge, Jason Keeley, Isabelle Lee, Jason Nelson, Tim Nightengale, F. Wesley Schneider, David Schwartz, Mark Seifter, Todd Stewart, Josh Vogt, and Linda Zayas-Palmer."],
 }
 
 norm = lambda s: re.sub(r'[^a-z0-9]', '', html.unescape(s).lower().replace('&', 'and'))

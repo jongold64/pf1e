@@ -17,8 +17,9 @@ SIZES = {'fine': 'Fine', 'dim': 'Diminutive', 'tiny': 'Tiny', 'sm': 'Small', 'me
 ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha']
 ABILITY_NAMES = {'str': 'Strength', 'dex': 'Dexterity', 'con': 'Constitution', 'int': 'Intelligence', 'wis': 'Wisdom', 'cha': 'Charisma'}
 # Standard traits the app treats as structured facts (see CLAUDE.md), by the name Foundry gives them.
-KINDS = [(r'^ability score|^[+\-–]\d+ (strength|dexterity|constitution|intelligence|wisdom|charisma)', 'ability_scores'), (r'^type$', 'type'), (r'^size$', 'size'),
-         (r'^(base |normal |slow |fast )?speed$', 'speed'), (r'^languages?$', 'languages')]
+KINDS = [(r'^ability score|^[+\-–]\d+ (strength|dexterity|constitution|intelligence|wisdom|charisma)', 'ability_scores'), (r'^type$', 'type'),
+         (r'^(size|fine|diminutive|tiny|small|medium|large|huge)$', 'size'),
+         (r'^(base |normal |slow |fast )?speed( \((slow|normal|fast)\))?$', 'speed'), (r'^languages?$', 'languages')]
 TYPES = {'monstroushumanoid': 'monstrous humanoid', 'magicalbeast': 'magical beast'}
 
 
