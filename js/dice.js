@@ -56,6 +56,22 @@ export function rollD20(bonus, rng = randomDie) {
 // always misses; a natural roll in the threat range is confirmed with another attack roll, and a confirmed critical
 // rolls the damage `mult` times. Returns { title, lines: [text] }.
 // options.maxHealing (house rule): healing groups (heal: true) give their maximum instead of being rolled.
+// Extra damage from weapon special abilities: `extra` dice on every hit (never multiplied), and `burst` dice on a
+// confirmed critical, rolled once per step of the multiplier above x1 (`steps`). Returns { total, text } or null.
+function rollExtras(g, steps, rng) {
+  const parts = [];
+  let total = 0;
+  for (const x of g.extra || []) {
+    const r = rollDamage(x.dice, rng);
+    if (r) { total += r.total; parts.push(`${x.type || 'extra'} ${r.text}`); }
+  }
+  for (const x of steps > 0 ? g.burst || [] : []) {
+    const r = rollDamage(x.dice, rng, steps);
+    if (r) { total += r.total; parts.push(`${x.type ? `${x.type} ` : ''}burst ${r.text}`); }
+  }
+  return parts.length ? { total, text: parts.join('; ') } : null;
+}
+
 export function rollSpec(spec, rng = randomDie, options = {}) {
   const lines = [];
   for (const g of spec.groups) {
@@ -68,12 +84,15 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       // `critMult` rolls critical damage: the damage rolled that many times and added up.
       if (g.critMult && g.damage) {
         const dmg = rollDamage(g.damage, rng, g.critMult);
-        if (dmg) lines.push(`${prefix}critical damage (×${g.critMult}) ${dmg.text}`);
+        const more = rollExtras(g, g.critMult - 1, rng);
+        if (dmg) lines.push(`${prefix}critical damage (×${g.critMult}) ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         continue;
       }
       for (let i = 0; i < (g.times || 1); i++) {
         const dmg = g.damage ? rollDamage(g.damage, dmgRng) : null;
-        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}${tag}`);
+        const more = dmg ? rollExtras(g, 0, rng) : null;
+        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}${tag}`
+          + (more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''));
       }
       continue;
     }
@@ -100,8 +119,13 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       }
       const dmg = rollDamage(g.damage, dmgRng);
       if (dmg) {
-        text += `. ${g.heal ? 'Healing' : 'Damage'} ${dmg.text}`;
-        if (times > 1) text += `; critical damage ${rollDamage(g.damage, rng, times).text}`;
+        const more = rollExtras(g, 0, rng);
+        text += `. ${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`;
+        if (times > 1) {
+          const crit = rollDamage(g.damage, rng, times);
+          const critMore = rollExtras(g, times - 1, rng);
+          text += `; critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`;
+        }
       }
       lines.push(text);
     });

@@ -3,7 +3,7 @@
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
-import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
+import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -71,12 +71,18 @@ function renderList(app) {
 const attackText = a => a.attacks.map(signed).join('/');
 
 // Threat range and multiplier for the Roll buttons ("19-20/×2" -> 19, 2), with Improved Critical doubling the range.
-function critOf(w, flags, have) {
-  const threat = w.threat ? (flags.impCrit && have.has('Improved Critical') ? 21 - 2 * (21 - w.threat) : w.threat) : 20;
+// Threat range and multiplier, plus the extra damage dice the weapon's special abilities add. Keen and Improved
+// Critical each double the threat range; they don't stack.
+function critOf(w, flags, have, entry = {}) {
+  const fx = abilityDamage(entry?.abilities || []);
+  const doubled = (flags.impCrit && have.has('Improved Critical')) || fx.keen;
+  const threat = w.threat ? (doubled ? 21 - 2 * (21 - w.threat) : w.threat) : 20;
   const mult = Number(String(w.multiplier ?? w.critical ?? '').match(/\d+/)?.[0]) || 2;
-  return { threat, mult };
+  return { threat, mult, extra: fx.hit, burst: fx.burst, doubled, fx };
 }
-const rollGroup = (label, a, crit) => ({ label, attacks: a.attacks, damage: a.damage, ...crit });
+const critText = (w, crit) => (crit.doubled ? improvedCritical(w) : w.critical) || '—';
+const rollGroup = (label, a, crit) => ({ label, attacks: a.attacks, damage: a.damage, threat: crit.threat, mult: crit.mult,
+                                         extra: crit.extra, burst: crit.burst });
 const usedText = a => (a.used.length ? ` <span class="muted">(${esc(a.used.join(', '))})</span>` : '');
 
 // Everything weaponAttack needs that comes from the character rather than the weapon.
@@ -165,8 +171,8 @@ function renderCombat(app, view, ctx) {
   });
   const off = r.off;
   const spec = { title: 'Two-weapon full attack', groups: [
-    rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have)),
-    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have)),
+    rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have, mainEntry)),
+    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry)),
   ] };
   $('twf-result').innerHTML = `<dl class="facts attack-line">
       <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}</dd>
@@ -200,10 +206,12 @@ export function renderMyWeapons(app, view) {
     const args = attackArgs(app, view, ctx, e);
     const a = weaponAttack(args);
     const flags = ctx.flagsFor(e, w);
-    const crit = critOf(w, flags, have);
+    const crit = critOf(w, flags, have, e);
     const weaponName = weaponLabel(w, e);
-    // Extra lines: a flurry with monk weapons, and a double weapon used as two weapons.
-    const extra = [];
+    // Extra lines: situational ability damage (holy vs evil foes, bane vs its chosen type) with a roll of its own,
+    // a flurry with monk weapons, and a double weapon used as two weapons.
+    const extra = crit.fx.vs.map(v => `<dt>${esc(v.name)}</dt><dd>+${esc(v.dice)} against ${esc(v.vs)}
+        ${rollButton({ title: `${weaponName}: ${v.name.toLowerCase()} damage`, groups: [{ attacks: [], damage: v.dice, word: `${v.name.toLowerCase()} damage` }] }, `Roll +${v.dice}`)}</dd>`);
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}
@@ -233,11 +241,12 @@ export function renderMyWeapons(app, view) {
       <dl class="facts attack-line">
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>
           ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</dd>
-        <dt>Damage</dt><dd><b>${esc(a.damage)}</b>
-          ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage }] }, 'Roll damage')}</dd>
+        <dt>Damage</dt><dd><b>${esc(damageWithExtras(a.damage, crit.fx))}</b>
+          ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] }, 'Roll damage')}
+          ${crit.fx.notes.length ? `<div class="muted small">${esc(crit.fx.notes.join(' '))}</div>` : ''}</dd>
         ${extra.join('')}
-        <dt>Critical</dt><dd>${esc((flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—')}
-          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult }] }, 'Roll crit damage') : ''}</dd>
+        <dt>Critical</dt><dd>${esc(critText(w, crit))}${crit.fx.burst.length ? ` <span class="muted">(plus ${esc(crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', '))} per step above ×1)</span>` : ''}
+          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }, 'Roll crit damage') : ''}</dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
       </dl>
@@ -268,7 +277,8 @@ export function weaponSummaries(app, view) {
     const args = attackArgs(app, view, ctx, e);
     const a = weaponAttack(args);
     const flags = ctx.flagsFor(e, w);
-    const extra = [];
+    const crit = critOf(w, flags, have, e);
+    const extra = crit.fx.vs.map(v => `${v.name} +${v.dice} against ${v.vs}`);
     if (ctx.flurry?.babs && isMonkWeapon(w)) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`${ctx.flurry.name} ${attackText(f)} (${f.damage})`);
@@ -280,8 +290,8 @@ export function weaponSummaries(app, view) {
     return {
       name: weaponLabel(w, e),
       attack: attackText(a) + (a.used.length ? ` (${a.used.join(', ')})` : ''),
-      damage: a.damage,
-      critical: (flags.impCrit && have.has('Improved Critical') ? improvedCritical(w) : w.critical) || '—',
+      damage: damageWithExtras(a.damage, crit.fx),
+      critical: critText(w, crit) + (crit.fx.burst.length ? ` (plus ${crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', ')} per step above ×1)` : ''),
       range: w.range_ft ? `${w.range_ft} ft.` : '',
       extra,
       proficient: args.proficient,

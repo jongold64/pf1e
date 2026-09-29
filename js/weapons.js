@@ -84,6 +84,43 @@ export function unarmedForSize(mediumDice, size) {
 }
 
 // Improved Critical doubles the threat range: "19-20/×2" -> "17-20/×2", "×3" -> "19-20/×3".
+// Weapon special abilities that add damage (Core Rulebook and Advanced Player's Guide). `hit`: extra dice on every
+// hit, never multiplied on a critical; `burst`: extra dice on a confirmed critical, once per step of the multiplier
+// above ×1 (×2 = once, ×3 = twice); `vs`: only against those foes (rolled separately); `note`: something else to know.
+export const ABILITY_DAMAGE = {
+  flaming: { hit: '1d6', type: 'fire' }, frost: { hit: '1d6', type: 'cold' }, shock: { hit: '1d6', type: 'electricity' },
+  corrosive: { hit: '1d6', type: 'acid' },
+  'flaming-burst': { hit: '1d6', burst: '1d10', type: 'fire' }, 'icy-burst': { hit: '1d6', burst: '1d10', type: 'cold' },
+  'shocking-burst': { hit: '1d6', burst: '1d10', type: 'electricity' }, 'corrosive-burst': { hit: '1d6', burst: '1d10', type: 'acid' },
+  thundering: { burst: '1d8', type: 'sonic' },
+  merciful: { hit: '1d6', type: 'nonlethal', note: 'all its damage is nonlethal (the wielder can turn this off)' },
+  vicious: { hit: '2d6', type: '', note: 'the wielder takes 1d6 damage each hit' },
+  holy: { vs: 'evil foes', hit: '2d6' }, unholy: { vs: 'good foes', hit: '2d6' },
+  axiomatic: { vs: 'chaotic foes', hit: '2d6' }, anarchic: { vs: 'lawful foes', hit: '2d6' },
+  bane: { vs: 'its chosen creature type', hit: '2d6', note: 'against that type it also counts as +2 better (+2 on attack and damage rolls)' },
+};
+
+// What a weapon's special abilities add: { hit: [{ dice, type }], burst: [{ dice, type }], vs: [{ name, dice, vs }],
+// notes: [text], keen } (keen doubles the threat range; it doesn't stack with Improved Critical).
+export function abilityDamage(abilities = []) {
+  const out = { hit: [], burst: [], vs: [], notes: [], keen: false };
+  for (const a of abilities) {
+    if (a.id === 'keen') out.keen = true;
+    const d = ABILITY_DAMAGE[a.id];
+    if (!d) continue;
+    if (d.vs) out.vs.push({ name: a.name, dice: d.hit, vs: d.vs });
+    else if (d.hit) out.hit.push({ dice: d.hit, type: d.type });
+    if (d.burst) out.burst.push({ dice: d.burst, type: d.type });
+    if (d.note) out.notes.push(`${a.name}: ${d.note}`);
+  }
+  return out;
+}
+
+// "1d8+3 plus 1d6 fire" (the extra dice every hit adds).
+export function damageWithExtras(damage, fx) {
+  return fx.hit.length ? `${damage} plus ${fx.hit.map(x => `${x.dice}${x.type ? ` ${x.type}` : ''}`).join(' plus ')}` : damage;
+}
+
 export function improvedCritical(w) {
   if (!w.threat) return w.critical;
   const doubled = 21 - 2 * (21 - w.threat);

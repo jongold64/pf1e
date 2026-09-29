@@ -10,6 +10,7 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
+import { abilityDamage, damageWithExtras } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { classCounts, babList, racialAdjustments } from './rules.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
@@ -1102,6 +1103,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('crafted weapon: magic at half, masterwork in full', weaponCost({ price_gp: 15 }, { enh: 1, abilities: [{ bonus: 1 }], crafted: true }), 4315);
   check('bought weapon: full price', weaponCost({ price_gp: 15 }, { enh: 1, abilities: [{ bonus: 1 }] }), 8315);
   check('magic part of a mundane item is 0', magicPart(0, [], 2000), 0);
+  const fx = abilityDamage([{ id: 'flaming-burst', name: 'Flaming Burst' }, { id: 'keen', name: 'Keen' }, { id: 'holy', name: 'Holy' }]);
+  check('flaming burst: +1d6 fire every hit, 1d10 fire burst; keen; holy only vs evil',
+        `${fx.hit.map(x => x.dice + x.type).join()} ${fx.burst.map(x => x.dice).join()} ${fx.keen} ${fx.vs.map(v => v.vs).join()}`, '1d6fire 1d10 true evil foes');
+  check('damage text with extras', damageWithExtras('1d8+3', fx), '1d8+3 plus 1d6 fire');
+  const seq = [20, 20, 3, 4, 5, 6, 7, 8, 9, 10];  // attack 20, confirm 20, then damage dice
+  let k = 0;
+  const fixed = () => seq[k++ % seq.length];
+  const r = rollSpec({ title: 't', groups: [{ attacks: [5], damage: '1d8', threat: 19, mult: 3, extra: fx.hit, burst: fx.burst }] }, fixed);
+  check('a critical with a burst weapon rolls the burst dice (x3: two d10s)', /fire burst 1d10 \(\d+\) \+ 1d10/.test(r.lines[0]), true);
+  check('...and the extra 1d6 fire once, not multiplied', (r.lines[0].match(/fire 1d6/g) || []).length, 2);
 }
 
 const failed = results.filter(r => !r.pass);

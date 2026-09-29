@@ -201,7 +201,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   in PSRD-Data: the player counts unmet ones with a stepper. Costs: crafted weapons/armor pay half the magic part
   (`crafted` flag; `weaponCost`/`armorCost`), crafted listed items `{ crafted: true }` count at `listedCost`, and
   `state.craftedItems` (potions/scrolls/wands) at half their price. Weapon/armor names come from `magicPrefix`
-  (`weaponLabel`). Special abilities don't change attack/damage numbers yet (shown by name).
+  (`weaponLabel`). Weapon ability damage (`ABILITY_DAMAGE`/`abilityDamage` in weapons.js, hand-entered): `hit` dice on
+  every hit (flaming, frost, shock, corrosive, bursts, merciful, vicious), never multiplied; `burst` dice on a confirmed
+  critical once per step above x1 (bursts, thundering); `vs` situational dice with a roll of their own (holy, unholy,
+  axiomatic, anarchic, bane); keen doubles the threat range (not stacking with Improved Critical). `rollSpec` rolls a
+  group's `extra`/`burst` (dice.js `rollExtras`). Other abilities are shown by name only.
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved
