@@ -10,6 +10,12 @@ export function signed(n) {
   return n >= 0 ? `+${n}` : `${n}`;
 }
 
+// 1 -> "1st", 2 -> "2nd", 12 -> "12th".
+export function ordinal(n) {
+  const s = n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+  return `${n}${s}`;
+}
+
 const isRow = line => line.includes(' | ');
 
 function table(rows) {

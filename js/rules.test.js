@@ -9,7 +9,7 @@ import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty } f
 import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
-import { paragraphs } from './dom.js';
+import { paragraphs, ordinal } from './dom.js';
 import { classCounts, babList, racialAdjustments } from './rules.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -23,7 +23,7 @@ import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
-import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency, archetypesFor, unchainedGaps } from './archetypes.js';
+import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency, archetypesFor, unchainedGaps, unchainedFit, kiPowerTrades } from './archetypes.js';
 import { replacedTraits, raceWithAlternates, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
@@ -1051,6 +1051,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('the unchained rogue is offered rogue archetypes', archetypesFor('rogue-unchained', archetypes).some(a => a.class === 'rogue'), true);
   check('a rogue archetype replacing trap sense fits the unchained rogue (danger sense)', unchainedGaps(cls('rogue'), ur, arch('rogue-scout')).length, 0);
   check('...and replaces danger sense there', replacedEntries(ur, { features: [{ name: 'x', replaces: ['trap sense'] }] }).map(e => e.name).join(), 'Danger Sense');
+  const um = cls('monk-unchained'), monk = cls('monk');
+  const zenFit = unchainedFit(monk, um, arch('monk-zen-archer'));
+  check('Zen Archer on the unchained monk: allowed, trading ki powers for the abilities it lacks', `${zenFit.why === ''} ${zenFit.kiPowers > 0}`, 'true true');
+  const trades = kiPowerTrades(monk, um, [arch('monk-zen-archer')]).trades;
+  check('each traded ability takes a different ki power, gained at or after its level',
+        trades.every((t, i) => t.level >= 4 && trades.findIndex(x => x.level === t.level) === i), true);
+  const qing = arch('monk-qinggong-monk'), asp = arch('monk-black-asp');
+  const both = kiPowerTrades(monk, um, [qing, asp]);
+  check('two archetypes needing more than the 9 ki powers: some abilities are short', both.short.length > 0 || both.trades.length <= 9, true);
+  check('the traded ki powers show as replaced in the class table',
+        classWithArchetypes(um, [arch('monk-zen-archer')], trades).progression.some(r => (r.replaced || []).some(x => /ki power/.test(x))), true);
+  check('ordinal', `${ordinal(1)} ${ordinal(2)} ${ordinal(3)} ${ordinal(11)} ${ordinal(12)} ${ordinal(22)}`, '1st 2nd 3rd 11th 12th 22nd');
   check('the unchained barbarian is offered barbarian archetypes, not rogue ones',
         archetypesFor('barbarian-unchained', archetypes).every(a => ['barbarian', 'barbarian-unchained'].includes(a.class)), true);
 }

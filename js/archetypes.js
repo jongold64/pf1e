@@ -62,6 +62,50 @@ export function unchainedGaps(original, unchained, arch) {
   return [...new Set(gaps)];
 }
 
+// The table's ruling for the unchained monk: a monk archetype may trade away an ability the unchained monk no longer
+// has (slow fall, high jump, diamond body, ...) by giving up a ki power instead, one per ability. The unchained monk
+// gains a ki power at these levels.
+export const KI_POWER_TRADE = { 'monk-unchained': [4, 6, 8, 10, 12, 14, 16, 18, 20] };
+
+// The level an ability first appears in a class table (1 if it isn't found).
+function tableLevel(cls, phrase) {
+  const options = phrase.replace(/\([^)]*\)/g, ' ').split(/\s+or\s+/).map(phraseParts);
+  const row = (cls.progression || []).find(r => (r.special || []).some(s => options.some(p => matches(p, s, r.level))));
+  return row ? row.level : 1;
+}
+
+// Ki powers given up for original-class archetypes on the unchained monk: { trades: [{ archetype, feature, level }],
+// short: [feature] } — each missing ability takes the first unused ki power gained at or after its level (else the
+// latest one left); `short` lists abilities with no ki power left to give up.
+export function kiPowerTrades(original, unchained, archetypes) {
+  const free = [...(KI_POWER_TRADE[unchained.id] || [])];
+  const trades = [], short = [];
+  if (!free.length) return { trades, short };
+  for (const a of archetypes.filter(x => x.class === original.id)) {
+    for (const gap of unchainedGaps(original, unchained, a)) {
+      const lv = tableLevel(original, gap);
+      const i = free.findIndex(l => l >= lv);
+      const level = i >= 0 ? free.splice(i, 1)[0] : free.pop();
+      if (level === undefined) short.push(gap);
+      else trades.push({ archetype: a.name, feature: gap, level });
+    }
+  }
+  return { trades, short };
+}
+
+// Whether an original-class archetype can go on an unchained class alongside the ones chosen: { why } says why not
+// ('' if it can), `kiPowers` how many ki powers it costs the unchained monk.
+export function unchainedFit(original, unchained, arch, chosen = []) {
+  const missing = unchainedGaps(original, unchained, arch);
+  if (!missing.length) return { why: '', kiPowers: 0 };
+  if (!KI_POWER_TRADE[unchained.id]) {
+    return { why: `changes ${missing.slice(0, 2).join(', ')}, which the ${unchained.name} doesn't have`, kiPowers: 0 };
+  }
+  const { short } = kiPowerTrades(original, unchained, [...chosen.filter(a => a.id !== arch.id), arch]);
+  if (short.length) return { why: `not enough ki powers left to trade for ${short.slice(0, 2).join(', ')}`, kiPowers: 0 };
+  return { why: '', kiPowers: missing.length };
+}
+
 function specialNumber(s) {
   const m = String(s).match(/[+]?(\d+)/);
   return m ? Number(m[1]) : null;
@@ -185,14 +229,16 @@ export function changedClassSkills(list, change) {
   return [...kept, ...(change.add || []).filter(s => !have.has(s)).map(skill => ({ skill }))];
 }
 
-// The class with its archetypes applied (the same object when there are none).
-export function classWithArchetypes(cls, archetypes = []) {
+// The class with its archetypes applied (the same object when there are none). `kiTrades` (from kiPowerTrades) marks
+// the ki powers the unchained monk gave up.
+export function classWithArchetypes(cls, archetypes = [], kiTrades = []) {
   if (!archetypes.length) return cls;
   const gone = new Set(archetypes.flatMap(a => replacedEntries(cls, a).map(e => `${e.level}#${e.index}`)));
   const progression = cls.progression.map(row => ({
     ...row,
     special: (row.special || []).filter((_, i) => !gone.has(`${row.level}#${i}`)),
-    replaced: (row.special || []).filter((_, i) => gone.has(`${row.level}#${i}`)),
+    replaced: [...(row.special || []).filter((_, i) => gone.has(`${row.level}#${i}`)),
+               ...kiTrades.filter(t => t.level === row.level).map(t => `ki power (traded for ${t.feature})`)],
     archetype_features: [],
   }));
   let classSkills = cls.class_skills || [];

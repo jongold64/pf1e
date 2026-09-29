@@ -178,6 +178,10 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   (`archetypesFor`); `unchainedGaps` greys out ones that replace or change a feature the unchained table doesn't have
   (names only, since unchained tables list each feature once without steps), and danger sense counts as trap sense
   (`SAME_AS`, per Pathfinder Unchained). Unnumbered table entries match any step number.
+  The user's table ruling for the unchained monk (`KI_POWER_TRADE`): a monk archetype may trade away an ability the
+  unchained monk no longer has by giving up one ki power per ability (`kiPowerTrades`: the first unused ki power at
+  4th, 6th, ... 20th level at or after the ability's level); `unchainedFit` says whether an archetype fits and what
+  it costs. Traded ki powers show struck out (`classWithArchetypes(cls, archs, kiTrades)`).
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits.
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /

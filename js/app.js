@@ -16,7 +16,7 @@ import {
   SKILLS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
-import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
@@ -25,7 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
-import { classWithArchetypes, archetypeConflict, archetypesFor, unchainedGaps, UNCHAINED_FROM } from './archetypes.js';
+import { classWithArchetypes, archetypeConflict, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
@@ -748,6 +748,12 @@ function loadText(load) {
   return `${name} (${load.weight} lbs.; light up to ${load.capacity.light}, medium ${load.capacity.medium}, heavy ${load.capacity.heavy})`;
 }
 
+// Ki powers the unchained monk gives up for monk archetypes (none for other classes).
+function kiTradesFor(cls) {
+  const original = UNCHAINED_FROM[cls.id] && data.classes.find(c => c.id === UNCHAINED_FROM[cls.id]);
+  return original ? kiPowerTrades(original, cls, chosenArchetypes(cls.id)).trades : [];
+}
+
 // The archetypes chosen for a class, as records.
 function chosenArchetypes(classId) {
   return (state.archetypes[classId] || []).map(id => data.archetypesById.get(id)).filter(Boolean);
@@ -768,7 +774,7 @@ function computeView() {
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).
-  const byId = new Map(data.classes.map(c => [c.id, classWithArchetypes(c, chosenArchetypes(c.id))]));
+  const byId = new Map(data.classes.map(c => [c.id, classWithArchetypes(c, chosenArchetypes(c.id), kiTradesFor(c))]));
   const classLevels = state.classLevels.map(id => byId.get(id));
   const counts = classCounts(classLevels);
   const classes = counts.map(e => e.cls);
@@ -937,26 +943,28 @@ function archetypePicker(cls, level, openFeatures) {
   const original = UNCHAINED_FROM[cls.id] && data.classes.find(c => c.id === UNCHAINED_FROM[cls.id]);
   // An original-class archetype on an unchained class: "Rogue archetype", and why it doesn't fit, if it doesn't.
   const from = a => (a.class !== cls.id ? ` · ${original.name} archetype` : '');
-  const gaps = a => (a.class !== cls.id ? unchainedGaps(original, base, a) : []);
+  const fit = a => (a.class !== cls.id ? unchainedFit(original, base, a, chosen) : { why: '', kiPowers: 0 });
+  const cost = n => (n ? ` · trades ${n} ki power${n === 1 ? '' : 's'}` : '');
   const chosen = chosenArchetypes(cls.id);
   const raceName = data.races.find(r => r.id === state.race)?.name;
+  const trades = original ? kiPowerTrades(original, base, chosen).trades : [];
   const taken = chosen.map(a => {
+    const mine = trades.filter(t => t.archetype === a.name);
+    const traded = mine.length ? `<p class="hint">Gives up the ki power${mine.length === 1 ? '' : 's'} gained at ${mine.map(t => ordinal(t.level)).join(', ')} level for ${esc(mine.map(t => t.feature).join(', '))}, which the ${esc(cls.name)} doesn't have.</p>` : '';
     const feats = a.features.map((f, i) => {
       const key = `${a.id}#${i}`;
       return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}>
         <summary>${esc(f.name)}</summary>${paragraphs(f.text)}</details>`;
     }).join('');
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${esc(from(a))}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
-        <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
+        <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>${traded}
       ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
       ${feats}</li>`;
   }).join('');
   const options = all.filter(a => !chosen.includes(a)).map(a => {
-    const missing = gaps(a);
-    const why = a.race && a.race !== raceName ? `${a.race} only`
-      : missing.length ? `changes ${missing.slice(0, 2).join(', ')}, which the ${cls.name} doesn't have`
-      : archetypeConflict(base, a, chosen);
-    const label = `${a.name}${a.race ? ` (${a.race})` : ''}${from(a) ? ` (${original.name})` : ''}${why ? ` — ${why}` : ''}`;
+    const { why: unfit, kiPowers } = fit(a);
+    const why = a.race && a.race !== raceName ? `${a.race} only` : unfit || archetypeConflict(base, a, chosen);
+    const label = `${a.name}${a.race ? ` (${a.race})` : ''}${from(a) ? ` (${original.name})` : ''}${why ? ` — ${why}` : cost(kiPowers)}`;
     return `<option value="${esc(a.id)}"${why ? ' disabled' : ''}>${esc(label)}</option>`;
   }).join('');
   return `<div class="archetypes"><h4>Archetypes</h4>
@@ -1503,14 +1511,14 @@ function openResult(type, id) {
     const targetCls = data.classes.find(c => c.id === target);
     const has = state.classLevels.includes(target);
     const taken = (state.archetypes[target] || []).includes(id);
-    const missing = target !== a.class ? unchainedGaps(cls, targetCls, a) : [];
+    const { why: unfit, kiPowers } = target !== a.class ? unchainedFit(cls, targetCls, a, chosenArchetypes(target)) : { why: '', kiPowers: 0 };
     const why = a.race && a.race !== data.races.find(r => r.id === state.race)?.name ? `${a.race} only`
-      : missing.length ? `it changes ${missing.slice(0, 2).join(', ')}, which the ${targetCls.name} doesn't have`
-      : archetypeConflict(targetCls, a, chosenArchetypes(target));
+      : unfit ? `it ${unfit}` : archetypeConflict(targetCls, a, chosenArchetypes(target));
     const feats = a.features.map(f => `<li><b>${esc(f.name)}</b> ${esc(f.text)}</li>`).join('');
     openDetail(a.name, `<p class="hint">${esc(cls.name)} archetype · ${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}</p>
       ${paragraphs(a.description || '')}<ul class="plain-list">${feats}</ul>
-      ${!taken && has && why ? `<p class="warning">Can't be taken now: ${esc(why)}.</p>` : ''}`,
+      ${!taken && has && why ? `<p class="warning">Can't be taken now: ${esc(why)}.</p>` : ''}
+      ${!taken && has && !why && kiPowers ? `<p class="hint">Taking it gives up ${kiPowers} ki power${kiPowers === 1 ? '' : 's'} for the monk abilities it replaces that the ${esc(targetCls.name)} doesn't have.</p>` : ''}`,
     taken ? [{ label: 'Go to Classes', primary: true, run: () => showTab('character') }]
       : has ? (why ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => {
         update({ archetypes: { ...state.archetypes, [target]: [...(state.archetypes[target] || []), id] } });
