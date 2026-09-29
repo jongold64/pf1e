@@ -229,6 +229,30 @@ export function changedClassSkills(list, change) {
   return [...kept, ...(change.add || []).filter(s => !have.has(s)).map(skill => ({ skill }))];
 }
 
+// The rules text for a class table entry ("bravery +1" -> the Bravery feature), '' when the class has none by that name.
+// Falls back to a numbered form's base ("Summon monster II" -> Summon Monster I), "DR" = damage reduction, and a
+// sub-ability described inside another feature's text ("Countersong (Su): ..." within Bardic Performance).
+export function featureDescription(cls, entry) {
+  const b = featureBase(String(entry).replace(/^DR\b/, 'damage reduction')).replace(/\s+(?:i|ii|iii|iv|v|vi|vii|viii|ix)$/, '');
+  if (!b) return '';
+  const feats = cls.features || [];
+  const baseOf = x => featureBase(x.name).replace(/\s+(?:i|ii|iii|iv|v|vi|vii|viii|ix)$/, '');
+  const f = feats.find(x => baseOf(x) === b)
+    || feats.find(x => baseOf(x).startsWith(`${b} `) || b.startsWith(`${baseOf(x)} `))
+    || (SAME_AS[b] && feats.find(x => baseOf(x) === SAME_AS[b]));
+  if (f) return f.text;
+  // "Countersong (Su): A bard can ..." up to the next "Name (Su):" paragraph.
+  for (const x of feats) {
+    const paras = String(x.text || '').split(/\n{2,}/);
+    const start = paras.findIndex(p => featureBase((p.match(/^([^:.]{2,60})(?:\s*\((?:Ex|Su|Sp)\))?\s*:/) || [])[1] || '') === b);
+    if (start >= 0) {
+      const end = paras.findIndex((p, i) => i > start && /^[^:.]{2,60}\((?:Ex|Su|Sp)\)\s*:/.test(p));
+      return paras.slice(start, end < 0 ? undefined : end).join('\n\n');
+    }
+  }
+  return '';
+}
+
 // The class with its archetypes applied (the same object when there are none). `kiTrades` (from kiPowerTrades) marks
 // the ki powers the unchained monk gave up.
 export function classWithArchetypes(cls, archetypes = [], kiTrades = []) {

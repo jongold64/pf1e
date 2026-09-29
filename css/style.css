@@ -550,3 +550,10 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .arch-feature p { margin: 4px 0; font-size: 0.9rem; }
 .features .arch-name { color: var(--accent); font-weight: 600; }
 .features s { color: var(--muted); }
+/* Class feature buttons in the Classes card's level list: replaced ones struck out, archetype ones in colour. */
+ol.features li:has(.terms) { display: flex; align-items: flex-start; gap: 10px; }
+ol.features li > b { min-width: 1.4em; padding-top: 5px; }
+.features .terms { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.features button.term { min-height: 30px; padding: 2px 9px; font-size: 0.85rem; }
+.features button.term-gone { color: var(--muted); }
+.features button.term-arch { color: var(--accent); font-weight: 600; }

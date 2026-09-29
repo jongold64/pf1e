@@ -182,6 +182,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   unchained monk no longer has by giving up one ki power per ability (`kiPowerTrades`: the first unused ki power at
   4th, 6th, ... 20th level at or after the ability's level); `unchainedFit` says whether an archetype fits and what
   it costs. Traded ki powers show struck out (`classWithArchetypes(cls, archs, kiTrades)`).
+- Class level list (Classes card): every entry is a popup button (`initTermPopover` on `#class-info`, items rebuilt in
+  `classItems` on each draw): class features show their rules text via `featureDescription` (table entry -> the class's
+  feature by name, numbered forms like "Summon monster II" -> the base, "DR" = damage reduction, or a "Name (Su):"
+  paragraph inside another feature, e.g. bard performances); replaced entries say which archetype feature replaced
+  them; archetype features show their own text.
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits ("Take this trait" fills the first empty trait slot; a note when all slots are full).
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /

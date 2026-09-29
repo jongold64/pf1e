@@ -72,7 +72,7 @@ export function initTermPopover(container, getItems) {
   const pop = document.createElement('div');
   pop.className = 'term-pop';
   pop.setAttribute('role', 'tooltip');
-  pop.id = 'term-pop';
+  if (!document.getElementById('term-pop')) pop.id = 'term-pop';
   pop.hidden = true;
   document.body.append(pop);
   let current = null;

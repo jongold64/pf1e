@@ -23,7 +23,7 @@ import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
-import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency, archetypesFor, unchainedGaps, unchainedFit, kiPowerTrades } from './archetypes.js';
+import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency, archetypesFor, unchainedGaps, unchainedFit, kiPowerTrades, featureDescription } from './archetypes.js';
 import { replacedTraits, raceWithAlternates, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
@@ -1062,6 +1062,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('two archetypes needing more than the 9 ki powers: some abilities are short', both.short.length > 0 || both.trades.length <= 9, true);
   check('the traded ki powers show as replaced in the class table',
         classWithArchetypes(um, [arch('monk-zen-archer')], trades).progression.some(r => (r.replaced || []).some(x => /ki power/.test(x))), true);
+  check('feature text: "bravery +1" finds Bravery', /Will saves against fear/.test(featureDescription(cls('fighter'), 'bravery +1')), true);
+  check('feature text: a bard performance inside Bardic Performance', /counter magic effects/.test(featureDescription(cls('bard'), 'countersong')), true);
+  check('feature text: "Summon monster II" finds Summon Monster I', /summon monster I/.test(featureDescription(cls('summoner'), 'Summon monster II')), true);
   check('ordinal', `${ordinal(1)} ${ordinal(2)} ${ordinal(3)} ${ordinal(11)} ${ordinal(12)} ${ordinal(22)}`, '1st 2nd 3rd 11th 12th 22nd');
   check('the unchained barbarian is offered barbarian archetypes, not rogue ones',
         archetypesFor('barbarian-unchained', archetypes).every(a => ['barbarian', 'barbarian-unchained'].includes(a.class)), true);

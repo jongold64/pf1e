@@ -25,7 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
-import { classWithArchetypes, archetypeConflict, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
+import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
@@ -71,6 +71,8 @@ let view = null;
 let pickerSlotId = null;
 let tab = 'character';
 let raceItems = [];
+// Popup text for the class feature buttons on the Classes card (rebuilt on each draw).
+let classItems = [];
 
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
@@ -482,6 +484,7 @@ function buildControls() {
     if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
   });
   initTermPopover($('race-info'), () => raceItems);
+  initTermPopover($('class-info'), () => classItems);
   initTraits(app);
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
   $('flaw-rows').addEventListener('change', e => {
@@ -1014,14 +1017,34 @@ function renderClasses(view) {
   }).join('');
 
   const open = new Set([...$('class-info').querySelectorAll('details.class-block[open]')].map(d => d.dataset.cls));
+  classItems = [];
   const openFeatures = new Set([...$('class-info').querySelectorAll('details.arch-feature[open]')].map(d => d.dataset.key));
   $('class-info').innerHTML = counts.map(e => {
     // Each level: the class's own features (ones an archetype replaced struck out) and the archetypes' features.
+    // Each entry is a button whose popup explains it: the class feature's rules text, what replaced it, or the
+    // archetype feature's own text.
+    const baseCls = data.classes.find(c => c.id === e.cls.id);
+    const replacedBy = new Map();  // "level|entry" -> "Feature (Archetype)"
+    for (const a of chosenArchetypes(e.cls.id)) {
+      for (const f of a.features) {
+        for (const x of replacedEntries(baseCls, { features: [f] })) replacedBy.set(`${x.level}|${x.name}`, `${f.name} (${a.name})`);
+      }
+    }
+    const term = (label, title, text, cls = '') => {
+      classItems.push({ title, text: String(text || '').split(/\n{2,}/).filter(Boolean) });
+      return `<button type="button" class="term${cls}" data-term="${classItems.length - 1}" aria-expanded="false">${label}</button>`;
+    };
+    const described = s => featureDescription(e.cls, s) || 'The class data has no description for this entry.';
     const features = e.cls.progression.slice(0, e.level).map(r => {
-      const own = (r.special || []).map(esc);
-      const gone = (r.replaced || []).map(s => `<s title="Replaced by an archetype">${esc(s)}</s>`);
-      const added = (r.archetype_features || []).map(f => `<span class="arch-name">${esc(f.name)}</span>`);
-      return `<li><b>${r.level}</b> ${[...own, ...gone, ...added].join(', ') || '—'}</li>`;
+      const own = (r.special || []).map(s => term(esc(s), s, described(s)));
+      const gone = (r.replaced || []).map(s => {
+        const ki = s.match(/^ki power \(traded for (.+)\)$/);
+        const why = ki ? `Given up so an archetype can replace ${ki[1]}, which this class doesn't have.`
+          : `Replaced by ${replacedBy.get(`${r.level}|${s}`) || 'an archetype'}.`;
+        return term(`<s>${esc(s)}</s>`, `${s} (replaced)`, `${why}\n\n${ki ? '' : described(s)}`, ' term-gone');
+      });
+      const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch'));
+      return `<li><b>${r.level}</b> <span class="terms">${[...own, ...gone, ...added].join('') || '—'}</span></li>`;
     }).join('');
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
