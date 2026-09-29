@@ -183,7 +183,7 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   4th, 6th, ... 20th level at or after the ability's level); `unchainedFit` says whether an archetype fits and what
   it costs. Traded ki powers show struck out (`classWithArchetypes(cls, archs, kiTrades)`).
 - Search (Character tab) also finds archetypes (details box with "Take …" when the character has the class and it
-  doesn't clash) and traits.
+  doesn't clash) and traits ("Take this trait" fills the first empty trait slot; a note when all slots are full).
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved

@@ -1530,8 +1530,22 @@ function openResult(type, id) {
       } }]);
   } else if (type === 'trait') {
     const t = data.traitsById.get(id);
+    // "Take this trait" puts it in the first empty trait slot (2, or 3 with the Extra Campaign Trait house rule).
+    const count = traitSlotCount(state.houseRules);
+    const taken = state.traits.slice(0, count).includes(id);
+    const empty = Array.from({ length: count }, (_, i) => i).find(i => !state.traits[i]);
+    const note = taken ? `<p class="hint">You have this trait.</p>`
+      : empty === undefined ? `<p class="warning">All ${count} trait slots are full. Remove one on the Feats tab to take this one.</p>` : '';
     openDetail(t.name, `<p class="hint">${esc(t.category)} trait${t.requirement ? ` (${esc(t.requirement)})` : ''} · ${esc(t.source)}</p>
-      ${paragraphs(t.text)}`, [{ label: 'Go to Feats (traits)', primary: true, run: () => showTab('feats') }]);
+      ${paragraphs(t.text)}${note}`, [
+      ...(!taken && empty !== undefined ? [{ label: 'Take this trait', primary: true, run: () => {
+        const traits = [...state.traits];
+        traits[empty] = id;
+        update({ traits });
+        showTab('feats');
+      } }] : []),
+      { label: 'Go to Feats (traits)', primary: taken || empty === undefined, run: () => showTab('feats') },
+    ]);
   } else if (type === 'feat') {
     const f = data.featsById.get(id);
     openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)),
