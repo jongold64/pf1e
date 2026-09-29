@@ -23,6 +23,7 @@ import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
+import { replacedEntries, archetypeConflict, classWithArchetypes, featureLevel, changedProficiency } from './archetypes.js';
 import { replacedTraits, raceWithAlternates, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollDamage, rollSpec } from './dice.js';
@@ -1015,6 +1016,37 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const base = { race: human, classLevels: [f, w, f, f], favoredClassId: 'fighter', baseScores: scores(10, 10, 10, 10, 10, 10), flexibleChoice: 'str' };
   check('favored picks: 1 HP level', characterStats({ ...base, favoredPicks: picks }).hp - characterStats(base).hp, 1);
   check('favored picks: 1 skill rank level', skillRanksAvailable({ ...base, favoredPicks: picks }) - skillRanksAvailable(base), 1);
+}
+
+{
+  // Archetypes
+  const archetypes = await fetch('data/archetypes.json').then(r => r.json());
+  const arch = id => archetypes.find(a => a.id === id);
+  const fighter = cls('fighter');
+  const thf = arch('fighter-two-handed-fighter');
+  check('Two-Handed Fighter replaces every bravery step and armor training 1-4',
+        replacedEntries(fighter, thf).map(e => e.level).join(), '2,3,6,7,10,11,14,15,18,19');
+  check('Two-Handed Fighter and Armor Master clash over bravery', /bravery/.test(archetypeConflict(fighter, arch('fighter-armor-master'), [thf])), true);
+  check('Two-Handed Fighter and Crossbowman ... are fine together or clash for a reason', typeof archetypeConflict(fighter, arch('fighter-crossbowman'), [thf]), 'string');
+  const changed = classWithArchetypes(fighter, [thf]);
+  check('replaced entries leave the class table', changed.progression[1].special.some(s => /bravery/i.test(s)), false);
+  check('the archetype feature is listed at its level', changed.progression[2].archetype_features.map(f => f.name).join(), 'Overhand Chop');
+  check('fighter bonus feats stay', featSlots({ race: race('human'), classLevels: [changed, changed], cls: changed }).filter(s => s.kind === 'class').length, 2);
+  check('no archetypes: the same class', classWithArchetypes(fighter, []), fighter);
+  const zen = classWithArchetypes(cls('monk'), [arch('monk-zen-archer')]);
+  check('Zen Archer keeps the monk bonus feat entries (it changes the list)', zen.progression[0].special.some(s => /bonus feat/i.test(s)), true);
+  check('Zen Archer loses stunning fist', zen.progression[0].special.some(s => /stunning fist/i.test(s)), false);
+  const cad = classWithArchetypes(fighter, [arch('fighter-cad')]);
+  check('Cad: Bluff becomes a class skill, Climb stops being one',
+        `${classSkillTest(cad)('Bluff')} ${classSkillTest(cad)('Climb')}`, 'true false');
+  check('Cad: no heavy armor proficiency', proficiencyFeats(cad).includes('Armor Proficiency, Heavy'), false);
+  check('Cad: still light armor', proficiencyFeats(cad).includes('Armor Proficiency, Light'), true);
+  check('Urban Barbarian: Diplomacy in, Survival out',
+        `${classSkillTest(classWithArchetypes(cls('barbarian'), [arch('barbarian-urban-barbarian')]))('Diplomacy')} ${classSkillTest(classWithArchetypes(cls('barbarian'), [arch('barbarian-urban-barbarian')]))('Survival')}`, 'true false');
+  check('proficiency text: tower shields removed', /except tower shields/.test(changedProficiency('all armor (heavy, light, and medium) and shields (including tower shields)', { remove: ['tower shields'] })), true);
+  check('Rogue Talents (extra choices) is listed where rogue talents start', featureLevel(cls('rogue'), arch('rogue-scout').features.find(f => f.name === 'Rogue Talents')), 2);
+  check('Hedge Witch Major Hexes (extra choices) is listed where major hexes start', featureLevel(cls('witch'), arch('witch-hedge-witch').features.find(f => f.name === 'Major Hexes')), 10);
+  check('every archetype belongs to a known class', archetypes.every(a => classes.some(c => c.id === a.class)), true);
 }
 
 const failed = results.filter(r => !r.pass);

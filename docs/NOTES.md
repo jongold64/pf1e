@@ -154,6 +154,18 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `d20pfsrd-races`, `PAGES` map; third-party "3rd Party ..." sections and "[JBE:...]"-tagged entries skipped;
   `d20_sources` on the race puts those books' notices in the license).
 
+- Archetypes (`js/archetypes.js`, data from `build_archetypes.py`): `state.archetypes` = { class id: [archetype ids] }.
+  computeView swaps each class for `classWithArchetypes(cls, chosen)`: table entries a feature `replaces` are removed
+  (kept in `row.replaced`, shown struck out) unless the feature has the same name (Zen Archer's "Bonus Feats" changes
+  the list, so the bonus feat slots stay); archetype features go in `row.archetype_features` at `featureLevel` (their
+  "At Nth level", else the replaced entry's level, else null for lists of extra talents/hexes); `class_skills`
+  changes (set/add/remove) and `proficiency` changes (replace, or add with armor/shield/weapon groups removed via
+  `changedProficiency`) are applied to the class copy, so skills, proficiency and feat prerequisites follow.
+  Phrase matching (`phraseParts`/`featureBase`): a number picks that step ("armor training 1"), "gained at 2nd
+  level" picks levels, a bare name every step; possessives are dropped only as a fallback ("witch's hex").
+  `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
+  archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
+  and feature fold-outs stay open across redraws.
 - UI checks worth repeating after changes (headless Edge works: `msedge --headless=new --dump-dom` /
   `--screenshot`, loading a scratch page that drives the app in an iframe on the same origin): every
   race and class at a few levels, each tab, search results opening their tab, and a character saved

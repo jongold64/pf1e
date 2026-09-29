@@ -71,8 +71,11 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const racial = `<p>${esc(traits.join(', ') || '—')}</p>
     <p><b>Favored class:</b> ${esc(fav.name)}${favored ? ` — ${esc(favored)}` : ''}</p>`;
   const features = view.counts.map(e => {
-    const specials = e.cls.progression.slice(0, e.level).flatMap(r => (r.special || []).map(s => `${s} (${r.level})`));
-    return `<p><b>${esc(e.cls.name)} ${e.level}:</b> ${esc(specials.join(', ') || '—')}</p>`;
+    // The class's own features (minus any an archetype replaced) and the archetypes' features, by level.
+    const specials = e.cls.progression.slice(0, e.level).flatMap(r =>
+      [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)].map(s => `${s} (${r.level})`));
+    const arch = e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : '';
+    return `<p><b>${esc(e.cls.name)}${esc(arch)} ${e.level}:</b> ${esc(specials.join(', ') || '—')}</p>`;
   }).join('');
 
   // Spells per day for each casting class, then the chosen spells by spell level.

@@ -25,6 +25,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
+import { classWithArchetypes, archetypeConflict } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
@@ -89,6 +90,7 @@ const state = {
   flexible: 'str',
   flexible2: 'dex',  // second +2 for Dual Talent (a human alternate trait)
   alternates: [],    // alternate racial traits taken (names from the race's alternate_traits)
+  archetypes: {},    // class id -> archetype ids taken for that class
   increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
   // Favored class bonus at each character level: 'hp', 'skill' or 'option' (the race's favored class option);
   // missing means 'hp'. Only levels in the favored class count.
@@ -159,6 +161,11 @@ function load(saved) {
   }
   state.favoredPicks = state.favoredPicks.slice(0, 20).map(p => (['hp', 'skill', 'option'].includes(p) ? p : 'hp'));
   delete state.favored;
+  // Archetypes: only ones that exist, for the class they're filed under.
+  const arch = state.archetypes && typeof state.archetypes === 'object' && !Array.isArray(state.archetypes) ? state.archetypes : {};
+  state.archetypes = Object.fromEntries(Object.entries(arch)
+    .map(([cid, ids]) => [cid, (Array.isArray(ids) ? ids : []).filter(id => data.archetypesById.get(id)?.class === cid)])
+    .filter(([, ids]) => ids.length));
   const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
   state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
   // Saves from before multiclassing have one class and a level instead of a class for each level.
@@ -504,6 +511,17 @@ function buildControls() {
     if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
   });
   $('favored-class').addEventListener('change', e => update({ favoredClass: e.target.value }));
+  // Archetypes: add from the list in a class's block, or remove one taken.
+  $('class-info').addEventListener('change', e => {
+    const cid = e.target.dataset.archetypeAdd;
+    if (cid && e.target.value) update({ archetypes: { ...state.archetypes, [cid]: [...(state.archetypes[cid] || []), e.target.value] } });
+  });
+  $('class-info').addEventListener('click', e => {
+    const btn = e.target.closest('[data-archetype-remove]');
+    if (!btn) return;
+    const cid = btn.dataset.cls;
+    update({ archetypes: { ...state.archetypes, [cid]: (state.archetypes[cid] || []).filter(id => id !== btn.dataset.archetypeRemove) } });
+  });
   // "Every level": the same favored class bonus at every level.
   $('favored-summary').addEventListener('click', e => {
     const all = e.target.closest('[data-favored-all]')?.dataset.favoredAll;
@@ -729,6 +747,11 @@ function loadText(load) {
   return `${name} (${load.weight} lbs.; light up to ${load.capacity.light}, medium ${load.capacity.medium}, heavy ${load.capacity.heavy})`;
 }
 
+// The archetypes chosen for a class, as records.
+function chosenArchetypes(classId) {
+  return (state.archetypes[classId] || []).map(id => data.archetypesById.get(id)).filter(Boolean);
+}
+
 // The racial +2 choice: one ability, or two with Dual Talent (a human alternate trait).
 function flexibleFor(race) {
   return race.dual_talent ? [state.flexible, state.flexible2] : state.flexible;
@@ -743,7 +766,8 @@ function withTraitSaves(fb, traitFx) {
 function computeView() {
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
-  const byId = new Map(data.classes.map(c => [c.id, c]));
+  // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).
+  const byId = new Map(data.classes.map(c => [c.id, classWithArchetypes(c, chosenArchetypes(c.id))]));
   const classLevels = state.classLevels.map(id => byId.get(id));
   const counts = classCounts(classLevels);
   const classes = counts.map(e => e.cls);
@@ -902,6 +926,36 @@ function renderFavoredSummary(view) {
       ${option ? '<button type="button" data-favored-all="option">Racial option</button>' : ''}</div>`;
 }
 
+// Archetypes for one class (inside its block on the Classes card): the ones taken, with their features (each one's
+// text in a fold-out), and a list to add another. Archetypes that clash with one already taken, or that belong to
+// another race, can't be picked.
+function archetypePicker(cls, level, openFeatures) {
+  const base = data.classes.find(c => c.id === cls.id);
+  const all = data.archetypes.filter(a => a.class === cls.id);
+  if (!all.length) return '';
+  const chosen = chosenArchetypes(cls.id);
+  const raceName = data.races.find(r => r.id === state.race)?.name;
+  const taken = chosen.map(a => {
+    const feats = a.features.map((f, i) => {
+      const key = `${a.id}#${i}`;
+      return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}>
+        <summary>${esc(f.name)}</summary>${paragraphs(f.text)}</details>`;
+    }).join('');
+    return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
+        <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
+      ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
+      ${feats}</li>`;
+  }).join('');
+  const options = all.filter(a => !chosen.includes(a)).map(a => {
+    const why = a.race && a.race !== raceName ? `${a.race} only` : archetypeConflict(base, a, chosen);
+    return `<option value="${esc(a.id)}"${why ? ' disabled' : ''}>${esc(a.name)}${a.race ? ` (${esc(a.race)})` : ''}${why ? ` — ${esc(why)}` : ''}</option>`;
+  }).join('');
+  return `<div class="archetypes"><h4>Archetypes</h4>
+    ${taken ? `<ul class="arch-list">${taken}</ul>` : '<p class="hint">None taken. An archetype swaps some class features for its own.</p>'}
+    <select data-archetype-add="${esc(cls.id)}" aria-label="Add a ${esc(cls.name)} archetype">
+      <option value="">Add a ${esc(cls.name)} archetype…</option>${options}</select></div>`;
+}
+
 // The Classes card: a class for each level, favored class, where prestige spellcasting goes, and each
 // class's features (and requirements, for prestige classes).
 function renderClasses(view) {
@@ -942,15 +996,25 @@ function renderClasses(view) {
         `<option value="${esc(t.id)}"${t.id === slot.target.id ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>`;
   }).join('');
 
+  const open = new Set([...$('class-info').querySelectorAll('details.class-block[open]')].map(d => d.dataset.cls));
+  const openFeatures = new Set([...$('class-info').querySelectorAll('details.arch-feature[open]')].map(d => d.dataset.key));
   $('class-info').innerHTML = counts.map(e => {
-    const features = e.cls.progression.slice(0, e.level)
-      .map(r => `<li><b>${r.level}</b> ${(r.special || []).map(esc).join(', ') || '—'}</li>`).join('');
+    // Each level: the class's own features (ones an archetype replaced struck out) and the archetypes' features.
+    const features = e.cls.progression.slice(0, e.level).map(r => {
+      const own = (r.special || []).map(esc);
+      const gone = (r.replaced || []).map(s => `<s title="Replaced by an archetype">${esc(s)}</s>`);
+      const added = (r.archetype_features || []).map(f => `<span class="arch-name">${esc(f.name)}</span>`);
+      return `<li><b>${r.level}</b> ${[...own, ...gone, ...added].join(', ') || '—'}</li>`;
+    }).join('');
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
-    return `<details class="class-block"${req && req.status !== 'met' ? ' open' : ''}>
-      <summary>${esc(e.cls.name)} ${e.level} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
+    const isOpen = open.has(e.cls.id) || (req && req.status !== 'met');
+    const names = e.cls.archetypes?.length ? ` · ${esc(e.cls.archetypes.join(', '))}` : '';
+    return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
+      <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
       ${reqHtml}
+      ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
     </details>`;
   }).join('');
@@ -1459,12 +1523,13 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
       fetch('data/armor.json').then(r => r.json()),
       fetch('data/traits.json').then(r => r.json()),
+      fetch('data/archetypes.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -1479,6 +1544,7 @@ async function start() {
   data.featsById = new Map(data.feats.map(f => [f.id, f]));
   data.armorById = new Map(data.armor.map(a => [a.id, a]));
   data.traitsById = new Map(data.traits.map(t => [t.id, t]));
+  data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

@@ -27,6 +27,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-feats')) else []),
                     # Traits read the skill names from classes.json, so they come after the classes.
                     ('build_traits.py', 'data/traits.json'),
+                    # Archetypes read the class ids and race names, so they also come after the classes.
+                    ('build_archetypes.py', 'data/archetypes.json'),
                     # Paizo traits PSRD lacks, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py (d20pfsrd-traits).
                     *([('build_d20_traits.py', 'data/traits.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-traits')) else []),

@@ -9,6 +9,7 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | `data/classes.json` | 67 classes: 11 core, 8 base, 10 hybrid, 3 alternate, 18 prestige, 5 NPC from PSRD-Data, plus 12 from the Foundry data: 6 occult (Occult Adventures), 4 unchained (Pathfinder Unchained), shifter and vigilante. Prestige classes include requirements and which levels add spellcasting to another class (`caster_advance`) |
 | `data/feats.json` | 1,227 feats, including 162 mythic feats; plus 2,155 Paizo feats from later books (Ultimate Wilderness, Ultimate Intrigue, Occult Adventures, Horror Adventures, Player Companions, ...) taken from d20pfsrd.com (marked `"origin": "d20pfsrd"`) |
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
+| `data/archetypes.json` | 393 class archetypes from PSRD-Data (Advanced Player's Guide, Ultimate Magic, Ultimate Combat, Advanced Class Guide, Advanced Race Guide racial archetypes, Monster Codex, Technology Guide): `{ id, name, class, source, race?, description, features: [{ name, text, level?, replaces, alters, class_skills?, proficiency? }] }`. `replaces`/`alters` are the class features each feature's text names |
 | `data/traits.json` | 1,336 character traits: 225 from the Advanced Player's Guide and Ultimate Campaign (combat, faith, magic, social, race, regional, religion, campaign), plus 1,111 from later Paizo books (Player Companions, Inner Sea Gods, Adventure Path player's guides, ...) taken from d20pfsrd.com (marked `"origin": "d20pfsrd"`; adds equipment, family, mount and exemplar traits). Simple unconditional numeric `effects` (saves, initiative, skill bonuses, class skills) are read from the text |
 | `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items). Items with several prices have `price_options`, read from the price text or from a price table in the description (bag of holding types, with each type's weight) |
 | `data/spells.json` | 3,004 spells with school, class spell levels, components, range, duration, saves and text: 1,536 from PSRD-Data (mythic spells left out) plus 1,468 from later Paizo books via the Foundry VTT Pathfinder 1e data (marked `"origin": "Foundry VTT pf1"`) |
@@ -97,7 +98,7 @@ All text is plain text (no HTML). Every record has an `id` (like `half-orc` or `
 - A few facts missing from the source text were filled in by hand in `scripts/build_races.py`
   (half-elf and half-orc subtypes, svirfneblin speed, gathlain and wyrwood creature types).
 - The source has no Benefit text for the feat Talented Magician.
-- Archetypes, spells, equipment, and skill descriptions are not included yet.
+- Skill descriptions are not included yet.
 
 ## Spot checks
 

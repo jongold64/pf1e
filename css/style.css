@@ -536,3 +536,17 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .class-levels select[data-favored-index] { flex: 1 1 100%; font-size: 0.9rem; }
 .favored-summary { flex-basis: 100%; }
 .favored-summary p { margin: 4px 0; }
+
+/* Archetypes, inside each class's block on the Classes card. */
+.archetypes { margin: 8px 0; padding: 8px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.archetypes h4 { margin: 0 0 6px; font-size: 0.95rem; }
+.archetypes select { width: 100%; }
+.arch-list { list-style: none; margin: 0 0 8px; padding: 0; }
+.arch-taken { padding: 6px 0; }
+.arch-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.arch-head button { margin-left: auto; }
+.arch-feature { margin: 4px 0 0 12px; }
+.arch-feature summary { cursor: pointer; }
+.arch-feature p { margin: 4px 0; font-size: 0.9rem; }
+.features .arch-name { color: var(--accent); font-weight: 600; }
+.features s { color: var(--muted); }
