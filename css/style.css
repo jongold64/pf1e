@@ -26,13 +26,15 @@
 
 * { box-sizing: border-box; }
 
+/* Everything 10% smaller than the browser default (rem sizes follow this). */
+html { font-size: 90%; }
 body {
   margin: 0;
   padding: 16px;
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 17px;
+  font-size: 15.3px;
   line-height: 1.4;
 }
 
@@ -44,7 +46,7 @@ h2 { margin: 0 0 10px; font-size: 1.1rem; }
 main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: 14px;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -53,15 +55,15 @@ main {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: 9px;
+  padding: 14px;
 }
 .card.wide { grid-column: 1 / -1; }
 
 /* Large touch targets for tablets */
 select, input[type="number"], button {
   font: inherit;
-  min-height: 44px;
+  min-height: 40px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg);
@@ -88,7 +90,7 @@ table.abilities { width: 100%; border-collapse: collapse; }
 .abilities th, .abilities td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); }
 .abilities th:first-child, .abilities td:first-child { text-align: left; }
 .abilities .base { display: inline-flex; align-items: center; gap: 6px; }
-.abilities button { width: 44px; padding: 0; font-size: 1.3rem; }
+.abilities button { width: 40px; padding: 0; font-size: 1.3rem; }
 .abilities .value { min-width: 2ch; font-weight: 600; }
 .abilities .score { font-weight: 700; font-size: 1.1rem; }
 
@@ -122,7 +124,7 @@ ol.features { list-style: none; padding: 0; margin: 6px 0 0; }
 ol.features li { padding: 3px 0; border-bottom: 1px solid var(--border); }
 ol.features b { display: inline-block; min-width: 2.2em; color: var(--text); }
 
-.check-row { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 6px; }
+.check-row { display: flex; align-items: center; gap: 10px; min-height: 40px; margin-bottom: 6px; }
 .check-row input { width: 22px; height: 22px; }
 table.spells { width: 100%; border-collapse: collapse; margin-top: 4px; }
 .spells th, .spells td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border); }
@@ -133,7 +135,7 @@ table.spells { width: 100%; border-collapse: collapse; margin-top: 4px; }
 /* Feats */
 .count { font-weight: 400; font-size: 0.95rem; color: var(--muted); margin-left: 6px; }
 .feat-slots { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-.slot { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.slot { border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; }
 .slot-label { font-weight: 600; margin-bottom: 4px; }
 .slot .hint { margin: 0 0 6px; }
 .slot .warning { margin: 6px 0 0; font-size: 0.95rem; }
@@ -162,13 +164,13 @@ dialog#feat-picker {
 dialog#feat-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .picker-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .picker-head h2 { margin: 0; }
-#feat-search { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin: 8px 0;
+#feat-search { width: 100%; font: inherit; min-height: 40px; padding: 0 12px; margin: 8px 0;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 .picker-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
 .picker-filters select { width: auto; }
 #feat-list { border-top: 1px solid var(--border); }
 .feat-item { border-bottom: 1px solid var(--border); }
-.feat-item summary { padding: 10px 4px; min-height: 44px; }
+.feat-item summary { padding: 10px 4px; min-height: 40px; }
 .feat-item small { color: var(--muted); margin-left: 6px; }
 .feat-body { padding: 0 4px 12px 30px; }
 .feat-body button { margin-top: 10px; }
@@ -181,7 +183,7 @@ table.skills { width: 100%; border-collapse: collapse; }
 .skills td.total { font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
 .skills td.total .roll-button { font-weight: 400; }
 .skills .base { display: inline-flex; align-items: center; gap: 6px; }
-.skills .base button { width: 44px; padding: 0; font-size: 1.3rem; }
+.skills .base button { width: 40px; padding: 0; font-size: 1.3rem; }
 .skills .value { min-width: 2ch; font-weight: 600; }
 .skill-name { font-weight: 600; }
 .skills tr.specialty td:first-child { padding-left: 20px; }
@@ -191,7 +193,7 @@ table.skills { width: 100%; border-collapse: collapse; }
 .tag.muted { background: var(--border); color: var(--text); }
 .muted { color: var(--muted); }
 .add-specialty { display: flex; gap: 6px; margin-top: 6px; }
-.add-specialty input { flex: 1; min-width: 0; font: inherit; min-height: 44px; padding: 0 10px;
+.add-specialty input { flex: 1; min-width: 0; font: inherit; min-height: 40px; padding: 0 10px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 button.link { border: 0; background: none; color: var(--accent); min-height: 0; padding: 0 4px;
   font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
@@ -214,14 +216,14 @@ button.link { border: 0; background: none; color: var(--accent); min-height: 0; 
 
 /* Search */
 .search-row { display: flex; gap: 8px; }
-.search-row input { flex: 1; min-width: 0; font: inherit; min-height: 44px; padding: 0 12px;
+.search-row input { flex: 1; min-width: 0; font: inherit; min-height: 40px; padding: 0 12px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 #search-status { margin: 8px 0 0; }
 .search-results { list-style: none; padding: 0; margin: 8px 0 0; max-height: 60vh; overflow-y: auto;
   border-top: 1px solid var(--border); }
 .search-results li { border-bottom: 1px solid var(--border); }
 .search-results button, .pick-list button {
-  display: flex; align-items: baseline; gap: 8px; width: 100%; min-height: 44px; padding: 6px 8px;
+  display: flex; align-items: baseline; gap: 8px; width: 100%; min-height: 40px; padding: 6px 8px;
   border: 0; border-radius: 0; background: none; color: var(--text); text-align: left; font: inherit;
 }
 .search-results button:hover, .pick-list button:hover { background: var(--bg); }
@@ -236,7 +238,7 @@ button.link { border: 0; background: none; color: var(--accent); min-height: 0; 
 .tag.type-magic-item { background: #8b2d1f; }
 
 /* List + side panel (spells, magic items) */
-.filter { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin-bottom: 10px;
+.filter { width: 100%; font: inherit; min-height: 40px; padding: 0 12px; margin-bottom: 10px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 .item-filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .item-filters .filter { flex: 2 1 220px; width: auto; }
@@ -302,7 +304,7 @@ table.inventory, table.versions { width: 100%; border-collapse: collapse; }
 .inventory th:first-child, .inventory td:first-child, .versions th:first-child, .versions td:first-child { text-align: left; }
 .inventory td:nth-child(2) { text-align: center; }
 .inventory .base { display: inline-flex; align-items: center; gap: 6px; }
-.inventory .base button { width: 44px; padding: 0; font-size: 1.3rem; }
+.inventory .base button { width: 40px; padding: 0; font-size: 1.3rem; }
 .inventory tr.worn td { background: var(--bg); }
 button.item-link { font-size: 1rem; text-decoration: none; padding: 0; text-align: left; min-height: 32px; }
 .versions { margin: 8px 0; font-size: 0.95rem; }
@@ -320,12 +322,12 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .my-spell-level .count.over { color: var(--bad); font-weight: 600; }
 .chip-list { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .chip-list li { display: inline-flex; }
-.chip { min-height: 36px; padding: 0 10px; border-radius: 18px 0 0 18px; border-right: 0; }
-.chip-remove { min-height: 36px; width: 36px; padding: 0; border-radius: 0 18px 18px 0; color: var(--muted); }
+.chip { min-height: 32px; padding: 0 10px; border-radius: 18px 0 0 18px; border-right: 0; }
+.chip-remove { min-height: 32px; width: 36px; padding: 0; border-radius: 0 18px 18px 0; color: var(--muted); }
 .pick-list button.mine { font-weight: 600; }
 
 /* Weapons */
-.weapon-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.weapon-card { border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; margin-bottom: 9px; }
 .weapon-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .weapon-head .item-link { font-weight: 700; font-size: 1.05rem; }
 .attack-line { grid-template-columns: max-content 1fr max-content 1fr; }
@@ -333,7 +335,10 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .weapon-controls { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; }
 .weapon-controls label { display: inline-flex; align-items: center; gap: 6px; }
 .weapon-controls select { width: auto; }
-.check-row.small { min-height: 36px; font-size: 0.9rem; margin: 0; }
+/* The special abilities list gets a row of its own under Quality. */
+.weapon-controls .craft-abilities, .weapon-controls > .hint { flex-basis: 100%; margin: 4px 0 0; }
+.weapon-controls .craft-abilities ul { margin: 4px 0; }
+.check-row.small { min-height: 32px; font-size: 0.9rem; margin: 0; }
 .check-row.small input { width: 20px; height: 20px; }
 .tag.type-weapon { background: #6b3a3a; }
 
@@ -355,7 +360,7 @@ h3.spell-class { margin: 14px 0 2px; font-size: 1.05rem; }
 /* Race card: items that open a popup explaining them */
 .terms { display: flex; flex-wrap: wrap; gap: 6px; }
 button.term {
-  min-height: 36px; padding: 4px 10px; border-radius: 16px; font-size: 0.9rem;
+  min-height: 32px; padding: 4px 10px; border-radius: 16px; font-size: 0.9rem;
   background: var(--card); color: var(--text); cursor: help; text-align: left;
 }
 button.term[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
@@ -386,7 +391,7 @@ h3.sub-heading { margin: 14px 0 6px; font-size: 1rem; }
 .char-pick { display: inline-flex; align-items: center; gap: 8px; flex: 1 1 240px; min-width: 0; }
 .char-pick select, .char-pick input { flex: 1; min-width: 0; }
 .char-bar input[type="text"] {
-  font: inherit; min-height: 44px; border: 1px solid var(--border); border-radius: 8px;
+  font: inherit; min-height: 40px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg); color: var(--text); padding: 0 10px;
 }
 .char-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -469,8 +474,8 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .hp-now #hp-status { font-weight: 700; text-transform: uppercase; }
 .hp-change { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hp-change .base { display: inline-flex; align-items: center; gap: 6px; }
-.hp-change .base button { width: 44px; padding: 0; font-size: 1.3rem; }
-#hp-amount { width: 5em; text-align: center; min-height: 44px; font: inherit; border: 1px solid var(--border);
+.hp-change .base button { width: 40px; padding: 0; font-size: 1.3rem; }
+#hp-amount { width: 5em; text-align: center; min-height: 40px; font: inherit; border: 1px solid var(--border);
   border-radius: 8px; background: var(--bg); color: var(--text); }
 /* In the Race card the tracker sits above AC and saves. */
 .card .hp-tracker { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
@@ -500,14 +505,14 @@ button.house-rule.on .yn { background: var(--accent); color: #fff; }
 dialog#trait-picker { width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 16px;
   border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); }
 dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
-#trait-search { width: 100%; font: inherit; min-height: 44px; padding: 0 12px; margin: 8px 0;
+#trait-search { width: 100%; font: inherit; min-height: 40px; padding: 0 12px; margin: 8px 0;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 #trait-list { border-top: 1px solid var(--border); }
 
 /* Flaws (house rule) */
 .flaw-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; }
 .flaw-row label { display: flex; align-items: center; gap: 8px; flex: 1 1 260px; }
-.flaw-row input { flex: 1; min-width: 0; font: inherit; min-height: 44px; padding: 0 10px; border: 1px solid var(--border);
+.flaw-row input { flex: 1; min-width: 0; font: inherit; min-height: 40px; padding: 0 10px; border: 1px solid var(--border);
   border-radius: 8px; background: var(--bg); color: var(--text); }
 
 /* Hero points (Action Points house rule), in the Race card under the hit point tracker. */
@@ -516,7 +521,7 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .hero-count { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .hero-count b { font-size: 2rem; line-height: 1; }
 .hero-count .base { display: inline-flex; gap: 6px; }
-.hero-count .base button { width: 44px; padding: 0; font-size: 1.3rem; }
+.hero-count .base button { width: 40px; padding: 0; font-size: 1.3rem; }
 .hero-uses { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .hero-note { margin: 0 0 8px; font-weight: 600; }
 .hero-note:empty { display: none; }
