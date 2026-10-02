@@ -5,7 +5,7 @@ import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, fe
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
          skillTotal, ranksFor } from './skills.js';
-import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty } from './armor.js';
+import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty, druidMetalWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
@@ -1113,6 +1113,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const r = rollSpec({ title: 't', groups: [{ attacks: [5], damage: '1d8', threat: 19, mult: 3, extra: fx.hit, burst: fx.burst }] }, fixed);
   check('a critical with a burst weapon rolls the burst dice (x3: two d10s)', /fire burst 1d10 \(\d+\) \+ 1d10/.test(r.lines[0]), true);
   check('...and the extra 1d6 fire once, not multiplied', (r.lines[0].match(/fire 1d6/g) || []).length, 2);
+}
+
+{
+  // Armor proficiency read from class text (druid "light and medium armor"; bard's spell-failure sentence isn't proficiency)
+  const armorOf = id => proficiencyFeats(cls(id)).filter(f => /Armor Proficiency/.test(f)).map(f => f.split(', ')[1][0]).join('');
+  check('druid: light and medium armor', armorOf('druid'), 'LM');
+  check('bard: light armor only', armorOf('bard'), 'L');
+  check('paladin: all armor', armorOf('paladin'), 'LMH');
+  check('magus: light armor only', armorOf('magus'), 'L');
+  check('investigator: light armors', armorOf('investigator'), 'L');
+  check('monk: none', armorOf('monk'), '');
+  const byId = armorById;
+  check('druid in chainmail: warned', druidMetalWarnings({ armor: byId('chainmail') }, ['druid']).length, 1);
+  check('druid in hide with a wooden shield: fine', druidMetalWarnings({ armor: byId('hide'), shield: byId('light-wooden-shield') }, ['druid']).length, 0);
+  check('fighter in chainmail: no druid warning', druidMetalWarnings({ armor: byId('chainmail') }, ['fighter']).length, 0);
 }
 
 const failed = results.filter(r => !r.pass);

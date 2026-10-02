@@ -83,6 +83,22 @@ export function armorAttackPenalty(effects, haveFeats) {
 
 // Proficiency problems with worn armor, given every feat the character has (proficiencies included).
 // Returns a list of messages; empty when proficient.
+// Armor and shields not made of metal (from their descriptions; the data has no material field). Druids may wear
+// only these (Core Rulebook: padded, leather or hide armor, wooden armor and wooden shields).
+export const NON_METAL = new Set(['padded', 'quilted-cloth', 'silken-ceremonial', 'leather', 'lamellar-cuirass', 'hide',
+  'wooden', 'stone-coat', 'light-wooden-shield', 'heavy-wooden-shield', 'light-wooden-quickdraw-shield', 'tower-shield',
+  'klar', 'madu']);
+
+// A druid in metal armor or with a metal shield can't cast druid spells or use supernatural or spell-like class
+// abilities while wearing it and for 24 hours after. A special material that isn't metal (darkwood, dragonhide) is fine.
+export function druidMetalWarnings(effects, classIds, materials = {}) {
+  if (!classIds.includes('druid')) return [];
+  const metal = (item, material) => item && !NON_METAL.has(item.id) && !['darkwood', 'dragonhide'].includes(material);
+  return [[effects.armor, materials.armor, 'armor'], [effects.shield, materials.shield, 'shield']]
+    .filter(([item, mat]) => metal(item, mat))
+    .map(([item, , what]) => `Druids can't wear metal ${what === 'armor' ? 'armor' : 'shields'} (${item.name}): while wearing it, and for 24 hours after, a druid can't cast druid spells or use supernatural or spell-like class abilities.`);
+}
+
 export function proficiencyWarnings(effects, haveFeats) {
   const have = new Set(haveFeats);
   const out = [];

@@ -1,7 +1,7 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
 import { magicPrefix } from './crafting.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { ENHANCEMENT_MAX, proficiencyWarnings, spellFailureByClass } from './armor.js';
+import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass } from './armor.js';
 import { MONK_IDS } from './rules.js';
 
 const GROUPS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor']];
@@ -68,7 +68,7 @@ export function renderArmorTab(app, view) {
   $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) : '<p>Unarmored.</p>';
   $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) : '<p>No shield.</p>';
 
-  const warnings = proficiencyWarnings(gear, view.haveFeats);
+  const warnings = [...proficiencyWarnings(gear, view.haveFeats), ...druidMetalWarnings(gear, view.counts.map(e => e.cls.id))];
   if (gear.maxDex !== null && stats.mod.dex > gear.maxDex) {
     warnings.push(`Your Dex bonus (${signed(stats.mod.dex)}) is capped at ${signed(gear.maxDex)} in this armor.`);
   }

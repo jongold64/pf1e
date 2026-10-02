@@ -146,10 +146,18 @@ export function proficiencyFeatsFor(classes) {
 export function proficiencyFeats(cls) {
   const text = lower((cls.features || []).find(f => /proficien/i.test(f.name))?.text);
   const out = [];
-  const allArmor = /all armor/.test(text);
-  if (allArmor || /light armor/.test(text)) out.push('Armor Proficiency, Light');
-  if (allArmor || /medium armor/.test(text)) out.push('Armor Proficiency, Medium');
-  if (allArmor || /heavy armor/.test(text)) out.push('Armor Proficiency, Heavy');
+  // Armor comes only from sentences saying what the class is proficient with ("proficient with light and medium
+  // armor"), not from ones about spell failure ("a bard wearing medium or heavy armor...").
+  const kinds = new Set();
+  for (const s of text.split(/(?<=\.)\s+/).filter(s => /\bproficien/.test(s) && !/\bnot proficient\b/.test(s))) {
+    if (/all (?:types of )?armor/.test(s)) ['light', 'medium', 'heavy'].forEach(k => kinds.add(k));
+    for (const m of s.matchAll(/((?:light|medium|heavy)(?:,?\s*(?:and|or)?\s*(?:light|medium|heavy))*)\s+armors?\b/g)) {
+      for (const k of m[1].match(/light|medium|heavy/g)) kinds.add(k);
+    }
+  }
+  if (kinds.has('light')) out.push('Armor Proficiency, Light');
+  if (kinds.has('medium')) out.push('Armor Proficiency, Medium');
+  if (kinds.has('heavy')) out.push('Armor Proficiency, Heavy');
   const shields = /\bshields\b/.test(text) && !/\b(not|any)\b[^.]*\bshields?\b/.test(text);
   if (shields) out.push('Shield Proficiency');
   if (shields && /tower shields/.test(text) && !/except tower shields/.test(text)) out.push('Tower Shield Proficiency');
