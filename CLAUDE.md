@@ -61,6 +61,8 @@ python scripts/validate.py data
 
 ## Key rules
 
+- The Guide tab (`#tab-guide` in `index.html`) explains each tab's features in plain words: update it when a feature
+  is added or changes.
 - Put new rules math in pure functions (`js/rules.js` or the matching module) and add checks to `js/rules.test.js`.
 - The app changes by pure functions plus a full re-render: `update()` → `render()`. `load()` must keep characters
   saved by older versions loading, migrating or dropping old fields.

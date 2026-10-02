@@ -38,6 +38,7 @@
       <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
       <button type="button" role="tab" data-tab="craft">Craft</button>
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
+      <button type="button" role="tab" data-tab="guide">Guide</button>
     </nav>
 
     <!-- Character -->
@@ -335,6 +336,131 @@
           <div class="browser-list" id="gear-list" aria-label="Equipment"></div>
           <aside class="browser-panel" id="gear-panel" aria-live="polite"></aside>
         </div>
+      </section>
+    </main>
+
+    <!-- Guide: a quick how-to for features that aren't obvious -->
+    <main class="tab-panel" id="tab-guide" role="tabpanel" hidden>
+      <section class="card wide guide">
+        <h2>Quick guide</h2>
+        <p class="hint">Tap a heading to open it. Most numbers update by themselves as you change things.</p>
+
+        <details open>
+          <summary>Saving, switching and printing characters</summary>
+          <ul>
+            <li>Everything saves automatically in this browser. Each device (laptop, tablet) keeps its own characters.</li>
+            <li>Use the <b>Character</b> list at the top to switch between characters; <b>New</b>, <b>Duplicate</b> and <b>Delete</b> are next to it.
+              Type a <b>Name</b> to label one.</li>
+            <li>To move a character to another device: <b>Export</b> saves a file; on the other device, <b>Import</b> that file.</li>
+            <li><b>Print</b> makes a one-page character sheet.</li>
+            <li>After an update, reload the page to get the newest version.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Dice rolls</summary>
+          <ul>
+            <li>Any <b>🎲 Roll</b> button rolls for you: saves, skills, ability checks, initiative, attacks, damage, spells, healing.</li>
+            <li>The result appears in a box at the bottom of the screen; the last few rolls are kept there.</li>
+            <li>Attack rolls spot natural 20s and 1s and critical threats, roll the confirmation and the extra damage.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Character tab</summary>
+          <ul>
+            <li><b>House rules</b>: switch each one Y or N. Encumbrance (what you carry slows you), Max Healing (healing rolls give their
+              maximum), Action Points (Pathfinder hero points), Flaws (up to two, each gives a bonus feat), Extra Campaign Trait (a third trait).</li>
+            <li><b>Search</b> finds anything by name: races, classes, archetypes, feats, traits, skills, spells, gear. Tap a result to
+              see it; most have a button to add it (e.g. <b>Take</b> an archetype or trait).</li>
+            <li><b>Race</b>: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
+              traits for others; ones that clash are greyed out.</li>
+            <li><b>Hit points</b>: use − / + to set an amount (negative for damage), then <b>Apply</b>; <b>Full</b> heals completely.</li>
+            <li>AC, CMD, CMB, saves and combat maneuvers are in the Race card, each with a Roll button.</li>
+            <li><b>Classes</b>: choose a class for each level (multiclassing works). Under each level in your favored class, choose
+              +1 hit point, +1 skill rank or your race's option.</li>
+            <li>Open a class's section to add <b>archetypes</b> and to see its features by level: tap any feature to read what it does.
+              Struck-out features were replaced by an archetype; coloured ones come from it.</li>
+            <li><b>Ability scores</b>: point buy with − / +; pick where racial +2s go and your ability increases at 4th, 8th... level.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Skills tab</summary>
+          <ul>
+            <li>Add ranks with − / +; the count at the top shows how many you have left. Class skills get +3 once they have a rank.</li>
+            <li>For Craft, Perform and Profession, type a specialty (e.g. "alchemy") and press <b>Add</b>.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Feats tab (feats, traits and flaws)</summary>
+          <ul>
+            <li>Each feat slot shows the level it comes from; <b>Choose a feat</b> opens a list you can search and filter.
+              Green ✓ / red ✗ show whether you meet each prerequisite.</li>
+            <li>Feats like Weapon Focus or Skill Focus ask which weapon or skill; that choice is applied automatically.</li>
+            <li><b>Traits</b>: choose two (three with the Extra Campaign Trait house rule). Their bonuses are added for you.</li>
+            <li><b>Flaws</b> appear when that house rule is on.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Armor tab</summary>
+          <ul>
+            <li>Choose armor and a shield, and their <b>Quality</b> (masterwork or +1 to +5). AC, Dex limit, check penalty, spell
+              failure and speed update for you, with warnings if you aren't proficient.</li>
+            <li>To add special abilities (fortification...), use <b>Add magic gear</b> on the Magic Items tab.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Weapons tab</summary>
+          <ul>
+            <li>Pick a weapon in the list below, then <b>Add</b> it. Each weapon shows its attacks, damage and critical with Roll buttons.</li>
+            <li><b>Quality</b> sets masterwork or +1 to +5; <b>Special abilities</b> (flaming, keen, holy...) add their damage
+              automatically. Situational ones (holy against evil) get their own Roll button.</li>
+            <li><b>Combat options</b> at the top: Power Attack, Deadly Aim, Rapid Shot (once you have the feats) and two-weapon fighting.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Spells tab</summary>
+          <ul>
+            <li>Shows spells per day for each casting class, and the class's spell list. Choose a spell and press
+              <b>Add to my spells</b> (spontaneous casters: add the spells you know).</li>
+            <li>My spells show attack bonus, damage, save DC and healing at your caster level, with Roll buttons and a spell
+              resistance check.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Magic Items tab</summary>
+          <ul>
+            <li>Browse by category or search; choose an item to see it, then <b>Add</b> it (pick a version, e.g. +2, if it has one).</li>
+            <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed: make a weapon or armor magic,
+              or add potions, scrolls and wands of any spell.</li>
+            <li><b>My magic items</b> lists what you own, with − / + for quantities.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Craft tab</summary>
+          <ul>
+            <li>For making items yourself with the item creation rules: magic weapons and armor, potions, scrolls, wands, or any
+              listed item (press <b>Craft this item</b> in its details on the Magic Items tab).</li>
+            <li>It checks the feat you need and each requirement (✓ / ✗; tick "I meet this" for ones it can't judge), and shows the
+              Spellcraft DC, your Spellcraft with a Roll button, the cost (half the price) and the time. <b>Rush it</b> halves the time for +5 DC.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Equipment tab</summary>
+          <ul>
+            <li>Set your <b>gold</b>, or use your class's starting gold or the wealth for your level.</li>
+            <li>Add gear from the list below. Totals show what you've spent (armor, weapons, magic items and gear) and what's left,
+              plus the weight you carry (and your load, with the Encumbrance house rule).</li>
+          </ul>
+        </details>
       </section>
     </main>
   </div>

@@ -202,14 +202,15 @@ button.link { border: 0; background: none; color: var(--accent); min-height: 0; 
 /* Tabs */
 .tabs {
   position: sticky; top: 0; z-index: 5;
-  /* Wraps onto a second row on a portrait tablet rather than scrolling sideways. */
-  display: flex; flex-wrap: wrap; gap: 4px;
+  /* The labels' size follows the bar's width (cqi = 1% of it), so a tablet keeps every tab on one row; only a phone
+     wraps onto a second row (rather than scrolling sideways). */
+  display: flex; flex-wrap: wrap; gap: 4px; container-type: inline-size;
   max-width: 900px; margin: 0 auto 16px; padding: 6px;
   background: var(--card); border: 1px solid var(--border); border-radius: 10px;
 }
 .tabs button {
   flex: 1 0 auto; border: 0; background: none; color: var(--text); font-weight: 600;
-  padding: 0 10px; white-space: nowrap;
+  padding: 0 0.55em; white-space: nowrap; font-size: 1rem; font-size: clamp(0.78rem, 1.8cqi, 15.3px);
 }
 .tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
 .tab-panel { max-width: 900px; margin: 0 auto; }
@@ -579,3 +580,9 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 .craft-extra .base { display: inline-flex; align-items: center; gap: 6px; }
 .craft-extra .base button { width: 40px; padding: 0; }
 .craft-done { font-weight: 600; color: var(--accent); }
+
+/* Guide tab */
+.guide details { border-top: 1px solid var(--border); padding: 6px 0; }
+.guide summary { cursor: pointer; font-weight: 700; padding: 6px 0; min-height: 32px; }
+.guide ul { margin: 4px 0 8px; padding-left: 20px; }
+.guide li { margin: 4px 0; }

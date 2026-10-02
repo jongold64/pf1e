@@ -41,7 +41,7 @@ import { weaponSummaries } from './tab-weapons.js';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
                       ['alternate', 'Alternate'], ['prestige', 'Prestige']];
-const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment'];
+const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'guide'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
