@@ -4,6 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PF1e Character Builder</title>
+  <!-- Installable app: "Add to Home Screen" (tablet) or "Install app" (laptop browser); works offline (sw.js). -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#8b2d1f">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="PF1e Builder">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -344,6 +352,20 @@
       <section class="card wide guide">
         <h2>Quick guide</h2>
         <p class="hint">Tap a heading to open it. Most numbers update by themselves as you change things.</p>
+
+        <details>
+          <summary>Install it as an app (works without internet)</summary>
+          <ul>
+            <li><b>iPad / iPhone (Safari):</b> open the site, tap the <b>Share</b> button, then <b>Add to Home Screen</b>.</li>
+            <li><b>Android tablet (Chrome):</b> open the menu (⋮) and choose <b>Install app</b> or <b>Add to Home screen</b>.</li>
+            <li><b>Laptop (Edge or Chrome):</b> click the install icon at the right end of the address bar, or open the menu and
+              choose <b>Apps → Install this site as an app</b>.</li>
+            <li>It gets its own icon and opens full screen. After the first visit it works with no internet; when you're online it
+              picks up updates by itself (close and reopen it to see them).</li>
+            <li><b>On an iPad or iPhone</b> the home-screen app keeps its own saved characters, separate from Safari's. To bring a
+              character over, <b>Export</b> it in Safari, then <b>Import</b> that file in the app.</li>
+          </ul>
+        </details>
 
         <details open>
           <summary>Saving, switching and printing characters</summary>

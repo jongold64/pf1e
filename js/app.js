@@ -1677,3 +1677,6 @@ async function start() {
 }
 
 start();
+
+// The offline helper (sw.js): keeps a copy of the app and its data so it works with no internet once installed.
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

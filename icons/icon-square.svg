@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="0" fill="#8b2d1f"/>
+  <polygon points="256,62 390,140 390,296 256,374 122,296 122,140" fill="none" stroke="#f3e9dc" stroke-width="20" stroke-linejoin="round"/>
+  <polygon points="256,128 326,252 186,252" fill="none" stroke="#f3e9dc" stroke-width="13" stroke-linejoin="round"/>
+  <text x="256" y="462" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" fill="#f3e9dc">PF1e</text>
+</svg>
