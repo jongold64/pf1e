@@ -102,7 +102,7 @@ function renderMySpells(app, view) {
     : 'The spells in your spellbook, or the ones you usually prepare. You prepare spells from these each day.';
 
   // Attack, damage and save DC for each spell, cast as this class.
-  const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.race.size, featChoices: view.featChoices,
+  const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
                              haveFeats: view.haveFeats });
   const row = s => {
     const lines = spellLines(s, ctx);

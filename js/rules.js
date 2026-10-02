@@ -1,5 +1,7 @@
 // Pathfinder 1e rules math. No page code here, so these functions can be tested on their own.
 
+import { acWithEffects } from './effects.js';
+
 export const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 export const ABILITY_NAMES = {
@@ -184,7 +186,8 @@ export function babList(total) {
 // featBonuses holds the numbers feats add ({ hp, fort, ref, will, dodgeAc }, see featEffects in feats.js).
 // gear is what worn armor and a shield do (armorEffects in armor.js); leave it out for no armor.
 export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
-                                 flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null }) {
+                                 flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null,
+                                 effects = null, size: sizeNow = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const total = levels.length;
   const counts = classCounts(levels);
@@ -192,7 +195,9 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   const fb = { hp: 0, fort: 0, ref: 0, will: 0, dodgeAc: 0, ...featBonuses };
   const racial = finalScores(baseScores, race, flexibleChoice);
   const inc = levelIncreases(total, increases);
-  const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a]]));
+  // Active effects (effects.js effectTotals): ability bonuses, saves, hit points, AC by type; others are passed on as `fx`.
+  const fx = { ac: {}, attack: 0, damage: 0, fort: 0, ref: 0, will: 0, init: 0, speed: 0, skills: 0, cmb: 0, cmd: 0, hp: 0, ...effects };
+  const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a] + (fx[a] || 0)]));
   const mod = Object.fromEntries(ABILITIES.map(a => [a, abilityModifier(scores[a])]));
   const rowFor = e => e.cls.progression[e.level - 1];
   const sum = key => counts.reduce((n, e) => n + (rowFor(e)[key] || 0), 0);
@@ -203,7 +208,7 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   const favored = favoredClassId || levels[0].id;
   if (favoredPicks) hp += favoredPicks.filter(p => p === 'hp').length;
   else if (favoredHp) hp += levels.filter(c => c.id === favored).length;
-  hp += fb.hp;
+  hp += fb.hp + fx.hp;
 
   // Monks add Wis (if positive) plus their monk-level AC bonus, but only with no armor and no shield.
   let classAc = 0;
@@ -211,14 +216,14 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   if (monk && !g.armor && !g.shield) {
     classAc = Math.max(0, mod.wis) + signedNumber(rowFor(monk).other?.['AC Bonus']);
   }
-  const size = SIZE_AC[race?.size] ?? 0;
+  const size = SIZE_AC[sizeNow || race?.size] ?? 0;
   // Armor's max Dex caps a Dex bonus to AC; a Dex penalty always applies.
   const dexAc = g.maxDex === null ? mod.dex : Math.min(mod.dex, g.maxDex);
-  const armorAc = g.armorBonus + g.shieldBonus;
   // Racial natural armor (kept when flat-footed, lost against touch) and racial dodge bonuses.
   const raceAc = racialAc(race);
   const dodge = fb.dodgeAc + raceAc.dodge;
-  const ac = 10 + armorAc + dexAc + size + classAc + dodge + raceAc.natural;
+  const acParts = acWithEffects({ armor: g.armorBonus, shield: g.shieldBonus, natural: raceAc.natural, dex: dexAc, dodge,
+                                  other: size + classAc }, fx.ac);
   const bab = counts.reduce((n, e) => n + rowFor(e).bab[0], 0);
 
   return {
@@ -229,15 +234,17 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
     mod,
     hp,
     bab: babList(bab),
-    fort: sum('fort') + mod.con + fb.fort,
-    ref: sum('ref') + mod.dex + fb.ref,
-    will: sum('will') + mod.wis + fb.will,
-    ac,
+    fort: sum('fort') + mod.con + fb.fort + fx.fort,
+    ref: sum('ref') + mod.dex + fb.ref + fx.ref,
+    will: sum('will') + mod.wis + fb.will + fx.will,
+    ac: acParts.ac,
     dexAc,
-    naturalArmor: raceAc.natural,
-    touch: ac - armorAc - raceAc.natural,
-    // Flat-footed loses a Dex bonus and dodge bonuses, but a Dex penalty still applies.
-    flatFooted: ac - Math.max(0, dexAc) - dodge,
+    naturalArmor: acParts.naturalPart,
+    // Touch loses armor, shield and natural armor; flat-footed loses a Dex bonus and dodge bonuses (a Dex penalty
+    // still applies).
+    touch: acParts.touch,
+    flatFooted: acParts.flatFooted,
+    fx,
   };
 }
 
@@ -346,7 +353,7 @@ export function slowedSpeed(speed) {
 
 // Initiative: Dex modifier, +4 with Improved Initiative.
 export function initiative(stats, haveFeats = [], traitBonus = 0) {
-  return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0) + traitBonus;
+  return stats.mod.dex + (haveFeats.includes('Improved Initiative') ? 4 : 0) + traitBonus + (stats.fx?.init || 0);
 }
 
 // Combat Maneuver Bonus and Defense (Core Rulebook, Combat Maneuvers). The size modifier is the reverse of the AC
@@ -363,8 +370,9 @@ export function combatManeuvers(stats, size, haveFeats = []) {
   const monk = (stats.classCounts || []).find(e => e.cls.id === 'monk' && e.level >= 3);
   const cmbBab = monk ? bab - monk.cls.progression[monk.level - 1].bab[0] + monk.level : bab;
   const ability = haveFeats.includes('Agile Maneuvers') ? Math.max(stats.mod.str, stats.mod.dex) : stats.mod.str;
-  const cmb = cmbBab + ability + sizeMod;
-  const cmd = stats.touch + sizeMod + sizeMod + bab + stats.mod.str;
+  // Bonuses on attack rolls from effects (bless, haste...) count on CMB too.
+  const cmb = cmbBab + ability + sizeMod + (stats.fx?.attack || 0) + (stats.fx?.cmb || 0);
+  const cmd = stats.touch + sizeMod + sizeMod + bab + stats.mod.str + (stats.fx?.cmd || 0);
   const maneuvers = MANEUVERS.map(name => {
     const improved = haveFeats.includes(`Improved ${name}`);
     const greater = haveFeats.includes(`Greater ${name}`);

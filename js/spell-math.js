@@ -92,7 +92,8 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
   const penetration = (haveFeats.includes('Spell Penetration') ? 2 : 0) + (haveFeats.includes('Greater Spell Penetration') ? 2 : 0);
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
-    sizeAttack: SIZE_AC[size] ?? 0, focus, penetration,
+    // Active effects' bonus on attack rolls counts on spell attacks too.
+    sizeAttack: (SIZE_AC[size] ?? 0) + (stats.fx?.attack || 0), focus, penetration,
   };
 }
 

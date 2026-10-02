@@ -586,3 +586,19 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 .guide summary { cursor: pointer; font-weight: 700; padding: 6px 0; min-height: 32px; }
 .guide ul { margin: 4px 0 8px; padding-left: 20px; }
 .guide li { margin: 4px 0; }
+
+/* Active effects card */
+#effects ul { list-style: none; padding: 0; margin: 6px 0; }
+#effects .buff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px 16px; }
+#effects .buff-active li { padding: 4px 0; border-bottom: 1px solid var(--border); }
+#effects .buff-active li:last-child { border-bottom: 0; }
+#effects .cl-input { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 4px 32px; font-size: 0.9rem; }
+#effects .cl-input input { width: 64px; }
+#effects .custom-effect { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
+#effects .custom-effect input[type="text"] { flex: 1 1 180px; min-width: 0; font: inherit; min-height: 40px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); padding: 0 10px; }
+#effects .custom-effect select { width: auto; flex: 0 1 auto; max-width: 100%; }
+#effects .custom-effect input[type="number"] { width: 70px; }
+#effects .custom-effect input[type="checkbox"] { width: 22px; height: 22px; }
+#effects .effect-totals { margin: 0 0 4px; }
+#effects h3 { font-size: 1rem; margin: 12px 0 4px; }

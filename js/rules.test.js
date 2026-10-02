@@ -15,6 +15,7 @@ import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, c
 import { classCounts, babList, racialAdjustments } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
+import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1184,6 +1185,36 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('leather can be eel hide', materialsFor(a('leather')).some(m => m.id === 'eel-hide'), true);
   check('a material that does not fit is ignored', withMaterial(a('leather'), 'mithral'), a('leather'));
   check('bard in a mithral breastplate: no spell failure', spellFailureByClass(armorEffects({ armor: withMaterial(a('breastplate'), 'mithral') }), [{ cls: { id: 'bard' }, level: 1 }])[0].chance, 0);
+}
+
+// Active effects: stacking and what they change.
+{
+  check('same type: highest counts (bless + heroism morale)', effectTotals([{ id: 'bless' }, { id: 'heroism' }]).attack, 2);
+  check('different types add (heroism morale + prayer luck + haste)', effectTotals([{ id: 'heroism' }, { id: 'prayer' }, { id: 'haste' }]).attack, 4);
+  check('dodge bonuses stack', stackTotal([{ type: 'dodge', value: 1 }, { type: 'dodge', value: 1 }]), 2);
+  check('penalties all count', stackTotal([{ type: 'morale', value: 2 }, { type: 'untyped', value: -2 }, { type: 'untyped', value: -1 }]), -1);
+  check('all saves reach each save', effectTotals([{ id: 'resistance' }]).will, 1);
+  check('resistance on all saves and on one: highest', effectTotals([{ id: 'resistance' }], [{ name: 'cloak', target: 'fort', type: 'resistance', value: 2 }]).fort, 2);
+  check('custom effect switched off is ignored', effectTotals([], [{ target: 'attack', type: 'luck', value: 2, on: false }]).attack, 0);
+  check('shield of faith CL 12: +4', effectTotals([{ id: 'shield-of-faith', cl: 12 }]).ac.deflection, 4);
+  check('barkskin CL 12: +5', effectTotals([{ id: 'barkskin', cl: 12 }]).ac['natural armor enhancement'], 5);
+  check('inspire courage, bard 5: +2', effectTotals([{ id: 'inspire-courage', cl: 5 }]).damage, 2);
+  check('enlarge person: one size up', shiftSize('Medium', effectTotals([{ id: 'enlarge-person' }]).size), 'Large');
+  const ac = acWithEffects({ armor: 4, natural: 0, dex: 2 }, { armor: 4, deflection: 2, 'natural armor enhancement': 2, dodge: 1 });
+  check('mage armor with a chain shirt: armor counts once', ac.ac, 10 + 4 + 2 + 2 + 2 + 1);
+  check('touch leaves out armor and natural armor', ac.touch, 10 + 2 + 2 + 1);
+  check('flat-footed leaves out Dex and dodge', ac.flatFooted, 10 + 4 + 2 + 2);
+  const fighter = classes.find(c => c.id === 'fighter');
+  const human = races.find(r => r.id === 'human');
+  const base = { str: 14, dex: 12, con: 12, int: 10, wis: 10, cha: 10 };
+  const plain = characterStats({ race: human, cls: fighter, level: 1, baseScores: base, flexibleChoice: 'str' });
+  const buffed = characterStats({ race: human, cls: fighter, level: 1, baseScores: base, flexibleChoice: 'str',
+    effects: effectTotals([{ id: 'bulls-strength' }, { id: 'bears-endurance' }]) });
+  check("bull's strength: Str +4", buffed.scores.str - plain.scores.str, 4);
+  check("bear's endurance: +2 hp at 1st level", buffed.hp - plain.hp, 2);
+  check("bear's endurance: Fort +2", buffed.fort - plain.fort, 2);
+  const large = characterStats({ race: human, cls: fighter, level: 1, baseScores: base, flexibleChoice: 'str', size: 'Large' });
+  check('Large: -1 AC', large.ac - plain.ac, -1);
 }
 
 const failed = results.filter(r => !r.pass);

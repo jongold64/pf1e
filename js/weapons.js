@@ -142,7 +142,8 @@ export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 // and the weapon allows it. powerBab is the base attack bonus the Power Attack / Deadly Aim step comes from.
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
                                proficient = true, armorPenalty = 0, unarmedDamage = null,
-                               hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0 }) {
+                               hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0,
+                               effectAttack = 0, effectDamage = 0 }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -183,21 +184,21 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used.push('Rapid Shot');
   }
 
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid;
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
   const ends = String(allDice ?? '').split('/');
   const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
   // bonusDamage: extra damage such as smite evil's (+paladin level).
-  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage;
+  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage;
   return {
     attacks: attackBabs.map(b => b + toHit),
     abilityUsed,
     damage: formatDamage(dice, damageBonus),
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
-             penalty, powerHit, powerDamage, strDamage },
+             penalty, powerHit, powerDamage, strDamage, effectAttack, effectDamage },
   };
 }
 

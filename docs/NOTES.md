@@ -166,6 +166,14 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
   archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
   and feature fold-outs stay open across redraws.
+- Active effects (`js/effects.js`, card in `tab-effects.js`): `state.buffs` [{ id, cl }] (hand-entered `BUFFS`, each
+  `bonuses(cl)` -> [{ target, type, value }], `size` steps, `note` for what isn't applied) and `state.customEffects`
+  [{ name, target, type, value, on }]. `effectTotals` stacks by type (dodge/circumstance/untyped add, penalties add, others
+  highest; 'saves' expands to each save first) -> characterStats `effects` (abilities, hp, saves, AC via `acWithEffects`:
+  armor/shield bonuses compete with worn armor, natural armor with racial, barkskin adds) and `stats.fx` for the rest:
+  attack/damage (weaponAttack `effectAttack`/`effectDamage`, spell attacks, CMB), init, speed, skills (`effectBonus`), cmd.
+  `view.size` = race size moved by enlarge/reduce, used for combat (AC, CMB, weapon dice, spells), not gear weight.
+  Feat prerequisites use scores without effects (`plainScores`).
 - Armor materials (`js/materials.js`, hand-entered from the Core Rulebook / Ultimate Equipment Special Materials):
   `state.armorMaterial` / `shieldMaterial`; computeView uses `withMaterial(item, id)`, a changed copy of the armor record
   (name, price incl. masterwork, weight, max Dex, check penalty, spell failure), so cost, weight, AC and the sheet need no

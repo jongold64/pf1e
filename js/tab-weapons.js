@@ -93,7 +93,7 @@ function combatContext(app, view) {
   // Unarmed strike damage from the monk or brawler table (the higher class level).
   const unarmedFrom = view.counts.filter(e => [...MONK_IDS, 'brawler'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
   const unarmed = unarmedFrom
-    ? unarmedForSize(unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'], view.race.size) : null;
+    ? unarmedForSize(unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'], view.size) : null;
   // Flurry of blows: monk (from 1st level) or brawler's flurry (from 2nd). Monk levels count as BAB for it.
   const flurryFrom = view.counts.find(e => MONK_IDS.includes(e.cls.id)) || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
   const flurry = flurryFrom ? {
@@ -116,12 +116,14 @@ function combatContext(app, view) {
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   return {
-    weapon: w, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.race.size] ?? 0,
-    size: view.race.size, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
+    weapon: w, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
+    size: view.size, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
     powerBab: view.stats.bab[0],
+    // Active effects' bonuses on attack and damage rolls (bless, divine favor...).
+    effectAttack: view.stats.fx.attack, effectDamage: view.stats.fx.damage,
   };
 }
 

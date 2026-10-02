@@ -28,6 +28,8 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize } from './effects.js';
+import { initEffects, renderEffects } from './tab-effects.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
@@ -117,6 +119,8 @@ const state = {
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
   shieldMw: false,
+  buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
+  customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
   shieldMaterial: '',
   shieldId: '',
@@ -226,6 +230,14 @@ function load(saved) {
   if (!worn(state.shieldId, 'shield')) state.shieldId = '';
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
+  // Active effects: known buffs once each, caster level 1-20; custom effects with a known target and type.
+  const seenBuffs = new Set();
+  state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
+    .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)) }));
+  state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
+    .map(x => ({ name: String(x.name || '').slice(0, 60), target: TARGETS.some(([t]) => t === x.target) ? x.target : 'attack',
+                 type: BONUS_TYPES.includes(x.type) ? x.type : 'untyped', value: Math.trunc(Number(x.value)) || 0, on: x.on !== false }))
+    .slice(0, 20);
   // A material only if the worn item can be made of it.
   for (const k of ['armor', 'shield']) {
     const m = materialById.get(state[`${k}Material`]);
@@ -530,6 +542,7 @@ function buildControls() {
   initTermPopover($('race-info'), () => raceItems);
   initTermPopover($('class-info'), () => classItems);
   initTraits(app);
+  initEffects(app);
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
   $('flaw-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.flaw);
@@ -820,7 +833,7 @@ function skillTotalFor(name) {
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
                       racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
-                      traitBonuses: view.traitFx.skills });
+                      traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills });
 }
 
 // The archetypes chosen for a class, as records.
@@ -874,10 +887,14 @@ function computeView() {
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
-  const statsWith = gearNow => characterStats({
+  // Active effects (spells and custom bonuses) and the size they leave the character at (enlarge person...).
+  const fx = effectTotals(state.buffs, state.customEffects);
+  const size = shiftSize(race.size, fx.size);
+  const statsWith = (gearNow, effects = fx) => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
     increases: state.increases, favoredPicks,
     featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear: gearNow,
+    effects, size,
   });
   // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
   // (the worse of the two counts, they don't add up). Strength doesn't depend on gear, so it comes from a first pass.
@@ -895,8 +912,10 @@ function computeView() {
     }
   }
   const stats = statsWith(gear);
+  // Feat prerequisites use the scores without temporary effects.
+  const plainScores = statsWith(gear, null).scores;
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
-  const ctx = featContext({ race, counts, casting: casting.casting, scores: stats.scores, bab: stats.bab[0], haveFeats, skillRanks });
+  const ctx = featContext({ race, counts, casting: casting.casting, scores: plainScores, bab: stats.bab[0], haveFeats, skillRanks });
 
   // The character as it was at an earlier level, for feats taken then and for prestige class requirements:
   // BAB, saves, spellcasting and ability increases from those levels, feats from slots reached by then (and free
@@ -933,10 +952,12 @@ function computeView() {
   if (load?.slows && !(race.traits || []).some(t => t.name === 'Slow and Steady')) {
     speed = Math.min(speed ?? Infinity, slowedSpeed(race.base_speed));
   }
+  // Enhancement bonuses to speed from effects (haste, longstrider...).
+  if (speed !== null && speed !== undefined && fx.speed) speed = Math.max(5, speed + fx.speed);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
-    load,
+    load, fx, size,
   };
 }
 
@@ -1248,7 +1269,7 @@ function render() {
   $('hp-status').textContent = hpStatus(hpNow, stats.scores.con);
   $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
-  const cm = combatManeuvers(stats, race.size, view.haveFeats);
+  const cm = combatManeuvers(stats, view.size, view.haveFeats);
   const results = [
     ['Maximum hit points', esc(stats.hp)],
     ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
@@ -1284,7 +1305,7 @@ function render() {
       <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] })}</div>`).join('')}
     ${layOnHands(stats).map(l => {
       // Touch of corruption needs a melee touch attack: BAB + Str + size.
-      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[race.size] ?? 0);
+      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack;
       const spec = l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
         : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] };
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
@@ -1300,6 +1321,7 @@ function render() {
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
+  renderEffects(app, view);
   renderFlaws();
   renderHeroPoints();
   renderSpells(view);
@@ -1344,7 +1366,7 @@ function renderSkills(race, classes, scores, featNames) {
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
-      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty });
+      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills });
       return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
           <div class="add-specialty">
@@ -1358,13 +1380,14 @@ function renderSkills(race, classes, scores, featNames) {
 
     const ranks = state.skills[name] || 0;
     const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty,
-                            traitBonuses: view.traitFx.skills });
+                            traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills });
     const parts = [`${abbr(info.ability)} ${signed(t.abilityMod)}`];
     if (t.classBonus) parts.push(`class +${t.classBonus}`);
     if (t.racial) parts.push(`race ${signed(t.racial)}`);
     if (t.feat) parts.push(`feats +${t.feat}`);
     if (t.trait) parts.push(`trait +${t.trait}`);
     if (t.armor) parts.push(`armor ${t.armor}`);
+    if (t.effect) parts.push(`effects ${signed(t.effect)}`);
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>

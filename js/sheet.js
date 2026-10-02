@@ -5,6 +5,7 @@ import { ABILITIES, formatBab, spellsPerDay, combatManeuvers, initiative, channe
 import { spellContext, spellLines } from './spell-math.js';
 import { favoredOption, favoredOptionTotal } from './race-options.js';
 import { magicPrefix } from './crafting.js';
+import { buffById } from './effects.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const ORDINAL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -21,7 +22,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const { state, data } = app;
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
-  const { cmb, cmd, maneuvers } = combatManeuvers(stats, race.size, view.haveFeats);
+  const { cmb, cmd, maneuvers } = combatManeuvers(stats, view.size, view.haveFeats);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
 
   const header = `<header class="sheet-header"><h1>${esc(name)}</h1>
@@ -34,10 +35,14 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
                 [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities]].filter(([a]) => a)
     .map(([a, enh, mw, abilities]) => [magicPrefix(enh, mw && !a.mw_included, abilities || []), a.name].filter(Boolean).join(' ')
       + (a.material_notes ? ` (${a.material_notes})` : '')).join(', ');
+  const activeEffects = [...state.buffs.map(x => buffById.get(x.id)?.name).filter(Boolean),
+    ...state.customEffects.filter(c => c.on && c.value).map(c => `${c.name || 'custom'} (${c.value > 0 ? '+' : ''}${c.value} ${c.type})`)];
   const defense = facts([
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],
     ['Armor', worn || 'none'],
+    // Active effects counted in these numbers (Active effects card).
+    ...(activeEffects.length ? [['Active effects', activeEffects.join(', ')]] : []),
     // Action Points house rule: hero points now, or none for an antihero.
     ...(state.houseRules.actionPoints ? [['Hero points', state.antihero ? 'none (antihero)' : String(state.heroPoints ?? 1)]] : []),
   ]);
@@ -95,7 +100,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   }).join('');
   // Chosen spells by level, each with its attack, damage and save DC as cast by the class it's on the list of.
   const contexts = view.casting.casting.map(c => spellContext({ cls: c.cls, effectiveLevel: c.effectiveLevel, stats,
-                                                                size: race.size, featChoices: view.featChoices }));
+                                                                size: view.size, featChoices: view.featChoices }));
   const chosen = (data.spells ? state.spells.map(id => data.spells.find(s => s.id === id)).filter(Boolean) : []).map(s => {
     const ctx = contexts.filter(c => s.levels[c.cls.id] !== undefined).sort((a, b) => s.levels[a.cls.id] - s.levels[b.cls.id])[0];
     return { name: s.name, level: ctx ? s.levels[ctx.cls.id] : null,

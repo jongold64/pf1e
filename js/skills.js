@@ -146,7 +146,8 @@ export function featSkillBonus(featNames, skillName, ranks) {
 // Returns { total, usable, classBonus, racial, feat, armor, abilityMod }.
 // A trained-only skill with no ranks can't be used (usable: false).
 // traitBonuses: { skill name: bonus } from chosen traits.
-export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [], checkPenalty = 0, traitBonuses = {} }) {
+export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [], checkPenalty = 0, traitBonuses = {},
+                             effectBonus = 0 }) {
   const info = skillInfo(name);
   const abilityMod = abilityModifier(scores[info.ability]);
   const classBonus = isClassSkill && ranks > 0 ? 3 : 0;
@@ -155,9 +156,10 @@ export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = 
   const armor = info.acp ? checkPenalty : 0;
   const trait = traitBonuses[name] || 0;
   return {
-    abilityMod, classBonus, racial, feat, armor, trait,
+    abilityMod, classBonus, racial, feat, armor, trait, effect: effectBonus,
     usable: !(info.trained && ranks === 0),
-    total: ranks + abilityMod + classBonus + racial + feat + armor + trait,
+    // effectBonus: active effects' bonus on all skill checks (heroism...).
+    total: ranks + abilityMod + classBonus + racial + feat + armor + trait + effectBonus,
   };
 }
 
