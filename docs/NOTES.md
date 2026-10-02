@@ -166,6 +166,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
   archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
   and feature fold-outs stay open across redraws.
+- Armor materials (`js/materials.js`, hand-entered from the Core Rulebook / Ultimate Equipment Special Materials):
+  `state.armorMaterial` / `shieldMaterial`; computeView uses `withMaterial(item, id)`, a changed copy of the armor record
+  (name, price incl. masterwork, weight, max Dex, check penalty, spell failure), so cost, weight, AC and the sheet need no
+  changes. Extra fields: `mw_included` (no +150 gp or second -1 penalty), `move_category` (mithral one lighter: speed and
+  bard/magus spell failure; proficiency still uses `category`), `metal` (druids), `dr` (adamantine), `material_notes`.
+  Mithral/darkleaf "-3 check penalty" and darkwood's "-2" include the masterwork 1; eel hide's "-1" is read the same way.
 - Domains (`js/domains.js`, data from `build_domains.py`: PSRD cleric domains, APG subdomains, UM druid domains, inquisitions):
   `state.domains` = { class id: [domain ids] } (cleric 2, inquisitor 1, druid 1) and `state.natureBond` ('companion' |
   'domain'). `domainChoices` limits the druid to Air/Animal/Earth/Fire/Plant/Water/Weather, their subdomains and druid

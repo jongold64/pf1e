@@ -27,6 +27,7 @@ import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from '.
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
+import { withMaterial, materialById } from './materials.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
@@ -116,6 +117,8 @@ const state = {
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
   shieldMw: false,
+  armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
+  shieldMaterial: '',
   shieldId: '',
   shieldEnh: 0,
   armorAbilities: [],   // special abilities on the worn armor ([{ id, name, option?, bonus? | gp? }])
@@ -223,6 +226,12 @@ function load(saved) {
   if (!worn(state.shieldId, 'shield')) state.shieldId = '';
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
+  // A material only if the worn item can be made of it.
+  for (const k of ['armor', 'shield']) {
+    const m = materialById.get(state[`${k}Material`]);
+    const item = data.armorById.get(state[`${k}Id`]);
+    if (!m || !item || !m.fits(item)) state[`${k}Material`] = '';
+  }
   for (const k of ['armorEnh', 'shieldEnh']) {
     if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
@@ -859,8 +868,8 @@ function computeView() {
   const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const armorGear = armorEffects({
-    armor: data.armorById.get(state.armorId) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
-    shield: data.armorById.get(state.shieldId) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
+    armor: withMaterial(data.armorById.get(state.armorId), state.armorMaterial) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
+    shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
   });
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);

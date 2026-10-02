@@ -24,7 +24,8 @@ export function startingGold(cls, classes = []) {
 export function armorCost(armor, enh = 0, mw = false, abilities = [], crafted = false) {
   if (!armor) return 0;
   const magic = magicPart(enh, abilities, 1000);
-  return (armor.price_gp || 0) + (enh > 0 || mw || abilities.length ? 150 : 0) + (crafted ? magic / 2 : magic);
+  // A special material that is always masterwork (mithral...) has the 150 gp in its price already.
+  return (armor.price_gp || 0) + ((enh > 0 || mw || abilities.length) && !armor.mw_included ? 150 : 0) + (crafted ? magic / 2 : magic);
 }
 
 // Price and weight of one inventory entry: an item, or one of its versions (e.g. a masterwork backpack).

@@ -17,7 +17,7 @@ const PROFICIENCY = {
 // enhancement bonuses (+1 to +5); magic armor is always masterwork, which lowers its check penalty by 1.
 // armorMw / shieldMw: masterwork but not magic (magic armor is always masterwork).
 export function armorEffects({ armor = null, shield = null, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false } = {}) {
-  const penalty = (item, enh, mw) => (item ? Math.min(0, item.check_penalty + (enh > 0 || mw ? 1 : 0)) : 0);
+  const penalty = (item, enh, mw) => (item ? Math.min(0, item.check_penalty + ((enh > 0 || mw) && !item.mw_included ? 1 : 0)) : 0);
   const caps = [armor?.max_dex, shield?.max_dex].filter(v => v !== null && v !== undefined);
   return {
     armorBonus: armor ? armor.bonus + armorEnh : 0,
@@ -25,8 +25,10 @@ export function armorEffects({ armor = null, shield = null, armorEnh = 0, shield
     maxDex: caps.length ? Math.min(...caps) : null,
     checkPenalty: penalty(armor, armorEnh, armorMw) + penalty(shield, shieldEnh, shieldMw),
     spellFailure: (armor?.spell_failure || 0) + (shield?.spell_failure || 0),
-    // Medium and heavy armor slow the wearer.
-    slows: armor ? armor.category === 'medium' || armor.category === 'heavy' : false,
+    // Medium and heavy armor slow the wearer (mithral counts as one category lighter: move_category).
+    slows: armor ? ['medium', 'heavy'].includes(armor.move_category || armor.category) : false,
+    // Damage reduction from adamantine armor.
+    dr: armor?.dr || 0,
     armor, shield, armorEnh, shieldEnh, armorMw, shieldMw,
   };
 }
@@ -49,7 +51,7 @@ const SPELL_FAILURE_FREE = {
 export function spellFailureByClass(effects, counts) {
   return counts.filter(e => ARCANE.has(e.cls.id)).map(e => {
     const free = SPELL_FAILURE_FREE[e.cls.id]?.(e.level) || { armor: [], shield: false };
-    const armorPart = effects.armor && !free.armor.includes(effects.armor.category) ? effects.armor.spell_failure || 0 : 0;
+    const armorPart = effects.armor && !free.armor.includes(effects.armor.move_category || effects.armor.category) ? effects.armor.spell_failure || 0 : 0;
     const shieldPart = effects.shield && !free.shield ? effects.shield.spell_failure || 0 : 0;
     return { cls: e.cls, chance: armorPart + shieldPart };
   });
@@ -70,7 +72,7 @@ export function speedInArmor(baseSpeed, effects, race) {
 export function armorAttackPenalty(effects, haveFeats) {
   const have = new Set(haveFeats);
   const { armor, shield, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false } = effects;
-  const penalty = (item, enh, mw) => Math.min(0, item.check_penalty + (enh > 0 || mw ? 1 : 0));
+  const penalty = (item, enh, mw) => Math.min(0, item.check_penalty + ((enh > 0 || mw) && !item.mw_included ? 1 : 0));
   let total = 0;
   if (armor && !have.has(PROFICIENCY[armor.category])) total += penalty(armor, armorEnh, armorMw);
   if (shield) {
@@ -93,7 +95,8 @@ export const NON_METAL = new Set(['padded', 'quilted-cloth', 'silken-ceremonial'
 // abilities while wearing it and for 24 hours after. A special material that isn't metal (darkwood, dragonhide) is fine.
 export function druidMetalWarnings(effects, classIds, materials = {}) {
   if (!classIds.includes('druid')) return [];
-  const metal = (item, material) => item && !NON_METAL.has(item.id) && !['darkwood', 'dragonhide'].includes(material);
+  // An item made of a special material says whether it's metal (`metal`, from materials.js).
+  const metal = (item, material) => item && (item.metal ?? !NON_METAL.has(item.id)) && !['darkwood', 'dragonhide'].includes(material);
   return [[effects.armor, materials.armor, 'armor'], [effects.shield, materials.shield, 'shield']]
     .filter(([item, mat]) => metal(item, mat))
     .map(([item, , what]) => `Druids can't wear metal ${what === 'armor' ? 'armor' : 'shields'} (${item.name}): while wearing it, and for 24 hours after, a druid can't cast druid spells or use supernatural or spell-like class abilities.`);

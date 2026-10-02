@@ -3,6 +3,7 @@ import { magicPrefix } from './crafting.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass } from './armor.js';
 import { MONK_IDS } from './rules.js';
+import { materialsFor } from './materials.js';
 
 const GROUPS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor']];
 
@@ -28,6 +29,9 @@ export function armorDetails(a) {
       ['Speed (30 ft. / 20 ft.)', a.speed_30 ? `${a.speed_30} ft. / ${a.speed_20} ft.` : null],
       ['Price', a.price_gp !== null ? `${a.price_gp.toLocaleString()} gp` : null],
       ['Weight', a.weight_lbs !== null ? `${a.weight_lbs} lbs.` : null],
+      ['Material', a.material ? [a.material + (a.mw_included ? ' (masterwork, included in the price)' : ''),
+        a.move_category && a.move_category !== a.category ? `counts as ${a.move_category} armor for speed and limits` : '',
+        a.material_notes, a.metal === false ? 'not metal (druids can wear it)' : ''].filter(Boolean).join('; ') : null],
     ])}
     ${a.description ? `<details class="rules"><summary>Rules text</summary>${paragraphs(a.description)}</details>` : ''}`;
 }
@@ -46,8 +50,10 @@ export function initArmorTab(app) {
   $('shield-enh').innerHTML = enh;
 
   // Another armor or shield doesn't keep the special abilities put on the old one.
-  $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value, armorAbilities: [], armorCrafted: false }));
-  $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value, shieldAbilities: [], shieldCrafted: false }));
+  $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value, armorAbilities: [], armorCrafted: false, armorMaterial: '' }));
+  $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value, shieldAbilities: [], shieldCrafted: false, shieldMaterial: '' }));
+  $('armor-material').addEventListener('change', e => app.update({ armorMaterial: e.target.value }));
+  $('shield-material').addEventListener('change', e => app.update({ shieldMaterial: e.target.value }));
   const quality = v => (v === 'mw' ? { enh: 0, mw: true } : { enh: Number(v), mw: false });
   $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ armorEnh: q.enh, armorMw: q.mw }); });
   $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ shieldEnh: q.enh, shieldMw: q.mw }); });
@@ -62,6 +68,17 @@ export function renderArmorTab(app, view) {
   $('shield-enh').value = !state.shieldEnh && state.shieldMw ? 'mw' : state.shieldEnh;
   $('armor-enh').disabled = !gear.armor;
   $('shield-enh').disabled = !gear.shield;
+  // Materials the worn item can be made of (price changes shown); a material that includes masterwork hides "Masterwork".
+  for (const k of ['armor', 'shield']) {
+    const base = app.data.armorById.get(state[`${k}Id`]);
+    const list = materialsFor(base);
+    $(`${k}-material`).innerHTML = `<option value="">${list.length ? 'Usual (steel, wood or leather)' : 'Usual'}</option>`
+      + list.map(m => `<option value="${esc(m.id)}">${esc(m.name)} (${esc((m.price(base) - base.price_gp >= 0 ? '+' : '') + (m.price(base) - base.price_gp).toLocaleString())} gp)</option>`).join('');
+    $(`${k}-material`).value = state[`${k}Material`];
+    $(`${k}-material`).disabled = !list.length;
+    $(`${k}-enh`).querySelector('option[value="mw"]').textContent = gear[k]?.mw_included ? 'Masterwork (included)' : 'Masterwork';
+    $(`${k}-enh`).querySelector('option[value="0"]').textContent = gear[k]?.mw_included ? 'Not magic' : 'None';
+  }
   // Special abilities (added with the Crafting card on the Magic Items tab).
   const abilities = list => (list.length ? `<p><b>Special abilities:</b> ${esc(magicPrefix(0, false, list))}
     <small class="muted">(add or change them with the Crafting card on the Magic Items tab)</small></p>` : '');
@@ -69,6 +86,9 @@ export function renderArmorTab(app, view) {
   $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) : '<p>No shield.</p>';
 
   const warnings = [...proficiencyWarnings(gear, view.haveFeats), ...druidMetalWarnings(gear, view.counts.map(e => e.cls.id))];
+  if (gear.armor?.move_category && gear.armor.move_category !== gear.armor.category) {
+    warnings.push(`${gear.armor.material} ${gear.armor.category} armor counts as ${gear.armor.move_category} armor for speed and other limits, but you still need ${gear.armor.category} armor proficiency.`);
+  }
   if (gear.maxDex !== null && stats.mod.dex > gear.maxDex) {
     warnings.push(`Your Dex bonus (${signed(stats.mod.dex)}) is capped at ${signed(gear.maxDex)} in this armor.`);
   }
@@ -84,6 +104,8 @@ export function renderArmorTab(app, view) {
     ['Dex bonus to AC', signed(stats.dexAc)],
     ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none'],
     ['Arcane spell failure', spellFailureText(gear, view.counts)],
+    ...(gear.dr ? [['Damage reduction', `${gear.dr}/— (adamantine)`]] : []),
+    ...[gear.armor, gear.shield].filter(a => a?.material_notes).map(a => [a.material, a.material_notes]),
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
       (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : '')],
   ];

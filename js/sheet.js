@@ -32,7 +32,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
 
   const worn = [[view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities],
                 [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities]].filter(([a]) => a)
-    .map(([a, enh, mw, abilities]) => [magicPrefix(enh, mw, abilities || []), a.name].filter(Boolean).join(' ')).join(', ');
+    .map(([a, enh, mw, abilities]) => [magicPrefix(enh, mw && !a.mw_included, abilities || []), a.name].filter(Boolean).join(' ')
+      + (a.material_notes ? ` (${a.material_notes})` : '')).join(', ');
   const defense = facts([
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],

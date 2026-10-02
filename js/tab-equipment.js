@@ -13,7 +13,7 @@ const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLower
 
 // "+1 fortification (light) Chainmail", "Masterwork Breastplate".
 function armorLabel(armor, enh, mw, abilities = []) {
-  const prefix = magicPrefix(enh, mw, abilities);
+  const prefix = magicPrefix(enh, mw && !armor.mw_included, abilities);
   return prefix ? `${prefix} ${armor.name}` : armor.name;
 }
 

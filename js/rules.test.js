@@ -14,6 +14,7 @@ import { abilityDamage, damageWithExtras } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { classCounts, babList, racialAdjustments } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
+import { withMaterial, materialsFor } from './materials.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1149,6 +1150,40 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Feather keeps nine domain spells', Object.keys(g.spells).length, 9);
   check('Feather replaces one Animal power', g.powers.length, byId.get('animal').powers.length);
   check('Wolf has Improved Trip and Pack Tactics', byId.get('druid-wolf').powers.map(p => p.name).join(', '), 'Improved Trip, Pack Tactics');
+}
+
+// Special materials for armor (Core Rulebook / Ultimate Equipment).
+{
+  const a = id => armorById(id);
+  const mc = withMaterial(a('chain-shirt'), 'mithral');
+  check('mithral chain shirt: max Dex +6', mc.max_dex, 6);
+  check('mithral chain shirt: check penalty 0', mc.check_penalty, 0);
+  check('mithral chain shirt: spell failure 10%', mc.spell_failure, 10);
+  check('mithral chain shirt: 12.5 lbs.', mc.weight_lbs, 12.5);
+  check('mithral chain shirt: 1,100 gp (masterwork included)', armorCost(mc, 0, false), 1100);
+  check('+1 mithral chain shirt: 2,100 gp', armorCost(mc, 1, false), 2100);
+  const fp = withMaterial(a('full-plate'), 'mithral');
+  check('mithral full plate: check penalty -3', fp.check_penalty, -3);
+  check('mithral full plate: counts as medium', fp.move_category, 'medium');
+  check('mithral full plate: still needs heavy proficiency', fp.category, 'heavy');
+  check('mithral full plate: 10,500 gp', fp.price_gp, 10500);
+  check('mithral breastplate: not slowed', armorEffects({ armor: withMaterial(a('breastplate'), 'mithral') }).slows, false);
+  check('mithral full plate: still slowed', armorEffects({ armor: fp }).slows, true);
+  check('mithral armor: the masterwork -1 is not added twice', armorEffects({ armor: fp, armorEnh: 2 }).checkPenalty, -3);
+  check('adamantine breastplate: DR 2', armorEffects({ armor: withMaterial(a('breastplate'), 'adamantine') }).dr, 2);
+  check('adamantine breastplate: check penalty -3', withMaterial(a('breastplate'), 'adamantine').check_penalty, -3);
+  const dw = withMaterial(a('heavy-wooden-shield'), 'darkwood');
+  check('darkwood heavy shield: check penalty 0', dw.check_penalty, 0);
+  check('darkwood heavy shield: 257 gp (7 + 150 + 10 per lb.)', dw.price_gp, 257);
+  check('dragonhide breastplate: 700 gp', withMaterial(a('breastplate'), 'dragonhide').price_gp, 700);
+  check('dragonhide breastplate: a druid may wear it', druidMetalWarnings({ armor: withMaterial(a('breastplate'), 'dragonhide') }, ['druid']).length, 0);
+  check('mithral chain shirt: still metal for a druid', druidMetalWarnings({ armor: mc }, ['druid']).length, 1);
+  check('darkleaf leather: spell failure 5%', withMaterial(a('leather'), 'darkleaf-cloth').spell_failure, 5);
+  check('gold breastplate: armor +4, penalty -6', [withMaterial(a('breastplate'), 'gold').bonus, withMaterial(a('breastplate'), 'gold').check_penalty].join(), '4,-6');
+  check('no mithral leather', materialsFor(a('leather')).some(m => m.id === 'mithral'), false);
+  check('leather can be eel hide', materialsFor(a('leather')).some(m => m.id === 'eel-hide'), true);
+  check('a material that does not fit is ignored', withMaterial(a('leather'), 'mithral'), a('leather'));
+  check('bard in a mithral breastplate: no spell failure', spellFailureByClass(armorEffects({ armor: withMaterial(a('breastplate'), 'mithral') }), [{ cls: { id: 'bard' }, level: 1 }])[0].chance, 0);
 }
 
 const failed = results.filter(r => !r.pass);
