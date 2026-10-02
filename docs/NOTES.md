@@ -166,6 +166,15 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
   archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
   and feature fold-outs stay open across redraws.
+- Animal companion (`js/companion.js`, card `tab-companion.js`, data `build_companions.py` -> data/companions.json:
+  the Core Rulebook "Animal Companion Base Statistics" table as `progression`, its rules text sections as `rules`, and
+  every `animal_companion` section with `animal_companion_details` (base + advancement) from CR, UM vermin, B1, B2, MC).
+  `companionLevel(counts, { natureBond, animalDomain })` adds druid (companion bond; Animal domain bond = level - 3),
+  hunter, ranger - 3, cleric with an Animal Companion domain power - 3. `companionStats` applies advancement at its level,
+  table Str/Dex and natural armor, chosen increases (4th/9th/14th/20th), feats via `featEffects` plus Weapon Finesse,
+  Improved Natural Armor, Improved Initiative; natural attacks: primary BAB + Str + size, secondary (hooves, tentacles,
+  tail slap, wings, pincers, or "*") -5 / -2 with Multiattack (9th, 3+ attacks) and half Str, a lone attack 1 1/2 Str.
+  `state.companion` = { animal, name, increases, feats (names), tricks, skills }.
 - Active effects (`js/effects.js`, card in `tab-effects.js`): `state.buffs` [{ id, cl }] (hand-entered `BUFFS`, each
   `bonuses(cl)` -> [{ target, type, value }], `size` steps, `note` for what isn't applied) and `state.customEffects`
   [{ name, target, type, value, on }]. `effectTotals` stacks by type (dodge/circumstance/untyped add, penalties add, others

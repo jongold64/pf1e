@@ -30,6 +30,8 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize } from './effects.js';
 import { initEffects, renderEffects } from './tab-effects.js';
+import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
+import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
@@ -119,6 +121,8 @@ const state = {
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
   shieldMw: false,
+  // Animal companion: animal id (data/companions.json), name, ability increases ('str'...), feat names, tricks, skill ranks.
+  companion: { animal: '', name: '', increases: [], feats: [], tricks: [], skills: {} },
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -230,6 +234,18 @@ function load(saved) {
   if (!worn(state.shieldId, 'shield')) state.shieldId = '';
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
+  // Animal companion: only known animals, skills and tricks.
+  const comp = state.companion && typeof state.companion === 'object' ? state.companion : {};
+  const list = x => (Array.isArray(x) ? x : []);
+  state.companion = {
+    animal: data.companions.animals.some(a => a.id === comp.animal) ? comp.animal : '',
+    name: String(comp.name || '').slice(0, 40),
+    increases: list(comp.increases).slice(0, 4).map(a => (['str', 'dex', 'con', 'int', 'wis', 'cha'].includes(a) ? a : 'str')),
+    feats: list(comp.feats).slice(0, 8).map(n => String(n || '')),
+    tricks: [...new Set(list(comp.tricks).filter(t => TRICKS.includes(t)))],
+    skills: Object.fromEntries(Object.entries(comp.skills && typeof comp.skills === 'object' ? comp.skills : {})
+      .filter(([n, r]) => ANIMAL_SKILLS.includes(n) && Number.isInteger(r) && r > 0 && r <= 20)),
+  };
   // Active effects: known buffs once each, caster level 1-20; custom effects with a known target and type.
   const seenBuffs = new Set();
   state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
@@ -543,6 +559,7 @@ function buildControls() {
   initTermPopover($('class-info'), () => classItems);
   initTraits(app);
   initEffects(app);
+  initCompanion(app);
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
   $('flaw-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.flaw);
@@ -958,6 +975,10 @@ function computeView() {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
     load, fx, size,
+    // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
+    // a druid whose Nature Bond is the Animal domain).
+    companion: companionLevel(counts, { natureBond: state.natureBond, animalDomain: cid => (state.domains[cid] || [])
+      .some(id => { const d = data.domainsById.get(id); return d && domainGrants(d, data.domainsById).powers.some(p => p.name === 'Animal Companion'); }) }),
   };
 }
 
@@ -1044,7 +1065,7 @@ function domainPicker(cls, level, openFeatures) {
       <option value="companion"${state.natureBond !== 'domain' ? ' selected' : ''}>Animal companion</option>
       <option value="domain"${state.natureBond === 'domain' ? ' selected' : ''}>A domain</option></select>` : '';
   if (rule.natureBond && state.natureBond !== 'domain') {
-    return `<div class="domains"><h4>Nature bond</h4>${bond}<p class="hint">An animal companion that adventures with you.</p></div>`;
+    return `<div class="domains"><h4>Nature bond</h4>${bond}<p class="hint">An animal companion: choose it on the Animal companion card below.</p></div>`;
   }
   const chosen = (state.domains[cls.id] || []).map(id => data.domainsById.get(id)).filter(Boolean);
   const kindName = { domain: 'domain', subdomain: 'subdomain', druid: 'druid domain', inquisition: 'inquisition' };
@@ -1322,6 +1343,7 @@ function render() {
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
   renderEffects(app, view);
+  renderCompanion(app, view);
   renderFlaws();
   renderHeroPoints();
   renderSpells(view);
@@ -1755,7 +1777,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -1763,6 +1785,7 @@ async function start() {
       fetch('data/traits.json').then(r => r.json()),
       fetch('data/archetypes.json').then(r => r.json()),
       fetch('data/domains.json').then(r => r.json()),
+      fetch('data/companions.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +

@@ -16,6 +16,7 @@ import { classCounts, babList, racialAdjustments } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
+import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1215,6 +1216,35 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check("bear's endurance: Fort +2", buffed.fort - plain.fort, 2);
   const large = characterStats({ race: human, cls: fighter, level: 1, baseScores: base, flexibleChoice: 'str', size: 'Large' });
   check('Large: -1 AC', large.ac - plain.ac, -1);
+}
+
+// Animal companions (Core Rulebook table and animals).
+{
+  const comp = await fetch('data/companions.json').then(r => r.json());
+  const animal = id => comp.animals.find(a => a.id === id);
+  const cls = id => classes.find(c => c.id === id);
+  check('druid 5: companion level 5', companionLevel([{ cls: cls('druid'), level: 5 }]).level, 5);
+  check('druid with a domain instead: none', companionLevel([{ cls: cls('druid'), level: 5 }], { natureBond: 'domain' }).level, 0);
+  check('druid with the Animal domain: level - 3', companionLevel([{ cls: cls('druid'), level: 5 }], { natureBond: 'domain', animalDomain: () => true }).level, 2);
+  check('ranger 3: none yet', companionLevel([{ cls: cls('ranger'), level: 3 }]).level, 0);
+  check('druid 4 + ranger 6 stack: 7', companionLevel([{ cls: cls('druid'), level: 4 }, { cls: cls('ranger'), level: 6 }]).level, 7);
+  check('cleric 7 without the Animal domain: none', companionLevel([{ cls: cls('cleric'), level: 7 }]).level, 0);
+  const w1 = companionStats(animal('wolf'), 1, comp.progression);
+  check('wolf at 1st: 13 hp (2d8+4)', w1.hp, 13);
+  check('wolf at 1st: AC 14', w1.ac, 14);
+  check('wolf at 1st: bite +2, 1d6+1', `${w1.attacks[0].bonus} ${w1.attacks[0].damage}`, '2 1d6+1');
+  check('wolf at 1st: Fort +5, Will +1', `${w1.fort} ${w1.will}`, '5 1');
+  const w7 = companionStats(animal('wolf'), 7, comp.progression, { increases: ['str'] });
+  check('wolf at 7th: Large', w7.size, 'Large');
+  check('wolf at 7th: Str 24 (13 + 8 + 2 + 1)', w7.scores.str, 24);
+  check('wolf at 7th: AC 19', w7.ac, 19);
+  check('wolf at 7th: bite +10, 1d8+10 (one attack: 1 1/2 Str)', `${w7.attacks[0].bonus} ${w7.attacks[0].damage}`, '10 1d8+10');
+  check('wolf at 7th: CMD 24 (10 + 4 + Str 7 + Dex 2 + 1)', w7.cmd, 24);
+  const horse = companionStats(animal('horse'), 1, comp.progression);
+  check('horse hooves are secondary (-5)', horse.attacks.find(x => x.name === 'hooves').bonus, horse.attacks.find(x => x.name === 'bite').bonus - 5);
+  check('ape at 9th: Multiattack with 3 attacks', companionStats(animal('ape'), 9, comp.progression).multiattack, true);
+  check('attacks parsed with riders', JSON.stringify(parseAttacks('bite (1d6 plus trip), 2 claws (1d4)').map(x => [x.count, x.name, x.dice, x.rider])),
+    JSON.stringify([[1, 'bite', '1d6', 'trip'], [2, 'claws', '1d4', '']]));
 }
 
 const failed = results.filter(r => !r.pass);

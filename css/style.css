@@ -602,3 +602,22 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 #effects .custom-effect input[type="checkbox"] { width: 22px; height: 22px; }
 #effects .effect-totals { margin: 0 0 4px; }
 #effects h3 { font-size: 1rem; margin: 12px 0 4px; }
+
+/* Animal companion card */
+#companion h3 { font-size: 1rem; margin: 12px 0 4px; }
+#companion .companion-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+#companion .companion-pick select { flex: 2 1 260px; width: auto; }
+#companion .companion-pick input { flex: 1 1 160px; font: inherit; min-height: 40px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg); color: var(--text); padding: 0 10px; }
+#companion .companion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 24px; }
+#companion .companion-scores { width: 100%; border-collapse: collapse; }
+#companion .companion-scores td { padding: 4px 6px; white-space: nowrap; }
+#companion .companion-skills { width: 100%; border-collapse: collapse; }
+#companion .companion-skills td { padding: 2px 4px; }
+#companion .companion-skills .base { display: inline-flex; align-items: center; gap: 6px; }
+#companion .companion-skills .total { text-align: right; white-space: nowrap; }
+#companion .companion-feats { display: grid; gap: 6px; }
+#companion .companion-tricks { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+#companion .row-label select { width: auto; margin: 0 6px 6px 0; }
+#companion details summary { cursor: pointer; padding: 4px 0; }
+#companion .defense-row small { display: block; color: var(--muted); font-size: 0.8rem; }

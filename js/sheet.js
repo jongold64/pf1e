@@ -6,6 +6,7 @@ import { spellContext, spellLines } from './spell-math.js';
 import { favoredOption, favoredOptionTotal } from './race-options.js';
 import { magicPrefix } from './crafting.js';
 import { buffById } from './effects.js';
+import { companionStats } from './companion.js';
 
 const ABILITY_NAMES = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const ORDINAL = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -125,6 +126,25 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const gear = (magic.length ? `<p><b>Magic items:</b> ${esc(magic.join(', '))}</p>` : '')
     + `<p><b>Equipment:</b> ${esc(inventory.join(', ') || 'none')}</p>` + facts(moneyRows);
 
+  // Animal companion: its main numbers in a few lines.
+  let companion = '';
+  const animal = view.companion.level && data.companions.animals.find(a => a.id === state.companion.animal);
+  if (animal) {
+    const c = companionStats(animal, view.companion.level, data.companions.progression, state.companion);
+    const skills = c.skills.filter(k => k.ranks).map(k => `${k.name} ${signed(k.total)}`);
+    companion = `<p><b>${esc(state.companion.name || animal.name)}</b> (${esc(animal.name)}, ${esc(c.size)}, effective druid level ${c.level})</p>`
+      + facts([
+        ['HP', `${c.hp} (${c.hd}d8)`], ['AC', `${c.ac}, touch ${c.touch}, flat-footed ${c.flatFooted}`],
+        ['Saves', `Fort ${signed(c.fort)}, Ref ${signed(c.ref)}, Will ${signed(c.will)}`], ['Init', signed(c.init)],
+        ['Speed', c.speed || '—'], ['CMB / CMD', `${signed(c.cmb)} / ${c.cmd}`],
+        ['Attacks', c.attacks.map(x => `${x.count > 1 ? `${x.count} ` : ''}${x.name} ${signed(x.bonus)}${x.damage ? ` (${x.damage}${x.rider ? ` plus ${x.rider}` : ''})` : ''}`).join(', ')],
+        ['Scores', Object.entries(c.scores).map(([a, v]) => `${a[0].toUpperCase()}${a.slice(1)} ${v ?? '—'}`).join(', ')],
+        ['Skills', skills.join(', ')], ['Feats', state.companion.feats.filter(Boolean).join(', ')],
+        ['Tricks', state.companion.tricks.join(', ')],
+        ['Special', [...new Set(c.specials), c.qualities, c.specialAttacks].filter(Boolean).join(', ')],
+      ]);
+  }
+
   return header
     + `<div class="sheet-columns">
         <div>${section('Ability scores', abilities)}${section('Defense', defense)}</div>
@@ -135,6 +155,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     + section('Racial traits', racial)
     + section('Class features', features)
     + section('Spells', spellTables + byLevel)
+    + section('Animal companion', companion)
     + section('Gear', gear)
     + `<p class="sheet-footer">Pathfinder RPG rules content is Open Game Content under the Open Game License 1.0a. Printed ${esc(new Date().toLocaleDateString())}.</p>`;
 }

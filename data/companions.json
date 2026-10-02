@@ -1,0 +1,2893 @@
+{
+  "progression": [
+    {
+      "level": 1,
+      "hd": 2,
+      "bab": 1,
+      "fort": 3,
+      "ref": 3,
+      "will": 0,
+      "skills": 2,
+      "feats": 1,
+      "natural_armor": 0,
+      "str_dex": 0,
+      "tricks": 1,
+      "special": [
+        "Link",
+        "share spells"
+      ]
+    },
+    {
+      "level": 2,
+      "hd": 3,
+      "bab": 2,
+      "fort": 3,
+      "ref": 3,
+      "will": 1,
+      "skills": 3,
+      "feats": 2,
+      "natural_armor": 0,
+      "str_dex": 0,
+      "tricks": 1,
+      "special": []
+    },
+    {
+      "level": 3,
+      "hd": 3,
+      "bab": 2,
+      "fort": 3,
+      "ref": 3,
+      "will": 1,
+      "skills": 3,
+      "feats": 2,
+      "natural_armor": 2,
+      "str_dex": 1,
+      "tricks": 2,
+      "special": [
+        "Evasion"
+      ]
+    },
+    {
+      "level": 4,
+      "hd": 4,
+      "bab": 3,
+      "fort": 4,
+      "ref": 4,
+      "will": 1,
+      "skills": 4,
+      "feats": 2,
+      "natural_armor": 2,
+      "str_dex": 1,
+      "tricks": 2,
+      "special": [
+        "Ability score increase"
+      ]
+    },
+    {
+      "level": 5,
+      "hd": 5,
+      "bab": 3,
+      "fort": 4,
+      "ref": 4,
+      "will": 1,
+      "skills": 5,
+      "feats": 3,
+      "natural_armor": 2,
+      "str_dex": 1,
+      "tricks": 2,
+      "special": []
+    },
+    {
+      "level": 6,
+      "hd": 6,
+      "bab": 4,
+      "fort": 5,
+      "ref": 5,
+      "will": 2,
+      "skills": 6,
+      "feats": 3,
+      "natural_armor": 4,
+      "str_dex": 2,
+      "tricks": 3,
+      "special": [
+        "Devotion"
+      ]
+    },
+    {
+      "level": 7,
+      "hd": 6,
+      "bab": 4,
+      "fort": 5,
+      "ref": 5,
+      "will": 2,
+      "skills": 6,
+      "feats": 3,
+      "natural_armor": 4,
+      "str_dex": 2,
+      "tricks": 3,
+      "special": []
+    },
+    {
+      "level": 8,
+      "hd": 7,
+      "bab": 5,
+      "fort": 5,
+      "ref": 5,
+      "will": 2,
+      "skills": 7,
+      "feats": 4,
+      "natural_armor": 4,
+      "str_dex": 2,
+      "tricks": 3,
+      "special": []
+    },
+    {
+      "level": 9,
+      "hd": 8,
+      "bab": 6,
+      "fort": 6,
+      "ref": 6,
+      "will": 2,
+      "skills": 8,
+      "feats": 4,
+      "natural_armor": 6,
+      "str_dex": 3,
+      "tricks": 4,
+      "special": [
+        "Ability score increase",
+        "Multiattack"
+      ]
+    },
+    {
+      "level": 10,
+      "hd": 9,
+      "bab": 6,
+      "fort": 6,
+      "ref": 6,
+      "will": 3,
+      "skills": 9,
+      "feats": 5,
+      "natural_armor": 6,
+      "str_dex": 3,
+      "tricks": 4,
+      "special": []
+    },
+    {
+      "level": 11,
+      "hd": 9,
+      "bab": 6,
+      "fort": 6,
+      "ref": 6,
+      "will": 3,
+      "skills": 9,
+      "feats": 5,
+      "natural_armor": 6,
+      "str_dex": 3,
+      "tricks": 4,
+      "special": []
+    },
+    {
+      "level": 12,
+      "hd": 10,
+      "bab": 7,
+      "fort": 7,
+      "ref": 7,
+      "will": 3,
+      "skills": 10,
+      "feats": 5,
+      "natural_armor": 8,
+      "str_dex": 4,
+      "tricks": 5,
+      "special": []
+    },
+    {
+      "level": 13,
+      "hd": 11,
+      "bab": 8,
+      "fort": 7,
+      "ref": 7,
+      "will": 3,
+      "skills": 11,
+      "feats": 6,
+      "natural_armor": 8,
+      "str_dex": 4,
+      "tricks": 5,
+      "special": []
+    },
+    {
+      "level": 14,
+      "hd": 12,
+      "bab": 9,
+      "fort": 8,
+      "ref": 8,
+      "will": 4,
+      "skills": 12,
+      "feats": 6,
+      "natural_armor": 8,
+      "str_dex": 4,
+      "tricks": 5,
+      "special": [
+        "Ability score increase"
+      ]
+    },
+    {
+      "level": 15,
+      "hd": 12,
+      "bab": 9,
+      "fort": 8,
+      "ref": 8,
+      "will": 4,
+      "skills": 12,
+      "feats": 6,
+      "natural_armor": 10,
+      "str_dex": 5,
+      "tricks": 6,
+      "special": [
+        "Improved evasion"
+      ]
+    },
+    {
+      "level": 16,
+      "hd": 13,
+      "bab": 9,
+      "fort": 8,
+      "ref": 8,
+      "will": 4,
+      "skills": 13,
+      "feats": 7,
+      "natural_armor": 10,
+      "str_dex": 5,
+      "tricks": 6,
+      "special": []
+    },
+    {
+      "level": 17,
+      "hd": 14,
+      "bab": 10,
+      "fort": 9,
+      "ref": 9,
+      "will": 4,
+      "skills": 14,
+      "feats": 7,
+      "natural_armor": 10,
+      "str_dex": 5,
+      "tricks": 6,
+      "special": []
+    },
+    {
+      "level": 18,
+      "hd": 15,
+      "bab": 11,
+      "fort": 9,
+      "ref": 9,
+      "will": 5,
+      "skills": 15,
+      "feats": 8,
+      "natural_armor": 12,
+      "str_dex": 6,
+      "tricks": 7,
+      "special": []
+    },
+    {
+      "level": 19,
+      "hd": 15,
+      "bab": 11,
+      "fort": 9,
+      "ref": 9,
+      "will": 5,
+      "skills": 15,
+      "feats": 8,
+      "natural_armor": 12,
+      "str_dex": 6,
+      "tricks": 7,
+      "special": []
+    },
+    {
+      "level": 20,
+      "hd": 16,
+      "bab": 12,
+      "fort": 10,
+      "ref": 10,
+      "will": 5,
+      "skills": 16,
+      "feats": 8,
+      "natural_armor": 12,
+      "str_dex": 6,
+      "tricks": 7,
+      "special": [
+        "Ability score increase"
+      ]
+    }
+  ],
+  "rules": {
+    "Class Level": "This is the character's druid level. The druid's class levels stack with levels of any other classes that are entitled to an animal companion for the purpose of determining the companion's statistics.",
+    "HD": "This is the total number of eight-sided (d8) Hit Dice the animal companion possesses, each of which gains a Constitution modifier, as normal.",
+    "BAB": "This is the animal companion's base attack bonus. An animal companion's base attack bonus is the same as that of a druid of a level equal to the animal's HD. Animal companions do not gain additional attacks using their natural weapons for a high base attack bonus.",
+    "Fort/Ref/Will": "These are the animal companion's base saving throw bonuses. An animal companion has good Fortitude and Reflex saves.",
+    "Skills": "This lists the animal's total skill ranks. Animal companions can assign skill ranks to any skill listed under Animal Skills. If an animal companion increases its Intelligence to 10 or higher, it gains bonus skill ranks as normal. Animal companions with an Intelligence of 3 or higher can purchase ranks in any skill. An animal companion cannot have more ranks in a skill than it has Hit Dice.",
+    "Feats": "This is the total number of feats possessed by an animal companion. Animal companions should select their feats from those listed under Animal Feats. Animal companions can select other feats, although they are unable to utilize some feats (such as Martial Weapon Proficiency). Note that animal companions cannot select a feat with a requirement of base attack bonus +1 until they gain their second feat at 3 Hit Dice.",
+    "Natural Armor Bonus": "The number noted here is an improvement to the animal companion's existing natural armor bonus.",
+    "Str/Dex Bonus": "Add this modifier to the animal companion's Strength and Dexterity scores.",
+    "Bonus Tricks": "The value given in this column is the total number of \"bonus\" tricks that the animal knows in addition to any that the druid might choose to teach it (see the Handle Animal skill for more details on how to teach an animal tricks). These bonus tricks don't require any training time or Handle Animal checks, and they don't count against the normal limit of tricks known by the animal. The druid selects these bonus tricks, and once selected, they can't be changed.",
+    "Special": "This includes a number of abilities gained by animal companions as they increase in power. Each of these bonuses is described below.",
+    "Link": "A druid can handle her animal companion as a free action, or push it as a move action, even if she doesn't have any ranks in the Handle Animal skill. The druid gains a +4 circumstance bonus on all wild empathy checks and Handle Animal checks made regarding an animal companion.",
+    "Share Spells": "The druid may cast a spell with a target of \"You\" on her animal companion (as a spell with a range of touch) instead of on herself. A druid may cast spells on her animal companion even if the spells normally do not affect creatures of the companion's type (animal). Spells cast in this way must come from a class that grants an animal companion. This ability does not allow the animal to share abilities that are not spells, even if they function like spells.",
+    "Evasion": "If an animal companion is subjected to an attack that normally allows a Reflex save for half damage, it takes no damage if it makes a successful saving throw.",
+    "Ability Score Increase": "The animal companion adds +1 to one of its ability scores.",
+    "Devotion": "An animal companion gains a +4 morale bonus on Will saves against enchantment spells and effects.",
+    "Multiattack": "An animal companion gains Multiattack as a bonus feat if it has three or more natural attacks and does not already have that feat. If it does not have the requisite three or more natural attacks, the animal companion instead gains a second attack with one of its natural weapons, albeit at a -5 penalty.",
+    "Improved Evasion": "When subjected to an attack that allows a Reflex saving throw for half damage, an animal companion takes no damage if it makes a successful saving throw and only half damage if the saving throw fails.",
+    "Animal Skills": "Animal companions can have ranks in any of the following skills: Acrobatics* (Dex), Climb* (Str), Escape Artist (Dex), Fly* (Dex), Intimidate (Cha), Perception* (Wis), Stealth* (Dex), Survival (Wis), and Swim* (Str). All of the skills marked with an (*) are class skills for animal companions. Animal companions with an Intelligence of 3 or higher can put ranks into any skill.",
+    "Animal Feats": "Animal companions can select from the following feats: Acrobatic, Agile Maneuvers, Armor Proficiency (light, medium, and heavy), Athletic, Blind-Fight, Combat Reflexes, Diehard, Dodge, Endurance, Great Fortitude, Improved Bull Rush, Improved Initiative, Improved Natural Armor, Improved Natural Attack, Improved Overrun, Intimidating Prowess, Iron Will, Lightning Reflexes, Mobility, Power Attack, Run, Skill Focus, Spring Attack, Stealthy, Toughness, Weapon Finesse, and Weapon Focus. Animal companions with an Intelligence of 3 or higher can select any feat they are physically capable of using. GMs might expand this list to include feats from other sources."
+  },
+  "animals": [
+    {
+      "id": "allosaurus",
+      "name": "Allosaurus",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 4,
+      "attacks": "bite (1d6), 2 claws (1d4)",
+      "abilities": {
+        "str": 14,
+        "dex": 16,
+        "con": 10,
+        "int": 2,
+        "wis": 15,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d8), 2 claws (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "grab, pounce",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "ankylosaurus",
+      "name": "Ankylosaurus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 9,
+      "attacks": "tail (1d6)",
+      "abilities": {
+        "str": 10,
+        "dex": 14,
+        "con": 9,
+        "int": 2,
+        "wis": 12,
+        "cha": 8
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "tail (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "stun",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "ant-giant",
+      "name": "Ant, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "30 ft., climb 20 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4 plus grab)",
+      "abilities": {
+        "str": 10,
+        "dex": 12,
+        "con": 15,
+        "int": null,
+        "wis": 12,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": "trip +8",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6 plus grab), sting (1d4 plus poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "poison (frequency 1 round [4], effect 1 Str damage, cure 1 save, Con-based DC)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "ape",
+      "name": "Ape",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Medium",
+      "speed": "30 ft., Climb 30 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d4), 2 claws (1d4)",
+      "abilities": {
+        "str": 13,
+        "dex": 17,
+        "con": 10,
+        "int": 2,
+        "wis": 12,
+        "cha": 7
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d6), 2 claws (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "arsinoitherium",
+      "name": "Arsinoitherium",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 0,
+      "attacks": "gore (1d8)",
+      "abilities": {
+        "str": 14,
+        "dex": 12,
+        "con": 15,
+        "int": 2,
+        "wis": 13,
+        "cha": 3
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 0,
+        "attacks": "gore (2d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "powerful charge (2d8), trample",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "aurochs",
+      "name": "Aurochs",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 1,
+      "attacks": "gore (1d6)",
+      "abilities": {
+        "str": 14,
+        "dex": 12,
+        "con": 12,
+        "int": 2,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "stampede, trample",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "baboon",
+      "name": "Baboon",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Small",
+      "speed": "30 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d4)",
+      "abilities": {
+        "str": 12,
+        "dex": 15,
+        "con": 12,
+        "int": 2,
+        "wis": 12,
+        "cha": 5
+      },
+      "special_qualities": "low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "badger-wolverine",
+      "name": "Badger (Wolverine)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "30 ft., burrow 10 ft., climb 10 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4), 2 claws (1d3)",
+      "abilities": {
+        "str": 10,
+        "dex": 17,
+        "con": 15,
+        "int": 2,
+        "wis": 12,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": "rage (as a barbarian for 6 rounds per day)",
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6), 2 claws (1d4)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "bear",
+      "name": "Bear",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "40 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4), 2 claws (1d3)",
+      "abilities": {
+        "str": 15,
+        "dex": 15,
+        "con": 13,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6), 2 claws (1d4)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "beetle-giant",
+      "name": "Beetle, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "20 ft., fly 20 ft. (poor)",
+      "natural_armor": 6,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 13,
+        "dex": 12,
+        "con": 13,
+        "int": null,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "darkvision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": "trip +8",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "trample (1d4)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "bird-eagle-hawk-owl",
+      "name": "Bird (Eagle/Hawk/Owl)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "10 ft., fly 80 ft. (average)",
+      "natural_armor": 1,
+      "attacks": "bite (1d4), 2 talons (1d4)",
+      "abilities": {
+        "str": 10,
+        "dex": 15,
+        "con": 12,
+        "int": 2,
+        "wis": 14,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "boar",
+      "name": "Boar",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "40 ft",
+      "natural_armor": 6,
+      "attacks": "gore (1d6)",
+      "abilities": {
+        "str": 13,
+        "dex": 12,
+        "con": 15,
+        "int": 2,
+        "wis": 13,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "gore (1d8)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "ferocity",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "brachiosaurus",
+      "name": "Brachiosaurus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 3,
+      "attacks": "tail (2d4)",
+      "abilities": {
+        "str": 13,
+        "dex": 14,
+        "con": 11,
+        "int": 2,
+        "wis": 13,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "tail (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "trample (1d8)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "camel",
+      "name": "Camel",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Large",
+      "speed": "50 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d4) or spit (ranged touch attack, target is sickened for 1d4 rounds, range 10 feet)",
+      "abilities": {
+        "str": 18,
+        "dex": 16,
+        "con": 14,
+        "int": 2,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "cat-big-lion-tiger",
+      "name": "Cat, Big (Lion, Tiger)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d6), 2 claws (1d4)",
+      "abilities": {
+        "str": 13,
+        "dex": 17,
+        "con": 13,
+        "int": 2,
+        "wis": 15,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": "rake (1d4)",
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d8), 2 claws (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": "grab, pounce, rake (1d6)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "cat-small-cheetah-leopard",
+      "name": "Cat, Small (Cheetah, Leopard)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "50 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d4 plus trip), 2 claws (1d2)",
+      "abilities": {
+        "str": 12,
+        "dex": 21,
+        "con": 13,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6 plus trip), 2 claws (1d3)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": "sprint",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "cave-salamander",
+      "name": "Cave Salamander",
+      "kind": "animal",
+      "source": "Monster Codex",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 13,
+        "dex": 12,
+        "con": 13,
+        "int": 1,
+        "wis": 12,
+        "cha": 4
+      },
+      "special_qualities": "darkvision 60 ft",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": "combat training (see the Handle Animal skill)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "centipede-giant",
+      "name": "Centipede, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "20 ft., climb 20 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4 plus poison)",
+      "abilities": {
+        "str": 8,
+        "dex": 17,
+        "con": 11,
+        "int": null,
+        "wis": 10,
+        "cha": 2
+      },
+      "special_qualities": "darkvision 60 ft",
+      "special_attacks": "poison (frequency 1 round [6], effect 1 Dex damage, cure 1 save, Con-based DC)",
+      "special_abilities": null,
+      "cmd_note": "can't be tripped",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6 plus poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "crab-giant",
+      "name": "Crab, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "30 ft., swim 20 ft",
+      "natural_armor": 5,
+      "attacks": "2 claws (1d3 plus grab)",
+      "abilities": {
+        "str": 13,
+        "dex": 14,
+        "con": 13,
+        "int": null,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "aquatic, darkvision, water dependency (survive out of water for 1 hour per point of Con, after which it begins to suffocate as if it were drowning)",
+      "special_attacks": "constrict (1d3)",
+      "special_abilities": null,
+      "cmd_note": "trip +12",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "2 claws (1d4 plus grab)",
+        "abilities": {
+          "str": 2,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "constrict (1d4)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "crocodile-alligator",
+      "name": "Crocodile (Alligator)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "20 ft., swim 30 ft",
+      "natural_armor": 4,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 15,
+        "dex": 14,
+        "con": 15,
+        "int": 1,
+        "wis": 12,
+        "cha": 2
+      },
+      "special_qualities": "hold breath, low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d8) or tail slap (1d12)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "death roll, grab, sprint",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "dinosaur-deinonychus-velociraptor",
+      "name": "Dinosaur (Deinonychus, Velociraptor)",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "60 ft",
+      "natural_armor": 1,
+      "attacks": "2 talons (1d6), bite (1d4)",
+      "abilities": {
+        "str": 11,
+        "dex": 17,
+        "con": 17,
+        "int": 2,
+        "wis": 12,
+        "cha": 14
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Medium",
+        "natural_armor": 2,
+        "attacks": "2 talons (1d8), bite (1d6), 2 claws (1d4)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "pounce",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "dire-bat",
+      "name": "Dire Bat",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "20 ft., fly 40 ft. (good)",
+      "natural_armor": 0,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 9,
+        "dex": 17,
+        "con": 9,
+        "int": 2,
+        "wis": 14,
+        "cha": 6
+      },
+      "special_qualities": "blindsense 40 ft",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "dire-rat",
+      "name": "Dire Rat",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "40 ft., climb 20 ft., swim 20 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d4)",
+      "abilities": {
+        "str": 10,
+        "dex": 17,
+        "con": 12,
+        "int": 2,
+        "wis": 12,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": "bite (1d4 plus disease)",
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "dog",
+      "name": "Dog",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "40 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4)",
+      "abilities": {
+        "str": 13,
+        "dex": 17,
+        "con": 15,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "dolphin",
+      "name": "Dolphin",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "swim 80 ft",
+      "natural_armor": 1,
+      "attacks": "slam (1d4)",
+      "abilities": {
+        "str": 12,
+        "dex": 15,
+        "con": 13,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, hold breath",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "dex": 2,
+          "con": 2
+        },
+        "special_qualities": "blindsight 120 ft",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "elasmosaurus",
+      "name": "Elasmosaurus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "20 ft., swim 50 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 10,
+        "dex": 18,
+        "con": 12,
+        "int": 2,
+        "wis": 13,
+        "cha": 9
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "bite (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "electric-eel",
+      "name": "Electric Eel",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "5 ft., swim 30 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 12,
+        "dex": 14,
+        "con": 18,
+        "int": 1,
+        "wis": 10,
+        "cha": 6
+      },
+      "special_qualities": "amphibious, low-light vision, electricity resistance 5",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 2,
+        "attacks": null,
+        "abilities": {
+          "dex": 2,
+          "con": 2
+        },
+        "special_qualities": "electricity (1d6), electricity resistance 10",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "elephant-mastodon",
+      "name": "Elephant/Mastodon",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 4,
+      "attacks": "gore (1d8), slam (1d6)",
+      "abilities": {
+        "str": 14,
+        "dex": 14,
+        "con": 13,
+        "int": 2,
+        "wis": 13,
+        "cha": 7
+      },
+      "special_qualities": null,
+      "special_attacks": null,
+      "special_abilities": "low-light vision, scent",
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (2d6), slam (1d8)",
+        "abilities": {},
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": "trample (2d6)",
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "frog",
+      "name": "Frog",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "30 ft., swim 30 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 15,
+        "dex": 13,
+        "con": 16,
+        "int": 1,
+        "wis": 9,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent, tongue, pull",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "dex": 2
+        },
+        "special_qualities": "swallow whole",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "gar",
+      "name": "Gar",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "swim 60 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 14,
+        "dex": 14,
+        "con": 15,
+        "int": 1,
+        "wis": 13,
+        "cha": 2
+      },
+      "special_qualities": null,
+      "special_attacks": null,
+      "special_abilities": "grab",
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 0,
+        "attacks": "bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "giant-snapping-turtle",
+      "name": "Giant Snapping Turtle",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "20 ft., swim 20 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 8,
+        "dex": 10,
+        "con": 9,
+        "int": 1,
+        "wis": 13,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, hold breath, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 0,
+        "attacks": "bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": "grab",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "goblin-dog",
+      "name": "Goblin Dog",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "50 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d4)",
+      "abilities": {
+        "str": 11,
+        "dex": 16,
+        "con": 11,
+        "int": 2,
+        "wis": 12,
+        "cha": 8
+      },
+      "special_qualities": "allergic reaction, low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 1,
+        "attacks": "bite (1d6)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "gorthek",
+      "name": "Gorthek",
+      "kind": "animal",
+      "source": "Monster Codex",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 4,
+      "attacks": "gore (1d8)",
+      "abilities": {
+        "str": 16,
+        "dex": 11,
+        "con": 13,
+        "int": 2,
+        "wis": 10,
+        "cha": 5
+      },
+      "special_qualities": "darkvision 60 ft., low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": "powerful charge (gore, 4d6 + twice Strength modifier)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "gylptodon",
+      "name": "Gylptodon",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "20 ft",
+      "natural_armor": 5,
+      "attacks": "2 claws (1d8)",
+      "abilities": {
+        "str": 13,
+        "dex": 12,
+        "con": 13,
+        "int": 2,
+        "wis": 13,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "2 claws (1d10)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "hippo",
+      "name": "Hippo",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 6,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 11,
+        "dex": 12,
+        "con": 12,
+        "int": 2,
+        "wis": 13,
+        "cha": 5
+      },
+      "special_qualities": "low-light vision, scent, sweat",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 0,
+        "attacks": "bite (2d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": "trample",
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "horse",
+      "name": "Horse",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Large",
+      "speed": "50 ft",
+      "natural_armor": 4,
+      "attacks": "bite (1d4), 2 hooves* (1d6)",
+      "abilities": {
+        "str": 16,
+        "dex": 13,
+        "con": 15,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": "combat trained (see the Handle Animal skill)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "hyena",
+      "name": "Hyena",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "50 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d4 plus trip)",
+      "abilities": {
+        "str": 10,
+        "dex": 17,
+        "con": 13,
+        "int": 2,
+        "wis": 13,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6 plus trip)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "leech-giant",
+      "name": "Leech, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "5 ft., swim 20 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d4 plus attach)",
+      "abilities": {
+        "str": 9,
+        "dex": 14,
+        "con": 12,
+        "int": null,
+        "wis": 10,
+        "cha": 1
+      },
+      "special_qualities": "amphibious, blindsense 30 ft., scent, susceptible to salt",
+      "special_attacks": "attach, blood drain (1 Str)",
+      "special_abilities": null,
+      "cmd_note": "can't be tripped",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6 plus attach)",
+        "abilities": {
+          "str": 2,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": "blindsight 30 ft",
+        "special_attacks": "blood drain (1 Str and 1 Con damage)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "manta-ray-companion",
+      "name": "Manta Ray Companion",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "swim 60 ft",
+      "natural_armor": 0,
+      "attacks": "tail slap (1d4)",
+      "abilities": {
+        "str": 8,
+        "dex": 15,
+        "con": 11,
+        "int": 1,
+        "wis": 13,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "tail slap (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "blindsense 30 ft",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "mantis-giant",
+      "name": "Mantis, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Medium; Speed 30 ft., climb 30 ft., fly 40 ft. (average)",
+      "speed": null,
+      "natural_armor": 3,
+      "attacks": "2 claws (1d4 plus grab)",
+      "abilities": {
+        "str": 10,
+        "dex": 15,
+        "con": 10,
+        "int": null,
+        "wis": 12,
+        "cha": 7
+      },
+      "special_qualities": "darkvision",
+      "special_attacks": "lunge",
+      "special_abilities": null,
+      "cmd_note": "trip +8",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "2 claws (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": "mandibles (1d6 secondary attack against a grabbed target), sudden strike (may take a full attack in the surprise round)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "megaloceros",
+      "name": "Megaloceros",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "50 ft",
+      "natural_armor": 3,
+      "attacks": "gore (1d8)",
+      "abilities": {
+        "str": 12,
+        "dex": 17,
+        "con": 14,
+        "int": 2,
+        "wis": 15,
+        "cha": 5
+      },
+      "special_qualities": null,
+      "special_attacks": null,
+      "special_abilities": "low-light vision, scent",
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "gore (2d6), 2 hooves (1d4)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "powerful charge (2d6)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "megatherium",
+      "name": "Megatherium",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "40 ft., climb 10 ft",
+      "natural_armor": 5,
+      "attacks": "2 claws (1d4)",
+      "abilities": {
+        "str": 9,
+        "dex": 14,
+        "con": 11,
+        "int": 2,
+        "wis": 13,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "2 claws (1d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "rend (2 claws, 1d8)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "monitor-lizard",
+      "name": "Monitor Lizard",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "30 ft., swim 30 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d6 plus grab)",
+      "abilities": {
+        "str": 13,
+        "dex": 17,
+        "con": 12,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Medium",
+        "natural_armor": 2,
+        "attacks": "bite (1d8 plus grab and poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "moray-eel",
+      "name": "Moray Eel",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "swim 30 ft",
+      "natural_armor": 5,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 14,
+        "dex": 16,
+        "con": 12,
+        "int": 1,
+        "wis": 12,
+        "cha": 8
+      },
+      "special_qualities": "low-light vision, grab",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "bite (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "gnaw",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "octopus",
+      "name": "Octopus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Small",
+      "speed": "20 ft., swim 30 ft., jet 200 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d3), tentacles (grab)",
+      "abilities": {
+        "str": 12,
+        "dex": 17,
+        "con": 14,
+        "int": 2,
+        "wis": 12,
+        "cha": 3
+      },
+      "special_qualities": "low-light vision, ink cloud",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": "bite (1d3 plus poison)",
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "orca",
+      "name": "Orca",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "swim 80 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 11,
+        "dex": 19,
+        "con": 10,
+        "int": 2,
+        "wis": 14,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, hold breath",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "blindsight 120 ft",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "parasaurolophus",
+      "name": "Parasaurolophus",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 2,
+      "attacks": "tail (1d6)",
+      "abilities": {
+        "str": 11,
+        "dex": 18,
+        "con": 9,
+        "int": 2,
+        "wis": 13,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 0,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "tail (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "trample (1d8)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "pony",
+      "name": "Pony",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 2,
+      "attacks": "2 hooves (1d3)",
+      "abilities": {
+        "str": 13,
+        "dex": 13,
+        "con": 12,
+        "int": 2,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": "combat trained (see the Handle Animal skill)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "pteranodon",
+      "name": "Pteranodon",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "10 ft., fly 50 ft. (clumsy)",
+      "natural_armor": 0,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 8,
+        "dex": 21,
+        "con": 10,
+        "int": 2,
+        "wis": 14,
+        "cha": 12
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "ram",
+      "name": "Ram",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Small",
+      "speed": "40 ft",
+      "natural_armor": 0,
+      "attacks": "gore (1d3)",
+      "abilities": {
+        "str": 10,
+        "dex": 17,
+        "con": 11,
+        "int": 2,
+        "wis": 14,
+        "cha": 7
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "gore (1d4)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": "powerful charge (1d8)",
+        "special_abilities": null,
+        "bonus_feat": "Improved Bull Rush"
+      }
+    },
+    {
+      "id": "rhinoceros",
+      "name": "Rhinoceros",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 0,
+      "attacks": "gore (1d8)",
+      "abilities": {
+        "str": 14,
+        "dex": 14,
+        "con": 15,
+        "int": 2,
+        "wis": 13,
+        "cha": 5
+      },
+      "special_qualities": "scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "powerful charge",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "riding-python",
+      "name": "Riding Python",
+      "kind": "animal",
+      "source": "Monster Codex",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 1,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 11,
+        "dex": 14,
+        "con": 13,
+        "int": 1,
+        "wis": 10,
+        "cha": 4
+      },
+      "special_qualities": "blindsight 60 ft",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": "(can't be tripped)",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": "combat training (see the Handle Animal skill)",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "roc",
+      "name": "Roc",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "20 ft., fly 80 ft",
+      "natural_armor": 5,
+      "attacks": "2 talons (1d4), bite (1d6)",
+      "abilities": {
+        "str": 12,
+        "dex": 19,
+        "con": 9,
+        "int": 2,
+        "wis": 13,
+        "cha": 11
+      },
+      "special_qualities": "low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "2 talons (1d6 plus grab), bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "scorpion-giant",
+      "name": "Scorpion, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 1,
+      "attacks": "2 claws (1d4 plus grab) and sting (1d4 plus poison)",
+      "abilities": {
+        "str": 11,
+        "dex": 12,
+        "con": 12,
+        "int": null,
+        "wis": 10,
+        "cha": 2
+      },
+      "special_qualities": "darkvision, tremorsense 30 ft",
+      "special_attacks": "poison (frequency 1 round (6), effect 1 Str damage, cure 1 save, Con-based DC)",
+      "special_abilities": null,
+      "cmd_note": "trip +12",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "2 claws (1d6 plus grab) and sting (1d6 plus poison)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "tremorsense 60 ft",
+        "special_attacks": "poison (frequency 1 round [6], effect 1d2 Str damage, cure 1 save, Con-based DC)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "shark",
+      "name": "Shark",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "swim 60 ft",
+      "natural_armor": 4,
+      "attacks": "bite (1d4)",
+      "abilities": {
+        "str": 13,
+        "dex": 15,
+        "con": 15,
+        "int": 1,
+        "wis": 12,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d6)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": "blindsense",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "slug-giant",
+      "name": "Slug, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Medium",
+      "speed": "20 ft",
+      "natural_armor": 4,
+      "attacks": "tongue (1d4 plus 1 acid)",
+      "abilities": {
+        "str": 13,
+        "dex": 8,
+        "con": 13,
+        "int": null,
+        "wis": 10,
+        "cha": 1
+      },
+      "special_qualities": "blindsense 30 ft., DR 5/slashing or piercing, susceptible to salt (Bestiary 254)",
+      "special_attacks": "spit acid (ranged touch attack, 30 foot range, 1d6 acid damage)",
+      "special_abilities": null,
+      "cmd_note": "can't be tripped",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "tongue (1d6 plus 1d2 acid)",
+        "abilities": {
+          "str": 2,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": "blindsight 30 ft",
+        "special_attacks": "spit acid (ranged touch attack, 30-foot range, 1d8 acid damage)",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "snake-constrictor",
+      "name": "Snake, Constrictor",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Medium",
+      "speed": "20 ft., climb 20 ft., swim 20 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d3)",
+      "abilities": {
+        "str": 15,
+        "dex": 17,
+        "con": 13,
+        "int": 1,
+        "wis": 12,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": "grab",
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Large",
+        "natural_armor": 1,
+        "attacks": "bite (1d4)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": "constrict 1d4",
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "snake-viper",
+      "name": "Snake, Viper",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Small",
+      "speed": "20 ft., climb 20 ft., swim 20 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d3 plus poison)",
+      "abilities": {
+        "str": 8,
+        "dex": 17,
+        "con": 11,
+        "int": 1,
+        "wis": 12,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": "poison (Frequency 1 round (6), Effect 1 Con damage, Cure 1 save, Con-based DC)",
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 0,
+        "attacks": "bite (1d4 plus poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "spider-giant",
+      "name": "Spider, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Small",
+      "speed": "30 ft., climb 30 ft",
+      "natural_armor": 0,
+      "attacks": "bite (1d4 plus poison)",
+      "abilities": {
+        "str": 6,
+        "dex": 17,
+        "con": 10,
+        "int": null,
+        "wis": 10,
+        "cha": 2
+      },
+      "special_qualities": "darkvision, tremorsense 30 feet",
+      "special_attacks": "poison (frequency 1 round [4], effect 1 Str damage, cure 1 save, Con-based DC)",
+      "special_abilities": null,
+      "cmd_note": "trip +12",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 1,
+        "attacks": "bite (1d6 plus poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "squid",
+      "name": "Squid",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "swim 60 ft., jet 240 ft",
+      "natural_armor": 0,
+      "attacks": "tentacles (1d4 plus grab), bite (1d3)",
+      "abilities": {
+        "str": 14,
+        "dex": 15,
+        "con": 11,
+        "int": 2,
+        "wis": 12,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision, ink cloud",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": null,
+        "natural_armor": 0,
+        "attacks": null,
+        "abilities": {
+          "str": 2,
+          "con": 2
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "stegosaurus",
+      "name": "Stegosaurus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Med.",
+      "speed": "30 ft",
+      "natural_armor": 6,
+      "attacks": "tail (2d6)",
+      "abilities": {
+        "str": 10,
+        "dex": 18,
+        "con": 10,
+        "int": 2,
+        "wis": 12,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "tail (2d8 plus trip)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "stingray-companion",
+      "name": "Stingray Companion",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Small",
+      "speed": "swim 40 ft",
+      "natural_armor": 0,
+      "attacks": "sting (1d3 plus poison)",
+      "abilities": {
+        "str": 6,
+        "dex": 15,
+        "con": 13,
+        "int": 1,
+        "wis": 13,
+        "cha": 2
+      },
+      "special_qualities": "low-light vision",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 4,
+        "size": "Medium",
+        "natural_armor": 1,
+        "attacks": "sting (1d4 plus poison)",
+        "abilities": {
+          "str": 4,
+          "dex": -2,
+          "con": 2
+        },
+        "special_qualities": "blindsense 30 ft",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "triceratops",
+      "name": "Triceratops",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 6,
+      "attacks": "gore (1d8)",
+      "abilities": {
+        "str": 10,
+        "dex": 13,
+        "con": 11,
+        "int": 2,
+        "wis": 12,
+        "cha": 7
+      },
+      "special_qualities": null,
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "powerful charge",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "tylosaurus",
+      "name": "Tylosaurus",
+      "kind": "animal",
+      "source": "Bestiary 2",
+      "size": "Medium",
+      "speed": "20 ft., swim 50 ft",
+      "natural_armor": 3,
+      "attacks": "bite (1d6)",
+      "abilities": {
+        "str": 10,
+        "dex": 17,
+        "con": 10,
+        "int": 2,
+        "wis": 13,
+        "cha": 9
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 0,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "grab",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "tyrannosaurus",
+      "name": "Tyrannosaurus",
+      "kind": "animal",
+      "source": "Bestiary",
+      "size": "Medium",
+      "speed": "30 ft",
+      "natural_armor": 4,
+      "attacks": "bite (1d8)",
+      "abilities": {
+        "str": 14,
+        "dex": 16,
+        "con": 10,
+        "int": 2,
+        "wis": 15,
+        "cha": 10
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "bite (2d6)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "grab, powerful bite",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "wasp-giant",
+      "name": "Wasp, Giant",
+      "kind": "vermin",
+      "source": "Ultimate Magic",
+      "size": "Medium",
+      "speed": "20 ft., fly 60 ft. (good)",
+      "natural_armor": 2,
+      "attacks": "sting (1d6 plus poison)",
+      "abilities": {
+        "str": 10,
+        "dex": 14,
+        "con": 11,
+        "int": null,
+        "wis": 13,
+        "cha": 4
+      },
+      "special_qualities": "darkvision",
+      "special_attacks": "poison (frequency 1 round [6], effect 1 Dex damage, cure 1 save, Con-based DC)",
+      "special_abilities": null,
+      "cmd_note": "trip +8",
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "sting (1d8 plus poison)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "wolf",
+      "name": "Wolf",
+      "kind": "animal",
+      "source": "Core Rulebook",
+      "size": "Medium",
+      "speed": "50 ft",
+      "natural_armor": 2,
+      "attacks": "bite (1d6 plus trip)",
+      "abilities": {
+        "str": 13,
+        "dex": 15,
+        "con": 15,
+        "int": 2,
+        "wis": 12,
+        "cha": 6
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 2,
+        "attacks": "bite (1d8 plus trip)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": null,
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    },
+    {
+      "id": "yzobu",
+      "name": "Yzobu",
+      "kind": "animal",
+      "source": "Monster Codex",
+      "size": "Medium",
+      "speed": "40 ft",
+      "natural_armor": 1,
+      "attacks": "gore (1d6)",
+      "abilities": {
+        "str": 14,
+        "dex": 12,
+        "con": 12,
+        "int": 2,
+        "wis": 11,
+        "cha": 4
+      },
+      "special_qualities": "low-light vision, scent",
+      "special_attacks": null,
+      "special_abilities": null,
+      "cmd_note": null,
+      "bonus_feat": null,
+      "advancement": {
+        "level": 7,
+        "size": "Large",
+        "natural_armor": 3,
+        "attacks": "gore (1d8)",
+        "abilities": {
+          "str": 8,
+          "dex": -2,
+          "con": 4
+        },
+        "special_qualities": "stampede, stench, trample",
+        "special_attacks": null,
+        "special_abilities": null,
+        "bonus_feat": null
+      }
+    }
+  ]
+}

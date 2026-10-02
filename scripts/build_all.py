@@ -29,7 +29,7 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_traits.py', 'data/traits.json'),
                     # Archetypes read the class ids and race names, so they also come after the classes.
                     ('build_archetypes.py', 'data/archetypes.json'),
-                    ('build_domains.py', 'data/domains.json'),
+                    ('build_domains.py', 'data/domains.json'), ('build_companions.py', 'data/companions.json'),
                     # Later Paizo archetypes from the Archives of Nethys pages cached in ../../aonprd-archetypes
                     # (build_aon_archetypes.py downloads what's missing when run on its own).
                     *([('build_aon_archetypes.py', 'data/archetypes.json')]
