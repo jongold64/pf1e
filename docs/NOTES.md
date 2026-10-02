@@ -166,6 +166,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `archetypeConflict` = both replace or change the same table entry or name the same off-table feature. Racial
   archetypes need their race. The picker is in each class's block on the Classes card (`archetypePicker`); blocks
   and feature fold-outs stay open across redraws.
+- Domains (`js/domains.js`, data from `build_domains.py`: PSRD cleric domains, APG subdomains, UM druid domains, inquisitions):
+  `state.domains` = { class id: [domain ids] } (cleric 2, inquisitor 1, druid 1) and `state.natureBond` ('companion' |
+  'domain'). `domainChoices` limits the druid to Air/Animal/Earth/Fire/Plant/Water/Weather, their subdomains and druid
+  domains; `domainConflict` stops a subdomain going with its own domain; `domainGrants` gives a subdomain its domain's
+  powers minus the one it `replaces`, and the domain's spells with its own swapped in. The druid's domain spell slot
+  (`extraSlotOn('druid')`) follows the Nature bond; the Spells tab lists domain spells, the sheet prints `domainLines`.
 - Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the
   race from the heading, Monster Codex ones via `MC_CLASSES`; `NOT_ARCHETYPES` skips the antipaladin's "Class
   Features") then `build_aon_archetypes.py`: every other Paizo archetype from the Archives of Nethys (d20pfsrd lacks

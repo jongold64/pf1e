@@ -13,6 +13,7 @@ import { paragraphs, ordinal } from './dom.js';
 import { abilityDamage, damageWithExtras } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { classCounts, babList, racialAdjustments } from './rules.js';
+import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1128,6 +1129,26 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('druid in chainmail: warned', druidMetalWarnings({ armor: byId('chainmail') }, ['druid']).length, 1);
   check('druid in hide with a wooden shield: fine', druidMetalWarnings({ armor: byId('hide'), shield: byId('light-wooden-shield') }, ['druid']).length, 0);
   check('fighter in chainmail: no druid warning', druidMetalWarnings({ armor: byId('chainmail') }, ['fighter']).length, 0);
+}
+
+// Domains: who chooses which, subdomain conflicts, and what a subdomain gives.
+{
+  const all = await fetch('data/domains.json').then(r => r.json());
+  const byId = new Map(all.map(d => [d.id, d]));
+  const ids = cid => domainChoices(cid, all).map(d => d.id);
+  check('druid may take Animal', ids('druid').includes('animal'), true);
+  check('druid may not take War', ids('druid').includes('war'), false);
+  check('druid may take a druid domain (Wolf)', ids('druid').includes('druid-wolf'), true);
+  check('druid may take the Feather subdomain (Animal)', ids('druid').includes('subdomain-feather'), true);
+  check('cleric may not take druid domains', ids('cleric').includes('druid-wolf'), false);
+  check('inquisitor may take an inquisition', ids('inquisitor').some(id => id.startsWith('inquisition-')), true);
+  check('wizard: no domains', ids('wizard').length, 0);
+  check('Feather with Animal: conflict', domainConflict(byId.get('subdomain-feather'), [byId.get('animal')]) !== '', true);
+  check('Feather with War: fine', domainConflict(byId.get('subdomain-feather'), [byId.get('war')]), '');
+  const g = domainGrants(byId.get('subdomain-feather'), byId);
+  check('Feather keeps nine domain spells', Object.keys(g.spells).length, 9);
+  check('Feather replaces one Animal power', g.powers.length, byId.get('animal').powers.length);
+  check('Wolf has Improved Trip and Pack Tactics', byId.get('druid-wolf').powers.map(p => p.name).join(', '), 'Improved Trip, Pack Tactics');
 }
 
 const failed = results.filter(r => !r.pass);

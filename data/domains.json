@@ -1,0 +1,3169 @@
+[
+  {
+    "id": "air",
+    "name": "Air",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can manipulate lightning, mist, and wind, traffic with air creatures, and are resistant to electricity damage.",
+    "powers": [
+      {
+        "name": "Lightning Arc",
+        "text": "As a standard action, you can unleash an arc of electricity targeting any foe within 30 feet as a ranged touch attack. This arc of electricity deals 1d6 points of electricity damage + 1 point for every two cleric levels you possess. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Electricity Resistance",
+        "text": "At 6th level, you gain resist electricity 10. This resistance increases to 20 at 12th level. At 20th level, you gain immunity to electricity.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "obscuring mist",
+      "2": "wind wall",
+      "3": "gaseous form",
+      "4": "air walk",
+      "5": "control winds",
+      "6": "chain lightning",
+      "7": "elemental body IV (air only)",
+      "8": "whirlwind",
+      "9": "elemental swarm (air spell only)"
+    }
+  },
+  {
+    "id": "animal",
+    "name": "Animal",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can speak with and befriend animals with ease. In addition, you treat Knowledge (nature) as a class skill.",
+    "powers": [
+      {
+        "name": "Speak with Animals",
+        "text": "You can speak with animals, as per the spell, for a number of rounds per day equal to 3 + your cleric level."
+      },
+      {
+        "name": "Animal Companion",
+        "text": "At 4th level, you gain the service of an animal companion. Your effective druid level for this animal companion is equal to your cleric level - 3. (Druids who take this ability through their nature bond class feature use their druid level - 3 to determine the abilities of their animal companions).",
+        "level": 4
+      }
+    ],
+    "spells": {
+      "1": "calm animals",
+      "2": "hold animal",
+      "3": "dominate animal",
+      "4": "summon nature's ally IV (animals only)",
+      "5": "beast shape III (animals only)",
+      "6": "antilife shell",
+      "7": "animal shapes",
+      "8": "summon nature's ally VIII (animals only)",
+      "9": "shapechange"
+    }
+  },
+  {
+    "id": "artifice",
+    "name": "Artifice",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can repair damage to objects, animate objects with life, and create objects from nothing.",
+    "powers": [
+      {
+        "name": "Artificer's Touch",
+        "text": "You can cast mending at will, using your cleric level as the caster level to repair damaged objects. In addition, you can cause damage to objects and construct creatures by striking them with a melee touch attack. Objects and constructs take 1d6 points of damage +1 for every two cleric levels you possess. This attack bypasses an amount of damage reduction and hardness equal to your cleric level. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Dancing Weapons",
+        "text": "At 8th level, you can give a weapon touched the dancing special weapon quality for 4 rounds. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "animate rope",
+      "2": "wood shape",
+      "3": "stone shape",
+      "4": "minor creation",
+      "5": "fabricate",
+      "6": "major creation",
+      "7": "wall of iron",
+      "8": "statue",
+      "9": "prismatic sphere"
+    }
+  },
+  {
+    "id": "chaos",
+    "name": "Chaos",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "Your touch infuses life and weapons with chaos, and you revel in all things anarchic.",
+    "powers": [
+      {
+        "name": "Touch of Chaos",
+        "text": "You can imbue a target with chaos as a melee touch attack. For the next round, anytime the target rolls a d20, he must roll twice and take the less favorable result. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Chaos Blade",
+        "text": "At 8th level, you can give a weapon touched the anarchic special weapon quality for a number of rounds equal to 1/2 your cleric level. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "protection from law",
+      "2": "align weapon (chaos only)",
+      "3": "magic circle against law",
+      "4": "chaos hammer",
+      "5": "dispel law",
+      "6": "animate objects",
+      "7": "word of chaos",
+      "8": "cloak of chaos",
+      "9": "summon monster IX (chaos spell only)"
+    }
+  },
+  {
+    "id": "charm",
+    "name": "Charm",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can baffle and befuddle foes with a touch or a smile, and your beauty and grace are divine.",
+    "powers": [
+      {
+        "name": "Dazing Touch",
+        "text": "You can cause a living creature to become dazed for 1 round as a melee touch attack. Creatures with more Hit Dice than your cleric level are unaffected. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Charming Smile",
+        "text": "At 8th level, you can cast charm person as a swift action, with a DC of 10 + 1/2 your cleric level + your Wisdom modifier. You can only have one creature charmed in this way at a time. The total number of rounds of this effect per day is equal to your cleric level. The rounds do not need to be consecutive, and you can dismiss the charm at any time as a free action. Each attempt to use this ability consumes 1 round of its duration, whether or not the creature succeeds on its save to resist the effect.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "charm person",
+      "2": "calm emotions",
+      "3": "suggestion",
+      "4": "heroism",
+      "5": "charm monster",
+      "6": "geas/quest",
+      "7": "insanity",
+      "8": "demand",
+      "9": "dominate monster"
+    }
+  },
+  {
+    "id": "community",
+    "name": "Community",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "Your touch can heal wounds, and your presence instills unity and strengthens emotional bonds.",
+    "powers": [
+      {
+        "name": "Calming Touch",
+        "text": "You can touch a creature as a standard action to heal it of 1d6 points of nonlethal damage + 1 point per cleric level. This touch also removes the fatigued, shaken, and sickened conditions (but has no effect on more severe conditions). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Unity",
+        "text": "At 8th level, whenever a spell or effect targets you and one or more allies within 30 feet, you can use this ability to allow your allies to use your saving throw against the effect in place of their own. Each ally must decide individually before the rolls are made. Using this ability is an immediate action. You can use this ability once per day at 8th level, and one additional time per day for every four cleric levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "bless",
+      "2": "shield other",
+      "3": "prayer",
+      "4": "imbue with spell ability",
+      "5": "telepathic bond",
+      "6": "heroes' feast",
+      "7": "refuge",
+      "8": "mass cure critical wounds",
+      "9": "miracle"
+    }
+  },
+  {
+    "id": "darkness",
+    "name": "Darkness",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You manipulate shadows and darkness. In addition, you receive Blind-Fight as a bonus feat.",
+    "powers": [
+      {
+        "name": "Touch of Darkness",
+        "text": "As a melee touch attack, you can cause a creature's vision to be fraught with shadows and darkness. The creature touched treats all other creatures as if they had concealment, suffering a 20% miss chance on all attack rolls. This effect lasts for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Eyes of Darkness",
+        "text": "At 8th level, your vision is not impaired by lighting conditions, even in absolute darkness and magic darkness. You can use this ability for a number of rounds per day equal to 1/2 your cleric level. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "obscuring mist",
+      "2": "blindness/deafness (only to cause blindness)",
+      "3": "deeper darkness",
+      "4": "shadow conjuration",
+      "5": "summon monster V (summons 1d3 shadows)",
+      "6": "shadow walk",
+      "7": "power word blind",
+      "8": "greater shadow evocation",
+      "9": "shades"
+    }
+  },
+  {
+    "id": "death",
+    "name": "Death",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can cause the living to bleed at a touch, and find comfort in the presence of the dead.",
+    "powers": [
+      {
+        "name": "Bleeding Touch",
+        "text": "As a melee touch attack, you can cause a living creature to take 1d6 points of damage per round. This effect persists for a number of rounds equal to 1/2 your cleric level (minimum 1) or until stopped with a DC 15 Heal check or any spell or effect that heals damage. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Death's Embrace",
+        "text": "At 8th level, you heal damage instead of taking damage from channeled negative energy. If the channeled negative energy targets undead, you heal hit points just like undead in the area.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "cause fear",
+      "2": "death knell",
+      "3": "animate dead",
+      "4": "death ward",
+      "5": "slay living",
+      "6": "create undead",
+      "7": "destruction",
+      "8": "create greater undead",
+      "9": "wail of the banshee"
+    }
+  },
+  {
+    "id": "destruction",
+    "name": "Destruction",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You revel in ruin and devastation, and can deliver particularly destructive attacks.",
+    "powers": [
+      {
+        "name": "Destructive Smite",
+        "text": "You gain the destructive smite power: the supernatural ability to make a single melee attack with a morale bonus on damage rolls equal to 1/2 your cleric level (minimum 1). You must declare the destructive smite before making the attack. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Destructive Aura",
+        "text": "At 8th level, you can emit a 30-foot aura of destruction for a number of rounds per day equal to your cleric level. All attacks made against targets in this aura (including you) gain a morale bonus on damage equal to 1/2 your cleric level and all critical threats are automatically confirmed. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "true strike",
+      "2": "shatter",
+      "3": "rage",
+      "4": "inflict critical wounds",
+      "5": "shout",
+      "6": "harm",
+      "7": "disintegrate",
+      "8": "earthquake",
+      "9": "implosion"
+    }
+  },
+  {
+    "id": "earth",
+    "name": "Earth",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You have mastery over earth, metal, and stone, can fire darts of acid, and command earth creatures.",
+    "powers": [
+      {
+        "name": "Acid Dart",
+        "text": "As a standard action, you can unleash an acid dart targeting any foe within 30 feet as a ranged touch attack. This acid dart deals 1d6 points of acid damage + 1 point for every two cleric levels you possess. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Acid Resistance",
+        "text": "At 6th level, you gain resist acid 10. This resistance increases to 20 at 12th level. At 20th level, you gain immunity to acid.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "magic stone",
+      "2": "soften earth and stone",
+      "3": "stone shape",
+      "4": "spike stones",
+      "5": "wall of stone",
+      "6": "stoneskin",
+      "7": "elemental body IV (earth only)",
+      "8": "earthquake",
+      "9": "elemental swarm (earth spell only)"
+    }
+  },
+  {
+    "id": "evil",
+    "name": "Evil",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are sinister and cruel, and have wholly pledged your soul to the cause of evil.",
+    "powers": [
+      {
+        "name": "Touch of Evil",
+        "text": "You can cause a creature to become sickened as a melee touch attack. Creatures sickened by your touch count as good for the purposes of spells with the evil descriptor. This ability lasts for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Scythe of Evil",
+        "text": "At 8th level, you can give a weapon touched the unholy special weapon quality for a number of rounds equal to 1/2 your cleric level. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "protection from good",
+      "2": "align weapon (evil only)",
+      "3": "magic circle against good",
+      "4": "unholy blight",
+      "5": "dispel good",
+      "6": "create undead",
+      "7": "blasphemy",
+      "8": "unholy aura",
+      "9": "summon monster IX (evil spell only)"
+    }
+  },
+  {
+    "id": "fire",
+    "name": "Fire",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can call forth fire, command creatures of the inferno, and your flesh does not burn.",
+    "powers": [
+      {
+        "name": "Fire Bolt",
+        "text": "As a standard action, you can unleash a scorching bolt of divine fire from your outstretched hand. You can target any single foe within 30 feet as a ranged touch attack with this bolt of fire. If you hit the foe, the fire bolt deals 1d6 points of fire damage + 1 point for every two cleric levels you possess. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Fire Resistance",
+        "text": "At 6th level, you gain resist fire 10. This resistance increases to 20 at 12th level. At 20th level, you gain immunity to fire.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "burning hands",
+      "2": "produce flame",
+      "3": "fireball",
+      "4": "wall of fire",
+      "5": "fire shield",
+      "6": "fire seeds",
+      "7": "elemental body IV (fire only)",
+      "8": "incendiary cloud",
+      "9": "elemental swarm (fire spell only)"
+    }
+  },
+  {
+    "id": "glory",
+    "name": "Glory",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are infused with the glory of the divine, and are a true foe of the undead. In addition, when you channel positive energy to harm undead creatures, the save DC to halve the damage is increased by 2.",
+    "powers": [
+      {
+        "name": "Touch of Glory",
+        "text": "You can cause your hand to shimmer with divine radiance, allowing you to touch a creature as a standard action and give it a bonus equal to your cleric level on a single Charisma-based skill check or Charisma ability check. This ability lasts for 1 hour or until the creature touched elects to apply the bonus to a roll. You can use this ability to grant the bonus a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Divine Presence",
+        "text": "At 8th level, you can emit a 30-foot aura of divine presence for a number of rounds per day equal to your cleric level. All allies within this aura are treated as if under the effects of a sanctuary spell with a DC equal to 10 + 1/2 your cleric level + your Wisdom modifier. These rounds do not need to be consecutive. Activating this ability is a standard action. If an ally leaves the area or makes an attack, the effect ends for that ally. If you make an attack, the effect ends for you and your allies.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "shield of faith",
+      "2": "bless weapon",
+      "3": "searing light",
+      "4": "holy smite",
+      "5": "righteous might",
+      "6": "undeath to death",
+      "7": "holy sword",
+      "8": "holy aura",
+      "9": "gate"
+    }
+  },
+  {
+    "id": "good",
+    "name": "Good",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You have pledged your life and soul to goodness and purity.",
+    "powers": [
+      {
+        "name": "Touch of Good",
+        "text": "You can touch a creature as a standard action, granting a sacred bonus on attack rolls, skill checks, ability checks, and saving throws equal to half your cleric level (minimum 1) for 1 round. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Holy Lance",
+        "text": "At 8th level, you can give a weapon you touch the holy special weapon quality for a number of rounds equal to 1/2 your cleric level. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "protection from evil",
+      "2": "align weapon (good only)",
+      "3": "magic circle against evil",
+      "4": "holy smite",
+      "5": "dispel evil",
+      "6": "blade barrier",
+      "7": "holy word",
+      "8": "holy aura",
+      "9": "summon monster IX (good spell only)"
+    }
+  },
+  {
+    "id": "healing",
+    "name": "Healing",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "Your touch staves off pain and death, and your healing magic is particularly vital and potent.",
+    "powers": [
+      {
+        "name": "Rebuke Death",
+        "text": "You can touch a living creature as a standard action, healing it for 1d4 points of damage plus 1 for every two cleric levels you possess. You can only use this ability on a creature that is below 0 hit points. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Healer's Blessing",
+        "text": "At 6th level, all of your cure spells are treated as if they were empowered, increasing the amount of damage healed by half (+50%). This does not apply to damage dealt to undead with a cure spell. This does not stack with the Empower Spell metamagic feat.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "cure light wounds",
+      "2": "cure moderate wounds",
+      "3": "cure serious wounds",
+      "4": "cure critical wounds",
+      "5": "breath of life",
+      "6": "heal",
+      "7": "regenerate",
+      "8": "mass cure critical wounds",
+      "9": "mass heal"
+    }
+  },
+  {
+    "id": "knowledge",
+    "name": "Knowledge",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a scholar and a sage of legends. In addition, you treat all Knowledge skills as class skills.",
+    "powers": [
+      {
+        "name": "Lore Keeper",
+        "text": "You can touch a creature to learn about its abilities and weaknesses. With a successful touch attack, you gain information as if you made the appropriate Knowledge skill check with a result equal to 15 + your cleric level + your Wisdom modifier."
+      },
+      {
+        "name": "Remote Viewing",
+        "text": "Starting at 6th level, you can use clairvoyance/clairaudience at will as a spell-like ability using your cleric level as the caster level. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "comprehend languages",
+      "2": "detect thoughts",
+      "3": "speak with dead",
+      "4": "divination",
+      "5": "true seeing",
+      "6": "find the path",
+      "7": "legend lore",
+      "8": "discern location",
+      "9": "foresight"
+    }
+  },
+  {
+    "id": "law",
+    "name": "Law",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You follow a strict and ordered code of laws, and in so doing, achieve enlightenment.",
+    "powers": [
+      {
+        "name": "Touch of Law",
+        "text": "You can touch a willing creature as a standard action, infusing it with the power of divine order and allowing it to treat all attack rolls, skill checks, ability checks, and saving throws for 1 round as if the natural d20 roll resulted in an 11. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Staff of Order",
+        "text": "At 8th level, you can give a weapon touched the axiomatic special weapon quality for a number of rounds equal to 1/2 your cleric level. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "protection from chaos",
+      "2": "align weapon (law only)",
+      "3": "magic circle against chaos",
+      "4": "order's wrath",
+      "5": "dispel chaos",
+      "6": "hold monster",
+      "7": "dictum",
+      "8": "shield of law",
+      "9": "summon monster IX (law spell only)"
+    }
+  },
+  {
+    "id": "liberation",
+    "name": "Liberation",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a spirit of freedom and a staunch foe against all who would enslave and oppress.",
+    "powers": [
+      {
+        "name": "Liberation",
+        "text": "You have the ability to ignore impediments to your mobility. For a number of rounds per day equal to your cleric level, you can move normally regardless of magical effects that impede movement, as if you were affected by freedom of movement. This effect occurs automatically as soon as it applies. These rounds do not need to be consecutive."
+      },
+      {
+        "name": "Freedom's Call",
+        "text": "At 8th level, you can emit a 30-foot aura of freedom for a number of rounds per day equal to your cleric level. Allies within this aura are not affected by the confused, grappled, frightened, panicked, paralyzed, pinned, or shaken conditions. This aura only suppresses these effects, and they return once a creature leaves the aura or when the aura ends, if applicable. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "remove fear",
+      "2": "remove paralysis",
+      "3": "remove curse",
+      "4": "freedom of movement",
+      "5": "break enchantment",
+      "6": "greater dispel magic",
+      "7": "refuge",
+      "8": "mind blank",
+      "9": "freedom"
+    }
+  },
+  {
+    "id": "luck",
+    "name": "Luck",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are infused with luck, and your mere presence can spread good fortune.",
+    "powers": [
+      {
+        "name": "Bit of Luck",
+        "text": "You can touch a willing creature as a standard action, giving it a bit of luck. For the next round, any time the target rolls a d20, he may roll twice and take the more favorable result. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Good Fortune",
+        "text": "At 6th level, as an immediate action, you can reroll any one d20 roll that you have just made before the results of the roll are revealed. You must take the result of the reroll, even if it's worse than the original roll. You can use this ability once per day at 6th level, and one additional time per day for every six cleric levels beyond 6th.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "true strike",
+      "2": "aid",
+      "3": "protection from energy",
+      "4": "freedom of movement",
+      "5": "break enchantment",
+      "6": "mislead",
+      "7": "spell turning",
+      "8": "moment of prescience",
+      "9": "miracle"
+    }
+  },
+  {
+    "id": "madness",
+    "name": "Madness",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You embrace the madness that lurks deep in your heart, and can unleash it to drive your foes insane or to sacrifice certain abilities to hone others.",
+    "powers": [
+      {
+        "name": "Vision of Madness",
+        "text": "You can give a creature a vision of madness as a melee touch attack. Choose one of the following: attack rolls, saving throws, or skill checks. The target receives a bonus to the chosen rolls equal to 1/2 your cleric level (minimum +1) and a penalty to the other two types of rolls equal to 1/2 your cleric level (minimum -1). This effect fades after 3 rounds. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Aura of Madness",
+        "text": "At 8th level, you can emit a 30-foot aura of madness for a number of rounds per day equal to your cleric level. Enemies within this aura are affected by confusion unless they make a Will save with a DC equal to 10 + 1/2 your cleric level + your Wisdom modifier. The confusion effect ends immediately when the creature leaves the area or the aura expires. Creatures that succeed on their saving throw are immune to this aura for 24 hours. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "lesser confusion",
+      "2": "touch of idiocy",
+      "3": "rage",
+      "4": "confusion",
+      "5": "nightmare",
+      "6": "phantasmal killer",
+      "7": "insanity",
+      "8": "scintillating pattern",
+      "9": "weird"
+    }
+  },
+  {
+    "id": "magic",
+    "name": "Magic",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a true student of all things mystical, and see divinity in the purity of magic.",
+    "powers": [
+      {
+        "name": "Hand of the Acolyte",
+        "text": "You can cause your melee weapon to fly from your grasp and strike a foe before instantly returning. As a standard action, you can make a single attack using a melee weapon at a range of 30 feet. This attack is treated as a ranged attack with a thrown weapon, except that you add your Wisdom modifier to the attack roll instead of your Dexterity modifier (damage still relies on Strength). This ability cannot be used to perform a combat maneuver. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Dispelling Touch",
+        "text": "At 8th level, you can use a targeted dispel magic effect as a melee touch attack. You can use this ability once per day at 8th level and one additional time per day for every four cleric levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "identify",
+      "2": "magic mouth",
+      "3": "dispel magic",
+      "4": "imbue with spell ability",
+      "5": "spell resistance",
+      "6": "antimagic field",
+      "7": "spell turning",
+      "8": "protection from spells",
+      "9": "mage's disjunction"
+    }
+  },
+  {
+    "id": "nobility",
+    "name": "Nobility",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a great leader, an inspiration to all who follow the teachings of your faith.",
+    "powers": [
+      {
+        "name": "Inspiring Word",
+        "text": "As a standard action, you can speak an inspiring word to a creature within 30 feet. That creature receives a +2 morale bonus on attack rolls, skill checks, ability checks, and saving throws for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this power a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Leadership",
+        "text": "At 8th level, you receive Leadership as a bonus feat. In addition, you gain a +2 bonus on your leadership score as long as you uphold the tenets of your deity (or divine concept if you do not venerate a deity).",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "divine favor",
+      "2": "enthrall",
+      "3": "magic vestment",
+      "4": "discern lies",
+      "5": "greater command",
+      "6": "geas/quest",
+      "7": "repulsion",
+      "8": "demand",
+      "9": "storm of vengeance"
+    }
+  },
+  {
+    "id": "plant",
+    "name": "Plant",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You find solace in the green, can grow defensive thorns, and can communicate with plants.",
+    "powers": [
+      {
+        "name": "Wooden Fist",
+        "text": "As a free action, your hands can become as hard as wood, covered in tiny thorns. While you have wooden fists, your unarmed strikes do not provoke attacks of opportunity, deal lethal damage, and gain a bonus on damage rolls equal to 1/2 your cleric level (minimum +1). You can use this ability for a number of rounds per day equal to 3 + your Wisdom modifier. These rounds do not need to be consecutive."
+      },
+      {
+        "name": "Bramble Armor",
+        "text": "At 6th level, you can cause a host of wooden thorns to burst from your skin as a free action. While bramble armor is in effect, any foe striking you with an unarmed strike or a melee weapon without reach takes 1d6 points of piercing damage + 1 point per two cleric levels you possess. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "entangle",
+      "2": "barkskin",
+      "3": "plant growth",
+      "4": "command plants",
+      "5": "wall of thorns",
+      "6": "repel wood",
+      "7": "animate plants",
+      "8": "control plants",
+      "9": "shambler"
+    }
+  },
+  {
+    "id": "protection",
+    "name": "Protection",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "Your faith is your greatest source of protection, and you can use that faith to defend others. In addition, you receive a +1 resistance bonus on saving throws. This bonus increases by 1 for every 5 levels you possess.",
+    "powers": [
+      {
+        "name": "Resistant Touch",
+        "text": "As a standard action, you can touch an ally to grant him your resistance bonus for 1 minute. When you use this ability, you lose your resistance bonus granted by the Protection domain for 1 minute. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Aura of Protection",
+        "text": "At 8th level, you can emit a 30-foot aura of protection for a number of rounds per day equal to your cleric level. You and your allies within this aura gain a +1 deflection bonus to AC and resistance 5 against all elements (acid, cold, electricity, fire, and sonic). The deflection bonus increases by +1 for every four cleric levels you possess beyond 8th. At 14th level, the resistance against all elements increases to 10. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "sanctuary",
+      "2": "shield other",
+      "3": "protection from energy",
+      "4": "spell immunity",
+      "5": "spell resistance",
+      "6": "antimagic field",
+      "7": "repulsion",
+      "8": "mind blank",
+      "9": "prismatic sphere"
+    }
+  },
+  {
+    "id": "repose",
+    "name": "Repose",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You see death not as something to be feared, but as a final rest and reward for a life well spent. The taint of undeath is a mockery of what you hold dear.",
+    "powers": [
+      {
+        "name": "Gentle Rest",
+        "text": "Your touch can fill a creature with lethargy, causing a living creature to become staggered for 1 round as a melee touch attack. If you touch a staggered living creature, that creature falls asleep for 1 round instead. Undead creatures touched are staggered for a number of rounds equal to your Wisdom modifier. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Ward Against Death",
+        "text": "At 8th level, you can emit a 30-foot aura that wards against death for a number of rounds per day equal to your cleric level. Living creatures in this area are immune to all death effects, energy drain, and effects that cause negative levels. This ward does not remove negative levels that a creature has already gained, but the negative levels have no effect while the creature is inside the warded area. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "deathwatch",
+      "2": "gentle repose",
+      "3": "speak with dead",
+      "4": "death ward",
+      "5": "slay living",
+      "6": "undeath to death",
+      "7": "destruction",
+      "8": "waves of exhaustion",
+      "9": "wail of the banshee"
+    }
+  },
+  {
+    "id": "rune",
+    "name": "Rune",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "In strange and eldritch runes you find potent magic. You gain Scribe Scroll as a bonus feat.",
+    "powers": [
+      {
+        "name": "Blast Rune",
+        "text": "As a standard action, you can create a blast rune in any adjacent square. Any creature entering this square takes 1d6 points of damage + 1 point for every two cleric levels you possess. This rune deals either acid, cold, electricity, or fire damage, decided when you create the rune. The rune is invisible and lasts a number of rounds equal to your cleric level or until discharged. You cannot create a blast rune in a square occupied by another creature. This rune counts as a 1st-level spell for the purposes of dispelling. It can be discovered with a DC 26 Perception skill check and disarmed with a DC 26 Disable Device skill check. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Spell Rune",
+        "text": "At 8th level, you can attach another spell that you cast to one of your blast runes, causing that spell to affect the creature that triggers the rune, in addition to the damage. This spell must be of at least one level lower than the highest-level cleric spell you can cast and it must target one or more creatures. Regardless of the number of targets the spell can normally affect, it only affects the creature that triggers the rune.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "erase",
+      "2": "secret page",
+      "3": "glyph of warding",
+      "4": "explosive runes",
+      "5": "lesser planar binding",
+      "6": "greater glyph of warding",
+      "7": "instant summons",
+      "8": "symbol of death",
+      "9": "teleportation circle"
+    }
+  },
+  {
+    "id": "strength",
+    "name": "Strength",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "In strength and brawn there is truth-your faith gives you incredible might and power.",
+    "powers": [
+      {
+        "name": "Strength Surge",
+        "text": "As a standard action, you can touch a creature to give it great strength. For 1 round, the target gains an enhancement bonus equal to 1/2 your cleric level (minimum +1) to melee attacks, combat maneuver checks that rely on Strength, Strength-based skills, and Strength checks. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Might of the Gods",
+        "text": "At 8th level, you can add your cleric level as an enhancement bonus to your Strength score for a number of rounds per day equal to your cleric level. This bonus only applies on Strength checks and Strength-based skill checks. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "enlarge person",
+      "2": "bull's strength",
+      "3": "magic vestment",
+      "4": "spell immunity",
+      "5": "righteous might",
+      "6": "stoneskin",
+      "7": "grasping hand",
+      "8": "clenched fist",
+      "9": "crushing hand"
+    }
+  },
+  {
+    "id": "sun",
+    "name": "Sun",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You see truth in the pure and burning light of the sun, and can call upon its blessing or wrath to work great deeds.",
+    "powers": [
+      {
+        "name": "Sun's Blessing",
+        "text": "Whenever you channel positive energy to harm undead creatures, add your cleric level to the damage dealt. Undead do not add their channel resistance to their saves when you channel positive energy."
+      },
+      {
+        "name": "Nimbus of Light",
+        "text": "At 8th level, you can emit a 30-foot nimbus of light for a number of rounds per day equal to your cleric level. This acts as a daylight spell. In addition, undead within this radius take an amount of damage equal to your cleric level each round that they remain inside the nimbus. Spells and spell-like abilities with the darkness descriptor are automatically dispelled if brought inside this nimbus. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "endure elements",
+      "2": "heat metal",
+      "3": "searing light",
+      "4": "fire shield",
+      "5": "flame strike",
+      "6": "fire seeds",
+      "7": "sunbeam",
+      "8": "sunburst",
+      "9": "prismatic sphere"
+    }
+  },
+  {
+    "id": "travel",
+    "name": "Travel",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are an explorer and find enlightenment in the simple joy of travel, be it by foot or conveyance or magic. Increase your base speed by 10 feet.",
+    "powers": [
+      {
+        "name": "Agile Feet",
+        "text": "As a free action, you can gain increased mobility for 1 round. For the next round, you ignore all difficult terrain and do not take any penalties for moving through it. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Dimensional Hop",
+        "text": "At 8th level, you can teleport up to 10 feet per cleric level per day as a move action. This teleportation must be used in 5-foot increments and such movement does not provoke attacks of opportunity. You must have line of sight to your destination to use this ability. You can bring other willing creatures with you, but you must expend an equal amount of distance for each creature brought.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "longstrider",
+      "2": "locate object",
+      "3": "fly",
+      "4": "dimension door",
+      "5": "teleport",
+      "6": "find the path",
+      "7": "greater teleport",
+      "8": "phase door",
+      "9": "astral projection"
+    }
+  },
+  {
+    "id": "trickery",
+    "name": "Trickery",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a master of illusions and deceptions. Bluff, Disguise, and Stealth are class skills.",
+    "powers": [
+      {
+        "name": "Copycat",
+        "text": "You can create an illusory double of yourself as a move action. This double functions as a single mirror image and lasts for a number of rounds equal to your cleric level, or until the illusory duplicate is dispelled or destroyed. You can have no more than one copycat at a time. This ability does not stack with the mirror image spell. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Master's Illusion",
+        "text": "At 8th level, you can create an illusion that hides the appearance of yourself and any number of allies within 30 feet for 1 round per cleric level. This ability otherwise functions like the spell veil. The save DC to disbelieve this effect is equal to 10 + 1/2 your cleric level + your Wisdom modifier. The rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "disguise self",
+      "2": "invisibility",
+      "3": "nondetection",
+      "4": "confusion",
+      "5": "false vision",
+      "6": "mislead",
+      "7": "screen",
+      "8": "mass invisibility",
+      "9": "time stop"
+    }
+  },
+  {
+    "id": "war",
+    "name": "War",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You are a crusader for your god, always ready and willing to fight to defend your faith.",
+    "powers": [
+      {
+        "name": "Battle Rage",
+        "text": "You can touch a creature as a standard action to give it a bonus on melee damage rolls equal to 1/2 your cleric level for 1 round (minimum +1). You can do so a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Weapon Master",
+        "text": "At 8th level, as a swift action, you gain the use of one combat feat for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive and you can change the feat chosen each time you use this ability. You must meet the prerequisites to use this feat.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "magic weapon",
+      "2": "spiritual weapon",
+      "3": "magic vestment",
+      "4": "divine power",
+      "5": "flame strike",
+      "6": "blade barrier",
+      "7": "power word blind",
+      "8": "power word stun",
+      "9": "power word kill"
+    }
+  },
+  {
+    "id": "water",
+    "name": "Water",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "You can manipulate water and mist and ice, conjure creatures of water, and resist cold.",
+    "powers": [
+      {
+        "name": "Icicle",
+        "text": "As a standard action, you can fire an icicle from your finger, targeting any foe within 30 feet as a ranged touch attack. The icicle deals 1d6 points of cold damage + 1 point for every two cleric levels you possess. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Cold Resistance",
+        "text": "At 6th level, you gain resist cold 10. This resistance increases to 20 at 12th level. At 20th level, you gain immunity to cold.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "obscuring mist",
+      "2": "fog cloud",
+      "3": "water breathing",
+      "4": "control water",
+      "5": "ice storm",
+      "6": "cone of cold",
+      "7": "elemental body IV (water only)",
+      "8": "horrid wilting",
+      "9": "elemental swarm (water spell only)"
+    }
+  },
+  {
+    "id": "weather",
+    "name": "Weather",
+    "kind": "domain",
+    "source": "Core Rulebook",
+    "description": "With power over storm and sky, you can call down the wrath of the gods upon the world below.",
+    "powers": [
+      {
+        "name": "Storm Burst",
+        "text": "As a standard action, you can create a storm burst targeting any foe within 30 feet as a ranged touch attack. The storm burst deals 1d6 points of nonlethal damage + 1 point for every two cleric levels you possess. In addition, the target is buffeted by winds and rain, causing it to take a -2 penalty on attack rolls for 1 round. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Lightning Lord",
+        "text": "At 8th level, you can call down a number of bolts of lightning per day equal to your cleric level. You can call down as many bolts as you want with a single standard action, but no creature can be the target of more than one bolt and no two targets can be more than 30 feet apart. This ability otherwise functions as call lightning.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "obscuring mist",
+      "2": "fog cloud",
+      "3": "call lightning",
+      "4": "sleet storm",
+      "5": "ice storm",
+      "6": "control winds",
+      "7": "control weather",
+      "8": "whirlwind",
+      "9": "storm of vengeance"
+    }
+  },
+  {
+    "id": "druid-aquatic",
+    "name": "Aquatic",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You master the deeps of the sea, raging rivers, flowing falls, and relentless tides.",
+    "powers": [
+      {
+        "name": "Sealord",
+        "text": "You can channel energy (as a cleric of your druid level) a number of times per day equal to 3 + your Charisma modifier, but only to heal creatures with the aquatic or water subtype or to command them (similar to using the Command Undead feat against undead). You can take other feats to add to this ability, such as Extra Channel and Improved Channel, but not feats that alter this ability, such as Elemental Channel and Alignment Channel. The DC to save against this ability is equal to 10 + 1/2 your druid level + your Charisma modifier."
+      },
+      {
+        "name": "Seastrike",
+        "text": "At 6th level, as a free action, you may use natural and manufactured weapons in water as if you had continuous freedom of movement. As a standard action, you can throw a weapon underwater without the normal penalties for throwing weapons; if your target is in or under the water, the weapon also acts as a returning weapon (see page 471 of the Core Rulebook) for that attack.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "hydraulic push",
+      "2": "slipstream",
+      "3": "water breathing",
+      "4": "freedom of movement",
+      "5": "black tentacles",
+      "6": "freezing sphere",
+      "7": "animal shapes (aquatic creatures only)",
+      "8": "seamantle",
+      "9": "tsunami"
+    }
+  },
+  {
+    "id": "druid-arctic",
+    "name": "Arctic",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You master the might of the endless, snow-covered wastes beneath the midnight sun, where icy polar winds blow.",
+    "powers": [
+      {
+        "name": "Call Cold",
+        "text": "You can channel energy (as a cleric of your druid level) a number of times per day equal to 3 + your Charisma modifier, but only to heal creatures with the cold subtype or to command them (similar to using the Command Undead feat against undead). You can take other feats that add to this ability, such as Extra Channel and Improved Channel, but not feats that alter this ability, such as Elemental Channel and Alignment Channel. The DC to save against this ability is equal to 10 + 1/2 your druid level + your Charisma modifier."
+      },
+      {
+        "name": "Banish Flame",
+        "text": "At 6th level, you may use your call cold ability to damage creatures with the fire subtype (as a cleric channeling negative energy) or to cause them to flee from you (as the Turn Undead feat). Alternatively, you may use this ability to negate magical fire effects as if using a targeted dispel magic; at 12th level, this functions as targeted or area greater dispel magic instead of dispel magic.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "frostbite",
+      "2": "aspect of the bear",
+      "3": "sleet storm",
+      "4": "wall of ice",
+      "5": "aspect of the wolf",
+      "6": "freezing sphere",
+      "7": "wind walk",
+      "8": "polar ray",
+      "9": "polar midnight"
+    }
+  },
+  {
+    "id": "druid-cave",
+    "name": "Cave",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The wonders and dark secrets of the deepest caves give you strength.",
+    "powers": [
+      {
+        "name": "Cavesight",
+        "text": "You can grant darkvision 60 feet to a willing creature you touch. This effect lasts 1 minute, or 1 hour if used on yourself. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Tremorsense",
+        "text": "At 6th level, you gain tremorsense 30 feet. At 12th level, you gain tremorsense 60 feet.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "detect aberration",
+      "2": "stone call",
+      "3": "deeper darkness",
+      "4": "echolocation",
+      "5": "wall of stone",
+      "6": "conjure black pudding",
+      "7": "statue (looking like a stalagmite or stalactite)",
+      "8": "earthquake",
+      "9": "imprisonment"
+    }
+  },
+  {
+    "id": "druid-desert",
+    "name": "Desert",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The spirits and secrets of the endless wastes are yours to command.",
+    "powers": [
+      {
+        "name": "Heat Shimmer",
+        "text": "As a free action, you can surround yourself with heat distortion that acts as the blur spell. Creatures that strike you in melee while you're using this ability are dazzled for 1 round (Fortitude negates). You may use this ability for a number of rounds per day equal to 3 + your Wisdom modifier. These rounds need not be consecutive."
+      },
+      {
+        "name": "Servant of the Sands",
+        "text": "At 8th level, once per day, you may call upon the aid of a janni as if using lesser planar ally. At 12th level, you may call upon the aid of any type of common (non-noble) genie as if using planar ally. At 16th level, you may call upon the aid of a noble genie as if using greater planar ally. If you use this power while in desert terrain, you need not make an offering to call the creature(s), and the cost of any service is halved.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "cloak of shade",
+      "2": "shifting sand",
+      "3": "cup of dust",
+      "4": "hallucinatory terrain",
+      "5": "transmute rock to mud (creates loose sand instead of mud)",
+      "6": "sirocco",
+      "7": "sunbeam",
+      "8": "sunburst",
+      "9": "horrid wilting"
+    }
+  },
+  {
+    "id": "druid-eagle",
+    "name": "Eagle",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "Your spirit soars with the mightiest and noblest of all winged creatures.",
+    "powers": [
+      {
+        "name": "Familiar",
+        "text": "You gain a hawk familiar. Your effective wizard level for this ability is equal to your druid level. Your druid level stacks with levels from other classes that grant familiars when determining the powers of your familiar."
+      },
+      {
+        "name": "Hawkeye",
+        "text": "As a swift action, you may add a bonus equal to half your druid level (minimum +1) on one ranged attack or on one Perception check. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Aerial evasion",
+        "text": "At 6th level, you gain the evasion ability (as a rogue) when you are flying. At 12th level, you gain improved evasion while flying.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "aspect of the falcon",
+      "2": "eagle's splendor",
+      "3": "fly",
+      "4": "river of wind",
+      "5": "overland flight",
+      "6": "eagle aerie",
+      "7": "animal shapes (birds only)",
+      "8": "sunburst",
+      "9": "winds of vengeance"
+    }
+  },
+  {
+    "id": "druid-frog",
+    "name": "Frog",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You venerate the elder amphibians that first brought life to land.",
+    "powers": [
+      {
+        "name": "Familiar",
+        "text": "You may gain a toad familiar. Your effective wizard level for this ability is equal to your druid level. Your druid level stacks with levels from other classes that grant familiars when determining the powers of your familiar."
+      },
+      {
+        "name": "Sticky Strike",
+        "text": "As a standard action, you can attempt a ranged touch attack with a sticky tendril against a target up to 15 feet away, then use the pull universal monster ability to pull the target 5 feet toward you. You gain a bonus on the pull's combat maneuver check equal to 1/2 your druid level. If the target is larger than you, you may pull yourself 5 feet toward the target without making a check. The target can remove the tendril by making an opposed Strength check as a standard action, or by dealing enough slashing damage to the tendril (hit points equal to your druid level, Armor Class equal to your touch Armor Class). You can dissolve the tendril as a free action. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Webfoot",
+        "text": "At 6th level, you gain the amphibious special quality and a swim speed equal to your land speed. At 12th level, you gain a climb speed equal to your land speed.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "jump",
+      "2": "delay poison",
+      "3": "lily pad stride",
+      "4": "shout",
+      "5": "blessing of the salamander",
+      "6": "confusion",
+      "7": "animal shapes (amphibians only)",
+      "8": "greater shout",
+      "9": "summon froghemoth"
+    }
+  },
+  {
+    "id": "druid-jungle",
+    "name": "Jungle",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The spirits of the jungle, both of natural guardians and lost civilizations, whisper in your heart.",
+    "powers": [
+      {
+        "name": "Brachiation",
+        "text": "As a free action for a number of rounds per day equal to your druid level, you may climb with a climb speed equal to your land speed, and gain a bonus on Acrobatics checks equal to your druid level. These rounds do not have to be consecutive."
+      },
+      {
+        "name": "Trap Sense",
+        "text": "At 3rd level, you gain the trap sense ability. This is identical to the rogue class ability. Your effective rogue level is equal to your druid level for the purpose of determining your trap sense bonus. Trap sense bonuses gained from multiple classes stack.",
+        "level": 3
+      }
+    ],
+    "spells": {
+      "1": "glide",
+      "2": "tar ball",
+      "3": "venomous bolt",
+      "4": "arboreal hammer",
+      "5": "blessing of the salamander",
+      "6": "swarm skin",
+      "7": "creeping doom",
+      "8": "wall of lava",
+      "9": "shambler"
+    }
+  },
+  {
+    "id": "druid-monkey",
+    "name": "Monkey",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The balanced wisdom, skill, agility, and playfulness of the monkey are the model for your spiritual discipline.",
+    "powers": [
+      {
+        "name": "Familiar",
+        "text": "You gain a monkey familiar. Your effective wizard level for this ability is equal to your druid level. Your druid level stacks with levels from other classes that grant familiars when determining the powers of your familiar."
+      },
+      {
+        "name": "Monkey Athletics",
+        "text": "As a free action, you may add a competence bonus equal to half your druid level (minimum of +1) on one Acrobatics, Climb, Disable Device, or Sleight of Hand check. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Ranged Legerdemain",
+        "text": "At 6th level, you can use the Disable Device and Sleight of Hand skills at a range of 30 feet. Working at a distance increases the normal skill check DC by 5, and you cannot take 10 on this check. Any object to be manipulated must weigh 5 pounds or less. You can only use this ability if you have at least 1 rank in the skill being used.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "beguiling gift",
+      "2": "spider climb",
+      "3": "cacophonous call",
+      "4": "freedom of movement",
+      "5": "summon nature's ally V (dire ape or girallon only)",
+      "6": "confusion",
+      "7": "animal shapes (apes and monkeys only)",
+      "8": "clenched fist",
+      "9": "foresight"
+    }
+  },
+  {
+    "id": "druid-mountain",
+    "name": "Mountain",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You have mastered the mighty powers of the great mountains that pierce the sky and stand aloof above the lowlands.",
+    "powers": [
+      {
+        "name": "Foothold",
+        "text": "As a standard action, you can cause an adjacent stone surface up to 10 feet square to mold itself into ridges and creases. A foothold that is created on a horizontal surface is treated as difficult terrain, and a Medium or smaller creature standing in the area or moving through it takes a -2 penalty on Acrobatics checks and to CMD due to poor footing. A foothold that is created on a vertical surface grants a +10 bonus on Climb checks to climb it. The stone remains altered for 1 hour. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Thin Air",
+        "text": "At 8th level, as a free action, you can surround yourself with a 5-foot aura of supernaturally thin air that draws the breath from creatures adjacent to you. Creatures beginning their turn in the aura are fatigued (Fortitude negates). A fatigued creature that begins its turn in the aura must save or suffer from altitude sickness, taking 1 point of ability damage to all ability scores. At 16th level, the aura increases to 10 feet. Creatures that do not breathe are immune to this aura. You can use this ability for a number of rounds per day equal to your druid level; the rounds need not be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "fist of stone",
+      "2": "stone call",
+      "3": "cloak of winds",
+      "4": "stoneskin",
+      "5": "geyser",
+      "6": "suffocate",
+      "7": "flesh to stone",
+      "8": "reverse gravity",
+      "9": "clashing rocks"
+    }
+  },
+  {
+    "id": "druid-plains",
+    "name": "Plains",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The wide open spaces of the prairie, savanna, and steppe are yours to master.",
+    "powers": [
+      {
+        "name": "Migrating Herd",
+        "text": "When you summon an aurochs, bison, elephant, horse, mastodon, pony, or similar quadruped herbivore with a summoning spell, the duration of the spell is increased by 100% (this does not stack with Extend Spell). The creature's land speed is increased by 10 feet."
+      },
+      {
+        "name": "Pounce",
+        "text": "At 6th level, you may use the pounce special attack once per day. You may pounce one additional time per day for every 3 levels after 6th.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "mount",
+      "2": "chameleon stride",
+      "3": "haste",
+      "4": "aspect of the stag",
+      "5": "control winds",
+      "6": "find the path",
+      "7": "whirlwind",
+      "8": "animal shapes",
+      "9": "worldwave"
+    }
+  },
+  {
+    "id": "druid-serpent",
+    "name": "Serpent",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You serve ancient serpentine mysteries whose coils still encircle the world.",
+    "powers": [
+      {
+        "name": "Familiar",
+        "text": "You gain a viper familiar. Your effective wizard level for this ability is equal to your druid level. Your druid level stacks with levels from other classes that grant familiars when determining the powers of your familiar."
+      },
+      {
+        "name": "Slither",
+        "text": "As a free action, you can distend and stretch your body to fit easily through narrow spaces for 1 round. You can move freely through a tight space that would normally require a creature of your size to squeeze through. While slithering, you gain a +2 dodge bonus to Armor Class against attacks of opportunity provoked by your movement and a +2 bonus on CMB and on Escape Artist checks made to escape from a grapple. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Venom Immunity",
+        "text": "At 6th level, you gain immunity to poisons from snakes, reptiles, and creatures with the reptilian subtype. At 12th level, you gain immunity to all poisons. This replaces venom immunity.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "charm animal",
+      "2": "animal trance",
+      "3": "poison",
+      "4": "strong jaw",
+      "5": "snakestaff",
+      "6": "charm monster",
+      "7": "animal shapes (reptiles and snakes only)",
+      "8": "scintillating pattern",
+      "9": "crushing hand"
+    }
+  },
+  {
+    "id": "druid-swamp",
+    "name": "Swamp",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "The sour-sweet depths of bogs, marshes, and swamps are your places of power.",
+    "powers": [
+      {
+        "name": "Natural Healing",
+        "text": "You can channel energy (as a cleric of your druid level) a number of times per day equal to 3 + your Charisma modifier, but only to heal animals, plants, and vermin. You may reduce the number of dice healed to cure ability damage (your choice) to all affected creatures, curing 1 point of ability damage for each d6 that the channel energy is reduced. You can take other feats to add to this ability, such as Extra Channel, but not feats that alter this ability, such as Elemental Channel and Alignment Channel."
+      },
+      {
+        "name": "Reed Hunter",
+        "text": "At 6th level, you gain blindsense 30 feet with respect to concealment and cover from fog, vegetation, or water. At 12th level, this improves to blindsight 30 feet with respect to these conditions.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "hydraulic push",
+      "2": "burst of nettles",
+      "3": "lily pad stride",
+      "4": "cape of wasps",
+      "5": "insect plague",
+      "6": "mass fester",
+      "7": "animate plants",
+      "8": "blood mist",
+      "9": "shambler"
+    }
+  },
+  {
+    "id": "druid-wolf",
+    "name": "Wolf",
+    "kind": "druid",
+    "source": "Ultimate Magic",
+    "description": "You run with the pack and are the master of the cold hunt of your spirit totem.",
+    "powers": [
+      {
+        "name": "Improved Trip",
+        "text": "You gain Improved Trip as a bonus feat."
+      },
+      {
+        "name": "Pack Tactics",
+        "text": "At 8th level, as a free action on your turn, you can designate an adjacent square; your attacks are treated as coming from that square for the purposes of determining whether or not you are flanking (this applies even if that square is occupied by an object or creature). This ends at the start of your next turn or if you move. If you are flanking a creature without using this ability, you may add your Wisdom bonus to your attack roll rather than the normal +2 flanking bonus. You can use this ability a number of times per day equal to 3 + your Wisdom modifier.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "hunter's howl",
+      "2": "bloodhound",
+      "3": "aspect of the wolf",
+      "4": "strong jaw",
+      "5": "tireless pursuers",
+      "6": "find the path",
+      "7": "animal shapes (canines only)",
+      "8": "phantasmal revenge",
+      "9": "freedom"
+    }
+  },
+  {
+    "id": "inquisition-anger",
+    "name": "Anger",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Holy (or unholy) rage, granted by your patron deity, ensures that when you fight, the battle ends with a bloody victory.",
+    "powers": [
+      {
+        "name": "Hateful Retort",
+        "text": "Once per day, as an immediate action after you have been hit with a melee attack, you can make a melee attack against the creature that hit you. This melee attack is at your highest attack bonus, even if you've already attacked in the round."
+      },
+      {
+        "name": "Divine Anger",
+        "text": "At 6th level, you gain the ability to rage like a barbarian. Your effective barbarian level for this ability is your inquisitor level - 3. If you have levels in barbarian, these levels stack when determining the effect of your rage. You do not gain any rage powers from this granted power, though if you have rage powers from another class, you may use them with these rages. You can rage a number of rounds per day equal to your Wisdom bonus, plus 1 round for every inquisitor level above 4th.",
+        "level": 6
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-black-powder",
+    "name": "Black Powder",
+    "kind": "inquisition",
+    "source": "Ultimate Combat",
+    "description": "You gain Exotic Weapon Proficiency (firearms) and Gunsmithing as bonus feats. When you hit an arcane spellcaster or a creature that uses spell-like abilities with a firearm attack, that creature must succeed at a Fortitude saving throw. If the spellcaster fails, he takes a -4 penalty on concentration checks for 1 round.",
+    "powers": [
+      {
+        "name": "Granted powers",
+        "text": "You gain Exotic Weapon Proficiency (firearms) and Gunsmithing as bonus feats. When you hit an arcane spellcaster or a creature that uses spell-like abilities with a firearm attack, that creature must succeed at a Fortitude saving throw. If the spellcaster fails, he takes a -4 penalty on concentration checks for 1 round."
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-conversion",
+    "name": "Conversion",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "You are a powerful persuader. A honeyed tongue empowered by divine argumentation sways the indifferent and adversarial to your side.",
+    "powers": [
+      {
+        "name": "Charm of Wisdom",
+        "text": "You use your Wisdom modifier instead of your Charisma modifier when making Bluff, Diplomacy, and Intimidate checks."
+      },
+      {
+        "name": "Swaying Word",
+        "text": "At 8th level, once per day you may speak a word of divinely inspired wisdom that causes a single creature to switch its alliance to you. The target must be within line of sight and able to hear you. If he fails his Will save, he is affected by dominate person, except the duration is only 1 minute.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-fate",
+    "name": "Fate",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Fate is a powerful tool for those who dole out justice for their deity. You can read the strands of fate, and those strands guide your endeavors.",
+    "powers": [
+      {
+        "name": "Augury",
+        "text": "Once per day, you can use augury as a spell-like ability."
+      },
+      {
+        "name": "Agent of Fate",
+        "text": "At 8th level, when you use your augury spell-like ability, you gain a benefit that lasts until the end of your next combat. If the result was \"weal,\" all curing effects used on you cure an additional +1d10 hit points. If the result was \"woe,\" your melee attacks deal an additional +1d6 points of damage. If the result is \"weal and woe\" or \"nothing,\" you gain a +2 insight bonus to your Armor Class.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-fervor",
+    "name": "Fervor",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Only a passionate and righteous will such as yours can ensure that justice will be properly done.",
+    "powers": [
+      {
+        "name": "Fire of Belief",
+        "text": "You can unleash a gout of holy or unholy flame that sears one target within 30 feet as a ranged touch attack. The target takes 1d6 points of fire damage plus half your inquisitor level (minimum +1). If you are good, the flames only harm nongood targets. If you are evil, the flames only harm nonevil targets. If you are neither good nor evil, when you gain this ability you must decide whether the flames harm only nongood or nonevil targets; once you make this decision, it cannot be changed (though if your alignment changes, the effect of the flames changes appropriately). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Fervent Action",
+        "text": "At 8th level, once per day as a swift action, you can make a single melee attack at your highest attack bonus, move up to your speed, or cast a prepared inquisitor spell (of a spell level up to one lower than the highest level spell you can cast) as per Quickened Spell.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-heresy",
+    "name": "Heresy",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Often it is hard to tell heretics from the faithful. You use duplicity, stealth, and the heretics' own arguments to root them out and bring them to justice.",
+    "powers": [
+      {
+        "name": "Righteous Infiltration",
+        "text": "You use your Wisdom modifier instead of your Charisma modifier when making Bluff and Intimidate checks."
+      },
+      {
+        "name": "Blessed Infiltration",
+        "text": "At 4th level, when you make a Bluff, Diplomacy, or Stealth check, you may roll twice and take the more favorable result. You can use this ability a number of times per day equal to your Wisdom bonus.",
+        "level": 4
+      },
+      {
+        "name": "Word of Anathema",
+        "text": "At 8th level, once per day, you can speak a word of anathema against a single creature within 60 feet (Will negates). This acts as bestow curse and lasts for 1 minute, giving the target a -4 penalty on attack rolls, saves, ability checks, and skill checks.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-illumination",
+    "name": "Illumination",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Many times an inquisitor's greatest weapon is pure and unflinching illumination; errors are often illuminated by light and wisdom.",
+    "powers": [
+      {
+        "name": "Illuminating Touch",
+        "text": "You cause your hand to shimmer with divine radiance, allowing you to touch a creature as a standard action and give it a bonus equal to 1/2 your inquisitor level on a single Will saving throw, Knowledge check, Perception check, or Sense Motive check. This ability lasts for 1 hour or until the creature chooses to apply the bonus to a roll. You can use this ability to grant the bonus a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Aura of Enlightenment",
+        "text": "At 4th level, you can create a 30-foot-radius aura of normal light. Allies in this aura gain a +2 insight bonus on skill checks. This counts as a 2nd-level light effect for the purpose of countering or dispelling darkness effects. You can use this aura for a number of rounds per day equal to your inquisitor level. These rounds do not need to be consecutive.",
+        "level": 4
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-imprisonment",
+    "name": "Imprisonment",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Sometimes it is better to capture foes than to kill them-whether your intention is to punish them for their crimes or to torture them for information.",
+    "powers": [
+      {
+        "name": "Caging Strike",
+        "text": "With a devastating weapon strike, spectral chains wrap around your target for a short period of time. Whenever you confirm a critical hit with a melee or ranged weapon attack (including spells that require attack rolls), you can choose to also entangle that target for 1d4 rounds (Fortitude negates). You may use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Divine Prison",
+        "text": "At 8th level, once per day upon making a successful melee attack, you can affect your target with hold monster (Will negates).",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-justice",
+    "name": "Justice",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Some must learn that to submit to one's fate often means submitting to your form of justice.",
+    "powers": [
+      {
+        "name": "Judicious Force",
+        "text": "If you or an ally within 10 feet makes a critical threat with a melee or ranged attack, as an immediate action you may add +4 to the confirmation roll. This does not stack with the Critical Focus feat. You may use this ability a number of times per day equal to your Wisdom bonus."
+      },
+      {
+        "name": "Chains of Justice",
+        "text": "At 6th level, once per day, you can bind an opponent within 60 feet to you with spectral chains (Will negates). When you take damage from an enemy, the bound target takes this damage as well. Whenever the bound target takes damage from you or one of your allies, you take this damage as well. You and the target are not physically bound to each other, and either can end the connection by breaking the line of effect or exceeding the ability's range. You may dismiss the chains as a standard action.",
+        "level": 6
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-oblivion",
+    "name": "Oblivion",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Some inquisitors believe that without faith there is only oblivion. But there are some divine servants who know enough about the darkness that lies beyond faith to use it as a tool… and a weapon.",
+    "powers": [
+      {
+        "name": "Life Anchor",
+        "text": "You gain a 10-foot-radius aura that helps dying creatures cling to life. Within this aura, a dying creature (including yourself) adds your Wisdom bonus to it stabilization checks (in addition to any other modifiers to stabilization checks)."
+      },
+      {
+        "name": "Stare of Oblivion",
+        "text": "At 8th level, you can use feeblemind as a gaze attack against one creature (Will negates). This effect lasts 1d4 rounds. You can use this ability once per day at 8th level, and one additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-order",
+    "name": "Order",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Most inquisitors fight insane aberrations and demonic creatures as well as the chaos of heresy. They use the dictum and the mantles of law in order to aid their struggle.",
+    "powers": [
+      {
+        "name": "Mantle against Chaos",
+        "text": "You can use protection from chaos on yourself or another creature as a spell-like ability. You can use this ability for a number of minutes per day equal to your inquisitor level (minimum 1). This duration does not need to be consecutive, but it must be used in 1 minute increments."
+      },
+      {
+        "name": "Commanding Order",
+        "text": "At 8th level, you can use greater command, except it only affects a single target. You can use this ability a number of times per day equal to 3 + your Wisdom bonus.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-persistence",
+    "name": "Persistence",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Your deity chose you for your persistence. You have vowed to pursue the enemies of the faith to the world's end if necessary. You receive Step Up as a bonus feat.",
+    "powers": [
+      {
+        "name": "Relentless Footing",
+        "text": "As a swift action, you can add 10 feet to your land speed. This increase counts as an enhancement bonus, and it affects your jumping distance as normal for increased speed. You can use this ability a number of times per day equal to 3 + your Wisdom bonus (minimum 1)."
+      },
+      {
+        "name": "Inner Strength",
+        "text": "At 6th level, once per day, you may heal yourself as a swift action, healing 1d6 hit points for every two inquisitor levels you possess. When you use this ability, you can also remove one of the following conditions from yourself: blinded, confused, dazzled, deafened, frightened, nauseated, shaken, sickened, or staggered.",
+        "level": 6
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-spellkiller",
+    "name": "Spellkiller",
+    "kind": "inquisition",
+    "source": "Ultimate Combat",
+    "description": "You gain the Disruptive feat as a bonus feat (even if you do not meet the prerequisites). When you defeat an enemy (whether by reducing it to 0 or fewer hit points, taking the enemy captive, or accepting a truce), you gain a +2 sacred or profane bonus to AC for 1 minute per level. You gain a sacred bonus if you are good, profane if you are evil; if you are neutral, you choose either sacred or profane when you select this inquisition. After you choose which type of bonus you gain, you cannot change the bonus type. When you hit a creature with levels of alchemist or any arcane spellcasting class, or that uses spell-like abilities, you can end this effect to stagger that creature. The creature gets a Fortitude saving throw against this effect on each of its turns (including the turn in which it gained the effect). A successful save ends the staggered condition.",
+    "powers": [
+      {
+        "name": "Granted powers",
+        "text": "You gain the Disruptive feat as a bonus feat (even if you do not meet the prerequisites). When you defeat an enemy (whether by reducing it to 0 or fewer hit points, taking the enemy captive, or accepting a truce), you gain a +2 sacred or profane bonus to AC for 1 minute per level. You gain a sacred bonus if you are good, profane if you are evil; if you are neutral, you choose either sacred or profane when you select this inquisition. After you choose which type of bonus you gain, you cannot change the bonus type. When you hit a creature with levels of alchemist or any arcane spellcasting class, or that uses spell-like abilities, you can end this effect to stagger that creature. The creature gets a Fortitude saving throw against this effect on each of its turns (including the turn in which it gained the effect). A successful save ends the staggered condition."
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-tactics",
+    "name": "Tactics",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "It is the cold and tactical mind that often wins the day. A proper, carefully considered sacrifice can inspire one's allies to serve your cause.",
+    "powers": [
+      {
+        "name": "Inquisitor's Direction",
+        "text": "At the start of your turn, you can choose to enter a tranquil, reflective state and forgo all actions (standard, move, swift, immediate, and free actions, including attacks of opportunity) for that round; one ally of your choice within 30 feet gains the benefit of haste for 1 round. You can use this ability a number of times per day equal to your 3 + Wisdom bonus (minimum 1)."
+      },
+      {
+        "name": "Grant the Initiative",
+        "text": "At 8th level, you and all allies within 30 feet may add your Wisdom bonus to your initiative checks.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-torture",
+    "name": "Torture",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Only through pain can truth and justice come to the surface. And if that doesn't work, at least you've enacted divine vengeance.",
+    "powers": [
+      {
+        "name": "Torturer's Presence",
+        "text": "You gain a +2 bonus when using the Intimidate skill. This is in addition to your bonus for Stern Gaze."
+      },
+      {
+        "name": "Torturer's Touch",
+        "text": "You may use touch of fatigue as a spell-like ability. Creatures that are immune to pain effects are immune to this touch. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Critical Precision",
+        "text": "At 8th level, when you roll a critical threat, you may expend one use of your torturer's touch ability to add +4 on your critical confirmation roll. This does not stack with Critical Focus.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-truth",
+    "name": "Truth",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "To find truth, one has to wring honesty from others-whether in a friendly or hostile manner.",
+    "powers": [
+      {
+        "name": "Justice's True Path",
+        "text": "As a standard action, you can touch a creature, granting an insight bonus on one attack roll, skill check, ability check, or saving throw before your next turn; this bonus is equal to half your inquisitor level (minimum 1) and lasts for 1 round. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Grasp of Honesty",
+        "text": "At 8th level, any creature you are grappling or pinning is affected by zone of truth (Will negates). Outside of combat, you may use this ability by touching a target with both hands. You can use this ability a number of rounds per day equal to your inquisitor level. These rounds do not need to be consecutive. The effect ends if you stop grappling, pinning, or touching the target.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-valor",
+    "name": "Valor",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "It takes courage to confront the enemies of your faith.",
+    "powers": [
+      {
+        "name": "Touch of Resolve",
+        "text": "You may use remove fear on a single creature a number of times per day equal to your 3 + your Wisdom bonus."
+      },
+      {
+        "name": "Fearless",
+        "text": "At 8th level, you become immune to fear.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-vengeance",
+    "name": "Vengeance",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "Vengeance is justice naked of pretense. On your oath, you will deliver justice so unbounded.",
+    "powers": [
+      {
+        "name": "Divine Retribution",
+        "text": "As a standard action, you can point at one creature within 30 feet to indicate that it is the target of divine wrath. A mishap or an accident appropriate to the environment occurs, such as a branch falling on the creature, rocks falling from the ceiling, or some other nonmagical misfortune; regardless of the cause, the mishap deals 1d6 points of damage + 1 point for every two inquisitor levels you possess (Reflex half). The GM decides whether this damage is bludgeoning, piercing, or slashing damage. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      },
+      {
+        "name": "Final Vengeance",
+        "text": "At 8th level, once per day, you can make one melee attack against an opponent within reach in response to an attack that would reduce you to negative hit points. Once your attack is resolved, you suffer the normal effect of the attack that provoked this ability. Effects that kill you or do not reduce you to negative hit points (such as ability damage or drain, negative levels, and disintegrate) do not trigger this ability.",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "inquisition-zeal",
+    "name": "Zeal",
+    "kind": "inquisition",
+    "source": "Ultimate Magic",
+    "description": "An inquisitor needs unyielding zeal in order to make sure her deity's work is done.",
+    "powers": [
+      {
+        "name": "Zealous Surge",
+        "text": "Once per day, when you are reduced to 0 or fewer hit points, you heal a number of hit points equal to your inquisitor level + your Wisdom modifier."
+      },
+      {
+        "name": "Scourge of the Enemy",
+        "text": "At 8th level, select one religion that is a rival or opponent of your religion. You treat members of this religion as if they were your favored enemy (as the ranger class ability), gaining a +2 bonus on the appropriate rolls. At 13th level, these bonuses increase to +4, and at 18th level, the bonuses increase to +6. These bonuses do not stack with other favored enemy bonuses (use the highest bonus that applies).",
+        "level": 8
+      }
+    ],
+    "spells": {}
+  },
+  {
+    "id": "subdomain-agathion",
+    "name": "Agathion",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the holy lance power of the Good domain. Agathions are a race of neutral good outsiders.",
+    "powers": [
+      {
+        "name": "Protective Aura",
+        "text": "At 8th level, you can emit a 30-foot protective aura as a standard action. Allies in this aura receive a +2 deflection bonus to AC and a +2 resistance bonus on all saving throws. In addition, allies in the area gain the benefits of protection from evil (although the AC bonus and saving throw bonus do not stack with those granted by this effect). You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not have to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "shield of faith",
+      "3": "tongues",
+      "6": "planar ally (agathions only)"
+    },
+    "parents": [
+      "good"
+    ],
+    "replaces": "holy lance"
+  },
+  {
+    "id": "subdomain-ancestors",
+    "name": "Ancestors",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the ward against death power of the Repose domain.",
+    "powers": [
+      {
+        "name": "Speak With Dead",
+        "text": "At 8th level, as a standard action, you can ask one question of a dead creature as if using speak with dead. The dead creature you are questioning does not gain a Will saving throw if your alignments are different. You can use this ability a number of times per day equal to your cleric level.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "4": "rest eternal*",
+      "6": "geas/quest"
+    },
+    "parents": [
+      "repose"
+    ],
+    "replaces": "ward against death"
+  },
+  {
+    "id": "subdomain-arcane",
+    "name": "Arcane",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the hand of the acolyte power of the Magic domain.",
+    "powers": [
+      {
+        "name": "Arcane Beacon",
+        "text": "As a standard action you can become a beacon of arcane energy until the end of your next turn. The aura emanates 15 feet from you. All arcane spells cast within the aura either gain a +1 bonus to their caster level or increase their saving throw DC by +1. The caster chooses the benefit when she casts the spell. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "4": "arcane eye",
+      "6": "analyze dweomer"
+    },
+    "parents": [
+      "magic"
+    ],
+    "replaces": "hand of the acolyte"
+  },
+  {
+    "id": "subdomain-archon",
+    "name": "Archon",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the holy lance power of the Good domain or the staff of order power of the Law domain. Archons are a race of lawful good outsiders.",
+    "powers": [
+      {
+        "name": "Aura of Menace",
+        "text": "At 8th level, you can emit a 30-foot aura of menace as a standard action. Enemies in this aura take a -2 penalty to AC and on attacks and saves as long as they remain inside the aura. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "divine favor",
+      "3": "prayer",
+      "6": "planar ally (archon only)"
+    },
+    "parents": [
+      "good",
+      "law"
+    ],
+    "replaces": "holy lance"
+  },
+  {
+    "id": "subdomain-ash",
+    "name": "Ash",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the fire resistance power of the Fire domain.",
+    "powers": [
+      {
+        "name": "Wall of Ashes",
+        "text": "At 8th level, you can create a wall of swirling ashes anywhere within 100 feet. This wall is up to 20 feet high and up to 10 feet long per cleric level you possess. The wall of ash blocks line of sight, and any creature passing through it must make a Fortitude save or be blinded for 1d4 rounds. The wall of ash reveals invisible creatures that are inside it or adjacent to it, although they become invisible again if they move away from the wall. You can use this ability for a number of minutes per day equal to your cleric level, but these minutes do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "7": "disintegrate",
+      "9": "fiery body*"
+    },
+    "parents": [
+      "fire"
+    ],
+    "replaces": "fire resistance"
+  },
+  {
+    "id": "subdomain-azata",
+    "name": "Azata",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of chaos power of the Chaos domain or the touch of good power of the Good domain. Azatas are a race of chaotic good outsiders.",
+    "powers": [
+      {
+        "name": "Elysium's Call",
+        "text": "With a touch, you can imbue creatures with the spirit of Elysium, lifting their spirits and freeing them from bonds. The creatures touched can immediately reroll any failed saving throws against spells and spell-like abilities of the enchantment (charm) and enchantment (compulsion) subschools. In addition, targets receive a +2 sacred bonus on such saving throws and a +2 sacred bonus on CMB checks to escape a grapple. Finally, targets can ignore up to 5 feet of difficult terrain each round, as if they had the Nimble Moves feat. These bonuses last for a number of rounds equal to 1/2 your cleric level (minimum 1), although the saving throw reroll only applies when the creature is touched. You can use this ability for a number of rounds per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "expeditious retreat",
+      "3": "fly",
+      "6": "planar ally (azata only)"
+    },
+    "parents": [
+      "chaos",
+      "good"
+    ],
+    "replaces": "touch of chaos"
+  },
+  {
+    "id": "subdomain-blood",
+    "name": "Blood",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the weapon master power of the War domain.",
+    "powers": [
+      {
+        "name": "Wounding Blade",
+        "text": "At 8th level, you can give a weapon that you touch the wounding special weapon quality for a number of rounds equal to 1/2 your cleric level. You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "vampiric touch",
+      "5": "wall of thorns",
+      "7": "inflict serious wounds (mass)"
+    },
+    "parents": [
+      "war"
+    ],
+    "replaces": "weapon master"
+  },
+  {
+    "id": "subdomain-catastrophe",
+    "name": "Catastrophe",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the destructive aura power of the Destruction domain.",
+    "powers": [
+      {
+        "name": "Deadly Weather",
+        "text": "At 8th level, you can unleash a furious call to the heavens, summoning forth an ever-changing storm of destruction for a number of rounds per day equal to your cleric level. This storm has a radius of 5 feet per cleric level. Each round, the storm has one of the following effects: driving rain (-4 on all Perception checks and ranged attack rolls), howling winds (-8 on Fly skill checks and ranged attack rolls), heavy snow (all terrain is considered difficult), or lightning bolt (as call lightning). Other effects depending on the weather might also apply (at the GM's discretion). You choose which effect takes place each round, but no effect may be repeated on the following round. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "gust of wind",
+      "3": "call lightning",
+      "7": "control weather"
+    },
+    "parents": [
+      "destruction"
+    ],
+    "replaces": "destructive aura"
+  },
+  {
+    "id": "subdomain-caves",
+    "name": "Caves",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the acid resistance power of the Earth domain.",
+    "powers": [
+      {
+        "name": "Tunnel Runner",
+        "text": "At 8th level, you can move through tunnels and caves with ease. Activating this ability is a standard action. You can move across any stone surface as if under the effects of spider climb. You can also see very well in darkness, gaining darkvision out to a range of 60 feet. If you already possess darkvision, extend the range by 60 feet. While underground, you also gain an insight bonus equal to your cleric level on Stealth skill checks and an insight bonus equal to your Wisdom modifier on initiative checks. You can use this ability for 1 minute per day per cleric level you possess. These minutes do not need to be consecutive, but they must be spent in 1-minute increments.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "create pit*",
+      "3": "spiked pit*",
+      "6": "hungry pit*"
+    },
+    "parents": [
+      "earth"
+    ],
+    "replaces": "acid resistance"
+  },
+  {
+    "id": "subdomain-cloud",
+    "name": "Cloud",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the electricity resistance power of the Air domain.",
+    "powers": [
+      {
+        "name": "Thundercloud",
+        "text": "At 8th level, you can, as a standard action, summon a storm cloud. This power functions as fog cloud except that creatures inside the cloud are deafened and take 2d6 points of electricity damage each round from the flashes of thunder and lightning. Once created, you can concentrate on the cloud to move it up to 30 feet each round. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "4": "solid fog",
+      "9": "storm of vengeance"
+    },
+    "parents": [
+      "air"
+    ],
+    "replaces": "electricity resistance"
+  },
+  {
+    "id": "subdomain-construct",
+    "name": "Construct",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the dancing weapon power of the Artifice domain.",
+    "powers": [
+      {
+        "name": "Animate Servant",
+        "text": "At 8th level, as a standard action, you can give life to inanimate objects. This ability functions as animate objects using your cleric level as the caster level. You can use this ability once per day at 8th level, and one additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "7": "limited wish",
+      "8": "polymorph any object"
+    },
+    "parents": [
+      "artifice"
+    ],
+    "replaces": "dancing weapon"
+  },
+  {
+    "id": "subdomain-curse",
+    "name": "Curse",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the bit of luck power of the Luck domain.",
+    "powers": [
+      {
+        "name": "Malign Eye",
+        "text": "As a standard action, you can afflict one target within 30 feet with your malign eye, causing it to take a -2 penalty on all saving throws against your spells. The effect lasts for 1 minute or until the target hits you with an attack. You can use this ability for a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "3": "bestow curse",
+      "6": "eyebite"
+    },
+    "parents": [
+      "luck"
+    ],
+    "replaces": "bit of luck"
+  },
+  {
+    "id": "subdomain-daemon",
+    "name": "Daemon",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the scythe of evil power of the Evil domain. Daemons are a race of neutral evil outsiders.",
+    "powers": [
+      {
+        "name": "Whispering Evil",
+        "text": "At 8th level, as a standard action, you can whisper a hypnotizing litany of empty promises. Each enemy within a 30-foot emanation that can hear you must succeed on a Will saving throw or become fascinated for as long as you continue the litany. You can use this power a number of rounds per day equal to your cleric level, but these rounds do not need to be consecutive. This is a mind-affecting effect.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "cause fear",
+      "3": "vampiric touch",
+      "6": "planar binding (daemons only)"
+    },
+    "parents": [
+      "evil"
+    ],
+    "replaces": "scythe of evil"
+  },
+  {
+    "id": "subdomain-day",
+    "name": "Day",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the nimbus of light power of the Sun domain.",
+    "powers": [
+      {
+        "name": "Day's Resurgence",
+        "text": "At 8th level, you can restore a single creature as if it had just completed 8 hours of rest. It takes 10 minutes to use this power. If the use of this power is disrupted, it must be restarted, but it is not lost. At the end of the 10 minutes, a single willing creature that you have touched regains hit points as if it had rested for the night and may make new saving throws against effects that require a save once per day. The target does not suffer any negative effects if such saving throws are failed, but success counts toward removing the affliction (if possible). This ability does not allow a target to prepare spells an additional time per day. You can use this ability once per day at 8th level, plus one additional time per day for every 2 levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "daylight"
+    },
+    "parents": [
+      "sun"
+    ],
+    "replaces": "nimbus of light"
+  },
+  {
+    "id": "subdomain-decay",
+    "name": "Decay",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the bramble armor power of the Plant domain.",
+    "powers": [
+      {
+        "name": "Aura of Decay",
+        "text": "At 8th level, you can emit a 30-foot aura of decay as a standard action. Living creatures in this aura (except you) take 1d6 points of damage per round as their flesh rots. They also take a cumulative -1 penalty to Strength each round they remain in the aura. Once outside the aura, the penalty fades at the rate of -1 per round, but it begins building again if they reenter the aura. Plant creatures take 2d6 points of damage per round. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "contagion",
+      "4": "poison",
+      "6": "harm"
+    },
+    "parents": [
+      "plant"
+    ],
+    "replaces": "bramble armor"
+  },
+  {
+    "id": "subdomain-deception",
+    "name": "Deception",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the copycat power of the Trickery domain.",
+    "powers": [
+      {
+        "name": "Sudden Shift",
+        "text": "In the blink of an eye, you can appear somewhere else. As an immediate action, after you are missed by a melee attack, you can teleport up to 10 feet to a space that you can see. This space must be inside the reach of the creature that attacked you. You can use this power a number of times each day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "mirror image",
+      "7": "project image"
+    },
+    "parents": [
+      "trickery"
+    ],
+    "replaces": "copycat"
+  },
+  {
+    "id": "subdomain-defense",
+    "name": "Defense",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the resistant touch power of the Protection domain.",
+    "powers": [
+      {
+        "name": "Deflection Aura",
+        "text": "Once each day, you can emit a 20-foot aura for a number of rounds equal to your cleric level. Allies within the aura gain a +2 deflection bonus to AC and combat maneuver defense."
+      }
+    ],
+    "spells": {
+      "1": "shield",
+      "2": "barkskin",
+      "7": "deflection*"
+    },
+    "parents": [
+      "protection"
+    ],
+    "replaces": "resistant touch"
+  },
+  {
+    "id": "subdomain-demon",
+    "name": "Demon",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of chaos power of the Chaos domain or the touch of evil power of the Evil domain. Demons are a race of chaotic evil outsiders.",
+    "powers": [
+      {
+        "name": "Fury of the Abyss",
+        "text": "As a swift action, you can give yourself an enhancement bonus equal to 1/2 your cleric level (minimum +1) on melee attacks, melee damage rolls, and combat maneuver checks. This bonus lasts for 1 round. During this round, you take a -2 penalty to AC. You can use this ability for a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "doom",
+      "3": "rage",
+      "6": "planar binding (demons only)"
+    },
+    "parents": [
+      "chaos",
+      "evil"
+    ],
+    "replaces": "touch of chaos"
+  },
+  {
+    "id": "subdomain-devil",
+    "name": "Devil",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of evil power of the Evil domain or the touch of law power of the Law domain. Devils are a race of lawful evil outsiders.",
+    "powers": [
+      {
+        "name": "Hell's Corruption",
+        "text": "You can cause a creature to become more susceptible to corruption as a melee touch attack. Creatures touched take a -2 penalty on all saving throws and must roll all opposed skill checks twice, taking the worse result. This effect lasts for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this ability for a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "command",
+      "3": "suggestion",
+      "6": "planar binding (devils only)"
+    },
+    "parents": [
+      "evil",
+      "law"
+    ],
+    "replaces": "touch of evil"
+  },
+  {
+    "id": "subdomain-divine",
+    "name": "Divine",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the hand of the acolyte power of the Magic domain.",
+    "powers": [
+      {
+        "name": "Divine Vessel",
+        "text": "Whenever you are the target of a divine spell, you can, as a swift action, grant each ally within 15 feet of you a divine boon. This boon grants a +2 bonus on the next attack roll, skill check, or ability check made before the end of their next turn. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "5": "cleanse*",
+      "7": "resurrection",
+      "9": "miracle"
+    },
+    "parents": [
+      "magic"
+    ],
+    "replaces": "hand of the acolyte"
+  },
+  {
+    "id": "subdomain-exploration",
+    "name": "Exploration",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the agile feet power of the Travel domain.",
+    "powers": [
+      {
+        "name": "Door Sight",
+        "text": "You can lay your hand upon any surface and see what is on the other side, as if using clairvoyance. Using this power takes 1 minute, during which time you must be touching the surface you want to see through. You can keep looking for as long as 10 minutes with each use of this power, but must touch the surface and take no other action the entire time. The surface cannot be thicker than 6 inches plus 1 inch per cleric level you possess. You can use this power a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "expeditious retreat",
+      "4": "locate creature",
+      "9": "world wave*"
+    },
+    "parents": [
+      "travel"
+    ],
+    "replaces": "agile feet"
+  },
+  {
+    "id": "subdomain-family",
+    "name": "Family",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following power replaces the calming touch power of the Community domain.",
+    "powers": [
+      {
+        "name": "Binding Ties",
+        "text": "As a standard action, you can touch an ally and remove one condition affecting the ally by transferring it to yourself. This transfer lasts a number of rounds equal to your cleric level, but you can end it as a free action on your turn. At the end of this effect, the condition reverts to the original creature, unless it has ended or is removed by another effect. While this power is in use, the target is immune to the transferred condition. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "calm emotions",
+      "3": "create food and water"
+    },
+    "parents": [
+      "community"
+    ],
+    "replaces": "calming touch"
+  },
+  {
+    "id": "subdomain-fate",
+    "name": "Fate",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the good fortune power of the Luck domain.",
+    "powers": [
+      {
+        "name": "Tugging Strands",
+        "text": "At 8th level, you can force a creature within line of sight to reroll any one roll that it has just made before the result of the roll is revealed. The result of the reroll must be taken, even if it is worse than the original roll. You can use this ability once per day at 8th level, and one additional time per day for every 6 levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "augury",
+      "3": "borrow fortune*"
+    },
+    "parents": [
+      "luck"
+    ],
+    "replaces": "good fortune"
+  },
+  {
+    "id": "subdomain-feather",
+    "name": "Feather",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the speak with animals power of the Animal domain.",
+    "powers": [
+      {
+        "name": "Eyes of the Hawk",
+        "text": "You gain a racial bonus on Perception checks equal to 1/2 your cleric level (minimum +1). In addition, if you can act during a surprise round, you receive a +2 racial bonus on your Initiative check."
+      }
+    ],
+    "spells": {
+      "2": "feather fall",
+      "3": "fly",
+      "6": "fly (mass)*"
+    },
+    "parents": [
+      "animal"
+    ],
+    "replaces": "speak with animals"
+  },
+  {
+    "id": "subdomain-ferocity",
+    "name": "Ferocity",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the strength surge power of the Strength domain.",
+    "powers": [
+      {
+        "name": "Ferocious Strike",
+        "text": "Whenever you make a melee attack, you can designate that attack as a ferocious strike. If the attack hits, it deals additional damage equal to 1/2 your cleric level (minimum +1). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "3": "rage",
+      "6": "bull's strength (mass)"
+    },
+    "parents": [
+      "strength"
+    ],
+    "replaces": "strength surge"
+  },
+  {
+    "id": "subdomain-freedom",
+    "name": "Freedom",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the liberation power of the Liberation domain.",
+    "powers": [
+      {
+        "name": "Liberty's Blessing",
+        "text": "You touch a willing creature as a standard action, granting it a boon. A creature with this boon can, as a swift action, make a saving throw against a single spell or effect it is suffering from that grants a save. The DC of the saving throw is equal to the original DC of the spell or effect. If the saving throw is successful, the effect ends. This boon lasts for 1 minute or until successfully used to remove a spell or effect, whichever duration is shorter. You can use this ability for a number of times equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "sanctuary",
+      "5": "plane shift"
+    },
+    "parents": [
+      "liberation"
+    ],
+    "replaces": "liberation"
+  },
+  {
+    "id": "subdomain-fur",
+    "name": "Fur",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the speak with animals power of the Animal domain.",
+    "powers": [
+      {
+        "name": "Predator's Grace",
+        "text": "You can, as a swift action, grant yourself a +10-foot bonus to your base speed for 1 round. This bonus increases by 5 feet for every 5 cleric levels you possess. In addition, you gain low-light vision for 1 round. If you already possess low-light vision, the range of your sight becomes three times that of a human in dim light for 1 round. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "magic fang",
+      "3": "beast shape I (animals only)"
+    },
+    "parents": [
+      "animal"
+    ],
+    "replaces": "speak with animals"
+  },
+  {
+    "id": "subdomain-growth",
+    "name": "Growth",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the wooden fist power of the Plant domain.",
+    "powers": [
+      {
+        "name": "Enlarge",
+        "text": "As a swift action you can enlarge yourself for 1 round, as if you were the target of the enlarge person spell. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "enlarge person",
+      "5": "righteous might"
+    },
+    "parents": [
+      "plant"
+    ],
+    "replaces": "wooden fist"
+  },
+  {
+    "id": "subdomain-heroism",
+    "name": "Heroism",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the divine presence power of the Glory domain.",
+    "powers": [
+      {
+        "name": "Aura of Heroism",
+        "text": "At 8th level, you can emit a 30-foot aura of heroism for a number of rounds per day equal to your cleric level. Using this ability is a swift action. Allies in the area are treated as if they were under the effects of heroism. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "heroism",
+      "6": "heroism (greater)"
+    },
+    "parents": [
+      "glory"
+    ],
+    "replaces": "divine presence"
+  },
+  {
+    "id": "subdomain-home",
+    "name": "Home",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the unity power of the Community domain.",
+    "powers": [
+      {
+        "name": "Guarded Hearth",
+        "text": "At 8th level, you can create a ward that protects a specified area. Creating this ward takes 10 minutes of uninterrupted work. This ward has a maximum radius of 5 feet per 2 cleric levels you possess. When the ward is completed, you designate any number of creatures inside its area. Should any other creature enter the warded area, all of the selected creatures are immediately alerted (and awoken if they were asleep). The designated creatures also receive a sacred bonus equal to your Wisdom modifier on all saving throws and attack rolls while inside the warded area. This ward immediately ends if you leave the area. The ward lasts for 1 hour per cleric level. You can use this ability once per day.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "alarm",
+      "3": "glyph of warding",
+      "7": "guards and wards"
+    },
+    "parents": [
+      "community"
+    ],
+    "replaces": "unity"
+  },
+  {
+    "id": "subdomain-honor",
+    "name": "Honor",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of glory power of the Glory domain.",
+    "powers": [
+      {
+        "name": "Honor Bound",
+        "text": "With a touch, you can remind a creature of its duties and responsibilities, granting it a new saving throw against each enchantment (charm) or enchantment (compulsion) effect that currently affects it. If the saving throw is successful, the enchantment effect is ended. This power only affects effects that allow a save. If you fail a save against such an effect, you can use this ability as an immediate action to grant yourself an additional save. Once the target (either you or a touched creature) has made one additional save per effect, this ability has no further effect on that particular enchantment effect. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "zone of truth",
+      "6": "geas/quest"
+    },
+    "parents": [
+      "glory"
+    ],
+    "replaces": "touch of glory"
+  },
+  {
+    "id": "subdomain-ice",
+    "name": "Ice",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the cold resistance power of the Water domain.",
+    "powers": [
+      {
+        "name": "Body of Ice",
+        "text": "At 8th level, you can transmute your body and equipment to ice for a period of time. It takes a standard action to take on the form of ice, and you can end the transmutation with a free action on your turn. When you take on the form of ice, you are immune to cold and have DR 5/-, but you take twice the normal amount of damage from fire. You can take on the form of ice for a number of rounds per day equal to your cleric level. The rounds need not be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "7": "freezing sphere",
+      "9": "polar ray"
+    },
+    "parents": [
+      "water"
+    ],
+    "replaces": "cold resistance"
+  },
+  {
+    "id": "subdomain-inevitable",
+    "name": "Inevitable",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of law power of the Law domain. Inevitables are a race of lawful neutral outsiders.",
+    "powers": [
+      {
+        "name": "Command",
+        "text": "As a standard action, you can give a creature an emotionless yet undeniable order, as per the spell command. A Will save negates this effect. You cannot target a creature more than once per day with this ability. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "3": "command undead",
+      "5": "command (greater)",
+      "6": "planar binding (inevitables only)"
+    },
+    "parents": [
+      "law"
+    ],
+    "replaces": "touch of law"
+  },
+  {
+    "id": "subdomain-insanity",
+    "name": "Insanity",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the visions of madness power of the Madness domain.",
+    "powers": [
+      {
+        "name": "Insane Focus",
+        "text": "You can touch a willing creature as a standard action, granting it a +4 bonus on all saving throws made against mind-affecting effects and immunity to confusion. This bonus lasts for 1 minute. If the creature fails a saving throw against a mind-affecting effect during this period, it loses its immunity to confusion and is immediately confused for one round. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "4": "moonstruck*",
+      "6": "phantasmal web*"
+    },
+    "parents": [
+      "madness"
+    ],
+    "replaces": "visions of madness"
+  },
+  {
+    "id": "subdomain-language",
+    "name": "Language",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the spell rune power of the Rune domain.",
+    "powers": [
+      {
+        "name": "Rune Shift",
+        "text": "At 6th level, as a swift action, you can change the location of one of your blast runes. The rune must be within 30 feet. You can place the blast rune in any square adjacent to you, including one occupied by another creature.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "1": "comprehend languages",
+      "2": "share language*",
+      "3": "tongues",
+      "5": "telepathic bond"
+    },
+    "parents": [
+      "rune"
+    ],
+    "replaces": "spell rune"
+  },
+  {
+    "id": "subdomain-leadership",
+    "name": "Leadership",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the inspiring word power of the Nobility domain.",
+    "powers": [
+      {
+        "name": "Inspiring Command",
+        "text": "As a standard action, you can issue an inspiring command to your allies. The inspiring command affects one ally plus one additional ally for every three cleric levels you possess, who must all be within 30 feet of you. Affected allies gain a +2 insight bonus on attack rolls, AC, combat maneuver defense, and skill checks for 1 round. This is a language-dependent mind-affecting effect."
+      }
+    ],
+    "spells": {
+      "3": "prayer",
+      "6": "brilliant inspiration*"
+    },
+    "parents": [
+      "nobility"
+    ],
+    "replaces": "inspiring word"
+  },
+  {
+    "id": "subdomain-light",
+    "name": "Light",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the sun's blessing power of the Sun domain.",
+    "powers": [
+      {
+        "name": "Blinding Flash",
+        "text": "As a standard action, you can emit a flash of light from your holy symbol or divine focus. The most powerful light emanates out 20 feet from you. Creatures with fewer Hit Dice than your cleric level within this area are blinded for 1d4 rounds unless they succeed at a Fortitude save. All creatures in this area are dazzled for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this ability a number of times per day equal to 3 + your Wisdom modifier"
+      }
+    ],
+    "spells": {
+      "1": "faerie fire",
+      "3": "daylight"
+    },
+    "parents": [
+      "sun"
+    ],
+    "replaces": "sun's blessing"
+  },
+  {
+    "id": "subdomain-loss",
+    "name": "Loss",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the eyes of darkness power of the Darkness domain.",
+    "powers": [
+      {
+        "name": "Aura of Forgetfulness",
+        "text": "At 8th level, you can emit a 30-foot aura of forgetfulness for a number of rounds per day equal to your cleric level. Creatures you target in this area must make a Will save or have no memory of any time spent inside the area. In addition, spellcasters in the area lose one prepared spell or available spell slot per round spent in the area, starting with 1st-level spells and going up through higher-level spells. Spellcasters are allowed a save each round to negate this loss (this save is separate from the memory loss save). These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "5": "enervation",
+      "6": "modify memory",
+      "9": "energy drain"
+    },
+    "parents": [
+      "darkness"
+    ],
+    "replaces": "eyes of darkness"
+  },
+  {
+    "id": "subdomain-love",
+    "name": "Love",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the dazing touch power of the Charm domain.",
+    "powers": [
+      {
+        "name": "Adoration",
+        "text": "As an immediate action, you can attempt to thwart a melee or ranged attack that targets you. This ability functions as sanctuary, but only against one individual attack. You must use the ability after the attack is declared but before the roll is made. The creature attacking you receives a Will save to negate this effect. If a creature has more than one attack, this ability only affects one of the attacks. You can use the ability a number of times per day equal to 3 + your Wisdom modifier. This is a mind-affecting effect."
+      }
+    ],
+    "spells": {
+      "2": "enthrall",
+      "8": "euphoric tranquility*"
+    },
+    "parents": [
+      "charm"
+    ],
+    "replaces": "dazing touch"
+  },
+  {
+    "id": "subdomain-lust",
+    "name": "Lust",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the charming smile power of the Charm domain.",
+    "powers": [
+      {
+        "name": "Anything to Please",
+        "text": "At 8th level, you can compel a creature within 30 feet to attempt to please you as a standard action. The creature receives a Will save to negate this affect. If the save fails, the creature attacks your enemies for 1 round, gives you its most valuable item, or drops prone at your feet and grovels for 1d4 rounds (GM's choice). You can use this ability once per day at 8th level and one additional time per day for every four levels beyond 8th. This is a mind-affecting effect.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "touch of idiocy",
+      "4": "confusion"
+    },
+    "parents": [
+      "charm"
+    ],
+    "replaces": "charming smile"
+  },
+  {
+    "id": "subdomain-martyr",
+    "name": "Martyr",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the leadership power of the Nobility domain.",
+    "powers": [
+      {
+        "name": "Sacrificial Bond",
+        "text": "At 8th level, when an ally within 30 feet takes damage from an attack, you can, as an immediate action, transfer this damage to yourself. This power also transfers any effects that accompany the damage. The damage done to you cannot be reduced in any way. You can use this ability once per day at 8th level, plus on additional time per day at 14th level and 20th level.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "shield other",
+      "6": "sacrificial oath*"
+    },
+    "parents": [
+      "nobility"
+    ],
+    "replaces": "leadership"
+  },
+  {
+    "id": "subdomain-memory",
+    "name": "Memory",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the lore keeper power of the Knowledge domain.",
+    "powers": [
+      {
+        "name": "Recall",
+        "text": "With a touch, you can cause a creature to recall some bit of forgotten lore or information. The creature can retry any Knowledge skill check it has made within the past minute, gaining a insight bonus on the check equal to your Wisdom modifier. You can use this ability a number times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "memory lapse*",
+      "6": "modify memory",
+      "8": "moment of prescience"
+    },
+    "parents": [
+      "knowledge"
+    ],
+    "replaces": "lore keeper"
+  },
+  {
+    "id": "subdomain-metal",
+    "name": "Metal",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the acid dart power of the Earth domain.",
+    "powers": [
+      {
+        "name": "Metal Fist",
+        "text": "As a swift action, you can turn your fists into metal for 1 round, allowing you to make unarmed strikes that deal 1d6 points of bludgeoning damage plus your Strength modifier. These unarmed strikes do not provoke attacks of opportunity, but attacking with both uses the two-weapon fighting rules as normal. In addition, these unarmed strikes ignore the hardness of items with a hardness of 10 or less. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "heat metal",
+      "6": "wall of iron",
+      "8": "iron body"
+    },
+    "parents": [
+      "earth"
+    ],
+    "replaces": "acid dart"
+  },
+  {
+    "id": "subdomain-murder",
+    "name": "Murder",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the death's embrace power of the Death domain.",
+    "powers": [
+      {
+        "name": "Killing Blow",
+        "text": "At 8th level, weapons you use become infused with the power of death. Whenever you confirm a critical hit with a melee or ranged weapon, your attack deals an additional amount of bleed damage equal to half your cleric level. You can use this ability once per day at 8th level, plus one additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "keen edge",
+      "5": "suffocation*",
+      "9": "suffocation (mass)*"
+    },
+    "parents": [
+      "death"
+    ],
+    "replaces": "death's embrace"
+  },
+  {
+    "id": "subdomain-night",
+    "name": "Night",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the touch of darkness power of the Darkness domain.",
+    "powers": [
+      {
+        "name": "Night Hunter",
+        "text": "As a standard action, you can blend into the shadows of the night, becoming nearly invisible. As long as you are in an area of dim light or darkness, you are invisible (as per invisibility) to creatures without darkvision. This ability lasts for a number of rounds equal to 1/2 your cleric level (minimum 1). You can use this ability for a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "sleep",
+      "6": "nightmare"
+    },
+    "parents": [
+      "darkness"
+    ],
+    "replaces": "touch of darkness"
+  },
+  {
+    "id": "subdomain-nightmare",
+    "name": "Nightmare",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the vision of madness power of the Madness domain.",
+    "powers": [
+      {
+        "name": "Fearful Touch",
+        "text": "As a standard action, you can make a melee touch attack against a creature, causing it to experience terrible hallucinations for 1 round. During this time, the creature loses any immunity to fear effects it might possess and takes a -2 penalty on attack rolls made against you. In addition, the creature takes a penalty on Will saves made against fear effects equal to 1/2 your cleric level (minimum -1). This power is a mind-affecting effect. You can use this ability for a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "4": "phantasmal killer",
+      "6": "cloak of dreams*",
+      "9": "weird"
+    },
+    "parents": [
+      "madness"
+    ],
+    "replaces": "vision of madness"
+  },
+  {
+    "id": "subdomain-oceans",
+    "name": "Oceans",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the icicle power of the Water domain.",
+    "powers": [
+      {
+        "name": "Surge",
+        "text": "As a standard action, you can cause a mighty wave to appear that pushes or pulls a single creature. Make a combat maneuver check against the target, using your cleric level + your Wisdom modifier as your CMB. If successful, you may pull or push the creature as if using the bull rush or drag combat maneuver. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "slipstream*",
+      "3": "water walk",
+      "9": "tsunami*"
+    },
+    "parents": [
+      "water"
+    ],
+    "replaces": "icicle"
+  },
+  {
+    "id": "subdomain-protean",
+    "name": "Protean",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the chaos blade power of the Chaos domain. Proteans are a race of chaotic neutral outsiders.",
+    "powers": [
+      {
+        "name": "Aura of Chaos",
+        "text": "At 8th level, you can surround yourself with a field wild energies. Thee energies manifest as a 30-foot aura of chaos for a number of rounds per day equal to your cleric level. All enemies within this aura must declare one type of action at the start of their turn (attack, cast a spell, move, use an item, or activate a special ability) and make a Will save. Creatures that fail the Will save must take an action other than their declared action. If they succeed, they must take the declared action. Creatures cannot select actions that they cannot perform.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "confusion (lesser)",
+      "3": "displacement",
+      "6": "planar binding (proteans only)"
+    },
+    "parents": [
+      "chaos"
+    ],
+    "replaces": "chaos blade"
+  },
+  {
+    "id": "subdomain-purity",
+    "name": "Purity",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the aura of protection power of the Protection domain.",
+    "powers": [
+      {
+        "name": "Purifying Touch",
+        "text": "At 8th level, you can touch a willing creature with divine power, giving it a saving throw against each effect currently affecting it, using the original saving throw DC of the effect. Each successful saving throw ends the related effect. The creature can choose not to make a save against an effect. You can use this ability once per day at 8th level, plus one additional time per day at 14th and 20th level.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "protection from chaos/evil/good/law",
+      "3": "remove blindness/deafness",
+      "5": "atonement"
+    },
+    "parents": [
+      "protection"
+    ],
+    "replaces": "aura of protection"
+  },
+  {
+    "id": "subdomain-rage",
+    "name": "Rage",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the destructive aura power of the Destruction domain.",
+    "powers": [
+      {
+        "name": "Rage",
+        "text": "At 8th level, you can enter a fearsome rage, like a barbarian, for a number of rounds per day equal to your cleric level. At 12th and 16th level, you can select one rage power. You cannot select any rage power that possesses a level requirement, but otherwise your barbarian level is equal to 1/2 your cleric level. These rounds of rage stack with any rounds of rage you might have from levels of barbarian.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "bull's strength",
+      "6": "moonstruck*"
+    },
+    "parents": [
+      "destruction"
+    ],
+    "replaces": "destructive aura"
+  },
+  {
+    "id": "subdomain-resolve",
+    "name": "Resolve",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the might of the gods power of the Strength domain.",
+    "powers": [
+      {
+        "name": "Bestow Resolve",
+        "text": "At 8th level, you can bless creatures with the boldness of your deity. You can bestow a number of temporary hit points equal to your level + your Wisdom modifier to all allies within 20 feet. The temporary hit points remain for 1 minute. You can use this ability once per day at 8th level, plus one additional time per day for every 4 levels you possess beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "bless",
+      "6": "heroes' feast"
+    },
+    "parents": [
+      "strength"
+    ],
+    "replaces": "might of the gods"
+  },
+  {
+    "id": "subdomain-restoration",
+    "name": "Restoration",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the rebuke death power of the Healing domain.",
+    "powers": [
+      {
+        "name": "Restorative Touch",
+        "text": "You can touch a creature, letting the healing power of your deity flow through you to relieve the creature of a minor condition. Your touch can remove the dazed, fatigued, shaken, sickened, or staggered condition. You choose which condition is removed. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "remove disease",
+      "4": "neutralize poison",
+      "5": "break enchantment"
+    },
+    "parents": [
+      "healing"
+    ],
+    "replaces": "rebuke death"
+  },
+  {
+    "id": "subdomain-resurrection",
+    "name": "Resurrection",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the healer's blessing power of the Healing domain.",
+    "powers": [
+      {
+        "name": "Gift of Life",
+        "text": "At 8th level, you can touch a creature that has died within the past minute to grant it a few moments of life. The dead creature returns to life for a number of rounds equal to your cleric level. Creatures returned to life in this way have a number of hit points equal to half your cleric level, and continue to be affected by any still-active spells, conditions, or afflictions present at the time of their death. At the end of this time, the creature dies again. The creature is free to act as it sees fit during this time. You are granted no control over it. You can use this power once per day at 8th level, plus one additional time per day for every four levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "5": "raise dead",
+      "7": "resurrection",
+      "9": "true resurrection"
+    },
+    "parents": [
+      "healing"
+    ],
+    "replaces": "healer's blessing"
+  },
+  {
+    "id": "subdomain-revolution",
+    "name": "Revolution",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the freedom's call power of the Liberation domain.",
+    "powers": [
+      {
+        "name": "Powerful Persuader",
+        "text": "At 8th level, when you make a Diplomacy or Intimidate check, you can roll twice and take the higher result. Using this ability is a free action. You can use this ability once per day at 8th level, plus one additional time per day for every 2 levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "2": "enthrall",
+      "6": "symbol of persuasion"
+    },
+    "parents": [
+      "liberation"
+    ],
+    "replaces": "freedom's call"
+  },
+  {
+    "id": "subdomain-seasons",
+    "name": "Seasons",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the storm burst power of the Weather domain.",
+    "powers": [
+      {
+        "name": "Untouched by the Seasons",
+        "text": "By touching a creature, you can grant it the benefits of endure elements, which last for 1 hour per cleric level. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "goodberry",
+      "4": "blight",
+      "8": "sunburst"
+    },
+    "parents": [
+      "weather"
+    ],
+    "replaces": "storm burst"
+  },
+  {
+    "id": "subdomain-smoke",
+    "name": "Smoke",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the fire bolt power of the Fire domain.",
+    "powers": [
+      {
+        "name": "Cloud of Smoke",
+        "text": "As a standard action, you can create a 5-foot-radius cloud of smoke. This power has a range of 30 feet. Creatures inside the cloud take a -2 penalty on attack rolls and Perception skill checks for as long as they remain inside and for 1 round after exiting the cloud. Creatures inside the cloud gain concealment from attacks made by opponents that are not adjacent to them. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "pyrotechnics",
+      "3": "stinking cloud"
+    },
+    "parents": [
+      "fire"
+    ],
+    "replaces": "fire bolt"
+  },
+  {
+    "id": "subdomain-souls",
+    "name": "Souls",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the gentle rest power of the Repose domain.",
+    "powers": [
+      {
+        "name": "Touch the Spirit World",
+        "text": "With a touch, you can empower a weapon to affect incorporeal creatures. The weapon touched deals half damage to incorporeal creatures, or full damage if it is a magic weapon. This benefit lasts for a number of rounds equal to your cleric level. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "3": "animate dead",
+      "6": "antilife shell",
+      "9": "trap the soul"
+    },
+    "parents": [
+      "repose"
+    ],
+    "replaces": "gentle rest"
+  },
+  {
+    "id": "subdomain-storms",
+    "name": "Storms",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the lightning lord power of the Weather domain.",
+    "powers": [
+      {
+        "name": "Gale Aura",
+        "text": "At 6th level, as a standard action, you can create a 30-foot aura of gale-like winds that slows the progress of enemies. Creatures in the aura cannot take a 5-foot step. Enemies in the aura treat each square that brings them closer to you as difficult terrain. They can move normally in any other direction. You can use this ability for a number of rounds per day equal to your cleric level. The rounds do not need to be consecutive.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "5": "call lightning storm",
+      "6": "sirocco*"
+    },
+    "parents": [
+      "weather"
+    ],
+    "replaces": "lightning lord"
+  },
+  {
+    "id": "subdomain-tactics",
+    "name": "Tactics",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the battle rage power of the War domain.",
+    "powers": [
+      {
+        "name": "Seize the Initiative",
+        "text": "Whenever you and your allies roll for initiative, you can grant one ally within 30 feet the ability to roll twice and take either result. This decision is made before results are revealed. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "aid",
+      "5": "command (greater)",
+      "8": "planar ally (greater)"
+    },
+    "parents": [
+      "war"
+    ],
+    "replaces": "battle rage"
+  },
+  {
+    "id": "subdomain-thievery",
+    "name": "Thievery",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the master's illusions power of the Trickery domain.",
+    "powers": [
+      {
+        "name": "Thief of the Gods",
+        "text": "At 8th level, when you make a Disable Device or Sleight of Hand check, you can roll twice and take the higher result. Using this ability is a free action. You can use this ability once per day at 8th level, plus one additional time per day for every 2 levels beyond 8th.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "locate object",
+      "7": "ethereal jaunt"
+    },
+    "parents": [
+      "trickery"
+    ],
+    "replaces": "master's illusions"
+  },
+  {
+    "id": "subdomain-thought",
+    "name": "Thought",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the remote viewing power of the Knowledge domain.",
+    "powers": [
+      {
+        "name": "Read Minds",
+        "text": "At 8th level, you can broaden your mental spectrum to encompass those around you. Doing so allows you to read the mind of every creature within 30 feet as if you had cast detect thoughts. This ability allows you to read the surface thoughts of any creature that you are aware of after only 1 round of concentration. Creatures in this area are allowed a Will save to negate the effect. The DC of this Will save is 10 + 1/2 your cleric level + your Wisdom modifier. You can use this ability for a number of rounds per day equal to your cleric level. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "3": "seek thoughts*",
+      "5": "telepathic bond",
+      "8": "mind blank"
+    },
+    "parents": [
+      "knowledge"
+    ],
+    "replaces": "remote viewing"
+  },
+  {
+    "id": "subdomain-toil",
+    "name": "Toil",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the dancing weapon power of the Artifice domain.",
+    "powers": [
+      {
+        "name": "Aura of Repetition",
+        "text": "At 8th level, you can emit a 30-foot aura of repetition for a number of rounds per day equal to your cleric level. All enemies within this aura must make a Will save each round or repeat their action from the previous round (if possible). Creatures that attacked on the previous round attack again on the following round, although they may change their target. Creatures that moved the previous round must take the same move action again, although they may change their route. Creatures that drank a potion must do so again, even they can only drink from an empty bottle. Actions that cannot be repeated are wasted. These rounds do not need to be consecutive.",
+        "level": 8
+      }
+    ],
+    "spells": {
+      "1": "command",
+      "5": "waves of fatigue",
+      "7": "waves of exhaustion"
+    },
+    "parents": [
+      "artifice"
+    ],
+    "replaces": "dancing weapon"
+  },
+  {
+    "id": "subdomain-trade",
+    "name": "Trade",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the agile feet power of the Travel domain.",
+    "powers": [
+      {
+        "name": "Silver-Tongued Haggler",
+        "text": "Whenever you make a Bluff, Diplomacy, or Sense Motive check, you can, as a free action, grant yourself a bonus on the roll equal to 1/2 your cleric level (minimum +1). You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "floating disk",
+      "5": "overland flight",
+      "9": "gate"
+    },
+    "parents": [
+      "travel"
+    ],
+    "replaces": "agile feet"
+  },
+  {
+    "id": "subdomain-undead",
+    "name": "Undead",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the bleeding touch power of the Death domain.",
+    "powers": [
+      {
+        "name": "Death's Kiss",
+        "text": "You can cause a creature to take on some of the traits of the undead with a melee touch attack. Touched creatures are treated as undead for the purposes of effects that heal or cause damage based on positive and negative energy. This effect lasts for a number of rounds equal to 1/2 your cleric level (minimum 1). It does not apply to the Turn Undead or Command Undead feats. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "2": "ghoul touch",
+      "4": "enervation",
+      "9": "energy drain"
+    },
+    "parents": [
+      "death"
+    ],
+    "replaces": "bleeding touch"
+  },
+  {
+    "id": "subdomain-wards",
+    "name": "Wards",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the spell rune power of the Rune domain.",
+    "powers": [
+      {
+        "name": "Warding Rune",
+        "text": "At 6th level, when a creature is damaged by your blast rune, it cannot attack you for a number of rounds equal to 1/2 your cleric level unless it succeeds at a Will save, as per the spell sanctuary. Using this ability is an immediate action when a creature triggers one of your blast runes. The ability does not prevent you from being attacked or affected by area of effect spells or abilities. You can use this ability once per day at 8th level, plus one additional time per day at 14th level and 20th level.",
+        "level": 6
+      }
+    ],
+    "spells": {
+      "4": "dimensional anchor",
+      "6": "guards and wards"
+    },
+    "parents": [
+      "rune"
+    ],
+    "replaces": "spell rune"
+  },
+  {
+    "id": "subdomain-wind",
+    "name": "Wind",
+    "kind": "subdomain",
+    "source": "Advanced Player's Guide",
+    "description": "The following granted power replaces the lightning arc power of the Air domain.",
+    "powers": [
+      {
+        "name": "Wind Blast",
+        "text": "As a standard action, you can unleash a blast of air in a 30-foot line. Make a combat maneuver check against each creature in the line, using your caster level as your base attack bonus and your Wisdom modifier in place of your Strength modifier. Treat the results as a bull rush attempt. You can use this ability a number of times per day equal to 3 + your Wisdom modifier."
+      }
+    ],
+    "spells": {
+      "1": "whispering wind",
+      "6": "wind walk",
+      "9": "winds of vengeance*"
+    },
+    "parents": [
+      "air"
+    ],
+    "replaces": "lightning arc"
+  }
+]

@@ -27,6 +27,7 @@ import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from '.
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
+import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -98,6 +99,8 @@ const state = {
   flexible2: 'dex',  // second +2 for Dual Talent (a human alternate trait)
   alternates: [],    // alternate racial traits taken (names from the race's alternate_traits)
   archetypes: {},    // class id -> archetype ids taken for that class
+  domains: {},       // class id -> domain ids chosen (cleric 2, inquisitor 1, druid 1 with a Nature Bond domain)
+  natureBond: 'companion',  // druid's Nature Bond: 'companion' (animal companion) or 'domain'
   increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
   // Favored class bonus at each character level: 'hp', 'skill' or 'option' (the race's favored class option);
   // missing means 'hp'. Only levels in the favored class count.
@@ -179,6 +182,13 @@ function load(saved) {
     .map(([cid, ids]) => [cid, (Array.isArray(ids) ? ids : [])
       .filter(id => [cid, UNCHAINED_FROM[cid]].includes(data.archetypesById.get(id)?.class))])
     .filter(([, ids]) => ids.length));
+  // Domains: only ones the class may choose, at most as many as it gets.
+  const dom = state.domains && typeof state.domains === 'object' && !Array.isArray(state.domains) ? state.domains : {};
+  state.domains = Object.fromEntries(Object.entries(dom).filter(([cid]) => DOMAIN_CLASSES[cid]).map(([cid, ids]) => {
+    const allowed = new Set(domainChoices(cid, data.domains).map(d => d.id));
+    return [cid, [...new Set(Array.isArray(ids) ? ids : [])].filter(id => allowed.has(id)).slice(0, DOMAIN_CLASSES[cid].count)];
+  }).filter(([, ids]) => ids.length));
+  if (state.natureBond !== 'domain') state.natureBond = 'companion';
   const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
   state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
   // Saves from before multiclassing have one class and a level instead of a class for each level.
@@ -286,6 +296,8 @@ function skillRowNames() {
 
 // Whether the optional extra spell slot is on for a class, falling back to its default.
 function extraSlotOn(clsId) {
+  // A druid's domain slot comes with a Nature Bond domain (chosen on the Classes card).
+  if (clsId === 'druid') return state.natureBond === 'domain' && !!state.domains.druid?.length;
   const slot = EXTRA_SLOTS[clsId];
   if (!slot?.optional) return false;
   return typeof state.extraSlots[clsId] === 'boolean' ? state.extraSlots[clsId] : slot.default;
@@ -396,7 +408,7 @@ function fillSheet() {
   }));
   const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent, dt.nextElementSibling?.textContent || '']);
   $('print-sheet').innerHTML = buildSheet({
-    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn,
+    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
     featLabel: slot => {
       const f = data.featsById.get(state.feats[slot.id]);
       if (!f) return null;
@@ -538,6 +550,18 @@ function buildControls() {
     if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
   });
   $('favored-class').addEventListener('change', e => update({ favoredClass: e.target.value }));
+  // Domains and the druid's Nature Bond (in a class's block).
+  $('class-info').addEventListener('change', e => {
+    if (e.target.matches('[data-nature-bond]')) update({ natureBond: e.target.value });
+    const cid = e.target.dataset.domainAdd;
+    if (cid && e.target.value) update({ domains: { ...state.domains, [cid]: [...(state.domains[cid] || []), e.target.value] } });
+  });
+  $('class-info').addEventListener('click', e => {
+    const btn = e.target.closest('[data-domain-remove]');
+    if (!btn) return;
+    const cid = btn.dataset.cls;
+    update({ domains: { ...state.domains, [cid]: (state.domains[cid] || []).filter(id => id !== btn.dataset.domainRemove) } });
+  });
   // Archetypes: add from the list in a class's block, or remove one taken.
   $('class-info').addEventListener('change', e => {
     const cid = e.target.dataset.archetypeAdd;
@@ -969,6 +993,57 @@ function renderFavoredSummary(view) {
       ${option ? '<button type="button" data-favored-all="option">Racial option</button>' : ''}</div>`;
 }
 
+// The domains a class has, one line each for the printed sheet: powers (with the level they start at) and spells.
+function domainLines(clsId) {
+  if (clsId === 'druid' && state.natureBond !== 'domain') return ['Nature bond: animal companion'];
+  return (state.domains[clsId] || []).map(id => data.domainsById.get(id)).filter(Boolean).map(d => {
+    const g = domainGrants(d, data.domainsById);
+    const powers = g.powers.map(p => p.level ? `${p.name} (${ordinal(p.level)})` : p.name).join(', ');
+    const spells = clsId === 'inquisitor' ? '' : Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${lv}: ${n}`).join(', ');
+    return `${d.name}${d.kind === 'inquisition' ? ' inquisition' : ' domain'}: ${powers}${spells ? `. Spells ${spells}` : ''}`;
+  });
+}
+
+// Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
+// the chosen domains with their powers (each in a fold-out, with the level it starts at) and domain spells, and a
+// list to choose another. A subdomain shows its domain's powers and spells with its own swapped in.
+function domainPicker(cls, level, openFeatures) {
+  const rule = DOMAIN_CLASSES[cls.id];
+  if (!rule) return '';
+  const bond = rule.natureBond ? `<select data-nature-bond aria-label="Nature bond">
+      <option value="companion"${state.natureBond !== 'domain' ? ' selected' : ''}>Animal companion</option>
+      <option value="domain"${state.natureBond === 'domain' ? ' selected' : ''}>A domain</option></select>` : '';
+  if (rule.natureBond && state.natureBond !== 'domain') {
+    return `<div class="domains"><h4>Nature bond</h4>${bond}<p class="hint">An animal companion that adventures with you.</p></div>`;
+  }
+  const chosen = (state.domains[cls.id] || []).map(id => data.domainsById.get(id)).filter(Boolean);
+  const kindName = { domain: 'domain', subdomain: 'subdomain', druid: 'druid domain', inquisition: 'inquisition' };
+  const taken = chosen.map(d => {
+    const g = domainGrants(d, data.domainsById);
+    const powers = g.powers.map((p, i) => {
+      const key = `dom-${d.id}#${i}`;
+      const later = p.level && p.level > level ? ` <small class="muted">(at ${ordinal(p.level)} level)</small>` : p.level ? ` <small class="muted">(${ordinal(p.level)} level)</small>` : '';
+      return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}><summary>${esc(p.name)}${later}</summary>${paragraphs(p.text)}</details>`;
+    }).join('');
+    const spells = Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))}: ${n}`).join(' · ');
+    return `<li class="arch-taken"><div class="arch-head"><b>${esc(d.name)}</b> <small class="muted">${esc(kindName[d.kind])}${g.parent ? ` of ${esc(g.parent.name)}` : ''} · ${esc(d.source)}</small>
+        <button type="button" data-domain-remove="${esc(d.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
+      ${d.description ? `<p class="hint">${esc(d.description)}</p>` : ''}${powers}
+      ${spells && cls.id !== 'inquisitor' ? `<p class="small"><b>Domain spells</b> ${esc(spells)}</p>` : ''}</li>`;
+  }).join('');
+  const left = rule.count - chosen.length;
+  const choices = domainChoices(cls.id, data.domains);
+  const group = kind => choices.filter(d => d.kind === kind && !chosen.includes(d)).map(d => {
+    const why = domainConflict(d, chosen);
+    return `<option value="${esc(d.id)}"${why ? ' disabled' : ''}>${esc(d.name)}${d.kind === 'subdomain' ? ` (${esc((d.parents || []).map(p => data.domainsById.get(p)?.name || p).join(' or '))})` : ''}${why ? ` — ${esc(why)}` : ''}</option>`;
+  }).join('');
+  const groups = [['domain', 'Domains'], ['druid', 'Druid domains'], ['subdomain', 'Subdomains'], ['inquisition', 'Inquisitions']]
+    .filter(([k]) => rule.kinds.includes(k)).map(([k, label]) => { const o = group(k); return o ? `<optgroup label="${label}">${o}</optgroup>` : ''; }).join('');
+  const add = left > 0 ? `<select data-domain-add="${esc(cls.id)}" aria-label="Choose a domain"><option value="">Choose ${rule.count > 1 ? `a domain (${left} left)` : 'one'}…</option>${groups}</select>` : '';
+  return `<div class="domains"><h4>${esc(rule.natureBond ? 'Nature bond' : rule.label)}</h4>${bond}
+    ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}${add}</div>`;
+}
+
 // Archetypes for one class (inside its block on the Classes card): the ones taken, with their features (each one's
 // text in a fold-out), and a list to add another. Archetypes that clash with one already taken, or that belong to
 // another race, can't be picked.
@@ -1087,6 +1162,7 @@ function renderClasses(view) {
     return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
       ${reqHtml}
+      ${domainPicker(e.cls, e.level, openFeatures)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
     </details>`;
@@ -1486,10 +1562,16 @@ function spellTable(c, spells) {
   const raised = c.effectiveLevel !== c.classLevel
     ? ` Casts as a level ${c.effectiveLevel} ${cls.name.toLowerCase()} (${c.classLevel} ${cls.name.toLowerCase()} + ${c.effectiveLevel - c.classLevel} from prestige classes).` : '';
   const slot = EXTRA_SLOTS[cls.id];
-  const extraBox = slot?.optional ? `<label class="check-row"><input type="checkbox" data-extra-slot="${esc(cls.id)}"
+  const extraBox = slot?.optional && cls.id !== 'druid' ? `<label class="check-row"><input type="checkbox" data-extra-slot="${esc(cls.id)}"
       ${extraSlotOn(cls.id) ? 'checked' : ''}> ${esc(slot.label)}</label>` : '';
+  // Domain spells (clerics, and druids with a Nature Bond domain): one a day in the domain slot of each level.
+  const doms = (cls.id === 'cleric' || (cls.id === 'druid' && state.natureBond === 'domain')) ? (state.domains[cls.id] || []) : [];
+  const domainLine = doms.map(id => data.domainsById.get(id)).filter(Boolean).map(d => {
+    const g = domainGrants(d, data.domainsById);
+    return `<p class="hint"><b>${esc(d.name)} domain spells:</b> ${esc(Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))} ${n}`).join(', '))}</p>`;
+  }).join('');
   const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
-    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${extraBox}`;
+    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${extraBox}${domainLine}`;
   if (spells.rows.length === 0) {
     return `${head}<p class="hint">${esc(cls.name)}s start casting spells at level ${spells.firstLevel}.</p>`;
   }
@@ -1641,13 +1723,14 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
       fetch('data/armor.json').then(r => r.json()),
       fetch('data/traits.json').then(r => r.json()),
       fetch('data/archetypes.json').then(r => r.json()),
+      fetch('data/domains.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -1663,6 +1746,7 @@ async function start() {
   data.armorById = new Map(data.armor.map(a => [a.id, a]));
   data.traitsById = new Map(data.traits.map(t => [t.id, t]));
   data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));
+  data.domainsById = new Map(data.domains.map(d => [d.id, d]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));
