@@ -23,7 +23,21 @@ function addButtons(item) {
   return `<div class="slot-buttons">${buttons}${craft}</div>`;
 }
 
-function itemDetails(item) {
+// The item in a popup (the list's Details button): everything the side panel shows, with Add and Craft as buttons.
+function popItem(app, id) {
+  const item = app.data.itemsById.get(id);
+  if (!item) return;
+  const actions = [];
+  if (ownable(item)) {
+    const options = item.price_options || [];
+    if (options.length) options.forEach((o, n) => actions.push({ label: `Add ${o.label} (${formatGp(o.price_gp)})`, primary: n === 0, run: () => addItem(app, item.id, o.label) }));
+    else actions.push({ label: 'Add to my magic items', primary: true, run: () => addItem(app, item.id) });
+  }
+  if (itemKind(item)) actions.push({ label: 'Craft this item', run: () => craftListedItem(app, item.id) });
+  app.openDetail(item.name, itemDetails(item, false), actions);
+}
+
+function itemDetails(item, withButtons = true) {
   const c = item.construction || {};
   return `<h3>${esc(item.name)}</h3>
     <p class="hint">${esc(item.category)} · ${esc(sourceText(item))}</p>
@@ -34,7 +48,7 @@ function itemDetails(item) {
       ['Price', item.price],
       ['Weight', item.weight],
     ])}
-    ${addButtons(item)}
+    ${withButtons ? addButtons(item) : ''}
     ${paragraphs(item.description) || '<p class="hint">The source has no description for this item.</p>'}
     ${c.requirements || c.cost ? `<h4>Construction</h4>${facts([['Requirements', c.requirements], ['Cost', c.cost]])}` : ''}`;
 }
@@ -150,6 +164,8 @@ export function initItemsTab(app) {
     document.getElementById(`cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
   $('item-list').addEventListener('click', e => {
+    const pop = e.target.closest('[data-item-pop]');
+    if (pop) { popItem(app, pop.dataset.itemPop); return; }
     const btn = e.target.closest('[data-item]');
     if (!btn) return;
     selectedId = btn.dataset.item;
@@ -199,7 +215,8 @@ function renderList(app) {
     return `<section class="list-group" id="cat-${slug(c)}">
       <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
       <ul class="pick-list">${list.map(i =>
-        `<li><button type="button" data-item="${esc(i.id)}">${esc(i.name)}${i.slot && !['none', 'slotless'].includes(i.slot) ? `<small>${esc(i.slot)}</small>` : ''}</button></li>`).join('')}</ul>
+        `<li class="with-details"><button type="button" data-item="${esc(i.id)}">${esc(i.name)}${i.slot && !['none', 'slotless'].includes(i.slot) ? `<small>${esc(i.slot)}</small>` : ''}</button>
+          <button type="button" class="skill-details" data-item-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup">Details</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No items match.</p>';
   renderPanel(app);

@@ -696,3 +696,8 @@ table.skill-why th.num { text-align: right; }
 .results button.skill-details { font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; vertical-align: middle; }
 #combat-card button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; }
 #inventory-rows button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; }
+/* Magic Items list: a Details button at the end of each row. */
+.pick-list li.with-details { display: flex; align-items: center; }
+.pick-list li.with-details > button[data-item] { flex: 1; min-width: 0; }
+.pick-list button.skill-details { width: auto; flex: none; min-height: 28px; padding: 0 8px; margin: 0 4px; font-size: 0.8rem;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg); align-items: center; justify-content: center; }
