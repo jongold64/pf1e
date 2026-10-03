@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  pointsSpent, racialAdjustments, characterStats, saveBreakdown, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
   currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
@@ -533,6 +533,11 @@ function buildControls() {
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  // Details popup for a saving throw.
+  $('race-defense').addEventListener('click', e => {
+    const b = e.target.closest('[data-save-details]');
+    if (b) showSaveDetails(b.dataset.saveDetails);
+  });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
   $('hero-points').addEventListener('click', e => {
     const add = e.target.closest('[data-hero-add]');
@@ -1312,7 +1317,8 @@ function render() {
   // Armor Class and saving throws, in the Race card; each save has a Roll button.
   const rollRow = (name, value, spec, cls = 'defense-row') => `<div class="${cls}"><span>${esc(name)}</span><b>${esc(signed(value))}</b>
     ${rollButton(spec)}</div>`;
-  const saveRow = (name, value) => rollRow(name, value, { title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] });
+  const saveRow = (name, value) => rollRow(name, value, { title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] })
+    .replace(/<\/div>$/, `<button type="button" class="skill-details" data-save-details="${name}" aria-label="What adds to ${name}">Details</button></div>`);
   // Ability checks: d20 + modifier, a Roll button beside each modifier.
   for (const a of ABILITIES) {
     $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check`, check: ABILITY_NAMES[a],
@@ -1364,6 +1370,23 @@ function render() {
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 
+// A Details popup's table: one row per thing that adds, then the total.
+function detailsTable(lines, total) {
+  const rows = lines.map(l => `<tr><td>${esc(l.label)}${l.note ? ` <small class="muted">(${esc(l.note)})</small>` : ''}</td>
+    <td class="num">${esc(signed(l.value))}</td></tr>`).join('');
+  return `<table class="skill-why"><tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(signed(total))}</b></td></tr></tfoot></table>`;
+}
+
+// Details popup for a saving throw (Race card).
+function showSaveDetails(name) {
+  const save = { Fortitude: 'fort', Reflex: 'ref', Will: 'will' }[name];
+  const b = saveBreakdown({ save, counts: view.counts, mod: view.stats.mod, featNames: view.haveFeats, traits: view.traits,
+    effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === save), effectTotal: view.stats.fx[save] });
+  openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
+    + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : ''));
+}
+
 // The Skills tab's Details popup for one skill (set by renderSkills, which has what it needs).
 let showSkillDetails = () => {};
 
@@ -1395,12 +1418,9 @@ function renderSkills(race, classes, scores, featNames) {
     const b = skillBreakdown({ name, ranks, scores, isClassSkill: isClassSkill(name), racialBonuses: racial, raceName: race.name,
       featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'skills'),
       effectTotal: view.stats.fx.skills });
-    const rows = b.lines.map(l => `<tr><td>${esc(l.label)}${l.note ? ` <small class="muted">(${esc(l.note)})</small>` : ''}</td>
-      <td class="num">${esc(signed(l.value))}</td></tr>`).join('');
     const info = skillInfo(name);
     openDetail(`${name} ${signed(b.total)}`, `
-      <table class="skill-why"><tbody>${rows}</tbody>
-        <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(signed(b.total))}</b></td></tr></tfoot></table>
+      ${detailsTable(b.lines, b.total)}
       ${b.usable ? '' : '<p class="warning">Trained only: the Core Rulebook allows no use of this skill without at least 1 rank. The Roll button is there in case your group allows it.</p>'}
       ${b.limited ? `<p class="hint">${esc(b.limited)}</p>` : ''}
       ${info.acp && !checkPenalty ? '<p class="hint">Armor check penalties would apply to this skill.</p>' : ''}

@@ -12,7 +12,7 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, 
 import { paragraphs, ordinal } from './dom.js';
 import { abilityDamage, damageWithExtras } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
-import { classCounts, babList, racialAdjustments } from './rules.js';
+import { classCounts, babList, racialAdjustments, saveBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
@@ -1250,6 +1250,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('ape at 9th: Multiattack with 3 attacks', companionStats(animal('ape'), 9, comp.progression).multiattack, true);
   check('attacks parsed with riders', JSON.stringify(parseAttacks('bite (1d6 plus trip), 2 claws (1d4)').map(x => [x.count, x.name, x.dice, x.rider])),
     JSON.stringify([[1, 'bite', '1d6', 'trip'], [2, 'claws', '1d4', '']]));
+}
+
+// Saving throw details.
+{
+  const fighter = classes.find(c => c.id === 'fighter');
+  const rogue = classes.find(c => c.id === 'rogue');
+  const b = saveBreakdown({ save: 'ref', counts: [{ cls: fighter, level: 2 }, { cls: rogue, level: 2 }], mod: { dex: 2 },
+    featNames: ['Lightning Reflexes'], traits: [{ name: 'Reactionary', effects: { saves: { ref: 1 } } }],
+    effects: [{ source: 'Resistance', type: 'resistance', value: 1 }, { source: 'Cloak', type: 'resistance', value: 2 }], effectTotal: 2 });
+  check('Reflex details: fighter 0 + rogue 3 + Dex 2 + Lightning Reflexes 2 + trait 1 + best resistance 2', b.total, 10);
 }
 
 const failed = results.filter(r => !r.pass);
