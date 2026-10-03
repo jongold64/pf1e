@@ -13,7 +13,7 @@ import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest } from './weapons.js';
 import {
-  SKILLS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
+  SKILLS, CRAFTS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
@@ -664,6 +664,12 @@ function buildControls() {
       const { [name]: _, ...rest } = state.skills;
       update({ specialties: state.specialties.filter(n => n !== name), skills: rest });
     }
+  });
+  // Choosing a craft from the list adds it.
+  $('skill-rows').addEventListener('change', e => {
+    if (!e.target.matches('[data-craft-pick]') || !e.target.value) return;
+    const name = `Craft (${e.target.value})`;
+    if (!state.specialties.includes(name)) update({ specialties: [...state.specialties, name] });
   });
   // Enter in a specialty box works like its Add button.
   $('skill-rows').addEventListener('keydown', e => {
@@ -1391,8 +1397,11 @@ function renderSkills(race, classes, scores, featNames) {
       const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills });
       return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
+          ${name === 'Craft' ? `<div class="add-specialty"><select data-craft-pick aria-label="Add a Craft skill">
+              <option value="">Add a craft…</option>${CRAFTS.filter(c => !state.specialties.includes(`Craft (${c})`))
+                .map(c => `<option value="${esc(c)}">${esc(c[0].toUpperCase() + c.slice(1))}</option>`).join('')}</select></div>` : ''}
           <div class="add-specialty">
-            <input type="text" data-specialty-for="${esc(name)}" placeholder="Add a specialty, e.g. ${name === 'Craft' ? 'alchemy' : name === 'Perform' ? 'sing' : 'sailor'}" aria-label="${esc(name)} specialty">
+            <input type="text" data-specialty-for="${esc(name)}" placeholder="${name === 'Craft' ? 'Or type another craft' : `Add a specialty, e.g. ${name === 'Perform' ? 'sing' : 'sailor'}`}" aria-label="${esc(name)} specialty">
             <button type="button" data-add-specialty="${esc(name)}">Add</button>
           </div></td>
         <td></td>

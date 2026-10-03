@@ -36,6 +36,13 @@ export const SKILLS = [
 
 const lower = s => String(s ?? '').toLowerCase();
 
+// Craft specialties for the Skills tab's list: the Core Rulebook's common Craft skills, then ones later Paizo books
+// use (clockwork: Blood of the Beast; maps: Ultimate Wilderness; mechanical: Technology Guide; poison: Ultimate
+// Combat; siege engines: Ultimate Combat; tattoos: Ultimate Equipment). Others can still be typed in.
+export const CRAFTS = ['alchemy', 'armor', 'baskets', 'books', 'bows', 'calligraphy', 'carpentry', 'cloth', 'clothing',
+  'glass', 'jewelry', 'leather', 'locks', 'paintings', 'pottery', 'sculptures', 'ships', 'shoes', 'stonemasonry', 'traps',
+  'weapons', 'clockwork', 'maps', 'mechanical', 'poison', 'siege engines', 'tattoos'];
+
 // "Craft (alchemy)" -> { base: 'Craft', specialty: 'alchemy' }; "Stealth" -> { base: 'Stealth', specialty: null }
 export function splitSkill(name) {
   const m = String(name).match(/^(.+?) \((.+)\)$/);
