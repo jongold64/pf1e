@@ -13,6 +13,7 @@ export const TRICKS = ['Attack', 'Come', 'Defend', 'Down', 'Fetch', 'Guard', 'He
 
 // Natural attacks that are secondary (Bestiary, Universal Monster Rules); the Horse marks its hooves with *.
 const SECONDARY = /^(hoof|hooves|tentacles?|tail slap|wings?|pincers?)$/;
+const ABILITY_NAME = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 const STEALTH_SIZE = { Fine: 16, Diminutive: 12, Tiny: 8, Small: 4, Medium: 0, Large: -4, Huge: -8, Gargantuan: -12, Colossal: -16 };
 const FLY_SIZE = { Fine: 8, Diminutive: 6, Tiny: 4, Small: 2, Medium: 0, Large: -2, Huge: -4, Gargantuan: -6, Colossal: -8 };
 
@@ -95,7 +96,15 @@ export function companionStats(animal, level, progression, choices = {}) {
     const single = totalAttacks === 1 && !x.secondary;
     const strDamage = x.secondary ? (mod.str > 0 ? Math.floor(mod.str / 2) : mod.str) : single && mod.str > 0 ? Math.floor(mod.str * 1.5) : mod.str;
     const bonus = row.bab + hitMod + sizeAc + (x.secondary ? (multiattack ? -2 : -5) : 0);
-    return { ...x, bonus, damageBonus: strDamage, damage: x.dice ? `${x.dice}${strDamage ? (strDamage > 0 ? `+${strDamage}` : strDamage) : ''}` : null };
+    const finesse = has('Weapon Finesse') && mod.dex > mod.str;
+    const why = {
+      attack: [{ label: 'Base attack bonus', value: row.bab }, { label: finesse ? 'Dexterity modifier (Weapon Finesse)' : 'Strength modifier', value: hitMod },
+        ...(sizeAc ? [{ label: `Size (${size})`, value: sizeAc }] : []),
+        ...(x.secondary ? [{ label: multiattack ? 'Secondary attack (with Multiattack)' : 'Secondary attack', value: multiattack ? -2 : -5 }] : [])],
+      damage: [{ label: 'Dice', text: x.dice || '—' }, { label: x.secondary ? 'Half Strength (secondary attack)' : single && mod.str > 0
+        ? 'Strength × 1 1/2 (its only natural attack)' : 'Strength', value: strDamage }],
+    };
+    return { ...x, bonus, damageBonus: strDamage, why, damage: x.dice ? `${x.dice}${strDamage ? (strDamage > 0 ? `+${strDamage}` : strDamage) : ''}` : null };
   });
 
   // Skills: ranks only in animal skills (at most HD each), all class skills.
@@ -103,13 +112,41 @@ export function companionStats(animal, level, progression, choices = {}) {
   const skills = ANIMAL_SKILLS.map(name => {
     const info = skillInfo(name);
     const ranks = Math.min(row.hd, skillRanks[name] || 0);
-    const total = ranks + mod[info.ability] + (ranks > 0 ? 3 : 0)
-      + (name === 'Stealth' ? STEALTH_SIZE[size] || 0 : 0) + (name === 'Fly' ? FLY_SIZE[size] || 0 : 0);
-    return { name, ranks, total, ability: info.ability };
+    const sizeSkill = (name === 'Stealth' ? STEALTH_SIZE[size] || 0 : 0) + (name === 'Fly' ? FLY_SIZE[size] || 0 : 0);
+    const total = ranks + mod[info.ability] + (ranks > 0 ? 3 : 0) + sizeSkill;
+    const why = [{ label: 'Ranks', value: ranks }, { label: `${ABILITY_NAME[info.ability]} modifier`, value: mod[info.ability] },
+      ...(ranks > 0 ? [{ label: 'Class skill (animal skills, with at least 1 rank)', value: 3 }] : []),
+      ...(sizeSkill ? [{ label: `Size (${size})`, value: sizeSkill }] : [])];
+    return { name, ranks, total, ability: info.ability, why };
   });
   const ranksUsed = skills.reduce((n, s) => n + s.ranks, 0);
 
   const specials = progression.slice(0, level).flatMap(r => r.special).filter(s => s !== 'Ability score increase');
+
+  // The pieces of each number, for the card's Details popups.
+  const featLine = (name, value) => (has(name) && value ? [{ label: `Feat: ${name}`, value }] : []);
+  const saveWhy = (save, ability, feat) => [{ label: `Base save (effective druid level ${level})`, value: row[save] },
+    { label: `${ABILITY_NAME[ability]} modifier`, value: mod[ability] }, ...featLine(feat, 2)];
+  const why = {
+    hp: [{ label: `${row.hd} Hit Dice (d8, average 4.5 each, rounded down)`, value: Math.floor(4.5 * row.hd) },
+      { label: `Constitution modifier × ${row.hd}`, value: Math.max(row.hd, Math.floor(4.5 * row.hd) + mod.con * row.hd) - Math.floor(4.5 * row.hd) },
+      ...featLine('Toughness', fb.hp)],
+    ac: [{ label: 'Base', ac: 10, touch: 10, flat: 10 },
+      { label: `Natural armor (${animal.name} ${animal.natural_armor >= 0 ? '+' : ''}${animal.natural_armor}${adv?.natural_armor ? `, advancement +${adv.natural_armor}` : ''}${row.natural_armor ? `, companion table +${row.natural_armor}` : ''}${has('Improved Natural Armor') ? ', Improved Natural Armor +1' : ''})`,
+        ac: natural, touch: null, flat: natural },
+      { label: 'Dexterity modifier', ac: mod.dex, touch: mod.dex, flat: mod.dex < 0 ? mod.dex : null },
+      ...(sizeAc ? [{ label: `Size (${size})`, ac: sizeAc, touch: sizeAc, flat: sizeAc }] : []),
+      ...(dodge ? [{ label: 'Feat: Dodge', ac: dodge, touch: dodge, flat: null }] : [])],
+    fort: saveWhy('fort', 'con', 'Great Fortitude'),
+    ref: saveWhy('ref', 'dex', 'Lightning Reflexes'),
+    will: saveWhy('will', 'wis', 'Iron Will'),
+    init: [{ label: 'Dexterity modifier', value: mod.dex }, ...featLine('Improved Initiative', 4)],
+    cmb: [{ label: 'Base attack bonus', value: row.bab }, { label: 'Strength modifier', value: mod.str },
+      ...(cmSize ? [{ label: `Size (${size})`, value: cmSize }] : [])],
+    cmd: [{ label: 'Base', value: 10, text: '10' }, { label: 'Base attack bonus', value: row.bab }, { label: 'Strength modifier', value: mod.str },
+      { label: 'Dexterity modifier', value: mod.dex }, ...(cmSize ? [{ label: `Size (${size})`, value: cmSize }] : []),
+      ...(dodge ? [{ label: 'Feat: Dodge', value: dodge }] : [])],
+  };
   return {
     level, row, size, scores, mod, hp, hd: row.hd, bab: row.bab,
     fort: row.fort + mod.con + fb.fort, ref: row.ref + mod.dex + fb.ref, will: row.will + mod.wis + fb.will,
@@ -127,5 +164,6 @@ export function companionStats(animal, level, progression, choices = {}) {
     specialAttacks: [animal.special_attacks, adv?.special_attacks].filter(Boolean).join('; '),
     specialAbilities: [animal.special_abilities, adv?.special_abilities].filter(Boolean).join('; '),
     advanced: !!adv,
+    why,
   };
 }

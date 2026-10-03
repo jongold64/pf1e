@@ -34,23 +34,24 @@ export function renderCompanion(app, view) {
   const s = companionStats(animal, cl.level, data.companions.progression, c);
   const title = c.name || animal.name;
   const roll = (label, n) => rollButton({ title: `${title}: ${label}`, check: label, plain: true, groups: [{ attacks: [n] }] });
+  const why = (key, what) => `<button type="button" class="skill-details" data-comp-why="${esc(key)}" aria-label="What adds to ${esc(what)}">Details</button>`;
   const defense = [
-    ['Hit points', `${s.hp} <small class="muted">(${s.hd}d8)</small>`],
-    ['AC', `${s.ac} <small class="muted">touch ${s.touch}, flat-footed ${s.flatFooted}</small>`],
-    ['Fortitude', `${signed(s.fort)}${roll('Fortitude', s.fort)}`],
-    ['Reflex', `${signed(s.ref)}${roll('Reflex', s.ref)}`],
-    ['Will', `${signed(s.will)}${roll('Will', s.will)}`],
-    ['Initiative', `${signed(s.init)}${roll('Initiative', s.init)}`],
+    ['Hit points', `${s.hp} <small class="muted">(${s.hd}d8)</small>${why('hp', 'hit points')}`],
+    ['AC', `${s.ac} <small class="muted">touch ${s.touch}, flat-footed ${s.flatFooted}</small>${why('ac', 'AC')}`],
+    ['Fortitude', `${signed(s.fort)}${roll('Fortitude', s.fort)}${why('fort', 'Fortitude')}`],
+    ['Reflex', `${signed(s.ref)}${roll('Reflex', s.ref)}${why('ref', 'Reflex')}`],
+    ['Will', `${signed(s.will)}${roll('Will', s.will)}${why('will', 'Will')}`],
+    ['Initiative', `${signed(s.init)}${roll('Initiative', s.init)}${why('init', 'initiative')}`],
     ['Speed', esc(s.speed || '—')],
     ['Size', esc(s.size)],
     ['Base attack', signed(s.bab)],
-    ['CMB / CMD', `${signed(s.cmb)}${rollButton({ title: `${title}: combat maneuver`, check: 'CMB', groups: [{ attacks: [s.cmb] }] })} / ${s.cmd}`],
+    ['CMB / CMD', `${signed(s.cmb)}${rollButton({ title: `${title}: combat maneuver`, check: 'CMB', groups: [{ attacks: [s.cmb] }] })} / ${s.cmd}${why('cm', 'CMB and CMD')}`],
   ];
-  const attackLines = s.attacks.map(x => {
+  const attackLines = s.attacks.map((x, ai) => {
     const label = `${x.count > 1 ? `${x.count} ` : ''}${x.name}${x.secondary ? ' (secondary)' : ''}${x.alternative ? ' (instead)' : ''}`;
     const spec = { title: `${title}: ${x.name}`, check: x.name, groups: [{ attacks: Array(x.count).fill(x.bonus), ...(x.damage ? { damage: x.damage } : {}), threat: 20, mult: 2 }] };
     return `<div class="defense-row"><span>${esc(label)}<small>${esc([x.damage, x.rider].filter(Boolean).join(' plus ') || '')}</small></span>
-      <b>${esc(signed(x.bonus))}</b>${rollButton(spec)}</div>`;
+      <b>${esc(signed(x.bonus))}</b>${rollButton(spec)}${why(`attack-${ai}`, x.name)}</div>`;
   }).join('');
   const scores = Object.entries(s.scores).map(([a, v]) => `<td><b>${ABILITY_NAMES[a]}</b> ${v === null ? '—' : `${v} <small class="muted">(${signed(s.mod[a])})</small>`}</td>`).join('');
   const incs = Array.from({ length: s.increasesAllowed }, (_, i) => `<select data-comp-inc="${i}" aria-label="Ability score increase ${i + 1}">
@@ -58,7 +59,7 @@ export function renderCompanion(app, view) {
   const skills = s.skills.map(k => `<tr><td>${esc(k.name)}</td><td><span class="base">
       <button type="button" data-comp-skill="${esc(k.name)}" data-step="-1" aria-label="Fewer ranks">−</button><span class="value">${k.ranks}</span>
       <button type="button" data-comp-skill="${esc(k.name)}" data-step="1" aria-label="More ranks">+</button></span></td>
-      <td class="total">${signed(k.total)}${roll(k.name, k.total)}</td></tr>`).join('');
+      <td class="total">${signed(k.total)}${roll(k.name, k.total)}${why(`skill-${k.name}`, k.name)}</td></tr>`).join('');
   const featOptions = data.feats.filter(f => !(f.types || []).includes('Mythic')).map(f => f.name).sort();
   const feats = Array.from({ length: s.featCount }, (_, i) => `<select data-comp-feat="${i}" aria-label="Companion feat ${i + 1}">
       <option value="">Feat ${i + 1}…</option>${featOptions.map(n => `<option${c.feats[i] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`).join('');
@@ -98,6 +99,45 @@ export function renderCompanion(app, view) {
     </div>`;
 }
 
+// A Details popup for one of the companion's numbers (key: hp, ac, fort, ref, will, init, cm, attack-N, skill-Name).
+function showWhy(app, key) {
+  const { state, data, view } = app;
+  const animal = data.companions.animals.find(a => a.id === state.companion.animal);
+  if (!animal || !view.companion.level) return;
+  const s = companionStats(animal, view.companion.level, data.companions.progression, state.companion);
+  const name = state.companion.name || animal.name;
+  const table = (rows, total) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}</td>
+    <td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(total)}</b></td></tr></tfoot></table>`;
+  let title = '', html = '';
+  if (key === 'hp') { title = `Hit points ${s.hp}`; html = table(s.why.hp, String(s.hp)); }
+  else if (['fort', 'ref', 'will', 'init'].includes(key)) {
+    title = `${{ fort: 'Fortitude', ref: 'Reflex', will: 'Will', init: 'Initiative' }[key]} ${signed(s[key])}`;
+    html = table(s.why[key], signed(s[key]));
+  } else if (key === 'ac') {
+    const cell = (v, base) => (v === null || v === undefined ? '<td class="num muted">—</td>' : `<td class="num">${esc(base ? String(v) : signed(v))}</td>`);
+    title = `AC ${s.ac}`;
+    html = `<table class="skill-why"><thead><tr><th></th><th class="num">AC</th><th class="num">Touch</th><th class="num">Flat-footed</th></tr></thead>
+      <tbody>${s.why.ac.map((r, i) => `<tr><td>${esc(r.label)}</td>${cell(r.ac, i === 0)}${cell(r.touch, i === 0)}${cell(r.flat, i === 0)}</tr>`).join('')}</tbody>
+      <tfoot><tr><td><b>Total</b></td><td class="num"><b>${s.ac}</b></td><td class="num"><b>${s.touch}</b></td><td class="num"><b>${s.flatFooted}</b></td></tr></tfoot></table>`;
+  } else if (key === 'cm') {
+    title = `CMB ${signed(s.cmb)} · CMD ${s.cmd}`;
+    html = `<h3>Combat Maneuver Bonus</h3>${table(s.why.cmb, signed(s.cmb))}<h3>Combat Maneuver Defense</h3>${table(s.why.cmd, String(s.cmd))}`;
+  } else if (key.startsWith('attack-')) {
+    const x = s.attacks[Number(key.slice(7))];
+    if (!x) return;
+    title = `${x.name} ${signed(x.bonus)}`;
+    html = `<h3>Attack roll</h3>${table(x.why.attack, signed(x.bonus))}<h3>Damage</h3>${table(x.why.damage, x.damage || '—')}
+      ${x.rider ? `<p class="hint">Plus ${esc(x.rider)}.</p>` : ''}`;
+  } else if (key.startsWith('skill-')) {
+    const k = s.skills.find(x => x.name === key.slice(6));
+    if (!k) return;
+    title = `${k.name} ${signed(k.total)}`;
+    html = table(k.why, signed(k.total));
+  }
+  app.openDetail(`${name}: ${title}`, html);
+}
+
 export function initCompanion(app) {
   const box = $('companion');
   const { state } = app;
@@ -120,6 +160,8 @@ export function initCompanion(app) {
     }
   });
   box.addEventListener('click', e => {
+    const w = e.target.closest('[data-comp-why]');
+    if (w) { showWhy(app, w.dataset.compWhy); return; }
     const b = e.target.closest('[data-comp-skill]');
     if (!b) return;
     const name = b.dataset.compSkill;

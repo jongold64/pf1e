@@ -658,3 +658,4 @@ table.skill-why th { text-align: left; font-weight: 600; padding: 4px; border-bo
 table.skill-why th.num { text-align: right; }
 /* Slim skill rows (after the general Roll/Details button rules so these win). */
 .skills td.total button.roll-button, .skills td.total button.skill-details { min-height: 28px; padding-top: 0; padding-bottom: 0; }
+#companion button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }

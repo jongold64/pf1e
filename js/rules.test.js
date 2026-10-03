@@ -1292,6 +1292,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('damage details add up to the damage bonus', b.damageRows.reduce((n, r) => n + r.value, 0), b.damageTotal);
 }
 
+// Companion details add up.
+{
+  const comp = await fetch('data/companions.json').then(r => r.json());
+  const horse = comp.animals.find(a => a.id === 'horse');
+  const s = companionStats(horse, 9, comp.progression, { increases: ['str', 'dex'], feats: ['Toughness', 'Dodge'], skills: { Perception: 4 } });
+  const sum = rows => rows.reduce((n, r) => n + (r.value || 0), 0);
+  check('companion hp details add up', sum(s.why.hp), s.hp);
+  check('companion AC details add up', [s.why.ac.reduce((n, r) => n + (r.ac ?? 0), 0), s.why.ac.reduce((n, r) => n + (r.touch ?? 0), 0), s.why.ac.reduce((n, r) => n + (r.flat ?? 0), 0)].join(),
+    [s.ac, s.touch, s.flatFooted].join());
+  check('companion saves, CMB, CMD details add up', [sum(s.why.fort), sum(s.why.ref), sum(s.why.will), sum(s.why.cmb), sum(s.why.cmd)].join(),
+    [s.fort, s.ref, s.will, s.cmb, s.cmd].join());
+  check('companion attack details add up', s.attacks.map(x => sum(x.why.attack)).join(), s.attacks.map(x => x.bonus).join());
+  check('companion skill details add up', s.skills.map(k => sum(k.why)).join(), s.skills.map(k => k.total).join());
+}
+
 const failed = results.filter(r => !r.pass);
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
