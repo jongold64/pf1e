@@ -4,7 +4,7 @@ import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, 
 import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
-         skillTotal, ranksFor } from './skills.js';
+         skillTotal, skillBreakdown, ranksFor } from './skills.js';
 import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty, druidMetalWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
@@ -400,7 +400,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const climb = skillTotal({ name: 'Climb', ranks: 1, scores: str16, isClassSkill: true });
   check('Climb: 1 rank + 3 Str + 3 class', climb.total, 7);
   check('class bonus needs a rank', skillTotal({ name: 'Climb', ranks: 0, scores: str16, isClassSkill: true }).total, 3);
-  check('trained-only skill with no ranks is unusable', skillTotal({ name: 'Knowledge (arcana)', ranks: 0, scores: str16, isClassSkill: false }).usable, false);
+  check('trained-only skill with no ranks is unusable', skillTotal({ name: 'Spellcraft', ranks: 0, scores: str16, isClassSkill: false }).usable, false);
+  check('Knowledge with no ranks: limited use (DC 10 or lower)', !!skillTotal({ name: 'Knowledge (arcana)', ranks: 0, scores: str16, isClassSkill: false }).limited, true);
+  const why = skillBreakdown({ name: 'Climb', ranks: 2, scores: str16, isClassSkill: true, featNames: ['Athletic'], checkPenalty: -1,
+    effects: [{ source: 'Heroism', type: 'morale', value: 2 }, { source: 'Good hope', type: 'morale', value: 2 }], effectTotal: 2 });
+  check('skill details add up to the total', why.lines.reduce((n, l) => n + l.value, 0), why.total);
+  check('skill details: Climb 2 + Str 3 + class 3 + Athletic 2 - armor 1 + morale 2', why.total, 11);
   check('untrained skill is usable', skillTotal({ name: 'Climb', ranks: 0, scores: str16, isClassSkill: false }).usable, true);
   const perc = skillTotal({ name: 'Perception', ranks: 10, scores: str16, isClassSkill: false,
                             racialBonuses: { Perception: 2 }, featNames: ['Alertness'] });

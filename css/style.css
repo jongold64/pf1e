@@ -641,3 +641,10 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
   #tab-character > :not(.char-column) { order: 6; }
   #tab-character > .house-rules { order: 0; }
 }
+
+/* Skills tab: Details button beside Roll, and its popup's table. */
+.skills td.total button.skill-details { font-weight: 400; font-size: 0.85rem; min-height: 32px; padding: 2px 10px; margin-left: 6px; }
+table.skill-why { width: 100%; border-collapse: collapse; }
+table.skill-why td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
+table.skill-why td.num { text-align: right; white-space: nowrap; }
+table.skill-why tfoot td { border-bottom: 0; }

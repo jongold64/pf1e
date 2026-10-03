@@ -13,7 +13,7 @@ import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest } from './weapons.js';
 import {
-  SKILLS, CRAFTS, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
+  SKILLS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
@@ -28,7 +28,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -642,6 +642,8 @@ function buildControls() {
 
   // Skills
   $('skill-rows').addEventListener('click', e => {
+    const why = e.target.closest('[data-skill-details]');
+    if (why) { showSkillDetails(why.dataset.skillDetails); return; }
     const step = e.target.closest('[data-skill-step]');
     if (step) {
       const name = step.dataset.skill;
@@ -1362,6 +1364,9 @@ function render() {
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
 }
 
+// The Skills tab's Details popup for one skill (set by renderSkills, which has what it needs).
+let showSkillDetails = () => {};
+
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
   const byClass = classSkillTest(classes);
@@ -1384,6 +1389,24 @@ function renderSkills(race, classes, scores, featNames) {
     (checkPenalty ? ` Your armor's check penalty (${checkPenalty}) applies to Str and Dex skills.` : '');
 
   const abbr = a => a.charAt(0).toUpperCase() + a.slice(1);
+  // Everything that adds to a skill, by name, in a popup.
+  showSkillDetails = name => {
+    const ranks = state.skills[name] || 0;
+    const b = skillBreakdown({ name, ranks, scores, isClassSkill: isClassSkill(name), racialBonuses: racial, raceName: race.name,
+      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'skills'),
+      effectTotal: view.stats.fx.skills });
+    const rows = b.lines.map(l => `<tr><td>${esc(l.label)}${l.note ? ` <small class="muted">(${esc(l.note)})</small>` : ''}</td>
+      <td class="num">${esc(signed(l.value))}</td></tr>`).join('');
+    const info = skillInfo(name);
+    openDetail(`${name} ${b.usable ? signed(b.total) : ''}`.trim(), `
+      <table class="skill-why"><tbody>${rows}</tbody>
+        <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(signed(b.total))}</b></td></tr></tfoot></table>
+      ${b.usable ? '' : '<p class="warning">Trained only: this skill cannot be used without at least 1 rank.</p>'}
+      ${b.limited ? `<p class="hint">${esc(b.limited)}</p>` : ''}
+      ${info.acp && !checkPenalty ? '<p class="hint">Armor check penalties would apply to this skill.</p>' : ''}
+      ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}`);
+  };
+  const details = name => `<button type="button" class="skill-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}">Details</button>`;
   $('skill-rows').innerHTML = (shownNames.length ? '' : '<tr><td colspan="3" class="hint">No skill matches that search.</td></tr>') +
     shownNames.map(name => {
     const info = skillInfo(name);
@@ -1405,7 +1428,8 @@ function renderSkills(race, classes, scores, featNames) {
             <button type="button" data-add-specialty="${esc(name)}">Add</button>
           </div></td>
         <td></td>
-        <td class="total">${untrained.usable ? signed(untrained.total) : '—'}</td>
+        <td class="total">${untrained.usable ? `${signed(untrained.total)}${rollButton({ title: `${name} check (untrained)`, check: name, plain: true, groups: [{ attacks: [untrained.total] }] })}`
+          : '<span class="muted" title="Needs at least 1 rank">—</span>'}${details(name)}</td>
       </tr>`;
     }
 
@@ -1419,6 +1443,7 @@ function renderSkills(race, classes, scores, featNames) {
     if (t.trait) parts.push(`trait +${t.trait}`);
     if (t.armor) parts.push(`armor ${t.armor}`);
     if (t.effect) parts.push(`effects ${signed(t.effect)}`);
+    if (t.limited) parts.push('untrained: limited use (see Details)');
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
@@ -1430,7 +1455,7 @@ function renderSkills(race, classes, scores, featNames) {
         <button type="button" data-skill="${esc(name)}" data-skill-step="1" aria-label="More ranks in ${esc(name)}">+</button>
       </span></td>
       <td class="total">${t.usable ? `${signed(t.total)}${rollButton({ title: `${name} check`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}`
-        : '<span class="muted" title="Needs at least 1 rank">—</span>'}</td>
+        : '<span class="muted" title="Trained only: needs at least 1 rank">—</span>'}${details(name)}</td>
     </tr>`;
   }).join('');
 }

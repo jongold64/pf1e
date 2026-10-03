@@ -2,6 +2,7 @@
 // No page code here, so these functions can be tested on their own.
 import { abilityModifier, finalScores, levelIncreases } from './rules.js';
 
+// `untrained`: a trained-only skill the Core Rulebook still lets you use in a limited way without ranks.
 // Core Rulebook skills. `family` skills (Craft, Perform, Profession) need a specialty, e.g. Craft (alchemy).
 // `acp` skills take the armor check penalty.
 export const SKILLS = [
@@ -15,18 +16,20 @@ export const SKILLS = [
   { name: 'Disguise', ability: 'cha' },
   { name: 'Escape Artist', ability: 'dex', acp: true },
   { name: 'Fly', ability: 'dex', acp: true },
-  { name: 'Handle Animal', ability: 'cha', trained: true },
+  { name: 'Handle Animal', ability: 'cha', trained: true, untrained: 'Without ranks, only to handle or push domestic animals (a Charisma check).' },
   { name: 'Heal', ability: 'wis' },
   { name: 'Intimidate', ability: 'cha' },
   ...['arcana', 'dungeoneering', 'engineering', 'geography', 'history', 'local', 'nature', 'nobility',
-      'planes', 'religion'].map(k => ({ name: `Knowledge (${k})`, ability: 'int', trained: true })),
+      'planes', 'religion'].map(k => ({ name: `Knowledge (${k})`, ability: 'int', trained: true,
+                                untrained: 'Without ranks, only for checks of DC 10 or lower (common knowledge).' })),
   { name: 'Linguistics', ability: 'int', trained: true },
   { name: 'Perception', ability: 'wis' },
   { name: 'Perform', ability: 'cha', family: true },
   { name: 'Profession', ability: 'wis', trained: true, family: true },
   { name: 'Ride', ability: 'dex', acp: true },
   { name: 'Sense Motive', ability: 'wis' },
-  { name: 'Sleight of Hand', ability: 'dex', acp: true, trained: true },
+  { name: 'Sleight of Hand', ability: 'dex', acp: true, trained: true,
+    untrained: 'Without ranks, a Dexterity check that can only beat DC 10 or lower (except hiding an object on your body).' },
   { name: 'Spellcraft', ability: 'int', trained: true },
   { name: 'Stealth', ability: 'dex', acp: true },
   { name: 'Survival', ability: 'wis' },
@@ -149,6 +152,35 @@ export function featSkillBonus(featNames, skillName, ranks) {
   return bonus;
 }
 
+// Everything that adds to one skill, named, for the Skills tab's Details popup: [{ label, value, note? }] plus the
+// total (the same as skillTotal's). traits: the chosen trait records (only the highest trait bonus counts);
+// effects: active effect bonuses on skill checks ({ source, type, value }) and effectTotal, their total after stacking.
+export function skillBreakdown({ name, ranks, scores, isClassSkill, racialBonuses = {}, raceName = 'Race', featNames = [],
+                                 checkPenalty = 0, traits = [], effects = [], effectTotal = 0 }) {
+  const info = skillInfo(name);
+  const t = skillTotal({ name, ranks, scores, isClassSkill, racialBonuses, featNames, checkPenalty,
+                         traitBonuses: Object.fromEntries([[name, Math.max(0, ...traits.map(x => x.effects?.skills?.[name] || 0))]]),
+                         effectBonus: effectTotal });
+  const ABILITY = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
+  const lines = [{ label: 'Ranks', value: ranks }, { label: `${ABILITY[info.ability]} modifier`, value: t.abilityMod }];
+  if (t.classBonus) lines.push({ label: 'Class skill (with at least 1 rank)', value: t.classBonus });
+  if (t.racial) lines.push({ label: `Racial bonus (${raceName})`, value: t.racial });
+  for (const f of featNames) {
+    if (SKILL_FEATS[f]?.includes(name)) lines.push({ label: `Feat: ${f}`, value: ranks >= 10 ? 4 : 2, note: ranks >= 10 ? '10+ ranks' : '' });
+    if (f === `Skill Focus (${name})`) lines.push({ label: 'Feat: Skill Focus', value: ranks >= 10 ? 6 : 3, note: ranks >= 10 ? '10+ ranks' : '' });
+  }
+  // Trait bonuses don't stack with each other: the highest counts.
+  const withTrait = traits.filter(x => x.effects?.skills?.[name]).sort((a, b) => b.effects.skills[name] - a.effects.skills[name]);
+  withTrait.forEach((x, i) => lines.push({ label: `Trait: ${x.name}`, value: i === 0 ? x.effects.skills[name] : 0,
+                                          note: i === 0 ? '' : `+${x.effects.skills[name]}, doesn't stack with another trait bonus` }));
+  if (t.armor) lines.push({ label: 'Armor check penalty', value: t.armor });
+  for (const e of effects) lines.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
+  // Bonuses of the same type that don't stack: the difference between the effects listed and what counts.
+  const listed = effects.reduce((n, e) => n + e.value, 0);
+  if (listed !== effectTotal) lines.push({ label: 'Effects of the same type do not stack', value: effectTotal - listed });
+  return { lines, total: t.total, usable: t.usable, trained: !!info.trained, limited: t.limited };
+}
+
 // One skill's total. `scores` are final ability scores; `checkPenalty` (0 or less) is the armor check penalty.
 // Returns { total, usable, classBonus, racial, feat, armor, abilityMod }.
 // A trained-only skill with no ranks can't be used (usable: false).
@@ -164,7 +196,8 @@ export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = 
   const trait = traitBonuses[name] || 0;
   return {
     abilityMod, classBonus, racial, feat, armor, trait, effect: effectBonus,
-    usable: !(info.trained && ranks === 0),
+    usable: !(info.trained && ranks === 0) || !!info.untrained,
+    limited: info.trained && ranks === 0 ? info.untrained || '' : '',
     // effectBonus: active effects' bonus on all skill checks (heroism...).
     total: ranks + abilityMod + classBonus + racial + feat + armor + trait + effectBonus,
   };
