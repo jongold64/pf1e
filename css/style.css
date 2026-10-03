@@ -8,6 +8,7 @@
   --good: #1a7f37;
   --bad: #cf222e;
   --warn: #9a6700;
+  --shade: #efebe3;   /* trained-only skill rows */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +22,7 @@
     --good: #57c27a;
     --bad: #ff7b72;
     --warn: #d4a72c;
+    --shade: #302d28;
   }
 }
 
@@ -186,6 +188,11 @@ table.skills { width: 100%; border-collapse: collapse; }
 .skills .base button { width: 40px; padding: 0; font-size: 1.3rem; }
 .skills .value { min-width: 2ch; font-weight: 600; }
 .skill-name { font-weight: 600; }
+/* Trained-only skills: a slightly darker row. */
+.skills tr.trained-only td { background: var(--shade); }
+.skills td { padding-top: 5px; padding-bottom: 5px; }
+.legend-shade { display: inline-block; width: 1.4em; height: 0.9em; vertical-align: -0.1em; background: var(--shade);
+  border: 1px solid var(--border); border-radius: 3px; }
 .skills tr.specialty td:first-child { padding-left: 20px; }
 .breakdown { color: var(--muted); font-size: 0.85rem; }
 .tag { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 1px 6px; margin-left: 4px;
