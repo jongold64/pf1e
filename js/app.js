@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
@@ -17,7 +17,7 @@ import {
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
-import { initArmorTab, renderArmorTab, armorDetails } from './tab-armor.js';
+import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -587,6 +587,8 @@ function buildControls() {
   });
   // Details popup for initiative (Results card).
   $('results').addEventListener('click', e => {
+    const rd = e.target.closest('[data-result-details]');
+    if (rd) { showResultDetails(rd.dataset.resultDetails); return; }
     if (!e.target.closest('[data-init-details]')) return;
     const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits,
       activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'init'));
@@ -1425,13 +1427,14 @@ function render() {
   $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
   const cm = combatManeuvers(stats, view.size, view.haveFeats);
+  const why = (key, what) => `<button type="button" class="skill-details" data-result-details="${key}" aria-label="How ${esc(what)} is worked out">Details</button>`;
   const results = [
-    ['Maximum hit points', esc(stats.hp)],
+    ['Maximum hit points', esc(stats.hp) + why('hp', 'maximum hit points')],
     ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}<button type="button" class="skill-details" data-init-details aria-label="What adds to initiative">Details</button>`],
-    ['Base attack bonus', esc(formatBab(stats.bab))],
-    ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
-    ['Wearing', esc(worn || 'no armor')],
-    ...(view.load ? [['Load', `<span class="${view.load.load === 'light' ? '' : 'warning'}">${esc(loadText(view.load))}</span>`]] : []),
+    ['Base attack bonus', esc(formatBab(stats.bab)) + why('bab', 'base attack bonus')],
+    ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`) + why('speed', 'speed')],
+    ['Wearing', esc(worn || 'no armor') + why('worn', 'what you wear')],
+    ...(view.load ? [['Load', `<span class="${view.load.load === 'light' ? '' : 'warning'}">${esc(loadText(view.load))}</span>${why('load', 'your load')}`]] : []),
   ];
   $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
@@ -1550,6 +1553,65 @@ function showManeuverDetails() {
   const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, state.customEffects));
   openDetail(`CMB ${signed(b.cmb)} · CMD ${b.cmd}`, `<h3>Combat Maneuver Bonus</h3>${detailsTable(b.cmbRows, b.cmb)}
     <h3>Combat Maneuver Defense</h3>${detailsTable(b.cmdRows, b.cmd, String(b.cmd))}`);
+}
+
+// Details popups for the Results card: maximum hit points, base attack bonus, speed, what's worn, and load.
+function showResultDetails(key) {
+  const { stats, gear } = view;
+  const table = (rows, total) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(total)}</b></td></tr></tfoot></table>`;
+  if (key === 'speed') { showArmorWhy(app, 'speed'); return; }
+  if (key === 'hp') {
+    // 1st level: the full hit die; later levels: the die's average (half + 1); Con at every level (at least 1 a level).
+    const levels = view.classLevels;
+    const con = stats.mod.con;
+    const rows = [{ label: `${levels[0].name} at 1st level: full hit die (${levels[0].hit_die})`, text: String(hitDieSize(levels[0])) }];
+    for (const e of classCounts(levels.slice(1))) {
+      rows.push({ label: `${e.cls.name} × ${e.level} more level${e.level === 1 ? '' : 's'}: average ${averageHpPerLevel(e.cls)} each (${e.cls.hit_die} ÷ 2 + 1)`,
+                  text: String(averageHpPerLevel(e.cls) * e.level) });
+    }
+    const dice = levels.reduce((n, c, i) => n + (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)), 0);
+    const withCon = levels.reduce((n, c, i) => n + Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + con), 0);
+    rows.push({ label: `Constitution modifier (${signed(con)}) × ${levels.length} level${levels.length === 1 ? '' : 's'}${withCon - dice !== con * levels.length ? ' (at least 1 hit point a level)' : ''}`,
+                text: signed(withCon - dice) });
+    const favoredHp = view.favoredPicks.filter(p => p === 'hp').length;
+    if (favoredHp) rows.push({ label: `Favored class bonus: +1 hit point × ${favoredHp}`, text: `+${favoredHp}` });
+    if (view.haveFeats.includes('Toughness')) rows.push({ label: 'Feat: Toughness', text: `+${Math.max(3, levels.length)}` });
+    if (stats.fx.hp) rows.push({ label: 'Active effects on hit points', text: signed(stats.fx.hp) });
+    const listed = withCon + favoredHp + (view.haveFeats.includes('Toughness') ? Math.max(3, levels.length) : 0) + stats.fx.hp;
+    if (listed !== stats.hp) rows.push({ label: 'Other', text: signed(stats.hp - listed) });
+    openDetail(`Maximum hit points ${stats.hp}`, table(rows, String(stats.hp))
+      + '<p class="hint">Each level after 1st gives the average of its hit die, rounded up (half the die + 1, e.g. d8 = 5). Temporary hit points (Xtra-HP) are on top of this.</p>');
+    return;
+  }
+  if (key === 'bab') {
+    const rows = view.counts.map(e => ({ label: `${e.cls.name} ${e.level}`, text: signed(e.cls.progression[e.level - 1].bab[0]) }));
+    openDetail(`Base attack bonus ${formatBab(stats.bab)}`, table(rows, signed(stats.bab[0]))
+      + `<p class="hint">Each class adds its own table's base attack bonus. At +6, +11 and +16 you get another attack, 5 lower each time: ${esc(formatBab(stats.bab))}.</p>`);
+    return;
+  }
+  if (key === 'worn') {
+    const items = [[gear.armor, state.armorEnh, 'armor'], [gear.shield, state.shieldEnh, 'shield']].filter(([a]) => a);
+    const rows = items.flatMap(([a, enh, k]) => [
+      { label: `${a.name}${enh ? ` +${enh}` : ''}${state[`${k}Abilities`]?.length ? ` (${state[`${k}Abilities`].map(x => x.name).join(', ')})` : ''}`,
+        text: `${k === 'shield' ? 'shield' : 'armor'} +${a.bonus + (enh || 0)}` },
+    ]);
+    openDetail('What you wear', rows.length ? `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody></table>
+      <dl class="facts"><dt>Max Dex bonus</dt><dd>${gear.maxDex === null ? 'no limit' : esc(signed(gear.maxDex))}</dd>
+        <dt>Armor check penalty</dt><dd>${gear.checkPenalty || 'none'}</dd><dt>Arcane spell failure</dt><dd>${gear.spellFailure}%</dd></dl>
+      <p class="hint">Change it, and see the Details for each of these, on the Armor tab.</p>` : '<p>No armor or shield. Choose them on the Armor tab.</p>');
+    return;
+  }
+  if (key === 'load' && view.load) {
+    const l = view.load;
+    openDetail(`Load: ${l.load}`, table([
+      { label: `Carrying capacity for Strength ${stats.scores.str}${view.race.size !== 'Medium' ? ` (${view.race.size})` : ''}`,
+        text: `light ≤ ${l.capacity.light}, medium ≤ ${l.capacity.medium}, heavy ≤ ${l.capacity.heavy} lbs.` },
+      { label: 'Weight carried (armor, weapons, gear and magic items; not coins)', text: `${l.weight} lbs.` },
+      ...(l.load === 'light' ? [] : [{ label: 'A medium or heavy load caps your Dex bonus and adds a check penalty (the worse of armor and load counts)',
+        text: `Dex at most ${signed(l.maxDex)}, ${l.checkPenalty}` }, { label: 'It also slows you like medium or heavy armor', text: `${view.speed ?? '—'} ft.` }]),
+    ], l.load) + '<p class="hint">The Equipment tab\'s Weight carried Details lists every item.</p>');
+  }
 }
 
 // The Xtra-HP popup: every way to have hit points above the maximum. Spirit Boost is a switch (healing past the

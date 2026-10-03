@@ -58,7 +58,7 @@ export function armorDetails(a) {
 }
 
 // A Details popup (the AC one is the same as on the Race card).
-function showArmorWhy(app, key) {
+export function showArmorWhy(app, key) {
   if (key === 'ac') { app.showAcDetails(); return; }
   if (key === 'touch' || key === 'flat') { app.showAcDetails(key); return; }
   const d = armorWhy.get(key);
