@@ -164,7 +164,7 @@ let currentId = null;
 // Shared with the tab modules.
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
-  showAcDetails: () => showAcDetails(),
+  showAcDetails: column => showAcDetails(column),
   get view() { return view; },
 };
 
@@ -596,7 +596,8 @@ function buildControls() {
   $('race-defense').addEventListener('click', e => {
     const b = e.target.closest('[data-save-details]');
     if (b) showSaveDetails(b.dataset.saveDetails);
-    if (e.target.closest('[data-ac-details]')) showAcDetails();
+    const acd = e.target.closest('[data-ac-details]');
+    if (acd) showAcDetails(acd.dataset.acDetails || null);
     if (e.target.closest('[data-cmb-details]')) showManeuverDetails();
   });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
@@ -1448,9 +1449,12 @@ function render() {
     <div class="defense-ac">
       <div><span>AC</span><b>${stats.ac}</b>
         <button type="button" class="skill-details" data-ac-details aria-label="What adds to AC, touch and flat-footed">Details</button></div>
-      <div><span>Touch</span><b>${stats.touch}</b></div>
-      <div><span>Flat-footed</span><b>${stats.flatFooted}</b></div>
-      <div><span>CMD</span><b>${cm.cmd}</b></div>
+      <div><span>Touch</span><b>${stats.touch}</b>
+        <button type="button" class="skill-details" data-ac-details="touch" aria-label="What counts for touch AC">Details</button></div>
+      <div><span>Flat-footed</span><b>${stats.flatFooted}</b>
+        <button type="button" class="skill-details" data-ac-details="flat" aria-label="What counts for flat-footed AC">Details</button></div>
+      <div><span>CMD</span><b>${cm.cmd}</b>
+        <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMD">Details</button></div>
       <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
         ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}
         <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMB and CMD">Details</button></div>
@@ -1510,7 +1514,8 @@ function showSaveDetails(name) {
 }
 
 // Details popup for AC, touch and flat-footed AC (Race card).
-function showAcDetails() {
+// column: 'touch' or 'flat' shows only what counts for touch or flat-footed AC (and what's left out); otherwise all three.
+function showAcDetails(column = null) {
   const { stats, gear } = view;
   const armorName = gear.armor && [gear.armor.name, state.armorEnh ? `+${state.armorEnh}` : ''].filter(Boolean).join(' ');
   const shieldName = gear.shield && [gear.shield.name, state.shieldEnh ? `+${state.shieldEnh}` : ''].filter(Boolean).join(' ');
@@ -1518,6 +1523,19 @@ function showAcDetails() {
   const b = acBreakdown(stats, { armor: armorName, shield: shieldName, race: view.race.name, monk: monk?.cls.name },
     activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'ac'));
   const cell = v => (v === null ? '<td class="num muted">—</td>' : `<td class="num">${esc(signed(v))}</td>`);
+  if (column) {
+    const name = column === 'touch' ? 'Touch AC' : 'Flat-footed AC';
+    const total = column === 'touch' ? b.totals.touch : b.totals.flat;
+    const counted = b.rows.filter(r => r[column] !== null && (r[column] !== 0 || r.label === 'Base'));
+    const left = b.rows.filter(r => r[column] === null && r.ac);
+    openDetail(`${name} ${total}`, `<table class="skill-why"><tbody>${counted.map(r => `<tr><td>${esc(r.label)}${r.note ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td>
+        <td class="num">${r.label === 'Base' ? '10' : esc(signed(r[column]))}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><td><b>Total</b></td><td class="num"><b>${total}</b></td></tr></tfoot></table>
+      ${left.length ? `<h3>Left out</h3><ul class="plain-list">${left.map(r => `<li>${esc(r.label)} (${esc(signed(r.ac))})</li>`).join('')}</ul>` : ''}
+      <p class="hint">${column === 'touch' ? 'Touch attacks (rays, touch spells) ignore armor, shields and natural armor.'
+        : 'Flat-footed (before you act in combat, or caught unaware), you lose your Dex bonus and dodge bonuses; a Dex penalty still counts.'}</p>`);
+    return;
+  }
   const rows = b.rows.map(r => `<tr><td>${esc(r.label)}${r.note ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td>
     ${r.label === 'Base' ? `<td class="num">10</td><td class="num">10</td><td class="num">10</td>` : cell(r.ac) + cell(r.touch) + cell(r.flat)}</tr>`).join('');
   openDetail(`Armor Class ${stats.ac}`, `<table class="skill-why"><thead><tr><th></th><th class="num">AC</th><th class="num">Touch</th>

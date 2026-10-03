@@ -60,6 +60,7 @@ export function armorDetails(a) {
 // A Details popup (the AC one is the same as on the Race card).
 function showArmorWhy(app, key) {
   if (key === 'ac') { app.showAcDetails(); return; }
+  if (key === 'touch' || key === 'flat') { app.showAcDetails(key); return; }
   const d = armorWhy.get(key);
   if (!d) return;
   app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
@@ -178,8 +179,8 @@ export function renderArmorTab(app, view) {
   ] });
   const rows = [
     ['Armor Class', stats.ac, 'ac'],
-    ['Touch AC', stats.touch],
-    ['Flat-footed AC', stats.flatFooted],
+    ['Touch AC', stats.touch, 'touch'],
+    ['Flat-footed AC', stats.flatFooted, 'flat'],
     ['Dex bonus to AC', signed(stats.dexAc), 'dex'],
     ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none', 'acp'],
     ['Arcane spell failure', spellFailureText(gear, view.counts), 'asf'],
