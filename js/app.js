@@ -1398,10 +1398,10 @@ function renderSkills(race, classes, scores, featNames) {
     const rows = b.lines.map(l => `<tr><td>${esc(l.label)}${l.note ? ` <small class="muted">(${esc(l.note)})</small>` : ''}</td>
       <td class="num">${esc(signed(l.value))}</td></tr>`).join('');
     const info = skillInfo(name);
-    openDetail(`${name} ${b.usable ? signed(b.total) : ''}`.trim(), `
+    openDetail(`${name} ${signed(b.total)}`, `
       <table class="skill-why"><tbody>${rows}</tbody>
         <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(signed(b.total))}</b></td></tr></tfoot></table>
-      ${b.usable ? '' : '<p class="warning">Trained only: this skill cannot be used without at least 1 rank.</p>'}
+      ${b.usable ? '' : '<p class="warning">Trained only: the Core Rulebook allows no use of this skill without at least 1 rank. The Roll button is there in case your group allows it.</p>'}
       ${b.limited ? `<p class="hint">${esc(b.limited)}</p>` : ''}
       ${info.acp && !checkPenalty ? '<p class="hint">Armor check penalties would apply to this skill.</p>' : ''}
       ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}`);
@@ -1428,8 +1428,7 @@ function renderSkills(race, classes, scores, featNames) {
             <button type="button" data-add-specialty="${esc(name)}">Add</button>
           </div></td>
         <td></td>
-        <td class="total">${untrained.usable ? `${signed(untrained.total)}${rollButton({ title: `${name} check (untrained)`, check: name, plain: true, groups: [{ attacks: [untrained.total] }] })}`
-          : '<span class="muted" title="Needs at least 1 rank">—</span>'}${details(name)}</td>
+        <td class="total">${signed(untrained.total)}${rollButton({ title: `${name} check (untrained)`, check: name, plain: true, groups: [{ attacks: [untrained.total] }] })}${details(name)}</td>
       </tr>`;
     }
 
@@ -1444,6 +1443,7 @@ function renderSkills(race, classes, scores, featNames) {
     if (t.armor) parts.push(`armor ${t.armor}`);
     if (t.effect) parts.push(`effects ${signed(t.effect)}`);
     if (t.limited) parts.push('untrained: limited use (see Details)');
+    else if (!t.usable) parts.push('trained only: needs a rank by the rules');
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
@@ -1454,8 +1454,7 @@ function renderSkills(race, classes, scores, featNames) {
         <span class="value">${ranks}</span>
         <button type="button" data-skill="${esc(name)}" data-skill-step="1" aria-label="More ranks in ${esc(name)}">+</button>
       </span></td>
-      <td class="total">${t.usable ? `${signed(t.total)}${rollButton({ title: `${name} check`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}`
-        : '<span class="muted" title="Trained only: needs at least 1 rank">—</span>'}${details(name)}</td>
+      <td class="total">${signed(t.total)}${rollButton({ title: `${name} check${t.usable ? '' : ' (untrained)'}`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}${details(name)}</td>
     </tr>`;
   }).join('');
 }
