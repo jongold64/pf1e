@@ -6,7 +6,8 @@ import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
-         powerAttackStep, unarmedForSize, improvedCritical } from './weapons.js';
+         powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown } from './weapons.js';
+import { activeBonuses } from './effects.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
 
@@ -244,7 +245,8 @@ export function renderMyWeapons(app, view) {
       </div>
       <dl class="facts attack-line">
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>
-          ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</dd>
+          ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}
+          <button type="button" class="skill-details" data-attack-details="${i}" aria-label="What adds to this weapon's attack and damage">Details</button></dd>
         <dt>Damage</dt><dd><b>${esc(damageWithExtras(a.damage, crit.fx))}</b>
           ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] }, 'Roll damage')}
           ${crit.fx.notes.length ? `<div class="muted small">${esc(crit.fx.notes.join(' '))}</div>` : ''}</dd>
@@ -271,6 +273,28 @@ export function renderMyWeapons(app, view) {
       ${isProficient ? '' : '<p class="warning">Not proficient: −4 on attack rolls.</p>'}
     </div>`;
   }).join('') || '<p class="hint">No weapons yet. Choose one below and add it.</p>';
+}
+
+// Details popup for one carried weapon: everything that adds to its attack roll and to its damage.
+function showAttackDetails(app, i) {
+  const { state, data, view } = app;
+  const e = state.weapons[i];
+  const w = e && data.weaponsById.get(e.id);
+  if (!w) return;
+  const ctx = combatContext(app, view);
+  const a = weaponAttack(attackArgs(app, view, ctx, e));
+  const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
+  const b = attackBreakdown(a, { effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage') });
+  const table = (rows, totalLabel, totalText) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}${r.note
+    ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td><td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td><b>${esc(totalLabel)}</b></td><td class="num"><b>${esc(totalText)}</b></td></tr></tfoot></table>`;
+  const dice = a.parts.dice || '—';
+  app.openDetail(`${weaponLabel(w, e)}: ${attackText(a)}`, `
+    <h3>Attack roll</h3>${table(b.attackRows, a.attacks.length > 1 ? 'First attack' : 'Total', signed(b.attackTotal))}
+    ${a.attacks.length > 1 ? `<p class="hint">Each extra attack from a high base attack bonus is 5 lower: ${esc(attackText(a))}.</p>` : ''}
+    <h3>Damage</h3>${table([{ label: `Weapon dice (${view.size})`, text: dice }, ...b.damageRows], 'Damage', damageWithExtras(a.damage, crit.fx))}
+    ${crit.fx.notes.length ? `<p class="hint">${esc(crit.fx.notes.join(' '))}</p>` : ''}
+    <p class="hint">Power Attack, Rapid Shot and two-weapon choices are on the Combat options card above.</p>`);
 }
 
 // Plain-text attack lines for each carried weapon (for the printed sheet).
@@ -334,6 +358,8 @@ export function initWeaponsTab(app) {
                              combat: { ...app.state.combat, main: '', off: '' } });
     const show = e.target.closest('[data-show-weapon]');
     if (show) showWeapon(app, show.dataset.showWeapon);
+    const why = e.target.closest('[data-attack-details]');
+    if (why) showAttackDetails(app, Number(why.dataset.attackDetails));
     // Special abilities (treasure or purchases, at market price): remove one.
     const rm = e.target.closest('[data-wab-remove]');
     if (rm) {

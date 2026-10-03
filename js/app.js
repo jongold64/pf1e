@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, saveBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  pointsSpent, racialAdjustments, characterStats, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
   currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
@@ -533,6 +533,13 @@ function buildControls() {
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  // Details popup for initiative (Results card).
+  $('results').addEventListener('click', e => {
+    if (!e.target.closest('[data-init-details]')) return;
+    const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits,
+      activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'init'));
+    openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
+  });
   // Details popup for a saving throw.
   $('race-defense').addEventListener('click', e => {
     const b = e.target.closest('[data-save-details]');
@@ -1308,7 +1315,7 @@ function render() {
   const cm = combatManeuvers(stats, view.size, view.haveFeats);
   const results = [
     ['Maximum hit points', esc(stats.hp)],
-    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}`],
+    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}<button type="button" class="skill-details" data-init-details aria-label="What adds to initiative">Details</button>`],
     ['Base attack bonus', esc(formatBab(stats.bab))],
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`)],
     ['Wearing', esc(worn || 'no armor')],

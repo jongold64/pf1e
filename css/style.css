@@ -643,7 +643,7 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 }
 
 /* Skills tab: Details button beside Roll, and its popup's table. */
-.skills td.total button.skill-details, .defense-row button.skill-details { font-weight: 400; font-size: 0.85rem; min-height: 32px; padding: 2px 10px; margin-left: 6px; }
+.skills td.total button.skill-details, .defense-row button.skill-details, .results button.skill-details, .attack-line button.skill-details { font-weight: 400; font-size: 0.85rem; min-height: 32px; padding: 2px 10px; margin-left: 6px; }
 table.skill-why { width: 100%; border-collapse: collapse; }
 table.skill-why td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
 table.skill-why td.num { text-align: right; white-space: nowrap; }

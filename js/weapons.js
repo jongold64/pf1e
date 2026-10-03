@@ -194,12 +194,47 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage;
   return {
     attacks: attackBabs.map(b => b + toHit),
+    babs: attackBabs,
     abilityUsed,
     damage: formatDamage(dice, damageBonus),
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
-             penalty, powerHit, powerDamage, strDamage, effectAttack, effectDamage },
+             penalty, powerHit, powerDamage, strDamage, effectAttack, effectDamage, rapid, enh, bonusDamage, dice },
   };
+}
+
+// Everything that adds to a weapon's attack and damage, named (Weapons tab Details popup). a: weaponAttack's result;
+// effects: active effect bonuses ({ source, type, value, target: 'attack' | 'damage' }). Returns
+// { attackRows, damageRows, attackTotal (first attack), damageTotal (bonus added to the dice) }.
+export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penaltyLabel = 'Fighting penalty', effects = [] } = {}) {
+  const p = a.parts;
+  const ab = a.abilityUsed === 'dex' ? 'Dexterity' : 'Strength';
+  const attackRows = [{ label: a.babs.length > 1 ? `Base attack bonus (attacks at ${a.babs.map(b => (b >= 0 ? `+${b}` : b)).join('/')})` : 'Base attack bonus',
+                        value: a.babs[0] }];
+  const add = (rows, label, value, note = '') => { if (value) rows.push({ label, value, note }); };
+  attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
+  add(attackRows, 'Size', p.sizeAttack);
+  add(attackRows, p.enh > 0 ? 'Enhancement bonus' : 'Masterwork', p.itemBonus);
+  add(attackRows, 'Weapon Focus', p.focus);
+  add(attackRows, proficiencyLabel, p.proficiency);
+  add(attackRows, 'Armor or shield penalty', p.armorPenalty);
+  add(attackRows, penaltyLabel, p.penalty);
+  add(attackRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerHit);
+  add(attackRows, 'Rapid Shot', p.rapid);
+  const damageRows = [];
+  add(damageRows, `${a.abilityUsed === 'dex' && p.strDamage === 0 ? 'Strength (none for this weapon)' : 'Strength'}`, p.strDamage,
+      p.strDamage && p.strDamage !== a.parts.abilityMod ? 'two-handed, off-hand or bow rules' : '');
+  add(damageRows, 'Enhancement bonus', p.enh);
+  add(damageRows, 'Weapon Specialization', p.spec);
+  add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
+  add(damageRows, 'Extra damage (smite)', p.bonusDamage);
+  for (const [rows, target, total] of [[attackRows, 'attack', p.effectAttack], [damageRows, 'damage', p.effectDamage]]) {
+    const mine = effects.filter(e => e.target === target);
+    for (const e of mine) rows.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
+    const listed = mine.reduce((n, e) => n + e.value, 0);
+    if (listed !== total) rows.push({ label: 'Effects of the same type do not stack', value: total - listed });
+  }
+  return { attackRows, damageRows, attackTotal: a.attacks[0], damageTotal: p.damageBonus };
 }
 
 // Attack penalties for fighting with two weapons (Core Rulebook Table 8-7), for the main hand and the off hand.

@@ -319,6 +319,19 @@ export function maneuverBreakdown(stats, size, haveFeats = [], effects = []) {
   return { cmb, cmd, cmbRows, cmdRows };
 }
 
+// Everything that adds to initiative, named (Details popup): Dex, Improved Initiative, the best trait bonus, effects.
+export function initiativeBreakdown(stats, haveFeats = [], traits = [], effects = []) {
+  const lines = [{ label: 'Dexterity modifier', value: stats.mod.dex }];
+  if (haveFeats.includes('Improved Initiative')) lines.push({ label: 'Feat: Improved Initiative', value: 4 });
+  const withTrait = traits.filter(t => t.effects?.initiative).sort((a, b) => b.effects.initiative - a.effects.initiative);
+  withTrait.forEach((t, i) => lines.push({ label: `Trait: ${t.name}`, value: i === 0 ? t.effects.initiative : 0,
+                                           note: i === 0 ? '' : `+${t.effects.initiative}, does not stack with another trait bonus` }));
+  for (const e of effects) lines.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
+  const listed = effects.reduce((n, e) => n + e.value, 0);
+  if (listed !== (stats.fx?.init || 0)) lines.push({ label: 'Effects of the same type do not stack', value: (stats.fx?.init || 0) - listed });
+  return { lines, total: lines.reduce((n, l) => n + l.value, 0) };
+}
+
 // Everything that adds to one saving throw ('fort' | 'ref' | 'will'), named, for the Details popup: each class's base
 // save, the ability modifier, Great Fortitude / Lightning Reflexes / Iron Will, the best trait bonus (trait bonuses
 // don't stack) and active effects (effectTotal is their total after stacking). Returns { lines: [{ label, value, note? }], total }.

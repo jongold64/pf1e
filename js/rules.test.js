@@ -10,9 +10,9 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
-import { abilityDamage, damageWithExtras } from './weapons.js';
+import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
-import { classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown } from './rules.js';
+import { classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
@@ -1277,6 +1277,19 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const cm = maneuverBreakdown(st, 'Medium', [], [{ source: 'Haste', target: 'attack', type: 'untyped', value: 1 }]);
   check('CMB details add up', cm.cmbRows.reduce((n, r) => n + r.value, 0), cm.cmb);
   check('CMD details add up', cm.cmdRows.reduce((n, r) => n + r.value, 0), cm.cmd);
+}
+
+// Initiative and weapon attack details add up.
+{
+  const ini = initiativeBreakdown({ mod: { dex: 3 }, fx: { init: 2 } }, ['Improved Initiative'], [{ name: 'Reactionary', effects: { initiative: 2 } }],
+    [{ source: 'Charm', type: 'luck', value: 2 }]);
+  check('initiative details: Dex 3 + Improved Initiative 4 + trait 2 + luck 2', ini.total, 11);
+  const sword = allWeapons.find(w => w.id === 'longsword');
+  const a = weaponAttackForDetails({ weapon: sword, entry: { enh: 2 }, bab: [6, 1], mod: { str: 3, dex: 1 }, effectAttack: 3, effectDamage: 1 });
+  const b = attackBreakdown(a, { effects: [{ target: 'attack', source: 'Heroism', type: 'morale', value: 2 }, { target: 'attack', source: 'Bless', type: 'morale', value: 1 },
+    { target: 'attack', source: 'Haste', type: 'untyped', value: 1 }, { target: 'damage', source: 'Prayer', type: 'luck', value: 1 }] });
+  check('attack details add up to the first attack', b.attackRows.reduce((n, r) => n + r.value, 0), a.attacks[0]);
+  check('damage details add up to the damage bonus', b.damageRows.reduce((n, r) => n + r.value, 0), b.damageTotal);
 }
 
 const failed = results.filter(r => !r.pass);
