@@ -536,6 +536,15 @@ function buildControls() {
     update({ hpCurrent: hp >= view.stats.hp ? null : hp });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  // Details popup for a Spells per day row.
+  $('spells-tables').addEventListener('click', e => {
+    const b = e.target.closest('[data-spellday]');
+    const d = b && spellDayWhy.get(b.dataset.spellday);
+    if (!d) return;
+    openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td><b>Per day</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>
+      <p class="hint">Ability scores here include active effects (an owl's wisdom, for example).</p>`);
+  });
   // Details popup for initiative (Results card).
   $('results').addEventListener('click', e => {
     if (!e.target.closest('[data-init-details]')) return;
@@ -1776,10 +1785,14 @@ function renderSpells(view) {
   $('no-spells').hidden = tables.length > 0;
   $('no-spells-text').textContent = tables.length ? ''
     : view.classes.length > 1 ? 'None of your classes cast spells.' : `${view.cls.name}s don't cast spells.`;
+  spellDayWhy.clear();
   $('spells-tables').innerHTML = tables.map(({ c, spells }) => spellTable(c, spells)).join('');
 }
 
 // Spells per day for one casting class (at its effective level, which prestige classes can raise).
+// How each Spells per day row is worked out, by "class|spell level", for its Details popup.
+const spellDayWhy = new Map();
+
 function spellTable(c, spells) {
   const { cls } = c;
   const abilityName = ABILITY_NAMES[spells.ability];
@@ -1807,12 +1820,25 @@ function spellTable(c, spells) {
     // Level 0 spells (cantrips/orisons) are cast at will.
     let total = r.spellLevel === 0 ? (r.base === null ? 'At will' : `${r.base} prepared`) : dash(r.total);
     if (!r.canCast) total = `<span class="warning">Needs ${abilityName.slice(0, 3)} ${10 + r.spellLevel}</span>`;
+    // The pieces of this row, for its Details popup.
+    const key = `${cls.id}|${r.spellLevel}`;
+    const mod = Math.floor((spells.score - 10) / 2);
+    const tableLevel = c.effectiveLevel !== c.classLevel ? `level ${c.effectiveLevel} (${c.classLevel} ${cls.name.toLowerCase()} + ${c.effectiveLevel - c.classLevel} from prestige classes)` : `level ${c.classLevel}`;
+    spellDayWhy.set(key, { title: `${cls.name}: ${ORDINALS[r.spellLevel]}-level spells`, rows: [
+      { label: `${cls.name} table at ${tableLevel}`, text: r.base === null ? 'none (known only)' : String(r.base) },
+      ...(r.spellLevel > 0 && r.base !== null ? [{ label: `Bonus spells from ${abilityName} ${spells.score} (modifier ${signed(mod)}): 1 if the modifier is at least the spell level, plus 1 for every 4 points above it`,
+                                                 text: r.bonus ? `+${r.bonus}` : '+0' }] : []),
+      ...(extraName && r.spellLevel > 0 && r.base !== null ? [{ label: `${extraName} slot (one ${extraName.toLowerCase()} spell a day)`, text: r.extra ? '+1' : '+0' }] : []),
+      { label: `Needs ${abilityName} ${10 + r.spellLevel} to cast ${ORDINALS[r.spellLevel]}-level spells`, text: r.canCast ? `you have ${spells.score} ✓` : `you have ${spells.score} ✗` },
+      ...(r.known !== null ? [{ label: 'Spells known (class table)', text: String(r.known) }] : []),
+      ...(r.prepared !== null ? [{ label: 'Spells prepared each day', text: String(r.prepared) }] : []),
+    ], total: r.spellLevel === 0 ? (r.base === null ? 'at will' : `${r.base} prepared, cast at will`) : r.canCast ? String(r.total ?? '—') : '0 (score too low)' });
     return `<tr${r.canCast ? '' : ' class="cannot"'}>
       <td>${ORDINALS[r.spellLevel]}</td>
       <td>${dash(r.base)}</td>
       <td>${r.bonus ? `+${r.bonus}` : ''}</td>
       ${extraName ? `<td>${r.extra ? `+${r.extra}` : ''}</td>` : ''}
-      <td class="total">${total}</td>
+      <td class="total">${total} <button type="button" class="skill-details" data-spellday="${esc(key)}" aria-label="How this is worked out">Details</button></td>
       ${showKnown ? `<td>${dash(r.known)}</td>` : ''}
       ${showPrepared ? `<td>${dash(r.prepared)}</td>` : ''}
     </tr>`;
