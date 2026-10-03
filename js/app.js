@@ -11,7 +11,7 @@ import {
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
-import { proficiencyTest } from './weapons.js';
+import { proficiencyTest, weaponWeight, WEAPON_SIZES } from './weapons.js';
 import {
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
@@ -307,7 +307,8 @@ function load(saved) {
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])),
-                 ...(cleanAbilities(e.abilities).length ? { abilities: cleanAbilities(e.abilities) } : {}) }));
+                 ...(cleanAbilities(e.abilities).length ? { abilities: cleanAbilities(e.abilities) } : {}),
+                 ...(WEAPON_SIZES.includes(e.size) ? { size: e.size } : {}) }));
   // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.
   state.armorAbilities = cleanAbilities(state.armorAbilities);
   state.shieldAbilities = cleanAbilities(state.shieldAbilities);
@@ -918,7 +919,7 @@ function carriedWeight(armorGear, size) {
   }
   const worn = equipmentTotals(state.inventory, data.gearById || new Map(),
                                { armor: armorGear.armor, shield: armorGear.shield, size });
-  const weapons = state.weapons.reduce((n, e) => n + (data.weaponsById?.get(e.id)?.weight_lbs || 0), 0) * sizeWeightFactor(size);
+  const weapons = state.weapons.reduce((n, e) => { const w = data.weaponsById?.get(e.id); return n + (w ? weaponWeight(w, e, size) : 0); }, 0);
   const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById).weight : 0;
   return Math.round((worn.weight + weapons + magic) * 100) / 100;
 }

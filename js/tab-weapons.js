@@ -6,7 +6,7 @@ import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
-         powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown } from './weapons.js';
+         powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -116,9 +116,11 @@ function combatContext(app, view) {
 }
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
+  // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted.
+  const sized = sizedWeapon(w, e.size, view.size);
   return {
-    weapon: w, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
-    size: view.size, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
+    weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
+    size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
@@ -152,7 +154,7 @@ function renderCombat(app, view, ctx) {
   const mainWeapon = mainEntry && data.weaponsById.get(mainEntry.id);
   const offOpts = [
     ...(mainWeapon && isDouble(mainWeapon) ? [[`${mainIndex}:1`, `Other end of the ${mainWeapon.name}`]] : []),
-    ...melee.filter(([i, , w]) => i !== mainIndex && w.group !== 'two-handed').map(([i, e, w]) => [String(i), name(e, w)]),
+    ...melee.filter(([i, e, w]) => i !== mainIndex && sizedWeapon(w, e.size, view.size).weapon.group !== 'two-handed').map(([i, e, w]) => [String(i), name(e, w)]),
   ];
   const select = (id, opts, value) => `<select id="${id}"><option value="">—</option>${opts.map(([v, t]) =>
     `<option value="${v}"${v === value ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
@@ -170,7 +172,7 @@ function renderCombat(app, view, ctx) {
   const mainArgs = attackArgs(app, view, ctx, mainEntry);
   const r = twoWeaponAttack({
     ...mainArgs,
-    main: { weapon: mainWeapon, entry: mainArgs.entry, end: 0 },
+    main: { weapon: mainArgs.weapon, entry: mainArgs.entry, end: 0 },
     off: { weapon: offArgs.weapon, entry: offArgs.entry, end: offEnd || 0, proficient: offArgs.proficient,
            unarmedDamage: offArgs.unarmedDamage },
   });
@@ -259,6 +261,10 @@ export function renderMyWeapons(app, view) {
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
       </dl>
       <div class="weapon-controls">
+        <label>Size <select data-weapon-size="${i}">
+          <option value="">Your size (${esc(view.size)})</option>
+          ${WEAPON_SIZES.map(z => `<option value="${z}"${e.size === z ? ' selected' : ''}>${z}</option>`).join('')}
+        </select></label>
         <label>Quality <select data-weapon-quality="${i}">
           <option value="0"${quality === '0' ? ' selected' : ''}>Normal</option>
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
@@ -273,6 +279,10 @@ export function renderMyWeapons(app, view) {
           Proficient anyway (e.g. from a feat or trait)</label>`}
       </div>
       ${isProficient ? '' : '<p class="warning">Not proficient: −4 on attack rolls.</p>'}
+      ${args.sized.steps ? `<p class="${args.sized.unusable ? 'warning' : 'hint'}">${args.sized.unusable
+        ? `Made for a ${esc(e.size)} creature: too big for you to wield (it would be more than two-handed).`
+        : `Made for a ${esc(e.size)} creature: ${args.sized.penalty} on attack rolls, ${esc(e.size)} damage dice${args.sized.weapon.group !== w.group
+          ? `, and it counts as ${esc(args.sized.weapon.group)} for you` : ''}.`}</p>` : ''}
     </div>`;
   }).join('') || '<p class="hint">No weapons yet. Choose one below and add it.</p>';
 }
@@ -285,7 +295,8 @@ function showAttackDetails(app, i, part = null) {
   const w = e && data.weaponsById.get(e.id);
   if (!w) return;
   const ctx = combatContext(app, view);
-  const a = weaponAttack(attackArgs(app, view, ctx, e));
+  const args = attackArgs(app, view, ctx, e);
+  const a = weaponAttack(args);
   const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
   const b = attackBreakdown(a, { effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage') });
   const table = (rows, totalLabel, totalText) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}${r.note
@@ -315,7 +326,7 @@ function showAttackDetails(app, i, part = null) {
     const extras = [...crit.fx.hit.map(x => ({ label: `${x.name || 'Special ability'}: every hit`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''}` })),
       ...crit.fx.vs.map(x => ({ label: `${x.name}: only against ${x.vs}`, text: `+${x.dice}` }))];
     app.openDetail(`${weaponLabel(w, e)} damage: ${damageWithExtras(a.damage, crit.fx)}`, `
-      ${table([{ label: `Weapon dice (${view.size})`, text: dice }, ...b.damageRows, ...extras.filter(x => !x.label.includes('only against'))], 'Damage', damageWithExtras(a.damage, crit.fx))}
+      ${table([{ label: `Weapon dice (${args.size}${e.size ? ' weapon' : ''})`, text: dice }, ...b.damageRows, ...extras.filter(x => !x.label.includes('only against'))], 'Damage', damageWithExtras(a.damage, crit.fx))}
       ${extras.some(x => x.label.includes('only against')) ? `<h3>Sometimes</h3><ul class="plain-list">${extras.filter(x => x.label.includes('only against')).map(x => `<li>${esc(x.label)}: ${esc(x.text)}</li>`).join('')}</ul>` : ''}
       <h3>On a critical hit</h3><p>${esc(critText(w, crit))}: the weapon dice and bonuses are rolled ×${crit.mult}; extra dice from special abilities aren't multiplied${crit.fx.burst.length
         ? `, but ${esc(crit.fx.burst.map(x => `${x.name || 'burst'} adds ${x.dice} ${x.type || ''}`.trim()).join(' and '))} for each step above ×1` : ''}.</p>
@@ -326,7 +337,7 @@ function showAttackDetails(app, i, part = null) {
   app.openDetail(`${weaponLabel(w, e)}: ${attackText(a)}`, `
     <h3>Attack roll</h3>${table(b.attackRows, a.attacks.length > 1 ? 'First attack' : 'Total', signed(b.attackTotal))}
     ${a.attacks.length > 1 ? `<p class="hint">Each extra attack from a high base attack bonus is 5 lower: ${esc(attackText(a))}.</p>` : ''}
-    <h3>Damage</h3>${table([{ label: `Weapon dice (${view.size})`, text: dice }, ...b.damageRows], 'Damage', damageWithExtras(a.damage, crit.fx))}
+    <h3>Damage</h3>${table([{ label: `Weapon dice (${args.size}${e.size ? ' weapon' : ''})`, text: dice }, ...b.damageRows], 'Damage', damageWithExtras(a.damage, crit.fx))}
     ${crit.fx.notes.length ? `<p class="hint">${esc(crit.fx.notes.join(' '))}</p>` : ''}
     <p class="hint">Power Attack, Rapid Shot and two-weapon choices are on the Combat options card above.</p>`);
 }
@@ -402,6 +413,13 @@ export function initWeaponsTab(app) {
     }
   });
   $('my-weapons').addEventListener('change', e => {
+    const sizeOf = e.target.dataset.weaponSize;
+    if (sizeOf !== undefined) {
+      const { size, ...rest } = app.state.weapons[Number(sizeOf)];
+      const weapons = app.state.weapons.map((x, j) => (j === Number(sizeOf) ? (e.target.value ? { ...rest, size: e.target.value } : rest) : x));
+      app.update({ weapons });
+      return;
+    }
     const quality = e.target.dataset.weaponQuality;
     if (quality !== undefined) {
       const v = e.target.value;

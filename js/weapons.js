@@ -128,6 +128,38 @@ export function improvedCritical(w) {
   return `${doubled}-20/${multiplier}`;
 }
 
+// Weapons made for a different size of creature (Core Rulebook, Weapon Size): the sizes offered, and what they change.
+export const WEAPON_SIZES = ['Small', 'Medium', 'Large'];
+const WEAPON_SIZE_COST = { Small: 1, Medium: 1, Large: 2 };
+const WEAPON_SIZE_WEIGHT = { Small: 0.5, Medium: 1, Large: 2 };
+const SIZE_ORDER = ['Fine', 'Diminutive', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan', 'Colossal'];
+const HANDS = ['light', 'one-handed', 'two-handed'];
+
+// A weapon as used by a creature of wielderSize when it was made for weaponSize (null = the wielder's own size):
+// { weapon (with its handedness shifted one step per size difference: a Large longsword is two-handed for a Medium
+// creature), diceSize (the damage column to use), penalty (-2 on attacks per size step), steps, unusable (more than
+// two-handed for the wielder) }. Ranged weapons keep their handedness.
+export function sizedWeapon(weapon, weaponSize, wielderSize) {
+  const own = !weaponSize || weaponSize === wielderSize;
+  const steps = own ? 0 : SIZE_ORDER.indexOf(weaponSize) - SIZE_ORDER.indexOf(wielderSize);
+  let group = weapon.group;
+  let unusable = false;
+  if (steps && HANDS.includes(weapon.group)) {
+    const i = HANDS.indexOf(weapon.group) + steps;
+    unusable = i > 2;
+    group = HANDS[Math.max(0, Math.min(2, i))];
+  }
+  return { weapon: group === weapon.group ? weapon : { ...weapon, group }, diceSize: own ? wielderSize : weaponSize,
+           penalty: steps ? -2 * Math.abs(steps) : 0, steps, unusable };
+}
+
+// A carried weapon's weight: as listed for Medium, half for Small and double for Large weapons (a weapon with no size
+// chosen is sized for the wielder).
+export function weaponWeight(weapon, entry = {}, wielderSize = 'Medium') {
+  const size = entry.size || wielderSize;
+  return (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[size] ?? (size === 'Tiny' ? 0.5 : 1));
+}
+
 // Power Attack and Deadly Aim: -1 attack / +2 damage, one step more at BAB +4 and every +4 after.
 export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 
@@ -143,7 +175,7 @@ export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
                                proficient = true, armorPenalty = 0, unarmedDamage = null,
                                hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0,
-                               effectAttack = 0, effectDamage = 0 }) {
+                               effectAttack = 0, effectDamage = 0, misfit = 0 }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -184,7 +216,8 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used.push('Rapid Shot');
   }
 
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack;
+  // misfit: -2 per size step for a weapon made for a different size of creature.
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
@@ -199,7 +232,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     damage: formatDamage(dice, damageBonus),
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
-             penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice },
+             penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit },
   };
 }
 
@@ -214,6 +247,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   const add = (rows, label, value, note = '') => { if (value) rows.push({ label, value, note }); };
   attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
   add(attackRows, 'Size', p.sizeAttack);
+  add(attackRows, 'Weapon made for a different size of creature (-2 per size)', p.misfit);
   add(attackRows, p.enh > 0 ? 'Enhancement bonus' : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
   add(attackRows, proficiencyLabel, p.proficiency);
@@ -298,11 +332,14 @@ export function weaponCost(weapon, entry = {}) {
   const enh = entry.enh || 0;
   const abilities = entry.abilities || [];
   const magic = magicPart(enh, abilities, 2000);
-  return (weapon.price_gp || 0) + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0) + (entry.crafted ? magic / 2 : magic);
+  // A weapon made for a Large creature costs twice as much (the masterwork and magic costs don't change).
+  return (weapon.price_gp || 0) * (WEAPON_SIZE_COST[entry.size] || 1) + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0)
+    + (entry.crafted ? magic / 2 : magic);
 }
 
-// "+1 flaming Longsword", "Masterwork Dagger", "Club".
+// "+1 flaming Longsword", "Masterwork Dagger", "Club", "Greatsword (Large)".
 export function weaponLabel(weapon, entry = {}) {
   const prefix = magicPrefix(entry.enh || 0, entry.masterwork, entry.abilities || []);
-  return prefix ? `${prefix} ${weapon.name}` : weapon.name;
+  const name = entry.size ? `${weapon.name} (${entry.size})` : weapon.name;
+  return prefix ? `${prefix} ${name}` : name;
 }

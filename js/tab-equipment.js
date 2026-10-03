@@ -2,7 +2,7 @@
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
-import { weaponCost, weaponLabel } from './weapons.js';
+import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
 
 let selectedId = null;
@@ -111,9 +111,9 @@ export async function renderEquipment(app, view) {
   const magic = { ...listedMagic, cost: listedMagic.cost + made };
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
-  const weaponWeight = carried.reduce((sum, [w]) => sum + (w.weight_lbs || 0), 0) * sizeFactor;
+  const weaponsWeight = carried.reduce((sum, [w, e]) => sum + weaponWeight(w, e, view.race.size), 0);
   const left = Math.round((gold - armorSpend - gearSpend - magic.cost - weaponSpend) * 100) / 100;
-  const carriedWeight = totals.weight + magic.weight + weaponWeight;
+  const carriedWeight = totals.weight + magic.weight + weaponsWeight;
 
   // What each total is made of, for its Details popup.
   const gearRows = state.inventory.map(e => {
@@ -134,7 +134,7 @@ export async function renderEquipment(app, view) {
     ...state.craftedItems.map(e => ({ label: `${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
                                        cost: craftedItemCost(e) * e.qty, note: e.bought ? '' : 'crafting cost', weight: null })),
   ];
-  const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), weight: (w.weight_lbs || 0) * sizeFactor }));
+  const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), weight: weaponWeight(w, e, view.race.size) }));
   const armorRows = wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.crafted ? 'crafted: magic at half price' : '', weight: x.weight }));
   const money = rows => rows.map(r => ({ label: r.label, text: formatGp(r.cost), note: r.note }));
   moneyDetails = {

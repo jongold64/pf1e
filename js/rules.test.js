@@ -10,7 +10,7 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
-import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails } from './weapons.js';
+import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -1325,6 +1325,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const healed = applyHp({ current: 25, max: 30, temps: [], amount: 12, spiritBoost: 5 });
   check('Spirit Boost: healing past the maximum becomes temporary hp, up to the oracle level', [healed.current, healed.temps[0]?.amount].join(), ',5');
   check('without Spirit Boost healing stops at the maximum', applyHp({ current: 25, max: 30, amount: 12 }).temps.length, 0);
+}
+
+// Weapons made for a different size of creature.
+{
+  const w = id => allWeapons.find(x => x.id === id);
+  const big = sizedWeapon(w('longsword'), 'Large', 'Medium');
+  check('Large longsword for a Medium creature: two-handed, Large dice, -2', [big.weapon.group, big.diceSize, big.penalty].join(), 'two-handed,Large,-2');
+  check('Large greatsword is too big for a Medium creature', sizedWeapon(w('greatsword'), 'Large', 'Medium').unusable, true);
+  check('Medium longsword for a Large creature: light-ish one step down (light)', sizedWeapon(w('longsword'), 'Medium', 'Large').weapon.group, 'light');
+  check('own size: no change', sizedWeapon(w('longsword'), null, 'Medium').penalty, 0);
+  const a = weaponAttackForDetails({ weapon: big.weapon, entry: {}, bab: [6, 1], mod: { str: 4, dex: 1 }, size: big.diceSize, misfit: big.penalty });
+  check('Large longsword: 2d6 + 1 1/2 Str, attack -2', `${a.attacks[0]} ${a.damage}`, '8 2d6+6');
+  check('Large weapon: double price', weaponCost(w('longsword'), { size: 'Large' }), 30);
+  check('Large weapon: double weight', weaponWeight(w('longsword'), { size: 'Large' }, 'Medium'), 8);
+  check('no size chosen, Small wielder: half weight', weaponWeight(w('longsword'), {}, 'Small'), 2);
 }
 
 const failed = results.filter(r => !r.pass);
