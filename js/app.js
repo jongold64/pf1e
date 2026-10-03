@@ -803,6 +803,15 @@ function buildControls() {
   $('feat-qualify').addEventListener('change', renderPicker);
   $('picker-close').addEventListener('click', () => $('feat-picker').close());
   $('detail-close').addEventListener('click', () => $('detail-dialog').close());
+  // Any popup window closes when you click or tap outside it (on the dimmed background), as well as with its Close button.
+  for (const dlg of document.querySelectorAll('dialog')) {
+    dlg.addEventListener('click', e => {
+      if (e.target !== dlg) return;  // a click inside the window's content
+      const r = dlg.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) dlg.close();
+    });
+  }
 
   initArmorTab(app);
   initSpellList(app);
