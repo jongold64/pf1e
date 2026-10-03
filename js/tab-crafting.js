@@ -144,7 +144,22 @@ function plan(app, list, c) {
         .map(r => ({ ...r, text: `${r.text} (${a.name})` })))];
     const saved = abilities.map(({ cl, ...a }) => a);
     const title = `${magicPrefix(form.enh, true, saved)} ${base.name}`;
+    const bonusParts = [`+${form.enh} enhancement`, ...abilities.filter(a => a.bonus).map(a => `${a.name} +${a.bonus}`)].join(', ');
+    const priceWhy = [
+      { label: `${base.name}`, text: formatGp(base.price_gp || 0) },
+      { label: 'Masterwork (magic weapons and armor always are)', text: `+${formatGp(mw)}` },
+      { label: `Magic: total bonus +${price.effective} (${bonusParts}), squared × ${formatGp(per)}`, text: `+${formatGp(price.effective * price.effective * per)}` },
+      ...abilities.filter(a => a.gp).map(a => ({ label: `${a.name} (flat price)`, text: `+${formatGp(a.gp)}` })),
+    ];
+    const costWhy = [
+      { label: 'New magic (the magic part of the price)', text: formatGp(price.base) },
+      ...(oldMagic ? [{ label: 'Magic it already has (not paid again)', text: `−${formatGp(oldMagic)}` }] : []),
+      ...(buying ? [] : [{ label: 'Making it: half of the magic you add', text: formatGp(craftCost(Math.max(0, added))) }]),
+      ...(needMw ? [{ label: `The masterwork ${base.name.toLowerCase()} itself (paid in full)`, text: `+${formatGp(needMw)}` }]
+        : [{ label: `The ${base.name.toLowerCase()} is already masterwork or magic`, text: '+0 gp' }]),
+    ];
     return {
+      why: { price: priceWhy, cost: costWhy, base: Math.max(0, added) },
       title, feat: CRAFT_FEATS[form.kind], itemCL: price.casterLevel, base: Math.max(0, added),
       market: (base.price_gp || 0) + mw + price.base,
       cost: buying ? Math.max(0, added) + needMw : craftCost(Math.max(0, added), needMw), errors,
@@ -180,7 +195,12 @@ function plan(app, list, c) {
     const price = spellItemPrice(form.spellKind, sl, cl);
     const errors = [...price.errors];
     if (form.spellKind === 'potion' && /^personal/i.test(spell.range || '')) errors.push('spells with a range of personal can\'t be made into potions');
+    const spellWhy = [{ label: `${info.label} price per spell level per caster level`, text: formatGp(info.perLevel) },
+      { label: `Spell level${clsNote ? ` (${clsNote})` : ''}`, text: sl === 0 ? '× ½ (0-level)' : `× ${sl}` },
+      { label: 'Caster level', text: `× ${cl}` }];
     return {
+      why: { price: spellWhy, cost: [...spellWhy, { label: 'Market price', text: formatGp(price.base) },
+        ...(buying ? [] : [{ label: 'Making it costs half', text: formatGp(craftCost(price.base)) }])], base: price.base },
       title: `${info.label} of ${spell.name} (caster level ${cl})`, feat: CRAFT_FEATS[form.spellKind], itemCL: cl, clRange: [min, max],
       base: price.base, market: price.base, cost: buying ? price.base : craftCost(price.base), errors, reqs: [], mandatory: [],
       note: `${info.label} price: ${info.perLevel} gp × spell level ${sl === 0 ? '0 (counts as ½)' : sl}${clsNote ? ` (${clsNote})` : ''} × caster level ${cl}`
@@ -207,7 +227,12 @@ function plan(app, list, c) {
   const checked = checkRequirements(reqs, ctx(optionBonus(option)));
   // Staves are spell-trigger items: their spells are required, not just +5 to the DC.
   const mandatory = kind === 'staff' ? checked.filter(r => (r.type === 'spell' || r.type === 'spells') && r.status === 'unmet') : [];
+  const listedCostNow = listedCost(item, option, price);
   return {
+    why: { price: [{ label: `${item.name}${option ? ` (${option})` : ''}: listed price`, text: price === null ? 'none listed' : formatGp(price) }],
+      cost: [{ label: 'Market price', text: price === null ? '—' : formatGp(price) },
+        { label: item.construction?.cost ? `Cost to make, from the item's Construction line (${item.construction.cost})` : 'Making it costs half the price',
+          text: listedCostNow === null ? '—' : formatGp(listedCostNow) }], base: price ?? 0 },
     title: option ? `${item.name} (${option})` : item.name, feat: CRAFT_FEATS[kind], itemCL: item.cl || 0,
     base: price ?? 0, market: price, cost: listedCost(item, option, price), errors: price === null ? ['the item has no price listed'] : [],
     reqs: checked, mandatory, noRequirements: !text,
@@ -313,11 +338,13 @@ function renderCard(app, c) {
   const done = form.message ? `<p class="craft-done">${esc(form.message)}</p>` : '';
   if (c.mode === 'buy') {
     const ok = !p.errors.length && p.cost !== null;
+    cardWhy.set(c.mode, { cost: { title: `You pay: ${p.cost === null ? '—' : formatGp(p.cost)}`, rows: p.why?.cost || [], total: p.cost === null ? '—' : formatGp(p.cost) } });
+    const why = key => (p.why ? ` <button type="button" class="skill-details" data-craft-why="${key}" aria-label="How this is worked out">Details</button>` : '');
     $(c.body).innerHTML = `${kinds}
       <div class="craft-controls">${kindControls(app, list, p, c)}</div>
       <h3>${esc(p.title)}</h3>
       <dl class="facts"><dt>Market price</dt><dd>${esc(p.market === null ? '—' : formatGp(p.market))}</dd>
-        <dt>You pay</dt><dd><b>${esc(p.cost === null ? '—' : formatGp(p.cost))}</b></dd></dl>
+        <dt>You pay</dt><dd><b>${esc(p.cost === null ? '—' : formatGp(p.cost))}</b>${why('cost')}</dd></dl>
       ${p.note ? `<p class="hint">${esc(p.note)}</p>` : ''}
       ${p.errors.length ? `<p class="warning">Can't be added: ${esc(p.errors.join('; '))}.</p>` : ''}
       <div class="slot-buttons"><button type="button" class="primary" data-craft-make${ok ? '' : ' disabled'}>Add it (${esc(p.cost === null ? '—' : formatGp(p.cost))})</button></div>
@@ -336,6 +363,27 @@ function renderCard(app, c) {
     return `<li class="req-${r.status}">${icon} ${esc(r.type === 'spells' ? `one of: ${r.text}` : r.text)}${ask}</li>`;
   }).join('');
   const take10 = sc.usable ? 10 + sc.total : null;
+  // The popups behind this card's Details buttons.
+  const unmetNames = [...p.reqs.filter((r, i) => r.status === 'unmet' || (r.status === 'ask' && !form.confirmed.has(i))).map(r => r.text),
+    ...Array.from({ length: form.extraUnmet }, () => 'another requirement you counted')];
+  const spellish = form.kind === 'spell' && (form.spellKind === 'potion' || form.spellKind === 'scroll');
+  cardWhy.set(c.mode, {
+    price: { title: `Market price: ${p.market === null ? '—' : formatGp(p.market)}`, rows: p.why?.price || [], total: p.market === null ? '—' : formatGp(p.market) },
+    cost: { title: `Cost to make: ${p.cost === null ? '—' : formatGp(p.cost)}`, rows: p.why?.cost || [], total: p.cost === null ? '—' : formatGp(p.cost),
+            note: 'Making an item costs half its base price in materials; anything bought rather than made (the masterwork item, material components) is paid in full.' },
+    time: { title: 'Time to make', total: time.hours < 8 ? `${time.hours} hours` : `${time.days} day${time.days === 1 ? '' : 's'}`, rows: [
+      { label: 'Base price of what you are making (the magic part)', text: formatGp(p.why?.base ?? p.base) },
+      spellish && (p.why?.base ?? p.base) <= 250 ? { label: 'Potions and scrolls of 250 gp or less', text: '2 hours' }
+        : { label: '8 hours per 1,000 gp (at least 8)', text: `${Math.max(8, 8 * Math.ceil((p.why?.base ?? p.base) / 1000))} hours` },
+      ...(form.rushed ? [{ label: 'Rushed: half the time (+5 to the DC)', text: `${time.hours} hours` }] : []),
+      { label: '8 hours of work a day, one item a day at most', text: `${time.days} day${time.days === 1 ? '' : 's'}` }] },
+    dc: { title: `Spellcraft DC ${dc}`, total: String(dc), rows: [
+      { label: 'Base', text: '5' }, { label: "Item's caster level", text: `+${p.itemCL}` },
+      ...unmetNames.map(n => ({ label: `Requirement not met: ${n}`, text: '+5' })),
+      ...(form.rushed ? [{ label: 'Rushed', text: '+5' }] : [])],
+      note: `Your Spellcraft: ${sc.usable ? signed(sc.total) : 'untrained'}${take10 !== null ? `; taking 10 gives ${take10}` : ''}. Failing wastes the time and gold; failing by 5 or more makes a cursed item.` },
+  });
+  const why = key => ` <button type="button" class="skill-details" data-craft-why="${key}" aria-label="How this is worked out">Details</button>`;
   $(c.body).innerHTML = `${kinds}
     <div class="craft-controls">${kindControls(app, list, p, c)}</div>
     <h3>${esc(p.title)}</h3>
@@ -351,10 +399,10 @@ function renderCard(app, c) {
       <label class="check-row"><input type="checkbox" data-craft="rushed"${form.rushed ? ' checked' : ''}> Rush it (half the time, +5 DC)</label>
     </div>
     <dl class="facts">
-      <dt>Market price</dt><dd>${esc(p.market === null ? '—' : formatGp(p.market))}</dd>
-      <dt>Cost to make</dt><dd><b>${esc(p.cost === null ? '—' : formatGp(p.cost))}</b></dd>
-      <dt>Time</dt><dd>${time.hours < 8 ? `${time.hours} hours` : `${time.days} day${time.days === 1 ? '' : 's'} (${time.hours} hours of work)`}</dd>
-      <dt>Spellcraft DC</dt><dd>${dc} <small class="muted">(5 + caster level ${p.itemCL}${unmet ? ` + ${5 * unmet} for ${unmet} unmet requirement${unmet === 1 ? '' : 's'}` : ''}${form.rushed ? ' + 5 rushed' : ''})</small></dd>
+      <dt>Market price</dt><dd>${esc(p.market === null ? '—' : formatGp(p.market))}${why('price')}</dd>
+      <dt>Cost to make</dt><dd><b>${esc(p.cost === null ? '—' : formatGp(p.cost))}</b>${why('cost')}</dd>
+      <dt>Time</dt><dd>${time.hours < 8 ? `${time.hours} hours` : `${time.days} day${time.days === 1 ? '' : 's'} (${time.hours} hours of work)`}${why('time')}</dd>
+      <dt>Spellcraft DC</dt><dd>${dc} <small class="muted">(5 + caster level ${p.itemCL}${unmet ? ` + ${5 * unmet} for ${unmet} unmet requirement${unmet === 1 ? '' : 's'}` : ''}${form.rushed ? ' + 5 rushed' : ''})</small>${why('dc')}</dd>
       <dt>Your Spellcraft</dt><dd>${sc.usable ? `${signed(sc.total)} ${rollButton({ title: `Spellcraft to craft ${p.title} (DC ${dc})`, check: 'Spellcraft', groups: [{ attacks: [sc.total] }] })}
         <small class="muted">taking 10 gives ${take10}: ${take10 >= dc ? 'success' : 'not enough'}</small>` : 'untrained (Spellcraft needs ranks)'}</dd>
     </dl>
@@ -385,6 +433,9 @@ export function craftListedItem(app, id, option) {
   $('craft-card').scrollIntoView({ block: 'start' });
 }
 
+// The Details popups' contents, by card mode, filled when the card is drawn.
+const cardWhy = new Map();
+
 function initCard(app, c) {
   const card = $(c.card);
   const form = c.form;
@@ -414,6 +465,13 @@ function initCard(app, c) {
     redraw();
   });
   card.addEventListener('click', e => {
+    const w = e.target.closest('[data-craft-why]');
+    const d = w && cardWhy.get(c.mode)?.[w.dataset.craftWhy];
+    if (d) {
+      app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+      return;
+    }
     const rm = e.target.closest('[data-craft-remove]');
     if (rm) { form.abilities.splice(Number(rm.dataset.craftRemove), 1); reset(); redraw(); return; }
     const extra = e.target.closest('[data-craft-extra]');
