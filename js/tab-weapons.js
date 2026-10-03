@@ -137,6 +137,18 @@ function attackArgs(app, view, ctx, e) {
   };
 }
 
+// What the Combat options card's Details buttons show, filled when it's drawn.
+const combatWhy = new Map();
+
+function showCombatWhy(app, key) {
+  const d = combatWhy.get(key);
+  if (!d) return;
+  const table = (rows, total) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
+    ${total !== undefined ? `<tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(total)}</b></td></tr></tfoot>` : ''}</table>`;
+  const body = d.sections ? d.sections.map(([h, rows, total]) => `<h3>${esc(h)}</h3>${table(rows, total)}`).join('') : table(d.rows, d.total);
+  app.openDetail(d.title, body + (d.note ? `<p class="hint">${esc(d.note)}</p>` : ''));
+}
+
 // The Combat options card: Power Attack, Deadly Aim and Rapid Shot switches (only for feats the character has)
 // and two-weapon fighting with the weapons chosen for each hand.
 function renderCombat(app, view, ctx) {
@@ -148,8 +160,21 @@ function renderCombat(app, view, ctx) {
     ['deadlyAim', 'Deadly Aim', `−${step} ranged attack, +${2 * step} damage`],
     ['rapidShot', 'Rapid Shot', 'one more ranged attack, −2 on all of them'],
   ].filter(([, feat]) => have.has(feat));
+  // What each switch does, for its Details popup.
+  const bab = view.stats.bab[0];
+  const stepRow = { label: `Your base attack bonus +${bab}: 1 step, +1 more at +4 and every 4 after`, text: `${step} step${step === 1 ? '' : 's'}` };
+  combatWhy.set('powerAttack', { title: 'Power Attack', rows: [stepRow,
+    { label: 'Melee attack rolls', text: `−${step}` }, { label: 'Damage, one-handed or light weapon', text: `+${2 * step}` },
+    { label: 'Damage, weapon in two hands (× 1½)', text: `+${3 * step}` }, { label: 'Damage, off-hand weapon (× ½)', text: `+${step}` }],
+    note: 'Melee only. It applies to every melee attack until your next turn; switch it off for attacks you need to land.' });
+  combatWhy.set('deadlyAim', { title: 'Deadly Aim', rows: [stepRow,
+    { label: 'Ranged attack rolls', text: `−${step}` }, { label: 'Damage', text: `+${2 * step}` }],
+    note: 'Ranged only; it doesn\u2019t apply to touch attacks or effects that don\u2019t deal hit point damage.' });
+  combatWhy.set('rapidShot', { title: 'Rapid Shot', rows: [{ label: 'One more ranged attack at your highest bonus', text: '+1 attack' },
+    { label: 'Every ranged attack this round', text: '−2' }], note: 'Only as part of a full attack with a ranged weapon.' });
   $('combat-switches').innerHTML = switches.map(([key, feat, what]) =>
-    `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span></label>`).join('')
+    `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span>
+      <button type="button" class="skill-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does">Details</button></label>`).join('')
     || '<p class="hint">Power Attack, Deadly Aim and Rapid Shot switches appear here once you have those feats.</p>';
 
   // Hands: every carried weapon except ranged ones; the off hand can also be the other end of a double weapon.
@@ -188,14 +213,30 @@ function renderCombat(app, view, ctx) {
     rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have, mainEntry)),
     rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry)),
   ] };
+  // The two hands' attacks in pieces, for their Details popups.
+  const effects = activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage');
+  const hasTwf = have.has('Two-Weapon Fighting');
+  for (const [key, hand, label, offWeapon] of [['main', r.main, 'Main hand', false], ['off', off, 'Off hand', true]]) {
+    const b = attackBreakdown(hand, { penaltyLabel: 'Two-weapon fighting penalty', effects });
+    combatWhy.set(key, { title: `${label}: ${attackText(hand)}, ${hand.damage}`, sections: [
+      ['Attack roll', b.attackRows.map(x => ({ label: x.label, text: x.text ?? signed(x.value) })), signed(b.attackTotal)],
+      ['Damage', [{ label: 'Weapon dice', text: hand.parts.dice || '—' }, ...b.damageRows.map(x => ({ label: x.label, text: x.text ?? signed(x.value) }))], hand.damage]],
+      note: offWeapon ? `Off-hand attacks: one, a second at −5 with Improved Two-Weapon Fighting and a third at −10 with Greater. Off-hand damage adds ${have.has('Double Slice') ? 'full Strength (Double Slice)' : 'half Strength'}.` : '' });
+  }
+  combatWhy.set('penalties', { title: 'Two-weapon fighting penalties', rows: [
+    { label: 'Normal: main hand / off hand', text: '−6 / −10' },
+    { label: `Off-hand weapon is light${r.offLight ? ' (yes)' : ' (no)'}: 2 less each`, text: r.offLight ? '−4 / −8' : '—' },
+    { label: `Two-Weapon Fighting feat${hasTwf ? ' (you have it)' : ' (you don\u2019t have it)'}: main hand 2 less, off hand 6 less`, text: hasTwf ? 'applied' : '—' },
+  ], total: `${r.penalties.main} / ${r.penalties.off}`, note: 'A double weapon\u2019s other end counts as a light off-hand weapon.' });
+  const whyBtn = (key, what) => ` <button type="button" class="skill-details" data-combat-why="${key}" aria-label="${esc(what)}">Details</button>`;
   $('twf-result').innerHTML = `<dl class="facts attack-line">
-      <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}</dd>
-      <dt>Off hand</dt><dd><b>${esc(attackText(off))}</b>, ${esc(off.damage)}${usedText(off)}</dd>
+      <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}${whyBtn('main', 'What adds to the main-hand attack')}</dd>
+      <dt>Off hand</dt><dd><b>${esc(attackText(off))}</b>, ${esc(off.damage)}${usedText(off)}${whyBtn('off', 'What adds to the off-hand attack')}</dd>
     </dl>
     <div class="slot-buttons">${rollButton(spec, 'Roll full attack')}</div>
     <p class="hint">Penalties ${r.penalties.main} main hand, ${r.penalties.off} off hand
       (${r.offLight ? 'light off-hand weapon' : 'off-hand weapon isn\'t light'}${have.has('Two-Weapon Fighting') ? ', Two-Weapon Fighting' : ', no Two-Weapon Fighting feat'}).
-      Off-hand damage adds ${have.has('Double Slice') ? 'full Strength (Double Slice)' : 'half Strength'}.</p>`;
+      Off-hand damage adds ${have.has('Double Slice') ? 'full Strength (Double Slice)' : 'half Strength'}.${whyBtn('penalties', 'How the two-weapon penalties are worked out')}</p>`;
 }
 
 // The character's weapons, each with its quality, feats, proficiency, attack bonus and damage.
@@ -463,6 +504,14 @@ export function initWeaponsTab(app) {
 }
 
 function initCombat(app) {
+  for (const id of ['combat-switches', 'twf-result']) {
+    $(id).addEventListener('click', e => {
+      const b = e.target.closest('[data-combat-why]');
+      if (!b) return;
+      e.preventDefault();  // inside a label: don't tick the box
+      showCombatWhy(app, b.dataset.combatWhy);
+    });
+  }
   $('combat-switches').addEventListener('change', e => {
     const key = e.target.dataset.combat;
     if (key) app.update({ combat: { ...app.state.combat, [key]: e.target.checked } });

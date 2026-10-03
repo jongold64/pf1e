@@ -694,3 +694,4 @@ table.skill-why th.num { text-align: right; }
   border-radius: 8px; background: var(--bg); color: var(--text); padding: 0 10px; }
 #craft-card button.skill-details, #buy-card button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; }
 .results button.skill-details { font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; vertical-align: middle; }
+#combat-card button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; }
