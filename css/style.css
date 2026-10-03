@@ -622,13 +622,22 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 #companion details summary { cursor: pointer; padding: 4px 0; }
 #companion .defense-row small { display: block; color: var(--muted); font-size: 0.8rem; }
 
-/* Character tab: two columns of cards (Race and Classes left, Results and Ability scores right). */
+/* Character tab: House rules on top, then two columns of cards (Race and Classes left; Results, Ability scores and
+   Active effects right). */
 .char-column { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.abilities-card table.abilities th, .abilities-card table.abilities td { padding: 6px 2px; }
-.abilities-card .abilities button { width: 32px; }
-.abilities-card .abilities button.roll-button { width: auto; padding: 2px 8px; }
+.abilities-card table.abilities th, .abilities-card table.abilities td { padding: 6px 1px; }
+.abilities-card .abilities .base { gap: 4px; }
+.abilities-card .abilities button { width: 30px; }
+.abilities-card .abilities button.roll-button { width: auto; padding: 2px 6px; }
+/* In a column, Results lists one item per row. */
+.char-column .results dl { grid-template-columns: 1fr auto; }
+/* Side by side, the two columns are drawn a little smaller so they fit. */
+@media (min-width: 641px) {
+  .char-column { zoom: 0.92; }
+}
 @media (max-width: 640px) {
   .char-column { display: contents; }
-  .order-1 { order: 1; } .order-2 { order: 2; } .order-3 { order: 3; } .order-4 { order: 4; }
-  #tab-character > :not(.char-column) { order: 5; }
+  .order-1 { order: 1; } .order-2 { order: 2; } .order-3 { order: 3; } .order-4 { order: 4; } .order-5 { order: 5; }
+  #tab-character > :not(.char-column) { order: 6; }
+  #tab-character > .house-rules { order: 0; }
 }

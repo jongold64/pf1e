@@ -51,8 +51,13 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
-      <!-- Two columns: Race and Classes on the left, Results and Ability scores on the right (one column, in the
-           order Race, Results, Classes, Ability scores, on narrow screens). -->
+      <section class="card wide house-rules">
+        <h2>House rules</h2>
+        <div id="house-rules" class="house-rule-buttons"></div>
+        <p id="house-rules-note" class="hint"></p>
+      </section>
+      <!-- Two columns: Race and Classes on the left, Results, Ability scores and Active effects on the right (one column, in the
+           order Race, Results, Classes, Ability scores, Active effects, on narrow screens). -->
       <div class="char-column">
         <section class="card order-1">
           <h2>Race</h2>
@@ -125,18 +130,11 @@
             <p id="increase-note" class="warning"></p>
           </div>
         </section>
+        <section class="card order-5" id="effects-card">
+          <h2>Active effects <span id="effects-count" class="count"></span></h2>
+          <div id="effects"></div>
+        </section>
       </div>
-
-      <section class="card wide" id="effects-card">
-        <h2>Active effects <span id="effects-count" class="count"></span></h2>
-        <div id="effects"></div>
-      </section>
-
-      <section class="card wide house-rules">
-        <h2>House rules</h2>
-        <div id="house-rules" class="house-rule-buttons"></div>
-        <p id="house-rules-note" class="hint"></p>
-      </section>
 
       <section class="card wide search-card">
         <form id="search-form" class="search-row" role="search">
