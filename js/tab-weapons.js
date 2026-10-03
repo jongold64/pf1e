@@ -253,7 +253,8 @@ export function renderMyWeapons(app, view) {
           ${crit.fx.notes.length ? `<div class="muted small">${esc(crit.fx.notes.join(' '))}</div>` : ''}</dd>
         ${extra.join('')}
         <dt>Critical</dt><dd>${esc(critText(w, crit))}${crit.fx.burst.length ? ` <span class="muted">(plus ${esc(crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', '))} per step above ×1)</span>` : ''}
-          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }, 'Roll crit damage') : ''}</dd>
+          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }, 'Roll crit damage') : ''}
+          <button type="button" class="skill-details" data-attack-details="${i}" data-part="critical" aria-label="How this weapon's criticals work">Details</button></dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
       </dl>
@@ -291,6 +292,25 @@ function showAttackDetails(app, i, part = null) {
     ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td><td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
     <tfoot><tr><td><b>${esc(totalLabel)}</b></td><td class="num"><b>${esc(totalText)}</b></td></tr></tfoot></table>`;
   const dice = a.parts.dice || '—';
+  if (part === 'critical') {
+    const base = w.threat ? `${w.threat === 20 ? '20' : `${w.threat}-20`}` : '20';
+    const hasImp = view.haveFeats.includes('Improved Critical') && ctx.flagsFor(e, w).impCrit;
+    const keen = crit.fx.keen;
+    const threatText = crit.threat === 20 ? '20' : `${crit.threat}-20`;
+    const rows = [
+      { label: `${w.name}: threat range`, text: base },
+      ...(hasImp || keen ? [{ label: `${[hasImp ? 'Improved Critical' : '', keen ? 'Keen' : ''].filter(Boolean).join(' and ')}: doubles the threat range${hasImp && keen ? ' (they don’t stack)' : ''}`, text: threatText }] : []),
+      { label: 'Damage multiplier', text: `×${crit.mult}` },
+      { label: 'Confirmation roll (same bonus as the attack)', text: signed(a.attacks[0]) },
+      { label: `Critical damage: the weapon dice and bonuses rolled ×${crit.mult}`, text: `${a.damage} ×${crit.mult}` },
+      ...crit.fx.hit.map(x => ({ label: `${x.name || 'Special ability'}: not multiplied`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''}` })),
+      ...crit.fx.burst.map(x => ({ label: `${x.name || 'Burst'}: extra on a critical, per step above ×1`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''} × ${crit.mult - 1}` })),
+    ];
+    app.openDetail(`${weaponLabel(w, e)} critical: ${critText(w, crit)}`, `${table(rows, 'Threat / multiplier', `${threatText}/×${crit.mult}`)}
+      <p class="hint">A natural roll in the threat range threatens a critical; roll again to confirm (it must hit the AC). The Roll button
+        does both and rolls the critical damage for you. A natural 20 always hits.</p>`);
+    return;
+  }
   if (part === 'damage') {
     const extras = [...crit.fx.hit.map(x => ({ label: `${x.name || 'Special ability'}: every hit`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''}` })),
       ...crit.fx.vs.map(x => ({ label: `${x.name}: only against ${x.vs}`, text: `+${x.dice}` }))];
