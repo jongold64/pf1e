@@ -1456,7 +1456,7 @@ function render() {
         <button type="button" class="skill-details" data-ac-details="touch" aria-label="What counts for touch AC">Details</button></div>
       <div><span>Flat-footed</span><b>${stats.flatFooted}</b>
         <button type="button" class="skill-details" data-ac-details="flat" aria-label="What counts for flat-footed AC">Details</button></div>
-      <div><span>CMD</span><b>${cm.cmd}</b>
+      <div class="cmd-box"><span>CMD</span><b>${cm.cmd}</b>
         <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMD">Details</button></div>
       <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
         ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}

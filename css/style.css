@@ -490,10 +490,13 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-ac > div { min-width: 64px; }
 .defense-ac .cmb-box .roll-button { display: block; margin: 4px auto 0; }
 /* Three across: AC / Touch / Flat-footed, then CMD and a wider CMB box with its Roll button beside the number. */
-.defense-ac { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.defense-ac > div { min-width: 0; }
-.defense-ac .cmb-box { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.defense-ac .cmb-box span { display: inline; }
+.defense-ac { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.defense-ac > div { min-width: 0; grid-column: span 4; }
+/* CMD and CMB each on one line: CMD a little wider than a third, CMB the rest. */
+.defense-ac .cmd-box, .defense-ac .cmb-box { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.defense-ac .cmd-box { grid-column: span 5; }
+.defense-ac .cmb-box { grid-column: span 7; }
+.defense-ac .cmb-box span, .defense-ac .cmd-box span { display: inline; }
 .defense-ac .cmb-box .roll-button { display: inline-block; margin: 0; }
 .channel-row { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
 .channel-row small { display: block; color: var(--muted); font-size: 0.8rem; }
@@ -652,7 +655,7 @@ table.skill-why td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
 table.skill-why td.num { text-align: right; white-space: nowrap; }
 table.skill-why tfoot td { border-bottom: 0; }
 .defense-ac button.skill-details { display: block; margin: 4px auto 0; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; }
-.defense-ac .cmb-box button.skill-details { display: inline-block; margin: 0; }
+.defense-ac .cmb-box button.skill-details, .defense-ac .cmd-box button.skill-details { display: inline-block; margin: 0; }
 table.skill-why th { text-align: left; font-weight: 600; padding: 4px; border-bottom: 1px solid var(--border); }
 table.skill-why th.num { text-align: right; }
 /* Slim skill rows (after the general Roll/Details button rules so these win). */
