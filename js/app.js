@@ -302,7 +302,7 @@ function load(saved) {
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,
                  ...(e.crafted === true ? { crafted: true } : {}) }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted'];
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,

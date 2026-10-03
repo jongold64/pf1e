@@ -6,7 +6,7 @@ import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
-         powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, WEAPON_SIZES } from './weapons.js';
+         powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -114,10 +114,17 @@ function combatContext(app, view) {
   return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
+// Levels in the classes holding the Titan Mauler (barbarian) and Titan Fighter archetypes, for big weapons.
+function titanLevels(app, view) {
+  const levelWith = id => view.counts.filter(c => (app.state.archetypes[c.cls.id] || []).includes(id)).reduce((n, c) => n + c.level, 0);
+  return bigWeaponRules({ titanMauler: levelWith('barbarian-titan-mauler'), titanFighter: levelWith('fighter-titan-fighter') });
+}
+
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
-  // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted.
-  const sized = sizedWeapon(w, e.size, view.size);
+  // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted (with the Titan
+  // Mauler's and Titan Fighter's rules for big weapons).
+  const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip);
   return {
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
@@ -274,6 +281,8 @@ export function renderMyWeapons(app, view) {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
+        ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
+          Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
         ${featBoxes}
         ${byRules ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-flag="proficient" data-index="${i}" ${e.proficient ? 'checked' : ''}>
           Proficient anyway (e.g. from a feat or trait)</label>`}
@@ -282,7 +291,8 @@ export function renderMyWeapons(app, view) {
       ${args.sized.steps ? `<p class="${args.sized.unusable ? 'warning' : 'hint'}">${args.sized.unusable
         ? `Made for a ${esc(e.size)} creature: too big for you to wield (it would be more than two-handed).`
         : `Made for a ${esc(e.size)} creature: ${args.sized.penalty} on attack rolls, ${esc(e.size)} damage dice${args.sized.weapon.group !== w.group
-          ? `, and it counts as ${esc(args.sized.weapon.group)} for you` : ''}.`}</p>` : ''}
+          ? `, and it counts as ${esc(args.sized.weapon.group)} for you` : ''}.${args.sized.notes.length ? ` ${esc(args.sized.notes.join(' '))}` : ''}`}</p>` : ''}
+      ${titanLevels(app, view).titanMauler ? '<p class="hint">Titan Mauler: Big Game Hunter gives +1 on attacks and +1 dodge AC in melee against larger creatures; Titanic Rage (14th) adds enlarge person when raging (switch it on under Active effects).</p>' : ''}
     </div>`;
   }).join('') || '<p class="hint">No weapons yet. Choose one below and add it.</p>';
 }
@@ -299,6 +309,11 @@ function showAttackDetails(app, i, part = null) {
   const a = weaponAttack(args);
   const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
   const b = attackBreakdown(a, { effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage') });
+  // The weapon-size penalty in its pieces (size steps, Giant Weapon Wielder, Massive Weapons, Incredible Heft, Jotungrip).
+  const sizeAt = b.attackRows.findIndex(r => r.label === 'Weapon size (and archetype rules)');
+  const sizeRows = args.sized.rows.filter(r => r.value);
+  if (sizeAt >= 0) b.attackRows.splice(sizeAt, 1, ...sizeRows);
+  else if (sizeRows.length) b.attackRows.splice(2, 0, ...sizeRows);  // they cancel out: still show them
   const table = (rows, totalLabel, totalText) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}${r.note
     ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td><td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
     <tfoot><tr><td><b>${esc(totalLabel)}</b></td><td class="num"><b>${esc(totalText)}</b></td></tr></tfoot></table>`;

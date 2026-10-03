@@ -10,7 +10,7 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
-import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight } from './weapons.js';
+import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight, bigWeaponRules } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -1340,6 +1340,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Large weapon: double price', weaponCost(w('longsword'), { size: 'Large' }), 30);
   check('Large weapon: double weight', weaponWeight(w('longsword'), { size: 'Large' }, 'Medium'), 8);
   check('no size chosen, Small wielder: half weight', weaponWeight(w('longsword'), {}, 'Small'), 2);
+}
+
+// Titan Mauler and Titan Fighter rules for big weapons.
+{
+  const w = id => allWeapons.find(x => x.id === id);
+  check('Massive Weapons at 6th: -2 cut to 0', sizedWeapon(w('longsword'), 'Large', 'Medium', bigWeaponRules({ titanMauler: 6 })).penalty, 0);
+  check('Massive Weapons at 3rd: -2 cut to -1', sizedWeapon(w('longsword'), 'Large', 'Medium', bigWeaponRules({ titanMauler: 3 })).penalty, -1);
+  const jg = sizedWeapon(w('greatsword'), null, 'Medium', bigWeaponRules({ titanMauler: 2 }), true);
+  check('Jotungrip: greatsword one-handed at -2', [jg.weapon.group, jg.penalty].join(), 'one-handed,-2');
+  check('Jotungrip needs 2nd level', sizedWeapon(w('greatsword'), null, 'Medium', bigWeaponRules({ titanMauler: 1 }), true).weapon.group, 'two-handed');
+  const tf = sizedWeapon(w('greatsword'), 'Large', 'Medium', bigWeaponRules({ titanFighter: 7 }));
+  check('Titan Fighter 7: Large greatsword usable, -4 + 2 = -2', [tf.unusable, tf.weapon.group, tf.penalty].join(), 'false,two-handed,-2');
+  check('Titan Fighter 1: Large greatsword at -4', sizedWeapon(w('greatsword'), 'Large', 'Medium', bigWeaponRules({ titanFighter: 1 })).penalty, -4);
+  check('without the archetype a Large greatsword is too big', sizedWeapon(w('greatsword'), 'Large', 'Medium').unusable, true);
+  check('Unstoppable Momentum at 9th: +2', bigWeaponRules({ titanFighter: 9 }).momentum, 2);
 }
 
 const failed = results.filter(r => !r.pass);

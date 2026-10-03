@@ -135,22 +135,63 @@ const WEAPON_SIZE_WEIGHT = { Small: 0.5, Medium: 1, Large: 2 };
 const SIZE_ORDER = ['Fine', 'Diminutive', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan', 'Colossal'];
 const HANDS = ['light', 'one-handed', 'two-handed'];
 
+// Archetype abilities for big weapons, by class level (0 = the character doesn't have the archetype):
+// - Titan Mauler (barbarian, Ultimate Combat): Jotungrip (2nd: a two-handed weapon of her size in one hand, -2 on
+//   attacks, one-handed for Strength and Power Attack); Massive Weapons (3rd: the penalty for too-large weapons
+//   reduced by 1, +1 more every three levels after 3rd).
+// - Titan Fighter (fighter, Giant Hunter's Handbook): Giant Weapon Wielder (1st: a two-handed weapon one size larger
+//   used as two-handed, an extra -2); Incredible Heft (3rd: the penalty for weapons one size larger reduced by 1, +1 at
+//   7th and every 4 levels after); Unstoppable Momentum (5th: +1 CMB and CMD while wielding an oversized weapon, +1 at
+//   9th and every 4 levels after).
+export function bigWeaponRules({ titanMauler = 0, titanFighter = 0 } = {}) {
+  return {
+    titanMauler, titanFighter,
+    jotungrip: titanMauler >= 2,
+    massive: titanMauler >= 3 ? 1 + Math.floor((titanMauler - 3) / 3) : 0,
+    giantWielder: titanFighter >= 1,
+    heft: titanFighter >= 3 ? 1 + Math.floor((titanFighter - 3) / 4) : 0,
+    momentum: titanFighter >= 5 ? 1 + Math.floor((titanFighter - 5) / 4) : 0,
+  };
+}
+
 // A weapon as used by a creature of wielderSize when it was made for weaponSize (null = the wielder's own size):
 // { weapon (with its handedness shifted one step per size difference: a Large longsword is two-handed for a Medium
-// creature), diceSize (the damage column to use), penalty (-2 on attacks per size step), steps, unusable (more than
-// two-handed for the wielder) }. Ranged weapons keep their handedness.
-export function sizedWeapon(weapon, weaponSize, wielderSize) {
+// creature), diceSize (the damage column to use), penalty (on attacks: -2 per size step, adjusted by the archetype
+// rules), rows (the penalty's pieces, for Details), steps, unusable (more than two-handed for the wielder), notes }.
+// Ranged weapons keep their handedness. jotungrip: the Titan Mauler's choice to hold a two-handed weapon in one hand.
+export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRules(), jotungrip = false) {
   const own = !weaponSize || weaponSize === wielderSize;
   const steps = own ? 0 : SIZE_ORDER.indexOf(weaponSize) - SIZE_ORDER.indexOf(wielderSize);
   let group = weapon.group;
   let unusable = false;
+  const rows = [];
+  const notes = [];
+  if (steps) rows.push({ label: `Weapon made for a ${weaponSize} creature (-2 per size step)`, value: -2 * Math.abs(steps) });
   if (steps && HANDS.includes(weapon.group)) {
     const i = HANDS.indexOf(weapon.group) + steps;
     unusable = i > 2;
     group = HANDS[Math.max(0, Math.min(2, i))];
+    // Giant Weapon Wielder: a two-handed weapon one size larger stays two-handed, at an extra -2.
+    if (unusable && rules.giantWielder && steps === 1 && weapon.group === 'two-handed') {
+      unusable = false;
+      rows.push({ label: 'Giant Weapon Wielder (Titan Fighter): oversized two-handed weapon', value: -2 });
+    }
+  }
+  if (steps > 0) {
+    // Massive Weapons and Incredible Heft lower the penalty for too-large weapons (not below 0).
+    const total = rows.reduce((n, r) => n + r.value, 0);
+    const cut = Math.min(-total, rules.massive + (steps === 1 ? rules.heft : 0));
+    if (cut && rules.massive) rows.push({ label: 'Massive Weapons (Titan Mauler)', value: Math.min(cut, rules.massive) });
+    if (cut > rules.massive && rules.heft) rows.push({ label: 'Incredible Heft (Titan Fighter)', value: cut - Math.min(cut, rules.massive) });
+    if (rules.momentum) notes.push(`Unstoppable Momentum: +${rules.momentum} on combat maneuvers and CMD while wielding it.`);
+  }
+  // Jotungrip: a two-handed weapon of the wielder's own size in one hand.
+  if (jotungrip && rules.jotungrip && !steps && weapon.group === 'two-handed') {
+    group = 'one-handed';
+    rows.push({ label: 'Jotungrip (Titan Mauler): two-handed weapon in one hand', value: -2 });
   }
   return { weapon: group === weapon.group ? weapon : { ...weapon, group }, diceSize: own ? wielderSize : weaponSize,
-           penalty: steps ? -2 * Math.abs(steps) : 0, steps, unusable };
+           penalty: rows.reduce((n, r) => n + r.value, 0), rows, steps, unusable, notes };
 }
 
 // A carried weapon's weight: as listed for Medium, half for Small and double for Large weapons (a weapon with no size
@@ -247,7 +288,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   const add = (rows, label, value, note = '') => { if (value) rows.push({ label, value, note }); };
   attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
   add(attackRows, 'Size', p.sizeAttack);
-  add(attackRows, 'Weapon made for a different size of creature (-2 per size)', p.misfit);
+  add(attackRows, 'Weapon size (and archetype rules)', p.misfit);
   add(attackRows, p.enh > 0 ? 'Enhancement bonus' : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
   add(attackRows, proficiencyLabel, p.proficiency);
