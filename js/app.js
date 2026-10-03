@@ -3,7 +3,7 @@ import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
-  currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
+  currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
@@ -41,7 +41,7 @@ import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, 
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
 import { HERO_POINT_USES, heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
-import { randomDie } from './dice.js';
+import { randomDie, rollDamage } from './dice.js';
 import { weaponSummaries } from './tab-weapons.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
@@ -88,6 +88,8 @@ let classItems = [];
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   hpCurrent: null,           // current hit points during play; null means full
+  tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
+  spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
   heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
   antihero: false,           // Action Points house rule: no hero points, a bonus feat at 1st level instead
   houseRules: {},            // house rules switched on: encumbrance, maxHealing, actionPoints, flaws, extraTrait
@@ -174,6 +176,10 @@ function load(saved) {
   if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
   state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
+  state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
+    .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
+    .map(t => ({ id: t.id, name: String(t.name || t.id).slice(0, 60), amount: t.amount })).slice(0, 20);
+  state.spiritBoost = Number.isInteger(state.spiritBoost) && state.spiritBoost > 0 ? Math.min(20, state.spiritBoost) : 0;
   if (!Number.isInteger(state.heroPoints) || state.heroPoints < 0) state.heroPoints = null;
   state.antihero = state.antihero === true;
   const hr = state.houseRules && typeof state.houseRules === 'object' ? state.houseRules : {};
@@ -531,11 +537,45 @@ function buildControls() {
   $('hp-plus').addEventListener('click', () => setAmount(amount() + 1));
   $('hp-apply').addEventListener('click', () => {
     if (!amount()) return;
-    const hp = changeHp(state.hpCurrent, view.stats.hp, amount());
+    // Damage comes off temporary hit points first; with Spirit Boost, healing past the maximum becomes temporary.
+    const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount: amount(), spiritBoost: state.spiritBoost });
     setAmount(0);
-    update({ hpCurrent: hp >= view.stats.hp ? null : hp });
+    update({ hpCurrent: r.current, tempHp: r.temps });
   });
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
+  $('hp-extra').addEventListener('click', showExtraHp);
+  // The Xtra-HP popup's controls (it's drawn into the shared details dialog).
+  $('detail-body').addEventListener('click', e => {
+    const box = e.target.closest('.xtra-hp');
+    if (!box) return;
+    const row = e.target.closest('[data-temp-source]');
+    const id = row?.dataset.tempSource;
+    const src = TEMP_HP_SOURCES.find(s => s.id === id);
+    if (e.target.closest('[data-temp-roll]') && src?.formula) {
+      const cl = Number(row.querySelector('[data-temp-cl]')?.value) || view.level;
+      row.querySelector('[data-temp-amount]').value = rollDamage(src.formula(cl, view.level)).total;
+    } else if (e.target.closest('[data-temp-add]') && src) {
+      const n = Number(row.querySelector('[data-temp-amount]').value);
+      const name = id === 'custom' ? (row.querySelector('[data-temp-name]').value.trim() || 'Other') : src.name;
+      update({ tempHp: addTempHp(state.tempHp, { id: id === 'custom' ? `custom-${name.toLowerCase()}` : id, name, amount: n }) });
+      showExtraHp();
+    } else if (e.target.closest('[data-temp-remove]')) {
+      update({ tempHp: state.tempHp.filter(t => t.id !== e.target.closest('[data-temp-remove]').dataset.tempRemove) });
+      showExtraHp();
+    } else if (e.target.closest('[data-temp-clear]')) {
+      update({ tempHp: [] });
+      showExtraHp();
+    }
+  });
+  $('detail-body').addEventListener('change', e => {
+    if (!e.target.closest('.xtra-hp')) return;
+    if (e.target.matches('[data-spirit-on]') || e.target.matches('[data-spirit-level]')) {
+      const box = e.target.closest('.xtra-hp');
+      const on = box.querySelector('[data-spirit-on]').checked;
+      const lv = Math.min(20, Math.max(1, Math.floor(Number(box.querySelector('[data-spirit-level]').value)) || 1));
+      update({ spiritBoost: on ? lv : 0 });
+    }
+  });
   // Details popup for a Spells per day row.
   $('spells-tables').addEventListener('click', e => {
     const b = e.target.closest('[data-spellday]');
@@ -1377,6 +1417,9 @@ function render() {
   const hpNow = currentHp(state.hpCurrent, stats.hp);
   $('hp-current').textContent = hpNow;
   $('hp-max').textContent = `of ${stats.hp}`;
+  const temp = state.tempHp.reduce((n, t) => n + t.amount, 0);
+  $('hp-temp').textContent = temp ? `+ ${temp} temporary` : '';
+  $('hp-temp').title = state.tempHp.map(t => `${t.name}: ${t.amount}`).join(', ');
   $('hp-status').textContent = hpStatus(hpNow, stats.scores.con);
   $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
@@ -1489,6 +1532,39 @@ function showManeuverDetails() {
   const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, state.customEffects));
   openDetail(`CMB ${signed(b.cmb)} · CMD ${b.cmd}`, `<h3>Combat Maneuver Bonus</h3>${detailsTable(b.cmbRows, b.cmb)}
     <h3>Combat Maneuver Defense</h3>${detailsTable(b.cmdRows, b.cmd, String(b.cmd))}`);
+}
+
+// The Xtra-HP popup: every way to have hit points above the maximum. Spirit Boost is a switch (healing past the
+// maximum becomes temporary hit points); the others add temporary hit points (roll or type the amount).
+function showExtraHp() {
+  const oracle = view.counts.find(e => e.cls.id === 'oracle');
+  const level = state.spiritBoost || oracle?.level || view.level;
+  const temps = state.tempHp.length ? `<table class="skill-why"><tbody>${state.tempHp.map(t => `<tr><td>${esc(t.name)}</td>
+      <td class="num">${t.amount}</td><td><button type="button" class="link" data-temp-remove="${esc(t.id)}">remove</button></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td><b>Temporary hit points</b></td><td class="num"><b>${state.tempHp.reduce((n, t) => n + t.amount, 0)}</b></td>
+      <td><button type="button" class="link" data-temp-clear>clear all</button></td></tr></tfoot></table>`
+    : '<p class="hint">None right now.</p>';
+  const rows = TEMP_HP_SOURCES.map(s => `<li data-temp-source="${s.id}">
+      <div><b>${esc(s.name)}</b> <small class="muted">${esc(s.kind)}</small></div>
+      <p class="hint">${esc(s.text)}</p>
+      <div class="xtra-row">
+        ${s.id === 'custom' ? '<input type="text" data-temp-name placeholder="Source" aria-label="Source of the temporary hit points">' : ''}
+        ${s.usesCl ? `<label>Caster level <input type="number" min="1" max="20" value="${view.level}" data-temp-cl></label>` : ''}
+        <input type="number" min="0" data-temp-amount placeholder="Amount" aria-label="Temporary hit points from ${esc(s.name)}"
+          value="${s.formula && !/d/.test(s.formula(view.level, view.level)) ? s.formula(view.level, view.level) : ''}">
+        ${s.formula ? `<button type="button" data-temp-roll>${/d/.test(s.formula(1, 1)) ? '🎲 Roll' : 'Work out'}</button>` : ''}
+        <button type="button" class="primary" data-temp-add>Add</button>
+      </div></li>`).join('');
+  openDetail('Extra hit points', `<div class="xtra-hp">
+    <h3>Now</h3>${temps}
+    <p class="hint">Temporary hit points are lost first when you take damage, and healing doesn't restore them. From the same
+      source they don't stack (the higher counts); from different sources they add up.</p>
+    <h3>Spirit Boost (oracle, Life mystery)</h3>
+    <label class="check-row"><input type="checkbox" data-spirit-on${state.spiritBoost ? ' checked' : ''}> Healing past my maximum becomes temporary hit points</label>
+    <label class="xtra-row">Oracle's level (the most it can give) <input type="number" min="1" max="20" value="${level}" data-spirit-level></label>
+    <p class="hint">When the oracle's healing spells heal a target past its maximum, the extra becomes temporary hit points (up to the
+      oracle's level) for 1 round per oracle level. With it on, Apply on the Hit points card does this for you.</p>
+    <h3>Temporary hit points</h3><ul class="xtra-list">${rows}</ul></div>`);
 }
 
 // The Skills tab's Details popup for one skill (set by renderSkills, which has what it needs).

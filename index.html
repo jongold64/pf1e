@@ -66,7 +66,7 @@
           <div id="race-info" class="info"></div>
           <div id="race-alternates" class="race-alternates"></div>
           <div class="hp-tracker">
-            <div class="hp-now"><span>Current hit points</span><b id="hp-current"></b><span id="hp-max"></span>
+            <div class="hp-now"><span>Current hit points</span><b id="hp-current"></b><span id="hp-max"></span><span id="hp-temp" class="hp-temp"></span>
               <span id="hp-status" class="warning"></span></div>
             <div class="hp-change">
               <span class="base">
@@ -76,6 +76,7 @@
               </span>
               <button type="button" id="hp-apply" class="primary">Apply</button>
               <button type="button" id="hp-full">Full</button>
+              <button type="button" id="hp-extra" title="Temporary hit points and other ways above the maximum">Xtra-HP</button>
             </div>
             <p class="hint">Negative for damage, positive for healing.</p>
           </div>
@@ -421,7 +422,10 @@
               see it; most have a button to add it (e.g. <b>Take</b> an archetype or trait).</li>
             <li><b>Race</b>: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
               traits for others; ones that clash are greyed out.</li>
-            <li><b>Hit points</b>: use − / + to set an amount (negative for damage), then <b>Apply</b>; <b>Full</b> heals completely.</li>
+            <li><b>Hit points</b>: use − / + to set an amount (negative for damage), then <b>Apply</b>; <b>Full</b> heals completely.
+              <b>Xtra-HP</b> lists the ways to go above your maximum: switch on <b>Spirit Boost</b> (an oracle's healing past your
+              maximum becomes temporary hit points), or add temporary hit points from aid, false life, greater heroism, rage and
+              more (roll or type the amount). Temporary hit points show beside your hit points and are lost first.</li>
             <li>AC, CMD, CMB, saves and combat maneuvers are in the Race card, each with a Roll button.</li>
             <li><b>Classes</b>: one line per class, showing how many levels you have in it. Use <b>Add a level of</b> to add one
               (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the

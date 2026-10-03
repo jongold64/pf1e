@@ -362,6 +362,63 @@ export function changeHp(current, max, amount) {
   return Math.min(max, currentHp(current, max) + amount);
 }
 
+// Ways to have hit points above the maximum (the Hit points card's Xtra-HP popup): temporary hit points from spells and
+// class features. formula(cl, hd) gives the dice to roll (null: type the amount in).
+export const TEMP_HP_SOURCES = [
+  { id: 'aid', name: 'Aid', kind: 'spell', usesCl: true, formula: cl => `1d8+${Math.min(10, cl)}`,
+    text: '1d8 + caster level (max +10) temporary hit points for 1 minute per level; also +1 morale on attacks and saves against fear.' },
+  { id: 'false-life', name: 'False life', kind: 'spell', usesCl: true, formula: cl => `1d10+${Math.min(10, cl)}`,
+    text: '1d10 + caster level (max +10) temporary hit points for 1 hour per level.' },
+  { id: 'greater-false-life', name: 'False life, greater', kind: 'spell', usesCl: true, formula: cl => `2d10+${Math.min(20, cl)}`,
+    text: '2d10 + caster level (max +20) temporary hit points for 1 hour per level.' },
+  { id: 'greater-heroism', name: 'Heroism, greater', kind: 'spell', usesCl: true, formula: cl => `${Math.min(20, cl)}`,
+    text: 'Temporary hit points equal to the caster level (max 20), for 1 minute per level; also +4 morale on attacks, saves and skills.' },
+  { id: 'divine-power', name: 'Divine power', kind: 'spell', usesCl: true, formula: cl => `${cl}`,
+    text: '1 temporary hit point per caster level, for 1 round per level.' },
+  { id: 'death-knell', name: 'Death knell', kind: 'spell', formula: () => '1d8',
+    text: '1d8 temporary hit points (and +2 Str, +1 caster level) for 10 minutes per Hit Die of the creature that died.' },
+  { id: 'vampiric-touch', name: 'Vampiric touch', kind: 'spell', formula: null,
+    text: 'Temporary hit points equal to the damage the touch dealt (type it in), for 1 hour.' },
+  { id: 'unchained-rage', name: 'Rage (unchained barbarian)', kind: 'class feature', usesHd: true, formula: (cl, hd) => `${2 * hd}`,
+    text: 'Temporary hit points equal to 2 × Hit Dice while raging; lost first, and gone when the rage ends.' },
+  { id: 'custom', name: 'Other', kind: 'other', formula: null,
+    text: 'Any other source of temporary hit points (an item, a feat, a GM ruling): name it and type the amount.' },
+];
+
+// Adds temporary hit points ([{ id, name, amount }]). Temporary hit points from the same source don't stack: the higher
+// amount stays. Different sources add up.
+export function addTempHp(temps, { id, name, amount }) {
+  const n = Math.max(0, Math.floor(Number(amount) || 0));
+  if (!n) return temps;
+  const same = temps.find(t => t.id === id);
+  if (same) return temps.map(t => (t.id === id ? { ...t, name, amount: Math.max(t.amount, n) } : t));
+  return [...temps, { id, name, amount: n }];
+}
+
+// Damage (negative) or healing (positive) with temporary hit points: damage comes off temporary hit points first;
+// healing never restores them and stops at the maximum, except that with Spirit Boost (an oracle's Life mystery
+// revelation, spiritBoost = the oracle's level) healing past the maximum becomes temporary hit points, up to the
+// oracle's level. Returns { current (null = full), temps }.
+export function applyHp({ current, max, temps = [], amount, spiritBoost = 0 }) {
+  let hp = currentHp(current, max);
+  let left = temps.map(t => ({ ...t }));
+  if (amount < 0) {
+    let dmg = -amount;
+    for (const t of left) {
+      const take = Math.min(t.amount, dmg);
+      t.amount -= take;
+      dmg -= take;
+    }
+    left = left.filter(t => t.amount > 0);
+    hp -= dmg;
+  } else if (amount > 0) {
+    const over = hp + amount - max;
+    hp = Math.min(max, hp + amount);
+    if (spiritBoost > 0 && over > 0) left = addTempHp(left, { id: 'spirit-boost', name: 'Spirit Boost', amount: Math.min(spiritBoost, over) });
+  }
+  return { current: hp >= max ? null : hp, temps: left };
+}
+
 // What 0 or fewer hit points means (Core Rulebook, Injury and Death): 0 disabled, below 0 dying, and dead at a
 // negative amount equal to the Constitution score.
 export function hpStatus(hp, conScore) {

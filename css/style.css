@@ -679,3 +679,13 @@ table.skill-why th.num { text-align: right; }
 #feat-slots button.skill-details { font-weight: 400; font-size: 0.85rem; }
 #trait-slots button.skill-details { font-weight: 400; font-size: 0.85rem; }
 #spells-tables button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 6px; }
+/* Temporary hit points beside the current hit points, and the Xtra-HP popup. */
+.hp-temp { color: var(--good); font-weight: 600; }
+.xtra-list { list-style: none; padding: 0; margin: 0; }
+.xtra-list > li { border-top: 1px solid var(--border); padding: 8px 0; }
+.xtra-list .hint { margin: 2px 0 6px; }
+.xtra-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.xtra-row input[type="number"] { width: 5.5em; }
+.xtra-row input[data-temp-amount] { width: 7.5em; }
+.xtra-row input[type="text"] { flex: 1 1 140px; min-width: 0; font: inherit; min-height: 40px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg); color: var(--text); padding: 0 10px; }

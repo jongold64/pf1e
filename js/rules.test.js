@@ -12,7 +12,7 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, 
 import { paragraphs, ordinal } from './dom.js';
 import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
-import { classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
+import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
@@ -1313,6 +1313,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Toughness at 6th level: +6 hp', /\+6 hit points/.test(featApplied('Toughness', { level: 6 })), true);
   check('Athletic: skill feat text', /Climb and Swim/.test(featApplied('Athletic', { skillFeats: SKILL_FEATS }) || ''), true);
   check('Cleave: not counted automatically', featApplied('Cleave'), null);
+}
+
+// Temporary hit points and Spirit Boost.
+{
+  const t1 = addTempHp([], { id: 'false-life', name: 'False life', amount: 12 });
+  check('temporary hp from the same source: the higher stays', addTempHp(t1, { id: 'false-life', name: 'False life', amount: 8 })[0].amount, 12);
+  check('temporary hp from different sources add up', addTempHp(t1, { id: 'aid', name: 'Aid', amount: 5 }).reduce((n, t) => n + t.amount, 0), 17);
+  const hit = applyHp({ current: null, max: 30, temps: [{ id: 'aid', name: 'Aid', amount: 5 }], amount: -8 });
+  check('damage comes off temporary hp first', [hit.current, hit.temps.length].join(), '27,0');
+  const healed = applyHp({ current: 25, max: 30, temps: [], amount: 12, spiritBoost: 5 });
+  check('Spirit Boost: healing past the maximum becomes temporary hp, up to the oracle level', [healed.current, healed.temps[0]?.amount].join(), ',5');
+  check('without Spirit Boost healing stops at the maximum', applyHp({ current: 25, max: 30, amount: 12 }).temps.length, 0);
 }
 
 const failed = results.filter(r => !r.pass);
