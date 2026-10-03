@@ -72,8 +72,10 @@ function rollExtras(g, steps, rng) {
   return parts.length ? { total, text: parts.join('; ') } : null;
 }
 
+// Lines starting with a tab belong under the line above (an attack's confirmation roll and damage); the panel indents them.
 export function rollSpec(spec, rng = randomDie, options = {}) {
   const lines = [];
+  const under = text => lines.push(`	${text}`);
   for (const g of spec.groups) {
     const maxed = options.maxHealing && g.heal;
     const dmgRng = maxed ? sides => sides : rng;
@@ -109,25 +111,25 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
         lines.push(`${prefix}Attack${n}: ${atk.text}, natural 1: miss`);
         return;
       }
-      let text = `${prefix}Attack${n}: ${atk.text}${atk.natural === 20 ? ' (natural 20: hits)' : ''}`;
+      // The attack on its line; its confirmation roll, damage and critical damage each on a line under it.
+      const threat = atk.natural >= (g.threat || 20);
+      lines.push(`${prefix}Attack${n}: ${atk.text}${atk.natural === 20 ? ' (natural 20: hits)' : ''}${threat ? ', critical threat!' : ''}`);
       let times = 1;
-      if (atk.natural >= (g.threat || 20)) {
+      if (threat) {
         const confirm = rollD20(bonus, rng);
-        text += `, critical threat! Confirm: ${confirm.text}`;
         times = g.mult || 2;
-        text += ` (if it hits AC, ×${times} damage)`;
+        under(`Confirm: ${confirm.text} (if it hits AC, ×${times} damage)`);
       }
       const dmg = rollDamage(g.damage, dmgRng);
       if (dmg) {
         const more = rollExtras(g, 0, rng);
-        text += `. ${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`;
+        under(`${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         if (times > 1) {
           const crit = rollDamage(g.damage, rng, times);
           const critMore = rollExtras(g, times - 1, rng);
-          text += `; critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`;
+          under(`Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`);
         }
       }
-      lines.push(text);
     });
   }
   return { title: spec.title, lines };

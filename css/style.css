@@ -453,6 +453,11 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .roll-lines li { margin: 3px 0; }
 .roll-older { margin-top: 8px; font-size: 0.9rem; color: var(--muted); }
 .roll-older p { margin: 6px 0; }
+/* An attack's confirmation roll and damage, indented under the attack. */
+.roll-lines li.roll-under { list-style: none; margin-left: 14px; }
+.roll-lines li.roll-under::before { content: '↳ '; color: var(--muted); }
+.roll-earlier { margin: 6px 0; }
+.roll-earlier .roll-lines { margin-top: 2px; }
 
 /* Race card: Armor Class and saving throws */
 .defense { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }

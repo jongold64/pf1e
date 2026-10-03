@@ -20,15 +20,18 @@ export function rollButton(spec, label = 'Roll') {
   return `<button type="button" class="roll-button" data-roll="${rollAttr(spec)}" aria-label="${esc(`${label}: ${spec.title}`)}">🎲 ${esc(label)}</button>`;
 }
 
+// One rolled line; a line starting with a tab (an attack's damage, confirmation roll) sits indented under the attack.
+const line = l => (l.startsWith('	') ? `<li class="roll-under">${esc(l.slice(1))}</li>` : `<li>${esc(l)}</li>`);
+
 function render(panel) {
   const [latest, ...older] = history;
   panel.hidden = !latest;
   if (!latest) return;
   panel.innerHTML = `<div class="roll-head"><b>${esc(latest.title)}</b>
       <button type="button" class="link" data-roll-close aria-label="Close">close</button></div>
-    <ul class="roll-lines">${latest.lines.map(l => `<li>${esc(l)}</li>`).join('') || '<li>Nothing to roll.</li>'}</ul>
+    <ul class="roll-lines">${latest.lines.map(line).join('') || '<li>Nothing to roll.</li>'}</ul>
     ${older.length ? `<details class="roll-older"><summary>Earlier rolls</summary>${older.map(r =>
-      `<p><b>${esc(r.title)}</b><br>${r.lines.map(esc).join('<br>')}</p>`).join('')}</details>` : ''}`;
+      `<div class="roll-earlier"><b>${esc(r.title)}</b><ul class="roll-lines">${r.lines.map(line).join('')}</ul></div>`).join('')}</details>` : ''}`;
 }
 
 export function initRolls() {
