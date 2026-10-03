@@ -1,11 +1,14 @@
 // Spells tab: the character's chosen spells, and their class spell list (grouped by spell level) with a side
 // panel for the spell being looked at.
-import { $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { activeBonuses } from './effects.js';
 import { spellsPerDay } from './rules.js';
 import { spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollButton } from './roll-ui.js';
 
 let selectedId = null;
+// The numbers behind each spell line shown in My spells, by key, for its Details popup.
+const lineDetails = new Map();
 let listClassId = null;  // which class's spell list is shown, for characters with several
 
 // The classes that have a spell list, and the one being shown, with its effective level (prestige classes can
@@ -87,6 +90,7 @@ function spellRollButtons(roll) {
 }
 
 function renderMySpells(app, view) {
+  lineDetails.clear();
   const { cls, level, table, maxLevel } = listClass(app, view);
   const byId = new Map(app.data.spells.map(s => [s.id, s]));
   const chosen = app.state.spells.map(id => byId.get(id)).filter(Boolean);
@@ -107,8 +111,13 @@ function renderMySpells(app, view) {
   const row = s => {
     const lines = spellLines(s, ctx);
     const sr = srCheck(s, ctx);
-    const numbers = lines.map(l => `<span class="spell-line">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}` +
-      `${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}</span>`);
+    const numbers = lines.map((l, i) => {
+      const key = `${cls.id}|${s.id}|${i}`;
+      if (l.why?.attack || l.why?.dc) lineDetails.set(key, { spell: s, line: l, cls });
+      return `<span class="spell-line">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}` +
+        `${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}` +
+        `${l.why?.attack || l.why?.dc ? ` <button type="button" class="skill-details" data-spell-details="${esc(key)}" aria-label="What makes up these numbers">Details</button>` : ''}</span>`;
+    });
     if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
     return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
       `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></span>` +
@@ -147,6 +156,35 @@ function removeSpell(app, id) {
   app.update({ spells: app.state.spells.filter(x => x !== id) });
 }
 
+// Details popup for one spell line: its attack bonus and save DC, piece by piece, and how the damage was worked out.
+function showLineDetails(app, key) {
+  const d = lineDetails.get(key);
+  if (!d) return;
+  const { spell, line, cls } = d;
+  const { state } = app;
+  const table = (rows, total) => `<table class="skill-why"><tbody>${rows.map(r => `<tr><td>${esc(r.label)}${r.note
+    ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td><td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(total)}</b></td></tr></tfoot></table>`;
+  const w = line.why;
+  let html = '';
+  if (w.attack) {
+    // Effects on attack rolls named one by one (with what the stacking rules take off).
+    const fxTotal = w.attack.find(r => r.label === 'Active effects on attack rolls')?.value || 0;
+    const effects = activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack')
+      .map(e => ({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` }));
+    const listed = effects.reduce((n, e) => n + e.value, 0);
+    const rows = [...w.attack.filter(r => r.label !== 'Active effects on attack rolls'), ...effects,
+      ...(listed !== fxTotal ? [{ label: 'Effects of the same type do not stack', value: fxTotal - listed }] : [])];
+    html += `<h3>Attack roll${w.count > 1 ? ` (each of ${w.count})` : ''}</h3>${table(rows, signed(w.attackTotal))}`;
+  }
+  if (w.dc) html += `<h3>Saving throw DC</h3>${table(w.dc, String(w.dcTotal))}`;
+  if (w.damage.length) {
+    html += `<h3>Amount</h3><p>${w.damage.map(x => `${esc(String(x.amount))} <small class="muted">(${/@cl/.test(x.formula)
+      ? `grows with caster level; yours is ${w.cl}` : 'the same at any caster level'})</small>`).join('<br>')}</p>`;
+  }
+  app.openDetail(`${spell.name} (${cls.name})${line.label ? `: ${line.label}` : ''}`, html);
+}
+
 export function initSpellList(app) {
   $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
   $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
@@ -167,6 +205,8 @@ export function initSpellList(app) {
       if (remove) removeSpell(app, remove.dataset.removeSpell);
       const show = e.target.closest('[data-show-spell]');
       if (show) showSpell(app, show.dataset.showSpell);
+      const why = e.target.closest('[data-spell-details]');
+      if (why) showLineDetails(app, why.dataset.spellDetails);
     });
   }
 }

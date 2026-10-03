@@ -92,8 +92,9 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
   const penetration = (haveFeats.includes('Spell Penetration') ? 2 : 0) + (haveFeats.includes('Greater Spell Penetration') ? 2 : 0);
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
-    // Active effects' bonus on attack rolls counts on spell attacks too.
-    sizeAttack: (SIZE_AC[size] ?? 0) + (stats.fx?.attack || 0), focus, penetration,
+    // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
+    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, focus, penetration,
+    abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability,
   };
 }
 
@@ -110,16 +111,28 @@ const signed = n => (n >= 0 ? `+${n}` : `${n}`);
 export function spellLines(spell, ctx) {
   const level = spell.levels?.[ctx.cls.id];
   const dc = level === undefined ? null : 10 + level + ctx.castMod + (ctx.focus[spell.school] || 0);
+  // What makes up the DC, for the Details popup.
+  const dcRows = dc === null ? null : [{ label: 'Base', value: 10, text: '10' }, { label: `Spell level (${ctx.cls.name})`, value: level },
+    { label: `${ctx.abilityName || 'Casting ability'} modifier`, value: ctx.castMod },
+    ...(ctx.focus[spell.school] ? [{ label: `Spell Focus (${spell.school})${ctx.focus[spell.school] > 1 ? ' and Greater Spell Focus' : ''}`, value: ctx.focus[spell.school] }] : [])];
+  const fx = ctx.fxAttack || 0;
+  const attackRows = ability => [{ label: 'Base attack bonus', value: ctx.bab },
+    { label: ability === 'dex' ? 'Dexterity modifier' : 'Strength modifier', value: ctx.mod[ability] },
+    ...(ctx.sizeAttack ? [{ label: 'Size', value: ctx.sizeAttack }] : []),
+    ...(fx ? [{ label: 'Active effects on attack rolls', value: fx }] : [])];
   const vars = { cl: ctx.cl };
   const lines = [];
   for (const a of spell.actions || []) {
     const parts = [];
+    const why = { attack: null, dc: null, damage: [] };
     let attack = null;
     if (a.kind === 'ranged touch' || a.kind === 'ranged') {
-      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack;
+      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx;
+      if (attack !== null) why.attack = attackRows('dex');
       parts.push(a.auto_hit ? 'hits automatically' : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(attack)}`);
     } else if (a.kind === 'melee touch' || a.kind === 'melee') {
-      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack;
+      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack + fx;
+      why.attack = attackRows('str');
       parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(attack)}`);
     } else if (a.kind === 'maneuver') {
       parts.push('combat maneuver');
@@ -128,10 +141,12 @@ export function spellLines(spell, ctx) {
       // Foundry marks a whole spell harmless; the attack half of a cure/inflict spell isn't.
       const harmless = a.harmless && !/touch|melee|ranged/.test(a.kind);
       parts.push(`DC ${dc} ${a.save_text || SAVES[a.save]}${harmless ? ' (harmless)' : ''}`);
+      why.dc = dcRows;
     }
     const amounts = (a.damage || []).map(d => ({ amount: evalFormula(d.formula, vars), types: d.types || [] }))
       .filter(d => d.amount !== null);
     const damage = amounts.map(d => `${d.amount}${d.types.length ? ` ${d.types.join('/')}` : ''}`);
+    why.damage = (a.damage || []).map(d => ({ formula: d.formula, amount: evalFormula(d.formula, vars) })).filter(d => d.amount !== null);
     const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
     if (damage.length) {
       const what = a.kind === 'heal' ? 'heals ' : '';
@@ -149,11 +164,11 @@ export function spellLines(spell, ctx) {
     } else if (rollDamage) {
       roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, groups: [{ attacks: [], damage: rollDamage, times: count, heal: a.kind === 'heal' }] };
     }
-    if (parts.length) lines.push({ label, text: parts.join(', '), roll });
+    if (parts.length) lines.push({ label, text: parts.join(', '), roll, why: { ...why, attackTotal: attack, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
   }
   // A save with no action data: the spell's own saving throw line.
   if (!lines.length && dc !== null && spell.saving_throw && !/^none/i.test(spell.saving_throw)) {
-    lines.push({ label: '', text: `DC ${dc} ${spell.saving_throw}` });
+    lines.push({ label: '', text: `DC ${dc} ${spell.saving_throw}`, why: { attack: null, dc: dcRows, damage: [], dcTotal: dc, cl: ctx.cl, count: 1 } });
   }
   return lines;
 }
