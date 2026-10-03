@@ -474,7 +474,7 @@ button.roll-button:active { background: var(--accent); color: #fff; }
   padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 .hp-tracker .hint { flex-basis: 100%; margin: 0; }
 .hp-now { display: flex; align-items: baseline; gap: 8px; }
-.hp-now > span:first-child { color: var(--muted); }
+.hp-now > .hp-label { color: var(--text); font-weight: 700; }
 .hp-now b { font-size: 2rem; line-height: 1; }
 .hp-now b.hurt { color: var(--bad); }
 .hp-now #hp-status { font-weight: 700; text-transform: uppercase; }
