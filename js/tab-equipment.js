@@ -1,12 +1,14 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, entryStats, formatGp, formatLbs,
+import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
-import { weaponCost } from './weapons.js';
+import { weaponCost, weaponLabel } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
 
 let selectedId = null;
 let listed = false;
+// What each money / weight total is made of (filled when the tab is drawn, shown by its Details button).
+let moneyDetails = {};
 
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLowerCase()})` : item.name);
@@ -93,28 +95,75 @@ export async function renderEquipment(app, view) {
     size: view.race.size,
   });
   const sizeFactor = sizeWeightFactor(view.race.size);
-  const armorSpend = armorCost(view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities, state.armorCrafted)
-    + armorCost(view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities, state.shieldCrafted);
-  const listed = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
+  // Worn armor and shield, with their special abilities (equipmentTotals counts them without abilities, so the gear's
+  // own cost is the total less that).
+  const wornItems = [[view.gear.armor, 'armor'], [view.gear.shield, 'shield']].filter(([a]) => a).map(([a, k]) => ({
+    name: armorLabel(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`]),
+    cost: armorCost(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]),
+    plain: armorCost(a, state[`${k}Enh`], state[`${k}Mw`]),
+    weight: (a.weight_lbs || 0) * sizeFactor, crafted: state[`${k}Crafted`],
+  }));
+  const armorSpend = wornItems.reduce((n, x) => n + x.cost, 0);
+  const gearSpend = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
+  const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
   const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0);
-  const magic = { ...listed, cost: listed.cost + made };
+  const magic = { ...listedMagic, cost: listedMagic.cost + made };
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponWeight = carried.reduce((sum, [w]) => sum + (w.weight_lbs || 0), 0) * sizeFactor;
-  const left = Math.round((gold - totals.cost - magic.cost - weaponSpend) * 100) / 100;
+  const left = Math.round((gold - armorSpend - gearSpend - magic.cost - weaponSpend) * 100) / 100;
+  const carriedWeight = totals.weight + magic.weight + weaponWeight;
+
+  // What each total is made of, for its Details popup.
+  const gearRows = state.inventory.map(e => {
+    const item = data.gearById.get(e.id);
+    if (!item) return null;
+    const st = entryStats(item, e.variant);
+    return { label: `${entryName(item, e.variant)}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (st.price_gp || 0) * e.qty,
+             weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
+  }).filter(Boolean);
+  const magicRows = [
+    ...state.magicItems.map(e => {
+      const item = data.itemsById?.get(e.id);
+      if (!item) return null;
+      const st = magicItemStats(item, e.option);
+      return { label: `${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (st.price_gp || 0) * e.qty,
+               weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
+    }).filter(Boolean),
+    ...state.craftedItems.map(e => ({ label: `${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
+                                       cost: craftedItemCost(e) * e.qty, note: e.bought ? '' : 'crafting cost', weight: null })),
+  ];
+  const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), weight: (w.weight_lbs || 0) * sizeFactor }));
+  const armorRows = wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.crafted ? 'crafted: magic at half price' : '', weight: x.weight }));
+  const money = rows => rows.map(r => ({ label: r.label, text: formatGp(r.cost), note: r.note }));
+  moneyDetails = {
+    armor: { title: `Armor and shield: ${formatGp(armorSpend)}`, rows: money(armorRows), total: formatGp(armorSpend) },
+    gear: { title: `Equipment: ${formatGp(gearSpend)}`, rows: money(gearRows), total: formatGp(gearSpend) },
+    weapons: { title: `Weapons: ${formatGp(weaponSpend)}`, rows: money(weaponRows), total: formatGp(weaponSpend) },
+    magic: { title: `Magic items: ${formatGp(magic.cost)}`, rows: money(magicRows), total: formatGp(magic.cost) },
+    left: { title: `Left: ${formatGp(left)}`, total: formatGp(left), rows: [
+      { label: state.gold === null ? `Gold (${view.cls.name.toLowerCase()} starting gold)` : 'Gold', text: formatGp(gold) },
+      { label: 'Armor and shield', text: `− ${formatGp(armorSpend)}` }, { label: 'Equipment', text: `− ${formatGp(gearSpend)}` },
+      { label: 'Weapons', text: `− ${formatGp(weaponSpend)}` }, { label: 'Magic items', text: `− ${formatGp(magic.cost)}` }] },
+    weight: { title: `Weight carried: ${formatLbs(carriedWeight)}`, total: formatLbs(carriedWeight),
+      rows: [...armorRows, ...weaponRows, ...gearRows, ...magicRows.filter(r => r.weight !== null)]
+        .map(r => ({ label: r.label, text: r.weight === null ? 'no weight listed' : formatLbs(r.weight) })),
+      note: 'Coins are not counted.' },
+  };
+  const details = key => ` <button type="button" class="skill-details" data-money-details="${key}" aria-label="What makes up this total">Details</button>`;
   $('money-summary').innerHTML = [
-    ['Gold', formatGp(gold)],
-    ['Armor and shield', formatGp(armorSpend)],
-    ['Equipment', formatGp(totals.cost - armorSpend)],
-    ['Weapons', formatGp(weaponSpend)],
-    ['Magic items', formatGp(magic.cost)],
-    ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>`],
-    ['Weight carried', formatLbs(totals.weight + magic.weight + weaponWeight)],
+    ['Gold', esc(formatGp(gold))],
+    ['Armor and shield', esc(formatGp(armorSpend)) + details('armor')],
+    ['Equipment', esc(formatGp(gearSpend)) + details('gear')],
+    ['Weapons', esc(formatGp(weaponSpend)) + details('weapons')],
+    ['Magic items', esc(formatGp(magic.cost)) + details('magic')],
+    ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>${details('left')}`],
+    ['Weight carried', esc(formatLbs(carriedWeight)) + details('weight')],
     // Encumbrance house rule: the load and the limits for this character's Strength and size.
-    ...(view.load ? [['Load', `${view.load.load[0].toUpperCase()}${view.load.load.slice(1)} (light up to ${view.load.capacity.light} lbs., `
-      + `medium ${view.load.capacity.medium}, heavy ${view.load.capacity.heavy})`]] : []),
-  ].map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === 'Left' ? v : esc(v)}</dd>`).join('');
+    ...(view.load ? [['Load', esc(`${view.load.load[0].toUpperCase()}${view.load.load.slice(1)} (light up to ${view.load.capacity.light} lbs., `
+      + `medium ${view.load.capacity.medium}, heavy ${view.load.capacity.heavy})`)]] : []),
+  ].map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join('');
   const notes = [sizeFactor === 1 ? 'Weights are for Medium characters.'
     : `Armor and weapons weigh ${sizeFactor < 1 ? 'half' : 'twice'} as much for ${view.race.size} characters (counted here). ` +
       (sizeFactor < 1 ? 'Some general gear (backpacks, bedrolls, clothing and the like) weighs a quarter as much when made for Small characters; the listed weights are the Medium ones.' : '')];
@@ -158,6 +207,15 @@ function addToInventory(app, id, variant) {
 }
 
 export function initEquipmentTab(app) {
+  $('money-summary').addEventListener('click', e => {
+    const b = e.target.closest('[data-money-details]');
+    const d = b && moneyDetails[b.dataset.moneyDetails];
+    if (!d) return;
+    const rows = d.rows.length ? d.rows.map(r => `<tr><td>${esc(r.label)}${r.note ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td>
+      <td class="num">${esc(r.text)}</td></tr>`).join('') : '<tr><td colspan="2" class="muted">Nothing yet.</td></tr>';
+    app.openDetail(d.title, `<table class="skill-why"><tbody>${rows}</tbody>
+      <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+  });
   $('gear-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
   $('gear-search').addEventListener('input', () => renderList(app));
   $('gear-category').addEventListener('change', e => {

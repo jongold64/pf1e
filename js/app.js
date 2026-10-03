@@ -443,7 +443,9 @@ function fillSheet() {
     // Just the number, not the Roll button's text.
     total: tr.querySelector('.total')?.firstChild?.textContent.trim() || '',
   }));
-  const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent, dt.nextElementSibling?.textContent || '']);
+  // The Equipment tab's totals, as text (leaving out their Details buttons).
+  const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent,
+    [...(dt.nextElementSibling?.childNodes || [])].filter(n => n.nodeName !== 'BUTTON').map(n => n.textContent).join('').trim()]);
   $('print-sheet').innerHTML = buildSheet({
     app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
     featLabel: slot => {
