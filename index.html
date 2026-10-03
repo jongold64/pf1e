@@ -51,10 +51,82 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
-      <section class="card wide results">
-        <h2>Results</h2>
-        <dl id="results"></dl>
-      </section>
+      <!-- Two columns: Race and Classes on the left, Results and Ability scores on the right (one column, in the
+           order Race, Results, Classes, Ability scores, on narrow screens). -->
+      <div class="char-column">
+        <section class="card order-1">
+          <h2>Race</h2>
+          <select id="race"></select>
+          <p class="hint term-hint">Tap or point at an item to see what it does.</p>
+          <div id="race-info" class="info"></div>
+          <div id="race-alternates" class="race-alternates"></div>
+          <div class="hp-tracker">
+            <div class="hp-now"><span>Current hit points</span><b id="hp-current"></b><span id="hp-max"></span>
+              <span id="hp-status" class="warning"></span></div>
+            <div class="hp-change">
+              <span class="base">
+                <button type="button" id="hp-minus" aria-label="Lower the amount">−</button>
+                <input id="hp-amount" type="number" inputmode="numeric" value="" aria-label="Amount: negative for damage, positive for healing">
+                <button type="button" id="hp-plus" aria-label="Raise the amount">+</button>
+              </span>
+              <button type="button" id="hp-apply" class="primary">Apply</button>
+              <button type="button" id="hp-full">Full</button>
+            </div>
+            <p class="hint">Negative for damage, positive for healing.</p>
+          </div>
+          <div id="hero-points" class="hero-points" hidden></div>
+          <div id="race-defense" class="defense"></div>
+        </section>
+        <section class="card order-3">
+          <h2>Classes <span id="class-summary" class="count"></span></h2>
+          <p class="hint">Pick a class for each level. Prestige classes can't be taken at 1st level.</p>
+          <ol id="class-levels" class="class-levels"></ol>
+          <div class="slot-buttons">
+            <button type="button" id="add-level">Add a level</button>
+            <button type="button" id="remove-level">Remove last level</button>
+          </div>
+          <div class="favored-row">
+            <label>Favored class <select id="favored-class"></select></label>
+            <div id="favored-summary" class="favored-summary"></div>
+          </div>
+          <div id="caster-choices"></div>
+          <div id="class-info" class="info"></div>
+        </section>
+      </div>
+      <div class="char-column">
+        <section class="card results order-2">
+          <h2>Results</h2>
+          <dl id="results"></dl>
+        </section>
+        <section class="card abilities-card order-4">
+          <h2>Ability scores</h2>
+          <div class="row">
+            <label>Point buy
+              <select id="budget"></select>
+            </label>
+            <span id="points" class="points"></span>
+          </div>
+          <label id="flexible-row" class="row" hidden>Racial +2 to
+            <select id="flexible"></select>
+          </label>
+          <label id="flexible2-row" class="row" hidden>Dual Talent: second +2 to
+            <select id="flexible2"></select>
+          </label>
+          <table class="abilities">
+            <thead>
+              <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
+            </thead>
+            <tbody id="ability-rows"></tbody>
+          </table>
+          <div id="increases" class="increases">
+            <h3>Ability increases</h3>
+            <p class="hint">Every 4 levels you add 1 to one ability score.</p>
+            <div id="increase-rows"></div>
+            <p id="increase-note" class="warning"></p>
+          </div>
+        </section>
+      </div>
+
       <section class="card wide" id="effects-card">
         <h2>Active effects <span id="effects-count" class="count"></span></h2>
         <div id="effects"></div>
@@ -77,78 +149,10 @@
         <ul id="search-results" class="search-results" hidden></ul>
       </section>
 
-      <section class="card">
-        <h2>Race</h2>
-        <select id="race"></select>
-        <p class="hint term-hint">Tap or point at an item to see what it does.</p>
-        <div id="race-info" class="info"></div>
-        <div id="race-alternates" class="race-alternates"></div>
-        <div class="hp-tracker">
-          <div class="hp-now"><span>Current hit points</span><b id="hp-current"></b><span id="hp-max"></span>
-            <span id="hp-status" class="warning"></span></div>
-          <div class="hp-change">
-            <span class="base">
-              <button type="button" id="hp-minus" aria-label="Lower the amount">−</button>
-              <input id="hp-amount" type="number" inputmode="numeric" value="" aria-label="Amount: negative for damage, positive for healing">
-              <button type="button" id="hp-plus" aria-label="Raise the amount">+</button>
-            </span>
-            <button type="button" id="hp-apply" class="primary">Apply</button>
-            <button type="button" id="hp-full">Full</button>
-          </div>
-          <p class="hint">Negative for damage, positive for healing.</p>
-        </div>
-        <div id="hero-points" class="hero-points" hidden></div>
-        <div id="race-defense" class="defense"></div>
-      </section>
-
-      <section class="card">
-        <h2>Classes <span id="class-summary" class="count"></span></h2>
-        <p class="hint">Pick a class for each level. Prestige classes can't be taken at 1st level.</p>
-        <ol id="class-levels" class="class-levels"></ol>
-        <div class="slot-buttons">
-          <button type="button" id="add-level">Add a level</button>
-          <button type="button" id="remove-level">Remove last level</button>
-        </div>
-        <div class="favored-row">
-          <label>Favored class <select id="favored-class"></select></label>
-          <div id="favored-summary" class="favored-summary"></div>
-        </div>
-        <div id="caster-choices"></div>
-        <div id="class-info" class="info"></div>
-      </section>
-
       <section class="card wide" id="companion-card" hidden>
         <h2>Animal companion <span id="companion-level" class="count"></span></h2>
         <div id="companion"></div>
       </section>
-      <section class="card wide">
-        <h2>Ability scores</h2>
-        <div class="row">
-          <label>Point buy
-            <select id="budget"></select>
-          </label>
-          <span id="points" class="points"></span>
-        </div>
-        <label id="flexible-row" class="row" hidden>Racial +2 to
-          <select id="flexible"></select>
-        </label>
-        <label id="flexible2-row" class="row" hidden>Dual Talent: second +2 to
-          <select id="flexible2"></select>
-        </label>
-        <table class="abilities">
-          <thead>
-            <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
-          </thead>
-          <tbody id="ability-rows"></tbody>
-        </table>
-        <div id="increases" class="increases">
-          <h3>Ability increases</h3>
-          <p class="hint">Every 4 levels you add 1 to one ability score.</p>
-          <div id="increase-rows"></div>
-          <p id="increase-note" class="warning"></p>
-        </div>
-      </section>
-
     </main>
 
     <!-- Feats -->
