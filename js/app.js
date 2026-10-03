@@ -162,6 +162,7 @@ let currentId = null;
 // Shared with the tab modules.
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
+  showAcDetails: () => showAcDetails(),
   get view() { return view; },
 };
 

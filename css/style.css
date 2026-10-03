@@ -661,3 +661,4 @@ table.skill-why th.num { text-align: right; }
 #companion button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
 .wide-facts button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 8px; }
 #my-items-card button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
+#tab-armor button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }

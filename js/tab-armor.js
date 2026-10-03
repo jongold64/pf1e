@@ -1,9 +1,30 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
-import { magicPrefix } from './crafting.js';
+import { magicPrefix, magicPart } from './crafting.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass } from './armor.js';
-import { MONK_IDS } from './rules.js';
+import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass, speedInArmor } from './armor.js';
+import { MONK_IDS, slowedSpeed } from './rules.js';
 import { materialsFor } from './materials.js';
+import { armorCost, formatGp } from './equipment.js';
+
+// What makes up each number on the tab, by key, for its Details popup (filled when the tab is drawn).
+const armorWhy = new Map();
+const whyButton = (key, what) => ` <button type="button" class="skill-details" data-armor-why="${esc(key)}" aria-label="How ${esc(what)} is worked out">Details</button>`;
+
+// Rows for one worn item's price: the item (with its material), masterwork, enhancement and special abilities.
+function priceRows(item, enh, mw, abilities, crafted) {
+  const rows = [{ label: item.material ? `${item.name} (${item.material.toLowerCase()} price, masterwork included)` : item.name,
+                  text: formatGp(item.price_gp || 0) }];
+  if ((enh > 0 || mw || abilities.length) && !item.mw_included) rows.push({ label: 'Masterwork', text: '+150 gp' });
+  const magic = magicPart(enh, abilities, 1000);
+  if (magic) {
+    const bonus = enh + abilities.reduce((n, a) => n + (a.bonus || 0), 0);
+    if (bonus) rows.push({ label: `Magic: total bonus +${bonus} (+${enh} enhancement${abilities.filter(a => a.bonus).map(a => `, ${a.name} +${a.bonus}`).join('')}), squared × 1,000 gp`,
+                           text: `+${formatGp(bonus * bonus * 1000)}` });
+    for (const a of abilities.filter(x => x.gp)) rows.push({ label: a.name, text: `+${formatGp(a.gp)}` });
+    if (crafted) rows.push({ label: 'Crafted: the magic costs half', text: `−${formatGp(magic / 2)}` });
+  }
+  return rows;
+}
 
 const GROUPS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor']];
 
@@ -36,7 +57,22 @@ export function armorDetails(a) {
     ${a.description ? `<details class="rules"><summary>Rules text</summary>${paragraphs(a.description)}</details>` : ''}`;
 }
 
+// A Details popup (the AC one is the same as on the Race card).
+function showArmorWhy(app, key) {
+  if (key === 'ac') { app.showAcDetails(); return; }
+  const d = armorWhy.get(key);
+  if (!d) return;
+  app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+}
+
 export function initArmorTab(app) {
+  for (const id of ['armor-summary', 'armor-info', 'shield-info']) {
+    $(id).addEventListener('click', e => {
+      const b = e.target.closest('[data-armor-why]');
+      if (b) showArmorWhy(app, b.dataset.armorWhy);
+    });
+  }
   const { data } = app;
   const option = a => `<option value="${esc(a.id)}">${esc(a.name)} (${signed(a.bonus)})</option>`;
   $('armor-select').innerHTML = '<option value="">No armor</option>' + GROUPS.map(([cat, label]) =>
@@ -82,8 +118,18 @@ export function renderArmorTab(app, view) {
   // Special abilities (added with the Crafting card on the Magic Items tab).
   const abilities = list => (list.length ? `<p><b>Special abilities:</b> ${esc(magicPrefix(0, false, list))}
     <small class="muted">(add or change them with the Crafting card on the Magic Items tab)</small></p>` : '');
-  $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) : '<p>Unarmored.</p>';
-  $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) : '<p>No shield.</p>';
+  armorWhy.clear();
+  // Each worn item's full price, with its Details.
+  const price = k => {
+    const item = gear[k];
+    const args = [item, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]];
+    const total = armorCost(...args);
+    armorWhy.set(`price-${k}`, { title: `Price: ${formatGp(total)}`, rows: priceRows(...args), total: formatGp(total),
+      note: 'This price counts on the Equipment tab.' });
+    return `<p><b>Price with quality and abilities:</b> ${esc(formatGp(total))}${whyButton(`price-${k}`, 'the price')}</p>`;
+  };
+  $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) + price('armor') : '<p>Unarmored.</p>';
+  $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) + price('shield') : '<p>No shield.</p>';
 
   const warnings = [...proficiencyWarnings(gear, view.haveFeats), ...druidMetalWarnings(gear, view.counts.map(e => e.cls.id))];
   if (gear.armor?.move_category && gear.armor.move_category !== gear.armor.category) {
@@ -97,17 +143,50 @@ export function renderArmorTab(app, view) {
   }
   $('armor-warnings').innerHTML = warnings.map(w => `<p class="warning">${esc(w)}</p>`).join('');
 
+  // Check penalty: each item's (masterwork and magic armor 1 less), and a heavy load's (the worse counts).
+  const itemPenalty = item => (item ? Math.min(0, item.check_penalty + ((item === gear.armor ? state.armorEnh > 0 || state.armorMw
+    : state.shieldEnh > 0 || state.shieldMw) && !item.mw_included ? 1 : 0)) : 0);
+  const armorOnly = itemPenalty(gear.armor) + itemPenalty(gear.shield);
+  armorWhy.set('acp', { title: `Armor check penalty: ${gear.checkPenalty || 'none'}`, total: String(gear.checkPenalty || 0), rows: [
+    ...[gear.armor, gear.shield].filter(Boolean).map(item => ({ label: `${item.name}${item.check_penalty !== itemPenalty(item)
+      ? ` (${item.check_penalty}, 1 less for masterwork or magic)` : item.mw_included ? ' (material and masterwork included)' : ''}`, text: String(itemPenalty(item)) })),
+    ...(view.load && view.load.checkPenalty ? [{ label: `${view.load.load[0].toUpperCase()}${view.load.load.slice(1)} load: ${view.load.checkPenalty} (only the worse of armor and load counts)`,
+                                                text: String(Math.min(armorOnly, view.load.checkPenalty) - armorOnly) }] : []),
+  ], note: 'It applies to Str- and Dex-based skills, and to attack rolls with armor you are not proficient in.' });
+  // Dex bonus to AC: Dex, capped by the armor's, the shield's and the load's limits.
+  const caps = [[gear.armor?.max_dex, gear.armor?.name], [gear.shield?.max_dex, gear.shield?.name],
+    [view.load?.maxDex, view.load ? `your ${view.load.load} load` : '']].filter(([v]) => v !== null && v !== undefined);
+  armorWhy.set('dex', { title: `Dex bonus to AC: ${signed(stats.dexAc)}`, total: signed(stats.dexAc), rows: [
+    { label: 'Dexterity modifier', text: signed(stats.mod.dex) },
+    ...caps.map(([v, what]) => ({ label: `Limit from ${what}`, text: `at most ${signed(v)}` })),
+  ], note: 'The lowest limit counts; a Dex penalty always applies.' });
+  // Spell failure: each item's chance, and which arcane classes can ignore it.
+  const byClass = spellFailureByClass(gear, view.counts);
+  armorWhy.set('asf', { title: 'Arcane spell failure', total: `${gear.spellFailure}%`, rows: [
+    ...[gear.armor, gear.shield].filter(Boolean).map(item => ({ label: item.name, text: `${item.spell_failure}%` })),
+    ...byClass.map(e => ({ label: `${e.cls.name} spells`, text: e.chance ? `${e.chance}%` : 'none (class feature)' })),
+  ], note: 'Only arcane spells with somatic components can fail; divine spells never do.' });
+  // Speed: the race's, slowed by medium or heavy armor or load, plus effects.
+  const base = view.race.base_speed;
+  const armorSpeed = speedInArmor(base, gear, view.race);
+  const loadSpeed = view.load?.slows && !(view.race.traits || []).some(t => t.name === 'Slow and Steady') ? slowedSpeed(base) : null;
+  armorWhy.set('speed', { title: `Speed: ${view.speed ?? '—'} ft.`, total: view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`, rows: [
+    { label: `${view.race.name} base speed`, text: base === null || base === undefined ? '—' : `${base} ft.` },
+    ...(gear.slows ? [{ label: armorSpeed === base ? 'Medium or heavy armor (does not slow this race)' : `In ${gear.armor.move_category || gear.armor.category} armor`, text: `${armorSpeed} ft.` }] : []),
+    ...(loadSpeed !== null ? [{ label: `Your ${view.load.load} load (the slower of armor and load counts)`, text: `${loadSpeed} ft.` }] : []),
+    ...(view.stats.fx.speed ? [{ label: 'Active effects (haste, longstrider...)', text: `${view.stats.fx.speed > 0 ? '+' : ''}${view.stats.fx.speed} ft.` }] : []),
+  ] });
   const rows = [
-    ['Armor Class', stats.ac],
+    ['Armor Class', stats.ac, 'ac'],
     ['Touch AC', stats.touch],
     ['Flat-footed AC', stats.flatFooted],
-    ['Dex bonus to AC', signed(stats.dexAc)],
-    ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none'],
-    ['Arcane spell failure', spellFailureText(gear, view.counts)],
+    ['Dex bonus to AC', signed(stats.dexAc), 'dex'],
+    ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none', 'acp'],
+    ['Arcane spell failure', spellFailureText(gear, view.counts), 'asf'],
     ...(gear.dr ? [['Damage reduction', `${gear.dr}/— (adamantine)`]] : []),
     ...[gear.armor, gear.shield].filter(a => a?.material_notes).map(a => [a.material, a.material_notes]),
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
-      (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : '')],
+      (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : ''), 'speed'],
   ];
-  $('armor-summary').innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  $('armor-summary').innerHTML = rows.map(([k, v, key]) => `<dt>${esc(k)}</dt><dd>${esc(v)}${key ? whyButton(key, k) : ''}</dd>`).join('');
 }
