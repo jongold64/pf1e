@@ -595,12 +595,25 @@ function buildControls() {
       update({ favoredPicks: picks });
       return;
     }
-    const i = e.target.dataset.levelIndex;
-    if (i === undefined) return;
-    update({ classLevels: state.classLevels.map((id, j) => (j === Number(i) ? e.target.value : id)) });
+    // Changing a class line changes every level of that class (it joins the other class's line if there is one).
+    const from = e.target.dataset.classChange;
+    if (from === undefined || !e.target.value) return;
+    update({ classLevels: state.classLevels.map(id => (id === from ? e.target.value : id)) });
+  });
+  $('class-levels').addEventListener('click', e => {
+    const more = e.target.closest('[data-class-more]');
+    if (more && state.classLevels.length < 20) update({ classLevels: [...state.classLevels, more.dataset.classMore] });
+    const less = e.target.closest('[data-class-less]');
+    if (less && state.classLevels.length > 1) {
+      // That class's highest level goes (with its favored class choice); later levels move down one.
+      const i = state.classLevels.lastIndexOf(less.dataset.classLess);
+      if (i === 0 && state.classLevels[1] && data.classes.find(c => c.id === state.classLevels[1])?.category === 'prestige') return;
+      update({ classLevels: state.classLevels.filter((_, j) => j !== i), favoredPicks: state.favoredPicks.filter((_, j) => j !== i) });
+    }
   });
   $('add-level').addEventListener('click', () => {
-    if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, state.classLevels.at(-1)] });
+    const id = $('add-level-class').value || state.classLevels.at(-1);
+    if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, id] });
   });
   $('remove-level').addEventListener('click', () => {
     if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
@@ -1167,18 +1180,59 @@ function renderClasses(view) {
   $('class-summary').textContent = `${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')} (level ${classLevels.length})`;
   const baseOptions = groupedOptions(data.classes.filter(c => c.category !== 'prestige'), CLASS_GROUPS);
   const allOptions = groupedOptions(data.classes, CLASS_GROUPS);
-  $('class-levels').innerHTML = classLevels.map((c, i) => `<li>
-      <label>Level ${i + 1} <select data-level-index="${i}">${i === 0 ? baseOptions : allOptions}</select></label>
-      ${c.category === 'prestige' && view.requirements.get(c.id)
-        ? STATUS_ICON[view.requirements.get(c.id).status] : ''}
-      ${view.favoredPicks[i] ? `<select data-favored-index="${i}" aria-label="Favored class bonus at level ${i + 1}">
-        <option value="hp">+1 hit point</option><option value="skill">+1 skill rank</option>
-        ${favoredOption(view.race, c) ? '<option value="option">Racial option</option>' : ''}</select>` : ''}
-    </li>`).join('');
-  $('class-levels').querySelectorAll('select[data-level-index]').forEach((sel, i) => { sel.value = classLevels[i].id; });
+  // One line per class (in the order first taken): how many levels and which character levels; opened, the choices
+  // made at each of its levels (favored class bonus, feats, traits, ability increases) and buttons to add, remove or
+  // change it.
+  const openLines = new Set([...$('class-levels').querySelectorAll('details[data-class-line][open]')].map(d => d.dataset.classLine));
+  const order = [...new Set(classLevels.map(c => c.id))];
+  const ranges = nums => nums.reduce((out, n) => {
+    const last = out.at(-1);
+    if (last && n === last[1] + 1) last[1] = n; else out.push([n, n]);
+    return out;
+  }, []).map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
+  const traitNames = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)?.name).filter(Boolean);
+  const choicesAt = lv => {
+    const out = [];
+    for (const s of view.slots.filter(x => x.charLevel === lv)) {
+      const f = data.featsById.get(state.feats[s.id]);
+      const c = view.featChoices.find(x => x.slotId === s.id);
+      const what = /^L\d+$/.test(s.id) ? 'Feat' : s.label.replace(/\s*\(level \d+\)$/, '');
+      out.push(f ? `${what}: ${f.name}${c?.value ? ` (${choiceLabel(c)})` : ''}` : `${what}: not chosen yet`);
+    }
+    if (lv === 1) out.push(...(traitNames.length ? traitNames.map(t => `Trait: ${t}`) : ['Traits: not chosen yet']));
+    const inc = INCREASE_LEVELS.indexOf(lv);
+    if (inc >= 0) out.push(state.increases[inc] ? `Ability increase: +1 ${ABILITY_NAMES[state.increases[inc]]}` : 'Ability increase: not chosen yet');
+    return out;
+  };
+  $('class-levels').innerHTML = order.map(id => {
+    const levels = classLevels.map((c, i) => (c.id === id ? i : -1)).filter(i => i >= 0);
+    const c = classLevels[levels[0]];
+    const req = c.category === 'prestige' && view.requirements.get(c.id);
+    const rows = levels.map((i, k) => `<li><b>Level ${i + 1}</b> <span class="muted">(${esc(c.name)} ${k + 1})</span>
+        ${view.favoredPicks[i] ? `<label class="favored-pick">Favored class bonus <select data-favored-index="${i}" aria-label="Favored class bonus at level ${i + 1}">
+          <option value="hp">+1 hit point</option><option value="skill">+1 skill rank</option>
+          ${favoredOption(view.race, c) ? '<option value="option">Racial option</option>' : ''}</select></label>` : ''}
+        ${choicesAt(i + 1).map(t => `<div class="level-choice">${esc(t)}</div>`).join('')}</li>`).join('');
+    return `<li><details class="class-line" data-class-line="${esc(id)}"${openLines.has(id) ? ' open' : ''}>
+      <summary><b>${esc(c.name)}</b> <span class="count">${levels.length} level${levels.length === 1 ? '' : 's'}</span>
+        <small class="muted">(level${levels.length === 1 ? '' : 's'} ${ranges(levels.map(i => i + 1))})</small> ${req ? STATUS_ICON[req.status] : ''}</summary>
+      <div class="class-line-body">
+        <div class="slot-buttons">
+          <button type="button" data-class-more="${esc(id)}"${classLevels.length >= 20 ? ' disabled' : ''}>+ Add a ${esc(c.name)} level</button>
+          <button type="button" data-class-less="${esc(id)}"${classLevels.length <= 1 ? ' disabled' : ''}>− Remove a ${esc(c.name)} level</button>
+          <label>Change to <select data-class-change="${esc(id)}">${levels.includes(0) ? baseOptions : allOptions}</select></label>
+        </div>
+        <ol class="level-choices">${rows}</ol>
+      </div></details></li>`;
+  }).join('');
+  $('class-levels').querySelectorAll('select[data-class-change]').forEach(sel => { sel.value = sel.dataset.classChange; });
   $('class-levels').querySelectorAll('select[data-favored-index]').forEach(sel => {
     sel.value = view.favoredPicks[Number(sel.dataset.favoredIndex)];
   });
+  const addSel = $('add-level-class');
+  const keep = addSel.value || classLevels.at(-1).id;
+  addSel.innerHTML = allOptions;
+  addSel.value = keep;
   $('add-level').disabled = classLevels.length >= 20;
   $('remove-level').disabled = classLevels.length <= 1;
 

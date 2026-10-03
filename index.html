@@ -84,10 +84,12 @@
         </section>
         <section class="card order-3">
           <h2>Classes <span id="class-summary" class="count"></span></h2>
-          <p class="hint">Pick a class for each level. Prestige classes can't be taken at 1st level.</p>
-          <ol id="class-levels" class="class-levels"></ol>
-          <div class="slot-buttons">
-            <button type="button" id="add-level">Add a level</button>
+          <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add or remove a
+            level of it, or change it. Prestige classes can't be taken at 1st level.</p>
+          <ul id="class-levels" class="class-lines"></ul>
+          <div class="slot-buttons add-level-row">
+            <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
+            <button type="button" id="add-level">Add</button>
             <button type="button" id="remove-level">Remove last level</button>
           </div>
           <div class="favored-row">
@@ -421,8 +423,10 @@
               traits for others; ones that clash are greyed out.</li>
             <li><b>Hit points</b>: use − / + to set an amount (negative for damage), then <b>Apply</b>; <b>Full</b> heals completely.</li>
             <li>AC, CMD, CMB, saves and combat maneuvers are in the Race card, each with a Roll button.</li>
-            <li><b>Classes</b>: choose a class for each level (multiclassing works). Under each level in your favored class, choose
-              +1 hit point, +1 skill rank or your race's option.</li>
+            <li><b>Classes</b>: one line per class, showing how many levels you have in it. Use <b>Add a level of</b> to add one
+              (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the
+              choices made there (favored class bonus, feats, traits, ability increases), add or remove a level of it, or change it
+              to another class. In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level.</li>
             <li>Open a class's section to add <b>archetypes</b> and to see its features by level: tap any feature to read what it does.
               Struck-out features were replaced by an archetype; coloured ones come from it.</li>
             <li>Clerics choose two <b>domains</b> and inquisitors a domain or inquisition in their class's section. A druid's

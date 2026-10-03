@@ -348,10 +348,6 @@ table.text-table { border-collapse: collapse; font-size: 0.9rem; min-width: 60%;
 .tag.type-weapon { background: #6b3a3a; }
 
 /* Classes card */
-.class-levels { list-style: none; padding: 0; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 12px; }
-.class-levels li { display: flex; align-items: center; gap: 6px; }
-.class-levels label { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 0.95rem; white-space: nowrap; }
-.class-levels select { flex: 1; min-width: 0; }
 .favored-row { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: flex-start; margin-top: 10px; }
 .favored-row > label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .favored-row select { width: auto; }
@@ -551,8 +547,6 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 .alt-list .alt-text { margin: 4px 0 0; font-size: 0.9rem; }
 .alt-list .hint { margin: 4px 0 0; }
 /* Favored class bonus: a choice beside each favored class level, and a summary under the favored class. */
-.class-levels li:has(select[data-favored-index]) { flex-wrap: wrap; }
-.class-levels select[data-favored-index] { flex: 1 1 100%; font-size: 0.9rem; }
 .favored-summary { flex-basis: 100%; }
 .favored-summary p { margin: 4px 0; }
 
@@ -667,3 +661,18 @@ table.skill-why th.num { text-align: right; }
 .wide-facts button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 8px; }
 #my-items-card button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
 #tab-armor button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
+/* Classes card: one line per class, opening to the choices made at each of its levels. */
+.class-lines { list-style: none; padding: 0; margin: 0 0 8px; }
+.class-lines > li { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; }
+.class-line summary { cursor: pointer; padding: 8px 10px; }
+.class-line-body { padding: 0 10px 8px; }
+.class-line-body .slot-buttons { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.class-line-body .slot-buttons select { width: auto; }
+.level-choices { list-style: none; padding: 0; margin: 8px 0 0; }
+.level-choices > li { padding: 6px 0; border-top: 1px solid var(--border); }
+.level-choice { font-size: 0.9rem; margin-left: 12px; }
+.favored-pick { display: block; margin: 4px 0 2px 12px; font-size: 0.9rem; }
+.favored-pick select { width: auto; min-height: 32px; }
+.add-level-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.add-level-row select { width: auto; }
+.class-line summary small { margin-left: 4px; }
