@@ -32,7 +32,7 @@ function levelText(app, spell) {
   return Object.entries(spell.levels).map(([id, lv]) => `${name(id)} ${lv}`).join(', ');
 }
 
-function spellDetails(app, spell, cls) {
+function spellDetails(app, spell, cls, withButton = true) {
   const onList = spell.levels[cls.id] !== undefined;
   const mine = app.state.spells.includes(spell.id);
   const school = [spell.school, spell.subschool ? `(${spell.subschool})` : '', spell.descriptors ? `[${spell.descriptors}]` : '']
@@ -43,7 +43,7 @@ function spellDetails(app, spell, cls) {
   return `<h3>${esc(spell.name)}</h3>
     <p class="hint">${esc(school)} · ${esc(sourceText(spell))}</p>
     ${onList ? '' : `<p class="warning">Not on the ${esc(cls.name.toLowerCase())} spell list${mine ? '' : ', so it can\'t be added'}.</p>`}
-    ${button ? `<div class="slot-buttons">${button}</div>` : ''}
+    ${button && withButton ? `<div class="slot-buttons">${button}</div>` : ''}
     ${facts([
       ['Level', levelText(app, spell)],
       ['Casting time', spell.casting_time],
@@ -68,8 +68,9 @@ function renderPanel(app, view) {
 // A spell button in a list; spells the character has are marked with a tick.
 function spellButton(app, s) {
   const mine = app.state.spells.includes(s.id);
-  return `<li><button type="button" data-spell="${esc(s.id)}"${mine ? ' class="mine"' : ''}>` +
-    `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}</small></button></li>`;
+  return `<li class="with-details"><button type="button" data-spell="${esc(s.id)}"${mine ? ' class="mine"' : ''}>` +
+    `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}</small></button>` +
+    `<button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">Details</button></li>`;
 }
 
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
@@ -148,6 +149,18 @@ function renderMySpells(app, view) {
     '<p class="hint">No spells yet. Choose a spell below, then "Add to my spells".</p>';
 }
 
+// The spell in a popup (the list's Details button): everything the side panel shows, with Add or Remove as a button.
+function popSpell(app, id) {
+  const spell = app.data.spells?.find(s => s.id === id);
+  if (!spell) return;
+  const { cls } = listClass(app, app.view);
+  const mine = app.state.spells.includes(spell.id);
+  const onList = spell.levels[cls.id] !== undefined;
+  const actions = mine ? [{ label: 'Remove from my spells', run: () => removeSpell(app, spell.id) }]
+    : onList ? [{ label: 'Add to my spells', primary: true, run: () => addSpell(app, spell.id) }] : [];
+  app.openDetail(spell.name, spellDetails(app, spell, cls, false), actions);
+}
+
 function addSpell(app, id) {
   if (!app.state.spells.includes(id)) app.update({ spells: [...app.state.spells, id] });
 }
@@ -191,6 +204,8 @@ export function initSpellList(app) {
   $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
   $('spell-class').addEventListener('change', e => { listClassId = e.target.value; renderSpellList(app, app.view); });
   $('spell-list').addEventListener('click', e => {
+    const pop = e.target.closest('[data-spell-pop]');
+    if (pop) { popSpell(app, pop.dataset.spellPop); return; }
     const btn = e.target.closest('[data-spell]');
     if (!btn) return;
     selectedId = btn.dataset.spell;
