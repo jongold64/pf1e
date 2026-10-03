@@ -24,11 +24,11 @@ const WEAPON_FEATS = [
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const GROUP_TEXT = { unarmed: 'unarmed', light: 'light melee', 'one-handed': 'one-handed melee', 'two-handed': 'two-handed melee', ranged: 'ranged' };
 
-function weaponDetails(w) {
+function weaponDetails(w, withButton = true) {
   return `<h3>${esc(w.name)}</h3>
     <p class="hint">${esc(w.category)} · ${esc(GROUP_TEXT[w.group] || w.group || '')} · ${esc(sourceText(w))}</p>
     ${facts([
-      ['Damage (Small / Medium)', [w.damage.s, w.damage.m].filter(Boolean).join(' / ') || null],
+      ['Damage (Small / Medium / Large)', [w.damage.s, w.damage.m, w.damage.l].map(x => x || '—').join(' / ')],
       ['Critical', w.critical],
       ['Range', w.range_ft ? `${w.range_ft} ft.${w.thrown ? ' (thrown)' : ''}` : null],
       ['Type', w.type],
@@ -37,7 +37,7 @@ function weaponDetails(w) {
       ['Weight', w.weight_lbs !== null ? formatLbs(w.weight_lbs) : null],
       ['Weapon Finesse', w.finesse ? 'can be used' : null],
     ])}
-    <div class="slot-buttons"><button type="button" class="primary" data-add-weapon="${esc(w.id)}">Add to my weapons</button></div>
+    ${withButton ? `<div class="slot-buttons"><button type="button" class="primary" data-add-weapon="${esc(w.id)}">Add to my weapons</button></div>` : ''}
     ${paragraphs(w.description) || '<p class="hint">The source has no description for this weapon.</p>'}`;
 }
 
@@ -66,7 +66,8 @@ function renderList(app) {
   $('weapon-list').innerHTML = categories.map(c => `<section class="list-group" id="wcat-${slug(c)}">
       <h3 class="list-heading">${esc(c)} <span class="count">${byCategory.get(c).length}</span></h3>
       <ul class="pick-list">${byCategory.get(c).map(w =>
-        `<li><button type="button" data-weapon="${esc(w.id)}">${esc(w.name)}<small>${esc(w.damage.m || '')}</small></button></li>`).join('')}</ul>
+        `<li class="with-details"><button type="button" data-weapon="${esc(w.id)}">${esc(w.name)}<small>${esc(w.damage.m || '')}</small></button>
+          <button type="button" class="skill-details" data-weapon-pop="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">Details</button></li>`).join('')}</ul>
     </section>`).join('') || '<p class="hint">No weapons match.</p>';
   renderPanel(app);
 }
@@ -443,6 +444,14 @@ export function initWeaponsTab(app) {
     document.getElementById(`wcat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
   $('weapon-list').addEventListener('click', e => {
+    // Details: the weapon in a popup, with Add to my weapons.
+    const pop = e.target.closest('[data-weapon-pop]');
+    if (pop) {
+      const w = app.data.weaponsById.get(pop.dataset.weaponPop);
+      if (w) app.openDetail(w.name, weaponDetails(w, false),
+        [{ label: 'Add to my weapons', primary: true, run: () => app.update({ weapons: [...app.state.weapons, { id: w.id, enh: 0 }] }) }]);
+      return;
+    }
     const btn = e.target.closest('[data-weapon]');
     if (!btn) return;
     selectedId = btn.dataset.weapon;
