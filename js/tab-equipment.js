@@ -4,11 +4,14 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTot
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
+import { showArmorWhy } from './tab-armor.js';
 
 let selectedId = null;
 let listed = false;
 // What each money / weight total is made of (filled when the tab is drawn, shown by its Details button).
 let moneyDetails = {};
+// Each inventory row's price and weight, by key, for its Details popup.
+const invWhy = new Map();
 
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLowerCase()})` : item.name);
@@ -178,21 +181,35 @@ export async function renderEquipment(app, view) {
   $('inventory-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
   const worn = [[view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities, state.armorCrafted],
                 [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities, state.shieldCrafted]].filter(([a]) => a);
+  invWhy.clear();
   $('inventory-rows').innerHTML = [
     ...worn.map(([a, enh, mw, abilities, crafted]) => `<tr class="worn"><td><b>${esc(armorLabel(a, enh, mw, abilities))}</b>
         <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div></td><td>1</td>
-        <td>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}</td><td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
+        <td>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}
+          <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></td>
+        <td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
     ...state.inventory.map((e, i) => {
       const item = data.gearById.get(e.id);
       if (!item) return '';
       const s = entryStats(item, e.variant);
+      // Its price and weight, each and in all, for the row's Details popup.
+      invWhy.set(`inv-${i}`, { title: entryName(item, e.variant), rows: [
+        { label: `Price each${e.variant ? ` (${e.variant.toLowerCase()} version)` : ''}`, text: s.price_gp !== null ? formatGp(s.price_gp) : 'not listed' },
+        { label: 'Quantity', text: `× ${e.qty}` },
+        { label: 'Price in all', text: s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—' },
+        { label: 'Weight each', text: s.weight_lbs !== null ? formatLbs(s.weight_lbs) : 'not listed' },
+        { label: 'Weight in all', text: s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—' },
+      ], note: [`Counted in Equipment (gold) and Weight carried above.`, view.race.size === 'Small'
+        ? 'Listed weights are for Medium characters; some gear made for Small characters (backpacks, bedrolls, clothing) weighs a quarter as much.' : '',
+        item.category ? `Category: ${item.category}. ${item.source ? `Source: ${item.source}.` : ''}` : ''].filter(Boolean).join(' ') });
       return `<tr><td><button type="button" class="link item-link" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button></td>
         <td><span class="base">
           <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
           <span class="value">${e.qty}</span>
           <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
         </span></td>
-        <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</td>
+        <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
+          <button type="button" class="skill-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}">Details</button></td>
         <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
     }),
   ].join('') || '<tr><td colspan="4" class="hint">Nothing yet. Choose items below and add them.</td></tr>';
@@ -232,6 +249,15 @@ export function initEquipmentTab(app) {
     if (btn) addToInventory(app, btn.dataset.addGear, btn.dataset.variant);
   });
   $('inventory-rows').addEventListener('click', e => {
+    const why = e.target.closest('[data-inv-why]');
+    if (why) {
+      const key = why.dataset.invWhy;
+      if (key.startsWith('price-')) { showArmorWhy(app, key); return; }
+      const d = invWhy.get(key);
+      if (d) app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody></table>
+        ${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+      return;
+    }
     const step = e.target.closest('[data-qty]');
     if (step) {
       const inv = app.state.inventory.map(x => ({ ...x }));
