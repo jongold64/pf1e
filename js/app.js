@@ -1446,7 +1446,7 @@ function renderSkills(race, classes, scores, featNames) {
   $('skills-hint').innerHTML = esc(
     `At most ${state.level} rank${state.level === 1 ? '' : 's'} in each skill. Class skills get +3 once they have a rank.` +
     (checkPenalty ? ` Your armor's check penalty (${checkPenalty}) applies to Str and Dex skills.` : ''))
-    + ' <span class="legend-shade"></span> Shaded skills are trained only (Details explains what that allows).';
+    + ' Details explains what a trained-only skill allows without ranks.';
 
   // Everything that adds to a skill, by name, in a popup.
   showSkillDetails = name => {
@@ -1469,13 +1469,12 @@ function renderSkills(race, classes, scores, featNames) {
     // Only Craft/Perform/Profession have player-added specialties; "Knowledge (arcana)" is a skill of its own.
     const specialty = info.family ? splitSkill(name).specialty : null;
     const classSkill = isClassSkill(name);
-    const tags = classSkill ? '<span class="tag">class</span>' : '';
-    const trainedClass = info.trained ? ' trained-only' : '';
+    const tags = [classSkill ? '<span class="tag">class</span>' : '', info.trained ? '<span class="tag muted">trained only</span>' : ''].join(' ');
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
       const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills });
-      return `<tr class="family${trainedClass}" data-row-skill="${esc(name)}">
+      return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
           ${name === 'Craft' ? `<div class="add-specialty"><select data-craft-pick aria-label="Add a Craft skill">
               <option value="">Add a craft…</option>${CRAFTS.filter(c => !state.specialties.includes(`Craft (${c})`))
@@ -1492,7 +1491,7 @@ function renderSkills(race, classes, scores, featNames) {
     const ranks = state.skills[name] || 0;
     const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty,
                             traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills });
-    return `<tr class="${specialty ? 'specialty' : ''}${trainedClass}" data-row-skill="${esc(name)}">
+    return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
         ${ranks > state.level ? `<div class="warning">More than ${state.level} ranks</div>` : ''}</td>
