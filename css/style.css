@@ -676,3 +676,4 @@ table.skill-why th.num { text-align: right; }
 .add-level-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .add-level-row select { width: auto; }
 .class-line summary small { margin-left: 4px; }
+#feat-slots button.skill-details { font-weight: 400; font-size: 0.85rem; }

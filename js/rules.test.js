@@ -1,7 +1,7 @@
 // Checks for rules.js and feats.js. Open tests.html through the local server to run them.
 import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases,
          bonusSpells, spellsPerDay } from './rules.js';
-import { featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
+import { featApplied, featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
          skillTotal, skillBreakdown, ranksFor } from './skills.js';
@@ -1306,6 +1306,13 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     [s.fort, s.ref, s.will, s.cmb, s.cmd].join());
   check('companion attack details add up', s.attacks.map(x => sum(x.why.attack)).join(), s.attacks.map(x => x.bonus).join());
   check('companion skill details add up', s.skills.map(k => sum(k.why)).join(), s.skills.map(k => k.total).join());
+}
+
+// What the app says it counts for a feat (Feats tab Details).
+{
+  check('Toughness at 6th level: +6 hp', /\+6 hit points/.test(featApplied('Toughness', { level: 6 })), true);
+  check('Athletic: skill feat text', /Climb and Swim/.test(featApplied('Athletic', { skillFeats: SKILL_FEATS }) || ''), true);
+  check('Cleave: not counted automatically', featApplied('Cleave'), null);
 }
 
 const failed = results.filter(r => !r.pass);

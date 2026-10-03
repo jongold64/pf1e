@@ -7,13 +7,13 @@ import {
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
-  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS,
+  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest } from './weapons.js';
 import {
-  SKILLS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
+  SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
@@ -715,6 +715,8 @@ function buildControls() {
   $('feat-type').innerHTML = '<option value="">All types</option>' +
     types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
   $('feat-slots').addEventListener('click', e => {
+    const fd = e.target.closest('[data-feat-details]');
+    if (fd) { showFeatSlotDetails(fd.dataset.featDetails); return; }
     const choose = e.target.closest('[data-choose]');
     if (choose) openPicker(choose.dataset.choose);
     const remove = e.target.closest('[data-remove]');
@@ -1569,6 +1571,36 @@ const STATUS_ICON = {
 };
 
 // Prerequisites (each marked ✓/✗/?) and rules text for one feat.
+// Details popup for a feat slot: where the slot comes from, the level the feat is checked at, each prerequisite, and
+// what the app counts for the feat.
+function showFeatSlotDetails(slotId) {
+  const slot = view.slots.find(s => s.id === slotId);
+  if (!slot) return;
+  const f = data.featsById.get(state.feats[slot.id]);
+  const why = slot.kind === 'class'
+    ? `A ${slot.label.replace(/\s*\(level \d+\)$/, '')} from the ${view.classes.find(c => c.id === slot.clsId)?.name || 'class'} table.`
+      + (BONUS_FEAT_RULES[slot.ruleId]?.note ? ` ${BONUS_FEAT_RULES[slot.ruleId].note}` : '')
+    : slot.kind === 'race' ? `From your race's Bonus Feat trait (${view.race.name}).`
+    : slot.id.startsWith('flaw-') ? 'From a flaw (Flaws house rule): any feat you qualify for.'
+    : slot.id === 'antihero' ? 'For playing an antihero (no hero points): any feat you qualify for.'
+    : `Every character gets a feat at 1st level and every odd level (3rd, 5th, 7th...). This is the one for character level ${slot.level}.`;
+  let html = `<h3>This slot</h3><p>${esc(why)}</p>
+    <p class="hint">Prerequisites are checked against your character at level ${slot.charLevel} (the level the feat is taken).</p>`;
+  if (f) {
+    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+    const choice = view.featChoices.find(c => c.slotId === slot.id);
+    const applied = featApplied(f.name, { level: view.level, choice: choice?.value ? choiceLabel(choice) : '', skillFeats: SKILL_FEATS });
+    html += `<h3>Prerequisites for ${esc(f.name)}</h3>${check.waived ? '<p class="hint">Waived for this bonus feat.</p>'
+      : check.parts.length ? `<ul class="prereqs">${check.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>`
+      : '<p class="hint">None.</p>'}
+      ${check.parts.some(x => x.status === 'unknown') ? '<p class="hint">? = the app can\'t check this one; check it yourself.</p>' : ''}
+      <h3>In the app</h3><p>${esc(applied || 'Not counted in the numbers automatically: read its Benefit and apply it in play (or add it as a custom effect on the Character tab).')}</p>`;
+  } else {
+    html += '<p class="hint">No feat chosen yet: press Choose a feat.</p>';
+  }
+  openDetail(f ? f.name : slot.label, html);
+}
+
 function featDetails(f, check) {
   const prereqs = check.waived
     ? '<p class="hint">Prerequisites are waived for this bonus feat.</p>'
@@ -1677,9 +1709,11 @@ function renderFeats(slots, granted, ctx) {
         <div class="slot-buttons">
           <button type="button" data-choose="${slot.id}">Change</button>
           <button type="button" data-remove="${slot.id}">Remove</button>
+          <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="About this feat slot and what the feat does here">Details</button>
         </div>`;
     } else {
-      body = `<button type="button" class="primary" data-choose="${slot.id}">Choose a feat</button>`;
+      body = `<div class="slot-buttons"><button type="button" class="primary" data-choose="${slot.id}">Choose a feat</button>
+        <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="About this feat slot">Details</button></div>`;
     }
     return `<li class="slot">
       <div class="slot-label">${esc(slot.label)}</div>

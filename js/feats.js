@@ -308,6 +308,42 @@ export function repeatable(feat) {
   return /(more than once|multiple times)/i.test(feat.special || '');
 }
 
+// What the app does with a feat (Feats tab Details popup): the numbers it adds and where, or null when the feat isn't
+// counted automatically. level: character level; choice: the weapon, skill or school it was taken for.
+const ITEM_CREATION = ['Brew Potion', 'Craft Magic Arms and Armor', 'Craft Rod', 'Craft Staff', 'Craft Wand', 'Craft Wondrous Item',
+  'Forge Ring', 'Scribe Scroll'];
+export function featApplied(name, { level = 1, choice = '', skillFeats = {} } = {}) {
+  const what = choice ? ` (${choice})` : '';
+  const saves = { 'Great Fortitude': 'Fortitude', 'Lightning Reflexes': 'Reflex', 'Iron Will': 'Will' };
+  if (name === 'Toughness') return `+${Math.max(3, level)} hit points (3, or 1 per character level from 4th): counted in your hit points.`;
+  if (saves[name]) return `+2 on ${saves[name]} saves: counted (see Details beside the save).`;
+  if (name === 'Dodge') return '+1 dodge bonus to AC: counted in AC, touch AC and CMD (not when flat-footed).';
+  if (name === 'Improved Initiative') return '+4 on initiative: counted.';
+  if (name === 'Weapon Focus' || name === 'Greater Weapon Focus') return `+1 on attack rolls with the chosen weapon${what}: counted on the Weapons tab.`;
+  if (name === 'Weapon Specialization' || name === 'Greater Weapon Specialization') return `+2 damage with the chosen weapon${what}: counted on the Weapons tab.`;
+  if (name === 'Improved Critical') return `Doubles the threat range of the chosen weapon${what}: counted on the Weapons tab.`;
+  if (name === 'Weapon Finesse') return 'Light and finesse weapons use Dex instead of Str on attack rolls when it is higher: counted on the Weapons tab.';
+  if (['Power Attack', 'Deadly Aim', 'Rapid Shot'].includes(name)) return 'Switch it on in Combat options on the Weapons tab; the attacks and damage change to match.';
+  if (['Two-Weapon Fighting', 'Improved Two-Weapon Fighting', 'Greater Two-Weapon Fighting', 'Double Slice'].includes(name)) {
+    return 'Counted when you choose a main and off-hand weapon in Combat options on the Weapons tab.';
+  }
+  if (name === 'Exotic Weapon Proficiency' || name === 'Martial Weapon Proficiency') return `Proficiency with the chosen weapon${what}: no -4 on the Weapons tab.`;
+  if (/^(Light|Medium|Heavy) Armor Proficiency$|^Armor Proficiency|^Shield Proficiency$|^Tower Shield Proficiency$/.test(name)) return 'Proficiency: no armor check penalty on attack rolls (Armor tab).';
+  if (name === 'Agile Maneuvers') return 'Dex instead of Str on CMB when it is higher: counted.';
+  if (/^(Improved|Greater) (Bull Rush|Dirty Trick|Disarm|Drag|Grapple|Overrun|Reposition|Steal|Sunder|Trip)$/.test(name)) {
+    return '+2 on that combat maneuver (and +2 CMD against it for Improved): shown on the Race card.';
+  }
+  if (name === 'Skill Focus') return `+3 on the chosen skill${what} (+6 with 10 or more ranks): counted on the Skills tab.`;
+  if (skillFeats[name]) return `+2 on ${skillFeats[name].join(' and ')} (+4 with 10 or more ranks): counted on the Skills tab.`;
+  if (name === 'Spell Focus' || name === 'Greater Spell Focus') return `+1 to the save DC of spells of the chosen school${what}: counted on the Spells tab.`;
+  if (name === 'Spell Penetration' || name === 'Greater Spell Penetration') return '+2 on caster level checks against spell resistance: counted on the Spells tab.';
+  if (name === 'Improved Channel') return '+2 to the DC of your channel energy: counted on the Race card.';
+  if (name === "Hero's Fortune" || name === 'Blood of Heroes' || name === 'Luck of Heroes') return 'Changes your hero points (Action Points house rule): counted.';
+  if (ITEM_CREATION.includes(name)) return 'Lets you make these items on the Craft tab.';
+  if (name === 'Improved Unarmed Strike') return 'Proficiency with unarmed strikes.';
+  return null;
+}
+
 // Numbers that simple feats add to the character sheet.
 export function featEffects(featNames, level) {
   const has = new Set(featNames);
