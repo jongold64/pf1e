@@ -109,8 +109,8 @@ export function abilityDamage(abilities = []) {
     const d = ABILITY_DAMAGE[a.id];
     if (!d) continue;
     if (d.vs) out.vs.push({ name: a.name, dice: d.hit, vs: d.vs });
-    else if (d.hit) out.hit.push({ dice: d.hit, type: d.type });
-    if (d.burst) out.burst.push({ dice: d.burst, type: d.type });
+    else if (d.hit) out.hit.push({ dice: d.hit, type: d.type, name: a.name });
+    if (d.burst) out.burst.push({ dice: d.burst, type: d.type, name: a.name });
     if (d.note) out.notes.push(`${a.name}: ${d.note}`);
   }
   return out;
@@ -199,7 +199,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     damage: formatDamage(dice, damageBonus),
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
-             penalty, powerHit, powerDamage, strDamage, effectAttack, effectDamage, rapid, enh, bonusDamage, dice },
+             penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice },
   };
 }
 
@@ -222,8 +222,13 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(attackRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerHit);
   add(attackRows, 'Rapid Shot', p.rapid);
   const damageRows = [];
-  add(damageRows, `${a.abilityUsed === 'dex' && p.strDamage === 0 ? 'Strength (none for this weapon)' : 'Strength'}`, p.strDamage,
-      p.strDamage && p.strDamage !== a.parts.abilityMod ? 'two-handed, off-hand or bow rules' : '');
+  // Which Strength rule applies: full, 1 1/2 times in two hands, half in the off hand, or a bow's limits.
+  const sm = p.strMod;
+  const strLabel = p.strDamage === sm ? 'Strength modifier'
+    : sm > 0 && p.strDamage === Math.floor(sm * 1.5) ? 'Strength × 1½ (held in two hands)'
+    : sm > 0 && p.strDamage === Math.floor(sm / 2) ? 'Strength × ½ (off hand)'
+    : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
+  add(damageRows, strLabel, p.strDamage);
   add(damageRows, 'Enhancement bonus', p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);

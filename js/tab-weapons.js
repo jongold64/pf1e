@@ -249,6 +249,7 @@ export function renderMyWeapons(app, view) {
           <button type="button" class="skill-details" data-attack-details="${i}" aria-label="What adds to this weapon's attack and damage">Details</button></dd>
         <dt>Damage</dt><dd><b>${esc(damageWithExtras(a.damage, crit.fx))}</b>
           ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] }, 'Roll damage')}
+          <button type="button" class="skill-details" data-attack-details="${i}" data-part="damage" aria-label="What adds to this weapon's damage">Details</button>
           ${crit.fx.notes.length ? `<div class="muted small">${esc(crit.fx.notes.join(' '))}</div>` : ''}</dd>
         ${extra.join('')}
         <dt>Critical</dt><dd>${esc(critText(w, crit))}${crit.fx.burst.length ? ` <span class="muted">(plus ${esc(crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', '))} per step above ×1)</span>` : ''}
@@ -276,7 +277,8 @@ export function renderMyWeapons(app, view) {
 }
 
 // Details popup for one carried weapon: everything that adds to its attack roll and to its damage.
-function showAttackDetails(app, i) {
+// part: 'damage' shows only the damage (with special abilities' extra dice and critical damage); otherwise attack and damage.
+function showAttackDetails(app, i, part = null) {
   const { state, data, view } = app;
   const e = state.weapons[i];
   const w = e && data.weaponsById.get(e.id);
@@ -289,6 +291,18 @@ function showAttackDetails(app, i) {
     ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td><td class="num">${esc(r.text ?? signed(r.value))}</td></tr>`).join('')}</tbody>
     <tfoot><tr><td><b>${esc(totalLabel)}</b></td><td class="num"><b>${esc(totalText)}</b></td></tr></tfoot></table>`;
   const dice = a.parts.dice || '—';
+  if (part === 'damage') {
+    const extras = [...crit.fx.hit.map(x => ({ label: `${x.name || 'Special ability'}: every hit`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''}` })),
+      ...crit.fx.vs.map(x => ({ label: `${x.name}: only against ${x.vs}`, text: `+${x.dice}` }))];
+    app.openDetail(`${weaponLabel(w, e)} damage: ${damageWithExtras(a.damage, crit.fx)}`, `
+      ${table([{ label: `Weapon dice (${view.size})`, text: dice }, ...b.damageRows, ...extras.filter(x => !x.label.includes('only against'))], 'Damage', damageWithExtras(a.damage, crit.fx))}
+      ${extras.some(x => x.label.includes('only against')) ? `<h3>Sometimes</h3><ul class="plain-list">${extras.filter(x => x.label.includes('only against')).map(x => `<li>${esc(x.label)}: ${esc(x.text)}</li>`).join('')}</ul>` : ''}
+      <h3>On a critical hit</h3><p>${esc(critText(w, crit))}: the weapon dice and bonuses are rolled ×${crit.mult}; extra dice from special abilities aren't multiplied${crit.fx.burst.length
+        ? `, but ${esc(crit.fx.burst.map(x => `${x.name || 'burst'} adds ${x.dice} ${x.type || ''}`.trim()).join(' and '))} for each step above ×1` : ''}.</p>
+      ${crit.fx.notes.length ? `<p class="hint">${esc(crit.fx.notes.join(' '))}</p>` : ''}
+      <p class="hint">Damage is at least 1. Power Attack and two-weapon choices are on the Combat options card above.</p>`);
+    return;
+  }
   app.openDetail(`${weaponLabel(w, e)}: ${attackText(a)}`, `
     <h3>Attack roll</h3>${table(b.attackRows, a.attacks.length > 1 ? 'First attack' : 'Total', signed(b.attackTotal))}
     ${a.attacks.length > 1 ? `<p class="hint">Each extra attack from a high base attack bonus is 5 lower: ${esc(attackText(a))}.</p>` : ''}
@@ -359,7 +373,7 @@ export function initWeaponsTab(app) {
     const show = e.target.closest('[data-show-weapon]');
     if (show) showWeapon(app, show.dataset.showWeapon);
     const why = e.target.closest('[data-attack-details]');
-    if (why) showAttackDetails(app, Number(why.dataset.attackDetails));
+    if (why) showAttackDetails(app, Number(why.dataset.attackDetails), why.dataset.part || null);
     // Special abilities (treasure or purchases, at market price): remove one.
     const rm = e.target.closest('[data-wab-remove]');
     if (rm) {
