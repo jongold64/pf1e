@@ -12,7 +12,7 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, 
 import { paragraphs, ordinal } from './dom.js';
 import { abilityDamage, damageWithExtras } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
-import { classCounts, babList, racialAdjustments, saveBreakdown } from './rules.js';
+import { classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
@@ -1260,6 +1260,23 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     featNames: ['Lightning Reflexes'], traits: [{ name: 'Reactionary', effects: { saves: { ref: 1 } } }],
     effects: [{ source: 'Resistance', type: 'resistance', value: 1 }, { source: 'Cloak', type: 'resistance', value: 2 }], effectTotal: 2 });
   check('Reflex details: fighter 0 + rogue 3 + Dex 2 + Lightning Reflexes 2 + trait 1 + best resistance 2', b.total, 10);
+}
+
+// AC and combat maneuver details add up to the numbers shown.
+{
+  const fighter = classes.find(c => c.id === 'fighter');
+  const human = races.find(r => r.id === 'human');
+  const base = { str: 14, dex: 14, con: 12, int: 10, wis: 10, cha: 10 };
+  const fx = effectTotals([{ id: 'mage-armor' }, { id: 'haste' }, { id: 'shield-of-faith', cl: 6 }]);
+  const st = characterStats({ race: human, cls: fighter, level: 4, baseScores: base, flexibleChoice: 'str', featBonuses: { dodgeAc: 1 },
+    gear: armorEffects({ armor: armorById('chain-shirt'), armorEnh: 1 }), effects: fx });
+  const ac = acBreakdown(st, {}, [{ source: 'Mage armor', type: 'armor', value: 4 }, { source: 'Haste', type: 'dodge', value: 1 },
+    { source: 'Shield of faith', type: 'deflection', value: 3 }]);
+  const sum = col => ac.rows.reduce((n, r) => n + (r[col] ?? 0), 0);
+  check('AC details add up (AC, touch, flat-footed)', [sum('ac'), sum('touch'), sum('flat')].join(), [st.ac, st.touch, st.flatFooted].join());
+  const cm = maneuverBreakdown(st, 'Medium', [], [{ source: 'Haste', target: 'attack', type: 'untyped', value: 1 }]);
+  check('CMB details add up', cm.cmbRows.reduce((n, r) => n + r.value, 0), cm.cmb);
+  check('CMD details add up', cm.cmdRows.reduce((n, r) => n + r.value, 0), cm.cmd);
 }
 
 const failed = results.filter(r => !r.pass);

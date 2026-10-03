@@ -648,3 +648,7 @@ table.skill-why { width: 100%; border-collapse: collapse; }
 table.skill-why td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
 table.skill-why td.num { text-align: right; white-space: nowrap; }
 table.skill-why tfoot td { border-bottom: 0; }
+.defense-ac button.skill-details { display: block; margin: 4px auto 0; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; }
+.defense-ac .cmb-box button.skill-details { display: inline-block; margin: 0; }
+table.skill-why th { text-align: left; font-weight: 600; padding: 4px; border-bottom: 1px solid var(--border); }
+table.skill-why th.num { text-align: right; }

@@ -2,7 +2,7 @@
 import {
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, saveBreakdown, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  pointsSpent, racialAdjustments, characterStats, saveBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
   currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
@@ -537,6 +537,8 @@ function buildControls() {
   $('race-defense').addEventListener('click', e => {
     const b = e.target.closest('[data-save-details]');
     if (b) showSaveDetails(b.dataset.saveDetails);
+    if (e.target.closest('[data-ac-details]')) showAcDetails();
+    if (e.target.closest('[data-cmb-details]')) showManeuverDetails();
   });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
   $('hero-points').addEventListener('click', e => {
@@ -1326,12 +1328,14 @@ function render() {
   }
   $('race-defense').innerHTML = `
     <div class="defense-ac">
-      <div><span>AC</span><b>${stats.ac}</b></div>
+      <div><span>AC</span><b>${stats.ac}</b>
+        <button type="button" class="skill-details" data-ac-details aria-label="What adds to AC, touch and flat-footed">Details</button></div>
       <div><span>Touch</span><b>${stats.touch}</b></div>
       <div><span>Flat-footed</span><b>${stats.flatFooted}</b></div>
       <div><span>CMD</span><b>${cm.cmd}</b></div>
       <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
-        ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}</div>
+        ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}
+        <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMB and CMD">Details</button></div>
     </div>
     ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
@@ -1371,11 +1375,11 @@ function render() {
 }
 
 // A Details popup's table: one row per thing that adds, then the total.
-function detailsTable(lines, total) {
+function detailsTable(lines, total, totalText = signed(total)) {
   const rows = lines.map(l => `<tr><td>${esc(l.label)}${l.note ? ` <small class="muted">(${esc(l.note)})</small>` : ''}</td>
-    <td class="num">${esc(signed(l.value))}</td></tr>`).join('');
+    <td class="num">${esc(l.text ?? signed(l.value))}</td></tr>`).join('');
   return `<table class="skill-why"><tbody>${rows}</tbody>
-    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(signed(total))}</b></td></tr></tfoot></table>`;
+    <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(totalText)}</b></td></tr></tfoot></table>`;
 }
 
 // Details popup for a saving throw (Race card).
@@ -1385,6 +1389,31 @@ function showSaveDetails(name) {
     effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === save), effectTotal: view.stats.fx[save] });
   openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
     + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : ''));
+}
+
+// Details popup for AC, touch and flat-footed AC (Race card).
+function showAcDetails() {
+  const { stats, gear } = view;
+  const armorName = gear.armor && [gear.armor.name, state.armorEnh ? `+${state.armorEnh}` : ''].filter(Boolean).join(' ');
+  const shieldName = gear.shield && [gear.shield.name, state.shieldEnh ? `+${state.shieldEnh}` : ''].filter(Boolean).join(' ');
+  const monk = view.counts.find(e => MONK_IDS.includes(e.cls.id));
+  const b = acBreakdown(stats, { armor: armorName, shield: shieldName, race: view.race.name, monk: monk?.cls.name },
+    activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'ac'));
+  const cell = v => (v === null ? '<td class="num muted">—</td>' : `<td class="num">${esc(signed(v))}</td>`);
+  const rows = b.rows.map(r => `<tr><td>${esc(r.label)}${r.note ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td>
+    ${r.label === 'Base' ? `<td class="num">10</td><td class="num">10</td><td class="num">10</td>` : cell(r.ac) + cell(r.touch) + cell(r.flat)}</tr>`).join('');
+  openDetail(`Armor Class ${stats.ac}`, `<table class="skill-why"><thead><tr><th></th><th class="num">AC</th><th class="num">Touch</th>
+      <th class="num">Flat-footed</th></tr></thead><tbody>${rows}</tbody>
+      <tfoot><tr><td><b>Total</b></td><td class="num"><b>${b.totals.ac}</b></td><td class="num"><b>${b.totals.touch}</b></td>
+      <td class="num"><b>${b.totals.flat}</b></td></tr></tfoot></table>
+    <p class="hint">Touch attacks ignore armor, shields and natural armor. Flat-footed, you lose your Dex bonus and dodge bonuses.</p>`);
+}
+
+// Details popup for CMB and CMD (Race card).
+function showManeuverDetails() {
+  const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, state.customEffects));
+  openDetail(`CMB ${signed(b.cmb)} · CMD ${b.cmd}`, `<h3>Combat Maneuver Bonus</h3>${detailsTable(b.cmbRows, b.cmb)}
+    <h3>Combat Maneuver Defense</h3>${detailsTable(b.cmdRows, b.cmd, String(b.cmd))}`);
 }
 
 // The Skills tab's Details popup for one skill (set by renderSkills, which has what it needs).

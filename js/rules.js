@@ -245,7 +245,78 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
     touch: acParts.touch,
     flatFooted: acParts.flatFooted,
     fx,
+    // The pieces of AC, for the Details popup (acBreakdown).
+    acInfo: { armor: g.armorBonus, shield: g.shieldBonus, armorPart: acParts.armorPart, shieldPart: acParts.shieldPart,
+              natural: raceAc.natural, dex: dexAc, dexMod: mod.dex, maxDex: g.maxDex, size, classAc, featDodge: fb.dodgeAc,
+              raceDodge: raceAc.dodge, wis: mod.wis },
   };
+}
+
+// Everything that adds to AC, named, with what counts for touch and flat-footed AC (Details popup on the Race card).
+// stats: from characterStats; names: { armor, shield (worn item names), race, monk (monk class name) };
+// effects: active effect bonuses to AC ({ source, type, value }). Returns { rows: [{ label, ac, touch, flat, note? }],
+// totals: { ac, touch, flat } } where touch / flat are null for a piece that doesn't count there.
+const NOT_TOUCH = new Set(['armor', 'shield', 'natural armor', 'natural armor enhancement']);
+export function acBreakdown(stats, names = {}, effects = []) {
+  const i = stats.acInfo;
+  const rows = [];
+  const add = (label, value, { touch = true, flat = true, note = '' } = {}) => {
+    if (!value && !note) return;
+    rows.push({ label, ac: value, touch: touch ? value : null, flat: flat ? value : null, note });
+  };
+  add('Base', 10);
+  if (i.armor) add(`Armor: ${names.armor || 'worn armor'}`, i.armor, { touch: false });
+  if (i.shield) add(`Shield: ${names.shield || 'shield'}`, i.shield, { touch: false });
+  add(`Dexterity modifier`, i.dex, { flat: i.dex < 0, note: i.maxDex !== null && i.dexMod > i.maxDex ? `Dex ${i.dexMod >= 0 ? '+' : ''}${i.dexMod}, capped by armor` : '' });
+  add('Size', i.size);
+  if (i.natural) add(`Natural armor (${names.race || 'race'})`, i.natural, { touch: false });
+  if (i.featDodge) add('Feat: Dodge', i.featDodge, { flat: false });
+  if (i.raceDodge) add(`Dodge bonus (${names.race || 'race'})`, i.raceDodge, { flat: false });
+  if (i.classAc) add(`${names.monk || 'Monk'} AC bonus (Wis + class)`, i.classAc);
+  for (const e of effects) {
+    add(`Effect: ${e.source}`, e.value, { touch: !NOT_TOUCH.has(e.type), flat: !(e.type === 'dodge' && e.value > 0), note: `${e.type} bonus` });
+  }
+  // What the stacking rules take off: same-type effects, and armor / shield / natural armor bonuses that compete.
+  const listed = (col, f) => rows.reduce((n, r) => n + (f(r) ?? 0), 0);
+  const fix = (label, target) => {
+    const d = { ac: target.ac - listed('ac', r => r.ac), touch: target.touch - listed('touch', r => r.touch), flat: target.flat - listed('flat', r => r.flat) };
+    if (d.ac || d.touch || d.flat) rows.push({ label, ac: d.ac, touch: d.touch, flat: d.flat });
+  };
+  fix('Bonuses of the same type do not stack (the highest counts)', { ac: stats.ac, touch: stats.touch, flat: stats.flatFooted });
+  return { rows, totals: { ac: stats.ac, touch: stats.touch, flat: stats.flatFooted } };
+}
+
+// CMB and CMD, named (Details popup). Mirrors combatManeuvers: CMB = BAB (monk levels count for a monk's) + Str (or Dex
+// with Agile Maneuvers) + special size modifier + attack roll bonuses from effects; CMD = 10 + BAB + Str + Dex + size
+// + the AC bonuses that count against touch attacks (dodge, deflection, a monk's AC bonus...).
+export function maneuverBreakdown(stats, size, haveFeats = [], effects = []) {
+  const { cmb, cmd } = combatManeuvers(stats, size, haveFeats);
+  const sizeMod = -(SIZE_AC[size] ?? 0);
+  const bab = stats.bab[0];
+  const monk = (stats.classCounts || []).find(e => e.cls.id === 'monk' && e.level >= 3);
+  const cmbBab = monk ? bab - monk.cls.progression[monk.level - 1].bab[0] + monk.level : bab;
+  const agile = haveFeats.includes('Agile Maneuvers') && stats.mod.dex > stats.mod.str;
+  const cmbRows = [{ label: monk ? 'Base attack bonus (monk levels count in full)' : 'Base attack bonus', value: cmbBab },
+    { label: agile ? 'Dexterity modifier (Agile Maneuvers)' : 'Strength modifier', value: agile ? stats.mod.dex : stats.mod.str }];
+  if (sizeMod) cmbRows.push({ label: 'Size', value: sizeMod });
+  for (const e of effects.filter(x => x.target === 'attack' || x.target === 'cmb')) {
+    cmbRows.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus${e.target === 'attack' ? ' on attack rolls' : ''}` });
+  }
+  const i = stats.acInfo;
+  const cmdRows = [{ label: 'Base', value: 10, text: '10' }, { label: 'Base attack bonus', value: bab }, { label: 'Strength modifier', value: stats.mod.str },
+    { label: 'Dexterity modifier', value: i.dex, note: i.maxDex !== null && i.dexMod > i.maxDex ? 'capped by armor' : '' }];
+  if (sizeMod) cmdRows.push({ label: 'Size', value: sizeMod });
+  if (i.featDodge) cmdRows.push({ label: 'Feat: Dodge', value: i.featDodge });
+  if (i.raceDodge) cmdRows.push({ label: 'Racial dodge bonus', value: i.raceDodge });
+  if (i.classAc) cmdRows.push({ label: 'Monk AC bonus', value: i.classAc });
+  for (const e of effects.filter(x => (x.target === 'ac' && !NOT_TOUCH.has(x.type)) || x.target === 'cmd')) {
+    cmdRows.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
+  }
+  for (const [rows, total] of [[cmbRows, cmb], [cmdRows, cmd]]) {
+    const listed = rows.reduce((n, r) => n + r.value, 0);
+    if (listed !== total) rows.push({ label: 'Bonuses of the same type do not stack (the highest counts)', value: total - listed });
+  }
+  return { cmb, cmd, cmbRows, cmdRows };
 }
 
 // Everything that adds to one saving throw ('fort' | 'ref' | 'will'), named, for the Details popup: each class's base
