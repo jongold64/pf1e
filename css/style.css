@@ -8,7 +8,7 @@
   --good: #1a7f37;
   --bad: #cf222e;
   --warn: #9a6700;
-  --shade: #efebe3;   /* trained-only skill rows */
+  --shade: #e4ddd0;   /* trained-only skill rows */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,7 +22,7 @@
     --good: #57c27a;
     --bad: #ff7b72;
     --warn: #d4a72c;
-    --shade: #302d28;
+    --shade: #3b3731;
   }
 }
 
