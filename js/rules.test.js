@@ -1357,6 +1357,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Unstoppable Momentum at 9th: +2', bigWeaponRules({ titanFighter: 9 }).momentum, 2);
 }
 
+// Effects on ability checks and on all d20 rolls.
+{
+  check('good hope: +2 on ability checks', effectTotals([{ id: 'good-hope' }]).checks, 2);
+  const all = effectTotals([], [{ name: 'Luckstone', target: 'd20', type: 'luck', value: 1, on: true }]);
+  check('all d20 rolls: attacks, each save, skills and ability checks', [all.attack, all.fort, all.ref, all.will, all.skills, all.checks].join(), '1,1,1,1,1,1');
+  check('all d20 rolls and prayer (both luck): the higher counts', effectTotals([{ id: 'prayer' }], [{ target: 'd20', type: 'luck', value: 2, on: true }]).attack, 2);
+}
+
 const failed = results.filter(r => !r.pass);
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;

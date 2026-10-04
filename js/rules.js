@@ -196,7 +196,7 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   const racial = finalScores(baseScores, race, flexibleChoice);
   const inc = levelIncreases(total, increases);
   // Active effects (effects.js effectTotals): ability bonuses, saves, hit points, AC by type; others are passed on as `fx`.
-  const fx = { ac: {}, attack: 0, damage: 0, fort: 0, ref: 0, will: 0, init: 0, speed: 0, skills: 0, cmb: 0, cmd: 0, hp: 0, ...effects };
+  const fx = { ac: {}, attack: 0, damage: 0, fort: 0, ref: 0, will: 0, init: 0, speed: 0, skills: 0, checks: 0, cmb: 0, cmd: 0, hp: 0, ...effects };
   const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a] + (fx[a] || 0)]));
   const mod = Object.fromEntries(ABILITIES.map(a => [a, abilityModifier(scores[a])]));
   const rowFor = e => e.cls.progression[e.level - 1];

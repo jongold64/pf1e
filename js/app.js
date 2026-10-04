@@ -1576,8 +1576,10 @@ function render() {
     .replace(/<\/div>$/, `<button type="button" class="skill-details" data-save-details="${name}" aria-label="What adds to ${name}">Details</button></div>`);
   // Ability checks: d20 + modifier, a Roll button beside each modifier.
   for (const a of ABILITIES) {
-    $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check`, check: ABILITY_NAMES[a],
-      plain: true, groups: [{ attacks: [stats.mod[a]] }] })}`;
+    // An ability check: the modifier plus active effects' bonus on ability checks (good hope...).
+    const check = stats.mod[a] + stats.fx.checks;
+    $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check${stats.fx.checks ? ` (${signed(stats.fx.checks)} from effects)` : ''}`,
+      check: ABILITY_NAMES[a], plain: true, groups: [{ attacks: [check] }] })}`;
   }
   $('race-defense').innerHTML = `
     <div class="defense-ac">

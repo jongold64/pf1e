@@ -14,7 +14,8 @@ const STACKS = new Set(['dodge', 'circumstance', 'untyped']);
 export const TARGETS = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'],
   ['wis', 'Wisdom'], ['cha', 'Charisma'], ['ac', 'Armor Class'], ['attack', 'Attack rolls'], ['damage', 'Damage rolls'],
   ['saves', 'All saves'], ['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will'], ['init', 'Initiative'],
-  ['speed', 'Speed (ft.)'], ['skills', 'Skill checks'], ['cmb', 'CMB'], ['cmd', 'CMD'], ['hp', 'Hit points']];
+  ['speed', 'Speed (ft.)'], ['skills', 'Skill checks'], ['checks', 'Ability checks'], ['cmb', 'CMB'], ['cmd', 'CMD'], ['hp', 'Hit points'],
+  ['d20', 'All d20 rolls (attacks, saves, skills, ability checks)']];
 export const TARGET_NAMES = Object.fromEntries(TARGETS);
 
 const per = (cl, every, max, start = 1) => Math.min(max, Math.max(start, Math.floor(cl / every)));
@@ -38,8 +39,7 @@ export const BUFFS = [
     note: 'reach +5 ft. (the size change itself is counted: -1 attack and AC, +1 CMB and CMD, bigger weapon damage)' },
   { id: 'expeditious-retreat', name: 'Expeditious retreat', bonuses: () => [b('speed', 'enhancement', 30)] },
   { id: 'foxs-cunning', name: "Fox's cunning", bonuses: () => [b('int', 'enhancement', 4)] },
-  { id: 'good-hope', name: 'Good hope', bonuses: () => ['attack', 'damage', 'saves', 'skills'].map(t => b(t, 'morale', 2)),
-    note: 'also +2 on ability checks' },
+  { id: 'good-hope', name: 'Good hope', bonuses: () => ['attack', 'damage', 'saves', 'skills', 'checks'].map(t => b(t, 'morale', 2)) },
   { id: 'greater-heroism', name: 'Greater heroism', bonuses: () => ['attack', 'saves', 'skills'].map(t => b(t, 'morale', 4)),
     note: 'immune to fear; temporary hp equal to caster level (max 20)' },
   { id: 'haste', name: 'Haste', bonuses: () => [b('attack', 'untyped', 1), b('ac', 'dodge', 1), b('ref', 'dodge', 1), b('speed', 'enhancement', 30)],
@@ -77,8 +77,10 @@ export function activeBonuses(buffs = [], custom = []) {
     if (c.on === false || !value || !TARGET_NAMES[c.target]) continue;
     out.push({ target: c.target, type: BONUS_TYPES.includes(c.type) ? c.type : 'untyped', value, source: c.name || 'Custom' });
   }
-  // "All saves" counts on each save (so it stacks, or not, with bonuses to one save).
-  return out.flatMap(x => (x.target === 'saves' ? ['fort', 'ref', 'will'].map(t => ({ ...x, target: t })) : [x]));
+  // "All saves" counts on each save (so it stacks, or not, with bonuses to one save); "All d20 rolls" on attacks, each
+  // save, skills and ability checks.
+  const spread = { saves: ['fort', 'ref', 'will'], d20: ['attack', 'fort', 'ref', 'will', 'skills', 'checks'] };
+  return out.flatMap(x => (spread[x.target] ? spread[x.target].map(t => ({ ...x, target: t })) : [x]));
 }
 
 // Total of a list of bonuses to one thing, by the stacking rules.
@@ -100,7 +102,7 @@ export function effectTotals(buffs = [], custom = []) {
   const all = activeBonuses(buffs, custom);
   const totals = { ac: {} };
   for (const [t] of TARGETS) {
-    if (t === 'saves' || t === 'ac') continue;
+    if (t === 'saves' || t === 'ac' || t === 'd20') continue;
     totals[t] = stackTotal(all.filter(x => x.target === t));
   }
   for (const type of new Set(all.filter(x => x.target === 'ac').map(x => x.type))) {

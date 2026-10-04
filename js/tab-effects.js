@@ -42,7 +42,7 @@ export function renderEffects(app, view) {
   const totals = [
     ...['str', 'dex', 'con', 'int', 'wis', 'cha'].filter(a => fx[a]).map(a => `${TARGET_NAMES[a]} ${signedN(fx[a])}`),
     ...Object.entries(fx.ac).filter(([, v]) => v).map(([t, v]) => `AC ${signedN(v)} ${t}`),
-    ...['attack', 'damage', 'fort', 'ref', 'will', 'init', 'skills', 'cmb', 'cmd', 'hp'].filter(k => fx[k]).map(k => `${TARGET_NAMES[k]} ${signedN(fx[k])}`),
+    ...['attack', 'damage', 'fort', 'ref', 'will', 'init', 'skills', 'checks', 'cmb', 'cmd', 'hp'].filter(k => fx[k]).map(k => `${TARGET_NAMES[k]} ${signedN(fx[k])}`),
     ...(fx.speed ? [`Speed ${signedN(fx.speed)} ft.`] : []),
     ...(view.size !== view.race.size ? [`Size ${view.size}`] : []),
   ];
