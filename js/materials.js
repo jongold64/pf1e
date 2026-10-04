@@ -15,7 +15,8 @@ import { NON_METAL } from './armor.js';
 const LEATHERS = ['leather', 'hide', 'studded-leather'];
 const METAL_SHIELDS = ['buckler', 'light-steel-shield', 'heavy-steel-shield', 'light-steel-quickdraw-shield'];
 const WOODEN_SHIELDS = ['light-wooden-shield', 'heavy-wooden-shield', 'light-wooden-quickdraw-shield', 'tower-shield'];
-const isMetalArmor = a => a.category !== 'shield' && !NON_METAL.has(a.id);
+// Metal armor: not in NON_METAL, and not marked `metal: false` (armor from later books says which it is).
+const isMetalArmor = a => a.category !== 'shield' && !NON_METAL.has(a.id) && a.metal !== false;
 const byCategory = (light, medium, heavy) => a => ({ light, medium, heavy })[a.category];
 
 // Each material: who can use it (`fits`), price (`price(a)` = the new full price), and changes. Prices from the

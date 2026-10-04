@@ -183,6 +183,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   attack/damage (weaponAttack `effectAttack`/`effectDamage`, spell attacks, CMB), init, speed, skills (`effectBonus`), cmd.
   `view.size` = race size moved by enlarge/reduce, used for combat (AC, CMB, weapon dice, spells), not gear weight.
   Feat prerequisites use scores without effects (`plainScores`).
+- Armor from later books: `build_foundry_armor.py` (after `build_armor.py`) adds the Foundry `armors-and-shields` pack's
+  mundane pieces PSRD lacks (Adventurer's Armory 2, Adventurer's Guide, Inner Sea World Guide, UE lamellar variants...),
+  Paizo books with notices only; names matched letters-only without a trailing "armor" (`SAME_AS` for renamed ones),
+  specific magic armor (aura, CL, enhancement, `SKIP`) left out. Records carry `metal` (false: druids can wear it), used
+  by `druidMetalWarnings` and the materials' `isMetalArmor`. Foundry has no description text for most of them.
 - Armor materials (`js/materials.js`, hand-entered from the Core Rulebook / Ultimate Equipment Special Materials):
   `state.armorMaterial` / `shieldMaterial`; computeView uses `withMaterial(item, id)`, a changed copy of the armor record
   (name, price incl. masterwork, weight, max Dex, check penalty, spell failure), so cost, weight, AC and the sheet need no
