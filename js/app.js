@@ -784,6 +784,24 @@ function buildControls() {
     update({ featChoices: { ...state.featChoices, [slotId]: { feat: state.feats[slotId], value: e.target.value } } });
   });
   $('feat-list').addEventListener('click', e => {
+    // Details: the feat in a popup over the list (prerequisites at this slot's level, what the app counts), with Choose.
+    const pop = e.target.closest('[data-feat-pop]');
+    if (pop) {
+      e.preventDefault();  // it sits in the row's summary: don't open or close the row
+      const f = data.featsById.get(pop.dataset.featPop);
+      const slot = view.slots.find(s => s.id === pickerSlotId);
+      if (!f || !slot) return;
+      const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+      const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
+      openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
+        <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).')}</p>
+        ${check.status === 'unmet' ? '<p class="warning">You do not meet all the prerequisites at this level.</p>' : ''}`,
+        [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
+          update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
+          $('feat-picker').close();
+        } }]);
+      return;
+    }
     const pick = e.target.closest('[data-pick]');
     if (!pick) return;
     update({ feats: { ...state.feats, [pickerSlotId]: pick.dataset.pick } });
@@ -1936,7 +1954,8 @@ function renderPicker() {
   $('feat-list').innerHTML = matches.slice(0, PICKER_LIMIT).map(({ f, check }) => `
     <details class="feat-item" data-feat="${esc(f.id)}">
       <summary>${STATUS_ICON[check.status]} <span class="feat-name">${esc(f.name)}</span>
-        <small>${esc((f.types || []).join(', '))}</small></summary>
+        <small>${esc((f.types || []).join(', '))}</small>
+        <button type="button" class="skill-details" data-feat-pop="${esc(f.id)}" aria-label="${esc(f.name)} in a popup">Details</button></summary>
       <div class="feat-body"></div>
     </details>`).join('') || '<p class="hint">No feats match.</p>';
 }
