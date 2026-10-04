@@ -17,7 +17,7 @@ import {
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
-import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy } from './tab-armor.js';
+import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -2127,13 +2127,7 @@ function openResult(type, id) {
     showTab('weapons');
     showWeapon(app, id);
   } else if (type === 'armor') {
-    const a = data.armorById.get(id);
-    const isShield = a.category === 'shield';
-    openDetail(a.name, armorDetails(a), [
-      { label: isShield ? 'Use this shield' : 'Wear this armor', primary: true,
-        run: () => { update(isShield ? { shieldId: id } : { armorId: id }); showTab('armor'); } },
-      { label: 'Go to Armor', run: () => showTab('armor') },
-    ]);
+    popArmor(app, id);
   }
 }
 

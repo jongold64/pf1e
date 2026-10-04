@@ -67,7 +67,47 @@ export function showArmorWhy(app, key) {
     <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
 }
 
+// Wearing an armor or shield (or taking it off): a different one doesn't keep the old one's abilities or material.
+export function wearArmor(app, a) {
+  const k = a.category === 'shield' ? 'shield' : 'armor';
+  const off = app.state[`${k}Id`] === a.id;
+  app.update({ [`${k}Id`]: off ? '' : a.id, [`${k}Abilities`]: [], [`${k}Crafted`]: false, [`${k}Material`]: '' });
+}
+
+// An armor or shield in a popup, with Wear / Use (or Take it off).
+export function popArmor(app, id) {
+  const a = app.data.armorById.get(id);
+  if (!a) return;
+  const isShield = a.category === 'shield';
+  const worn = app.state[isShield ? 'shieldId' : 'armorId'] === a.id;
+  app.openDetail(a.name, armorDetails(a), [
+    { label: worn ? 'Take it off' : isShield ? 'Use this shield' : 'Wear this armor', primary: !worn,
+      run: () => { wearArmor(app, a); app.showTab('armor'); } },
+  ]);
+}
+
+// The list of every armor and shield, grouped by category, each row with a Details button.
+function renderArmorList(app) {
+  const { data, state } = app;
+  const groups = [...GROUPS, ['shield', 'Shields']];
+  $('armor-list-count').textContent = `${data.armor.length}`;
+  $('armor-list').innerHTML = groups.map(([cat, label]) => {
+    const list = data.armor.filter(a => a.category === cat).sort((x, y) => x.name.localeCompare(y.name));
+    return list.length ? `<section class="list-group"><h3 class="list-heading">${esc(label)} <span class="count">${list.length}</span></h3>
+      <ul class="pick-list armor-pick">${list.map(a => {
+        const worn = state.armorId === a.id || state.shieldId === a.id;
+        return `<li class="with-details"><button type="button" data-armor-pop="${esc(a.id)}"${worn ? ' class="mine"' : ''}>${worn ? '<span class="status met" title="Wearing">✓</span>' : ''}${esc(a.name)}
+          <small>${esc(signed(a.bonus))}${a.max_dex !== null ? ` · max Dex ${esc(signed(a.max_dex))}` : ''}${a.price_gp !== null ? ` · ${esc(formatGp(a.price_gp))}` : ''}</small></button>
+          <button type="button" class="skill-details" data-armor-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></section>` : '';
+  }).join('');
+}
+
 export function initArmorTab(app) {
+  $('armor-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-armor-pop]');
+    if (b) popArmor(app, b.dataset.armorPop);
+  });
   for (const id of ['armor-summary', 'armor-info', 'shield-info']) {
     $(id).addEventListener('click', e => {
       const b = e.target.closest('[data-armor-why]');
@@ -189,5 +229,6 @@ export function renderArmorTab(app, view) {
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
       (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : ''), 'speed'],
   ];
+  renderArmorList(app);
   $('armor-summary').innerHTML = rows.map(([k, v, key]) => `<dt>${esc(k)}</dt><dd>${esc(v)}${key ? whyButton(key, k) : ''}</dd>`).join('');
 }
