@@ -682,6 +682,8 @@ function buildControls() {
   $('class-info').addEventListener('click', e => {
     const pop = e.target.closest('[data-arch-pop]');
     if (pop) popArchetype(pop.dataset.archPop, pop.dataset.cls);
+    const dpop = e.target.closest('[data-domain-pop]');
+    if (dpop) popDomain(dpop.dataset.domainPop, dpop.dataset.cls);
   });
   $('class-info').addEventListener('click', e => {
     const btn = e.target.closest('[data-domain-remove]');
@@ -1203,6 +1205,7 @@ function domainPicker(cls, level, openFeatures) {
     }).join('');
     const spells = Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))}: ${n}`).join(' · ');
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(d.name)}</b> <small class="muted">${esc(kindName[d.kind])}${g.parent ? ` of ${esc(g.parent.name)}` : ''} · ${esc(d.source)}</small>
+        <button type="button" class="skill-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}">Details</button>
         <button type="button" data-domain-remove="${esc(d.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
       ${d.description ? `<p class="hint">${esc(d.description)}</p>` : ''}${powers}
       ${spells && cls.id !== 'inquisitor' ? `<p class="small"><b>Domain spells</b> ${esc(spells)}</p>` : ''}</li>`;
@@ -1216,8 +1219,47 @@ function domainPicker(cls, level, openFeatures) {
   const groups = [['domain', 'Domains'], ['druid', 'Druid domains'], ['subdomain', 'Subdomains'], ['inquisition', 'Inquisitions']]
     .filter(([k]) => rule.kinds.includes(k)).map(([k, label]) => { const o = group(k); return o ? `<optgroup label="${label}">${o}</optgroup>` : ''; }).join('');
   const add = left > 0 ? `<select data-domain-add="${esc(cls.id)}" aria-label="Choose a domain"><option value="">Choose ${rule.count > 1 ? `a domain (${left} left)` : 'one'}…</option>${groups}</select>` : '';
+  // Every domain this class can choose, with why one can't be taken now, each with a Details button.
+  const kindLabel = { domain: 'domain', druid: 'druid domain', subdomain: 'subdomain', inquisition: 'inquisition' };
+  const browse = `<details class="arch-feature arch-browse" data-key="dbrowse-${esc(cls.id)}"${openFeatures.has(`dbrowse-${cls.id}`) ? ' open' : ''}>
+      <summary>Browse all ${choices.length} ${esc(rule.count > 1 || !rule.natureBond ? 'choices' : 'domains')}</summary>
+      <ul class="pick-list">${choices.map(d => {
+        const mine = chosen.includes(d);
+        const why = mine ? 'taken' : left <= 0 ? 'no choice left' : domainConflict(d, chosen);
+        return `<li class="with-details"><button type="button" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(d.name)}
+            <small>${esc(why || `${kindLabel[d.kind]}${d.kind === 'subdomain' ? ` of ${(d.parents || []).map(p => data.domainsById.get(p)?.name || p).join(' or ')}` : ''}`)}</small></button>
+          <button type="button" class="skill-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(d.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details>`;
   return `<div class="domains"><h4>${esc(rule.natureBond ? 'Nature bond' : rule.label)}</h4>${bond}
-    ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}${add}</div>`;
+    ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}${add}${browse}</div>`;
+}
+
+// A domain in a popup (Classes card): its description, the powers it grants (a subdomain's with its domain's, minus the
+// one it replaces) with the level each starts at, its domain spells, and Choose / Remove.
+function popDomain(id, clsId) {
+  const d = data.domainsById.get(id);
+  const rule = DOMAIN_CLASSES[clsId];
+  const cls = view.classes.find(c => c.id === clsId);
+  if (!d || !rule || !cls) return;
+  const chosen = (state.domains[clsId] || []).map(x => data.domainsById.get(x)).filter(Boolean);
+  const mine = chosen.includes(d);
+  const left = rule.count - chosen.length;
+  const why = mine ? '' : left <= 0 ? `you already have ${rule.count === 1 ? 'one' : rule.count}` : domainConflict(d, chosen);
+  const g = domainGrants(d, data.domainsById);
+  const level = view.counts.find(e => e.cls.id === clsId)?.level || 1;
+  const powers = g.powers.map(p => `<li><b>${esc(p.name)}</b>${p.level ? ` <small class="muted">(${p.level > level ? 'at ' : ''}${esc(ordinal(p.level))} level)</small>` : ''}${paragraphs(p.text)}</li>`).join('');
+  const spells = Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `<li>${esc(ordinal(Number(lv)))}: ${esc(n)}</li>`).join('');
+  const kind = { domain: 'Domain', druid: 'Druid domain', subdomain: 'Subdomain', inquisition: 'Inquisition' }[d.kind];
+  const actions = mine
+    ? [{ label: 'Remove it', run: () => update({ domains: { ...state.domains, [clsId]: (state.domains[clsId] || []).filter(x => x !== id) } }) }]
+    : why ? [] : [{ label: `Choose ${d.name}`, primary: true, run: () => update({ domains: { ...state.domains, [clsId]: [...(state.domains[clsId] || []), id] } }) }];
+  openDetail(`${d.name} (${cls.name})`, `<p class="hint">${esc(kind)}${g.parent ? ` of ${esc(g.parent.name)}` : ''} · ${esc(d.source)}</p>
+    ${d.description ? paragraphs(d.description) : ''}
+    ${d.kind === 'subdomain' && d.replaces ? `<p class="hint">Replaces the ${esc(d.replaces)} power of its domain, and some of its spells.</p>` : ''}
+    ${why ? `<p class="warning">Can't choose it now: ${esc(why)}.</p>` : mine ? '<p class="hint">You have chosen it.</p>' : ''}
+    <h3>Granted powers</h3><ul class="plain-list arch-pop-features">${powers || '<li class="hint">None listed.</li>'}</ul>
+    ${spells && clsId !== 'inquisitor' ? `<h3>Domain spells</h3><ul class="plain-list">${spells}</ul>` : ''}
+    ${clsId === 'inquisitor' ? '<p class="hint">Inquisitors get a domain\u2019s powers, not its domain spells.</p>' : ''}`, actions);
 }
 
 // An archetype in a popup (Classes card): what it's about, each feature with the level it comes at and what it
