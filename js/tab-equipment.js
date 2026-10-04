@@ -22,7 +22,7 @@ function armorLabel(armor, enh, mw, abilities = []) {
   return prefix ? `${prefix} ${armor.name}` : armor.name;
 }
 
-function gearDetails(item) {
+function gearDetails(item, withButtons = true) {
   const versions = item.variants || [];
   const addButtons = versions.length
     ? versions.map(v => `<button type="button" class="primary" data-add-gear="${esc(item.id)}" data-variant="${esc(v.name)}">
@@ -38,7 +38,7 @@ function gearDetails(item) {
           ['Weight', item.weight_lbs !== null ? formatLbs(item.weight_lbs) : item.weight],
         ])}
     ${facts([['Craft DC', item.craft_dc]])}
-    <div class="slot-buttons">${addButtons}</div>
+    ${withButtons ? `<div class="slot-buttons">${addButtons}</div>` : ''}
     ${paragraphs(item.description)}`;
 }
 
@@ -68,7 +68,8 @@ function renderList(app) {
     return `<section class="list-group" id="gear-cat-${slug(c)}">
       <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
       <ul class="pick-list">${list.map(i =>
-        `<li><button type="button" data-gear="${esc(i.id)}">${esc(i.name)}<small>${esc(i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''))}</small></button></li>`).join('')}</ul>
+        `<li class="with-details"><button type="button" data-gear="${esc(i.id)}">${esc(i.name)}<small>${esc(i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''))}</small></button>
+          <button type="button" class="skill-details" data-gear-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup">Details</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No equipment matches.</p>';
   renderPanel(app);
@@ -239,6 +240,18 @@ export function initEquipmentTab(app) {
     document.getElementById(`gear-cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
   $('gear-list').addEventListener('click', e => {
+    // Details: the item in a popup, with an Add button for each version.
+    const pop = e.target.closest('[data-gear-pop]');
+    if (pop) {
+      const item = app.data.gearById.get(pop.dataset.gearPop);
+      if (!item) return;
+      const versions = item.variants || [];
+      const actions = versions.length
+        ? versions.map((v, n) => ({ label: `Add ${v.name.toLowerCase()} (${formatGp(v.price_gp)})`, primary: n === 0, run: () => addToInventory(app, item.id, v.name) }))
+        : [{ label: 'Add to inventory', primary: true, run: () => addToInventory(app, item.id) }];
+      app.openDetail(item.name, gearDetails(item, false), actions);
+      return;
+    }
     const btn = e.target.closest('[data-gear]');
     if (!btn) return;
     selectedId = btn.dataset.gear;
