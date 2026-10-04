@@ -2,7 +2,7 @@
 // house rule), and a picker with every published trait, searchable and filtered by category. No limits are checked
 // (the player's choice).
 import { $, esc, paragraphs } from './dom.js';
-import { traitSlotCount } from './traits.js';
+import { traitSlotCount, traitSlotLabels } from './traits.js';
 
 let pickerSlot = null;
 
@@ -22,12 +22,12 @@ function traitLabel(t) {
 
 export function renderTraits(app) {
   const { state, data } = app;
-  const count = traitSlotCount(state.houseRules);
+  const count = traitSlotCount(state.houseRules, state.drawback);
   const chosen = state.traits.map(id => data.traitsById.get(id));
   $('trait-count').textContent = `${chosen.slice(0, count).filter(Boolean).length} of ${count} chosen`;
   $('trait-slots').innerHTML = Array.from({ length: count }, (_, i) => {
     const t = chosen[i];
-    const label = i === 2 ? 'Extra campaign trait' : `Trait ${i + 1}`;
+    const label = traitSlotLabels(state.houseRules, state.drawback)[i] || `Trait ${i + 1}`;
     const body = t ? `<details class="chosen"><summary>${esc(t.name)} <small class="muted">${esc(t.category)}</small></summary>
         <p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}</details>
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
@@ -62,10 +62,12 @@ function renderPicker(app) {
 // bonus it gives, with whether it counts (trait bonuses don't stack: only the highest of each counts).
 function showTraitDetails(app, i) {
   const { state, data } = app;
-  const count = traitSlotCount(state.houseRules);
+  const count = traitSlotCount(state.houseRules, state.drawback);
   const chosen = state.traits.slice(0, count).map(id => data.traitsById.get(id)).filter(Boolean);
   const t = data.traitsById.get(state.traits[i]);
-  const slotText = i === 2 ? 'The third trait from the Extra Campaign Trait house rule (it must be a campaign trait).'
+  const label = traitSlotLabels(state.houseRules, state.drawback)[i] || '';
+  const slotText = label === 'Extra campaign trait' ? 'The third trait from the Extra Campaign Trait house rule (it must be a campaign trait).'
+    : label === 'Trait for your drawback' ? 'The extra trait your drawback gives (Drawbacks house rule).'
     : 'Every character starts with two traits. By the rules they should come from different categories (the app doesn\'t check this).';
   let html = `<h3>This slot</h3><p>${esc(slotText)}</p>`;
   if (t) {
@@ -90,7 +92,7 @@ function showTraitDetails(app, i) {
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';
   }
-  app.openDetail(t ? t.name : (i === 2 ? 'Extra campaign trait' : `Trait ${i + 1}`), html);
+  app.openDetail(t ? t.name : (traitSlotLabels(state.houseRules, state.drawback)[i] || `Trait ${i + 1}`), html);
 }
 
 export function initTraits(app) {
@@ -103,7 +105,7 @@ export function initTraits(app) {
     const choose = e.target.closest('[data-trait-choose]');
     if (choose) {
       pickerSlot = Number(choose.dataset.traitChoose);
-      $('trait-picker-title').textContent = pickerSlot === 2 ? 'Extra campaign trait' : `Trait ${pickerSlot + 1}`;
+      $('trait-picker-title').textContent = traitSlotLabels(app.state.houseRules, app.state.drawback)[pickerSlot] || `Trait ${pickerSlot + 1}`;
       $('trait-search').value = '';
       renderPicker(app);
       $('trait-picker').showModal();
@@ -132,7 +134,7 @@ export function initTraits(app) {
       e.preventDefault();  // it sits in the row's summary: don't open or close the row
       const t = app.data.traitsById.get(pop.dataset.traitPop);
       if (!t) return;
-      const others = app.state.traits.slice(0, traitSlotCount(app.state.houseRules)).filter((id, i) => id && i !== pickerSlot)
+      const others = app.state.traits.slice(0, traitSlotCount(app.state.houseRules, app.state.drawback)).filter((id, i) => id && i !== pickerSlot)
         .map(id => app.data.traitsById.get(id)).filter(Boolean);
       const e2 = t.effects || {};
       const lines = [];

@@ -11,6 +11,8 @@ MISSING_NOTICES = [
     'Stephen Radney-MacFarland, Sean K Reynolds, Dennis Baker, Jesse Benner, Ben Bruck, Jim Groves, Tim Hitchcock, '
     'Tracy Hurley, Jonathan Keith, Jason Nelson, Tom Phillips, Ryan Macklin, F. Wesley Schneider, Amber Scott, '
     'Tork Shaw, Russ Taylor, and Ray Vallese.',
+    # The Flaws house rule's list (js/flaws.js) is from the d20 SRD's Unearthed Arcana variant rules.
+    'Unearthed Arcana Copyright 2004, Wizards of the Coast, Inc.; Andy Collins, Jesse Decker, David Noonan, Rich Redman.',
 ]
 
 c, rows = load('book-ogl.db')

@@ -334,8 +334,14 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   1), `update()` adds 1 per level gained (2 with Blood of Heroes) and 1 when Hero's Fortune is taken, max 3 (5 with
   Hero's Fortune); spend buttons per use (`HERO_POINT_USES`; cheat death costs 2; Luck of Heroes d20 > 15 keeps the
   point on a reroll or before-roll bonus); `state.antihero` = no hero points and an `antihero` 1st-level feat slot.
-  Flaws: `state.flaws` (two typed { name, effect }); each named flaw adds a `flaw-N` general feat slot at 1st level
-  (`featSlots({ flaws })`), only while the Flaws rule is on. The penalty isn't applied.
+  Flaws: `state.flaws` (two { id, choice?, name, effect }; ids from `js/flaws.js` FLAWS, the d20 SRD's Unearthed Arcana
+  list, or 'other' typed in); each adds a `flaw-N` general feat slot at 1st level (`featSlots({ flaws })`) while the rule is
+  on. `flawEffects` turns them into penalties: untyped effects (saves, initiative, AC, Pathetic's ability, Frail's hp) added
+  to `view.customAll`, plus Feeble's per-ability checks/skills, Inattentive's Perception, Noncombatant/Shaky melee/ranged
+  attacks (weapons, spell touch attacks) and Slow's halved base speed. Older typed saves are matched to the list by name.
+  Drawbacks (house rule `drawbacks`): `state.drawback` from data/drawbacks.json (`build_d20_drawbacks.py`, d20pfsrd cache
+  ../../d20pfsrd-drawbacks fetched with `fetch_d20pfsrd_feats.py ... traits drawbacks`); `traitSlotCount(houseRules,
+  drawback)` adds a slot. Their penalties are situational, so they're shown, not applied.
 - App side: psychic magic (`PSYCHIC` in multiclass.js) is its own tradition; `MONK_IDS` (rules.js) gives the unchained
   monk the monk's AC bonus and unarmed damage; its flurry (`flurryBabs('monk-unchained')`) is one extra attack at full
   BAB (two from 11th) with no penalty; the unchained rogue's finesse training grants Weapon Finesse.

@@ -37,6 +37,9 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Paizo traits PSRD lacks, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py (d20pfsrd-traits).
                     *([('build_d20_traits.py', 'data/traits.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-traits')) else []),
+                    # Paizo drawbacks (Drawbacks house rule), from d20pfsrd pages cached in ../../d20pfsrd-drawbacks.
+                    *([('build_d20_drawbacks.py', 'data/drawbacks.json')]
+                      if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-drawbacks')) else []),
                     ('build_armor.py', 'data/armor.json'),
                     # Armor and shields from later Paizo books (and Ultimate Equipment variants) after the PSRD ones.
                     ('build_foundry_armor.py', 'data/armor.json'),

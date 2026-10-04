@@ -29,6 +29,7 @@ import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
+import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -118,7 +119,8 @@ const state = {
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
-  flaws: [],       // Flaws house rule: up to two { name, effect } (typed in); each gives a bonus feat
+  drawback: '',    // Drawbacks house rule: the drawback taken (data/drawbacks.json id), '' for none
+  flaws: [],       // Flaws house rule: up to two { id (flaws.js FLAWS, or 'other'), choice? (Pathetic's ability), name, effect }
   armorId: '',     // worn armor (data/armor.json id), '' for none
   armorEnh: 0,     // its magic enhancement bonus, 0-5
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
@@ -153,6 +155,7 @@ const HOUSE_RULES = [
   ['actionPoints', 'Action Points', "Action Points: Pathfinder's hero points (Advanced Player's Guide), in the Race card: 1 to start, 1 more each level gained, at most 3, and at most 1 spent a round."],
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
   ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
+  ['drawbacks', 'Drawbacks', "Drawbacks (Ultimate Campaign): take one drawback and gain an extra trait (Feats tab)."],
 ];
 
 // A fresh character, for "New" and for resetting before a saved one is loaded.
@@ -224,9 +227,14 @@ function load(saved) {
   }
   if (!Array.isArray(state.specialties)) state.specialties = [];
   state.specialties = state.specialties.filter(n => skillInfo(n)?.family && splitSkill(n).specialty);
-  state.flaws = (Array.isArray(state.flaws) ? state.flaws : []).slice(0, 2)
-    .map(f => ({ name: String(f?.name || '').slice(0, 60), effect: String(f?.effect || '').slice(0, 200) }));
-  state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 3)
+  state.flaws = (Array.isArray(state.flaws) ? state.flaws : []).slice(0, 2).map(f => {
+    const name = String(f?.name || '').slice(0, 60);
+    const known = flawById.get(f?.id) || FLAWS.find(x => x.name.toLowerCase() === name.trim().toLowerCase());
+    if (known) return { id: known.id, name: known.name, effect: '', ...(known.choice && ABILITIES.includes(f?.choice) ? { choice: f.choice } : {}) };
+    return name.trim() ? { id: 'other', name, effect: String(f?.effect || '').slice(0, 200) } : { id: '', name: '', effect: '' };
+  });
+  if (!data.drawbacksById?.has(state.drawback)) state.drawback = '';
+  state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
   for (const [name, ranks] of Object.entries(state.skills)) {
@@ -612,7 +620,7 @@ function buildControls() {
     if (rd) { showResultDetails(rd.dataset.resultDetails); return; }
     if (!e.target.closest('[data-init-details]')) return;
     const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits,
-      activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'init'));
+      activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'init'));
     openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
   });
   // Details popup for a saving throw.
@@ -651,12 +659,20 @@ function buildControls() {
   initEffects(app);
   initCompanion(app);
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
+  $('drawback-row').addEventListener('change', e => {
+    if (e.target.id === 'drawback-select') update({ drawback: e.target.value });
+  });
   $('flaw-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.flaw);
     const field = e.target.dataset.flawField;
     if (!field) return;
-    const flaws = [0, 1].map(j => ({ ...(state.flaws[j] || { name: '', effect: '' }) }));
-    flaws[i][field] = e.target.value.slice(0, field === 'name' ? 60 : 200);
+    const flaws = [0, 1].map(j => ({ id: '', name: '', effect: '', ...(state.flaws[j] || {}) }));
+    if (field === 'id') {
+      const f = flawById.get(e.target.value);
+      flaws[i] = f ? { id: f.id, name: f.name, effect: '', ...(f.choice ? { choice: 'str' } : {}) }
+        : e.target.value === 'other' ? { id: 'other', name: '', effect: '' } : { id: '', name: '', effect: '' };
+    } else if (field === 'choice') flaws[i].choice = e.target.value;
+    else flaws[i][field] = e.target.value.slice(0, field === 'name' ? 60 : 200);
     update({ flaws });
   });
   // Classes: a class for each level
@@ -997,7 +1013,13 @@ function skillTotalFor(name) {
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
                       racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
-                      traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills });
+                      traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + flawSkill(name) });
+}
+
+// A flaw's penalty on a skill: Feeble (Str, Dex and Con skills) and Inattentive (Perception).
+function flawSkill(name) {
+  const f = view.flawFx;
+  return (f.skillsByAbility[skillInfo(name)?.ability] || 0) + (f.skills[splitSkill(name).base] || f.skills[name] || 0);
 }
 
 // The archetypes chosen for a class, as records.
@@ -1049,10 +1071,14 @@ function computeView() {
     shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
   });
   // Chosen traits (only as many as there are slots) and what they add.
-  const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)).filter(Boolean);
+  const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules, state.drawback)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
   // Active effects (spells and custom bonuses) and the size they leave the character at (enlarge person...).
-  const fx = effectTotals(state.buffs, state.customEffects);
+  // Flaws (house rule) count like effects: their penalties are untyped, so they add up with everything else.
+  const flawFx = flawEffects(state.houseRules.flaws ? state.flaws : []);
+  const customAll = [...state.customEffects, ...flawFx.effects,
+    ...(flawFx.hpPerLevel ? [{ name: 'Frail (flaw)', target: 'hp', type: 'untyped', value: flawFx.hpPerLevel * classLevels.length, on: true }] : [])];
+  const fx = effectTotals(state.buffs, customAll);
   const size = shiftSize(race.size, fx.size);
   const statsWith = (gearNow, effects = fx) => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
@@ -1111,7 +1137,8 @@ function computeView() {
     const before = classLevels.slice(0, classLevels.findIndex(c => c.id === e.cls.id));
     requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, before.length ? contextAt(before.length) : null));
   }
-  let speed = speedInArmor(race.base_speed, gear, race);
+  const baseSpeed = flawFx.halfSpeed && race.base_speed ? Math.floor(race.base_speed / 2 / 5) * 5 : race.base_speed;
+  let speed = speedInArmor(baseSpeed, gear, race);
   // A medium or heavy load slows like medium or heavy armor (not both); dwarves' Slow and Steady ignores it.
   if (load?.slows && !(race.traits || []).some(t => t.name === 'Slow and Steady')) {
     speed = Math.min(speed ?? Infinity, slowedSpeed(race.base_speed));
@@ -1121,7 +1148,7 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
-    load, fx, size,
+    load, fx, size, flawFx, customAll,
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     companion: companionLevel(counts, { natureBond: state.natureBond, animalDomain: cid => (state.domains[cid] || [])
@@ -1375,7 +1402,7 @@ function renderClasses(view) {
     if (last && n === last[1] + 1) last[1] = n; else out.push([n, n]);
     return out;
   }, []).map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
-  const traitNames = state.traits.slice(0, traitSlotCount(state.houseRules)).map(id => data.traitsById.get(id)?.name).filter(Boolean);
+  const traitNames = state.traits.slice(0, traitSlotCount(state.houseRules, state.drawback)).map(id => data.traitsById.get(id)?.name).filter(Boolean);
   const choicesAt = lv => {
     const out = [];
     for (const s of view.slots.filter(x => x.charLevel === lv)) {
@@ -1577,7 +1604,7 @@ function render() {
   // Ability checks: d20 + modifier, a Roll button beside each modifier.
   for (const a of ABILITIES) {
     // An ability check: the modifier plus active effects' bonus on ability checks (good hope...).
-    const check = stats.mod[a] + stats.fx.checks;
+    const check = stats.mod[a] + stats.fx.checks + (view.flawFx.checks[a] || 0);
     $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check${stats.fx.checks ? ` (${signed(stats.fx.checks)} from effects)` : ''}`,
       check: ABILITY_NAMES[a], plain: true, groups: [{ attacks: [check] }] })}`;
   }
@@ -1621,6 +1648,7 @@ function render() {
   renderEffects(app, view);
   renderCompanion(app, view);
   renderFlaws();
+  renderDrawback();
   renderHeroPoints();
   renderSpells(view);
   renderArmorTab(app, view);
@@ -1644,7 +1672,7 @@ function detailsTable(lines, total, totalText = signed(total)) {
 function showSaveDetails(name) {
   const save = { Fortitude: 'fort', Reflex: 'ref', Will: 'will' }[name];
   const b = saveBreakdown({ save, counts: view.counts, mod: view.stats.mod, featNames: view.haveFeats, traits: view.traits,
-    effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === save), effectTotal: view.stats.fx[save] });
+    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save), effectTotal: view.stats.fx[save] });
   openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
     + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : ''));
 }
@@ -1657,7 +1685,7 @@ function showAcDetails(column = null) {
   const shieldName = gear.shield && [gear.shield.name, state.shieldEnh ? `+${state.shieldEnh}` : ''].filter(Boolean).join(' ');
   const monk = view.counts.find(e => MONK_IDS.includes(e.cls.id));
   const b = acBreakdown(stats, { armor: armorName, shield: shieldName, race: view.race.name, monk: monk?.cls.name },
-    activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'ac'));
+    activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'ac'));
   const cell = v => (v === null ? '<td class="num muted">—</td>' : `<td class="num">${esc(signed(v))}</td>`);
   if (column) {
     const name = column === 'touch' ? 'Touch AC' : 'Flat-footed AC';
@@ -1683,7 +1711,7 @@ function showAcDetails(column = null) {
 
 // Details popup for CMB and CMD (Race card).
 function showManeuverDetails() {
-  const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, state.customEffects));
+  const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, view.customAll));
   openDetail(`CMB ${signed(b.cmb)} · CMD ${b.cmd}`, `<h3>Combat Maneuver Bonus</h3>${detailsTable(b.cmbRows, b.cmb)}
     <h3>Combat Maneuver Defense</h3>${detailsTable(b.cmdRows, b.cmd, String(b.cmd))}`);
 }
@@ -1809,8 +1837,9 @@ function renderSkills(race, classes, scores, featNames) {
   showSkillDetails = name => {
     const ranks = state.skills[name] || 0;
     const b = skillBreakdown({ name, ranks, scores, isClassSkill: isClassSkill(name), racialBonuses: racial, raceName: race.name,
-      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'skills'),
+      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'skills'),
       effectTotal: view.stats.fx.skills });
+    if (flawSkill(name)) { b.lines.push({ label: 'Flaw (Feeble or Inattentive)', value: flawSkill(name) }); b.total += flawSkill(name); }
     const info = skillInfo(name);
     openDetail(`${name} ${signed(b.total)}`, `
       ${detailsTable(b.lines, b.total)}
@@ -1830,7 +1859,7 @@ function renderSkills(race, classes, scores, featNames) {
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
-      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills });
+      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills + flawSkill(name) });
       return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
           ${name === 'Craft' ? `<div class="add-specialty"><select data-craft-pick aria-label="Add a Craft skill">
@@ -1847,7 +1876,7 @@ function renderSkills(race, classes, scores, featNames) {
 
     const ranks = state.skills[name] || 0;
     const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty,
-                            traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills });
+                            traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + flawSkill(name) });
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
@@ -1969,17 +1998,39 @@ function renderHeroPoints() {
     ${antihero}`;
 }
 
+// Drawbacks card (Drawbacks house rule): pick one drawback from the list; its full text shows, and it adds a trait slot.
+function renderDrawback() {
+  $('drawback-card').hidden = !state.houseRules.drawbacks;
+  if ($('drawback-card').hidden) return;
+  const d = data.drawbacksById.get(state.drawback);
+  $('drawback-row').innerHTML = `<label>Drawback <select id="drawback-select"><option value="">— none —</option>
+      ${data.drawbacks.map(x => `<option value="${esc(x.id)}"${x.id === state.drawback ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+    ${d ? `<div class="flaw-details"><p class="hint">${esc(d.source)}</p>${paragraphs(d.text)}
+      <p class="hint">It gives you an extra trait slot (in the Traits card above). Its penalty isn't counted automatically: most
+        apply only in some situations, so apply it in play (or add a custom effect on the Character tab).</p></div>` : ''}`;
+}
+
 function renderFlaws() {
   $('flaws-card').hidden = !state.houseRules.flaws;
   if ($('flaws-card').hidden) return;
   const active = document.activeElement?.dataset?.flawField ? document.activeElement : null;
-  if (active && $('flaw-rows').contains(active)) return;  // don't redraw while typing
+  if (active && active.tagName === 'INPUT' && $('flaw-rows').contains(active)) return;  // don't redraw while typing
+  const otherIds = i => state.flaws.filter((f, j) => j !== i && f?.id && f.id !== 'other').map(f => f.id);
   $('flaw-rows').innerHTML = [0, 1].map(i => {
-    const f = state.flaws[i] || { name: '', effect: '' };
-    return `<div class="flaw-row"><label>Flaw ${i + 1} <input type="text" data-flaw="${i}" data-flaw-field="name" maxlength="60"
-        value="${esc(f.name)}" placeholder="e.g. Feeble"></label>
-      <label>Penalty <input type="text" data-flaw="${i}" data-flaw-field="effect" maxlength="200"
-        value="${esc(f.effect)}" placeholder="e.g. -2 on Strength-based checks"></label></div>`;
+    const f = state.flaws[i] || { id: '', name: '', effect: '' };
+    const known = flawById.get(f.id);
+    const options = FLAWS.filter(x => !otherIds(i).includes(x.id)).map(x => `<option value="${x.id}"${f.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('');
+    const choice = known?.choice ? `<label>Ability <select data-flaw="${i}" data-flaw-field="choice">${ABILITIES.map(a =>
+      `<option value="${a}"${f.choice === a ? ' selected' : ''}>${ABILITY_NAMES[a]}</option>`).join('')}</select></label>` : '';
+    const details = known ? `<div class="flaw-details"><p><i>${esc(known.flavor)}</i></p><p><b>Effect:</b> ${esc(known.effect)}</p>
+        ${known.special ? `<p><b>Special:</b> ${esc(known.special)}</p>` : ''}
+        <p class="hint">${known.id === 'murky-eyed' ? 'Not counted automatically: roll the miss chance twice in play.' : 'Applied to your numbers and rolls.'}</p></div>`
+      : f.id === 'other' ? `<label>Name <input type="text" data-flaw="${i}" data-flaw-field="name" maxlength="60" value="${esc(f.name)}" placeholder="Flaw name"></label>
+        <label>Penalty <input type="text" data-flaw="${i}" data-flaw-field="effect" maxlength="200" value="${esc(f.effect)}" placeholder="e.g. -2 on Strength-based checks"></label>
+        <p class="hint">A typed-in flaw's penalty isn't applied: add it as a custom effect on the Character tab.</p>` : '';
+    return `<div class="flaw-row"><label>Flaw ${i + 1} <select data-flaw="${i}" data-flaw-field="id">
+        <option value="">— none —</option>${options}<option value="other"${f.id === 'other' ? ' selected' : ''}>Other (type it in)</option></select></label>
+      ${choice}${details}</div>`;
   }).join('');
 }
 
@@ -2210,7 +2261,7 @@ function openResult(type, id) {
   } else if (type === 'trait') {
     const t = data.traitsById.get(id);
     // "Take this trait" puts it in the first empty trait slot (2, or 3 with the Extra Campaign Trait house rule).
-    const count = traitSlotCount(state.houseRules);
+    const count = traitSlotCount(state.houseRules, state.drawback);
     const taken = state.traits.slice(0, count).includes(id);
     const empty = Array.from({ length: count }, (_, i) => i).find(i => !state.traits[i]);
     const note = taken ? `<p class="hint">You have this trait.</p>`
@@ -2257,7 +2308,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -2266,6 +2317,7 @@ async function start() {
       fetch('data/archetypes.json').then(r => r.json()),
       fetch('data/domains.json').then(r => r.json()),
       fetch('data/companions.json').then(r => r.json()),
+      fetch('data/drawbacks.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -2282,6 +2334,7 @@ async function start() {
   data.traitsById = new Map(data.traits.map(t => [t.id, t]));
   data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));
   data.domainsById = new Map(data.domains.map(d => [d.id, d]));
+  data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

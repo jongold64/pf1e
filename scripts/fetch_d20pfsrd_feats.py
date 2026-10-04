@@ -14,6 +14,9 @@ CACHE = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__fil
 SECTION = sys.argv[2] if len(sys.argv) > 2 else 'feats'
 # Parts of a section that aren't what the app uses (third-party material, trait drawbacks and tools).
 SKIP = ('3rd-party', 'drawbacks', '/tools/')
+# Optional third argument: fetch only pages whose address has this in it (e.g. "drawbacks", which SKIP otherwise leaves
+# out): python fetch_d20pfsrd_feats.py ../../d20pfsrd-drawbacks traits drawbacks
+ONLY = sys.argv[3] if len(sys.argv) > 3 else None
 HEADERS = {'User-Agent': 'pf1e-builder personal character builder (feat import)', 'Accept': 'text/html,application/xml'}
 DELAY = 0.5  # seconds between requests
 
@@ -43,6 +46,8 @@ def feat_urls():
         urls += found
         time.sleep(DELAY)
     # A page is at least /<section>/<category>/<name>/; category index pages and the skipped parts are left out.
+    if ONLY:
+        return [u for u in urls if re.search(rf'd20pfsrd\.com/{SECTION}/[^/]+/[^/]+/', u) and ONLY in u and '3rd-party' not in u]
     return [u for u in urls if re.search(rf'd20pfsrd\.com/{SECTION}/[^/]+/[^/]+/', u) and not any(x in u for x in SKIP)]
 
 

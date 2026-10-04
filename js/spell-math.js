@@ -82,7 +82,7 @@ export function evalFormula(formula, vars = {}) {
 
 // What the character needs to know about casting a spell as a given class: caster level, casting ability
 // modifier, BAB and attack modifiers, and school focus bonuses.
-export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [] }) {
+export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [], flawMelee = 0, flawRanged = 0 }) {
   const ability = CASTING_ABILITY[cls.id];
   const focus = {};
   for (const c of featChoices) {
@@ -93,7 +93,7 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
     // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
-    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, focus, penetration,
+    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, focus, penetration, flawMelee, flawRanged,
     abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability,
   };
 }
@@ -127,12 +127,12 @@ export function spellLines(spell, ctx) {
     const why = { attack: null, dc: null, damage: [] };
     let attack = null;
     if (a.kind === 'ranged touch' || a.kind === 'ranged') {
-      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx;
-      if (attack !== null) why.attack = attackRows('dex');
+      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx + (ctx.flawRanged || 0);
+      if (attack !== null) why.attack = [...attackRows('dex'), ...(ctx.flawRanged ? [{ label: 'Flaw: Shaky', value: ctx.flawRanged }] : [])];
       parts.push(a.auto_hit ? 'hits automatically' : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(attack)}`);
     } else if (a.kind === 'melee touch' || a.kind === 'melee') {
-      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack + fx;
-      why.attack = attackRows('str');
+      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack + fx + (ctx.flawMelee || 0);
+      why.attack = [...attackRows('str'), ...(ctx.flawMelee ? [{ label: 'Flaw: Noncombatant', value: ctx.flawMelee }] : [])];
       parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(attack)}`);
     } else if (a.kind === 'maneuver') {
       parts.push('combat maneuver');

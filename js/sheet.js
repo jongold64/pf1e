@@ -101,7 +101,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   }).join('');
   // Chosen spells by level, each with its attack, damage and save DC as cast by the class it's on the list of.
   const contexts = view.casting.casting.map(c => spellContext({ cls: c.cls, effectiveLevel: c.effectiveLevel, stats,
-                                                                size: view.size, featChoices: view.featChoices }));
+                                                                size: view.size, featChoices: view.featChoices,
+                                                                flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged }));
   const chosen = (data.spells ? state.spells.map(id => data.spells.find(s => s.id === id)).filter(Boolean) : []).map(s => {
     const ctx = contexts.filter(c => s.levels[c.cls.id] !== undefined).sort((a, b) => s.levels[a.cls.id] - s.levels[b.cls.id])[0];
     return { name: s.name, level: ctx ? s.levels[ctx.cls.id] : null,

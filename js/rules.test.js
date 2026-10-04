@@ -16,6 +16,7 @@ import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakd
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
+import { flawEffects } from './flaws.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1363,6 +1364,17 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const all = effectTotals([], [{ name: 'Luckstone', target: 'd20', type: 'luck', value: 1, on: true }]);
   check('all d20 rolls: attacks, each save, skills and ability checks', [all.attack, all.fort, all.ref, all.will, all.skills, all.checks].join(), '1,1,1,1,1,1');
   check('all d20 rolls and prayer (both luck): the higher counts', effectTotals([{ id: 'prayer' }], [{ target: 'd20', type: 'luck', value: 2, on: true }]).attack, 2);
+}
+
+// Flaws (Unearthed Arcana) and drawbacks' extra trait.
+{
+  const f = flawEffects([{ id: 'feeble' }, { id: 'weak-will' }]);
+  check('Feeble: -2 on Str, Dex and Con checks and skills', [f.checks.str, f.checks.dex, f.checks.con, f.skillsByAbility.dex, f.checks.wis ?? 0].join(), '-2,-2,-2,-2,0');
+  check('Weak Will: -3 Will (as an untyped effect)', effectTotals([], f.effects).will, -3);
+  check('Pathetic (Dex): Dex -2', effectTotals([], flawEffects([{ id: 'pathetic', choice: 'dex' }]).effects).dex, -2);
+  check('Noncombatant / Shaky: melee -2, ranged -2', [flawEffects([{ id: 'noncombatant' }]).melee, flawEffects([{ id: 'shaky' }]).ranged].join(), '-2,-2');
+  check('Inattentive: Perception -4', flawEffects([{ id: 'inattentive' }]).skills.Perception, -4);
+  check('a drawback gives an extra trait slot (with the house rule)', [traitSlotCount({ drawbacks: true }, 'anxious'), traitSlotCount({ drawbacks: true }), traitSlotCount({}, 'anxious')].join(), '3,2,2');
 }
 
 const failed = results.filter(r => !r.pass);

@@ -2,8 +2,16 @@
 // ones add up to. No page code here, so it can be tested on its own.
 
 // Two traits normally; the "Extra Campaign Trait" house rule adds a third.
-export function traitSlotCount(houseRules = {}) {
-  return 2 + (houseRules.extraTrait ? 1 : 0);
+// Trait slots: 2, a third with the Extra Campaign Trait house rule, and one more for a drawback (Drawbacks house rule,
+// Ultimate Campaign: taking a drawback gives an extra trait).
+export function traitSlotCount(houseRules = {}, drawback = '') {
+  return 2 + (houseRules.extraTrait ? 1 : 0) + (houseRules.drawbacks && drawback ? 1 : 0);
+}
+
+// The trait slots' names, in order.
+export function traitSlotLabels(houseRules = {}, drawback = '') {
+  return ['Trait 1', 'Trait 2', ...(houseRules.extraTrait ? ['Extra campaign trait'] : []),
+          ...(houseRules.drawbacks && drawback ? ['Trait for your drawback'] : [])];
 }
 
 // The numbers chosen traits add (from each trait's `effects`, read from its text by the data build):

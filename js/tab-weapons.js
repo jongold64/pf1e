@@ -134,8 +134,18 @@ function attackArgs(app, view, ctx, e) {
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
     powerBab: view.stats.bab[0],
     // Active effects' bonuses on attack and damage rolls (bless, divine favor...).
-    effectAttack: view.stats.fx.attack, effectDamage: view.stats.fx.damage,
+    // Flaws: Noncombatant (melee) and Shaky (ranged) attack penalties.
+    effectAttack: view.stats.fx.attack + (w.group === 'ranged' ? view.flawFx.ranged : view.flawFx.melee), effectDamage: view.stats.fx.damage,
   };
+}
+
+// The effect bonuses on a weapon's attack and damage rolls, named, for Details popups: active effects plus a flaw's
+// penalty (Noncombatant on melee attacks, Shaky on ranged ones).
+function weaponEffects(app, w) {
+  const v = app.view;
+  const flaw = w.group === 'ranged' ? v.flawFx.ranged : v.flawFx.melee;
+  return [...activeBonuses(app.state.buffs, v.customAll).filter(x => x.target === 'attack' || x.target === 'damage'),
+          ...(flaw ? [{ target: 'attack', source: w.group === 'ranged' ? 'Shaky (flaw)' : 'Noncombatant (flaw)', type: 'untyped', value: flaw }] : [])];
 }
 
 // What the Combat options card's Details buttons show, filled when it's drawn.
@@ -215,7 +225,7 @@ function renderCombat(app, view, ctx) {
     rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry)),
   ] };
   // The two hands' attacks in pieces, for their Details popups.
-  const effects = activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage');
+  const effects = weaponEffects(app, mainArgs.weapon);
   const hasTwf = have.has('Two-Weapon Fighting');
   for (const [key, hand, label, offWeapon] of [['main', r.main, 'Main hand', false], ['off', off, 'Off hand', true]]) {
     const b = attackBreakdown(hand, { penaltyLabel: 'Two-weapon fighting penalty', effects });
@@ -350,7 +360,7 @@ function showAttackDetails(app, i, part = null) {
   const args = attackArgs(app, view, ctx, e);
   const a = weaponAttack(args);
   const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
-  const b = attackBreakdown(a, { effects: activeBonuses(state.buffs, state.customEffects).filter(x => x.target === 'attack' || x.target === 'damage') });
+  const b = attackBreakdown(a, { effects: weaponEffects(app, w) });
   // The weapon-size penalty in its pieces (size steps, Giant Weapon Wielder, Massive Weapons, Incredible Heft, Jotungrip).
   const sizeAt = b.attackRows.findIndex(r => r.label === 'Weapon size (and archetype rules)');
   const sizeRows = args.sized.rows.filter(r => r.value);
