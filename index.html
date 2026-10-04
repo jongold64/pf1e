@@ -300,9 +300,12 @@
         <dl id="armor-summary" class="facts wide-facts"></dl>
       </section>
       <section class="card wide" id="armor-list-card">
-        <h2>All armor and shields <span id="armor-list-count" class="count"></span></h2>
-        <p class="hint">Tap an item or its Details to see it, and wear it from there. ✓ marks what you're wearing.</p>
-        <div id="armor-list"></div>
+        <details class="card-fold">
+          <summary><h2>All armor and shields <span id="armor-list-count" class="count"></span></h2></summary>
+          <p class="hint">Tap an item or its Details to see it; wear it from there, with a quality and material, or go on to add
+            special abilities. ✓ marks what you're wearing.</p>
+          <div id="armor-list"></div>
+        </details>
       </section>
     </main>
 
@@ -487,8 +490,9 @@
             <li><b>Material</b> makes it mithral, adamantine, darkwood, dragonhide and so on (only the ones that item can be made
               of are listed); price, weight and stats change to match. Dragonhide, darkwood and the leathers are fine for druids.</li>
             <li>To add special abilities (fortification...), use <b>Add magic gear</b> on the Magic Items tab.</li>
-            <li><b>All armor and shields</b> at the bottom lists every one by category; tap one or its <b>Details</b> to see it and
-              wear it (or take it off) from the popup.</li>
+            <li><b>All armor and shields</b> at the bottom (tap its heading to open it) lists every one by category. Tap one or its
+              <b>Details</b> to see it, pick a quality (masterwork or +1 to +5) and material, and wear it; or go straight on to
+              <b>Add special abilities</b> (bought) or <b>Craft it magic</b>.</li>
             <li><b>Details</b> buttons show how the price, AC, Dex bonus, check penalty, spell failure and speed are worked out.</li>
           </ul>
         </details>

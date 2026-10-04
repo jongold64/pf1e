@@ -707,3 +707,11 @@ table.skill-why th.num { text-align: right; }
 .arch-browse .pick-list { max-height: 320px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 6px; }
 .arch-head button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; }
 .arch-pop-features > li { border-top: 1px solid var(--border); padding: 6px 0; }
+/* A card that folds up: its heading is the summary. */
+.card-fold > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.card-fold > summary::-webkit-details-marker { display: none; }
+.card-fold > summary::before { content: '▸'; color: var(--accent); font-size: 1.1rem; }
+.card-fold[open] > summary::before { content: '▾'; }
+.card-fold > summary h2 { margin: 0; }
+.pop-armor-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.pop-armor-choices select { width: auto; }

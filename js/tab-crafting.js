@@ -425,6 +425,17 @@ export function renderCrafting(app, which = null) {
   }
 }
 
+// Making worn armor or a shield magic from the Armor tab's list: the Add magic gear card (buy) or the Craft tab's card
+// (craft), set to that armor or shield.
+export function openMagicArmor(app, target, mode = 'buy') {
+  const c = CARDS[mode];
+  const enh = Math.max(1, app.state[`${target}Enh`] || 0);
+  Object.assign(c.form, { kind: 'armor', target, enh, abilities: [], confirmed: new Set(), extraUnmet: 0, message: '' });
+  app.showTab(mode === 'buy' ? 'magic-items' : 'craft');
+  renderCrafting(app, mode);
+  $(c.card).scrollIntoView({ block: 'start' });
+}
+
 // "Craft this item" in a magic item's details: plan it on the Craft tab.
 export function craftListedItem(app, id, option) {
   Object.assign(CARDS.craft.form, { kind: 'item', itemId: id, option: option || '', confirmed: new Set(), extraUnmet: 0, message: '' });

@@ -4,6 +4,7 @@ import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass, speedInArmor } from './armor.js';
 import { MONK_IDS, slowedSpeed } from './rules.js';
 import { materialsFor } from './materials.js';
+import { openMagicArmor } from './tab-crafting.js';
 import { armorCost, formatGp } from './equipment.js';
 
 // What makes up each number on the tab, by key, for its Details popup (filled when the tab is drawn).
@@ -74,16 +75,41 @@ export function wearArmor(app, a) {
   app.update({ [`${k}Id`]: off ? '' : a.id, [`${k}Abilities`]: [], [`${k}Crafted`]: false, [`${k}Material`]: '' });
 }
 
-// An armor or shield in a popup, with Wear / Use (or Take it off).
+// An armor or shield in a popup: its stats, a quality (masterwork or +1 to +5) and material to wear it with, and buttons
+// to wear it, to go on and add special abilities (bought, or crafted), or to take it off.
 export function popArmor(app, id) {
   const a = app.data.armorById.get(id);
   if (!a) return;
-  const isShield = a.category === 'shield';
-  const worn = app.state[isShield ? 'shieldId' : 'armorId'] === a.id;
-  app.openDetail(a.name, armorDetails(a), [
-    { label: worn ? 'Take it off' : isShield ? 'Use this shield' : 'Wear this armor', primary: !worn,
-      run: () => { wearArmor(app, a); app.showTab('armor'); } },
+  const { state } = app;
+  const k = a.category === 'shield' ? 'shield' : 'armor';
+  const worn = state[`${k}Id`] === a.id;
+  const enh = worn ? state[`${k}Enh`] : 0;
+  const quality = worn && !enh && state[`${k}Mw`] ? 'mw' : String(enh);
+  const mats = materialsFor(a);
+  const controls = `<div class="pop-armor-choices">
+      <label>Quality <select data-pop-armor="enh"><option value="0">None</option><option value="mw">Masterwork</option>
+        ${Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}</option>`).join('')}</select></label>
+      ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual</option>${mats.map(m =>
+        `<option value="${esc(m.id)}"${worn && state[`${k}Material`] === m.id ? ' selected' : ''}>${esc(m.name)} (${esc((m.price(a) - a.price_gp >= 0 ? '+' : '') + (m.price(a) - a.price_gp).toLocaleString())} gp)</option>`).join('')}</select></label>` : ''}
+    </div>
+    ${worn && state[`${k}Abilities`]?.length ? `<p class="hint">Special abilities on it now: ${esc(state[`${k}Abilities`].map(x => x.name).join(', '))}.</p>` : ''}`;
+  // The choices in the popup, applied when a button is pressed.
+  const choose = () => {
+    const box = document.getElementById('detail-body');
+    const q = box.querySelector('[data-pop-armor="enh"]').value;
+    const material = box.querySelector('[data-pop-armor="material"]')?.value || '';
+    const keep = worn ? { [`${k}Abilities`]: state[`${k}Abilities`], [`${k}Crafted`]: state[`${k}Crafted`] } : { [`${k}Abilities`]: [], [`${k}Crafted`]: false };
+    app.update({ [`${k}Id`]: a.id, [`${k}Enh`]: q === 'mw' ? 0 : Number(q), [`${k}Mw`]: q === 'mw', [`${k}Material`]: material, ...keep });
+  };
+  const wear = k === 'shield' ? 'Use this shield' : 'Wear this armor';
+  app.openDetail(a.name, armorDetails(a) + controls, [
+    { label: worn ? 'Update it' : wear, primary: true, run: () => { choose(); app.showTab('armor'); } },
+    { label: 'Add special abilities (buy)', run: () => { choose(); openMagicArmor(app, k, 'buy'); } },
+    { label: 'Craft it magic', run: () => { choose(); openMagicArmor(app, k, 'craft'); } },
+    ...(worn ? [{ label: 'Take it off', run: () => { wearArmor(app, a); app.showTab('armor'); } }] : []),
   ]);
+  const sel = document.querySelector('#detail-body [data-pop-armor="enh"]');
+  if (sel) sel.value = quality;
 }
 
 // The list of every armor and shield, grouped by category, each row with a Details button.
