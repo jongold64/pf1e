@@ -703,3 +703,7 @@ table.skill-why th.num { text-align: right; }
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); align-items: center; justify-content: center; }
 #trait-list summary button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 8px; }
 #feat-list summary button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 8px; }
+/* Classes card: browse list of a class's archetypes, and Details on taken ones. */
+.arch-browse .pick-list { max-height: 320px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 6px; }
+.arch-head button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; }
+.arch-pop-features > li { border-top: 1px solid var(--border); padding: 6px 0; }

@@ -678,6 +678,11 @@ function buildControls() {
     const cid = e.target.dataset.domainAdd;
     if (cid && e.target.value) update({ domains: { ...state.domains, [cid]: [...(state.domains[cid] || []), e.target.value] } });
   });
+  // Archetype Details (taken ones and the browse list).
+  $('class-info').addEventListener('click', e => {
+    const pop = e.target.closest('[data-arch-pop]');
+    if (pop) popArchetype(pop.dataset.archPop, pop.dataset.cls);
+  });
   $('class-info').addEventListener('click', e => {
     const btn = e.target.closest('[data-domain-remove]');
     if (!btn) return;
@@ -1215,6 +1220,31 @@ function domainPicker(cls, level, openFeatures) {
     ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}${add}</div>`;
 }
 
+// An archetype in a popup (Classes card): what it's about, each feature with the level it comes at and what it
+// replaces, whether it can be taken, and Take / Remove.
+function popArchetype(id, clsId) {
+  const a = data.archetypesById.get(id);
+  const cls = view.classes.find(c => c.id === clsId);
+  if (!a || !cls) return;
+  const base = data.classes.find(c => c.id === clsId);
+  const chosen = chosenArchetypes(clsId);
+  const taken = chosen.includes(a);
+  const raceName = data.races.find(r => r.id === state.race)?.name;
+  const original = UNCHAINED_FROM[clsId] && data.classes.find(c => c.id === UNCHAINED_FROM[clsId]);
+  const unfit = a.class !== clsId && original ? unchainedFit(original, base, a, chosen).why : '';
+  const why = taken ? '' : a.race && a.race !== raceName ? `${a.race} only` : unfit || archetypeConflict(base, a, chosen);
+  const list = v => (Array.isArray(v) ? v : String(v || '').replace(/^\[|\]$/g, '').split(/',\s*'|", "/).map(x => x.replace(/^['"]|['"]$/g, '')).filter(Boolean));
+  const feats = a.features.map(f => `<li><b>${esc(f.name)}</b>${f.level ? ` <small class="muted">(${esc(ordinal(Number(f.level)))} level)</small>` : ''}
+      ${list(f.replaces).length ? `<div class="hint">Replaces: ${esc(list(f.replaces).join(', '))}</div>` : ''}${paragraphs(f.text)}</li>`).join('');
+  const actions = taken
+    ? [{ label: 'Remove it', run: () => update({ archetypes: { ...state.archetypes, [clsId]: (state.archetypes[clsId] || []).filter(x => x !== id) } }) }]
+    : why ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => update({ archetypes: { ...state.archetypes, [clsId]: [...(state.archetypes[clsId] || []), id] } }) }];
+  openDetail(`${a.name} (${cls.name})`, `<p class="hint">${esc(a.source)}${a.race ? ` · ${esc(a.race)} only` : ''}${a.class !== clsId && original ? ` · ${esc(original.name)} archetype` : ''}</p>
+    ${a.description ? paragraphs(a.description) : ''}
+    ${why ? `<p class="warning">Can't take it now: ${esc(why)}.</p>` : taken ? '<p class="hint">You have taken it.</p>' : ''}
+    <h3>Features</h3><ul class="plain-list arch-pop-features">${feats}</ul>`, actions);
+}
+
 // Archetypes for one class (inside its block on the Classes card): the ones taken, with their features (each one's
 // text in a fold-out), and a list to add another. Archetypes that clash with one already taken, or that belong to
 // another race, can't be picked.
@@ -1239,6 +1269,7 @@ function archetypePicker(cls, level, openFeatures) {
         <summary>${esc(f.name)}</summary>${paragraphs(f.text)}</details>`;
     }).join('');
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${esc(from(a))}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
+        <button type="button" class="skill-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}">Details</button>
         <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>${traded}
       ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
       ${feats}</li>`;
@@ -1252,7 +1283,16 @@ function archetypePicker(cls, level, openFeatures) {
   return `<div class="archetypes"><h4>Archetypes</h4>
     ${taken ? `<ul class="arch-list">${taken}</ul>` : '<p class="hint">None taken. An archetype swaps some class features for its own.</p>'}
     <select data-archetype-add="${esc(cls.id)}" aria-label="Add a ${esc(cls.name)} archetype">
-      <option value="">Add a ${esc(cls.name)} archetype…</option>${options}</select></div>`;
+      <option value="">Add a ${esc(cls.name)} archetype…</option>${options}</select>
+    <details class="arch-feature arch-browse" data-key="browse-${esc(cls.id)}"${openFeatures.has(`browse-${cls.id}`) ? ' open' : ''}>
+      <summary>Browse all ${all.length} ${esc(cls.name)} archetypes</summary>
+      <ul class="pick-list">${all.map(a => {
+        const { why: unfit } = fit(a);
+        const why = chosen.includes(a) ? 'taken' : a.race && a.race !== raceName ? `${a.race} only` : unfit || archetypeConflict(base, a, chosen);
+        return `<li class="with-details"><button type="button" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}"${chosen.includes(a) ? ' class="mine"' : ''}>${chosen.includes(a) ? '<span class="status met">✓</span>' : ''}${esc(a.name)}
+            <small>${esc(why || a.source)}</small></button>
+          <button type="button" class="skill-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details></div>`;
 }
 
 // The Classes card: a class for each level, favored class, where prestige spellcasting goes, and each
