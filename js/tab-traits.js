@@ -50,7 +50,8 @@ function renderPicker(app) {
     && (!search || t.name.toLowerCase().includes(search) || (t.requirement || '').toLowerCase().includes(search)));
   $('trait-picker-count').textContent = `${list.length} trait${list.length === 1 ? '' : 's'}`;
   $('trait-list').innerHTML = list.map(t => `<details class="feat-item">
-      <summary><span class="feat-name">${esc(t.name)}</span> <small>${esc(t.category)}${t.requirement ? ` · ${esc(t.requirement)}` : ''}</small></summary>
+      <summary><span class="feat-name">${esc(t.name)}</span> <small>${esc(t.category)}${t.requirement ? ` · ${esc(t.requirement)}` : ''}</small>
+        <button type="button" class="skill-details" data-trait-pop="${esc(t.id)}" aria-label="${esc(t.name)} in a popup">Details</button></summary>
       <div class="feat-body"><p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
         <button type="button" class="primary" data-trait-pick="${esc(t.id)}">Choose ${esc(t.name)}</button></div>
@@ -117,13 +118,41 @@ export function initTraits(app) {
   $('trait-search').addEventListener('input', () => renderPicker(app));
   $('trait-category').addEventListener('change', () => renderPicker(app));
   $('trait-picker-close').addEventListener('click', () => $('trait-picker').close());
-  $('trait-list').addEventListener('click', e => {
-    const pick = e.target.closest('[data-trait-pick]');
-    if (!pick) return;
+  const choose = id => {
     const traits = [...app.state.traits];
     while (traits.length < pickerSlot) traits.push(null);
-    traits[pickerSlot] = pick.dataset.traitPick;
+    traits[pickerSlot] = id;
     app.update({ traits });
     $('trait-picker').close();
+  };
+  $('trait-list').addEventListener('click', e => {
+    // Details: the trait in a popup (over the list), with what it would count and Choose.
+    const pop = e.target.closest('[data-trait-pop]');
+    if (pop) {
+      e.preventDefault();  // it sits in the row's summary: don't open or close the row
+      const t = app.data.traitsById.get(pop.dataset.traitPop);
+      if (!t) return;
+      const others = app.state.traits.slice(0, traitSlotCount(app.state.houseRules)).filter((id, i) => id && i !== pickerSlot)
+        .map(id => app.data.traitsById.get(id)).filter(Boolean);
+      const e2 = t.effects || {};
+      const lines = [];
+      const vs = (mine, get, what) => {
+        const best = others.filter(o => (get(o) || 0) >= mine).sort((a, b) => get(b) - get(a))[0];
+        lines.push(`+${mine} ${what}${best ? `: not counted while you keep ${best.name} (+${get(best)}; trait bonuses don't stack)` : ': counted'}`);
+      };
+      for (const [save, n] of Object.entries(e2.saves || {})) vs(n, o => o.effects?.saves?.[save], `${{ fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[save]} saves`);
+      if (e2.initiative) vs(e2.initiative, o => o.effects?.initiative, 'initiative');
+      for (const [skill, n] of Object.entries(e2.skills || {})) vs(n, o => o.effects?.skills?.[skill], skill);
+      if ((e2.class_skills || []).length) lines.push(`Class skill: ${e2.class_skills.join(', ')}`);
+      const sameCategory = others.find(o => o.category === t.category);
+      app.openDetail(t.name, `<p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
+        <h3>In the app</h3>${lines.length ? `<ul class="plain-list">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`
+          : '<p>Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).</p>'}
+        ${sameCategory ? `<p class="warning">You already have a ${esc(t.category)} trait (${esc(sameCategory.name)}); by the rules your traits should come from different categories.</p>` : ''}`,
+        [{ label: `Choose ${t.name}`, primary: true, run: () => choose(t.id) }]);
+      return;
+    }
+    const pick = e.target.closest('[data-trait-pick]');
+    if (pick) choose(pick.dataset.traitPick);
   });
 }

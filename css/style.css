@@ -701,3 +701,4 @@ table.skill-why th.num { text-align: right; }
 .pick-list li.with-details > button[data-item] { flex: 1; min-width: 0; }
 .pick-list button.skill-details { width: auto; flex: none; min-height: 28px; padding: 0 8px; margin: 0 4px; font-size: 0.8rem;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); align-items: center; justify-content: center; }
+#trait-list summary button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: 8px; }
