@@ -4,7 +4,7 @@
 //   and whether the character meets them, the Spellcraft DC against the character's Spellcraft, cost (half) and time.
 // - Magic Items tab ("buy" mode): the same weapons, armor and potions / scrolls / wands as treasure or purchases, with
 //   no feat, requirement or skill check, at their market price.
-import { $, esc, signed } from './dom.js';
+import { $, esc, signed, paragraphs, facts } from './dom.js';
 import { CRAFT_FEATS, SPELL_ITEMS, itemKind, abilityOptions, magicArmsPrice, magicPart, spellItemPrice, craftCost,
          craftTime, craftDC, parseRequirements, checkRequirements, optionBonus, listedCost, magicPrefix } from './crafting.js';
 import { spellsPerDay } from './rules.js';
@@ -259,13 +259,23 @@ export function abilityPicker(app, category, picks, attrs) {
       `<option value="${esc(o.label)}"${o.label === pick.option ? ' selected' : ''}>${esc(o.label)} (${o.bonus ? `+${o.bonus} bonus` : formatGp(o.gp)})</option>`).join('')}</select>` : '';
     const o = opts.find(x => x.label === pick.option) || opts[0];
     return `<li><b>${esc(a.name)}</b> ${which} <small class="muted">${o.bonus ? `+${o.bonus} bonus` : `+${esc(formatGp(o.gp))}`} · caster level ${esc(a.cl ?? '?')}</small>
+      <button type="button" class="skill-details" data-ability-pop="${esc(a.id)}">Details</button>
       <button type="button" ${attrs.remove}="${i}">Remove</button></li>`;
   }).join('');
+  // Every special ability that could be added, each with a Details button (its popup can add it).
+  const browse = all.length ? `<details class="arch-feature ability-browse"><summary>Browse all ${all.length} ${esc(category.toLowerCase())}</summary>
+      <ul class="pick-list">${all.map(a => {
+        const opts = abilityOptions(a);
+        const o = opts[0];
+        return `<li class="with-details"><button type="button" data-ability-pop="${esc(a.id)}">${esc(a.name)}
+            <small>${o.bonus ? `+${o.bonus} bonus` : esc(formatGp(o.gp))}${opts.length > 1 ? ', several versions' : ''}</small></button>
+          <button type="button" class="skill-details" data-ability-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details>` : '';
   return `<div class="craft-abilities"><b>Special abilities</b>
       ${chosen ? `<ul class="plain-list">${chosen}</ul>` : '<p class="hint">None. Add one below (each adds its bonus to the price).</p>'}
       <select ${attrs.add} aria-label="Add a special ability"${attrs.disabled ? ' disabled' : ''}><option value="">Add a special ability…</option>
         ${all.map(a => { const o = abilityOptions(a)[0]; return `<option value="${esc(a.id)}">${esc(a.name)} (${o.bonus ? `+${o.bonus}` : formatGp(o.gp)}${abilityOptions(a).length > 1 ? ', several versions' : ''})</option>`; }).join('')}
-      </select></div>`;
+      </select>${browse}</div>`;
 }
 
 function kindControls(app, list, p, c) {
@@ -500,6 +510,33 @@ function initCard(app, c) {
   });
 }
 
+// A special ability in a popup: what it does, its price (each version), aura and caster level, and what making it
+// needs. From a picker it can also be added (the picker's own list does the adding, so every card works the same way).
+function popAbility(app, id, picker) {
+  const a = app.data.itemsById?.get(id);
+  if (!a) return;
+  const opts = abilityOptions(a);
+  const c = a.construction || {};
+  const addSel = picker ? [...picker.querySelectorAll('select')].find(s => [...s.options].some(o => o.value === id)) : null;
+  const price = opts.map(o => `${o.label ? `${o.label}: ` : ''}${o.bonus ? `+${o.bonus} bonus (counts toward the total bonus, which is squared)` : `+${formatGp(o.gp)}`}`).join('; ');
+  app.openDetail(a.name, `<p class="hint">${esc(a.category)} · ${esc(a.source || '')}</p>
+    ${facts([['Price', price || a.price], ['Aura', a.aura], ['Caster level', a.cl]])}
+    ${paragraphs(a.description) || '<p class="hint">The source has no description for it.</p>'}
+    ${c.requirements || c.cost ? `<h4>Construction</h4>${facts([['Requirements', c.requirements], ['Cost', c.cost]])}` : ''}
+    <p class="hint">A weapon or armor needs at least a +1 enhancement bonus before special abilities can be added, and the total bonus
+      (enhancement plus abilities) can be at most +10.</p>`,
+    addSel && !addSel.disabled ? [{ label: `Add ${a.name}`, primary: true, run: () => {
+      addSel.value = id;
+      addSel.dispatchEvent(new Event('change', { bubbles: true }));
+    } }] : []);
+}
+
 export function initCrafting(app) {
   for (const c of Object.values(CARDS)) if ($(c.card)) initCard(app, c);
+  // Details on special abilities, wherever a picker is (Craft tab, Add magic gear, weapon cards).
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-ability-pop]');
+    if (!b) return;
+    popAbility(app, b.dataset.abilityPop, b.closest('.craft-abilities'));
+  });
 }

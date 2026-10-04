@@ -525,6 +525,26 @@ function buildControls() {
   // A new race drops the old one's alternate traits (favored class options that don't exist fall back to +1 HP).
   $('race').addEventListener('change', e => update({ race: e.target.value, alternates: [] }));
   // Alternate racial traits: a tick box each.
+  // Details on an alternate racial trait: what it gives and what it takes away, with Take / Remove.
+  $('race-alternates').addEventListener('click', e => {
+    const pop = e.target.closest('[data-alt-pop]');
+    if (!pop) return;
+    e.preventDefault();  // inside the checkbox's label: don't tick it
+    const race = data.races.find(r => r.id === state.race);
+    const a = (race.alternate_traits || []).find(x => x.name === pop.dataset.altPop);
+    if (!a) return;
+    const taken = state.alternates.includes(a.name);
+    const conflict = taken ? '' : alternateConflict(race, a, state.alternates);
+    const replaced = replacedTraits(race, a);
+    const lost = replaced.map(n => (race.traits || []).find(t => t.name === n)).filter(Boolean);
+    openDetail(`${a.name} (${race.name})`, `${paragraphs(a.text)}
+      <h3>It replaces</h3>${lost.length ? `<ul class="plain-list arch-pop-features">${lost.map(t => `<li><b>${esc(t.name)}</b>${paragraphs(t.text)}</li>`).join('')}</ul>`
+        : replaced.length ? `<p>${esc(replaced.join(', '))}</p>` : '<p class="hint">The text doesn\u2019t name a standard trait the app can match; read it to see what it replaces.</p>'}
+      ${conflict ? `<p class="warning">Not available: ${esc(conflict)}.</p>` : taken ? '<p class="hint">You have taken it.</p>' : ''}
+      <p class="hint">The app swaps it in everywhere: skills, AC, speed, bonus feats and ability score changes it can read from the text.</p>`,
+      taken ? [{ label: 'Remove it', run: () => update({ alternates: state.alternates.filter(n => n !== a.name) }) }]
+        : conflict ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => update({ alternates: [...state.alternates, a.name] }) }]);
+  });
   $('race-alternates').addEventListener('change', e => {
     const name = e.target.dataset.alternate;
     if (name === undefined) return;
@@ -1144,7 +1164,8 @@ function renderAlternates(baseRace) {
       const replaces = replacedTraits(baseRace, a);
       return `<li class="${taken ? 'taken' : ''}"><label class="check-row"><input type="checkbox" data-alternate="${esc(a.name)}"
           ${taken ? 'checked' : ''}${conflict ? ' disabled' : ''}> <b>${esc(a.name)}</b>
-          <small class="muted">${replaces.length ? `replaces ${esc(replaces.join(', '))}` : 'see text for what it replaces'}</small></label>
+          <small class="muted">${replaces.length ? `replaces ${esc(replaces.join(', '))}` : 'see text for what it replaces'}</small>
+          <button type="button" class="skill-details" data-alt-pop="${esc(a.name)}" aria-label="${esc(a.name)} in a popup">Details</button></label>
         ${conflict ? `<p class="hint">Not available: ${esc(conflict)}.</p>` : ''}
         <p class="alt-text">${esc(a.text)}</p></li>`;
     }).join('')}</ul></details>`;

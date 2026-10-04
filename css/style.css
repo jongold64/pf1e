@@ -715,3 +715,6 @@ table.skill-why th.num { text-align: right; }
 .card-fold > summary h2 { margin: 0; }
 .pop-armor-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
 .pop-armor-choices select { width: auto; }
+.alt-list button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: auto; }
+.craft-abilities button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; }
+.ability-browse .pick-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 6px; }
