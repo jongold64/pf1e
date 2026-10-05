@@ -122,7 +122,22 @@ export function slotKinds(slot) {
 // for witches and shamans only their own class's hexes, the oracle's mystery for revelations, not above the slot's level,
 // and not taken in another slot unless it can be taken more than once. Returns [{ talent, why }] where why is '' or the
 // reason it can't be taken now.
-export function talentOptions(slot, all, { taken = [], mystery = '' } = {}) {
+// revelationNames (the chosen mystery's list) picks the oracle's revelations by name: a revelation several mysteries
+// share is one record, and a name with versions per mystery ("Assumed Form (Whimsy)") keeps the mystery's own.
+const baseName = n => n.replace(/\s*\(.*\)$/, '').toLowerCase().replace(/[^a-z]/g, '');
+export function talentOptions(slot, all, { taken = [], mystery = '', revelationNames = null } = {}) {
+  if (slot.rule.needs === 'mystery' && revelationNames) {
+    const want = new Set(revelationNames.map(baseName));
+    const fits = all.filter(t => slot.rule.kinds.includes(t.kind) && want.has(baseName(t.name)));
+    // One record per name: the mystery's own version if there is one, else the first.
+    const byName = new Map();
+    for (const t of fits) {
+      const k = baseName(t.name);
+      if (!byName.has(k) || (t.mystery === mystery && byName.get(k).mystery !== mystery)) byName.set(k, t);
+    }
+    all = [...byName.values()];
+    mystery = '';  // already chosen by name, so the mystery filter below doesn't apply
+  }
   const kinds = slotKinds(slot);
   // "Accurate Stance (Unchained)": only for the unchained class, which takes it instead of a same-named core version.
   const unchained = slot.classId?.endsWith('-unchained');
@@ -135,7 +150,7 @@ export function talentOptions(slot, all, { taken = [], mystery = '' } = {}) {
                  why: taken.includes(t.id) && !t.repeatable ? 'already taken' : t.level && t.level > slot.classLevel ? `needs ${t.level}th level` : '' }));
 }
 
-// The mysteries revelations are listed under (for the oracle's choice).
+// The mysteries revelations are listed under (when no mysteries list is loaded).
 export function mysteries(all) {
   return [...new Set(all.filter(t => t.kind === 'revelation' && t.mystery).map(t => t.mystery))].sort();
 }

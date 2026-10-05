@@ -217,6 +217,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   4th, 8th, and 12th levels", "the 1st-level", "at second level"), numbered picks ("weapon training 3 and 4", "second
   favored enemy") or the whole feature; the words before and after the term must fit (`LEAD_OK`, `AFTER_OK`) so
   "infusion specialization" or "final revelation" don't count. Other mentions ("in place of", "alters") become notes.
+  Oracle mysteries: `build_aon_mysteries.py` -> data/mysteries.json from the AoN mystery pages (book, deities, class
+  skills, bonus spells, revelation names, final revelation); the talents builder adds each page's revelations (the
+  page's book) where Foundry has none. `state.mystery` is a mystery name; `talentOptions(..., { revelationNames })`
+  offers the revelations its page lists, by name (shared ones like Brain Drain are one record; a name with versions
+  per mystery keeps the mystery's own).
   Text only: choices don't change numbers. Gaps: about 560 Foundry options (mostly later-book revelations, rogue
   talents, rage powers, discoveries) have no book anywhere and are left out.
 - Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the

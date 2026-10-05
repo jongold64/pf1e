@@ -94,6 +94,9 @@ All text is plain text (no HTML). Every record has an `id` (like `half-orc` or `
 - `level` (the minimum class level its text names, or null), `repeatable`, `mystery` (revelations), `school`
   (occultist focus powers)
 
+**Oracle mystery** (`mysteries.json`, for example `flame`): `deities`, `class_skills`, `bonus_spells` (as printed),
+`revelations` (names, matched to `talents.json` by name), `final_revelation`.
+
 916 of 1,227 feats have prerequisites that are fully machine-readable. The rest include at least one
 `other` entry, such as "Small size or smaller" or "proficiency with the selected weapon".
 

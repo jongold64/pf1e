@@ -30,7 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, mysteries, ruleOf, pluralOf, archetypeEffects } from './talents.js';
+import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -243,7 +243,7 @@ function load(saved) {
     const rule = ruleOf(slot);
     return rule && typeof v === 'string' && (rule.choices ? Object.hasOwn(rule.choices, v) : data.talentsById.has(v));
   }));
-  if (typeof state.mystery !== 'string' || !mysteries(data.talents).includes(state.mystery)) state.mystery = '';
+  if (typeof state.mystery !== 'string' || !data.mysteries.some(m => m.name === state.mystery)) state.mystery = '';
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
@@ -791,6 +791,8 @@ function buildControls() {
     if (tp) popTalent(tp.dataset.talentPop, tp.dataset.slot);
     const cp = e.target.closest('[data-choice-pop]');
     if (cp) popChoice(cp.dataset.choicePop, cp.dataset.slot);
+    const mp = e.target.closest('[data-mystery-pop]');
+    if (mp) popMystery(mp.dataset.mysteryPop);
   });
   $('class-info').addEventListener('change', e => {
     if (e.target.matches('[data-mystery]')) update({ mystery: e.target.value });
@@ -1347,12 +1349,22 @@ function domainLines(clsId) {
 
 // Class choices for one class (Classes card): a list per kind (rage powers...) with a line per pick slot: the choice and
 // its Details, or Choose. An oracle chooses a mystery first, which decides the revelations offered.
-function talentPicker(cls, level) {
+function talentPicker(cls, level, openFeatures) {
   const { slots, notes } = classChoiceSlots(cls.id, level);
   if (!slots.length) return '';
   const groups = [...new Set(slots.map(s => s.rule))];
-  const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<label class="row-label">Mystery <select data-mystery>
-      <option value="">Choose your mystery…</option>${mysteries(data.talents).map(m => `<option${m === state.mystery ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select></label>` : '';
+  // The oracle's mystery: a list, Details for the chosen one, and every mystery with its own Details.
+  const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<div class="mystery-pick"><label class="row-label">Mystery <select data-mystery>
+      <option value="">Choose your mystery…</option>${data.mysteries.map(m => `<option${m.name === state.mystery ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      ${state.mystery ? `<button type="button" class="skill-details" data-mystery-pop="${esc(state.mystery)}">Details</button>` : ''}</div>
+    <details class="arch-feature arch-browse" data-key="mbrowse-${esc(cls.id)}"${openFeatures?.has(`mbrowse-${cls.id}`) ? ' open' : ''}>
+      <summary>Browse all ${data.mysteries.length} mysteries</summary>
+      <ul class="pick-list">${data.mysteries.map(m => {
+        const mine = m.name === state.mystery;
+        return `<li class="with-details"><button type="button" data-mystery-pop="${esc(m.name)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(m.name)}
+            <small>${esc(m.source)}</small></button>
+          <button type="button" class="skill-details" data-mystery-pop="${esc(m.name)}" aria-label="${esc(m.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details>` : '';
   return `<div class="talents">${mysteryPick}${groups.map(rule => {
     const mine = slots.filter(s => s.rule === rule);
     const open = mine.filter(s => !s.replacedBy);
@@ -1394,7 +1406,7 @@ function openTalentPicker(slotId, search = '') {
         <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></span></li>`).join('');
   } else {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
-    const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery })
+    const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery, revelationNames: data.mysteryByName.get(state.mystery)?.revelations })
       .filter(o => !q || o.talent.name.toLowerCase().includes(q) || o.talent.text.toLowerCase().includes(q))
       .sort((a, b) => (!!a.why - !!b.why) || a.talent.name.localeCompare(b.talent.name));
     list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
@@ -1412,6 +1424,28 @@ function openTalentPicker(slotId, search = '') {
 }
 
 // A chosen class option in a popup: its text, book and level, and Change / Remove.
+// An oracle mystery in a popup: book, deities, class skills, bonus spells, its revelations (each with its text in a
+// fold-out, from the class choices data) and the final revelation, with Choose or Remove.
+function popMystery(name) {
+  const m = data.mysteryByName.get(name);
+  if (!m) return;
+  const slot = { rule: { kinds: ['revelation'], needs: 'mystery' }, classLevel: 20 };
+  const revs = talentOptions(slot, data.talents, { mystery: m.name, revelationNames: m.revelations }).map(o => o.talent);
+  const letters = n => n.replace(/\s*\(.*\)$/, '').toLowerCase().replace(/[^a-z]/g, '');
+  const missing = m.revelations.filter(n => !revs.some(t => letters(t.name) === letters(n)));
+  const mine = state.mystery === m.name;
+  openDetail(`${m.name} mystery`, `<p class="hint">Oracle mystery · ${esc(m.source)}${mine ? ' · your mystery' : ''}</p>
+    ${facts([['Deities', m.deities || null], ['Class skills', m.class_skills.replace(/^An oracle with [^.]*? adds /i, '').replace(/ to her list of class skills\.?$/i, '') || null],
+             ['Bonus spells', m.bonus_spells || null]])}
+    <h3>Revelations (${m.revelations.length})</h3>
+    <ul class="plain-list">${revs.sort((a, b) => a.name.localeCompare(b.name)).map(t => `<li><details><summary><b>${esc(t.name)}</b>
+      <small class="muted">${esc(t.source)}${t.level ? ` · ${ordinal(t.level)} level` : ''}</small></summary>${paragraphs(t.text)}</details></li>`).join('')}
+      ${missing.map(n => `<li><b>${esc(n)}</b> <small class="muted">text not in the data</small></li>`).join('')}</ul>
+    ${m.final_revelation ? `<h3>Final revelation (20th level)</h3>${paragraphs(m.final_revelation)}` : ''}`,
+    mine ? [{ label: 'Remove it', run: () => update({ mystery: '' }) }]
+         : [{ label: `Choose ${m.name}`, primary: true, run: () => update({ mystery: m.name }) }]);
+}
+
 // From the picker (preview = { slotId, search, why }): Choose (unless it can't be taken yet) and Back to the list.
 function popTalent(id, slotId, preview = null) {
   const t = data.talentsById.get(id);
@@ -1729,7 +1763,7 @@ function renderClasses(view) {
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
       ${reqHtml}
       ${domainPicker(e.cls, e.level, openFeatures)}
-      ${talentPicker(e.cls, e.level)}
+      ${talentPicker(e.cls, e.level, openFeatures)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
     </details>`;
@@ -2546,7 +2580,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -2557,6 +2591,7 @@ async function start() {
       fetch('data/companions.json').then(r => r.json()),
       fetch('data/drawbacks.json').then(r => r.json()),
       fetch('data/talents.json').then(r => r.json()),
+      fetch('data/mysteries.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -2575,6 +2610,7 @@ async function start() {
   data.domainsById = new Map(data.domains.map(d => [d.id, d]));
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
+  data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

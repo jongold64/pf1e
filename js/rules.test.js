@@ -1421,6 +1421,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     [!!arch('She can take Catch Off-Guard in place of a rage power.').replaced['rage-power'], arch('She can take Catch Off-Guard in place of a rage power.').notes['rage-power'].length].join(), 'false,1');
   check('archetype: another feature named in passing replaces nothing',
     Object.keys(arch('This ability replaces metakinesis and infusion specialization.', 'kineticist').replaced).length, 0);
+  const shared = [{ id: 'bd', name: 'Brain Drain', kind: 'revelation', mystery: 'Lore' }, { id: 'af1', name: 'Assumed Form (Intrigue)', kind: 'revelation', mystery: 'Intrigue' },
+                  { id: 'af2', name: 'Assumed Form (Whimsy)', kind: 'revelation', mystery: 'Whimsy' }, { id: 'zz', name: 'Other', kind: 'revelation', mystery: 'Whimsy' }];
+  check("oracle: the mystery's list by name, shared ones and its own version",
+    talentOptions(talentSlots('oracle', 1).find(s => s.rule.key === 'revelation'), shared, { mystery: 'Whimsy', revelationNames: ['Brain Drain', 'Assumed Form'] })
+      .map(o => o.talent.id).join(), 'bd,af2');
   check('oracle: only the mystery revelations', talentOptions(talentSlots('oracle', 1).find(s => s.rule.key === 'revelation'), rev, { mystery: 'Flame' }).map(o => o.talent.id).join(), 'x');
 }
 

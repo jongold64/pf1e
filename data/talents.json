@@ -988,7 +988,7 @@
   "origin": "Foundry VTT pf1"
  },
  {
-  "id": "woodland-stride",
+  "id": "advanced-slayer-talent-woodland-stride",
   "name": "Woodland Stride",
   "kind": "advanced-slayer-talent",
   "classes": [
@@ -17413,6 +17413,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "animate-primal-forces",
+  "name": "Animate Primal Forces",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "As a standard action, you can summon a single Small air, earth, fire, or water elemental to serve you. It remains for a number of rounds equal to your Charisma modifier. At 7th level, you can summon a Medium elemental. At 9th level, you can summon a Large elemental. You can use this ability once per day plus one additional time per day at 10th level. You must be at least 3rd level to select this revelation.",
+  "level": 3,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
   "id": "apocalypse-final-revelation",
   "name": "Apocalypse Final Revelation",
   "kind": "revelation",
@@ -17469,6 +17483,34 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "armored-mind",
+  "name": "Armored Mind",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Path of the Hellknight",
+  "text": "While you are wearing Hellknight plateISWG or a signifer mask (see page 63), you gain a +2 bonus on Will saving throws to resist mind-affecting effects. Once per day at 7th level, you can reroll a Will saving throw against a mind-affecting effect and choose the more favorable result. At 11th level, the bonus on Will saving throws increases to +4.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Godclaw",
+  "origin": "aonprd"
+ },
+ {
+  "id": "army-of-darkness",
+  "name": "Army of Darkness",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "Whenever you cast a summon monster spell and summon a creature that normally has the celestial or fiendish template, you can instead summon it with the shadow creature template (Pathfinder RPG Bestiary 4 238). This revelation counts as having the Spell Focus (conjuration) feat for the purpose of meeting the prerequisites of the Augment Summoning feat, as well as any feat that lists Augment Summoning as a prerequisite.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
   "id": "ascetic-armor",
   "name": "Ascetic Armor",
   "kind": "revelation",
@@ -17495,6 +17537,20 @@
   "repeatable": false,
   "mystery": "Ascetic",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "ash-cloud",
+  "name": "Ash Cloud",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "As a standard action, you can surround yourself with a 10-foot-radius cloud of ash, which functions as an obscuring mist spell, except you can see through it clearly. The cloud is stationary, and remains for 1 round per oracle level. Using this ability again causes your previous cloud to fall to the ground. At 7th level, your ash cloud fills with embers. All creatures in the cloud except you take 1d6 points of fire damage per round and must succeed at Fortitude saves to avoid choking, as though they were breathing in heavy smoke (Core Rulebook 444).",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
  },
  {
   "id": "asmodeuss-boon",
@@ -17525,6 +17581,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "astral-caravan",
+  "name": "Astral Caravan",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "As a full-round action, you can step into the planar border where the Astral Plane abuts the Material Plane, pulling up to one additional person per class level with you. You can’t travel fully into the Astral Plane or any of the other planes it borders, but while using this ability you can cover incredible distances, traversing 50 miles per hour, as per the shadow walk spell. You can travel for up to 1 hour per day per oracle level. This duration need not be continuous, but it must be spent in 1-hour increments.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
   "id": "automatic-writing",
   "name": "Automatic Writing",
   "kind": "revelation",
@@ -17551,6 +17621,20 @@
   "repeatable": false,
   "mystery": "Heavens",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "balefire",
+  "name": "Balefire",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You call upon the cleansing or searing fires of the Outer Rifts to burn your foes. As a standard action, one target within 30 feet is wreathed in screaming flames and takes 1d6 points of fire damage per level. A successful Ref lex save halves this damage. At 10th level, the fire’s howls cause any creatures damaged by it to be staggered for 1 round. At 15th level, creatures who fail their saves against the balefire are staggered for 1d4 rounds and stunned for 1 round. You can use this ability once per day plus one additional time per day at 10th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
  },
  {
   "id": "battle-final-revelation",
@@ -17637,6 +17721,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "blistered-caress",
+  "name": "Blistered Caress",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You can channel the hostile, unforgiving heat of the sun into your touch. This is a melee touch attack that deals 1d8 points of fire damage per 2 oracle levels (Fortitude half ). Against a plant creature, this touch heals or damages the creature (your choice) for 1d6 points of fire damage per oracle level. At 7th level, a creature that fails its save against this revelation becomes sickened for 1d4 hours in addition to taking fire damage. At 15th level, your touch is so intense that a creature that fails its save is also staggered for 1d6 rounds. You can use this ability once per day plus one additional time per day at 10th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
   "id": "blizzard",
   "name": "Blizzard",
   "kind": "revelation",
@@ -17707,6 +17805,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "breath-of-creation",
+  "name": "Breath of Creation",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "Volcanic vapors elevate your mind even as they ravage your body. When you take Constitution damage from volcanic gases, you gain a bonus to your Charisma equal to the damage taken. This bonus lasts for 1 hour or until the ability damage is healed. The maximum bonus to your Charisma is +2, increasing to +4 at 10th level, and to +6 at 15th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
+ },
+ {
   "id": "breath-weapon",
   "name": "Breath Weapon",
   "kind": "revelation",
@@ -17735,6 +17847,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "capricious-misdirection",
+  "name": "Capricious Misdirection",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "Your ever-changing nature allows you to misdirect aura-reading divinations with ease. You are constantly under the effects of a misdirection spell, except that you can take a standard action to select a creature or object within 60 feet to serve as the target of detection spells used against you until you select a different creature or object. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
   "id": "channel",
   "name": "Channel",
   "kind": "revelation",
@@ -17747,6 +17873,20 @@
   "repeatable": false,
   "mystery": "Life",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "child-of-winter",
+  "name": "Child of Winter",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "People of the North",
+  "text": "You gain the constant benefit of endure elements, but only against cold temperatures. You can move across regular snow without penalty, and heavy snow costs you only 2 squares of movement instead of 4. You can move across icy surfaces without penalty, and never need to make Acrobatics checks to run or charge on ice. You leave no trail in ice or snow, and cannot be tracked (you may choose to leave a trail if you so desire). During winter months, you gain a +2 insight bonus on Initiative checks and Reflex saving throws.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Winter",
+  "origin": "aonprd"
  },
  {
   "id": "cinder-dance",
@@ -17762,6 +17902,20 @@
   "repeatable": false,
   "mystery": "Flame",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "cleansing-flames",
+  "name": "Cleansing Flames",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "As a swift action, you can take 1d4 points of damage per oracle level to gain a new saving throw against a single ongoing effect. The effect must be one for which you already failed a saving throw. If you succeed, the effect is removed. At 7th and 15th levels, you can use this ability one additional time per day.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
  },
  {
   "id": "cloak-of-darkness",
@@ -17806,6 +17960,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "cold-aura",
+  "name": "Cold Aura",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "People of the North",
+  "text": "As a swift action, you can cause waves of cold to radiate from your body. This cold deals 1d6 points of cold damage per 2 oracle levels to all creatures within 10 feet. A successful Fortitude save halves the damage. In addition, a flurry of snow momentarily surrounds you, granting you concealment until your next turn. You can use this ability once per day, plus one additional time per day at 5th level and every 5 levels thereafter.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Winter",
+  "origin": "aonprd"
+ },
+ {
   "id": "combat-healer",
   "name": "Combat Healer",
   "kind": "revelation",
@@ -17848,6 +18016,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "curse-of-dampening",
+  "name": "Curse of Dampening",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Healer's Handbook",
+  "text": "You diminish one target within 30 feet as a standard action, making its attacks weaker. Whenever the target would roll to deal damage with an attack or spell, it deals the minimum amount of damage. This curse lasts for 1 round per 2 oracle levels you have (minimum 1). A successful Will saving throw negates this effect. This is a mind-affecting curse effect. You can use this revelation once per day, plus one additional time at 11th level and 15th level. You must be at least 7th level before selecting this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Succor",
+  "origin": "aonprd"
+ },
+ {
   "id": "dance-of-the-blades",
   "name": "Dance of the Blades",
   "kind": "revelation",
@@ -17874,6 +18056,20 @@
   "repeatable": false,
   "mystery": "Elemental",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "dark-secrets",
+  "name": "Dark Secrets",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "You learn the hidden secrets surrounding the casting of shadow spells. You can add a number of spells from the sorcerer/wizard spell list equal to your Charisma modifier (minimum 1, maximum equal to half your oracle level) to your spell list and your list of spells known as divine spells. These have a spell level equal to their sorcerer/wizard spell level. You can add only illusion spells from the shadow subschool or spells with the darkness descriptor to your list of spells known in this manner. Each time you gain an oracle level after taking this revelation, you can choose to replace one of these spells for a new appropriate spell on the sorcerer/wizard spell list.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
  },
  {
   "id": "dark-tapestry-final-revelation",
@@ -17944,6 +18140,20 @@
   "repeatable": false,
   "mystery": "Life",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "demonhide",
+  "name": "Demonhide",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You alter your flesh to be as tough as a demon’s hide, granting you a +4 armor bonus. At 7th level, and every four levels thereafter, this bonus increases by +2. At 13th level, this armor also grants you DR 5/cold iron. You can use this revelation for 1 hour per day per oracle level. The duration does not need to be consecutive, but it must be spent in 1-hour increments.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
  },
  {
   "id": "desert-mirage",
@@ -18058,6 +18268,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "dread-resilience",
+  "name": "Dread Resilience",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You have been hardened by exposure to the otherworldly energies of the Outer Rifts, and you just keep getting tougher. You gain a +1 inherent bonus to Constitution upon taking this revelation and another for every four oracle levels gained thereafter. You must be at least 9th level to select this revelation.",
+  "level": 9,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
+ },
+ {
   "id": "dust-to-dust",
   "name": "Dust to Dust",
   "kind": "revelation",
@@ -18098,6 +18322,62 @@
   "repeatable": false,
   "mystery": "Stone",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "ectoplasmic-armor",
+  "name": "Ectoplasmic Armor",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Occult Mysteries",
+  "text": "You can conjure armor made of ectoplasm that grants you a +4 armor bonus to AC. In addition, this armor functions as if it had the ghost touch special ability. At 7th level and every 4 levels thereafter, the armor bonus increases by 2. You can use this armor for 1 hour per day per oracle level. This duration does not need to be consecutive, but it must be spent in 1-hour increments.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Occult",
+  "origin": "aonprd"
+ },
+ {
+  "id": "eldritch-bolt",
+  "name": "Eldritch Bolt",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You can damage foes with a bolt of raw magical energy. Make a ranged touch attack against any foe within 30 feet. On a hit, you deal 1d8 points of force damage, +1 point of damage per two oracle levels. At 10th level, the bolt’s range increases to 60 feet. You may use this revelation a number of times per day equal to 3 + your Charisma modifier.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "eldritch-resistance",
+  "name": "Eldritch Resistance",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You gain resistance 2 to acid, cold, electricity, fire, and sonic. This resistance increases to 5 at 5th level, 10 at 11th level, and 20 at 17th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "eldritch-scar",
+  "name": "Eldritch Scar",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Once per day when you damage a creature with a spell you cast, you may, as a swift action, cause your magic to leave an eldritch scar upon that creature. An eldritch scar appears as a normal scar, save that it flickers with faint radiance of a color of your choice. The next time that creature casts a spell, uses a spell-like ability, or activates a magic item, it triggers a primal magic event (see page 13) of a CR equal to your caster level. This causes the eldritch scar to vanish. A creature can be marked by only one eldritch scar at a time (a more powerful one replaces a weaker one). An eldritch scar fades automatically after 24 hours. It can be removed before that point via any effect capable of removing a curse (the curse’s level equals your caster level), but if an attempt to remove an eldritch scar fails, that attempt triggers a primal magic event—an event triggered this way does not cause the eldritch scar to fade. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
  },
  {
   "id": "elemental-aegis",
@@ -18198,6 +18478,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "enhanced-inflictions",
+  "name": "Enhanced Inflictions",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Healer's Handbook",
+  "text": "You recognize that harming your enemies is sometimes the only way to help your allies, and so your wrath is particularly fierce. Whenever you cast an inflict spell (a spell with the word “inflict” in the name), the maximum amount of damage dealt by the spell is based on your oracle level, not the limit based on the spell. For example, an 11th-level oracle of succor with this revelation can cast inflict light wounds to deal 1d8+11 points of damage instead of the normal 1d8+5 maximum.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Succor",
+  "origin": "aonprd"
+ },
+ {
   "id": "ensnare-the-soul",
   "name": "Ensnare the Soul",
   "kind": "revelation",
@@ -18240,6 +18534,34 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "erupt",
+  "name": "Erupt",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "As a swift action, you cause flaming shards of rock to erupt from your body. These shards deal 1d6 points of damage per 2 oracle levels (minimum 1d6) to all creatures in a 10-foot-radius burst (Reflex half ). Half of this damage is fire damage and the other half is piercing damage. The shards create difficult terrain for 1 round. You can use this ability once per day, plus one additional time per day at 5th level and every 5 levels thereafter.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
+ },
+ {
+  "id": "eye-of-the-moon",
+  "name": "Eye of the Moon",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "Your connection to the moon makes you supernaturally perceptive. You gain darkvision to a range of 60 feet. At 11th level, as a standard action, you can focus on a specific object or area (the size of which can be no greater than a 10-foot-by-10-foot square) and see it as though with true seeing as long as the moon is shining on it. Moonless nights, cloudy skies, and shadows interfere with this ability.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
   "id": "eyes-of-the-streets",
   "name": "Eyes of the Streets",
   "kind": "revelation",
@@ -18266,6 +18588,34 @@
   "repeatable": false,
   "mystery": "Streets",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "feywise",
+  "name": "Feywise",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "Your whimsy grants you protection from fey mischief. You gain the resist nature’s lure druid class feature. In addition, you gain a +2 bonus on Perception, Sense Motive, and Survival checks against fey. You must be at least 3rd level to select this revelation.",
+  "level": 3,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
+  "id": "fiery-conduit",
+  "name": "Fiery Conduit",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "You can deliver touch spells to burning creatures within 30 feet without actually touching them. For the purposes of this ability, burning creatures include creatures that have caught on fire, creatures taking ongoing fire damage, and creatures with the fire subtype or that are polymorphed into such creatures. You must succeed at a ranged touch attack to affect an unwilling target.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
  },
  {
   "id": "fire-breath",
@@ -18321,6 +18671,20 @@
   "repeatable": false,
   "mystery": "Ascetic",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "flicker",
+  "name": "Flicker",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "You can flicker from sight for a short time, allowing you to escape or set up a prank. As a swift action, you can disappear for 1 round per oracle level. This ability functions as invisibility. You can use this revelation a number of times per day equal to half your oracle level (minimum 1).",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
  },
  {
   "id": "flowing-step",
@@ -18407,6 +18771,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "form-of-the-beast",
+  "name": "Form of the Beast",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "As a standard action, you can assume the form of a Small or Medium animal, as beast shape I. At 9th level, you can assume the form of a Tiny or Large animal, as beast shape II. At 11th level, you can assume the form of a Diminutive or Huge animal or a Small or Medium magical beast, as beast shape III. At 13th level, you can assume the form of a Tiny or Large magical beast, as beast shape IV. You can use this ability once per day, but the duration is 1 hour/level. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
   "id": "form-of-the-dragon",
   "name": "Form of the Dragon",
   "kind": "revelation",
@@ -18475,6 +18853,20 @@
   "repeatable": false,
   "mystery": "Flame",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "gift-of-claw-and-horn",
+  "name": "Gift of Claw and Horn",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "As a swift action, you gain a natural weapon. The natural weapon lasts for a number of rounds equal to half your oracle level (minimum 1). You must choose a bite, claw, or gore attack. These attacks deal the normal damage for a creature of your size (Pathfinder RPG Bestiary 302). At 5th level, your natural weapon gains a +1 enhancement bonus. This bonus increases by +1 at 10th, 15th, and 20th level. At 11th level, you gain two natural weapons at a time. You can use this ability a number of times per day equal to 3 + your Charisma modifier.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
  },
  {
   "id": "gift-of-madness",
@@ -18615,6 +19007,20 @@
   "repeatable": false,
   "mystery": "Waves",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "ice-shape",
+  "name": "Ice Shape",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "People of the North",
+  "text": "You are able to sculpt ice and snow into almost any shape. This ability functions like stone shape, but targeting only ice and snow, not stone. You can use this ability a number of times per day equal to 3 + your Charisma modifier.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Winter",
+  "origin": "aonprd"
  },
  {
   "id": "icy-skin",
@@ -18841,6 +19247,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "lava-walk",
+  "name": "Lava Walk",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "You can walk across lava, magma, and similarly heated stone at your normal movement speed. You are immune to any fire damage caused by the surface while you walk above it, even if it radiates damage at a distance. While using lava walk, you never slip or fall from poor or slippery footing. You can use lava walk for 1 minute per day per oracle level. This duration doesn’t need to be consecutive, but it must be spent in 1-minute increments. You must be at least 3rd level to select this revelation.",
+  "level": 3,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
+ },
+ {
   "id": "life-final-revelation",
   "name": "Life Final Revelation",
   "kind": "revelation",
@@ -18925,6 +19345,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "living-shadow",
+  "name": "Living Shadow",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "Your body dissolves, and you become a living shadow. This ability functions as gaseous form. At 14th level, this ability functions as shadow bodyOA instead, except you also gain DR 10/magic and become immune to poison, sneak attacks, and critical hits as if also using gaseous form. You can use this ability a number of minutes per day equal to your oracle level. This duration does not need to be consecutive, but it must be spent in 1-minute increments. You must be at least 7th level to choose this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
   "id": "lore-keeper",
   "name": "Lore Keeper",
   "kind": "revelation",
@@ -18939,6 +19373,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "luminous-form",
+  "name": "Luminous Form",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You can transform your body into churning light, granting you the effects of blur and causing your body to shed light as a sunrod. At 7th level, creatures that end their turn adjacent to your luminous form become blinded for 1 round (Fortitude negates). At 13th level, creatures that end their turn adjacent to your luminous form are blinded for 1d4 rounds (Fortitude reduces to 1 round). At 18th level, your luminescence is as bright as natural sunlight, and creatures affected by natural sunlight are so affected if they end their turn adjacent to your luminous form. You can maintain your luminous form for up to 1 minute per day per oracle level; this duration need not be continuous, but it must be used in 1-minute increments. You can forgo the blur and blinding aspects of this ability to instead simply shed light as a torch, though this still counts against the ability’s duration for the day.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
   "id": "lure-of-the-heavens",
   "name": "Lure of the Heavens",
   "kind": "revelation",
@@ -18951,6 +19399,34 @@
   "repeatable": false,
   "mystery": "Heavens",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "magic-penetration",
+  "name": "Magic Penetration",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You gain a +2 bonus on any caster level check made to dispel or remove a magic effect (such as when using the dispel magic or remove curse spell). If you are 9th level or higher, the bonus increases to +4.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "magma-form",
+  "name": "Magma Form",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "As a standard action, you can assume the form of a Small magma elemental, as elemental body I. You gain the same abilities as if you had chosen an earth elemental’s form, except your earth glide functions as the earth glide ability of a magma elemental. At 9th level, you can assume the form of a Medium magma elemental, as elemental body II. At 11th level, you can assume the form a Large magma elemental, as elemental body III. At 13th level, you can assume the form of a Huge magma elemental, as elemental body IV. You can use this ability once per day, but the duration is 1 hour per oracle level. You must be at least 7th level to choose this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
  },
  {
   "id": "revelation-maneuver-mastery",
@@ -18993,6 +19469,34 @@
   "repeatable": false,
   "mystery": "Dark Tapestry",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "many-roads",
+  "name": "Many Roads",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You gain an insight bonus on Fly and Survival checks equal to 1/2 your oracle level. Further, you learn to speak and read three languages in addition to those you already know.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "martial-disciple",
+  "name": "Martial Disciple",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Villain Codex",
+  "text": "Through meditation and study of monastic forms of combat, you have learned a lethal form of unarmed combat. You gain Improved Unarmed Strike as a bonus feat, even if you do not meet the prerequisites. You gain the unarmed strike damage of a monk of your oracle level. If you also have monk levels, those levels stack for the purpose of determining your unarmed strike damage.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Ascetic",
+  "origin": "aonprd"
  },
  {
   "id": "martial-discipline",
@@ -19107,6 +19611,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "moonbeam",
+  "name": "Moonbeam",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "You can fire a ray of moonlight as a ranged touch attack at any creature within 30 feet. This ray deals 1d6 points of damage + 1 for every 2 oracle levels you possess. In addition, the target must succeed at a Fortitude save or become blinded for 1 round. You can use this ability a number of times per day equal to your Charisma modifier (minimum 1).",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
   "id": "moonlight-bridge",
   "name": "Moonlight Bridge",
   "kind": "revelation",
@@ -19121,6 +19639,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "moonlit-script",
+  "name": "Moonlit Script",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "Once per night while you sleep, your hands produce mysterious writing that pertains to the future. At 1st level, the prophetic writing manifests as an augury spell with 90% effectiveness. At 5th level, the writing takes the form of a divination with 90% effectiveness. At 8th level, the writing manifests as a casting of commune with no material component required.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
   "id": "moral-crisis",
   "name": "Moral Crisis",
   "kind": "revelation",
@@ -19133,6 +19665,20 @@
   "repeatable": false,
   "mystery": "Reaper",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "mystic-null",
+  "name": "Mystic Null",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You gain a +2 insight bonus on saves against spells and spell-like abilities. At 7th level, this bonus also applies on saves against supernatural abilities. At 11th level, the bonus increases to +4.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
  },
  {
   "id": "natural-divination",
@@ -19317,6 +19863,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "pierce-the-shadows",
+  "name": "Pierce the Shadows",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "The shadows step aside from your baleful gaze, affording you sight in even the deepest darkness. You gain darkvision 60 feet. If you already have darkvision, increase your existing darkvision by 60 feet instead. At 11th level, you can see perfectly in darkness of any kind, even in absolute darkness or the darkness created by a deeper darkness spell.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
   "id": "pierce-the-veil",
   "name": "Pierce the Veil",
   "kind": "revelation",
@@ -19329,6 +19889,48 @@
   "repeatable": false,
   "mystery": "Dark Tapestry",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "pitiful-foe",
+  "name": "Pitiful Foe",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Healer's Handbook",
+  "text": "You can temporarily curse one target within 30 feet as a standard action, making it pitiful and ineffective in battle. While this ability is in effect, the target is never considered to be threatening you or your allies, even if it is armed and you or your allies are standing in a square into which it can make a melee attack. If the target rolls a natural 20 on an attack roll or saving throw, the attack or saving throw is not an automatic success (as would be normal) and whether it is successful is instead determined normally. Additionally, the target automatically fails all rolls to confirm critical hits. This curse lasts for 1 round per 2 oracle levels you have (minimum 1). A successful Will saving throw negates this effect. This is a mind-affecting curse effect. You can use this revelation once per day, plus one additional time at 7th and 15th levels.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Succor",
+  "origin": "aonprd"
+ },
+ {
+  "id": "planar-haze",
+  "name": "Planar Haze",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You can fill an area with the smoky miasma of the Outer Rifts. Once per day when you cast a spell that has an area, as a swift action you may also fill that area with a thick haze that acts as obscuring mist, except it originates at the center of your spell effect and cannot expand beyond the spell’s area. At 10th level, the haze functions as fog cloud. You may use this ability one additional time per day at 7th level, and one additional time per day at 14th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
+ },
+ {
+  "id": "planar-infusion",
+  "name": "Planar Infusion",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "As a standard action once per day, you can cause a 20-foot-spread to gain either the mildly chaotic-aligned or mildly evil-aligned planar trait for a number of rounds equal to your oracle level. Lawful creatures in a chaotic-aligned area take a –2 circumstance penalty on all Charisma-based checks, as do good creatures in an evil-aligned area. At 11th level, the infusion makes the area strongly aligned, which causes the –2 circumstance penalty to apply on all Intelligence-, Wisdom-, and Charisma-based checks made by any creature that lacks the matching alignment component (these penalties stack with those from the lower-level effect). You must be chaotic or evil to select this revelation, and you can only infuse an area with an alignment that matches a component of your own alignment.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
  },
  {
   "id": "poetic-vengeance",
@@ -19373,6 +19975,76 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "primal-companion",
+  "name": "Primal Companion",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "You gain the service of a faithful animal of the night. You can select from a bear, boar, crocodile, shark, tiger, or wolf. This animal functions as a druid’s animal companion, using your oracle level as your effective druid level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "primal-manipulation",
+  "name": "Primal Manipulation",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Whenever you cast a spell that deals acid, cold, electricity, or fire damage, you may change it to deal one of the other listed damage types. You may use this ability once per day, plus one additional time for every 5 levels. At 15th level, you can change a spell to deal sonic damage, though the damage is halved. At 20th level, you can change a spell to deal force damage, though the damage is halved. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "primal-mastery",
+  "name": "Primal Mastery",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Whenever a spell you cast triggers a primal magic event (see page 13), or whenever you use a rod of wonder, roll d% twice when generating the result. You may pick which of the two results actually occurs. You gain a +2 bonus on all saving throws made to resist primal magic events or magical effects caused by a rod of wonder.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "project-psyche",
+  "name": "Project Psyche",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Occult Mysteries",
+  "text": "You can project your psyche into another vessel. Once per day, you can possess another creature as if using the magic jar spell, though this does not require a receptacle. You must be adjacent to the target creature, which receives a Will save against the effect. You must be at least 11th level to choose this revelation.",
+  "level": 11,
+  "repeatable": false,
+  "mystery": "Occult",
+  "origin": "aonprd"
+ },
+ {
+  "id": "prophetic-armor",
+  "name": "Prophetic Armor",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "You are so in tune with your primal nature that your instincts often act to save you from danger that your civilized mind isn’t even aware of. You may use your Charisma modifier (instead of your Dexterity modifier) as part of your Armor Class and all Reflex saving throws. Your armor’s maximum Dexterity bonus applies to your Charisma, instead.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
+ },
+ {
   "id": "punitive-transformation",
   "name": "Punitive Transformation",
   "kind": "revelation",
@@ -19385,6 +20057,34 @@
   "repeatable": false,
   "mystery": "Waves",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "pure-whimsy",
+  "name": "Pure Whimsy",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "Once per day, you can release a stream of errant chaos from the First World as a standard action. When you do so, identify a target within 90 feet and generate a random effect as from a rod of wonder (or, at the GM’s discretion, another random or unusual effect of similar power). The DC of any required saving throw is 10 + half your oracle level + your Charisma modifier, and no effect from this ability persists for more than 1 day. You can use this ability once per day at 7th level and one additional time per day for every 4 levels beyond 7th. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
+  "id": "pyroclastic-shove",
+  "name": "Pyroclastic Shove",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Pathfinder #95: Anvil of Fire",
+  "text": "As a standard action, you conjure a cascade of volcanic ash to bull rush a creature within 30 feet of you. The CMB of this cascade is equal to your base attack bonus + your Charisma modifier + 4 from the cascade’s Gargantuan size. If the bull rush succeeds, the creature takes 1d6 points of fire damage per oracle level. At 12th and at 17th level, you can use this ability one additional time per day. You must be 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Volcano",
+  "origin": "aonprd"
  },
  {
   "id": "raise-the-dead",
@@ -19541,6 +20241,34 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "rift-magic",
+  "name": "Rift Magic",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Your spells gain a +4 bonus on caster level checks made to overcome the spell resistance of chaotic outsiders and evil outsiders.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
+ },
+ {
+  "id": "rift-weapon",
+  "name": "Rift Weapon",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Your understanding of the powers that move through the Outer Rifts allows you to imbue weapons with the ability to penetrate the defenses of creatures native to other planes. Once per day as a standard action, you can touch one weapon (or a group of up to 20 similar pieces of ammunition) and give it the ability to penetrate DR/cold iron for 1 minute per caster level. At 9th level, you can also grant the additional ability to bypass either DR/good and DR/law. You can use this ability an additional time per day for every 5 oracle levels you possess.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
+ },
+ {
   "id": "rock-throwing",
   "name": "Rock Throwing",
   "kind": "revelation",
@@ -19639,6 +20367,76 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "serpent-in-the-sun",
+  "name": "Serpent in the Sun",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "So long as you are exposed to at least 4 hours of sunlight per day, you no longer need to eat to survive and you gain +2 bonus on saves against diseases. At 5th level, you become immune to nonmagical diseases and no longer need to drink water to survive. At 10th level, you become immune to magical diseases, gain a +2 bonus on saving throws against poisons, and only need to sleep half as long to rest or recover from fatigue or exhaustion. At 15th level, you become immune to poison and fatigue. You lose these benefits if you fail to spend at least 4 hours in sunlight in a 24-hour period.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "servant-of-winter",
+  "name": "Servant of Winter",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "People of the North",
+  "text": "As a full-round action, you can summon a single ice elemental (Pathfinder RPG Bestiary 2 114) to serve you. At 7th level, you can summon a Medium ice elemental, as summon monster IV. At 11th level, you can summon a Huge ice elemental, as summon monster VI. At 15th level, you can summon an elder ice elemental, as summon monster VIII. You can use this ability once per day, plus one additional time per day at 15th level. You must be at least 7th level before selecting this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Winter",
+  "origin": "aonprd"
+ },
+ {
+  "id": "shadow-armament",
+  "name": "Shadow Armament",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "You can create a quasi-real simple or martial masterwork weapon appropriate for your current size. You are considered proficient with this weapon. The first time you hit a creature with this weapon, that creature can attempt a Will save to disbelieve; failure means the weapon deals damage normally, while success means the creature takes only 1 point of damage from the weapon’s attacks. The weapon deals only 1 point of damage to objects. At 3rd level, and again at 11th level and 19th level, the weapon gains a cumulative +1 enhancement bonus. At 7th level, the weapon gains either the frost or keen weapon special ability, chosen when the weapon is created. These abilities don’t function against a target that succeeds at its Will save. At 15th level, the weapon deals minimum damage (as if it had rolled a 1 on each of its damage dice) against targets that succeed at their saves instead of 1 point of damage. You can use this ability for a number of minutes per day equal to your oracle level. This duration does not need to be consecutive, but it must be used in 1-minute increments. The weapon disappears after 1 round if it leaves your grasp.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
+  "id": "shadow-mastery",
+  "name": "Shadow Mastery",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "Whenever you cast an illusion spell from the shadow subschool, increase the strength of such spells by 1% per oracle level you have. You must be at least 7th level to choose this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
+  "id": "shadow-projection",
+  "name": "Shadow Projection",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of Shadows",
+  "text": "You infuse your life force and psyche into your shadow, causing it to separate from your body and act as an independent creature. This ability functions as shadow projectionAPG except as follows. Your shadow has the outsider type and the phantom subtype instead of the undead type. As a result, this ability does not have the evil descriptor and your shadow cannot be turned or affected as undead (though it can be affected as an outsider). You can use this ability for a number of hours per day equal to half your oracle level. These hours don’t need to be consecutive, but they must be spent in 1-hour increments. Your shadow’s hit points are not replenished between uses, although your shadow can be healed in the same manner as any other outsider. When this ability isn’t in use, any healing done to you also heals your shadow for an equal amount. You must be at least 7th level to choose this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Shadow",
+  "origin": "aonprd"
+ },
+ {
   "id": "shard-explosion",
   "name": "Shard Explosion",
   "kind": "revelation",
@@ -19651,6 +20449,34 @@
   "repeatable": false,
   "mystery": "Stone",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "shell-of-succor",
+  "name": "Shell of Succor",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Healer's Handbook",
+  "text": "You can surround an ally with bolstering energies that supplement its health and grant it extra vigor. With a touch from you (a standard action), one creature gains a ward of restorative energy, granting it a number of temporary hit points equal to your Charisma bonus + 1d6 per 2 oracle levels you have (maximum 10d6). These temporary hit points last 1 minute per oracle level you have.\n\nThe target always loses these temporary hit points first, even before other temporary hit points (including those from, for example, the purify body spell on page 9 or a kineticist’s force ward defense wild talent). If an attack deals fewer points of damage than the target has as temporary hit points from shell of succor, it still reduces those temporary hit points but otherwise counts as a miss for the purpose of abilities that trigger on a hit or a miss.\n\nYou can use this revelation once per day, plus one additional time at 11th and 19th levels. You must be at least 3rd level before selecting this revelation.",
+  "level": 3,
+  "repeatable": false,
+  "mystery": "Succor",
+  "origin": "aonprd"
+ },
+ {
+  "id": "shroud-of-retribution",
+  "name": "Shroud of Retribution",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Occult Mysteries",
+  "text": "As an immediate action, you can summon a shroud of spirits that reflects your attackers’ damage back onto them. Any creature that strikes you deals normal damage to you, but at the same time the attacker takes 1d8 points of force damage + 1 point per 2 caster levels you possess (maximum +10). This effect lasts until the end of your next turn. You can use this ability once per day, plus one additional time per day at 11th level and every 4 levels thereafter. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Occult",
+  "origin": "aonprd"
  },
  {
   "id": "shroud-of-the-city",
@@ -19693,6 +20519,34 @@
   "repeatable": false,
   "mystery": "Battle",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "snow-sight",
+  "name": "Snow Sight",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "People of the North",
+  "text": "You can see through falling snow and sleet without taking any penalties on Perception checks as long as there is enough light to allow you to see normally. At 11th level, in cold conditions or in icy or snowy terrain, you can learn about your surroundings as if using the commune with nature spell. You can use the commune with nature ability once per day at 11th level, and twice per day at 15th level.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Winter",
+  "origin": "aonprd"
+ },
+ {
+  "id": "solar-wind",
+  "name": "Solar Wind",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You can unleash a blast of searing wind at a single target within 30 feet as a ranged touch attack with no range increment. Your solar wind deals 1d6 points of fire damage + 1 for every 2 oracle levels you possess. At 7th level, you can also knock an opponent back, treating the blast as a bull rush combat maneuver that uses your caster level + your Charisma modifier in place of your CMB. You can use this ability a number of times per day equal to 3 + your Charisma modifier.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
  },
  {
   "id": "soul-siphon",
@@ -20073,6 +20927,48 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "sun-stride",
+  "name": "Sun Stride",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You can travel between areas of natural sunlight as if by means of a dimension door spell. This ability does not function in areas of less than bright light, though it does work within the area of a daylight spell. At 5th level, you can sun stride up to 40 feet per day; this can be a single stride of 40 feet or four strides of 10 feet each. At 9th level and every 4 levels thereafter, the distance you can sun stride doubles (80 feet at 9th level, 160 feet at 13th level, and 32 feet at 17th level). This amount can be split among many strides, but each one, no matter how small, counts as a 10-foot increment. You must be at least 5th level to select this revelation.",
+  "level": 5,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "sungazer",
+  "name": "Sungazer",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "You can study the sun and gaze upon any place its light touches. You can use clairaudience/clairvoyance as a spell-like ability, but only for visual observation and you can only place your sensor in places currently being touched by sunlight. At 10th level, you can instead use scrying to observe any area touched by sunlight. At 15th level, you can use greater scrying instead. You must be at least 5th level to select this revelation. You can sungaze for 1 minute per day per oracle level; the duration need not be continuous, but it must be used in 1-minute increments.",
+  "level": 5,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
+  "id": "sure-soul",
+  "name": "Sure Soul",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Occult Mysteries",
+  "text": "Because of your experience with possessing spirits, you gain a +2 insight bonus on saving throws against possession effects such as magic jar, a ghost’s malevolence ability, or domination effects. At 7th level, this bonus also applies against death effects and mind-affecting effects. At 11th level, the bonus increases to +4.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Occult",
+  "origin": "aonprd"
+ },
+ {
   "id": "surprising-charge",
   "name": "Surprising Charge",
   "kind": "revelation",
@@ -20127,6 +21023,20 @@
   "repeatable": false,
   "mystery": "Dragon",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "telepathy",
+  "name": "Telepathy",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You can mentally communicate with any other creature within 100 feet that has a language, as per the telepathy power of demons and angels. You must be at least 11th level before selecting this revelation.",
+  "level": 11,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
  },
  {
   "id": "temporal-celerity",
@@ -20283,6 +21193,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "torch-touch",
+  "name": "Torch Touch",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "The Harrow Handbook",
+  "text": "As a move action, you can alter the amount of light shed by any nonmagical light source within 60 feet so that its light radius is either halved or doubled. At 1st level, you can affect light sources up to the size of a torch. At 7th level, you can affect any Medium or smaller nonmagical light source (such as a campfire). At 14th level, you can affect Large or smaller nonmagical light sources (such as bonfires) and magical light sources up to the size of an everburning torch. If a creature is holding the light source you are trying to affect, the creature can attempt a Reflex save to avoid the effect.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Solar",
+  "origin": "aonprd"
+ },
+ {
   "id": "touch-of-acid",
   "name": "Touch of Acid",
   "kind": "revelation",
@@ -20323,6 +21247,20 @@
   "repeatable": false,
   "mystery": "Flame",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "touch-of-the-moon",
+  "name": "Touch of the Moon",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Blood of the Moon",
+  "text": "The exact effects of this revelation depend on whether you cast inflict or cure spells. If you cast inflict spells, these spells carry with them the taint of madness. Subjects who take damage from your inflict spells are also subject to confusion, as the spell, except the duration of this effect is a number of rounds equal to the level of the inflict spell. The save DC against this effect is 10 + 1/2 your oracle level + your Charisma modifier. Alternatively, if you cast cure spells, these spells are potentially more effective but entirely in the target’s mind. Whenever you cast a cure spell, you can cast it as though it were enhanced with the Empower Spell metamagic feat by expending two spell slots, except these hit points are temporary. This does not increase the level of the spell. Hit points healed this way expire after a number of minutes equal to half your oracle level. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Lunar",
+  "origin": "aonprd"
  },
  {
   "id": "touch-of-the-void",
@@ -20381,6 +21319,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "trigger-primal-magic-event",
+  "name": "Trigger Primal Magic Event",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "Once per day as an immediate action, you can cause a spellcaster (including yourself ) within 30 feet to trigger a primal magic event as the spell is being cast. At 13th level, you can cause any creature in the act of activating a magic item to trigger a primal magic event (see page 13). At 17th level, you can use this ability twice per day. A spellcaster can make a concentration check (DC = 15 + twice the spell’s level) to focus the magic and avoid triggering a primal magic effect, but non-spellcasters activating magic items have no such option. You must be at least 9th level before selecting this revelation.",
+  "level": 9,
+  "repeatable": false,
+  "mystery": "Spellscar",
+  "origin": "aonprd"
+ },
+ {
   "id": "true-death",
   "name": "True Death",
   "kind": "revelation",
@@ -20423,6 +21375,20 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "unearthly-terrain",
+  "name": "Unearthly Terrain",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You can twist the material world into the harsh, jagged edges and uneven angles of the outer planes. As a standard action, you can turn one 20- foot square into difficult terrain for 1 round per level. You may use this ability a number of times per day equal to 3 + your Charisma bonus.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
+ },
+ {
   "id": "unstoppable-overrun",
   "name": "Unstoppable Overrun",
   "kind": "revelation",
@@ -20463,6 +21429,20 @@
   "repeatable": false,
   "mystery": "Intrigue",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "versatile-comedy",
+  "name": "Versatile Comedy",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "The powers of whimsy infuse your comedy with the ability to awe and befuddle. You can use your total Perform (comedy) bonus in place of your Bluff and Intimidate bonuses.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
  },
  {
   "id": "vision-in-iron",
@@ -20564,6 +21544,34 @@
   "origin": "Foundry VTT pf1"
  },
  {
+  "id": "whimsical-prank",
+  "name": "Whimsical Prank",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "As a standard action, you can call upon fey to play a prank on a creature within 30 feet as a dirty trickAPG combat maneuver. Resolve this attempt as normal, except that it doesn’t provoke attacks of opportunity, you use your oracle level in place of your Combat Maneuver Bonus, and you add your Charisma modifier in place of your Strength or Dexterity modifier. No save is allowed against this attempt, but a creature affected by this revelation cannot be the target of this revelation again for 1 day.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
+  "id": "whimsical-step",
+  "name": "Whimsical Step",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "Once per day as a move action, you can teleport up to 10 feet per oracle level. You can use this ability once per day at 7th level and one additional time per day for every 4 levels beyond 7th. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
   "id": "whirlwind-lesson",
   "name": "Whirlwind Lesson",
   "kind": "revelation",
@@ -20646,6 +21654,20 @@
   "repeatable": false,
   "mystery": "Flame",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "wings-of-terror",
+  "name": "Wings of Terror",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Inner Sea Magic",
+  "text": "You can manifest a pair of enormous, batlike demon wings that grant you a fly speed of 60 feet with average maneuverability and a +4 bonus on Intimidate checks. At 10th level, your speed increases to 90 feet, your maneuverability increases to good, and the bonus increases to +8 on Intimidate checks. You can use these wings for 1 minute per day per oracle level. This duration does not need to be consecutive, but it must be spent in 1-minute increments. You must be at least 7th level to select this revelation.",
+  "level": 7,
+  "repeatable": false,
+  "mystery": "Outer Rifts",
+  "origin": "aonprd"
  },
  {
   "id": "wings-of-the-dragon",
@@ -20758,6 +21780,34 @@
   "repeatable": false,
   "mystery": "Wood",
   "origin": "Foundry VTT pf1"
+ },
+ {
+  "id": "woodland-caprice",
+  "name": "Woodland Caprice",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Legacy of the First World",
+  "text": "Your fey powers allow you to move easily through woodland environments. You gain woodland stride, as per the druid ability. At 7th level, you also gain the trackless step druid class feature and can similarly conceal the tracks of any allies within 30 feet that you choose.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Whimsy",
+  "origin": "aonprd"
+ },
+ {
+  "id": "revelation-woodland-stride",
+  "name": "Woodland Stride",
+  "kind": "revelation",
+  "classes": [
+   "oracle"
+  ],
+  "source": "Ultimate Magic",
+  "text": "You can move through any sort of undergrowth (such as natural thorns, briars, overgrown areas, and similar terrain) at your normal speed and without taking damage or suffering any other impairment. Thorns, briars, and overgrown areas that have been magically manipulated to impede motion, however, still affect you.",
+  "level": null,
+  "repeatable": false,
+  "mystery": "Wood",
+  "origin": "aonprd"
  },
  {
   "id": "accurate-poisoner",

@@ -274,6 +274,11 @@ def main():
         text = page_text(aon_page(page, AON_URLS.get(page, f'https://aonprd.com/{page}.aspx')))
         for name, book, body, k, level in aon_options(text, kind, headings):
             add(name, k, cids, book, body, level)
+    # Each mystery's own revelations (the page's book unless one names another).
+    from build_aon_mysteries import mystery_pages
+    for m in mystery_pages():
+        for name, book, body in m['revelations']:
+            add(name, 'revelation', ['oracle'], book or m['source'], body, mystery=m['name'])
     for name, book, body, k in arcanist_exploits():
         add(name, k, ['arcanist'], book, body)
     for school in IMPLEMENT_SCHOOLS:
