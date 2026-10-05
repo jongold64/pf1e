@@ -768,3 +768,10 @@ table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%,
 .specialty-picker .add-specialty { display: flex; gap: 8px; }
 #feats-card h2 .skill-details, #traits-card h2 .skill-details, #skills-card h2 .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin-left: 6px; }
 .granted-feats button.link { font-size: inherit; padding: 0 2px; }
+/* Armor tab: a Details button beside the armor or shield, its quality and its material. */
+.armor-pick { display: flex; gap: 6px; align-items: center; }
+.armor-pick select { flex: 1; min-width: 0; }
+#tab-armor .enh-row { display: flex; gap: 6px; align-items: center; }
+#tab-armor .enh-row label { display: flex; gap: 6px; align-items: center; flex: 1; min-width: 0; }
+#tab-armor .enh-row select { flex: 1; min-width: 0; }
+table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mix(in srgb, var(--accent) 8%, transparent); }

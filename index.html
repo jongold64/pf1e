@@ -293,16 +293,22 @@
       </section>
       <section class="card">
         <h2>Armor</h2>
-        <select id="armor-select" aria-label="Armor"></select>
-        <label class="row enh-row">Quality <select id="armor-enh"></select></label>
-        <label class="row enh-row">Material <select id="armor-material"></select></label>
+        <div class="row armor-pick"><select id="armor-select" aria-label="Armor"></select>
+          <button type="button" class="skill-details" data-armor-part="armor|item" aria-label="The armor in a popup">Details</button></div>
+        <div class="row enh-row"><label>Quality <select id="armor-enh"></select></label>
+          <button type="button" class="skill-details" data-armor-part="armor|quality" aria-label="What masterwork and magic do">Details</button></div>
+        <div class="row enh-row"><label>Material <select id="armor-material"></select></label>
+          <button type="button" class="skill-details" data-armor-part="armor|material" aria-label="What the material changes">Details</button></div>
         <div id="armor-info" class="info"></div>
       </section>
       <section class="card">
         <h2>Shield</h2>
-        <select id="shield-select" aria-label="Shield"></select>
-        <label class="row enh-row">Quality <select id="shield-enh"></select></label>
-        <label class="row enh-row">Material <select id="shield-material"></select></label>
+        <div class="row armor-pick"><select id="shield-select" aria-label="Shield"></select>
+          <button type="button" class="skill-details" data-armor-part="shield|item" aria-label="The shield in a popup">Details</button></div>
+        <div class="row enh-row"><label>Quality <select id="shield-enh"></select></label>
+          <button type="button" class="skill-details" data-armor-part="shield|quality" aria-label="What masterwork and magic do">Details</button></div>
+        <div class="row enh-row"><label>Material <select id="shield-material"></select></label>
+          <button type="button" class="skill-details" data-armor-part="shield|material" aria-label="What the material changes">Details</button></div>
         <div id="shield-info" class="info"></div>
       </section>
       <section class="card wide">
@@ -562,6 +568,9 @@
         <details>
           <summary>Armor tab</summary>
           <ul>
+            <li><b>Details</b> beside the armor or shield opens it (stats, quality and material, Update, add special abilities, take
+              it off). Beside <b>Quality</b>: what masterwork and +1 to +5 do and cost for it, and its price so far. Beside
+              <b>Material</b>: what the chosen material changes compared with the usual one, and every material it can be made of.</li>
             <li>Choose armor and a shield, and their <b>Quality</b> (masterwork or +1 to +5). AC, Dex limit, check penalty, spell
               failure and speed update for you, with warnings if you aren't proficient.</li>
             <li><b>Material</b> makes it mithral, adamantine, darkwood, dragonhide and so on (only the ones that item can be made

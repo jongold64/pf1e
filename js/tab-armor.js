@@ -3,7 +3,7 @@ import { magicPrefix, magicPart } from './crafting.js';
 import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass, speedInArmor } from './armor.js';
 import { MONK_IDS, slowedSpeed } from './rules.js';
-import { materialsFor } from './materials.js';
+import { materialsFor, withMaterial } from './materials.js';
 import { openMagicArmor } from './tab-crafting.js';
 import { armorCost, formatGp } from './equipment.js';
 
@@ -129,7 +129,80 @@ function renderArmorList(app) {
   }).join('');
 }
 
+// The Details beside Quality: what masterwork and +1 to +5 do for this item and what each costs, and its price now.
+function popQuality(app, k) {
+  const { state } = app;
+  const base = app.data.armorById.get(state[`${k}Id`]);
+  if (!base) { app.openDetail(k === 'shield' ? 'No shield' : 'No armor', `<p>Choose ${k === 'shield' ? 'a shield' : 'armor'} first.</p>`); return; }
+  const item = state[`${k}Material`] ? withMaterial(base, state[`${k}Material`]) : base;
+  const what = k === 'shield' ? 'shield bonus' : 'armor bonus';
+  const rows = [
+    ['Masterwork', `armor check penalty 1 less${item.mw_included ? ' (already included with this material)' : ''}`, item.mw_included ? 'included' : '+150 gp'],
+    ...Array.from({ length: ENHANCEMENT_MAX }, (_, i) => i + 1).map(n => [`+${n}`, `+${n} enhancement to its ${what}; masterwork, so penalty 1 less`,
+      `+${formatGp(n * n * 1000 + (item.mw_included ? 0 : 150))}`]),
+  ];
+  const total = armorCost(item, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]);
+  app.openDetail(`Quality: ${item.name}`, `
+    <table class="skill-why"><thead><tr><th>Quality</th><th>What it does</th><th class="num">Adds to the price</th></tr></thead>
+      <tbody>${rows.map(([q, w, p]) => `<tr><td>${esc(q)}</td><td>${esc(w)}</td><td class="num">${esc(p)}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">Magic armor and shields are always masterwork. The magic price is the total bonus (enhancement plus special
+      abilities' bonuses) squared × 1,000 gp; a +1 enhancement is needed before special abilities can be added, and the total
+      can't go above +10.</p>
+    <p><b>This ${esc(k)} now:</b> ${esc(formatGp(total))} <span class="muted">(the Details beside its price on the card shows how it adds up)</span></p>`);
+}
+
+// The Details beside Material: the chosen material against the usual item (bonus, Dex limit, penalty, spell failure, speed,
+// weight, price and its own effects), then every material this item can be made of.
+function popMaterial(app, k) {
+  const { state } = app;
+  const base = app.data.armorById.get(state[`${k}Id`]);
+  if (!base) { app.openDetail(k === 'shield' ? 'No shield' : 'No armor', `<p>Choose ${k === 'shield' ? 'a shield' : 'armor'} first.</p>`); return; }
+  const list = materialsFor(base);
+  const chosen = state[`${k}Material`] ? withMaterial(base, state[`${k}Material`]) : null;
+  const dexText = v => (v === null || v === undefined ? 'no limit' : signed(v));
+  const props = it => [[k === 'shield' ? 'Shield bonus' : 'Armor bonus', signed(it.bonus)], ['Max Dex bonus', dexText(it.max_dex)],
+    ['Armor check penalty', String(it.check_penalty)], ['Arcane spell failure', `${it.spell_failure}%`],
+    ...(k === 'shield' ? [] : [['Counts as (speed and limits)', `${it.move_category || it.category} armor`]]),
+    ['Weight', it.weight_lbs === null ? '—' : `${it.weight_lbs} lbs.`], ['Price', it.price_gp === null ? '—' : formatGp(it.price_gp)],
+    ['Masterwork', it.mw_included ? 'included' : 'no'],
+    ...(chosen?.metal === false ? [['Metal', it === chosen ? 'no: druids can wear it' : 'yes']] : []),
+    ['Its own effects', it.material_notes || '—']];
+  const compare = chosen ? `<h3>${esc(chosen.material)} against the usual ${esc(base.name.toLowerCase())}</h3>
+    <table class="skill-why"><thead><tr><th></th><th>Usual</th><th>${esc(chosen.material)}</th></tr></thead><tbody>${props(base).map(([l, v], i) => {
+      const w = props(chosen)[i][1];
+      return `<tr${v !== w ? ' class="changed"' : ''}><td>${esc(l)}</td><td>${esc(v)}</td><td>${v !== w ? `<b>${esc(w)}</b>` : esc(w)}</td></tr>`;
+    }).join('')}</tbody></table>` : `<p>${esc(base.name)} is made of the usual material (steel, wood or leather).</p>`;
+  const others = list.length ? `<h3>Materials it can be made of (${list.length})</h3>
+    <table class="skill-why"><tbody>${list.map(m => {
+      const it = withMaterial(base, m.id);
+      const diff = (it.price_gp ?? 0) - (base.price_gp ?? 0);
+      const changes = [it.max_dex !== base.max_dex ? `Dex ${dexText(it.max_dex)}` : '', it.check_penalty !== base.check_penalty ? `penalty ${it.check_penalty}` : '',
+        it.spell_failure !== base.spell_failure ? `failure ${it.spell_failure}%` : '', it.move_category && it.move_category !== base.category ? `counts as ${it.move_category}` : '',
+        it.weight_lbs !== base.weight_lbs ? `${it.weight_lbs} lbs.` : '', it.material_notes || ''].filter(Boolean).join(', ');
+      return `<tr${m.id === state[`${k}Material`] ? ' class="mine"' : ''}><td><b>${esc(m.name)}</b>${m.id === state[`${k}Material`] ? ' ✓' : ''}<br><small class="muted">${esc(changes || 'no other changes')}</small></td>
+        <td class="num">${diff >= 0 ? '+' : '−'}${esc(formatGp(Math.abs(diff)))}</td></tr>`;
+    }).join('')}</tbody></table>` : '<p class="hint">No special material fits this item.</p>';
+  app.openDetail(`Material: ${chosen ? chosen.name : base.name}`, compare + others
+    + '<p class="hint">Choose the material in the list beside this button.</p>');
+}
+
 export function initArmorTab(app) {
+  // Details beside the armor / shield, its quality and its material.
+  for (const card of ['armor-select', 'shield-select']) {
+    $(card).closest('section').addEventListener('click', e => {
+      const b = e.target.closest('[data-armor-part]');
+      if (!b) return;
+      e.preventDefault();
+      const [k, part] = b.dataset.armorPart.split('|');
+      if (part === 'item') {
+        if (app.state[`${k}Id`]) popArmor(app, app.state[`${k}Id`]);
+        else app.openDetail(k === 'shield' ? 'No shield' : 'No armor', `<p>Choose ${k === 'shield' ? 'a shield' : 'armor'} in the list, or browse
+          <b>All armor and shields</b> at the bottom of this tab.</p>`);
+      }
+      if (part === 'quality') popQuality(app, k);
+      if (part === 'material') popMaterial(app, k);
+    });
+  }
   $('armor-list').addEventListener('click', e => {
     const b = e.target.closest('[data-armor-pop]');
     if (b) popArmor(app, b.dataset.armorPop);
