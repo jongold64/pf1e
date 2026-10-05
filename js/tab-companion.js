@@ -1,7 +1,7 @@
 // Animal companion card (Character tab): shown when a class gives a companion (druid, hunter, ranger, a cleric or druid
 // with the Animal domain). Choose the animal and name it; its statistics follow the effective druid level, with Roll
 // buttons. Choices are kept in state.companion.
-import { $, esc, signed, paragraphs } from './dom.js';
+import { $, esc, signed, paragraphs, facts } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { TRICKS, companionStats } from './companion.js';
 
@@ -24,8 +24,13 @@ export function renderCompanion(app, view) {
   const picker = `<div class="companion-pick">
       <select data-comp="animal" aria-label="Animal"><option value="">Choose an animal…</option>${group('animal', 'Animals')}
         ${group('vermin', 'Vermin (needs the Vermin Heart feat)')}</select>
-      <input type="text" data-comp="name" value="${esc(c.name)}" placeholder="Name" aria-label="Companion's name"></div>
-    <p class="hint">Levels counted: ${esc(where)}.</p>`;
+      <input type="text" data-comp="name" value="${esc(c.name)}" placeholder="Name" aria-label="Companion's name">
+      ${c.animal ? `<button type="button" class="skill-details" data-animal-pop="${esc(c.animal)}">Details</button>` : ''}</div>
+    <p class="hint">Levels counted: ${esc(where)}.</p>
+    <details class="flaw-browse" data-key="animal-browse"${openKeys.has('animal-browse') ? ' open' : ''}><summary>Browse all ${animals.length} companions</summary>
+      <ul class="pick-list">${animals.map(a => `<li class="with-details"><button type="button" data-animal-pop="${esc(a.id)}"${a.id === c.animal ? ' class="mine"' : ''}>${a.id === c.animal ? '<span class="status met">✓</span>' : ''}${esc(a.name)}
+          <small>${esc(a.size)} · ${esc(a.attacks || '')}${a.kind === 'vermin' ? ' · vermin' : ''}</small></button>
+        <button type="button" class="skill-details" data-animal-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`).join('')}</ul></details>`;
   const animal = animals.find(a => a.id === c.animal);
   if (!animal) {
     box.innerHTML = picker;
@@ -138,6 +143,34 @@ function showWhy(app, key) {
   app.openDetail(`${name}: ${title}`, html);
 }
 
+// An animal in a popup: its starting statistics, what changes when it advances, and what it would be at your effective
+// druid level, with Choose.
+function popAnimal(app, id) {
+  const { state, data, view } = app;
+  const a = data.companions.animals.find(x => x.id === id);
+  if (!a) return;
+  const level = view.companion.level || 1;
+  const s = companionStats(a, level, data.companions.progression, { increases: [], feats: [], skills: {} });
+  const scores = (sc, plus = false) => Object.entries(sc).map(([k, v]) => `${ABILITY_NAMES[k]} ${v === null ? '—' : plus && v > 0 ? `+${v}` : v}`).join(', ');
+  const adv = a.advancement;
+  const mine = state.companion.animal === a.id;
+  app.openDetail(`${a.name} (animal companion)`, `<p class="hint">${esc(a.source)}${a.kind === 'vermin' ? ' · vermin: needs the Vermin Heart feat' : ''}</p>
+    <h3>Starting statistics</h3>
+    ${facts([['Size', a.size], ['Speed', a.speed], ['Natural armor', `+${a.natural_armor}`], ['Attacks', a.attacks],
+             ['Ability scores', scores(a.abilities)], ['Special qualities', a.special_qualities], ['Special attacks', a.special_attacks],
+             ['Special abilities', a.special_abilities], ['CMD', a.cmd_note], ['Bonus feat', a.bonus_feat]])}
+    ${adv ? `<h3>At ${esc(String(adv.level))}th level</h3>${facts([['Size', adv.size], ['Natural armor', adv.natural_armor ? `+${adv.natural_armor} more` : null],
+      ['Attacks', adv.attacks], ['Ability scores', scores(adv.abilities || {}, true)], ['Special qualities', adv.special_qualities],
+      ['Special attacks', adv.special_attacks], ['Special abilities', adv.special_abilities], ['Bonus feat', adv.bonus_feat]])}` : ''}
+    <h3>At your effective druid level (${level})</h3>
+    ${facts([['Hit points', `${s.hp} (${s.hd}d8)`], ['AC', `${s.ac} (touch ${s.touch}, flat-footed ${s.flatFooted})`],
+             ['Saves', `Fort ${signed(s.fort)}, Ref ${signed(s.ref)}, Will ${signed(s.will)}`],
+             ['Attacks', s.attacks.map(x => `${x.count > 1 ? `${x.count} ` : ''}${x.name} ${signed(x.bonus)}${x.damage ? ` (${x.damage})` : ''}`).join(', ')],
+             ['CMB / CMD', `${signed(s.cmb)} / ${s.cmd}`], ['Size', s.size]])}
+    <p class="hint">Before ability score increases and feats you choose.</p>`,
+    mine ? [] : [{ label: `Choose the ${a.name}`, primary: true, run: () => app.update({ companion: { ...state.companion, animal: a.id } }) }]);
+}
+
 export function initCompanion(app) {
   const box = $('companion');
   const { state } = app;
@@ -160,6 +193,8 @@ export function initCompanion(app) {
     }
   });
   box.addEventListener('click', e => {
+    const pop = e.target.closest('[data-animal-pop]');
+    if (pop) { popAnimal(app, pop.dataset.animalPop); return; }
     const w = e.target.closest('[data-comp-why]');
     if (w) { showWhy(app, w.dataset.compWhy); return; }
     const b = e.target.closest('[data-comp-skill]');
