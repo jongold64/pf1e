@@ -18,8 +18,8 @@ race, hit points, results, active effects), Abilities (point buy, increases), Cl
 domains, class choices, animal companion), Feats, Skills, Spells (per day + class spell list), Magic Items
 (browse by category with a details panel), Armor, Weapons (attack bonus and damage per carried weapon),
 and Equipment (inventory + gold + weight; armor and weapons are kept separate from it). Every tab except Character has its own search
-box that looks only through what that tab covers; the global search (`.search-bar`, above every tab's page, so the
-Guide tab too) covers everything,
+box that looks only through what that tab covers; the global search (`#search-dialog`, a popup opened by the
+Search button beside Print, from any tab) covers everything,
 hosted on GitHub Pages and used on a laptop and a tablet. The user is new to coding: keep the app
 plain HTML/CSS/JavaScript with ES modules, no framework, no build step and no npm dependencies, and
 explain any new tool before asking them to install it.
@@ -247,7 +247,7 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   feature by name, numbered forms like "Summon monster II" -> the base, "DR" = damage reduction, or a "Name (Su):"
   paragraph inside another feature, e.g. bard performances); replaced entries say which archetype feature replaced
   them; archetype features show their own text.
-- Global search (above every tab) also finds archetypes (details box with "Take …" when the character has the class and it
+- Global search (the Search popup) also finds archetypes (details box with "Take …" when the character has the class and it
   doesn't clash) and traits ("Take this trait" fills the first empty trait slot; a note when all slots are full).
 - Magic gear builder (`js/tab-crafting.js`, one module, two cards in `CARDS`): the **Craft tab** ("craft" mode, below)
   and the **Magic Items tab's "Add magic gear" card** ("buy" mode: treasure or purchases, no feat/requirement/DC, cost =

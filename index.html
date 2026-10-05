@@ -33,6 +33,7 @@
         <button type="button" id="char-export">Export</button>
         <button type="button" id="char-import">Import</button>
         <button type="button" id="char-print">Print</button>
+        <button type="button" id="char-search">🔍 Search</button>
         <input type="file" id="char-file" accept=".json,application/json" hidden>
       </div>
     </div>
@@ -50,20 +51,6 @@
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
       <button type="button" role="tab" data-tab="guide">Guide</button>
     </nav>
-
-    <!-- Search: above every tab's page. -->
-    <div class="search-bar">
-      <section class="card search-card">
-        <form id="search-form" class="search-row" role="search">
-          <input id="global-search" type="search" autocomplete="off"
-                 placeholder="Find anything by name: races, classes, feats, spells, gear…"
-                 aria-label="Search everything by name">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <p id="search-status" class="hint" hidden></p>
-        <ul id="search-results" class="search-results" hidden></ul>
-      </section>
-    </div>
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
@@ -433,10 +420,12 @@
         </details>
 
         <details>
-          <summary>Search (at the top of every tab)</summary>
+          <summary>Search (the 🔍 Search button beside Print)</summary>
           <ul>
-            <li><b>Search</b> finds anything by name: races, classes, archetypes, feats, traits, skills, spells, gear. Tap a result to
-              see it; most have a button to add it (e.g. <b>Take</b> an archetype or trait).</li>
+            <li><b>🔍 Search</b>, in the row with Print, opens a search window from any tab. It finds anything by name: races,
+              classes, archetypes, feats, traits, skills, spells, gear. Tap a result to see it; most have a button to add it
+              (e.g. <b>Take</b> an archetype or trait). Close the window with <b>Close</b> or by tapping outside it; your last
+              search is still there when you open it again.</li>
           </ul>
         </details>
 
@@ -661,6 +650,22 @@
     <div class="picker-filters"><select id="trait-category" aria-label="Trait category"></select></div>
     <p id="trait-picker-count" class="hint"></p>
     <div id="trait-list"></div>
+  </dialog>
+
+  <!-- Search everything: opened by the Search button beside Print. -->
+  <dialog id="search-dialog" aria-labelledby="search-title">
+    <div class="picker-head">
+      <h2 id="search-title">Search</h2>
+      <button type="button" id="search-close">Close</button>
+    </div>
+    <form id="search-form" class="search-row" role="search">
+      <input id="global-search" type="search" autocomplete="off"
+             placeholder="Find anything by name: races, classes, feats, spells, gear…"
+             aria-label="Search everything by name">
+      <button type="submit" class="primary">Search</button>
+    </form>
+    <p id="search-status" class="hint" hidden></p>
+    <ul id="search-results" class="search-results" hidden></ul>
   </dialog>
 
   <dialog id="detail-dialog" aria-labelledby="detail-title">

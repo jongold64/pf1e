@@ -68,8 +68,19 @@ export function initSearch(app) {
     loadAll(app);
     run(app);
   });
+  // The Search button (beside Print) opens the search window; the last search stays in it.
+  $('char-search').addEventListener('click', () => {
+    $('search-dialog').showModal();
+    $('global-search').focus();
+    $('global-search').select();
+    loadAll(app);
+  });
+  $('search-close').addEventListener('click', () => $('search-dialog').close());
+  // A result: the search window closes, then the result opens (a tab, or its details window).
   $('search-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-type]');
-    if (btn) app.openResult(btn.dataset.type, btn.dataset.id);
+    if (!btn) return;
+    $('search-dialog').close();
+    app.openResult(btn.dataset.type, btn.dataset.id);
   });
 }
