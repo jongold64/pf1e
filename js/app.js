@@ -789,6 +789,8 @@ function buildControls() {
     if (ch) openTalentPicker(ch.dataset.talentChoose);
     const tp = e.target.closest('[data-talent-pop]');
     if (tp) popTalent(tp.dataset.talentPop, tp.dataset.slot);
+    const cp = e.target.closest('[data-choice-pop]');
+    if (cp) popChoice(cp.dataset.choicePop, cp.dataset.slot);
   });
   $('class-info').addEventListener('change', e => {
     if (e.target.matches('[data-mystery]')) update({ mystery: e.target.value });
@@ -804,6 +806,15 @@ function buildControls() {
     }
   });
   $('detail-body').addEventListener('click', e => {
+    // Details on a picker row: the option on its own, with Choose and Back to the list (keeping the search).
+    const det = e.target.closest('[data-talent-detail], [data-choice-detail]');
+    const from = det?.closest('.talent-picker');
+    if (from) {
+      const back = { slotId: from.dataset.slot, search: from.querySelector('.talent-search')?.value || '' };
+      if (det.dataset.talentDetail) popTalent(det.dataset.talentDetail, null, { ...back, why: det.dataset.why });
+      else popChoice(det.dataset.choiceDetail, null, back);
+      return;
+    }
     const take = e.target.closest('[data-talent-take]');
     const box = take?.closest('.talent-picker');
     if (!box) return;
@@ -1358,7 +1369,8 @@ function talentPicker(cls, level) {
         const name = t ? t.name : v || '';
         return `<li><span class="muted">${esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
           ${!t && v && rule.choices?.[v] ? `<small class="muted">${esc(rule.choices[v])}</small>` : ''}
-          <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>` : ''}
+          <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
+            : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
           <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
       }).join('')}</ul>`;
   }).join('')}</div>`;
@@ -1378,7 +1390,8 @@ function openTalentPicker(slotId, search = '') {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId && k.startsWith(`${cid}|${key}|`)).map(([, v]) => v);
     list = Object.entries(slot.rule.choices).filter(([p]) => !taken.includes(p)).map(([p, what]) => `<li class="talent-option">
         <div><b>${esc(p)}</b> <small class="muted">${esc(what)}</small></div>
-        <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></li>`).join('');
+        <span class="talent-buttons"><button type="button" class="skill-details" data-choice-detail="${esc(p)}">Details</button>
+        <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></span></li>`).join('');
   } else {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
     const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery })
@@ -1387,7 +1400,8 @@ function openTalentPicker(slotId, search = '') {
     list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
         <details><summary><b>${esc(t.name)}</b> <small class="muted">${esc(t.source)}${t.level ? ` · ${ordinal(t.level)} level` : ''}${t.repeatable ? ' · can be taken again' : ''}${why ? ` · ${why}` : ''}</small></summary>
           ${paragraphs(t.text)}</details>
-        ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</li>`).join('') || '<li class="hint">Nothing matches.</li>';
+        <span class="talent-buttons"><button type="button" class="skill-details" data-talent-detail="${esc(t.id)}" data-why="${esc(why)}">Details</button>
+        ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</span></li>`).join('') || '<li class="hint">Nothing matches.</li>';
   }
   const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
   openDetail(`${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
@@ -1398,14 +1412,39 @@ function openTalentPicker(slotId, search = '') {
 }
 
 // A chosen class option in a popup: its text, book and level, and Change / Remove.
-function popTalent(id, slotId) {
+// From the picker (preview = { slotId, search, why }): Choose (unless it can't be taken yet) and Back to the list.
+function popTalent(id, slotId, preview = null) {
   const t = data.talentsById.get(id);
   if (!t) return;
-  openDetail(t.name, `<p class="hint">${esc(t.kind.replace(/-/g, ' '))} · ${esc(t.source)}${t.level ? ` · from ${ordinal(t.level)} level` : ''}${t.mystery ? ` · ${esc(t.mystery)} mystery` : ''}${t.repeatable ? ' · can be taken more than once' : ''}</p>
+  const classNames = (t.classes || []).map(c => data.classes.find(x => x.id === c)?.name).filter(Boolean);
+  openDetail(t.name, `<p class="hint">${esc(t.kind.replace(/-/g, ' '))} · ${esc(t.source)}${t.level ? ` · from ${ordinal(t.level)} level` : ''}${t.mystery ? ` · ${esc(t.mystery)} mystery` : ''}${t.school ? ` · ${esc(t.school)} implements` : ''}${t.repeatable ? ' · can be taken more than once' : ''}</p>
+    ${preview?.why ? `<p class="warning">You can't take it here: ${esc(preview.why)}.</p>` : ''}
     ${paragraphs(t.text)}
+    ${classNames.length ? `<p class="hint">Listed for: ${esc(classNames.join(', '))}.</p>` : ''}
     <p class="hint">Not counted in the numbers automatically: apply it in play, or add a custom effect on the Character tab when it applies.</p>`,
-    slotId ? [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
-              { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
+    preview ? talentPreviewActions(id, preview)
+      : slotId ? [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
+                  { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
+}
+
+function talentPreviewActions(value, { slotId, search, why }) {
+  return [...(why ? [] : [{ label: 'Choose', primary: true, run: () => update({ talents: { ...state.talents, [slotId]: value } }) }]),
+          { label: 'Back to the list', run: () => setTimeout(() => openTalentPicker(slotId, search), 0) }];
+}
+
+// One entry of a fixed list (a Perform type, favored enemy, weapon group...): what it gives, and the same buttons.
+function popChoice(value, slotId, preview = null) {
+  const rule = ruleOf(slotId || preview?.slotId);
+  const what = rule?.choices?.[value];
+  if (!what) return;
+  const sid = slotId || preview.slotId;
+  const cls = data.classes.find(c => c.id === sid.split('|')[0]);
+  openDetail(value, `<p class="hint">${esc(rule.label)} · ${esc(cls?.name || '')}</p>
+    <p>${esc(what[0].toUpperCase() + what.slice(1))}.</p>
+    <p class="hint">See the ${esc(cls?.name || 'class')} class feature for the full rule. Not counted in the numbers automatically.</p>`,
+    preview ? talentPreviewActions(value, preview)
+      : [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
+         { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }]);
 }
 
 // Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
