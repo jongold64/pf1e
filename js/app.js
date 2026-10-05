@@ -49,7 +49,7 @@ import { weaponSummaries } from './tab-weapons.js';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
                       ['alternate', 'Alternate'], ['prestige', 'Prestige']];
-const TABS = ['character', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'guide'];
+const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'guide'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
@@ -2531,9 +2531,9 @@ function openResult(type, id) {
       ${featureNames ? `<h4>Class features</h4><p>${esc(featureNames)}</p>` : ''}`,
     [
       ...(state.classLevels.length < 20 ? [{ label: `Add a level of ${c.name}`, primary: true,
-        run: () => { update({ classLevels: [...state.classLevels, id] }); showTab('character'); } }] : []),
+        run: () => { update({ classLevels: [...state.classLevels, id] }); showTab('classes'); } }] : []),
       ...(c.category !== 'prestige' ? [{ label: `Make every level ${c.name}`,
-        run: () => { update({ classLevels: state.classLevels.map(() => id) }); showTab('character'); } }] : []),
+        run: () => { update({ classLevels: state.classLevels.map(() => id) }); showTab('classes'); } }] : []),
     ]);
   } else if (type === 'archetype') {
     const a = data.archetypesById.get(id);
@@ -2552,14 +2552,14 @@ function openResult(type, id) {
       ${paragraphs(a.description || '')}<ul class="plain-list">${feats}</ul>
       ${!taken && has && why ? `<p class="warning">Can't be taken now: ${esc(why)}.</p>` : ''}
       ${!taken && has && !why && kiPowers ? `<p class="hint">Taking it gives up ${kiPowers} ki power${kiPowers === 1 ? '' : 's'} for the monk abilities it replaces that the ${esc(targetCls.name)} doesn't have.</p>` : ''}`,
-    taken ? [{ label: 'Go to Classes', primary: true, run: () => showTab('character') }]
+    taken ? [{ label: 'Go to Classes', primary: true, run: () => showTab('classes') }]
       : has ? (why ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => {
         update({ archetypes: { ...state.archetypes, [target]: [...(state.archetypes[target] || []), id] } });
-        showTab('character');
+        showTab('classes');
       } }])
       : [{ label: `Add a level of ${cls.name}`, primary: true, run: () => {
         if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, a.class] });
-        showTab('character');
+        showTab('classes');
       } }]);
   } else if (type === 'trait') {
     const t = data.traitsById.get(id);

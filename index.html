@@ -38,6 +38,8 @@
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button type="button" role="tab" data-tab="character">Character</button>
+      <button type="button" role="tab" data-tab="abilities">Abilities</button>
+      <button type="button" role="tab" data-tab="classes">Classes</button>
       <button type="button" role="tab" data-tab="skills">Skills</button>
       <button type="button" role="tab" data-tab="feats">Feats</button>
       <button type="button" role="tab" data-tab="armor">Armor</button>
@@ -49,6 +51,20 @@
       <button type="button" role="tab" data-tab="guide">Guide</button>
     </nav>
 
+    <!-- Search: above every tab's page. -->
+    <div class="search-bar">
+      <section class="card search-card">
+        <form id="search-form" class="search-row" role="search">
+          <input id="global-search" type="search" autocomplete="off"
+                 placeholder="Find anything by name: races, classes, feats, spells, gear…"
+                 aria-label="Search everything by name">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <p id="search-status" class="hint" hidden></p>
+        <ul id="search-results" class="search-results" hidden></ul>
+      </section>
+    </div>
+
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
       <section class="card wide house-rules">
@@ -56,8 +72,8 @@
         <div id="house-rules" class="house-rule-buttons"></div>
         <p id="house-rules-note" class="hint"></p>
       </section>
-      <!-- Two columns: Race and Classes on the left, Results, Ability scores and Active effects on the right (one column, in the
-           order Race, Results, Classes, Ability scores, Active effects, on narrow screens). -->
+      <!-- Two columns: Race on the left, Results and Active effects on the right (one column, in the order Race,
+           Results, Active effects, on narrow screens). -->
       <div class="char-column">
         <section class="card order-1">
           <h2>Race</h2>
@@ -83,55 +99,11 @@
           <div id="hero-points" class="hero-points" hidden></div>
           <div id="race-defense" class="defense"></div>
         </section>
-        <section class="card order-3">
-          <h2>Classes <span id="class-summary" class="count"></span></h2>
-          <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add or remove a
-            level of it, or change it. Prestige classes can't be taken at 1st level.</p>
-          <ul id="class-levels" class="class-lines"></ul>
-          <div class="slot-buttons add-level-row">
-            <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
-            <button type="button" id="add-level">Add</button>
-            <button type="button" id="remove-level">Remove last level</button>
-          </div>
-          <div class="favored-row">
-            <label>Favored class <select id="favored-class"></select></label>
-            <div id="favored-summary" class="favored-summary"></div>
-          </div>
-          <div id="caster-choices"></div>
-          <div id="class-info" class="info"></div>
-        </section>
       </div>
       <div class="char-column">
         <section class="card results order-2">
           <h2>Results</h2>
           <dl id="results"></dl>
-        </section>
-        <section class="card abilities-card order-4">
-          <h2>Ability scores</h2>
-          <div class="row">
-            <label>Point buy
-              <select id="budget"></select>
-            </label>
-            <span id="points" class="points"></span>
-          </div>
-          <label id="flexible-row" class="row" hidden>Racial +2 to
-            <select id="flexible"></select>
-          </label>
-          <label id="flexible2-row" class="row" hidden>Dual Talent: second +2 to
-            <select id="flexible2"></select>
-          </label>
-          <table class="abilities">
-            <thead>
-              <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
-            </thead>
-            <tbody id="ability-rows"></tbody>
-          </table>
-          <div id="increases" class="increases">
-            <h3>Ability increases</h3>
-            <p class="hint">Every 4 levels you add 1 to one ability score.</p>
-            <div id="increase-rows"></div>
-            <p id="increase-note" class="warning"></p>
-          </div>
         </section>
         <section class="card order-5" id="effects-card">
           <h2>Active effects <span id="effects-count" class="count"></span></h2>
@@ -139,17 +111,59 @@
         </section>
       </div>
 
-      <section class="card wide search-card">
-        <form id="search-form" class="search-row" role="search">
-          <input id="global-search" type="search" autocomplete="off"
-                 placeholder="Find anything by name: races, classes, feats, spells, gear…"
-                 aria-label="Search everything by name">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <p id="search-status" class="hint" hidden></p>
-        <ul id="search-results" class="search-results" hidden></ul>
-      </section>
 
+    </main>
+
+    <!-- Abilities -->
+    <main class="tab-panel" id="tab-abilities" role="tabpanel" hidden>
+      <section class="card wide abilities-card">
+        <h2>Ability scores</h2>
+        <div class="row">
+          <label>Point buy
+            <select id="budget"></select>
+          </label>
+          <span id="points" class="points"></span>
+        </div>
+        <label id="flexible-row" class="row" hidden>Racial +2 to
+          <select id="flexible"></select>
+        </label>
+        <label id="flexible2-row" class="row" hidden>Dual Talent: second +2 to
+          <select id="flexible2"></select>
+        </label>
+        <table class="abilities">
+          <thead>
+            <tr><th>Ability</th><th>Base</th><th>Race</th><th>Level</th><th>Score</th><th>Mod</th></tr>
+          </thead>
+          <tbody id="ability-rows"></tbody>
+        </table>
+        <div id="increases" class="increases">
+          <h3>Ability increases</h3>
+          <p class="hint">Every 4 levels you add 1 to one ability score.</p>
+          <div id="increase-rows"></div>
+          <p id="increase-note" class="warning"></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Classes (and the animal companion they give) -->
+    <main class="tab-panel" id="tab-classes" role="tabpanel" hidden>
+      <section class="card wide">
+        <h2>Classes <span id="class-summary" class="count"></span></h2>
+        <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add or remove a
+          level of it, or change it. Prestige classes can't be taken at 1st level.</p>
+        <ul id="class-levels" class="class-lines"></ul>
+        <div class="slot-buttons add-level-row">
+          <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
+          <button type="button" id="add-level">Add</button>
+          <button type="button" id="remove-level">Remove last level</button>
+        </div>
+        <div class="favored-row">
+          <label>Favored class <select id="favored-class"></select></label>
+          <div id="favored-summary" class="favored-summary"></div>
+        </div>
+        <div id="caster-choices"></div>
+        <div id="class-info" class="info"></div>
+      </section>
       <section class="card wide" id="companion-card" hidden>
         <h2>Animal companion <span id="companion-level" class="count"></span></h2>
         <div id="companion"></div>
@@ -417,32 +431,20 @@
         </details>
 
         <details>
+          <summary>Search (at the top of every tab)</summary>
+          <ul>
+            <li><b>Search</b> finds anything by name: races, classes, archetypes, feats, traits, skills, spells, gear. Tap a result to
+              see it; most have a button to add it (e.g. <b>Take</b> an archetype or trait).</li>
+          </ul>
+        </details>
+
+        <details>
           <summary>Character tab</summary>
           <ul>
             <li>Popup windows (Details, the feat and trait lists) close with their <b>Close</b> button or by tapping anywhere outside them.</li>
-            <li><b>Active effects</b>: switch on spells cast on you (bless, haste, bull's strength, mage armor, barkskin, enlarge
-              person...) and set the caster level where it matters. Add your own for anything else (name, bonus, type, what it
-              affects; <b>+ another bonus</b> gives one effect several, like a rage's Str, Con, Will and AC
-              ; <b>All d20 rolls</b> covers attacks, saves, skills and ability checks). Every number and roll in the app (scores, AC,
-              attacks, damage, saves, skills, ability checks, initiative, CMB, speed) counts them, following the
-              stacking rules: bonuses of the same type don't add up, only the highest counts (dodge and untyped ones do add up).
-              <b>Details</b> on a spell shows what it gives at your caster level, whether each bonus counts next to your other effects,
-              how it grows, and the spell's own text. A custom effect's <b>Details</b> shows everything it applies to and whether it counts.</li>
-            <li><b>Animal companion</b> appears for druids, hunters, rangers (from 4th level) and clerics or druids with the Animal
-              domain. Choose the animal and name it: hit points, AC, saves, attacks, skills, feats, tricks and its special
-              abilities follow your level (class levels that give a companion add up), with Roll buttons and Details. It prints on the sheet. <b>Browse all</b> (or Details beside the animal) shows each animal's
-              starting statistics, what changes when it advances, and what it would be at your level, with a Choose button.
-              Each trick has <b>Details</b> too: what the animal does and the Handle Animal DC to teach it.</li>
-            <li>On the Race card, <b>Details</b> beside each saving throw lists what adds to it: each class's base save, the
-              ability modifier, feats, traits and active effects. The <b>Details</b> under AC shows every piece of AC and which ones
-              count for touch and flat-footed AC; Touch, Flat-footed and CMD each have their own, and the one beside CMB explains CMB and CMD.</li>
-            <li>On the <b>Results</b> card, <b>Details</b> explains maximum hit points (hit dice, Con, favored class, Toughness), initiative,
-              base attack bonus (each class's share), speed, what you wear and your load.</li>
             <li><b>House rules</b>: switch each one Y or N. Encumbrance (what you carry slows you), Max Healing (healing rolls give their
               maximum), Action Points (Pathfinder hero points), Flaws (up to two, chosen from a list, each gives a bonus feat and its penalty is
               applied), Extra Campaign Trait (a third trait), Drawbacks (Paizo: take one drawback for an extra trait).</li>
-            <li><b>Search</b> finds anything by name: races, classes, archetypes, feats, traits, skills, spells, gear. Tap a result to
-              see it; most have a button to add it (e.g. <b>Take</b> an archetype or trait).</li>
             <li><b>Race</b>: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
               traits for others; ones that clash are greyed out. <b>Details</b> on one shows it beside the standard trait it replaces,
               with Take or Remove.</li>
@@ -451,6 +453,33 @@
               maximum becomes temporary hit points), or add temporary hit points from aid, false life, greater heroism, rage and
               more (roll or type the amount). Temporary hit points show beside your hit points and are lost first.</li>
             <li>AC, CMD, CMB, saves and combat maneuvers are in the Race card, each with a Roll button.</li>
+            <li>On the Race card, <b>Details</b> beside each saving throw lists what adds to it: each class's base save, the
+              ability modifier, feats, traits and active effects. The <b>Details</b> under AC shows every piece of AC and which ones
+              count for touch and flat-footed AC; Touch, Flat-footed and CMD each have their own, and the one beside CMB explains CMB and CMD.</li>
+            <li>On the <b>Results</b> card, <b>Details</b> explains maximum hit points (hit dice, Con, favored class, Toughness), initiative,
+              base attack bonus (each class's share), speed, what you wear and your load.</li>
+            <li><b>Active effects</b>: switch on spells cast on you (bless, haste, bull's strength, mage armor, barkskin, enlarge
+              person...) and set the caster level where it matters. Add your own for anything else (name, bonus, type, what it
+              affects; <b>+ another bonus</b> gives one effect several, like a rage's Str, Con, Will and AC
+              ; <b>All d20 rolls</b> covers attacks, saves, skills and ability checks). Every number and roll in the app (scores, AC,
+              attacks, damage, saves, skills, ability checks, initiative, CMB, speed) counts them, following the
+              stacking rules: bonuses of the same type don't add up, only the highest counts (dodge and untyped ones do add up).
+              <b>Details</b> on a spell shows what it gives at your caster level, whether each bonus counts next to your other effects,
+              how it grows, and the spell's own text. A custom effect's <b>Details</b> shows everything it applies to and whether it counts.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Abilities tab</summary>
+          <ul>
+            <li><b>Ability scores</b>: point buy with − / +; pick where racial +2s go and your ability increases at 4th, 8th... level.
+              Each score shows its base, racial change, level increases, total and modifier; ability checks can be rolled here.</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Classes tab</summary>
+          <ul>
             <li><b>Classes</b>: one line per class, showing how many levels you have in it. Use <b>Add a level of</b> to add one
               (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the
               choices made there (favored class bonus, feats, traits, ability increases), add or remove a level of it, or change it
@@ -481,7 +510,11 @@
               that replaces picks marks them "replaced by" it; other changes it makes (like extra options) are listed under
               <b>Your archetype changes these</b>. Choices show in the class line's level popup and on the printed sheet. They
               aren't added to the numbers: use a custom effect for bonuses that apply.</li>
-            <li><b>Ability scores</b>: point buy with − / +; pick where racial +2s go and your ability increases at 4th, 8th... level.</li>
+            <li><b>Animal companion</b> (below the Classes card) appears for druids, hunters, rangers (from 4th level) and clerics or druids with the Animal
+              domain. Choose the animal and name it: hit points, AC, saves, attacks, skills, feats, tricks and its special
+              abilities follow your level (class levels that give a companion add up), with Roll buttons and Details. It prints on the sheet. <b>Browse all</b> (or Details beside the animal) shows each animal's
+              starting statistics, what changes when it advances, and what it would be at your level, with a Choose button.
+              Each trick has <b>Details</b> too: what the animal does and the Handle Animal DC to teach it.</li>
           </ul>
         </details>
 
