@@ -93,7 +93,7 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
     // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
-    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, fxMelee: stats.fx?.['melee-attack'] || 0, focus, penetration, flawMelee, flawRanged,
+    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, fxMelee: stats.fx?.['melee-attack'] || 0, fxRanged: stats.fx?.['ranged-attack'] || 0, focus, penetration, flawMelee, flawRanged,
     abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability,
   };
 }
@@ -127,7 +127,7 @@ export function spellLines(spell, ctx) {
     const why = { attack: null, dc: null, damage: [] };
     let attack = null;
     if (a.kind === 'ranged touch' || a.kind === 'ranged') {
-      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx + (ctx.flawRanged || 0);
+      attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx + (ctx.fxRanged || 0) + (ctx.flawRanged || 0);
       if (attack !== null) why.attack = [...attackRows('dex'), ...(ctx.flawRanged ? [{ label: 'Flaw: Shaky', value: ctx.flawRanged }] : [])];
       parts.push(a.auto_hit ? 'hits automatically' : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(attack)}`);
     } else if (a.kind === 'melee touch' || a.kind === 'melee') {

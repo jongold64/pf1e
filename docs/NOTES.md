@@ -209,6 +209,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   domains; `domainConflict` stops a subdomain going with its own domain; `domainGrants` gives a subdomain its domain's
   powers minus the one it `replaces`, and the domain's spells with its own swapped in. The druid's domain spell slot
   (`extraSlotOn('druid')`) follows the Nature bond; the Spells tab lists domain spells, the sheet prints `domainLines`.
+- Active effects (`js/effects.js` BUFFS): each has a `group` (EFFECT_GROUPS: spells, conferred abilities, other
+  adjustments = worn items, circumstances, combat conditions, conditions), optional `levels` (amounts to pick, e.g. a
+  belt's +2/+4/+6, negative levels 1-10; `buffAmount` keeps a saved amount valid) and `flags`: 'noDexAc' (characterStats
+  drops a Dex bonus and dodge bonuses from AC) and 'halfSpeed' (computeView halves speed). Targets 'melee-attack',
+  'melee-damage' and 'ranged-attack' stack with 'attack'/'damage' by the usual rules (effectTotals works out the extra).
 - Class choices (`js/talents.js`, data from `build_foundry_talents.py`): the Foundry class-abilities pack by tag (e.g.
   "Rage Power" -> kind `rage-power`; Foundry's "(ROG)"-style name codes are dropped, "(UC)" becomes "(Unchained)",
   "(SHA)" "(shaman)"; entries without a Foundry book get it from PSRD by name, the rest are skipped), then Archives of

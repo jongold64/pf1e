@@ -1349,6 +1349,8 @@ function computeView() {
   }
   // Enhancement bonuses to speed from effects (haste, longstrider...).
   if (speed !== null && speed !== undefined && fx.speed) speed = Math.max(5, speed + fx.speed);
+  // Entangled or exhausted: half speed.
+  if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,

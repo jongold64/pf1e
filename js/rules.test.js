@@ -1480,6 +1480,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Extra Hex with no witch or shaman: none', featTalentSlots([{ slotId: 'L1', name: 'Extra Hex', charLevel: 1 }], ['fighter']).length, 0);
 }
 
+// Adjustments: items with amounts, conditions and their flags.
+{
+  check('belt of giant strength +4', effectTotals([{ id: 'belt-str', cl: 4 }]).str, 4);
+  check('belt with no amount chosen: its first (+2)', effectTotals([{ id: 'belt-str', cl: 1 }]).str, 2);
+  check('shaken: -2 on attacks, saves, skills, checks', [effectTotals([{ id: 'shaken', cl: 1 }]).attack, effectTotals([{ id: 'shaken', cl: 1 }]).will].join(), '-2,-2');
+  check('flat-footed flags no Dex to AC', effectTotals([{ id: 'flat-footed', cl: 1 }]).flags.join(), 'noDexAc');
+  check('2 negative levels: -10 hp', effectTotals([{ id: 'energy-drained', cl: 2 }]).hp, -10);
+  check('shooting into melee: ranged only', [effectTotals([{ id: 'shooting-into-melee', cl: 1 }])['ranged-attack'], effectTotals([{ id: 'shooting-into-melee', cl: 1 }]).attack].join(), '-4,0');
+  const human = race('human'), ftr = cls('fighter');
+  const st = fx => characterStats({ race: human, cls: ftr, level: 1, baseScores: { str: 10, dex: 16, con: 10, int: 10, wis: 10, cha: 10 }, flexibleChoice: 'str', effects: fx });
+  check('flat-footed AC: Dex bonus lost', st(effectTotals([{ id: 'flat-footed', cl: 1 }])).ac, 10);
+  check('stunned: -2 and no Dex', st(effectTotals([{ id: 'stunned', cl: 1 }])).ac, 8);
+  check('normal AC with Dex 16', st(effectTotals([])).ac, 13);
+}
+
 // Which bonuses count: the highest of a type; penalties and dodge/untyped ones always.
 {
   const c = countedBonuses([{ type: 'enhancement', value: 4 }, { type: 'enhancement', value: 2 }, { type: 'morale', value: 2 },

@@ -222,8 +222,11 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   // Racial natural armor (kept when flat-footed, lost against touch) and racial dodge bonuses.
   const raceAc = racialAc(race);
   const dodge = fb.dodgeAc + raceAc.dodge;
-  const acParts = acWithEffects({ armor: g.armorBonus, shield: g.shieldBonus, natural: raceAc.natural, dex: dexAc, dodge,
-                                  other: size + classAc }, fx.ac);
+  // Flat-footed, stunned, blinded...: no Dex bonus (a penalty stays) and no dodge bonuses.
+  const noDex = (fx.flags || []).includes('noDexAc');
+  const acFx = noDex ? Object.fromEntries(Object.entries(fx.ac).filter(([t]) => t !== 'dodge')) : fx.ac;
+  const acParts = acWithEffects({ armor: g.armorBonus, shield: g.shieldBonus, natural: raceAc.natural, dex: noDex ? Math.min(0, dexAc) : dexAc,
+                                  dodge: noDex ? 0 : dodge, other: size + classAc }, acFx);
   const bab = counts.reduce((n, e) => n + rowFor(e).bab[0], 0);
 
   return {
