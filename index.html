@@ -252,7 +252,8 @@
         <div id="buy-body"></div>
       </section>
       <section class="card wide" id="my-items-card">
-        <h2>My magic items <span id="my-items-count" class="count"></span></h2>
+        <h2>My magic items <span id="my-items-count" class="count"></span>
+          <button type="button" id="my-items-slots" class="skill-details" aria-label="Which body slots your items fill">Details</button></h2>
         <table class="inventory">
           <thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Weight</th></tr></thead>
           <tbody id="my-items-rows"></tbody>
@@ -631,6 +632,9 @@
         <details>
           <summary>Magic Items tab</summary>
           <ul>
+            <li>In <b>My magic items</b>, <b>Details</b> beside an item opens it (with One more and Remove); beside a potion, scroll
+              or wand it shows how it's used, its caster level, save DC and price. <b>Details</b> beside the count shows which body
+              slot each item fills, and warns when two compete for one slot.</li>
             <li>Browse by category or search; choose an item to see it, then <b>Add</b> it (pick a version, e.g. +2, if it has one).
               <b>Details</b> on a row opens the item in a popup, with its Add and Craft buttons.</li>
             <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed: make a weapon or armor magic,

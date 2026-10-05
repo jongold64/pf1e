@@ -24,6 +24,66 @@ function addButtons(item) {
 }
 
 // The item in a popup (the list's Details button): everything the side panel shows, with Add and Craft as buttons.
+// An item you have, in a popup: its description and stats, with One more and Remove.
+function popOwned(app, i) {
+  const e = app.state.magicItems[i];
+  const item = e && app.data.itemsById.get(e.id);
+  if (!item) return;
+  const change = d => {
+    const owned = app.state.magicItems.map(x => ({ ...x }));
+    owned[i].qty += d;
+    app.update({ magicItems: owned.filter(x => x.qty > 0) });
+  };
+  app.openDetail(entryName(item, e.option), `<p class="hint">You have ${e.qty}${e.crafted ? ' (crafted: counted at the cost to make)' : ''}.</p>${itemDetails(item, false)}`,
+    [{ label: 'One more', run: () => change(1) }, { label: e.qty > 1 ? 'One fewer' : 'Remove it', run: () => change(-1) }]);
+}
+
+// A potion, scroll or wand you added, in a popup: how it's used, its caster level, save DC and price.
+function popMade(app, i) {
+  const e = app.state.craftedItems[i];
+  if (!e) return;
+  const info = SPELL_ITEMS[e.kind];
+  // The save DC of a spell from an item: 10 + spell level + the lowest ability modifier that can cast it.
+  const dc = 10 + e.spellLevel + Math.floor(e.spellLevel / 2);
+  const use = { potion: 'Drink it (a standard action): the spell affects you, as if cast by the caster level below. One use.',
+    scroll: 'Read it (as casting the spell): the spell must be on your class list; if its caster level is higher than yours, make a caster level check (DC = its caster level + 1). One use.',
+    wand: 'Use it (spell trigger, a standard action): the spell must be on your class list (or use Use Magic Device). It holds 50 charges.' }[e.kind];
+  app.openDetail(`${info.label} of ${e.spellName}`, `<table class="skill-why"><tbody>
+      <tr><td>Spell</td><td class="num">${esc(e.spellName)}, level ${e.spellLevel}</td></tr>
+      <tr><td>Caster level</td><td class="num">${e.cl}</td></tr>
+      <tr><td>Save DC (10 + spell level + the lowest casting modifier)</td><td class="num">${dc}</td></tr>
+      <tr><td>Price (${formatGp(info.perLevel)} × spell level × caster level)</td><td class="num">${esc(formatGp(craftedItemPrice(e)))}</td></tr>
+      <tr><td>You have</td><td class="num">${e.qty}${e.bought ? ' (bought or found)' : ' (crafted: counted at the cost to make)'}</td></tr></tbody></table>
+    <p>${esc(use)}</p><p class="hint">${esc(info.label)}s hold spells of up to level ${info.maxSpellLevel}.</p>`);
+}
+
+// Which body slots your items fill (Core Rulebook, Magic Items on the Body): one item per slot, two rings; slotless items
+// and ones worn as armor or a shield are listed apart. Two items wanting the same slot are flagged.
+const BODY_SLOTS = [['head', 'Head'], ['headband', 'Headband'], ['eyes', 'Eyes'], ['shoulders', 'Shoulders'], ['neck', 'Neck'],
+  ['chest', 'Chest'], ['body', 'Body'], ['belt', 'Belt'], ['wrists', 'Wrists'], ['hands', 'Hands'], ['ring', 'Rings (two)'], ['feet', 'Feet']];
+function popSlots(app) {
+  const by = new Map();
+  const other = [];
+  for (const e of app.state.magicItems) {
+    const item = app.data.itemsById.get(e.id);
+    if (!item) continue;
+    const slot = String(item.slot || 'none').toLowerCase().replace(/[^a-z]/g, '').replace(/^wrist$/, 'wrists');
+    const name = entryName(item, e.option);
+    if (BODY_SLOTS.some(([k]) => k === slot)) for (let n = 0; n < e.qty; n++) by.set(slot, [...(by.get(slot) || []), name]);
+    else other.push(`${name}${e.qty > 1 ? ` ×${e.qty}` : ''}${['armor', 'shield'].includes(slot) ? ` (${slot})` : ''}`);
+  }
+  const rows = BODY_SLOTS.map(([k, label]) => {
+    const list = by.get(k) || [];
+    const max = k === 'ring' ? 2 : 1;
+    return `<tr${list.length > max ? ' class="over"' : ''}><td>${esc(label)}</td><td>${list.length ? esc(list.join(', ')) : '<span class="muted">empty</span>'}
+      ${list.length > max ? `<span class="warning"> ${list.length} items, only ${max} can be worn (the others don\u2019t work)</span>` : ''}</td></tr>`;
+  }).join('');
+  app.openDetail('Body slots', `<table class="skill-why"><tbody>${rows}</tbody></table>
+    ${other.length ? `<h3>No body slot (slotless, or used as armor or a shield)</h3><p>${esc(other.join(', '))}</p>` : ''}
+    <p class="hint">Only one item works in each body slot (two rings). Bonuses of the same type from different items don\u2019t stack:
+      add the ones you wear as active effects on the Character tab.</p>`);
+}
+
 function popItem(app, id) {
   const item = app.data.itemsById.get(id);
   if (!item) return;
@@ -93,6 +153,7 @@ export function renderMyItems(app) {
       note: e.crafted ? 'Crafted items count at what they cost to make.' : 'Bought or found items count at their market price.' });
     allRows.push({ label: `${name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, text: each !== null && each !== undefined ? formatGp(each * e.qty) : 'no price' });
     return `<tr><td><button type="button" class="link item-link" data-show-item="${esc(item.id)}">${esc(entryName(item, e.option))}</button>
+        <button type="button" class="skill-details" data-owned-pop="${i}" aria-label="${esc(name)} in a popup">Details</button>
         <div class="breakdown">${esc(item.category)}${item.slot && !['none', 'slotless'].includes(item.slot) ? ` · ${esc(item.slot)}` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div></td>
       <td><span class="base">
         <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
@@ -115,6 +176,7 @@ export function renderMyItems(app) {
       note: e.bought ? 'Bought or found: counts at the market price.' : 'Made by the character: counts at the cost to make.' });
     allRows.push({ label: `${name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, text: formatGp(craftedItemCost(e) * e.qty) });
     return `<tr><td>${esc(SPELL_ITEMS[e.kind].label)} of ${esc(e.spellName)}
+        <button type="button" class="skill-details" data-made-pop="${i}" aria-label="${esc(name)} in a popup">Details</button>
         <div class="breakdown">caster level ${e.cl} · ${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div></td>
       <td><span class="base">
         <button type="button" data-made-qty="${i}" data-step="-1" aria-label="One fewer">−</button>
@@ -178,6 +240,7 @@ export function initItemsTab(app) {
     if (craft) craftListedItem(app, craft.dataset.craftItem);
   });
   initCrafting(app);
+  $('my-items-slots').addEventListener('click', () => popSlots(app));
   $('my-items-rows').addEventListener('click', e => {
     const step = e.target.closest('[data-item-qty]');
     if (step) {
@@ -187,6 +250,10 @@ export function initItemsTab(app) {
     }
     const show = e.target.closest('[data-show-item]');
     if (show) showItem(app, show.dataset.showItem);
+    const owned = e.target.closest('[data-owned-pop]');
+    if (owned) popOwned(app, Number(owned.dataset.ownedPop));
+    const mp = e.target.closest('[data-made-pop]');
+    if (mp) popMade(app, Number(mp.dataset.madePop));
     const made = e.target.closest('[data-made-qty]');
     if (made) {
       const items = app.state.craftedItems.map(x => ({ ...x }));
