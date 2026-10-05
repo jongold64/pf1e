@@ -28,7 +28,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
@@ -540,6 +540,7 @@ function buildControls() {
       <td id="inc-${a}"></td>
       <td class="score" id="score-${a}"></td>
       <td id="mod-${a}"></td>
+      <td><button type="button" class="skill-details" data-ability-details="${a}" aria-label="${ABILITY_NAMES[a]} in a popup">Details</button></td>
     </tr>`).join('');
 
   // A saved id that no longer exists in the data falls back to the first option.
@@ -871,6 +872,8 @@ function buildControls() {
   $('flexible').addEventListener('change', e => update({ flexible: e.target.value }));
   $('flexible2').addEventListener('change', e => update({ flexible2: e.target.value }));
   $('ability-rows').addEventListener('click', e => {
+    const why = e.target.closest('[data-ability-details]');
+    if (why) { showAbilityDetails(why.dataset.abilityDetails); return; }
     const btn = e.target.closest('button[data-ability]');
     if (!btn) return;
     const a = btn.dataset.ability;
@@ -1132,6 +1135,45 @@ function skillTotalFor(name) {
 function flawSkill(name) {
   const f = view.flawFx;
   return (f.skillsByAbility[skillInfo(name)?.ability] || 0) + (f.skills[splitSkill(name).base] || f.skills[name] || 0);
+}
+
+// What each ability score is used for (Core Rulebook chapter 1), shown in its Details.
+const ABILITY_USES = {
+  str: 'Melee attack and damage rolls (and thrown weapons and composite bows), CMB and CMD, Strength checks such as breaking doors, and how much you can carry.',
+  dex: 'AC (and CMD), Reflex saves, initiative, ranged attack rolls, and attack rolls with finesse weapons if you have Weapon Finesse.',
+  con: 'Hit points at every level, Fortitude saves, and concentration to keep holding your breath, running or raging.',
+  int: 'Skill ranks per level and bonus languages; spells for wizards, magi, witches, alchemists, arcanists, investigators and psychics.',
+  wis: 'Will saves; spells for clerics, druids, rangers, inquisitors, hunters, warpriests, shamans and mediums (and some class abilities such as a monk\u2019s AC).',
+  cha: 'Spells for sorcerers, bards, oracles, paladins, summoners, bloodragers, skalds and mesmerists; channel energy and lay on hands uses; bonus spells for those classes.',
+};
+
+// An ability score in a popup: base (with its point cost), race, level increases and each active effect (and whether
+// it counts next to the others), then the score and modifier, the ability check with a Roll button, and what it's used for.
+function showAbilityDetails(a) {
+  const stats = view.stats;
+  const race = data.races.find(r => r.id === state.race);
+  const racial = racialAdjustments(race, view.flexibleChoice)[a] || 0;
+  const incLevels = INCREASE_LEVELS.filter((lv, i) => state.level >= lv && state.increases[i] === a);
+  const fx = countedBonuses(activeBonuses(state.buffs, view.customAll).filter(x => x.target === a));
+  const rows = [
+    [`Base (point buy, costs ${POINT_COSTS[state.base[a]]} point${Math.abs(POINT_COSTS[state.base[a]]) === 1 ? '' : 's'})`, String(state.base[a])],
+    ...(racial ? [[`${race.name}${race.flexible_ability_bonus ? ' (your choice of ability)' : ''}`, signed(racial)]] : []),
+    ...(incLevels.length ? [[`Ability increase${incLevels.length > 1 ? 's' : ''} at level ${incLevels.join(', ')}`, signed(incLevels.length)]] : []),
+    ...fx.map(x => [`${x.source} (${x.type})${x.counts ? '' : ': doesn\u2019t count, a bigger bonus of this type is on'}`, x.counts ? signed(x.value) : `(${signed(x.value)})`]),
+  ];
+  const checkFx = stats.fx.checks + (view.flawFx.checks[a] || 0);
+  const check = stats.mod[a] + checkFx;
+  const skills = SKILLS.filter(s => s.ability === a).map(s => s.name);
+  openDetail(`${ABILITY_NAMES[a]} ${stats.scores[a]} (${signed(stats.mod[a])})`, `
+    <table class="skill-why"><tbody>${rows.map(([l, v]) => `<tr><td>${esc(l)}</td><td class="num">${esc(v)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td><b>Score</b></td><td class="num"><b>${stats.scores[a]}</b></td></tr>
+        <tr><td><b>Modifier</b> (score − 10, halved, rounded down)</td><td class="num"><b>${esc(signed(stats.mod[a]))}</b></td></tr></tfoot></table>
+    <p><b>${esc(ABILITY_NAMES[a])} check:</b> d20 ${esc(signed(check))}${checkFx ? ` (modifier ${esc(signed(stats.mod[a]))}, ${esc(signed(checkFx))} from effects and flaws)` : ''}
+      ${rollButton({ title: `${ABILITY_NAMES[a]} check`, check: ABILITY_NAMES[a], plain: true, groups: [{ attacks: [check] }] })}</p>
+    <h3>What it's used for</h3>
+    <p>${esc(ABILITY_USES[a])}</p>
+    ${skills.length ? `<p><b>Skills:</b> ${esc(skills.join(', '))}.</p>` : ''}
+    <p class="hint">Change the base with − / + in its row; spells and items that raise it go in Active effects on the Character tab.</p>`);
 }
 
 // The archetypes chosen for a class, as records.

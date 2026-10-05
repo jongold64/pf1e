@@ -15,7 +15,7 @@ import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, c
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
-import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
+import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf } from './talents.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
@@ -1384,6 +1384,13 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     more: [{ target: 'con', type: 'morale', value: 4 }, { target: 'will', type: 'morale', value: 2 }, { target: 'ac', type: 'untyped', value: -2 }] }]);
   check('one effect, several bonuses: Str +4, Con +4, Will +2, AC -2', [rage.str, rage.con, rage.will, rage.ac.untyped].join(), '4,4,2,-2');
   check('switched off: none of them count', effectTotals([], [{ name: 'Rage', target: 'str', type: 'morale', value: 4, on: false, more: [{ target: 'con', type: 'morale', value: 4 }] }]).con, 0);
+}
+
+// Which bonuses count: the highest of a type; penalties and dodge/untyped ones always.
+{
+  const c = countedBonuses([{ type: 'enhancement', value: 4 }, { type: 'enhancement', value: 2 }, { type: 'morale', value: 2 },
+                            { type: 'untyped', value: 1 }, { type: 'enhancement', value: -2 }]);
+  check('counted bonuses: +4 enh counts, +2 enh not, morale, untyped and penalty do', c.map(x => x.counts ? 'y' : 'n').join(''), 'ynyyy');
 }
 
 // Class choices: slots by class level, kinds opening up later, and options taken or too high.

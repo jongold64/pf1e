@@ -88,6 +88,16 @@ export function activeBonuses(buffs = [], custom = []) {
 }
 
 // Total of a list of bonuses to one thing, by the stacking rules.
+// Each bonus marked with whether it counts: penalties and dodge, circumstance and untyped bonuses always do; of the
+// other bonuses of one type only the highest counts (the first of equal ones). Adds up to stackTotal.
+export function countedBonuses(bonuses) {
+  const best = new Map();
+  bonuses.forEach((x, i) => {
+    if (x.value >= 0 && !STACKS.has(x.type) && (!best.has(x.type) || x.value > bonuses[best.get(x.type)].value)) best.set(x.type, i);
+  });
+  return bonuses.map((x, i) => ({ ...x, counts: x.value < 0 || STACKS.has(x.type) || best.get(x.type) === i }));
+}
+
 export function stackTotal(bonuses) {
   let total = 0;
   const best = new Map();

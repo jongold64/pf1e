@@ -756,3 +756,4 @@ table.skill-why th.num { text-align: right; }
 .talent-notes ul { margin: 4px 0; padding-left: 18px; }
 .talent-list .talent-option .talent-buttons { flex: none; display: flex; gap: 6px; align-items: center; }
 .mystery-pick { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.abilities-card .abilities button.skill-details { width: auto; padding: 2px 8px; font-size: 0.8rem; min-height: 30px; }
