@@ -161,6 +161,18 @@
 
     <!-- Feats -->
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
+      <section class="card wide" id="feats-card">
+        <h2>Feats <span id="feat-count" class="count"></span>
+          <button type="button" id="feat-count-details" class="skill-details" aria-label="Every feat slot and where it comes from">Details</button></h2>
+        <form class="search-row tab-search" id="feat-tab-search-form" role="search">
+          <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <ul id="feat-tab-results" class="search-results" hidden></ul>
+        <p id="granted-feats" class="hint granted-feats"></p>
+        <ul id="feat-slots" class="feat-slots"></ul>
+        <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
+      </section>
       <section class="card wide" id="traits-card">
         <h2>Traits <span id="trait-count" class="count"></span>
           <button type="button" id="trait-count-details" class="skill-details" aria-label="Your traits: how many and what they do">Details</button></h2>
@@ -177,18 +189,6 @@
         <p class="hint">House rule (Unearthed Arcana): up to two flaws, each giving a bonus feat at 1st level. Their penalties are
           applied to your numbers and rolls.</p>
         <div id="flaw-rows"></div>
-      </section>
-      <section class="card wide" id="feats-card">
-        <h2>Feats <span id="feat-count" class="count"></span>
-          <button type="button" id="feat-count-details" class="skill-details" aria-label="Every feat slot and where it comes from">Details</button></h2>
-        <form class="search-row tab-search" id="feat-tab-search-form" role="search">
-          <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <ul id="feat-tab-results" class="search-results" hidden></ul>
-        <p id="granted-feats" class="hint granted-feats"></p>
-        <ul id="feat-slots" class="feat-slots"></ul>
-        <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
     </main>
 
