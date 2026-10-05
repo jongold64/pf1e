@@ -36,6 +36,7 @@ export function renderEffects(app, view) {
       <input type="number" data-fx="${i}" data-field="value" value="${c.value}" aria-label="Bonus (negative for a penalty)">
       <select data-fx="${i}" data-field="type" aria-label="Bonus type">${options(BONUS_TYPES.map(t => [t, t]), c.type)}</select>
       <select data-fx="${i}" data-field="target" aria-label="Applies to">${options(TARGETS, c.target)}</select>
+      <button type="button" class="skill-details" data-fx-pop="${i}" aria-label="What this effect does">Details</button>
       <button type="button" data-fx-remove="${i}" aria-label="Remove this effect">Remove</button></li>`).join('');
 
   // What counts after stacking, by what it changes.
@@ -93,9 +94,36 @@ async function popBuff(app, id) {
          : { label: 'Switch it on', primary: true, run: () => app.update({ buffs: [...state.buffs, { id, cl: app.view.level }] }) }]);
 }
 
+// A custom effect in a popup: what it applies to (all saves / all d20 rolls spelled out), whether it counts next to the
+// other effects (same-type bonuses don't stack; dodge, circumstance, untyped and penalties do), and On / Off.
+function popCustom(app, i) {
+  const { state } = app;
+  const c = state.customEffects[i];
+  if (!c) return;
+  const name = c.name || 'Custom effect';
+  const spread = { saves: ['fort', 'ref', 'will'], d20: ['attack', 'fort', 'ref', 'will', 'skills', 'checks'] }[c.target] || [c.target];
+  const stacks = c.value < 0 || ['dodge', 'circumstance', 'untyped'].includes(c.type);
+  const others = activeBonuses(state.buffs, app.view.customAll.filter((x, j) => x !== c));
+  const rows = spread.map(t => {
+    const rival = stacks ? null : others.filter(o => o.target === t && o.type === c.type && o.value >= c.value).sort((a, b) => b.value - a.value)[0];
+    return `<tr><td>${esc(TARGET_NAMES[t] || t)}</td><td class="num">${esc(signedN(c.value))}</td>
+      <td>${!c.on ? 'off' : !c.value ? 'no amount' : rival ? `doesn't count while ${esc(rival.source)} gives ${esc(signedN(rival.value))}` : 'counts'}</td></tr>`;
+  }).join('');
+  app.openDetail(name, `<p class="hint">Custom effect · ${esc(signedN(c.value))} ${esc(c.type)} ${c.value < 0 ? 'penalty' : 'bonus'} on ${esc((TARGET_NAMES[c.target] || c.target).toLowerCase())}${c.on ? '' : ' · switched off'}</p>
+    <table class="skill-why"><tbody>${rows}</tbody></table>
+    <p class="hint">${stacks ? `${c.value < 0 ? 'Penalties' : `${c.type[0].toUpperCase()}${c.type.slice(1)} bonuses`} add up with everything else.`
+      : `${c.type[0].toUpperCase()}${c.type.slice(1)} bonuses don't stack with each other: only the highest counts. Bonuses of other types add up.`}
+      Change the name, amount, type or what it applies to in its row.</p>`,
+    [c.on ? { label: 'Switch it off', run: () => app.update({ customEffects: state.customEffects.map((x, j) => (j === i ? { ...x, on: false } : x)) }) }
+          : { label: 'Switch it on', primary: true, run: () => app.update({ customEffects: state.customEffects.map((x, j) => (j === i ? { ...x, on: true } : x)) }) },
+     { label: 'Remove it', run: () => app.update({ customEffects: state.customEffects.filter((_, j) => j !== i) }) }]);
+}
+
 export function initEffects(app) {
   // Details: inside a buff's label, so it doesn't tick the box.
   $('effects').addEventListener('click', e => {
+    const cp = e.target.closest('[data-fx-pop]');
+    if (cp) { popCustom(app, Number(cp.dataset.fxPop)); return; }
     const b = e.target.closest('[data-buff-pop]');
     if (!b) return;
     e.preventDefault();
