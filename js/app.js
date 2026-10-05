@@ -982,7 +982,7 @@ function buildControls() {
       const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
       openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
         <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).')}</p>
-        ${check.status === 'unmet' ? '<p class="warning">You do not meet all the prerequisites at this level.</p>' : ''}`,
+        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}`,
         [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
           update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
           $('feat-picker').close();
@@ -2520,7 +2520,16 @@ function renderFlaws() {
       }).join('')}</ul></details>`;
 }
 
-const featByName = name => data.feats.find(f => f.name.toLowerCase() === String(name).toLowerCase());
+// Which prerequisites aren't met, and at which level: a feat is checked as the character was when its slot was gained
+// (Extra Rage Power in a 1st-level slot fails: rage powers start at barbarian 2nd).
+function unmetWarning(check, slot) {
+  const unmet = check.parts.filter(x => x.status === 'unmet').map(x => x.why);
+  const later = view.slots.some(s => s.charLevel > slot.charLevel && !data.featsById.has(state.feats[s.id]));
+  return `<p class="warning">Not met at level ${slot.charLevel}, when this slot was gained: ${esc(unmet.join('; '))}.
+    ${slot.charLevel < view.level ? `Feats are checked as your character was at that level${later ? '; a later feat slot may qualify' : ''}.` : ''}</p>`;
+}
+
+const featByName = name =>data.feats.find(f => f.name.toLowerCase() === String(name).toLowerCase());
 
 // Every feat slot in a popup: the level it comes at, where it comes from, the feat in it (✓ / ✗ / ?), and the free class
 // feats, with how slots are earned.
@@ -2587,7 +2596,7 @@ function renderFeats(slots, granted, ctx) {
         </details>
         ${choice ? choiceSelect(choice) : ''}
         ${wrongSlot ? '<p class="warning">This feat isn\'t allowed in this slot.</p>' : ''}
-        ${check.status === 'unmet' ? '<p class="warning">You don\'t meet all the prerequisites.</p>' : ''}
+        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}
         <div class="slot-buttons">
           <button type="button" data-choose="${slot.id}">Change</button>
           <button type="button" data-remove="${slot.id}">Remove</button>
