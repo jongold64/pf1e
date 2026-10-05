@@ -266,8 +266,12 @@ function load(saved) {
   state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
     .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)) }));
   state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
-    .map(x => ({ name: String(x.name || '').slice(0, 60), target: TARGETS.some(([t]) => t === x.target) ? x.target : 'attack',
-                 type: BONUS_TYPES.includes(x.type) ? x.type : 'untyped', value: Math.trunc(Number(x.value)) || 0, on: x.on !== false }))
+    .map(x => {
+      const part = p => ({ target: TARGETS.some(([t]) => t === p?.target) ? p.target : 'attack',
+                           type: BONUS_TYPES.includes(p?.type) ? p.type : 'untyped', value: Math.trunc(Number(p?.value)) || 0 });
+      const more = (Array.isArray(x.more) ? x.more : []).filter(p => p && typeof p === 'object').slice(0, 8).map(part);
+      return { name: String(x.name || '').slice(0, 60), ...part(x), on: x.on !== false, ...(more.length ? { more } : {}) };
+    })
     .slice(0, 20);
   // A material only if the worn item can be made of it.
   for (const k of ['armor', 'shield']) {

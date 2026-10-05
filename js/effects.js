@@ -72,10 +72,14 @@ export function activeBonuses(buffs = [], custom = []) {
     if (!buff) continue;
     for (const x of buff.bonuses(Math.max(1, Number(cl) || 1))) out.push({ ...x, source: buff.name });
   }
+  // A custom effect can give several bonuses: its own { target, type, value } and any more in `more`.
   for (const c of custom) {
-    const value = Number(c.value);
-    if (c.on === false || !value || !TARGET_NAMES[c.target]) continue;
-    out.push({ target: c.target, type: BONUS_TYPES.includes(c.type) ? c.type : 'untyped', value, source: c.name || 'Custom' });
+    if (c.on === false) continue;
+    for (const p of [c, ...(c.more || [])]) {
+      const value = Number(p.value);
+      if (!value || !TARGET_NAMES[p.target]) continue;
+      out.push({ target: p.target, type: BONUS_TYPES.includes(p.type) ? p.type : 'untyped', value, source: c.name || 'Custom' });
+    }
   }
   // "All saves" counts on each save (so it stacks, or not, with bonuses to one save); "All d20 rolls" on attacks, each
   // save, skills and ability checks.

@@ -30,14 +30,20 @@ export function renderEffects(app, view) {
   };
   const active = BUFFS.filter(b => on.has(b.id));
   const options = (list, value) => list.map(([v, label]) => `<option value="${esc(v)}"${v === value ? ' selected' : ''}>${esc(label)}</option>`).join('');
+  // Each custom effect: on/off and a name, then one line per bonus it gives (amount, type, what it applies to).
+  const partRow = (i, k, p) => `<div class="fx-part">
+      <input type="number" data-fx="${i}" data-part="${k}" data-field="value" value="${p.value}" aria-label="Bonus (negative for a penalty)">
+      <select data-fx="${i}" data-part="${k}" data-field="type" aria-label="Bonus type">${options(BONUS_TYPES.map(t => [t, t]), p.type)}</select>
+      <select data-fx="${i}" data-part="${k}" data-field="target" aria-label="Applies to">${options(TARGETS, p.target)}</select>
+      ${k ? `<button type="button" class="link" data-fx-part-remove="${i}:${k}" aria-label="Remove this bonus">remove</button>` : ''}</div>`;
   const custom = state.customEffects.map((c, i) => `<li class="custom-effect">
-      <input type="checkbox" data-fx="${i}" data-field="on"${c.on ? ' checked' : ''} aria-label="On">
-      <input type="text" data-fx="${i}" data-field="name" value="${esc(c.name)}" placeholder="Name (e.g. potion, inspire greatness)" aria-label="Name">
-      <input type="number" data-fx="${i}" data-field="value" value="${c.value}" aria-label="Bonus (negative for a penalty)">
-      <select data-fx="${i}" data-field="type" aria-label="Bonus type">${options(BONUS_TYPES.map(t => [t, t]), c.type)}</select>
-      <select data-fx="${i}" data-field="target" aria-label="Applies to">${options(TARGETS, c.target)}</select>
-      <button type="button" class="skill-details" data-fx-pop="${i}" aria-label="What this effect does">Details</button>
-      <button type="button" data-fx-remove="${i}" aria-label="Remove this effect">Remove</button></li>`).join('');
+      <div class="fx-head">
+        <input type="checkbox" data-fx="${i}" data-field="on"${c.on ? ' checked' : ''} aria-label="On">
+        <input type="text" data-fx="${i}" data-field="name" value="${esc(c.name)}" placeholder="Name (e.g. rage, inspire greatness, potion)" aria-label="Name">
+        <button type="button" class="skill-details" data-fx-pop="${i}" aria-label="What this effect does">Details</button>
+        <button type="button" data-fx-remove="${i}" aria-label="Remove this effect">Remove</button></div>
+      ${[c, ...(c.more || [])].map((p, k) => partRow(i, k, p)).join('')}
+      <button type="button" class="link" data-fx-more="${i}">+ another bonus from it</button></li>`).join('');
 
   // What counts after stacking, by what it changes.
   const fx = view.stats.fx;
@@ -101,19 +107,22 @@ function popCustom(app, i) {
   const c = state.customEffects[i];
   if (!c) return;
   const name = c.name || 'Custom effect';
-  const spread = { saves: ['fort', 'ref', 'will'], d20: ['attack', 'fort', 'ref', 'will', 'skills', 'checks'] }[c.target] || [c.target];
-  const stacks = c.value < 0 || ['dodge', 'circumstance', 'untyped'].includes(c.type);
   const others = activeBonuses(state.buffs, app.view.customAll.filter((x, j) => x !== c));
-  const rows = spread.map(t => {
-    const rival = stacks ? null : others.filter(o => o.target === t && o.type === c.type && o.value >= c.value).sort((a, b) => b.value - a.value)[0];
-    return `<tr><td>${esc(TARGET_NAMES[t] || t)}</td><td class="num">${esc(signedN(c.value))}</td>
-      <td>${!c.on ? 'off' : !c.value ? 'no amount' : rival ? `doesn't count while ${esc(rival.source)} gives ${esc(signedN(rival.value))}` : 'counts'}</td></tr>`;
+  const parts = [c, ...(c.more || [])];
+  const rows = parts.flatMap(p => {
+    const spread = { saves: ['fort', 'ref', 'will'], d20: ['attack', 'fort', 'ref', 'will', 'skills', 'checks'] }[p.target] || [p.target];
+    const stacks = p.value < 0 || ['dodge', 'circumstance', 'untyped'].includes(p.type);
+    return spread.map(t => {
+      const rival = stacks ? null : others.filter(o => o.target === t && o.type === p.type && o.value >= p.value).sort((a, b) => b.value - a.value)[0];
+      return `<tr><td>${esc(TARGET_NAMES[t] || t)}</td><td class="num">${esc(signedN(p.value))}</td><td>${esc(p.type)}</td>
+        <td>${!c.on ? 'off' : !p.value ? 'no amount' : rival ? `doesn't count while ${esc(rival.source)} gives ${esc(signedN(rival.value))}` : 'counts'}</td></tr>`;
+    });
   }).join('');
-  app.openDetail(name, `<p class="hint">Custom effect · ${esc(signedN(c.value))} ${esc(c.type)} ${c.value < 0 ? 'penalty' : 'bonus'} on ${esc((TARGET_NAMES[c.target] || c.target).toLowerCase())}${c.on ? '' : ' · switched off'}</p>
+  app.openDetail(name, `<p class="hint">Custom effect · ${parts.length} bonus${parts.length === 1 ? '' : 'es'}${c.on ? '' : ' · switched off'}</p>
     <table class="skill-why"><tbody>${rows}</tbody></table>
-    <p class="hint">${stacks ? `${c.value < 0 ? 'Penalties' : `${c.type[0].toUpperCase()}${c.type.slice(1)} bonuses`} add up with everything else.`
-      : `${c.type[0].toUpperCase()}${c.type.slice(1)} bonuses don't stack with each other: only the highest counts. Bonuses of other types add up.`}
-      Change the name, amount, type or what it applies to in its row.</p>`,
+    <p class="hint">Bonuses of the same type don't stack with each other (only the highest counts), except dodge, circumstance and
+      untyped ones; penalties all add up. Change the name, amounts, types or what each applies to in its row; "+ another bonus"
+      adds one more to the same effect.</p>`,
     [c.on ? { label: 'Switch it off', run: () => app.update({ customEffects: state.customEffects.map((x, j) => (j === i ? { ...x, on: false } : x)) }) }
           : { label: 'Switch it on', primary: true, run: () => app.update({ customEffects: state.customEffects.map((x, j) => (j === i ? { ...x, on: true } : x)) }) },
      { label: 'Remove it', run: () => app.update({ customEffects: state.customEffects.filter((_, j) => j !== i) }) }]);
@@ -142,12 +151,28 @@ export function initEffects(app) {
       app.update({ buffs: state.buffs.map(x => (x.id === t.dataset.buffCl ? { ...x, cl } : x)) });
     } else if (t.dataset.fx !== undefined) {
       const i = Number(t.dataset.fx);
+      const k = Number(t.dataset.part || 0);
       const field = t.dataset.field;
       const value = field === 'on' ? t.checked : field === 'value' ? Math.trunc(Number(t.value)) || 0 : t.value;
-      app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, [field]: value } : c)) });
+      // Bonus 0 is the effect's own fields; bonuses 1, 2... are in `more`.
+      app.update({ customEffects: state.customEffects.map((c, j) => (j !== i ? c : k
+        ? { ...c, more: (c.more || []).map((p, m) => (m === k - 1 ? { ...p, [field]: value } : p)) }
+        : { ...c, [field]: value })) });
     }
   });
   box.addEventListener('click', e => {
+    const more = e.target.closest('[data-fx-more]');
+    if (more) {
+      const i = Number(more.dataset.fxMore);
+      app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, more: [...(c.more || []), { target: 'attack', type: c.type, value: 1 }] } : c)) });
+      return;
+    }
+    const pr = e.target.closest('[data-fx-part-remove]');
+    if (pr) {
+      const [i, k] = pr.dataset.fxPartRemove.split(':').map(Number);
+      app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, more: (c.more || []).filter((_, m) => m !== k - 1) } : c)) });
+      return;
+    }
     if (e.target.closest('[data-fx-add]')) {
       app.update({ customEffects: [...state.customEffects, { name: '', target: 'attack', type: 'untyped', value: 1, on: true }] });
     } else if (e.target.closest('[data-fx-remove]')) {

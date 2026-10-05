@@ -1377,6 +1377,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('a drawback gives an extra trait slot (with the house rule)', [traitSlotCount({ drawbacks: true }, 'anxious'), traitSlotCount({ drawbacks: true }), traitSlotCount({}, 'anxious')].join(), '3,2,2');
 }
 
+// A custom effect with several bonuses (e.g. a barbarian's rage).
+{
+  const rage = effectTotals([], [{ name: 'Rage', target: 'str', type: 'morale', value: 4, on: true,
+    more: [{ target: 'con', type: 'morale', value: 4 }, { target: 'will', type: 'morale', value: 2 }, { target: 'ac', type: 'untyped', value: -2 }] }]);
+  check('one effect, several bonuses: Str +4, Con +4, Will +2, AC -2', [rage.str, rage.con, rage.will, rage.ac.untyped].join(), '4,4,2,-2');
+  check('switched off: none of them count', effectTotals([], [{ name: 'Rage', target: 'str', type: 'morale', value: 4, on: false, more: [{ target: 'con', type: 'morale', value: 4 }] }]).con, 0);
+}
+
 const failed = results.filter(r => !r.pass);
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
