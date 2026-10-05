@@ -1,7 +1,7 @@
 // Checks for rules.js and feats.js. Open tests.html through the local server to run them.
 import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, formatBab, levelIncreases,
          bonusSpells, spellsPerDay } from './rules.js';
-import { featApplied, featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
+import { featApplied, featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq, classFeatureStatus,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses,
          skillTotal, skillBreakdown, ranksFor } from './skills.js';
@@ -1416,6 +1416,49 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const both = effectTotals([{ id: 'unchained-rage', cl: 7 }, { id: 'heroism', cl: 5 }]);
   check('melee morale +2 and all-attack morale +2 do not stack', [both.attack, both['melee-attack']].join(), '2,0');
   check('skald inspired rage 8: +4 Str', effectTotals([{ id: 'inspired-rage', cl: 8 }]).str, 4);
+}
+
+// Class feature prerequisites as Paizo words them.
+{
+  const ctxOf = (entries, extra = {}) => ({ counts: entries.map(([id, lv]) => ({ cls: cls(id), level: lv })), haveFeats: new Set(), ...extra });
+  check('"the grit": a gunslinger', classFeatureStatus('the grit', ctxOf([['gunslinger', 1]])), 'met');
+  check('"wizard school": a wizard', classFeatureStatus('wizard school', ctxOf([['wizard', 1]])), 'met');
+  check('"wizard school": not a fighter', classFeatureStatus('wizard school', ctxOf([['fighter', 5]])), 'unmet');
+  check('"rage or raging song": a skald', classFeatureStatus('rage or raging song', ctxOf([['skald', 1]])), 'met');
+  check('"rage or raging song": a barbarian', classFeatureStatus('rage or raging song', ctxOf([['barbarian', 1]])), 'met');
+  check('"sorcerer bloodline": a sorcerer', classFeatureStatus('sorcerer bloodline', ctxOf([['sorcerer', 1]])), 'met');
+  check('"spellcaster with familiar": a witch', classFeatureStatus('spellcaster with familiar', ctxOf([['witch', 1]])), 'met');
+  check('"spellbook": a wizard', classFeatureStatus('spellbook', ctxOf([['wizard', 1]])), 'met');
+  check('"domain or mystery": an oracle', classFeatureStatus('domain or mystery', ctxOf([['oracle', 2]])), 'met');
+  check('"amateur gunslinger or grit": the feat counts', classFeatureStatus('amateur gunslinger or grit',
+    { ...ctxOf([['fighter', 1]]), haveFeats: new Set(['amateur gunslinger']) }), 'met');
+  const ranger = c => ctxOf([['ranger', 5]], { choices: c });
+  check('"favored enemy (undead)": chosen', classFeatureStatus('favored enemy (undead)', ranger([{ label: 'Favored enemy', value: 'Undead' }])), 'met');
+  check('"favored enemy (undead)": another enemy', classFeatureStatus('favored enemy (undead)', ranger([{ label: 'Favored enemy', value: 'Animal' }])), 'unmet');
+  check('"favored enemy (giants)": Humanoid (giant)', classFeatureStatus('favored enemy (giants)', ranger([{ label: 'Favored enemy', value: 'Humanoid (giant)' }])), 'met');
+  check('"favored terrain (mountains)": Mountain', classFeatureStatus('favored terrain (mountains)', ctxOf([['ranger', 3]], { choices: [{ label: 'Favored terrain', value: 'Mountain' }] })), 'met');
+  check('"weapon training (thrown)"', classFeatureStatus('weapon training (thrown)', ctxOf([['fighter', 5]], { choices: [{ label: 'Weapon training group', value: 'Thrown' }] })), 'met');
+  const drunk = { name: 'Drunken Master', features: [{ name: 'Drunken Ki', level: 3 }] };
+  check('"drunken ki": from the archetype at 3rd', classFeatureStatus('drunken ki', ctxOf([['monk', 3]], { archetypes: { monk: [drunk] } })), 'met');
+  check('"drunken ki": not at 2nd', classFeatureStatus('drunken ki', ctxOf([['monk', 2]], { archetypes: { monk: [drunk] } })), 'unmet');
+  check('a feature the data never names: can\u2019t be checked', classFeatureStatus('lesser spirit power', ctxOf([['fighter', 1]], { featureWords: [new Set(['rage'])] })), 'unknown');
+}
+
+// Prerequisites naming classes and skills in other words.
+{
+  const ctxOf = (entries, extra = {}) => ({ counts: entries.map(([id, lv]) => ({ cls: cls(id), level: lv })), haveFeats: new Set(),
+    classNames: new Set(classes.flatMap(c => [c.id, c.name.toLowerCase()])), ...extra });
+  check('"unchained summoner" level 1', checkPrereq({ type: 'class_level', class: 'unchained summoner', value: 1 }, ctxOf([['summoner-unchained', 1]]), {}).status, 'met');
+  check('"specialist wizard" level 1', checkPrereq({ type: 'class_level', class: 'specialist wizard', value: 1 }, ctxOf([['wizard', 3]]), {}).status, 'met');
+  check('"flowing monk" level 5 with the archetype', checkPrereq({ type: 'class_level', class: 'flowing monk', value: 5 },
+    ctxOf([['monk', 5]], { archetypes: { monk: [{ name: 'Flowing Monk', features: [] }] } }), {}).status, 'met');
+  check('"arcane caster" level: can\u2019t be checked', checkPrereq({ type: 'class_level', class: 'arcane caster', value: 1 }, ctxOf([['wizard', 3]]), {}).status, 'unknown');
+  const sk = (skill, ranks, skillRanks, feats = []) => checkPrereq({ type: 'skill', skill, ranks }, { ...ctxOf([['rogue', 5]]), skillRanks, haveFeats: new Set(feats) }, {}).status;
+  check('"Acrobatics or Fly"', sk('Acrobatics or Fly', 5, { Fly: 5 }), 'met');
+  check('"Knowledge (any)"', sk('Knowledge (any)', 3, { 'Knowledge (planes)': 3 }), 'met');
+  check('"SpellCraft"', sk('SpellCraft', 2, { Spellcraft: 2 }), 'met');
+  check('"Performance (sing)"', sk('Performance (sing)', 1, { 'Perform (sing)': 1 }), 'met');
+  check('"Spell Penetration or Bluff": the feat', sk('Spell Penetration or Bluff', 5, {}, ['spell penetration']), 'met');
 }
 
 // Class feature prerequisites: singular and plural match ("Rage Powers" in the unchained barbarian's table).

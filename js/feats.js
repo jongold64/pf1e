@@ -1,7 +1,7 @@
 // Feat rules: where feat slots come from, which feats a slot accepts, and prerequisite checks.
 // No page code here, so these functions can be tested on their own.
 import { spellsPerDay, classCounts } from './rules.js';
-import { ranksFor } from './skills.js';
+import { ranksFor, SKILLS } from './skills.js';
 
 const lower = s => String(s ?? '').toLowerCase();
 const hasType = (feat, ...types) => types.some(t => (feat.types || []).includes(t));
@@ -177,7 +177,12 @@ export function casterLevel(cls, level) {
 // `skillRanks` ({ skill name: ranks }) is optional; without it skill prerequisites can't be checked.
 // A multiclass character passes `counts` ([{ cls, level }]) and `casting` ([{ cls, effectiveLevel }], see
 // castingClasses in multiclass.js); a single-class one just { cls, level }.
-export function featContext({ race, cls, level, counts = null, casting = null, scores, bab, haveFeats, skillRanks = null }) {
+// For class feature prerequisites (all optional): archetypes { class id: [archetype records] } (their features count from
+// the level each comes at), choices [{ label, value }] (picks such as "Favored enemy": "Undead"), talentNames (chosen
+// rage powers, talents, hexes...), featureWords (featureIndex: every feature name in the data, to tell a feature the
+// character lacks from one the app doesn't know).
+export function featContext({ race, cls, level, counts = null, casting = null, scores, bab, haveFeats, skillRanks = null,
+                              archetypes = {}, choices = [], talentNames = [], featureWords = null, classNames = null }) {
   const classes = counts || [{ cls, level }];
   const casters = casting || classes.map(e => ({ cls: e.cls, effectiveLevel: e.level }));
   let maxSpellLevel = -1;
@@ -195,13 +200,31 @@ export function featContext({ race, cls, level, counts = null, casting = null, s
     maxSpellLevel,
     skillRanks,
     haveFeats: new Set(haveFeats.map(lower)),
+    archetypes, choices, talentNames, featureWords,
+    // Every class id and name (lower case), to tell a class the character lacks from a name that isn't a class.
+    classNames,
   };
 }
 
 // Levels a character has in a class, by id or name ("fighter", "Fighter").
 export function levelsIn(ctx, clsIdOrName) {
   const want = lower(clsIdOrName);
-  return ctx.counts.find(e => e.cls.id === want || lower(e.cls.name) === want)?.level || 0;
+  // "unchained summoner" is the class "Summoner (Unchained)" (id summoner-unchained).
+  const unchained = want.match(/^unchained (\w+)$/);
+  const id = unchained ? `${unchained[1]}-unchained` : want;
+  return ctx.counts.find(e => e.cls.id === id || lower(e.cls.name) === want)?.level || 0;
+}
+
+// A class level prerequisite naming something other than a class: "specialist wizard" (wizard levels), an archetype
+// ("flowing monk": that class's levels if the character has the archetype), or null if it can't be read ("arcane
+// caster", "manifestation").
+function classLevelsNamed(ctx, name) {
+  const n = lower(name);
+  if (n === 'specialist wizard') return levelsIn(ctx, 'wizard');
+  for (const [cid, list] of Object.entries(ctx.archetypes || {})) {
+    if ((list || []).some(a => lower(a.name) === n)) return levelsIn(ctx, cid);
+  }
+  return null;
 }
 
 // The data build leaves some prerequisites as text. These patterns are common enough to read here:
@@ -224,15 +247,74 @@ const words = s => lower(s).split(/[^a-z']+/).filter(Boolean);
 const singular = w => w.endsWith('ies') ? `${w.slice(0, -3)}y` : /(xes|ches|shes|sses)$/.test(w) ? w.slice(0, -2)
   : w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w;
 
-function classFeatureLevel(cls, feature) {
-  const want = words(feature).map(singular);
-  for (const row of cls.progression) {
-    for (const special of row.special || []) {
-      const have = words(special).map(singular);
-      if (want.every(w => have.includes(w))) return row.level;
-    }
+// Every feature name in the data (class tables and feature lists, archetype features, class choice options) as sets of
+// singular words, for classFeatureStatus to tell "not met" from "can't be checked".
+export function featureIndex(classes = [], archetypes = [], talents = []) {
+  const names = [...classes.flatMap(c => [...c.progression.flatMap(r => r.special || []), ...(c.features || []).map(f => f.name)]),
+                 ...archetypes.flatMap(a => (a.features || []).map(f => f.name)), ...talents.map(t => t.name)];
+  return [...new Set(names.map(lower))].map(n => new Set(words(n).map(singular)));
+}
+
+// Words that don't name the feature ("the grit", "spellcaster with familiar").
+const FILLER = new Set(['the', 'a', 'an', 'with', 'spellcaster', 'class', 'feature', 'ability']);
+// Bracketed picks the app records: "favored enemy (undead)" is met by choosing Undead as a favored enemy.
+const CHOICE_RULES = [['favored enemy', 'favored enemy'], ['favored terrain', 'favored terrain'], ['weapon training', 'weapon training group']];
+const QUALIFIER_ALIASES = { 'any plane': 'planes' };
+const hasWords = (want, text) => { const have = words(text).map(singular); return want.every(w => have.includes(w)); };
+
+// Whether one class (at its level in the context) has a feature: its level table (when the table names it, the level
+// there decides), else its feature list (an entry with no level counts from 1st: spellbooks, a witch's familiar), and the
+// features of its archetypes from the level each comes at.
+function classHas(e, want, ctx) {
+  if (!want.length) return false;
+  const inTable = r => (r.special || []).some(s => hasWords(want, s));
+  if (e.cls.progression.some(inTable)) {
+    if (e.cls.progression.slice(0, e.level).some(inTable)) return true;
+  } else if ((e.cls.features || []).some(f => (f.level ?? 1) <= e.level && hasWords(want, f.name))) return true;
+  return (ctx.archetypes?.[e.cls.id] || []).some(a => (a.features || []).some(f => (f.level ?? 1) <= e.level && hasWords(want, f.name)));
+}
+
+// A class feature prerequisite as written ("rage power", "the grit", "rage or raging song", "favored enemy (undead)",
+// "detect undead paladin"): 'met', 'unmet' or 'unknown' (no feature by that name anywhere in the data, so it can't be
+// checked). "X or Y": either; a part can also be a feat ("amateur gunslinger"). A class named in it ("wizard school")
+// must be the one with the rest. A bracketed pick is checked against the character's choices where the app records them.
+export function classFeatureStatus(text, ctx) {
+  const parts = String(text).split(/\s+or\s+/i).map(t => oneFeatureStatus(t.trim(), ctx));
+  return parts.includes('met') ? 'met' : parts.includes('unknown') ? 'unknown' : 'unmet';
+}
+
+function oneFeatureStatus(text, ctx) {
+  if (ctx.haveFeats?.has(lower(text))) return 'met';
+  const q = text.match(/^(.*?)\s*\((.+)\)$/);
+  const want = words(q ? q[1] : text).map(singular).filter(w => !FILLER.has(w));
+  let has = ctx.counts.some(e => classHas(e, want, ctx)) || (ctx.talentNames || []).some(n => hasWords(want, n));
+  if (!has) {
+    // "wizard school", "detect undead paladin": the class named, with the rest of the words.
+    has = ctx.counts.some(e => {
+      const name = singular(words(e.cls.name)[0] || '');
+      return want.includes(name) && classHas(e, want.filter(w => w !== name), ctx);
+    });
   }
-  return null;
+  if (!has) {
+    const known = !ctx.featureWords || ctx.featureWords.some(set => want.every(w => set.has(w)));
+    return known ? 'unmet' : 'unknown';
+  }
+  if (!q) return 'met';
+  // The bracketed pick: checked where the app records it, otherwise left to the player.
+  const rule = CHOICE_RULES.find(([k]) => hasWords(words(k).map(singular), q[1]));
+  if (!rule) return 'unknown';
+  const pick = words(QUALIFIER_ALIASES[lower(q[2])] || q[2]).map(singular);
+  return (ctx.choices || []).some(c => lower(c.label).startsWith(rule[1]) && hasWords(pick, c.value)) ? 'met' : 'unmet';
+}
+
+
+// A skill as a prerequisite writes it, as the app names it: "SpellCraft" -> "Spellcraft", "Performance (sing)" ->
+// "Perform (sing)".
+function skillName(text) {
+  const t = String(text).replace(/^Performance\b/i, 'Perform');
+  const base = t.replace(/\s*\(.*\)$/, '');
+  const known = SKILLS.find(s => lower(s.name) === lower(t)) || SKILLS.find(s => lower(s.name) === lower(base));
+  return known ? (known.name === base || lower(known.name) === lower(base) ? known.name + t.slice(base.length) : known.name) : t;
 }
 
 // Checks one prerequisite. Returns { status: 'met' | 'unmet' | 'unknown', why }.
@@ -258,15 +340,21 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
       return result(r.id === p.race || (r.subtypes || []).map(lower).includes(p.race), `Race: ${p.race}`);
     }
     case 'class_level': {
-      const lv = p.class === 'fighter' ? Math.max(fighterLevel, levelsIn(ctx, 'fighter')) : levelsIn(ctx, p.class);
+      let lv = p.class === 'fighter' ? Math.max(fighterLevel, levelsIn(ctx, 'fighter')) : levelsIn(ctx, p.class);
+      // Not a class the character has: maybe a wizard specialist or an archetype; a name that isn't a class at all
+      // ("arcane caster") can't be checked.
+      if (!lv && ctx.classNames && !ctx.classNames.has(lower(p.class)) && !/^unchained \w+$/.test(lower(p.class))) {
+        const named = classLevelsNamed(ctx, p.class);
+        if (named === null && !['specialist wizard'].includes(lower(p.class))) {
+          return { status: 'unknown', why: `${p.class} level ${p.value} (can\u2019t be checked: check it yourself)` };
+        }
+        lv = named || 0;
+      }
       return result(lv >= p.value, `${p.class} level ${p.value}`);
     }
     case 'class_feature': {
-      const has = ctx.counts.some(e => {
-        const lv = classFeatureLevel(e.cls, p.feature);
-        return lv !== null && lv <= e.level;
-      });
-      return result(has, `Class feature: ${p.feature}`);
+      const status = classFeatureStatus(p.feature, ctx);
+      return { status, why: `Class feature: ${p.feature}${status === 'unknown' ? ' (can\u2019t be checked: check it yourself)' : ''}` };
     }
     case 'caster_level':
       return result(ctx.casterLevel >= p.value, `Caster level ${p.value}`);
@@ -279,7 +367,14 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
     case 'skill': {
       const why = `${p.skill} ${p.ranks} rank${p.ranks === 1 ? '' : 's'}`;
       if (!ctx.skillRanks) return { status: 'unknown', why: `${why} (skills not added yet)` };
-      return result(ranksFor(p.skill, ctx.skillRanks) >= p.ranks, why);
+      // "Acrobatics or Fly", "Spell Penetration or Bluff", "Any one item creation feat or Craft (alchemy)": either part,
+      // and a part can be a feat. Odd spellings ("SpellCraft", "Performance (sing)") are read as the skill.
+      const parts = p.skill.split(/\s+or\s+/i).map(s => s.trim());
+      const ok = parts.some(part => ctx.haveFeats?.has(lower(part)) || ranksFor(skillName(part), ctx.skillRanks) >= p.ranks);
+      if (!ok && parts.some(part => /item creation feat/i.test(part))) {
+        return { status: 'unknown', why: `${why} (check the item creation feat yourself)` };
+      }
+      return result(ok, why);
     }
     case 'any_of': {
       const parts = p.options.map(o => checkPrereq(o, ctx, feat, slotRule));

@@ -6,7 +6,7 @@ import {
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
 } from './rules.js';
 import {
-  BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, checkFeat,
+  BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
   repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
@@ -1290,7 +1290,15 @@ function computeView() {
   // Feat prerequisites use the scores without temporary effects.
   const plainScores = statsWith(gear, null).scores;
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
-  const ctx = featContext({ race, counts, casting: casting.casting, scores: plainScores, bab: stats.bab[0], haveFeats, skillRanks });
+  // For class feature prerequisites: archetypes, class choice picks and chosen options.
+  const cfArgs = {
+    archetypes: Object.fromEntries(Object.keys(state.archetypes).map(cid => [cid, chosenArchetypes(cid)])),
+    choices: Object.entries(state.talents).map(([slot, v]) => ({ label: ruleOf(slot)?.label || '', value: data.talentsById.get(v)?.name || v })),
+    talentNames: Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
+    featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
+    classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
+  };
+  const ctx = featContext({ race, counts, casting: casting.casting, scores: plainScores, bab: stats.bab[0], haveFeats, skillRanks, ...cfArgs });
 
   // The character as it was at an earlier level, for feats taken then and for prestige class requirements:
   // BAB, saves, spellcasting and ability increases from those levels, feats from slots reached by then (and free
@@ -1311,7 +1319,7 @@ function computeView() {
       ];
       const ranks = Object.fromEntries(Object.entries(skillRanks).map(([n, r]) => [n, Math.min(r, lv)]));
       contexts.set(key, featContext({ race, counts: beforeCounts, casting: castingClasses(beforeCounts, state.casterChoices).casting,
-                                     scores: beforeStats.scores, bab: beforeStats.bab[0], haveFeats: feats, skillRanks: ranks }));
+                                     scores: beforeStats.scores, bab: beforeStats.bab[0], haveFeats: feats, skillRanks: ranks, ...cfArgs }));
     }
     return contexts.get(key);
   };

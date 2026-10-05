@@ -212,6 +212,10 @@ export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = 
 // "Perform (oratory or sing)" means either one. Returns the best matching rank count.
 export function ranksFor(prereqSkill, skillRanks) {
   const { base, specialty } = splitSkill(prereqSkill);
+  // "Knowledge (any)": the best of the Knowledge skills.
+  if (base === 'Knowledge' && /^any/i.test(specialty || '')) {
+    return Math.max(0, ...Object.entries(skillRanks).filter(([n]) => n.startsWith('Knowledge (')).map(([, r]) => r));
+  }
   const info = SKILLS.find(s => s.name === base);
   if (!info?.family) return skillRanks[prereqSkill] || 0;
   const options = specialty ? specialty.split(/\s+or\s+|,\s*/).map(lower) : null;

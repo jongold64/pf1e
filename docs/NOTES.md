@@ -125,7 +125,14 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   feat" / "Teamwork feat"; `BONUS_FEAT_RULES` encodes each class's bonus-feat restrictions from its
   rules text. `checkFeat` returns met / unmet / unknown per prerequisite; skill ranks and most `other`
   prerequisites are unknown, but `readTextPrereq` reads a few text patterns the data build missed
-  ("8th-level fighter", "X with selected weapon", "ability to cast Nth-level spells"). Free class feats
+  ("8th-level fighter", "X with selected weapon", "ability to cast Nth-level spells"). Class feature
+  prerequisites go through `classFeatureStatus`, which reads Paizo's wording: singular = plural ("rage power" /
+  "Rage Powers"), "X or Y" (a part may be a feat), filler and class names ("the grit", "wizard school"), the class
+  table first (its level decides), else the class's feature list, the chosen archetypes' features (at their level),
+  domains and chosen class options; "favored enemy (undead)", "favored terrain (…)", "weapon training (thrown)" are
+  checked against the picks in `state.talents`. A feature named nowhere in the data (`featureIndex`) is 'unknown', not
+  'unmet'. Class level prerequisites read "unchained summoner", "specialist wizard" and archetype names ("flowing
+  monk"); skill ones read "A or B", "Knowledge (any)", "SpellCraft", "Performance (sing)". Free class feats
   come from class-table specials (`grantedFeats`) and armor/shield proficiency from the class's
   proficiency text (`proficiencyFeats`). Mythic feats are filtered out in `app.js`.
 - Skills: `js/skills.js` has the Core Rulebook skill list (abilities, trained-only, and the Craft /
