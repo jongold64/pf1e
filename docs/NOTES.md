@@ -200,6 +200,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   domains; `domainConflict` stops a subdomain going with its own domain; `domainGrants` gives a subdomain its domain's
   powers minus the one it `replaces`, and the domain's spells with its own swapped in. The druid's domain spell slot
   (`extraSlotOn('druid')`) follows the Nature bond; the Spells tab lists domain spells, the sheet prints `domainLines`.
+- Class choices (`js/talents.js`, data from `build_foundry_talents.py`: the Foundry class-abilities pack by tag, e.g.
+  "Rage Power" -> kind `rage-power`; entries without a Foundry book get it from PSRD by name, the rest are skipped):
+  `TALENT_RULES` = class id -> rules { key, label, kinds, levels, later: [{ from, kinds }], needs: 'mystery', perform },
+  hand-entered from the class tables. `state.talents` = { "class|key|classLevel": talent id or, for bard versatile
+  performance, a Perform type }; `state.mystery` filters oracle revelations. `talentOptions` greys out taken (unless
+  `repeatable`) and too-high-level options. Text only: they don't change numbers. Not available: oracle curses
+  (no book in the data), paladin mercies (one Foundry entry).
 - Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the
   race from the heading, Monster Codex ones via `MC_CLASSES`; `NOT_ARCHETYPES` skips the antipaladin's "Class
   Features") then `build_aon_archetypes.py`: every other Paizo archetype from the Archives of Nethys (d20pfsrd lacks

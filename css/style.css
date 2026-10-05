@@ -737,3 +737,15 @@ table.skill-why th.num { text-align: right; }
 #effects .fx-part input[type="number"] { width: 56px; flex: none; padding: 0 4px; }
 #effects .fx-part select { flex: 1 1 0; min-width: 0; width: auto; font-size: 0.9rem; padding: 0 4px; }
 #effects .fx-part .link { flex: none; }
+/* Class choices (rage powers, talents...) in a class's block, and their picker. */
+.talents h4 { margin: 12px 0 4px; }
+.talent-slots { list-style: none; padding: 0; margin: 0; }
+.talent-slots li { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.talent-slots .talent-buttons { margin-left: auto; display: flex; gap: 6px; }
+.talent-slots button { min-height: 30px; font-size: 0.85rem; padding: 0 10px; }
+.talent-picker .talent-search { width: 100%; font: inherit; min-height: 40px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--text); padding: 0 10px; margin-bottom: 8px; }
+.talent-list .talent-option { display: flex; gap: 8px; align-items: flex-start; border-top: 1px solid var(--border); padding: 6px 0; }
+.talent-list .talent-option details { flex: 1; min-width: 0; }
+.talent-list .talent-option.unavailable { opacity: 0.6; }
+.talent-list .talent-option button { flex: none; }

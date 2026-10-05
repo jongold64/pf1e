@@ -19,7 +19,7 @@ const table = (head, rows) => (rows.length ? `<table class="sheet-table"><thead>
 
 // parts: { app, view, name, weapons (weaponSummaries), skills ([{ name, ranks, total }]), moneyRows ([[label, value]]),
 //          featLabel(slot) -> "Weapon Focus (longsword)" or null, extraSlotOn(clsId) }
-export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLabel, extraSlotOn, domainLines = () => [] }) {
+export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLabel, extraSlotOn, domainLines = () => [], talentLines = () => [] }) {
   const { state, data } = app;
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
@@ -85,7 +85,8 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
       [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)].map(s => `${s} (${r.level})`));
     const arch = e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : '';
     return `<p><b>${esc(e.cls.name)}${esc(arch)} ${e.level}:</b> ${esc(specials.join(', ') || '—')}</p>`
-      + domainLines(e.cls.id).map(l => `<p class="small">${esc(l)}</p>`).join('');
+      + domainLines(e.cls.id).map(l => `<p class="small">${esc(l)}</p>`).join('')
+      + talentLines(e.cls.id, e.level).map(l => `<p class="small">${esc(l)}</p>`).join('');
   }).join('');
 
   // Spells per day for each casting class, then the chosen spells by spell level.

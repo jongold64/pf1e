@@ -30,6 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
+import { TALENT_RULES, VERSATILE_PERFORMANCE, talentSlots, talentOptions, mysteries } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -119,6 +120,8 @@ const state = {
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
+  talents: {},     // class choices by slot ("barbarian|rage-power|4" -> talent id; bard versatile performance -> Perform type)
+  mystery: '',     // an oracle's mystery (for which revelations fit)
   drawback: '',    // Drawbacks house rule: the drawback taken (data/drawbacks.json id), '' for none
   flaws: [],       // Flaws house rule: up to two { id (flaws.js FLAWS, or 'other'), choice? (Pathetic's ability), name, effect }
   armorId: '',     // worn armor (data/armor.json id), '' for none
@@ -234,6 +237,13 @@ function load(saved) {
     return name.trim() ? { id: 'other', name, effect: String(f?.effect || '').slice(0, 200) } : { id: '', name: '', effect: '' };
   });
   if (!data.drawbacksById?.has(state.drawback)) state.drawback = '';
+  // Class choices: known slots holding a known option (a talent id, or a Perform type for versatile performance).
+  const tal = state.talents && typeof state.talents === 'object' && !Array.isArray(state.talents) ? state.talents : {};
+  state.talents = Object.fromEntries(Object.entries(tal).filter(([slot, v]) => {
+    const [cid] = slot.split('|');
+    return TALENT_RULES[cid] && typeof v === 'string' && (data.talentsById.has(v) || VERSATILE_PERFORMANCE[v]);
+  }));
+  if (typeof state.mystery !== 'string' || !mysteries(data.talents).includes(state.mystery)) state.mystery = '';
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
@@ -468,6 +478,12 @@ function fillSheet() {
     [...(dt.nextElementSibling?.childNodes || [])].filter(n => n.nodeName !== 'BUTTON').map(n => n.textContent).join('').trim()]);
   $('print-sheet').innerHTML = buildSheet({
     app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
+    // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
+    talentLines: (cid, lv) => [...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
+      const picks = talentSlots(cid, lv).filter(s => s.rule === rule && state.talents[s.id])
+        .map(s => `${data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]} (${s.classLevel})`);
+      return picks.length ? `${rule.label}s: ${picks.join(', ')}` : '';
+    }).filter(Boolean),
     featLabel: slot => {
       const f = data.featsById.get(state.feats[slot.id]);
       if (!f) return null;
@@ -766,6 +782,33 @@ function buildControls() {
     if (e.target.matches('[data-nature-bond]')) update({ natureBond: e.target.value });
     const cid = e.target.dataset.domainAdd;
     if (cid && e.target.value) update({ domains: { ...state.domains, [cid]: [...(state.domains[cid] || []), e.target.value] } });
+  });
+  // Class choices (rage powers, talents, hexes...): choose, change, details; the oracle's mystery.
+  $('class-info').addEventListener('click', e => {
+    const ch = e.target.closest('[data-talent-choose]');
+    if (ch) openTalentPicker(ch.dataset.talentChoose);
+    const tp = e.target.closest('[data-talent-pop]');
+    if (tp) popTalent(tp.dataset.talentPop, tp.dataset.slot);
+  });
+  $('class-info').addEventListener('change', e => {
+    if (e.target.matches('[data-mystery]')) update({ mystery: e.target.value });
+  });
+  // The class option picker lives in the details window.
+  $('detail-body').addEventListener('input', e => {
+    const box = e.target.closest('.talent-picker');
+    if (box && e.target.matches('.talent-search')) {
+      const pos = e.target.selectionStart;
+      openTalentPicker(box.dataset.slot, e.target.value);
+      const again = document.querySelector('#detail-body .talent-search');
+      if (again) again.setSelectionRange(pos, pos);
+    }
+  });
+  $('detail-body').addEventListener('click', e => {
+    const take = e.target.closest('[data-talent-take]');
+    const box = take?.closest('.talent-picker');
+    if (!box) return;
+    update({ talents: { ...state.talents, [box.dataset.slot]: take.dataset.talentTake } });
+    $('detail-dialog').close();
   });
   // Archetype Details (taken ones and the browse list).
   $('class-info').addEventListener('click', e => {
@@ -1286,6 +1329,72 @@ function domainLines(clsId) {
 // Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
 // the chosen domains with their powers (each in a fold-out, with the level it starts at) and domain spells, and a
 // list to choose another. A subdomain shows its domain's powers and spells with its own swapped in.
+// Class choices for one class (Classes card): a list per kind (rage powers...) with a line per pick slot: the choice and
+// its Details, or Choose. An oracle chooses a mystery first, which decides the revelations offered.
+function talentPicker(cls, level) {
+  const slots = talentSlots(cls.id, level);
+  if (!slots.length) return '';
+  const groups = [...new Set(slots.map(s => s.rule))];
+  const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<label class="row-label">Mystery <select data-mystery>
+      <option value="">Choose your mystery…</option>${mysteries(data.talents).map(m => `<option${m === state.mystery ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select></label>` : '';
+  return `<div class="talents">${mysteryPick}${groups.map(rule => {
+    const mine = slots.filter(s => s.rule === rule);
+    const chosen = mine.filter(s => state.talents[s.id]).length;
+    return `<h4>${esc(rule.label)}s <span class="count">${chosen} of ${mine.length} chosen</span></h4>
+      <ul class="talent-slots">${mine.map(s => {
+        const v = state.talents[s.id];
+        const t = data.talentsById.get(v);
+        const name = t ? t.name : v ? `${v} (${VERSATILE_PERFORMANCE[v].join(' and ')})` : '';
+        return `<li><span class="muted">${esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
+          <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>` : ''}
+          <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
+      }).join('')}</ul>`;
+  }).join('')}</div>`;
+}
+
+// The list to choose a class option for one slot, in the details window: a search box, then every option that fits
+// (ones that can't be taken yet are greyed out with the reason); each has its text in a fold-out and a Choose button.
+function openTalentPicker(slotId, search = '') {
+  const [cid, key, lv] = slotId.split('|');
+  const cls = view.classes.find(c => c.id === cid);
+  const slot = talentSlots(cid, 20).find(s => s.id === slotId);
+  if (!cls || !slot) return;
+  const q = search.trim().toLowerCase();
+  let list;
+  if (slot.rule.perform) {
+    const taken = Object.entries(state.talents).filter(([k, v]) => k !== slotId && k.startsWith(`${cid}|`)).map(([, v]) => v);
+    list = Object.entries(VERSATILE_PERFORMANCE).filter(([p]) => !taken.includes(p)).map(([p, skills]) => `<li class="talent-option">
+        <div><b>${esc(p)}</b> <small class="muted">use your Perform (${esc(p.toLowerCase())}) bonus for ${esc(skills.join(' and '))} checks</small></div>
+        <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></li>`).join('');
+  } else {
+    const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
+    const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery })
+      .filter(o => !q || o.talent.name.toLowerCase().includes(q) || o.talent.text.toLowerCase().includes(q))
+      .sort((a, b) => (!!a.why - !!b.why) || a.talent.name.localeCompare(b.talent.name));
+    list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
+        <details><summary><b>${esc(t.name)}</b> <small class="muted">${esc(t.source)}${t.level ? ` · ${ordinal(t.level)} level` : ''}${t.repeatable ? ' · can be taken again' : ''}${why ? ` · ${why}` : ''}</small></summary>
+          ${paragraphs(t.text)}</details>
+        ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</li>`).join('') || '<li class="hint">Nothing matches.</li>';
+  }
+  const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
+  openDetail(`${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
+      ${slot.rule.perform ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
+      ${mysteryNote}<ul class="plain-list talent-list">${list}</ul></div>`,
+    state.talents[slotId] ? [{ label: 'Clear this choice', run: () => { const t = { ...state.talents }; delete t[slotId]; update({ talents: t }); } }] : []);
+  document.querySelector('#detail-body .talent-search')?.focus();
+}
+
+// A chosen class option in a popup: its text, book and level, and Change / Remove.
+function popTalent(id, slotId) {
+  const t = data.talentsById.get(id);
+  if (!t) return;
+  openDetail(t.name, `<p class="hint">${esc(t.kind.replace(/-/g, ' '))} · ${esc(t.source)}${t.level ? ` · from ${ordinal(t.level)} level` : ''}${t.mystery ? ` · ${esc(t.mystery)} mystery` : ''}${t.repeatable ? ' · can be taken more than once' : ''}</p>
+    ${paragraphs(t.text)}
+    <p class="hint">Not counted in the numbers automatically: apply it in play, or add a custom effect on the Character tab when it applies.</p>`,
+    slotId ? [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
+              { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
+}
+
 function domainPicker(cls, level, openFeatures) {
   const rule = DOMAIN_CLASSES[cls.id];
   if (!rule) return '';
@@ -1465,6 +1574,13 @@ function renderClasses(view) {
       out.push(f ? `${what}: ${f.name}${c?.value ? ` (${choiceLabel(c)})` : ''}` : `${what}: not chosen yet`);
     }
     if (lv === 1) out.push(...(traitNames.length ? traitNames.map(t => `Trait: ${t}`) : ['Traits: not chosen yet']));
+    // Class choices: the k-th level in a class is a character level; a pick at class level k shows here.
+    const c = classLevels[lv - 1];
+    const k = classLevels.slice(0, lv).filter(x => x.id === c.id).length;
+    for (const s of talentSlots(c.id, k).filter(x => x.classLevel === k)) {
+      const v = state.talents[s.id];
+      out.push(`${s.rule.label}: ${data.talentsById.get(v)?.name || v || 'not chosen yet'}`);
+    }
     const inc = INCREASE_LEVELS.indexOf(lv);
     if (inc >= 0) out.push(state.increases[inc] ? `Ability increase: +1 ${ABILITY_NAMES[state.increases[inc]]}` : 'Ability increase: not chosen yet');
     return out;
@@ -1558,6 +1674,7 @@ function renderClasses(view) {
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
       ${reqHtml}
       ${domainPicker(e.cls, e.level, openFeatures)}
+      ${talentPicker(e.cls, e.level)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
     </details>`;
@@ -2374,7 +2491,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -2384,6 +2501,7 @@ async function start() {
       fetch('data/domains.json').then(r => r.json()),
       fetch('data/companions.json').then(r => r.json()),
       fetch('data/drawbacks.json').then(r => r.json()),
+      fetch('data/talents.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -2401,6 +2519,7 @@ async function start() {
   data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));
   data.domainsById = new Map(data.domains.map(d => [d.id, d]));
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
+  data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

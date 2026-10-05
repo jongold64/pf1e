@@ -21,6 +21,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_classes.py', 'data/classes.json'),
                     # Adds post-2015 classes (occult, unchained, shifter, vigilante) after the PSRD ones.
                     ('build_foundry_classes.py', 'data/classes.json'),
+                    # Class choices (rage powers, rogue talents, hexes...) from Foundry, books from PSRD where Foundry has none.
+                    ('build_foundry_talents.py', 'data/talents.json'),
                     ('build_feats.py', 'data/feats.json'),
                     # Paizo feats from later books, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py.
                     *([('build_d20_feats.py', 'data/feats.json')]

@@ -17,6 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
 import { flawEffects } from './flaws.js';
+import { talentSlots, talentOptions, slotKinds } from './talents.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1383,6 +1384,24 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     more: [{ target: 'con', type: 'morale', value: 4 }, { target: 'will', type: 'morale', value: 2 }, { target: 'ac', type: 'untyped', value: -2 }] }]);
   check('one effect, several bonuses: Str +4, Con +4, Will +2, AC -2', [rage.str, rage.con, rage.will, rage.ac.untyped].join(), '4,4,2,-2');
   check('switched off: none of them count', effectTotals([], [{ name: 'Rage', target: 'str', type: 'morale', value: 4, on: false, more: [{ target: 'con', type: 'morale', value: 4 }] }]).con, 0);
+}
+
+// Class choices: slots by class level, kinds opening up later, and options taken or too high.
+{
+  check('barbarian 7: rage powers at 2, 4, 6', talentSlots('barbarian', 7).map(s => s.classLevel).join(), '2,4,6');
+  check('witch 1: one hex', talentSlots('witch', 1).length, 1);
+  check('bard 6: two versatile performances', talentSlots('bard', 6).length, 2);
+  check('fighter: none', talentSlots('fighter', 20).length, 0);
+  const rogue = talentSlots('rogue', 10);
+  check('rogue 8th slot: rogue talents only', slotKinds(rogue[3]).join(), 'rogue-talent');
+  check('rogue 10th slot: advanced talents too', slotKinds(rogue[4]).join(), 'rogue-talent,advanced-rogue-talent');
+  const all = [{ id: 'a', kind: 'rage-power', level: null }, { id: 'b', kind: 'rage-power', level: 8 },
+               { id: 'c', kind: 'rage-power', level: null, repeatable: true }, { id: 'd', kind: 'hex' }];
+  const opts = talentOptions(talentSlots('barbarian', 4)[1], all, { taken: ['a', 'c'] });
+  check('options: the slot kind only', opts.length, 3);
+  check('taken / too high / repeatable', opts.map(o => o.why || 'ok').join(), 'already taken,needs 8th level,ok');
+  const rev = [{ id: 'x', kind: 'revelation', mystery: 'Flame' }, { id: 'y', kind: 'revelation', mystery: 'Bones' }];
+  check('oracle: only the mystery revelations', talentOptions(talentSlots('oracle', 1)[0], rev, { mystery: 'Flame' }).map(o => o.talent.id).join(), 'x');
 }
 
 const failed = results.filter(r => !r.pass);
