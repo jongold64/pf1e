@@ -1,7 +1,7 @@
 // Active effects card (Character tab): common spells and other buffs to switch on (with a caster level where the
 // bonus grows with it), custom effects the player types in, and what they add up to by the stacking rules.
-import { $, esc } from './dom.js';
-import { BUFFS, BONUS_TYPES, TARGETS, TARGET_NAMES } from './effects.js';
+import { $, esc, paragraphs, facts } from './dom.js';
+import { BUFFS, buffById, BONUS_TYPES, TARGETS, TARGET_NAMES, activeBonuses } from './effects.js';
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
 
@@ -24,7 +24,8 @@ export function renderEffects(app, view) {
     const level = buff.scales && cur ? `<label class="cl-input">${esc(buff.levelName || 'caster level')}
         <input type="number" min="1" max="20" value="${cl}" data-buff-cl="${esc(buff.id)}"></label>` : '';
     return `<li class="${cur ? 'on' : ''}"><label class="check-row small"><input type="checkbox" data-buff="${esc(buff.id)}"${cur ? ' checked' : ''}>
-        <span><b>${esc(buff.name)}</b> <small class="muted">${esc(buffSummary(buff, cl))}</small></span></label>${level}
+        <span><b>${esc(buff.name)}</b> <small class="muted">${esc(buffSummary(buff, cl))}</small></span>
+        <button type="button" class="skill-details" data-buff-pop="${esc(buff.id)}" aria-label="${esc(buff.name)} in a popup">Details</button></label>${level}
         ${cur && buff.note ? `<div class="hint">Not counted: ${esc(buff.note)}</div>` : ''}</li>`;
   };
   const active = BUFFS.filter(b => on.has(b.id));
@@ -59,7 +60,47 @@ export function renderEffects(app, view) {
     <p><button type="button" data-fx-add>Add an effect</button>${activeCount ? ' <button type="button" data-fx-clear>Switch all off</button>' : ''}</p>`;
 }
 
+// A buff in a popup: what it gives at your caster level (and how that grows), whether each bonus counts next to the
+// other effects that are on (same-type bonuses don't stack), what isn't counted, and the spell's own text.
+async function popBuff(app, id) {
+  const buff = buffById.get(id);
+  if (!buff) return;
+  const { state } = app;
+  const cur = state.buffs.find(x => x.id === id);
+  const cl = cur?.cl || app.view.level;
+  // The other effects on now, and which of them beat or match each of this buff's bonuses.
+  const others = activeBonuses(state.buffs.filter(x => x.id !== id), app.view.customAll);
+  const rows = buff.bonuses(cl).flatMap(b => (b.target === 'saves' ? ['fort', 'ref', 'will'].map(t => ({ ...b, target: t })) : [b])).map(b => {
+    const rival = b.value > 0 && !['dodge', 'circumstance', 'untyped'].includes(b.type)
+      ? others.filter(o => o.target === b.target && o.type === b.type && o.value >= b.value).sort((x, y) => y.value - x.value)[0] : null;
+    return `<tr><td>${esc(TARGET_NAMES[b.target])}</td><td class="num">${esc(signedN(b.value))}</td><td>${esc(b.type)}</td>
+      <td>${rival ? `doesn't count while ${esc(rival.source)} gives ${esc(signedN(rival.value))}` : 'counts'}</td></tr>`;
+  }).join('');
+  const growth = buff.scales ? `<p class="hint">It grows with ${esc(buff.levelName || 'caster level')}: ${[1, 5, 10, 15, 20].map(l =>
+    `${l}: ${buff.bonuses(l).map(x => signedN(x.value)).filter((v, i, a) => a.indexOf(v) === i).join('/')}`).join(' · ')}.</p>` : '';
+  // The spell's own text (spells load on first use).
+  if (!app.data.spells) await app.loadSpells();
+  const plain = buff.name.replace(/\s*\(.*\)$/, '').toLowerCase();
+  const spell = app.data.spells?.find(s => s.name.toLowerCase() === plain);
+  app.openDetail(buff.name, `<p class="hint">${spell ? `${esc(spell.school || '')} spell · ${esc(spell.source || '')}` : 'Class ability'}${cur ? ` · on, at ${esc(buff.levelName || 'caster level')} ${cl}` : ''}</p>
+    <h3>${cur ? 'What it gives now' : `What it would give (${esc(buff.levelName || 'caster level')} ${cl})`}</h3>
+    <table class="skill-why"><tbody>${rows}</tbody></table>${growth}
+    ${buff.size ? `<p>It makes you one size ${buff.size > 0 ? 'larger' : 'smaller'}: size changes to AC, attacks, CMB/CMD and weapon damage are counted.</p>` : ''}
+    ${buff.note ? `<p class="hint">Not counted: ${esc(buff.note)}.</p>` : ''}
+    ${spell ? `<h3>The spell</h3>${facts([['Range', spell.range], ['Duration', spell.duration], ['Target', spell.target || null], ['Saving throw', spell.saving_throw]])}
+      <details class="rules"><summary>Spell text</summary>${paragraphs(spell.description)}</details>` : ''}`,
+    [cur ? { label: 'Switch it off', run: () => app.update({ buffs: state.buffs.filter(x => x.id !== id) }) }
+         : { label: 'Switch it on', primary: true, run: () => app.update({ buffs: [...state.buffs, { id, cl: app.view.level }] }) }]);
+}
+
 export function initEffects(app) {
+  // Details: inside a buff's label, so it doesn't tick the box.
+  $('effects').addEventListener('click', e => {
+    const b = e.target.closest('[data-buff-pop]');
+    if (!b) return;
+    e.preventDefault();
+    popBuff(app, b.dataset.buffPop);
+  });
   const box = $('effects');
   const { state } = app;
   box.addEventListener('change', e => {

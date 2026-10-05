@@ -725,3 +725,4 @@ table.skill-why th.num { text-align: right; }
 .flaw-browse .pick-list { max-height: 320px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 6px; }
 #drawback-row button.skill-details, .flaw-row button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
 #companion .companion-pick button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; }
+#effects button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: auto; }
