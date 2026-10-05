@@ -30,7 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects } from './talents.js';
+import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -483,7 +483,7 @@ function fillSheet() {
     // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
     talentLines: (cid, lv) => [...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
       const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
-        .map(s => `${data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]} (${s.classLevel})`);
+        .map(s => `${data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]} (${s.fromFeat ? 'feat' : s.classLevel})`);
       return picks.length ? `${pluralOf(rule)}: ${picks.join(', ')}` : '';
     }).filter(Boolean),
     featLabel: slot => {
@@ -1198,10 +1198,18 @@ function chosenArchetypes(classId) {
 
 // A class's choice slots up to a class level, each with replacedBy (the archetype that replaces that pick, or ''),
 // and the archetypes' other notes on them by rule key.
+// Feats such as Extra Rage Power add picks (one per feat taken), listed after the class's own.
 function classChoiceSlots(classId, classLevel) {
   const fx = archetypeEffects(classId, chosenArchetypes(classId));
   return { notes: fx.notes,
-           slots: talentSlots(classId, classLevel).map(s => ({ ...s, replacedBy: fx.replaced[s.rule.key]?.[s.classLevel] || '' })) };
+           slots: [...talentSlots(classId, classLevel).map(s => ({ ...s, replacedBy: fx.replaced[s.rule.key]?.[s.classLevel] || '' })),
+                   ...extraFeatSlots().filter(s => s.classId === classId && s.classLevel <= classLevel).map(s => ({ ...s, replacedBy: '' }))] };
+}
+
+// The class choice picks the character's Extra ... feats give.
+function extraFeatSlots() {
+  const feats = view.slots.map(s => ({ slotId: s.id, name: data.featsById.get(state.feats[s.id])?.name, charLevel: s.charLevel })).filter(f => f.name);
+  return featTalentSlots(feats, view.classLevels.map(c => c.id));
 }
 
 // The racial +2 choice: one ability, or two with Dual Talent (a human alternate trait).
@@ -1491,7 +1499,7 @@ function talentPicker(cls, level, openFeatures) {
         const v = state.talents[s.id];
         const t = data.talentsById.get(v);
         const name = t ? t.name : v || '';
-        return `<li><span class="muted">${esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
+        return `<li><span class="muted">${s.fromFeat ? `${esc(s.fromFeat)} (feat)` : esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
           ${!t && v && rule.choices?.[v] ? `<small class="muted">${esc(rule.choices[v])}</small>` : ''}
           <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
             : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
@@ -1533,7 +1541,7 @@ function browseTalents(cls, rule, slots, openFeatures) {
 function openTalentPicker(slotId, search = '') {
   const [cid, key, lv] = slotId.split('|');
   const cls = view.classes.find(c => c.id === cid);
-  const slot = talentSlots(cid, 20).find(s => s.id === slotId);
+  const slot = classChoiceSlots(cid, 20).slots.find(s => s.id === slotId);
   if (!cls || !slot) return;
   const q = search.trim().toLowerCase();
   let list;
@@ -1556,7 +1564,7 @@ function openTalentPicker(slotId, search = '') {
         ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</span></li>`).join('') || '<li class="hint">Nothing matches.</li>';
   }
   const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
-  openDetail(`${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
+  openDetail(slot.fromFeat ? `${slot.rule.label}: from ${slot.fromFeat}` : `${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
       ${slot.rule.choices ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
       ${mysteryNote}<ul class="plain-list talent-list">${list}</ul></div>`,
     state.talents[slotId] ? [{ label: 'Clear this choice', run: () => { const t = { ...state.talents }; delete t[slotId]; update({ talents: t }); } }] : []);
@@ -1806,7 +1814,11 @@ function renderClasses(view) {
     // Class choices: the k-th level in a class is a character level; a pick at class level k shows here.
     const c = classLevels[lv - 1];
     const k = classLevels.slice(0, lv).filter(x => x.id === c.id).length;
-    for (const s of classChoiceSlots(c.id, k).slots.filter(x => x.classLevel === k)) {
+    for (const s of extraFeatSlots().filter(x => x.charLevel === lv)) {
+      const v = state.talents[s.id];
+      out.push(`${s.rule.label} (${s.fromFeat}): ${data.talentsById.get(v)?.name || 'not chosen yet'}`);
+    }
+    for (const s of classChoiceSlots(c.id, k).slots.filter(x => !x.fromFeat && x.classLevel === k)) {
       const v = state.talents[s.id];
       out.push(`${s.rule.label}: ${s.replacedBy ? `replaced by ${s.replacedBy}` : data.talentsById.get(v)?.name || v || 'not chosen yet'}`);
     }

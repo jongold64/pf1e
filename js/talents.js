@@ -98,6 +98,33 @@ export const TALENT_RULES = {
                      choices: listOf(Object.keys(RAGE_PROPHET_SPELLS), s => `an extra oracle spell known (${RAGE_PROPHET_SPELLS[s]} level)`) }],
 };
 
+// Feats that give one more pick of a class's choices each time they're taken: feat name -> rule keys it adds to (the
+// first class the character has with one of them gets it).
+export const EXTRA_FEATS = {
+  'Extra Rage Power': ['rage-power'], 'Extra Rogue Talent': ['rogue-talent', 'ninja-trick'], 'Extra Ninja Trick': ['ninja-trick'],
+  'Extra Slayer Talent': ['slayer-talent'], 'Extra Investigator Talent': ['investigator-talent'], 'Extra Hex': ['hex'],
+  'Extra Discovery': ['discovery'], 'Extra Arcana': ['magus-arcana'], 'Extra Revelation': ['revelation'],
+  'Extra Arcanist Exploit': ['arcanist-exploit'], 'Extra Mercy': ['mercy'], 'Extra Amplification': ['phrenic-amplification'],
+  'Extra Wild Talent': ['wild-talent'], 'Extra Focus Power': ['focus-power'],
+};
+
+// The extra pick slots feats give: feats is [{ slotId (the feat slot), name, charLevel }] and classLevels the class id at
+// each character level. Each slot: { id: "class|rule|feat-<feat slot>", rule, classId, classLevel (the class's level
+// when the feat was taken, for which options fit), fromFeat, charLevel }.
+export function featTalentSlots(feats, classLevels) {
+  const out = [];
+  for (const f of feats) {
+    const keys = EXTRA_FEATS[f.name];
+    if (!keys) continue;
+    const owner = [...new Set(classLevels)].map(cid => [cid, (TALENT_RULES[cid] || []).find(r => keys.includes(r.key))]).find(([, r]) => r);
+    if (!owner) continue;
+    const [classId, rule] = owner;
+    const classLevel = Math.max(1, classLevels.slice(0, f.charLevel).filter(c => c === classId).length);
+    out.push({ id: `${classId}|${rule.key}|feat-${f.slotId}`, rule, classId, classLevel, fromFeat: f.name, charLevel: f.charLevel });
+  }
+  return out;
+}
+
 // A rule's heading: "Rage powers", "Mercies".
 export const pluralOf = rule => rule.plural || `${rule.label}s`;
 

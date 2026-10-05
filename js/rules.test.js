@@ -17,7 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses } from './effects.js';
 import { flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf } from './talents.js';
+import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1416,6 +1416,15 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const both = effectTotals([{ id: 'unchained-rage', cl: 7 }, { id: 'heroism', cl: 5 }]);
   check('melee morale +2 and all-attack morale +2 do not stack', [both.attack, both['melee-attack']].join(), '2,0');
   check('skald inspired rage 8: +4 Str', effectTotals([{ id: 'inspired-rage', cl: 8 }]).str, 4);
+}
+
+// Extra feats add class choice picks.
+{
+  const s = featTalentSlots([{ slotId: 'L3', name: 'Extra Rage Power', charLevel: 3 }, { slotId: 'L5', name: 'Extra Rage Power', charLevel: 5 },
+                             { slotId: 'L1', name: 'Power Attack', charLevel: 1 }], ['fighter', 'barbarian', 'barbarian', 'barbarian', 'barbarian']);
+  check('Extra Rage Power twice: two rage power picks', s.map(x => `${x.classId}:${x.rule.key}:${x.classLevel}`).join(), 'barbarian:rage-power:2,barbarian:rage-power:4');
+  check('Extra Rogue Talent on a ninja: a ninja trick pick', featTalentSlots([{ slotId: 'L1', name: 'Extra Rogue Talent', charLevel: 1 }], ['ninja'])[0]?.rule.key, 'ninja-trick');
+  check('Extra Hex with no witch or shaman: none', featTalentSlots([{ slotId: 'L1', name: 'Extra Hex', charLevel: 1 }], ['fighter']).length, 0);
 }
 
 // Which bonuses count: the highest of a type; penalties and dodge/untyped ones always.
