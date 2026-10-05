@@ -5,7 +5,7 @@ import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
-import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
+import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { formatGp, formatLbs } from './equipment.js';
@@ -328,6 +328,16 @@ export function renderMyWeapons(app, view) {
           <option value="">Your size (${esc(view.size)})</option>
           ${WEAPON_SIZES.map(z => `<option value="${z}"${e.size === z ? ' selected' : ''}>${z}</option>`).join('')}
         </select></label>
+        ${isComposite(w) ? (() => {
+          // Composite bows: the strength rating (Str bonus added to damage, up to it; -2 attack if your Str is lower).
+          const adaptive = (e.abilities || []).some(x => x.id === 'adaptive');
+          const str = view.stats.mod.str;
+          return adaptive ? `<p class="hint">Adaptive: its strength rating always matches your Strength bonus (+${Math.max(0, str)}).</p>`
+            : `<label>Strength rating <select data-weapon-rating="${i}">
+              ${Number.isInteger(e.strRating) ? '' : `<option value="" selected>Not set: matches your Strength (+${Math.max(0, str)})</option>`}
+              ${Array.from({ length: 11 }, (_, n) => `<option value="${n}"${e.strRating === n ? ' selected' : ''}>+${n}${n ? ` (+${n * ratingPrice(w)} gp)` : ''}${n === Math.max(0, str) ? ' = your Strength' : ''}</option>`).join('')}
+            </select></label>${compositeRating(w, e, str) > str ? '<p class="warning small">Your Strength bonus is below its rating: −2 on attacks with it.</p>' : ''}`;
+        })() : ''}
         <label>Quality <select data-weapon-quality="${i}">
           <option value="0"${quality === '0' ? ' selected' : ''}>Normal</option>
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
@@ -446,6 +456,11 @@ export function weaponSummaries(app, view) {
   }).filter(Boolean);
 }
 
+// A weapon to add: a composite bow comes with a strength rating that matches your Strength bonus now.
+function newEntry(app, w) {
+  return { id: w.id, enh: 0, ...(isComposite(w) ? { strRating: Math.max(0, app.view.stats.mod.str) } : {}) };
+}
+
 function changeEntry(app, index, changes) {
   app.update({ weapons: app.state.weapons.map((e, i) => (i === index ? { ...e, ...changes } : e)) });
 }
@@ -463,7 +478,7 @@ export function initWeaponsTab(app) {
     if (pop) {
       const w = app.data.weaponsById.get(pop.dataset.weaponPop);
       if (w) app.openDetail(w.name, weaponDetails(w, false),
-        [{ label: 'Add to my weapons', primary: true, run: () => app.update({ weapons: [...app.state.weapons, { id: w.id, enh: 0 }] }) }]);
+        [{ label: 'Add to my weapons', primary: true, run: () => app.update({ weapons: [...app.state.weapons, newEntry(app, w)] }) }]);
       return;
     }
     const btn = e.target.closest('[data-weapon]');
@@ -473,7 +488,7 @@ export function initWeaponsTab(app) {
   });
   $('weapon-panel').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-weapon]');
-    if (btn) app.update({ weapons: [...app.state.weapons, { id: btn.dataset.addWeapon, enh: 0 }] });
+    if (btn) app.update({ weapons: [...app.state.weapons, newEntry(app, app.data.weaponsById.get(btn.dataset.addWeapon) || { id: btn.dataset.addWeapon })] });
   });
   $('my-weapons').addEventListener('click', e => {
     const remove = e.target.closest('[data-remove-weapon]');
@@ -499,6 +514,8 @@ export function initWeaponsTab(app) {
       app.update({ weapons });
       return;
     }
+    const rating = e.target.dataset.weaponRating;
+    if (rating !== undefined && e.target.value !== '') { changeEntry(app, Number(rating), { strRating: Number(e.target.value) }); return; }
     const quality = e.target.dataset.weaponQuality;
     if (quality !== undefined) {
       const v = e.target.value;

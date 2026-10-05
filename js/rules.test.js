@@ -607,6 +607,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Str to damage: longbow bonus ignored', strToDamage(weapon('Longbow'), 3), 0);
   check('Str to damage: longbow penalty applies', strToDamage(weapon('Longbow'), -1), -1);
   check('Str to damage: composite longbow', strToDamage(weapon('Composite Longbow'), 3), 3);
+  check('Str to damage: composite longbow, rating +2', strToDamage(weapon('Composite Longbow'), 3, 2), 2);
+  check('Str to damage: composite bow, a penalty always', strToDamage(weapon('Composite Longbow'), -1, 2), -1);
+  {
+    const clb = weapon('Composite Longbow');
+    const at = (str, entry) => weaponAttack({ weapon: clb, entry, bab: [5], mod: { str, dex: 2 } });
+    check('composite +2 rating, Str +4: +2 damage', at(4, { strRating: 2 }).parts.strDamage, 2);
+    check('composite +3 rating, Str +1: -2 attack, +1 damage', [at(1, { strRating: 3 }).attacks[0], at(1, { strRating: 3 }).parts.strDamage].join(), '5,1');
+    check('composite, no rating set: all your Strength', at(4, {}).parts.strDamage, 4);
+    check('adaptive composite: matches Strength', at(4, { strRating: 1, abilities: [{ id: 'adaptive' }] }).parts.strDamage, 4);
+    check('composite longbow +3 rating: 100 + 300 gp', weaponCost(clb, { strRating: 3 }), 400);
+    check('composite shortbow +2 rating: 75 + 150 gp', weaponCost(weapon('Composite Shortbow'), { strRating: 2 }), 225);
+  }
   check('Str to damage: crossbow none', strToDamage(weapon('Heavy Crossbow'), 3), 0);
   check('Str to damage: javelin (thrown)', strToDamage(weapon('Javelin'), 2), 2);
   check('formatDamage', `${formatDamage('1d8', 4)} / ${formatDamage('1d6 fire', 0)} / ${formatDamage('1d4', -1)}`, '1d8+4 / 1d6 fire / 1d4-1');

@@ -45,14 +45,26 @@ export function proficiencyTest(clsOrList, race) {
 // How much of the character's Str modifier goes to damage.
 // Two-handed melee: 1.5×. Thrown weapons, slings and composite bows: 1×. Other bows: only a Str penalty.
 // Crossbows, firearms and technological weapons: none.
-export function strToDamage(weapon, strMod) {
+// A composite bow (Core Rulebook): made for a strength rating; it adds your Str bonus to damage up to that rating, and
+// you take -2 on attacks with it if your Str bonus is lower. The rating it counts with: the one set on it, or your
+// Str bonus with the adaptive ability, or when none is set (older saved weapons). null for other weapons.
+export const isComposite = weapon => /composite/i.test(weapon?.name || '');
+export function compositeRating(weapon, entry = {}, strMod = 0) {
+  if (!isComposite(weapon)) return null;
+  if ((entry.abilities || []).some(a => a.id === 'adaptive') || !Number.isInteger(entry.strRating)) return Math.max(0, strMod);
+  return entry.strRating;
+}
+// Price of a composite bow's strength rating: 100 gp per point for a longbow, 75 gp for a shortbow.
+export const ratingPrice = weapon => (/long/i.test(weapon.name) ? 100 : 75);
+
+export function strToDamage(weapon, strMod, rating = null) {
   const name = lower(weapon.name);
   // 1-1/2 times a Str bonus; a Str penalty isn't multiplied.
   if (weapon.group === 'two-handed') return strMod > 0 ? Math.floor(strMod * 1.5) : strMod;
   if (weapon.group !== 'ranged') return strMod;
   if (weapon.firearm || weapon.category === 'Technological Weapons' ||
       /crossbow|pistol|musket|rifle|blunderbuss|gun|cannon|launcher|blowgun|dart gun/.test(name)) return 0;
-  if (/bow/.test(name)) return /composite/.test(name) ? strMod : Math.min(0, strMod);
+  if (/bow/.test(name)) return /composite/.test(name) ? (strMod < 0 ? strMod : Math.min(strMod, rating ?? strMod)) : Math.min(0, strMod);
   return strMod;  // slings and thrown ranged weapons (javelin, dart, shuriken, ...)
 }
 
@@ -232,7 +244,10 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   let strDamage;
   if (hand === 'off') strDamage = mod.str > 0 && !has.has('Double Slice') ? Math.floor(mod.str / 2) : mod.str;
   else if ((hand === 'main' || hand === 'flurry') && melee) strDamage = mod.str;
-  else strDamage = strToDamage(weapon, mod.str);
+  else strDamage = strToDamage(weapon, mod.str, compositeRating(weapon, entry, mod.str));
+  // A composite bow whose strength rating is above your Str bonus: -2 on attacks.
+  const rating = compositeRating(weapon, entry, mod.str);
+  const tooWeak = rating !== null && mod.str < rating ? -2 : 0;
 
   // Power Attack (melee) / Deadly Aim (ranged). Damage +50% with a weapon in two hands, halved off-hand.
   const step = powerAttackStep(powerBab);
@@ -258,7 +273,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   }
 
   // misfit: -2 per size step for a weapon made for a different size of creature.
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit;
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
@@ -273,7 +288,8 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     damage: formatDamage(dice, damageBonus),
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
-             penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit },
+             penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit,
+             rating, tooWeak },
   };
 }
 
@@ -296,14 +312,18 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(attackRows, penaltyLabel, p.penalty);
   add(attackRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerHit);
   add(attackRows, 'Rapid Shot', p.rapid);
+  add(attackRows, `Strength below the bow\u2019s strength rating (+${p.rating})`, p.tooWeak);
   const damageRows = [];
   // Which Strength rule applies: full, 1 1/2 times in two hands, half in the off hand, or a bow's limits.
   const sm = p.strMod;
-  const strLabel = p.strDamage === sm ? 'Strength modifier'
+  const strLabel = p.rating !== null && p.rating !== undefined
+    ? `Strength (composite bow: your Str bonus, up to its strength rating of +${p.rating})`
+    : p.strDamage === sm ? 'Strength modifier'
     : sm > 0 && p.strDamage === Math.floor(sm * 1.5) ? 'Strength × 1½ (held in two hands)'
     : sm > 0 && p.strDamage === Math.floor(sm / 2) ? 'Strength × ½ (off hand)'
     : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
-  add(damageRows, strLabel, p.strDamage);
+  if (p.rating !== null && p.rating !== undefined) damageRows.push({ label: strLabel, value: p.strDamage });
+  else add(damageRows, strLabel, p.strDamage);
   add(damageRows, 'Enhancement bonus', p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
@@ -374,13 +394,17 @@ export function weaponCost(weapon, entry = {}) {
   const abilities = entry.abilities || [];
   const magic = magicPart(enh, abilities, 2000);
   // A weapon made for a Large creature costs twice as much (the masterwork and magic costs don't change).
-  return (weapon.price_gp || 0) * (WEAPON_SIZE_COST[entry.size] || 1) + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0)
+  // A composite bow's strength rating: 100 gp (longbow) or 75 gp (shortbow) per point.
+  const rating = isComposite(weapon) && Number.isInteger(entry.strRating) ? entry.strRating * ratingPrice(weapon) : 0;
+  return (weapon.price_gp || 0) * (WEAPON_SIZE_COST[entry.size] || 1) + rating + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0)
     + (entry.crafted ? magic / 2 : magic);
 }
 
 // "+1 flaming Longsword", "Masterwork Dagger", "Club", "Greatsword (Large)".
 export function weaponLabel(weapon, entry = {}) {
   const prefix = magicPrefix(entry.enh || 0, entry.masterwork, entry.abilities || []);
-  const name = entry.size ? `${weapon.name} (${entry.size})` : weapon.name;
+  const rated = isComposite(weapon) && Number.isInteger(entry.strRating) && !(entry.abilities || []).some(a => a.id === 'adaptive')
+    ? ` (+${entry.strRating} Str)` : '';
+  const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated;
   return prefix ? `${prefix} ${name}` : name;
 }

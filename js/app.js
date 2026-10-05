@@ -330,7 +330,9 @@ function load(saved) {
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])),
                  ...(cleanAbilities(e.abilities).length ? { abilities: cleanAbilities(e.abilities) } : {}),
-                 ...(WEAPON_SIZES.includes(e.size) ? { size: e.size } : {}) }));
+                 ...(WEAPON_SIZES.includes(e.size) ? { size: e.size } : {}),
+                 // A composite bow's strength rating (0-10); none on older saves (counts as your Strength).
+                 ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}) }));
   // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.
   state.armorAbilities = cleanAbilities(state.armorAbilities);
   state.shieldAbilities = cleanAbilities(state.shieldAbilities);
