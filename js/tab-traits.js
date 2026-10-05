@@ -95,7 +95,29 @@ function showTraitDetails(app, i) {
   app.openDetail(t ? t.name : (traitSlotLabels(state.houseRules, state.drawback)[i] || `Trait ${i + 1}`), html);
 }
 
+// Your traits in a popup: how many you get and why, each one with its category, a warning when two share a category
+// (Advanced Player's Guide: no more than one trait from the same list), and what they add.
+function popTraits(app) {
+  const { state, data } = app;
+  const count = traitSlotCount(state.houseRules, state.drawback);
+  const labels = traitSlotLabels(state.houseRules, state.drawback);
+  const chosen = state.traits.slice(0, count).map(id => data.traitsById.get(id));
+  const cats = chosen.filter(Boolean).map(t => t.category);
+  const twice = [...new Set(cats.filter((c, i) => cats.indexOf(c) !== i))];
+  const rows = labels.map((l, i) => `<tr><td>${esc(l)}</td><td>${chosen[i] ? `${esc(chosen[i].name)} <small class="muted">${esc(chosen[i].category)}</small>` : '<span class="hint">not chosen</span>'}</td>
+      <td>${chosen[i] && effectText(chosen[i]) ? esc(effectText(chosen[i])) : ''}</td></tr>`).join('');
+  app.openDetail(`Traits: ${chosen.filter(Boolean).length} of ${count} chosen`, `
+    <table class="skill-why"><thead><tr><th>Slot</th><th>Trait</th><th>Counted</th></tr></thead><tbody>${rows}</tbody></table>
+    <p>Every character starts with two traits.${state.houseRules.extraTrait ? ' The Extra Campaign Trait house rule adds a third.' : ''}${state.houseRules.drawbacks && state.drawback ? ' Your drawback adds one more.' : ''}
+      The Additional Traits feat gives two more; the app has no slots for those yet, so note them yourself.</p>
+    ${twice.length ? `<p class="warning">Two traits from the same category (${esc(twice.join(', '))}): the rules allow only one trait from each category.</p>`
+      : '<p class="hint">The rules allow only one trait from each category (combat, faith, magic, social, race, regional, campaign...).</p>'}
+    <p class="hint">Trait bonuses are their own type: two trait bonuses to the same thing don\u2019t stack (the higher counts).
+      Bonuses and class skills shown under Counted are added for you.</p>`);
+}
+
 export function initTraits(app) {
+  $('trait-count-details').addEventListener('click', () => popTraits(app));
   const categories = [...new Set(app.data.traits.map(t => t.category))].sort();
   $('trait-category').innerHTML = '<option value="">All categories</option>' +
     categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');

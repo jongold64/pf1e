@@ -956,6 +956,14 @@ function buildControls() {
     if (!slotId) return;
     update({ featChoices: { ...state.featChoices, [slotId]: { feat: state.feats[slotId], value: e.target.value } } });
   });
+  $('feat-count-details').addEventListener('click', () => popFeatSlots());
+  // A free class feat's name (in the Feats card, or in the slots popup).
+  for (const box of ['granted-feats', 'detail-body']) {
+    $(box).addEventListener('click', e => {
+      const g = e.target.closest('[data-granted-pop]');
+      if (g) popGrantedFeat(g.dataset.grantedPop);
+    });
+  }
   $('feat-list').addEventListener('click', e => {
     // Details: the feat in a popup over the list (prerequisites at this slot's level, what the app counts), with Choose.
     const pop = e.target.closest('[data-feat-pop]');
@@ -2506,10 +2514,45 @@ function renderFlaws() {
       }).join('')}</ul></details>`;
 }
 
+const featByName = name => data.feats.find(f => f.name.toLowerCase() === String(name).toLowerCase());
+
+// Every feat slot in a popup: the level it comes at, where it comes from, the feat in it (✓ / ✗ / ?), and the free class
+// feats, with how slots are earned.
+function popFeatSlots() {
+  const rows = view.slots.slice().sort((a, b) => a.charLevel - b.charLevel).map(s => {
+    const f = data.featsById.get(state.feats[s.id]);
+    const st = f ? checkFeat(f, view.contextAt(s.charLevel, s.id), s).status : null;
+    return `<tr><td>${s.charLevel}</td><td>${esc(s.label)}</td><td>${f ? `${STATUS_ICON[st]} ${esc(f.name)}` : '<span class="hint">not chosen</span>'}</td></tr>`;
+  }).join('');
+  const filled = view.slots.filter(s => data.featsById.has(state.feats[s.id])).length;
+  openDetail(`Feats: ${filled} of ${view.slots.length} chosen`, `
+    <table class="skill-why"><thead><tr><th>Level</th><th>Slot</th><th>Feat</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="hint">Everyone gets a feat at 1st level and every odd level (3rd, 5th...). Humans get a bonus feat at 1st level, and
+      fighters, monks, wizards and some other classes get bonus feats from their own lists; flaws (a house rule) give one each.
+      ✓ prerequisites met · ✗ not met · ? can't be checked.</p>
+    ${view.granted.length ? `<h3>Free from your class${view.classes.length > 1 ? 'es' : ''}</h3>
+      <ul class="plain-list">${view.granted.map(n => { const f = featByName(n);
+        return `<li>${esc(n)}${f ? ` <button type="button" class="skill-details" data-granted-pop="${esc(f.id)}">Details</button>` : ''}</li>`; }).join('')}</ul>` : ''}`);
+}
+
+// A feat the class gives for free, in a popup.
+function popGrantedFeat(id) {
+  const f = data.featsById.get(id);
+  if (!f) return;
+  const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
+  openDetail(f.name, `<p class="hint">Free from your class: you have it without using a feat slot (its prerequisites don't
+    need to be met).</p>${featDetails(f, checkFeat(f, view.ctx))}
+    <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play.')}</p>`);
+}
+
 function renderFeats(slots, granted, ctx) {
   const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
-  $('granted-feats').textContent = granted.length ? `Free from your class${view.classes.length > 1 ? 'es' : ''}: ${granted.join(', ')}.` : '';
+  // Free feats from the classes: each name opens the feat.
+  $('granted-feats').innerHTML = granted.length ? `Free from your class${view.classes.length > 1 ? 'es' : ''}: ${granted.map(n => {
+    const f = featByName(n);
+    return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>` : esc(n);
+  }).join(', ')}.` : '';
 
   $('feat-slots').innerHTML = slots.map(slot => {
     const f = data.featsById.get(state.feats[slot.id]);

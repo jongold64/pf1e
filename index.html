@@ -162,7 +162,8 @@
     <!-- Feats -->
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
       <section class="card wide" id="traits-card">
-        <h2>Traits <span id="trait-count" class="count"></span></h2>
+        <h2>Traits <span id="trait-count" class="count"></span>
+          <button type="button" id="trait-count-details" class="skill-details" aria-label="Your traits: how many and what they do">Details</button></h2>
         <ul id="trait-slots" class="feat-slots"></ul>
         <p id="trait-note" class="hint"></p>
       </section>
@@ -178,13 +179,14 @@
         <div id="flaw-rows"></div>
       </section>
       <section class="card wide" id="feats-card">
-        <h2>Feats <span id="feat-count" class="count"></span></h2>
+        <h2>Feats <span id="feat-count" class="count"></span>
+          <button type="button" id="feat-count-details" class="skill-details" aria-label="Every feat slot and where it comes from">Details</button></h2>
         <form class="search-row tab-search" id="feat-tab-search-form" role="search">
           <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
           <button type="submit" class="primary">Search</button>
         </form>
         <ul id="feat-tab-results" class="search-results" hidden></ul>
-        <p id="granted-feats" class="hint"></p>
+        <p id="granted-feats" class="hint granted-feats"></p>
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
@@ -539,6 +541,9 @@
         <details>
           <summary>Feats tab (feats, traits and flaws)</summary>
           <ul>
+            <li><b>Details</b> beside the Feats count lists every feat slot (the level it comes at, where it comes from, the feat in it
+              with ✓ / ✗) and your free class feats; tap a free feat's name to read it. <b>Details</b> beside the Traits count shows
+              how many traits you get and why, each trait's category (the rules allow one per category) and what's counted.</li>
             <li>Each feat slot shows the level it comes from; <b>Choose a feat</b> opens a list you can search and filter.
               Green ✓ / red ✗ show whether you meet each prerequisite.</li>
             <li>Feats like Weapon Focus or Skill Focus ask which weapon or skill; that choice is applied automatically.</li>
