@@ -763,7 +763,7 @@ table.class-table td, table.class-table th { font-size: 0.85rem; vertical-align:
 table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .class-line summary button.skill-details, .class-block summary button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin-left: 6px; }
 /* Craft / Perform / Profession: an Add button in the row; the choices open in a popup. */
-.add-specialty-button { display: block; margin-top: 4px; font-size: 0.85rem; min-height: 32px; padding: 2px 10px; }
+.add-specialty-button { display: inline-block; margin-left: 6px; font-size: 0.85rem; min-height: 30px; padding: 2px 10px; font-weight: 400; }
 .specialty-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); max-height: 50vh; overflow-y: auto; margin-bottom: 10px; }
 .specialty-picker .add-specialty { display: flex; gap: 8px; }
 #feats-card h2 .skill-details, #traits-card h2 .skill-details, #skills-card h2 .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin-left: 6px; }

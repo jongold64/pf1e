@@ -2338,8 +2338,8 @@ function renderSkills(race, classes, scores, featNames) {
     if (info.family && !specialty) {
       const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills + flawSkill(name) });
       return `<tr class="family" data-row-skill="${esc(name)}">
-        <td><div class="skill-name">${esc(name)} ${tags}</div>
-          <button type="button" class="add-specialty-button" data-open-specialty="${esc(name)}">+ Add a ${esc(name === 'Craft' ? 'craft' : name === 'Perform' ? 'type of performance' : 'profession')}</button></td>
+        <td><div class="skill-name">${esc(name)} ${tags}
+          <button type="button" class="add-specialty-button" data-open-specialty="${esc(name)}">+ Add a ${esc(name === 'Craft' ? 'craft' : name === 'Perform' ? 'type of performance' : 'profession')}</button></div></td>
         <td></td>
         <td class="total">${signed(untrained.total)}${rollButton({ title: `${name} check (untrained)`, check: name, plain: true, groups: [{ attacks: [untrained.total] }] })}${details(name)}</td>
       </tr>`;
