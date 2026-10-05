@@ -1,5 +1,5 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
-import { $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
@@ -80,7 +80,7 @@ function renderList(app) {
 export async function renderEquipment(app, view) {
   const { state, data } = app;
   if (!data.gear || (state.magicItems.length && !data.itemsById) || (state.weapons.length && !data.weaponsById)) {
-    $('inventory-rows').innerHTML = '<tr><td colspan="4" class="hint">Loading equipment…</td></tr>';
+    $('inventory-rows').innerHTML = '<p class="hint">Loading equipment…</p>';
     await Promise.all([app.loadGear(), state.magicItems.length ? app.loadItems() : null,
                        state.weapons.length ? app.loadWeapons() : null]);
     view = app.view;
@@ -213,11 +213,20 @@ export async function renderEquipment(app, view) {
                 [view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities, state.shieldCrafted]].filter(([a]) => a);
   invWhy.clear();
   $('inventory-rows').innerHTML = [
-    ...worn.map(([a, enh, mw, abilities, crafted]) => `<tr class="worn"><td><b>${esc(armorLabel(a, enh, mw, abilities))}</b>
-        <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div></td><td>1</td>
-        <td>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}
-          <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></td>
-        <td>${esc(formatLbs(a.weight_lbs * sizeFactor))}</td></tr>`),
+    ...worn.map(([a, enh, mw, abilities, crafted]) => {
+      const key = a === view.gear.armor ? 'inv-armor' : 'inv-shield';
+      const open = openLines.has(key);
+      return `<div class="line-card"><div class="fit-line item-line">
+          <b class="line-name">${esc(armorLabel(a, enh, mw, abilities))}</b><span class="wl-k">worn</span>
+          <span class="wl-part"><b>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}</b></span>
+          <span class="wl-k">${esc(formatLbs(a.weight_lbs * sizeFactor))}</span>
+          <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="More about it">Details</button></div>
+        <div class="line-more"${open ? '' : ' hidden'}>
+          <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div>
+          <div class="line-controls"><span>Cost ${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}
+            <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></span></div>
+        </div></div>`;
+    }),
     ...state.inventory.map((e, i) => {
       const item = data.gearById.get(e.id);
       if (!item) return '';
@@ -232,17 +241,29 @@ export async function renderEquipment(app, view) {
       ], note: [`Counted in Equipment (gold) and Weight carried above.`, view.race.size === 'Small'
         ? 'Listed weights are for Medium characters; some gear made for Small characters (backpacks, bedrolls, clothing) weighs a quarter as much.' : '',
         item.category ? `Category: ${item.category}. ${item.source ? `Source: ${item.source}.` : ''}` : ''].filter(Boolean).join(' ') });
-      return `<tr><td><button type="button" class="link item-link" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button></td>
-        <td><span class="base">
-          <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
-          <span class="value">${e.qty}</span>
-          <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
-        </span></td>
-        <td>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
-          <button type="button" class="skill-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}">Details</button></td>
-        <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
+      // One line: the item, how many, cost and weight; Details opens how many, the cost breakdown and the item.
+      const key = `gear-${i}`;
+      const open = openLines.has(key);
+      return `<div class="line-card"><div class="fit-line item-line">
+          <button type="button" class="link item-link line-name" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button>
+          ${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
+          <span class="wl-part"><b>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
+          <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
+          <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}">Details</button></div>
+        <div class="line-more"${open ? '' : ' hidden'}>
+          ${item.category ? `<div class="breakdown">${esc(item.category)}</div>` : ''}
+          <div class="line-controls">
+            <button type="button" class="skill-details" data-show-gear="${esc(item.id)}" aria-label="${esc(item.name)}">About it</button>
+            <span class="base">How many
+              <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
+              <span class="value">${e.qty}</span>
+              <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
+            <span>Cost ${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
+              <button type="button" class="skill-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}">Details</button></span>
+          </div></div></div>`;
     }),
-  ].join('') || '<tr><td colspan="4" class="hint">Nothing yet. Choose items below and add them.</td></tr>';
+  ].join('') || '<p class="hint">Nothing yet. Choose items below and add them.</p>';
+  requestAnimationFrame(() => fitLines($('inventory-rows')));
 }
 
 function addToInventory(app, id, variant) {

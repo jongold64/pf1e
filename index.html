@@ -365,10 +365,7 @@
     <main class="tab-panel" id="tab-equipment" role="tabpanel" hidden>
       <section class="card wide">
         <h2>Inventory <span id="inventory-count" class="count"></span></h2>
-        <table class="inventory">
-          <thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Weight</th></tr></thead>
-          <tbody id="inventory-rows"></tbody>
-        </table>
+        <div id="inventory-rows" class="line-list"></div>
       </section>
       <section class="card wide">
         <h2>Money and weight</h2>
@@ -674,6 +671,8 @@
         <details>
           <summary>Equipment tab</summary>
           <ul>
+            <li>In <b>Inventory</b>, each item (and the armor and shield you wear) is one line: how many, cost, weight, with
+              <b>Details</b> at the end to open how many (− / +), the cost breakdown and the item itself.</li>
             <li><b>Details</b> beside <b>Gold</b> shows your class's starting gold and the wealth-by-level table; beside
               <b>Carrying capacity</b>, the light, medium and heavy loads for your Strength and size, what each does, and your load now.</li>
             <li>Set your <b>gold</b>, or use your class's starting gold or the wealth for your level.</li>
