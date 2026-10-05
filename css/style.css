@@ -775,3 +775,5 @@ table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%,
 #tab-armor .enh-row label { display: flex; gap: 6px; align-items: center; flex: 1; min-width: 0; }
 #tab-armor .enh-row select { flex: 1; min-width: 0; }
 table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+/* Classes tab: the classes' sections at the top, then a line before the class lines and levels. */
+.class-info-top { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }

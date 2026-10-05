@@ -136,6 +136,8 @@
     <main class="tab-panel" id="tab-classes" role="tabpanel" hidden>
       <section class="card wide">
         <h2>Classes <span id="class-summary" class="count"></span></h2>
+        <!-- Each class's section (features, archetypes, domains, class choices) first; then the class lines and levels. -->
+        <div id="class-info" class="info class-info-top"></div>
         <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add or remove a
           level of it, or change it. Prestige classes can't be taken at 1st level.</p>
         <ul id="class-levels" class="class-lines"></ul>
@@ -151,7 +153,6 @@
           <div id="favored-summary" class="favored-summary"></div>
         </div>
         <div id="caster-choices"></div>
-        <div id="class-info" class="info"></div>
       </section>
       <section class="card wide" id="companion-card" hidden>
         <h2>Animal companion <span id="companion-level" class="count"></span></h2>
