@@ -214,6 +214,11 @@
 
     <!-- Spells -->
     <main class="tab-panel" id="tab-spells" role="tabpanel" hidden>
+      <section class="card wide" id="my-spells-card" hidden>
+        <h2>My spells <span id="my-spells-count" class="count"></span></h2>
+        <p id="my-spells-hint" class="hint"></p>
+        <div id="my-spells"></div>
+      </section>
       <section class="card wide" id="no-spells" hidden>
         <h2>Spells</h2>
         <p id="no-spells-text"></p>
@@ -221,11 +226,6 @@
       <section class="card wide" id="spells-card" hidden>
         <h2>Spells per day</h2>
         <div id="spells-tables"></div>
-      </section>
-      <section class="card wide" id="my-spells-card" hidden>
-        <h2>My spells <span id="my-spells-count" class="count"></span></h2>
-        <p id="my-spells-hint" class="hint"></p>
-        <div id="my-spells"></div>
       </section>
       <section class="card wide" id="spell-list-card">
         <h2 id="spell-list-title">Spell list</h2>
@@ -244,18 +244,18 @@
 
     <!-- Magic items -->
     <main class="tab-panel" id="tab-magic-items" role="tabpanel" hidden>
+      <section class="card wide" id="my-items-card">
+        <h2>My magic items <span id="my-items-count" class="count"></span>
+          <button type="button" id="my-items-slots" class="skill-details" aria-label="Which body slots your items fill">Details</button></h2>
+        <div id="my-items-rows" class="line-list"></div>
+        <p id="my-items-total" class="hint"></p>
+      </section>
       <section class="card wide" id="buy-card">
         <h2>Add magic gear</h2>
         <p class="hint">Treasure or purchases: make a weapon or armor magic, or add potions, scrolls and wands, at their
           market price (no feats or checks needed). Items in the list below have their own Add buttons. To make items
           yourself, use the Craft tab.</p>
         <div id="buy-body"></div>
-      </section>
-      <section class="card wide" id="my-items-card">
-        <h2>My magic items <span id="my-items-count" class="count"></span>
-          <button type="button" id="my-items-slots" class="skill-details" aria-label="Which body slots your items fill">Details</button></h2>
-        <div id="my-items-rows" class="line-list"></div>
-        <p id="my-items-total" class="hint"></p>
       </section>
       <section class="card wide">
         <h2>Magic items <span id="item-count" class="count"></span></h2>
@@ -285,13 +285,6 @@
 
     <!-- Armor -->
     <main class="tab-panel" id="tab-armor" role="tabpanel" hidden>
-      <section class="card wide">
-        <form class="search-row tab-search" id="armor-search-form" role="search">
-          <input id="armor-search" type="search" autocomplete="off" placeholder="Search armor and shields by name" aria-label="Search armor">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <ul id="armor-search-results" class="search-results" hidden></ul>
-      </section>
       <section class="card wide line-card">
         <h2>Armor</h2>
         <div id="armor-line" class="fit-line item-line"></div>
@@ -319,6 +312,13 @@
         </div>
       </section>
       <section class="card wide">
+        <form class="search-row tab-search" id="armor-search-form" role="search">
+          <input id="armor-search" type="search" autocomplete="off" placeholder="Search armor and shields by name" aria-label="Search armor">
+          <button type="submit" class="primary">Search</button>
+        </form>
+        <ul id="armor-search-results" class="search-results" hidden></ul>
+      </section>
+      <section class="card wide">
         <h2>In this armor</h2>
         <div id="armor-warnings"></div>
         <dl id="armor-summary" class="facts wide-facts"></dl>
@@ -335,17 +335,17 @@
 
     <!-- Weapons -->
     <main class="tab-panel" id="tab-weapons" role="tabpanel" hidden>
+      <section class="card wide">
+        <h2>My weapons <span id="my-weapons-count" class="count"></span></h2>
+        <p id="my-weapons-note" class="hint"></p>
+        <div id="my-weapons"></div>
+      </section>
       <section class="card wide" id="combat-card">
         <h2>Combat options</h2>
         <div id="combat-switches"></div>
         <h3 class="sub-heading">Two-weapon fighting</h3>
         <div id="twf-hands" class="twf-hands"></div>
         <div id="twf-result"></div>
-      </section>
-      <section class="card wide">
-        <h2>My weapons <span id="my-weapons-count" class="count"></span></h2>
-        <p id="my-weapons-note" class="hint"></p>
-        <div id="my-weapons"></div>
       </section>
       <section class="card wide">
         <h2>Weapons <span id="weapon-count" class="count"></span></h2>
