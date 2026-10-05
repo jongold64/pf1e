@@ -68,7 +68,8 @@ export function renderCompanion(app, view) {
   const featOptions = data.feats.filter(f => !(f.types || []).includes('Mythic')).map(f => f.name).sort();
   const feats = Array.from({ length: s.featCount }, (_, i) => `<select data-comp-feat="${i}" aria-label="Companion feat ${i + 1}">
       <option value="">Feat ${i + 1}…</option>${featOptions.map(n => `<option${c.feats[i] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`).join('');
-  const tricks = TRICKS.map(t => `<label class="check-row small"><input type="checkbox" data-comp-trick="${esc(t)}"${c.tricks.includes(t) ? ' checked' : ''}> ${esc(t)}</label>`).join('');
+  const tricks = TRICKS.map(t => `<label class="check-row small"><input type="checkbox" data-comp-trick="${esc(t)}"${c.tricks.includes(t) ? ' checked' : ''}> ${esc(t)}
+      <button type="button" class="skill-details" data-trick-pop="${esc(t)}" aria-label="What ${esc(t)} does">Details</button></label>`).join('');
   const specials = [...new Set(s.specials)].map(name => {
     const text = data.companions.rules[name] || data.companions.rules[name.replace(/^\w/, ch => ch.toUpperCase())] || '';
     const key = `sp-${name}`;
@@ -171,6 +172,23 @@ function popAnimal(app, id) {
     mine ? [] : [{ label: `Choose the ${a.name}`, primary: true, run: () => app.update({ companion: { ...state.companion, animal: a.id } }) }]);
 }
 
+// A trick in a popup (Core Rulebook, Handle Animal): what the animal does, the DC to teach it, and Teach / Forget.
+function popTrick(app, name) {
+  const { state, data } = app;
+  const t = (data.companions.tricks || []).find(x => x.name === name);
+  if (!t) return;
+  const known = state.companion.tricks.includes(name);
+  const animal = data.companions.animals.find(a => a.id === state.companion.animal);
+  const s = animal && companionStats(animal, app.view.companion.level, data.companions.progression, state.companion);
+  const limit = s?.scores.int ? s.scores.int * 3 + s.tricksBonus : null;
+  app.openDetail(`${t.name} (trick)`, `<p class="hint">Handle Animal · Core Rulebook</p>${paragraphs(t.text)}
+    ${facts([['To teach it', `DC ${t.dc} Handle Animal check, after 1 week of work`], ['To push it without the trick', 'DC 25 Handle Animal check']])}
+    <p class="hint">${esc(data.companions.rules['Teach an Animal a Trick'] || '')}</p>
+    <p class="hint">An animal companion also knows its bonus tricks (${s ? s.tricksBonus : 'by level'}) without any training${limit ? `; yours can know up to ${limit} in all` : ''}.</p>`,
+    [known ? { label: 'Forget it', run: () => app.update({ companion: { ...state.companion, tricks: state.companion.tricks.filter(x => x !== name) } }) }
+           : { label: 'It knows this trick', primary: true, run: () => app.update({ companion: { ...state.companion, tricks: [...state.companion.tricks, name] } }) }]);
+}
+
 export function initCompanion(app) {
   const box = $('companion');
   const { state } = app;
@@ -195,6 +213,8 @@ export function initCompanion(app) {
   box.addEventListener('click', e => {
     const pop = e.target.closest('[data-animal-pop]');
     if (pop) { popAnimal(app, pop.dataset.animalPop); return; }
+    const tp = e.target.closest('[data-trick-pop]');
+    if (tp) { e.preventDefault(); popTrick(app, tp.dataset.trickPop); return; }
     const w = e.target.closest('[data-comp-why]');
     if (w) { showWhy(app, w.dataset.compWhy); return; }
     const b = e.target.closest('[data-comp-skill]');

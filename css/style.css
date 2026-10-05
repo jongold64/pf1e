@@ -726,3 +726,5 @@ table.skill-why th.num { text-align: right; }
 #drawback-row button.skill-details, .flaw-row button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; margin-left: 6px; }
 #companion .companion-pick button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 0 8px; }
 #effects button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 0 8px; margin-left: auto; }
+#companion .companion-tricks button.skill-details { font-weight: 400; font-size: 0.75rem; min-height: 24px; padding: 0 6px; margin-left: auto; }
+#companion .companion-tricks { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }

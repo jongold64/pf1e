@@ -53,7 +53,7 @@ def descendants(n):
 
 def main():
     out_path = sys.argv[1]
-    animals, progression, rules = {}, [], {}
+    animals, progression, rules, tricks = {}, [], {}, []
     for db, book, abbr, c, rows in iter_books(ALL_BOOKS):
         details = {r[0]: dict(zip(['section_id', 'ac', 'attack', 'cmd', 'ability_scores', 'special_abilities', 'special_qualities',
                                    'special_attacks', 'size', 'speed', 'bonus_feat', 'level'], r))
@@ -83,6 +83,13 @@ def main():
                     name = clean(x.get('name') or '')
                     if name in ('Animal Skills', 'Animal Feats') and x.get('body') and name not in rules:
                         rules[name] = text(x['body'])
+            # The tricks an animal can learn: "Attack (DC 20): The animal attacks ..." in the Handle Animal skill's
+            # "Teach an Animal a Trick" section (Core Rulebook).
+            if not tricks and clean(n.get('name') or '') == 'Teach an Animal a Trick' and n.get('body'):
+                t = re.sub(r'\s+', ' ', text(n['body']))
+                for m in re.finditer(r"([A-Z][a-z]+) \(DC (\d+)\): (.*?)(?= [A-Z][a-z]+ \(DC \d+\):|$)", t):
+                    tricks.append({'name': m.group(1), 'dc': int(m.group(2)), 'text': m.group(3).strip()})
+                rules['Teach an Animal a Trick'] = t[:t.find('Attack (DC')].strip() if 'Attack (DC' in t else t
             if n.get('type') != 'animal_companion' or n.get('subtype') != 'base':
                 continue
             d = details.get(n['section_id'])
@@ -105,10 +112,11 @@ def main():
                     'special_abilities': tidy(a['special_abilities']), 'bonus_feat': tidy(a['bonus_feat'])}
             if rec['id'] not in animals:
                 animals[rec['id']] = rec
-    out = {'progression': progression, 'rules': rules, 'animals': sorted(animals.values(), key=lambda a: a['name'])}
+    out = {'progression': progression, 'rules': rules, 'tricks': tricks, 'animals': sorted(animals.values(), key=lambda a: a['name'])}
     json.dump(out, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
     print(len(progression), 'table rows;', len(out['animals']), 'companions', dict(Counter(a['source'] for a in out['animals'])))
     print('rules:', list(rules))
+    print('tricks:', [(t['name'], t['dc']) for t in tricks])
     print('no advancement:', [a['id'] for a in out['animals'] if 'advancement' not in a])
     print('odd scores:', [a['id'] for a in out['animals'] if len(a['abilities']) != 6])
 

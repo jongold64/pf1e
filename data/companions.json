@@ -300,6 +300,7 @@
     }
   ],
   "rules": {
+    "Teach an Animal a Trick": "You can teach an animal a specific trick with 1 week of work and a successful Handle Animal check against the indicated DC. An animal with an Intelligence score of 1 can learn a maximum of three tricks, while an animal with an Intelligence score of 2 can learn a maximum of six tricks. Possible tricks (and their associated DCs) include, but are not necessarily limited to, the following.",
     "Class Level": "This is the character's druid level. The druid's class levels stack with levels of any other classes that are entitled to an animal companion for the purpose of determining the companion's statistics.",
     "HD": "This is the total number of eight-sided (d8) Hit Dice the animal companion possesses, each of which gains a Constitution modifier, as normal.",
     "BAB": "This is the animal companion's base attack bonus. An animal companion's base attack bonus is the same as that of a druid of a level equal to the animal's HD. Animal companions do not gain additional attacks using their natural weapons for a high base attack bonus.",
@@ -320,6 +321,68 @@
     "Animal Skills": "Animal companions can have ranks in any of the following skills: Acrobatics* (Dex), Climb* (Str), Escape Artist (Dex), Fly* (Dex), Intimidate (Cha), Perception* (Wis), Stealth* (Dex), Survival (Wis), and Swim* (Str). All of the skills marked with an (*) are class skills for animal companions. Animal companions with an Intelligence of 3 or higher can put ranks into any skill.",
     "Animal Feats": "Animal companions can select from the following feats: Acrobatic, Agile Maneuvers, Armor Proficiency (light, medium, and heavy), Athletic, Blind-Fight, Combat Reflexes, Diehard, Dodge, Endurance, Great Fortitude, Improved Bull Rush, Improved Initiative, Improved Natural Armor, Improved Natural Attack, Improved Overrun, Intimidating Prowess, Iron Will, Lightning Reflexes, Mobility, Power Attack, Run, Skill Focus, Spring Attack, Stealthy, Toughness, Weapon Finesse, and Weapon Focus. Animal companions with an Intelligence of 3 or higher can select any feat they are physically capable of using. GMs might expand this list to include feats from other sources."
   },
+  "tricks": [
+    {
+      "name": "Attack",
+      "dc": 20,
+      "text": "The animal attacks apparent enemies. You may point to a particular creature that you wish the animal to attack, and it will comply if able. Normally, an animal will attack only humanoids, monstrous humanoids, giants, or other animals. Teaching an animal to attack all creatures (including such unnatural creatures as undead and aberrations) counts as two tricks."
+    },
+    {
+      "name": "Come",
+      "dc": 15,
+      "text": "The animal comes to you, even if it normally would not do so."
+    },
+    {
+      "name": "Defend",
+      "dc": 20,
+      "text": "The animal defends you (or is ready to defend you if no threat is present), even without any command being given. Alternatively, you can command the animal to defend another specific character."
+    },
+    {
+      "name": "Down",
+      "dc": 15,
+      "text": "The animal breaks off from combat or otherwise backs down. An animal that doesn't know this trick continues to fight until it must flee (due to injury, a fear effect, or the like) or its opponent is defeated."
+    },
+    {
+      "name": "Fetch",
+      "dc": 15,
+      "text": "The animal goes and gets something. If you do not point out a specific item, the animal fetches a random object."
+    },
+    {
+      "name": "Guard",
+      "dc": 20,
+      "text": "The animal stays in place and prevents others from approaching."
+    },
+    {
+      "name": "Heel",
+      "dc": 15,
+      "text": "The animal follows you closely, even to places where it normally wouldn't go."
+    },
+    {
+      "name": "Perform",
+      "dc": 15,
+      "text": "The animal performs a variety of simple tricks, such as sitting up, rolling over, roaring or barking, and so on."
+    },
+    {
+      "name": "Seek",
+      "dc": 15,
+      "text": "The animal moves into an area and looks around for anything that is obviously alive or animate."
+    },
+    {
+      "name": "Stay",
+      "dc": 15,
+      "text": "The animal stays in place, waiting for you to return. It does not challenge other creatures that come by, though it still defends itself if it needs to."
+    },
+    {
+      "name": "Track",
+      "dc": 20,
+      "text": "The animal tracks the scent presented to it. (This requires the animal to have the scent ability.)"
+    },
+    {
+      "name": "Work",
+      "dc": 15,
+      "text": "The animal pulls or pushes a medium or heavy load."
+    }
+  ],
   "animals": [
     {
       "id": "allosaurus",
