@@ -220,11 +220,15 @@ export function readTextPrereq(text) {
 // Words in a class feature name, for matching "channel energy" to "Channel positive energy".
 const words = s => lower(s).split(/[^a-z']+/).filter(Boolean);
 
+// Singular and plural count the same ("rage power" is in the unchained barbarian's table as "Rage Powers").
+const singular = w => w.endsWith('ies') ? `${w.slice(0, -3)}y` : /(xes|ches|shes|sses)$/.test(w) ? w.slice(0, -2)
+  : w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w;
+
 function classFeatureLevel(cls, feature) {
-  const want = words(feature);
+  const want = words(feature).map(singular);
   for (const row of cls.progression) {
     for (const special of row.special || []) {
-      const have = words(special);
+      const have = words(special).map(singular);
       if (want.every(w => have.includes(w))) return row.level;
     }
   }

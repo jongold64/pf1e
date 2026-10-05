@@ -1418,6 +1418,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('skald inspired rage 8: +4 Str', effectTotals([{ id: 'inspired-rage', cl: 8 }]).str, 4);
 }
 
+// Class feature prerequisites: singular and plural match ("Rage Powers" in the unchained barbarian's table).
+{
+  const ub = cls('barbarian-unchained');
+  const ctxFor = lv => ({ counts: [{ cls: ub, level: lv }] });
+  check('Extra Rage Power: unchained barbarian 2 has rage powers', checkPrereq({ type: 'class_feature', feature: 'rage power' }, ctxFor(2), {}).status, 'met');
+  check('Extra Rage Power: unchained barbarian 1 not yet', checkPrereq({ type: 'class_feature', feature: 'rage power' }, ctxFor(1), {}).status, 'unmet');
+}
+
 // Extra feats add class choice picks.
 {
   const s = featTalentSlots([{ slotId: 'L3', name: 'Extra Rage Power', charLevel: 3 }, { slotId: 'L5', name: 'Extra Rage Power', charLevel: 5 },
