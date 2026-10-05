@@ -95,20 +95,25 @@ export function classSkillTest(clsOrList) {
 // using Int as it is at that level (so an Int increase at 4th level only helps from 4th level on),
 // plus 1 for humans (Skilled) and 1 for levels in the favored class if its bonus goes to skill ranks.
 // Pass { cls, level } for a single class, or `classLevels` (the class at each level) and `favoredClassId`.
-export function skillRanksAvailable({ race, cls, level, classLevels = null, favoredClassId = null, baseScores,
-                                      flexibleChoice, increases = [], favoredSkill = false, favoredPicks = null }) {
+export function skillRanksAvailable(args) {
+  return skillRanksByLevel(args).reduce((n, r) => n + r.total, 0);
+}
+
+// The skill ranks each level gives: [{ level, cls, perLevel (the class's ranks), intMod (Int modifier at that level),
+// fromClass (the two together, at least 1), skilled (a race's Skilled trait: 1), favored (favored class bonus: 1), total }].
+export function skillRanksByLevel({ race, cls, level, classLevels = null, favoredClassId = null, baseScores,
+                                    flexibleChoice, increases = [], favoredSkill = false, favoredPicks = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const favored = favoredClassId || levels[0].id;
   const racial = finalScores(baseScores, race, flexibleChoice);
-  const skilled = (race?.traits || []).some(t => t.name === 'Skilled' && /additional skill rank/i.test(t.text));
-  let total = 0;
-  levels.forEach((c, i) => {
-    const int = racial.int + levelIncreases(i + 1, increases).int;
-    total += Math.max(1, c.skill_ranks_per_level + abilityModifier(int));
-    if (skilled) total += 1;
-    if (favoredPicks ? favoredPicks[i] === 'skill' : favoredSkill && c.id === favored) total += 1;
+  const skilled = (race?.traits || []).some(t => t.name === 'Skilled' && /additional skill rank/i.test(t.text)) ? 1 : 0;
+  return levels.map((c, i) => {
+    const intMod = abilityModifier(racial.int + levelIncreases(i + 1, increases).int);
+    const fromClass = Math.max(1, c.skill_ranks_per_level + intMod);
+    const fav = (favoredPicks ? favoredPicks[i] === 'skill' : favoredSkill && c.id === favored) ? 1 : 0;
+    return { level: i + 1, cls: c, perLevel: c.skill_ranks_per_level, intMod, fromClass, skilled, favored: fav,
+             total: fromClass + skilled + fav };
   });
-  return total;
 }
 
 // Racial skill bonuses that always apply, read from the race's traits. Returns { skillName: bonus }.

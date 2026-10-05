@@ -3,7 +3,7 @@ import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, 
          bonusSpells, spellsPerDay } from './rules.js';
 import { featApplied, featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
-import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, racialSkillBonuses,
+import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses,
          skillTotal, skillBreakdown, ranksFor } from './skills.js';
 import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty, druidMetalWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
@@ -1384,6 +1384,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     more: [{ target: 'con', type: 'morale', value: 4 }, { target: 'will', type: 'morale', value: 2 }, { target: 'ac', type: 'untyped', value: -2 }] }]);
   check('one effect, several bonuses: Str +4, Con +4, Will +2, AC -2', [rage.str, rage.con, rage.will, rage.ac.untyped].join(), '4,4,2,-2');
   check('switched off: none of them count', effectTotals([], [{ name: 'Rage', target: 'str', type: 'morale', value: 4, on: false, more: [{ target: 'con', type: 'morale', value: 4 }] }]).con, 0);
+}
+
+// Skill ranks by level: class + Int (at least 1), Skilled, favored class.
+{
+  const fighter = { id: 'fighter', name: 'Fighter', skill_ranks_per_level: 2 };
+  const rows = skillRanksByLevel({ race: { traits: [{ name: 'Skilled', text: 'an additional skill rank at each level' }] },
+    classLevels: [fighter, fighter], baseScores: { str: 10, dex: 10, con: 10, int: 6, wis: 10, cha: 10 }, favoredPicks: ['skill', 'hp'] });
+  check('skill ranks by level: 2 - 2 Int = at least 1, +1 Skilled, +1 favored', rows.map(r => r.total).join(), '3,2');
 }
 
 // Which bonuses count: the highest of a type; penalties and dodge/untyped ones always.

@@ -13,7 +13,7 @@ import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest, weaponWeight, WEAPON_SIZES } from './weapons.js';
 import {
-  SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, racialSkillBonuses, skillTotal,
+  SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
@@ -893,6 +893,7 @@ function buildControls() {
   });
 
   // Skills
+  $('skill-count-details').addEventListener('click', () => showRankDetails());
   $('skill-rows').addEventListener('click', e => {
     const why = e.target.closest('[data-skill-details]');
     if (why) { showSkillDetails(why.dataset.skillDetails); return; }
@@ -2205,20 +2206,42 @@ function showExtraHp() {
     <h3>Temporary hit points</h3><ul class="xtra-list">${rows}</ul></div>`);
 }
 
-// The Skills tab's Details popup for one skill (set by renderSkills, which has what it needs).
+// The Skills tab's Details popup for one skill, and the one for skill ranks (set by renderSkills, which has what they need).
 let showSkillDetails = () => {};
+let showRankDetails = () => {};
 
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
   const byClass = classSkillTest(classes);
   const isClassSkill = name => byClass(name) || view.traitFx.classSkills.has(name);
   const racial = racialSkillBonuses(race);
-  const available = skillRanksAvailable({
+  const byLevel = skillRanksByLevel({
     race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,
     flexibleChoice: view.flexibleChoice, increases: state.increases, favoredPicks: view.favoredPicks,
   });
+  const available = byLevel.reduce((n, r) => n + r.total, 0);
   const names = skillRowNames();
   const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);
+  // Skill ranks in a popup: what each level gives (class ranks + Int, Skilled, favored class) and where they went.
+  showRankDetails = () => {
+    const spent = names.filter(n => state.skills[n]).map(n => [n, state.skills[n]]);
+    const skilledCol = byLevel.some(r => r.skilled), favCol = byLevel.some(r => r.favored);
+    openDetail(`Skill ranks: ${used} of ${available} used`, `
+      <table class="skill-why"><thead><tr><th>Level</th><th>Class</th><th class="num">Class + Int</th>
+        ${skilledCol ? `<th class="num">${esc(race.name)} (Skilled)</th>` : ''}${favCol ? '<th class="num">Favored class</th>' : ''}<th class="num">Ranks</th></tr></thead>
+        <tbody>${byLevel.map(r => `<tr><td>${r.level}</td><td>${esc(r.cls.name)}</td>
+          <td class="num">${r.perLevel} ${esc(signed(r.intMod))}${r.perLevel + r.intMod < 1 ? ' (at least 1)' : ''} = ${r.fromClass}</td>
+          ${skilledCol ? `<td class="num">${r.skilled ? '+1' : ''}</td>` : ''}${favCol ? `<td class="num">${r.favored ? '+1' : ''}</td>` : ''}
+          <td class="num"><b>${r.total}</b></td></tr>`).join('')}</tbody>
+        <tfoot><tr><td colspan="${3 + skilledCol + favCol}"><b>Ranks in all</b></td><td class="num"><b>${available}</b></td></tr></tfoot></table>
+      <p class="hint">Int counts as it was at each level (with that level's ability increases). Choose +1 skill rank as a
+        favored class bonus on the Classes tab.</p>
+      <h3>Where they went (${used})</h3>
+      ${spent.length ? `<table class="skill-why"><tbody>${spent.map(([n, k]) => `<tr><td>${esc(n)}${isClassSkill(n) ? ' <small class="muted">class skill, +3</small>' : ''}</td>
+        <td class="num">${k}</td></tr>`).join('')}</tbody></table>` : '<p class="hint">No ranks spent yet.</p>'}
+      <p>${used > available ? `<b class="warning">${used - available} more than you have.</b>` : `<b>${available - used} left.</b>`}
+        At most ${state.level} rank${state.level === 1 ? '' : 's'} in one skill (your level).</p>`);
+  };
   // The Skills tab's search shows only matching rows.
   const shownNames = skillFilter ? names.filter(n => n.toLowerCase().includes(skillFilter)) : names;
   $('skill-count').textContent = `${used} of ${available} ranks used`;

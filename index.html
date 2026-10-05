@@ -193,7 +193,8 @@
     <!-- Skills -->
     <main class="tab-panel" id="tab-skills" role="tabpanel" hidden>
       <section class="card wide" id="skills-card">
-        <h2>Skills <span id="skill-count" class="count"></span></h2>
+        <h2>Skills <span id="skill-count" class="count"></span>
+          <button type="button" id="skill-count-details" class="skill-details" aria-label="Where your skill ranks come from">Details</button></h2>
         <form class="search-row tab-search" id="skill-search-form" role="search">
           <input id="skill-search" type="search" autocomplete="off" placeholder="Search skills by name" aria-label="Search skills">
           <button type="submit" class="primary">Search</button>
@@ -523,6 +524,8 @@
             <li><b>Roll</b> works with no ranks too (just the ability modifier and bonuses). By the rules, trained-only skills need a
               rank, except Knowledge (DC 10 or lower), Handle Animal (domestic animals) and Sleight of Hand (DC 10 or lower); the
               others still have a Roll button, for groups that allow it.</li>
+            <li><b>Details</b> beside the ranks count shows the ranks each level gives (class ranks plus Int, a human's
+              Skilled, favored class bonus) and where you've spent them.</li>
             <li><b>Details</b> shows everything that adds to a skill: ranks, ability, class skill, race, feats, traits, armor and active effects.</li>
             <li>For Craft, choose from the <b>Add a craft</b> list (the Core Rulebook crafts plus ones from later Paizo books), or type another. For Perform and
               Profession, type a specialty (e.g. "sing") and press <b>Add</b>.</li>
