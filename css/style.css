@@ -785,3 +785,6 @@ table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mi
 .control-with-details { display: inline-flex; align-items: center; gap: 4px; }
 .weapon-head .skill-details, .weapon-card dd .skill-details, .weapon-controls .skill-details { font-size: 0.8rem; min-height: 28px; padding: 1px 8px; font-weight: 400; }
 .weapon-title { display: inline-flex; align-items: center; gap: 8px; }
+/* Spells tab: the casting summary line, and Details beside chosen spells and level counts. */
+.cast-line { margin: 4px 0 8px; }
+.cast-line .skill-details, .my-spell-level h3 .skill-details, .spell-row .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 1px 8px; margin-left: 6px; }

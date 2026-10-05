@@ -42,6 +42,7 @@ import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
+import { spellContext } from './spell-math.js';
 import { HERO_POINT_USES, heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
 import { randomDie, rollDamage } from './dice.js';
 import { weaponSummaries } from './tab-weapons.js';
@@ -633,6 +634,7 @@ function buildControls() {
     const b = e.target.closest('[data-spellday]');
     const d = b && spellDayWhy.get(b.dataset.spellday);
     if (!d) return;
+    if (d.html) { openDetail(d.title, d.html); return; }
     openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody>
       <tfoot><tr><td><b>Per day</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>
       <p class="hint">Ability scores here include active effects (an owl's wisdom, for example).</p>`);
@@ -2679,8 +2681,32 @@ function spellTable(c, spells) {
     const g = domainGrants(d, data.domainsById);
     return `<p class="hint"><b>${esc(d.name)} domain spells:</b> ${esc(Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))} ${n}`).join(', '))}</p>`;
   }).join('');
+  // Caster level, concentration, save DC and spell resistance check, with a Details popup of how each is worked out.
+  const sc = spellContext({ cls, effectiveLevel: c.effectiveLevel, stats: view.stats, size: view.size, featChoices: view.featChoices, haveFeats: view.haveFeats });
+  const castKey = `${cls.id}|cast`;
+  if (spells.rows.length) {
+    const lateCaster = sc.cl !== c.effectiveLevel;
+    const focusRows = Object.entries(sc.focus).map(([school, n]) => `<tr><td>Spell Focus (${esc(school)})${n > 1 ? ' and Greater Spell Focus' : ''}</td><td class="num">+${n} on that school's DCs</td></tr>`).join('');
+    spellDayWhy.set(castKey, { title: `${cls.name}: casting`, html: `
+      <h3>Caster level ${sc.cl}</h3>
+      <table class="skill-why"><tbody><tr><td>${esc(cls.name)} level${c.effectiveLevel !== c.classLevel ? ` (${c.classLevel} + ${c.effectiveLevel - c.classLevel} from prestige classes)` : ''}</td><td class="num">${c.effectiveLevel}</td></tr>
+        ${lateCaster ? `<tr><td>${esc(cls.name)}s start casting at 4th level: caster level is class level − 3</td><td class="num">−3</td></tr>` : ''}</tbody></table>
+      <h3>Concentration: d20 ${signed(sc.cl + sc.castMod)}</h3>
+      <table class="skill-why"><tbody><tr><td>Caster level</td><td class="num">${sc.cl}</td></tr><tr><td>${esc(abilityName)} modifier</td><td class="num">${signed(sc.castMod)}</td></tr></tbody></table>
+      <p class="hint">Rolled to cast while hurt, grappled, on the defensive (DC 15 + double the spell level; Combat Casting adds +4) and so on.</p>
+      <h3>Save DC: 10 + spell level ${signed(sc.castMod)}</h3>
+      <table class="skill-why"><tbody><tr><td>Base</td><td class="num">10</td></tr><tr><td>Spell level</td><td class="num">+ level</td></tr>
+        <tr><td>${esc(abilityName)} modifier</td><td class="num">${signed(sc.castMod)}</td></tr>${focusRows}</tbody></table>
+      <h3>Spell resistance check: d20 ${signed(sc.cl + sc.penetration)}</h3>
+      <table class="skill-why"><tbody><tr><td>Caster level</td><td class="num">${sc.cl}</td></tr>
+        ${sc.penetration ? `<tr><td>Spell Penetration${sc.penetration > 2 ? ' and Greater Spell Penetration' : ''}</td><td class="num">+${sc.penetration}</td></tr>` : ''}</tbody></table>
+      <p class="hint">Ability scores here include active effects (an owl's wisdom, for example). Each spell's own DC and numbers are in My spells.</p>` });
+  }
+  const castLine = spells.rows.length ? `<p class="cast-line">Caster level <b>${sc.cl}</b> · Concentration <b>${signed(sc.cl + sc.castMod)}</b>
+      · Save DC <b>${10 + sc.castMod} + spell level</b> · Spell resistance check <b>${signed(sc.cl + sc.penetration)}</b>
+      <button type="button" class="skill-details" data-spellday="${esc(castKey)}" aria-label="How these are worked out">Details</button></p>` : '';
   const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
-    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${extraBox}${domainLine}`;
+    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${castLine}${extraBox}${domainLine}`;
   if (spells.rows.length === 0) {
     return `${head}<p class="hint">${esc(cls.name)}s start casting spells at level ${spells.firstLevel}.</p>`;
   }

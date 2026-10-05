@@ -122,7 +122,8 @@ function renderMySpells(app, view) {
     });
     if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
     return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
-      `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button></span>` +
+      `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button>` +
+      `<button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">Details</button></span>` +
       (numbers.length ? `<span class="spell-numbers">${numbers.join('')}</span>` : '') +
       '</li>';
   };
@@ -135,7 +136,8 @@ function renderMySpells(app, view) {
     const count = limit !== undefined ? `${spells.length} of ${limit} known` : `${spells.length}`;
     const notYet = lv > maxLevel && spells.length ? ' · can\'t cast yet' : '';
     groups.push(`<div class="my-spell-level">
-      <h3>${LEVEL_NAMES[lv]} <span class="count${over ? ' over' : ''}">${count}${notYet}</span></h3>
+      <h3>${LEVEL_NAMES[lv]} <span class="count${over ? ' over' : ''}">${count}${notYet}</span>
+        <button type="button" class="skill-details" data-spell-level-why="${lv}" aria-label="How many spells of this level">Details</button></h3>
       ${spells.length ? `<ul class="my-spell-rows">${spells.map(row).join('')}</ul>`
         : '<p class="hint">None chosen yet.</p>'}
     </div>`);
@@ -148,6 +150,26 @@ function renderMySpells(app, view) {
   }
   $('my-spells').innerHTML = groups.join('') ||
     '<p class="hint">No spells yet. Choose a spell below, then "Add to my spells".</p>';
+}
+
+// How many spells of one level the character keeps (My spells' level Details): known spells from the class table for
+// spontaneous casters, otherwise a spellbook or list to prepare from; and whether they can be cast yet.
+function popSpellLevel(app, lv) {
+  const view = app.view;
+  const { cls, table, maxLevel } = listClass(app, view);
+  const row = (table?.rows || []).find(r => r.spellLevel === lv);
+  const chosen = app.state.spells.map(id => app.data.spells.find(s => s.id === id)).filter(s => s && s.levels[cls.id] === lv);
+  const known = row?.known ?? null;
+  const rows = [['Chosen', String(chosen.length)],
+    ...(known !== null ? [[`Spells known (${cls.name} table)`, String(known)]] : []),
+    ...(row && row.prepared !== null && row.prepared !== undefined ? [['Prepared each day', String(row.prepared)]] : []),
+    ...(row && lv > 0 && row.total !== null && row.total !== undefined ? [['Cast per day', String(row.total)]] : []),
+    ['Can cast this level yet', lv <= maxLevel ? 'yes' : 'not yet']];
+  app.openDetail(`${LEVEL_NAMES[lv]}: ${cls.name}`, `<table class="skill-why"><tbody>${rows.map(([l, v]) => `<tr><td>${esc(l)}</td><td class="num">${esc(v)}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">${known !== null
+      ? `A ${esc(cls.name.toLowerCase())} knows a set number of spells of each level (the class table) and casts any of them with the day\u2019s spells; ${chosen.length > known ? `you have ${chosen.length - known} too many here.` : `${known - chosen.length} more can be known.`}`
+      : `A ${esc(cls.name.toLowerCase())} prepares spells each day from a spellbook or the whole class list; add the ones you use. There's no limit on how many you list here.`}
+      The Spells per day table above shows where each number comes from.</p>`);
 }
 
 // The spell in a popup (the list's Details button): everything the side panel shows, with Add or Remove as a button.
@@ -223,6 +245,10 @@ export function initSpellList(app) {
       if (show) showSpell(app, show.dataset.showSpell);
       const why = e.target.closest('[data-spell-details]');
       if (why) showLineDetails(app, why.dataset.spellDetails);
+      const pop = e.target.closest('[data-spell-pop]');
+      if (pop && el.id === 'my-spells') popSpell(app, pop.dataset.spellPop);
+      const lv = e.target.closest('[data-spell-level-why]');
+      if (lv) popSpellLevel(app, Number(lv.dataset.spellLevelWhy));
     });
   }
 }
