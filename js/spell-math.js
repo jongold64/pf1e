@@ -93,7 +93,7 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
   return {
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
     // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
-    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, focus, penetration, flawMelee, flawRanged,
+    sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, fxMelee: stats.fx?.['melee-attack'] || 0, focus, penetration, flawMelee, flawRanged,
     abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability,
   };
 }
@@ -131,7 +131,7 @@ export function spellLines(spell, ctx) {
       if (attack !== null) why.attack = [...attackRows('dex'), ...(ctx.flawRanged ? [{ label: 'Flaw: Shaky', value: ctx.flawRanged }] : [])];
       parts.push(a.auto_hit ? 'hits automatically' : `${a.kind === 'ranged' ? 'ranged attack' : 'ranged touch'} ${signed(attack)}`);
     } else if (a.kind === 'melee touch' || a.kind === 'melee') {
-      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack + fx + (ctx.flawMelee || 0);
+      attack = ctx.bab + ctx.mod.str + ctx.sizeAttack + fx + (ctx.fxMelee || 0) + (ctx.flawMelee || 0);
       why.attack = [...attackRows('str'), ...(ctx.flawMelee ? [{ label: 'Flaw: Noncombatant', value: ctx.flawMelee }] : [])];
       parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(attack)}`);
     } else if (a.kind === 'maneuver') {

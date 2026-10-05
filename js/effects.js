@@ -2,7 +2,8 @@
 // here, so it can be tested on its own.
 //
 // An effect is a list of bonuses: { target, type, value }. Targets: the six abilities (str...cha), 'ac', 'attack',
-// 'damage', 'fort', 'ref', 'will', 'saves' (all three), 'init', 'speed', 'skills', 'cmb', 'cmd', 'hp'.
+// 'damage', 'melee-attack' and 'melee-damage' (melee weapons only), 'fort', 'ref', 'will', 'saves' (all three), 'init',
+// 'speed', 'skills', 'cmb', 'cmd', 'hp'.
 // Stacking (Core Rulebook, Combining Magical Effects): bonuses of the same type don't stack (the highest counts),
 // except dodge, circumstance and untyped bonuses; penalties all add up.
 
@@ -13,6 +14,7 @@ const STACKS = new Set(['dodge', 'circumstance', 'untyped']);
 
 export const TARGETS = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'],
   ['wis', 'Wisdom'], ['cha', 'Charisma'], ['ac', 'Armor Class'], ['attack', 'Attack rolls'], ['damage', 'Damage rolls'],
+  ['melee-attack', 'Melee attack rolls'], ['melee-damage', 'Melee damage rolls'],
   ['saves', 'All saves'], ['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will'], ['init', 'Initiative'],
   ['speed', 'Speed (ft.)'], ['skills', 'Skill checks'], ['checks', 'Ability checks'], ['cmb', 'CMB'], ['cmd', 'CMD'], ['hp', 'Hit points'],
   ['d20', 'All d20 rolls (attacks, saves, skills, ability checks)']];
@@ -54,6 +56,19 @@ export const BUFFS = [
   { id: 'prayer', name: 'Prayer', bonuses: () => ['attack', 'damage', 'saves', 'skills'].map(t => b(t, 'luck', 1)) },
   { id: 'protection-from-evil', name: 'Protection from evil (or chaos, good, law)', bonuses: () => [b('ac', 'deflection', 2), b('saves', 'resistance', 2)],
     note: 'only against attacks and effects by evil (chaotic, good, lawful) creatures' },
+  // Class rages (their level is the class level). Barbarian and bloodrager: +4 morale Str and Con, +2 Will (greater
+  // rage at 11th: +6/+3; mighty rage at 20th: +8/+4). Unchained barbarian: +2 morale on melee attack and damage rolls
+  // and Will saves (+3 at 11th, +4 at 20th) and temporary hit points instead. Skald's inspired rage: +2 Str and Con,
+  // +1 Will (+4/+2 at 8th, +6/+3 at 16th), -1 AC.
+  { id: 'barbarian-rage', name: 'Rage (barbarian, bloodrager)', scales: true, levelName: 'barbarian level',
+    bonuses: l => { const t = l >= 20 ? 8 : l >= 11 ? 6 : 4; return [b('str', 'morale', t), b('con', 'morale', t), b('will', 'morale', t / 2), b('ac', 'untyped', -2)]; },
+    note: 'the extra Con hit points are counted; while raging you can\u2019t use Cha, Dex or Int skills except Acrobatics, Fly, Intimidate and Ride, or concentrate' },
+  { id: 'unchained-rage', name: 'Rage (unchained barbarian)', scales: true, levelName: 'barbarian level',
+    bonuses: l => { const t = l >= 20 ? 4 : l >= 11 ? 3 : 2; return [b('melee-attack', 'morale', t), b('melee-damage', 'morale', t), b('will', 'morale', t), b('ac', 'untyped', -2)]; },
+    note: 'also on thrown weapon damage; 2 temporary hit points per Hit Die (3 from 11th, 4 at 20th): add them with Xtra-HP on the Character tab' },
+  { id: 'inspired-rage', name: 'Inspired rage (skald)', scales: true, levelName: 'skald level',
+    bonuses: l => { const t = l >= 16 ? 6 : l >= 8 ? 4 : 2; return [b('str', 'morale', t), b('con', 'morale', t), b('will', 'morale', t / 2), b('ac', 'untyped', -1)]; },
+    note: 'the skald\u2019s allies who accept it get it too; raging allies can\u2019t use Cha, Dex or Int skills except Acrobatics, Fly, Intimidate and Ride' },
   { id: 'rage', name: 'Rage (spell)', bonuses: () => [b('str', 'morale', 2), b('con', 'morale', 2), b('will', 'morale', 1), b('ac', 'untyped', -2)] },
   { id: 'reduce-person', name: 'Reduce person', size: -1, bonuses: () => [b('str', 'size', -2), b('dex', 'size', 2)],
     note: 'reach may shrink (the size change itself is counted: +1 attack and AC, -1 CMB and CMD, smaller weapon damage)' },
@@ -118,6 +133,11 @@ export function effectTotals(buffs = [], custom = []) {
   for (const [t] of TARGETS) {
     if (t === 'saves' || t === 'ac' || t === 'd20') continue;
     totals[t] = stackTotal(all.filter(x => x.target === t));
+  }
+  // Melee-only bonuses stack with the ones on every attack by the usual rules (a morale bonus on melee attacks and
+  // one on all attacks don't add up): what melee gets on top of the all-attack total.
+  for (const [melee, any] of [['melee-attack', 'attack'], ['melee-damage', 'damage']]) {
+    totals[melee] = stackTotal(all.filter(x => x.target === any || x.target === melee)) - totals[any];
   }
   for (const type of new Set(all.filter(x => x.target === 'ac').map(x => x.type))) {
     totals.ac[type] = stackTotal(all.filter(x => x.target === 'ac' && x.type === type));

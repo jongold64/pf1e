@@ -1394,6 +1394,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('skill ranks by level: 2 - 2 Int = at least 1, +1 Skilled, +1 favored', rows.map(r => r.total).join(), '3,2');
 }
 
+// Class rages, and melee-only bonuses stacking with all-attack ones.
+{
+  const rage = effectTotals([{ id: 'barbarian-rage', cl: 7 }]);
+  check('barbarian rage 7: +4 Str, +4 Con, +2 Will, -2 AC', [rage.str, rage.con, rage.will, rage.ac.untyped].join(), '4,4,2,-2');
+  check('barbarian rage 11: greater rage +6', effectTotals([{ id: 'barbarian-rage', cl: 11 }]).str, 6);
+  const un = effectTotals([{ id: 'unchained-rage', cl: 7 }]);
+  check('unchained rage 7: +2 melee attack and damage, +2 Will, no Str', [un['melee-attack'], un['melee-damage'], un.will, un.str, un.attack].join(), '2,2,2,0,0');
+  const both = effectTotals([{ id: 'unchained-rage', cl: 7 }, { id: 'heroism', cl: 5 }]);
+  check('melee morale +2 and all-attack morale +2 do not stack', [both.attack, both['melee-attack']].join(), '2,0');
+  check('skald inspired rage 8: +4 Str', effectTotals([{ id: 'inspired-rage', cl: 8 }]).str, 4);
+}
+
 // Which bonuses count: the highest of a type; penalties and dodge/untyped ones always.
 {
   const c = countedBonuses([{ type: 'enhancement', value: 4 }, { type: 'enhancement', value: 2 }, { type: 'morale', value: 2 },

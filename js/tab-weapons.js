@@ -135,7 +135,9 @@ function attackArgs(app, view, ctx, e) {
     powerBab: view.stats.bab[0],
     // Active effects' bonuses on attack and damage rolls (bless, divine favor...).
     // Flaws: Noncombatant (melee) and Shaky (ranged) attack penalties.
-    effectAttack: view.stats.fx.attack + (w.group === 'ranged' ? view.flawFx.ranged : view.flawFx.melee), effectDamage: view.stats.fx.damage,
+    // Melee-only effects (an unchained barbarian's rage) on melee weapons.
+    effectAttack: view.stats.fx.attack + (w.group === 'ranged' ? view.flawFx.ranged : view.flawFx.melee + (view.stats.fx['melee-attack'] || 0)),
+    effectDamage: view.stats.fx.damage + (w.group === 'ranged' ? 0 : view.stats.fx['melee-damage'] || 0),
   };
 }
 
@@ -144,7 +146,9 @@ function attackArgs(app, view, ctx, e) {
 function weaponEffects(app, w) {
   const v = app.view;
   const flaw = w.group === 'ranged' ? v.flawFx.ranged : v.flawFx.melee;
-  return [...activeBonuses(app.state.buffs, v.customAll).filter(x => x.target === 'attack' || x.target === 'damage'),
+  const melee = w.group !== 'ranged';
+  return [...activeBonuses(app.state.buffs, v.customAll).filter(x => x.target === 'attack' || x.target === 'damage'
+            || (melee && (x.target === 'melee-attack' || x.target === 'melee-damage'))).map(x => ({ ...x, target: x.target.replace('melee-', '') })),
           ...(flaw ? [{ target: 'attack', source: w.group === 'ranged' ? 'Shaky (flaw)' : 'Noncombatant (flaw)', type: 'untyped', value: flaw }] : [])];
 }
 

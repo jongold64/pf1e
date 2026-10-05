@@ -2028,7 +2028,7 @@ function render() {
       <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] })}</div>`).join('')}
     ${layOnHands(stats).map(l => {
       // Touch of corruption needs a melee touch attack: BAB + Str + size.
-      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack;
+      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
       const spec = l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
         : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] };
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
