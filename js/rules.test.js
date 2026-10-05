@@ -4,7 +4,7 @@ import { abilityModifier, pointsSpent, finalScores, characterStats, hitDieSize, 
 import { featApplied, featSlots, slotAccepts, grantedFeats, proficiencyFeats, casterLevel, featContext, checkPrereq, classFeatureStatus,
          checkFeat, repeatable, featEffects, monkFeatList, readTextPrereq, BONUS_FEAT_RULES } from './feats.js';
 import { SKILLS, SKILL_FEATS, skillInfo, splitSkill, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses,
-         skillTotal, skillBreakdown, ranksFor } from './skills.js';
+         skillTotal, skillBreakdown, ranksFor, sizeSkillModifier } from './skills.js';
 import { armorEffects, speedInArmor, proficiencyWarnings, armorAttackPenalty, druidMetalWarnings } from './armor.js';
 import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
@@ -15,7 +15,7 @@ import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, c
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
-import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses } from './effects.js';
+import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
@@ -491,6 +491,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const s10 = scores(14, 10, 10, 10, 10, 10);
   check('armor check penalty on Climb', skillTotal({ name: 'Climb', ranks: 1, scores: s10, isClassSkill: true, checkPenalty: -5 }).total, 1);
   check('no armor check penalty on Perception', skillTotal({ name: 'Perception', ranks: 1, scores: s10, isClassSkill: false, checkPenalty: -5 }).total, 1);
+  // Size on Stealth (+4 a step smaller) and Fly (+2 a step), Core Rulebook.
+  check('Small: Stealth +4', sizeSkillModifier('Stealth', 'Small'), 4);
+  check('Large: Stealth -4', sizeSkillModifier('Stealth', 'Large'), -4);
+  check('Tiny: Fly +4', sizeSkillModifier('Fly', 'Tiny'), 4);
+  check('Huge: Fly -4', sizeSkillModifier('Fly', 'Huge'), -4);
+  check('size only on Fly and Stealth', sizeSkillModifier('Climb', 'Large'), 0);
+  check('Small Stealth total', skillTotal({ name: 'Stealth', ranks: 1, scores: s10, isClassSkill: false, size: 'Small' }).total, 5);
+  check('Large shows a Size line', skillBreakdown({ name: 'Stealth', ranks: 0, scores: s10, isClassSkill: false, size: 'Large' }).lines.some(l => l.label === 'Size (Large)' && l.value === -4), true);
   check('armor check penalty skills', SKILLS.filter(x => x.acp).map(x => x.name).join(', '),
         'Acrobatics, Climb, Disable Device, Escape Artist, Fly, Ride, Sleight of Hand, Stealth, Swim');
 }
@@ -1478,6 +1486,32 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Extra Rage Power twice: two rage power picks', s.map(x => `${x.classId}:${x.rule.key}:${x.classLevel}`).join(), 'barbarian:rage-power:2,barbarian:rage-power:4');
   check('Extra Rogue Talent on a ninja: a ninja trick pick', featTalentSlots([{ slotId: 'L1', name: 'Extra Rogue Talent', charLevel: 1 }], ['ninja'])[0]?.rule.key, 'ninja-trick');
   check('Extra Hex with no witch or shaman: none', featTalentSlots([{ slotId: 'L1', name: 'Extra Hex', charLevel: 1 }], ['fighter']).length, 0);
+}
+
+// The effects catalog: every bonus amount appears in its rules text (the spell, magic item, class feature or class option
+// named in its `ref`). Amounts at the first level / amount / each form; ones from an ability modifier are skipped.
+{
+  const [spellsD, itemsD, talentsD] = await Promise.all(['spells', 'magic-items', 'talents'].map(n => fetch(`data/${n}.json`).then(r => r.json())));
+  const textOf = ref => (ref.with ? `${textOne(ref)} ${textOne(ref.with)}` : textOne(ref));
+  const textOne = ref => {
+    if (ref.spell) return [ref.spell, ...(ref.also || [])].map(n => spellsD.find(x => x.name.toLowerCase() === n.toLowerCase())?.description || '').join(' ') || null;
+    if (ref.item) return itemsD.find(x => x.name.toLowerCase() === ref.item.toLowerCase())?.description;
+    if (ref.cls) return classes.find(c => c.id === ref.cls)?.features?.find(f => f.name.startsWith(ref.feature))?.text;
+    if (ref.talent) return talentsD.find(t => t.name === ref.talent)?.text;
+    return null;
+  };
+  setEffectMods({});
+  const missingRef = [], missingNumber = [];
+  for (const buff of BUFFS.filter(x => x.ref)) {
+    const text = textOf(buff.ref);
+    if (!text) { missingRef.push(buff.name); continue; }
+    const amounts = buff.forms ? buff.forms.map((_, i) => i + 1) : [buff.levels ? buff.levels[0] : 1];
+    // (At 1st level a bonus equal to the level, like smite's damage, isn't a number the text prints.)
+    const nums = new Set(amounts.flatMap(n => buff.bonuses(buffAmount(buff, n), {})).map(x => Math.abs(x.value)).filter(v => v && !(buff.scales && v === 1 && /level/.test(buff.levelName || ''))));
+    for (const n of nums) if (!new RegExp(`(^|[^0-9])[+−-]?${n}([^0-9]|$)`).test(text)) missingNumber.push(`${buff.name}: ${n}`);
+  }
+  check(`effects catalog: every entry's rules text found (${BUFFS.filter(x => x.ref).length} entries)`, missingRef.join(', ') || 'all found', 'all found');
+  check('effects catalog: every bonus amount appears in its rules text', missingNumber.join(', ') || 'all found', 'all found');
 }
 
 // Adjustments: items with amounts, conditions and their flags.

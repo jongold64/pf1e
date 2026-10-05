@@ -7,6 +7,8 @@
 // Stacking (Core Rulebook, Combining Magical Effects): bonuses of the same type don't stack (the highest counts),
 // except dodge, circumstance and untyped bonuses; penalties all add up.
 
+import { MORE_BUFFS } from './effect-catalog.js';
+
 export const BONUS_TYPES = ['alchemical', 'armor', 'circumstance', 'competence', 'deflection', 'dodge', 'enhancement',
   'insight', 'luck', 'morale', 'natural armor', 'natural armor enhancement', 'profane', 'resistance', 'sacred', 'shield',
   'size', 'untyped'];
@@ -18,7 +20,18 @@ export const TARGETS = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Cons
   ['saves', 'All saves'], ['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will'], ['init', 'Initiative'],
   ['speed', 'Speed (ft.)'], ['skills', 'Skill checks'], ['checks', 'Ability checks'], ['cmb', 'CMB'], ['cmd', 'CMD'], ['hp', 'Hit points'],
   ['d20', 'All d20 rolls (attacks, saves, skills, ability checks)']];
+// One skill only ("skill:Stealth"): Craft, Perform and Profession count for every specialty.
+export const SKILL_TARGET_NAMES = ['Acrobatics', 'Appraise', 'Bluff', 'Climb', 'Craft', 'Diplomacy', 'Disable Device', 'Disguise',
+  'Escape Artist', 'Fly', 'Handle Animal', 'Heal', 'Intimidate', ...['arcana', 'dungeoneering', 'engineering', 'geography', 'history', 'local',
+  'nature', 'nobility', 'planes', 'religion'].map(k => `Knowledge (${k})`), 'Linguistics', 'Perception', 'Perform', 'Profession', 'Ride',
+  'Sense Motive', 'Sleight of Hand', 'Spellcraft', 'Stealth', 'Survival', 'Swim', 'Use Magic Device'];
+TARGETS.push(...SKILL_TARGET_NAMES.map(s => [`skill:${s}`, `${s} checks`]));
 export const TARGET_NAMES = Object.fromEntries(TARGETS);
+
+// The character's ability modifiers (without effects), for effects that use one (smite evil adds the Charisma bonus).
+let MODS = {};
+export function setEffectMods(mods) { MODS = mods || {}; }
+export const effectMods = () => MODS;
 
 const per = (cl, every, max, start = 1) => Math.min(max, Math.max(start, Math.floor(cl / every)));
 const b = (target, type, value) => ({ target, type, value });
@@ -182,6 +195,14 @@ export const BUFFS = [
   { id: 'nauseated', name: 'Nauseated', group: 'condition', bonuses: () => [], note: 'only a single move action a turn; no attacks, spells or concentration' },
   { id: 'dazed', name: 'Dazed', group: 'condition', bonuses: () => [], note: 'you can take no actions (no AC penalty)' },
 ];
+BUFFS.push(...MORE_BUFFS);
+// A choice of forms (a polymorph's animal, a mutagen's ability score): picked like an amount, 1 for the first form.
+for (const x of BUFFS) {
+  if (!x.forms) continue;
+  x.levels = range(1, x.forms.length);
+  x.levelName = x.levelName || 'form';
+  x.bonuses = n => x.forms[n - 1]?.bonuses || [];
+}
 // Class rages and inspire courage are conferred abilities too.
 for (const id of ['barbarian-rage', 'unchained-rage', 'inspired-rage', 'inspire-courage']) BUFFS.find(x => x.id === id).group = 'ability';
 // A chosen amount that isn't one of the buff's amounts (or none yet) counts as its first.
@@ -195,7 +216,7 @@ export function activeBonuses(buffs = [], custom = []) {
   for (const { id, cl } of buffs) {
     const buff = buffById.get(id);
     if (!buff) continue;
-    for (const x of buff.bonuses(buffAmount(buff, Math.max(1, Number(cl) || 1)))) out.push({ ...x, source: buff.name });
+    for (const x of buff.bonuses(buffAmount(buff, Math.max(1, Number(cl) || 1)), MODS)) out.push({ ...x, source: buff.name });
   }
   // A custom effect can give several bonuses: its own { target, type, value } and any more in `more`.
   for (const c of custom) {
@@ -246,13 +267,20 @@ export function effectTotals(buffs = [], custom = []) {
   }
   // Melee-only bonuses stack with the ones on every attack by the usual rules (a morale bonus on melee attacks and
   // one on all attacks don't add up): what melee gets on top of the all-attack total.
-  for (const [melee, any] of [['melee-attack', 'attack'], ['melee-damage', 'damage'], ['ranged-attack', 'attack']]) {
+  for (const [melee, any] of [['melee-attack', 'attack'], ['melee-damage', 'damage'], ['ranged-attack', 'attack'],
+                              ...SKILL_TARGET_NAMES.map(s => [`skill:${s}`, 'skills'])]) {
     totals[melee] = stackTotal(all.filter(x => x.target === any || x.target === melee)) - totals[any];
   }
   for (const type of new Set(all.filter(x => x.target === 'ac').map(x => x.type))) {
     totals.ac[type] = stackTotal(all.filter(x => x.target === 'ac' && x.type === type));
   }
   totals.size = buffs.reduce((n, x) => n + (buffById.get(x.id)?.size || 0), 0);
+  // A polymorph (or divine vessel...) sets your size: its form's size, or the spell's.
+  for (const x of buffs) {
+    const buff = buffById.get(x.id);
+    const set = buff?.forms ? buff.forms[buffAmount(buff, x.cl) - 1]?.size : buff?.setSize;
+    if (set) totals.setSize = set;
+  }
   // Conditions that take away your Dex bonus to AC, or halve your speed.
   totals.flags = [...new Set(buffs.flatMap(x => buffById.get(x.id)?.flags || []))];
   return totals;

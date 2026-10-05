@@ -161,11 +161,11 @@ export function featSkillBonus(featNames, skillName, ranks) {
 // total (the same as skillTotal's). traits: the chosen trait records (only the highest trait bonus counts);
 // effects: active effect bonuses on skill checks ({ source, type, value }) and effectTotal, their total after stacking.
 export function skillBreakdown({ name, ranks, scores, isClassSkill, racialBonuses = {}, raceName = 'Race', featNames = [],
-                                 checkPenalty = 0, traits = [], effects = [], effectTotal = 0 }) {
+                                 checkPenalty = 0, traits = [], effects = [], effectTotal = 0, size = 'Medium' }) {
   const info = skillInfo(name);
   const t = skillTotal({ name, ranks, scores, isClassSkill, racialBonuses, featNames, checkPenalty,
                          traitBonuses: Object.fromEntries([[name, Math.max(0, ...traits.map(x => x.effects?.skills?.[name] || 0))]]),
-                         effectBonus: effectTotal });
+                         effectBonus: effectTotal, size });
   const ABILITY = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
   const lines = [{ label: 'Ranks', value: ranks }, { label: `${ABILITY[info.ability]} modifier`, value: t.abilityMod }];
   if (t.classBonus) lines.push({ label: 'Class skill (with at least 1 rank)', value: t.classBonus });
@@ -179,6 +179,7 @@ export function skillBreakdown({ name, ranks, scores, isClassSkill, racialBonuse
   withTrait.forEach((x, i) => lines.push({ label: `Trait: ${x.name}`, value: i === 0 ? x.effects.skills[name] : 0,
                                           note: i === 0 ? '' : `+${x.effects.skills[name]}, doesn't stack with another trait bonus` }));
   if (t.armor) lines.push({ label: 'Armor check penalty', value: t.armor });
+  if (t.size) lines.push({ label: `Size (${size})`, value: t.size });
   for (const e of effects) lines.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
   // Bonuses of the same type that don't stack: the difference between the effects listed and what counts.
   const listed = effects.reduce((n, e) => n + e.value, 0);
@@ -186,12 +187,20 @@ export function skillBreakdown({ name, ranks, scores, isClassSkill, racialBonuse
   return { lines, total: t.total, usable: t.usable, trained: !!info.trained, limited: t.limited };
 }
 
+// The size modifier on Fly and Stealth checks (Core Rulebook, Table 7-1 and the skill entries): Stealth gains 4 and Fly 2
+// for each size smaller than Medium, and loses as much for each size larger.
+const SIZE_STEPS = { Fine: 4, Diminutive: 3, Tiny: 2, Small: 1, Medium: 0, Large: -1, Huge: -2, Gargantuan: -3, Colossal: -4 };
+export function sizeSkillModifier(name, size) {
+  const steps = SIZE_STEPS[size] || 0;
+  return name === 'Stealth' ? 4 * steps : name === 'Fly' ? 2 * steps : 0;
+}
+
 // One skill's total. `scores` are final ability scores; `checkPenalty` (0 or less) is the armor check penalty.
 // Returns { total, usable, classBonus, racial, feat, armor, abilityMod }.
 // A trained-only skill with no ranks can't be used (usable: false).
 // traitBonuses: { skill name: bonus } from chosen traits.
 export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [], checkPenalty = 0, traitBonuses = {},
-                             effectBonus = 0 }) {
+                             effectBonus = 0, size = 'Medium' }) {
   const info = skillInfo(name);
   const abilityMod = abilityModifier(scores[info.ability]);
   const classBonus = isClassSkill && ranks > 0 ? 3 : 0;
@@ -199,12 +208,13 @@ export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = 
   const feat = featSkillBonus(featNames, name, ranks);
   const armor = info.acp ? checkPenalty : 0;
   const trait = traitBonuses[name] || 0;
+  const sizeMod = sizeSkillModifier(name, size);
   return {
-    abilityMod, classBonus, racial, feat, armor, trait, effect: effectBonus,
+    abilityMod, classBonus, racial, feat, armor, trait, effect: effectBonus, size: sizeMod,
     usable: !(info.trained && ranks === 0) || !!info.untrained,
     limited: info.trained && ranks === 0 ? info.untrained || '' : '',
     // effectBonus: active effects' bonus on all skill checks (heroism...).
-    total: ranks + abilityMod + classBonus + racial + feat + armor + trait + effectBonus,
+    total: ranks + abilityMod + classBonus + racial + feat + armor + trait + effectBonus + sizeMod,
   };
 }
 

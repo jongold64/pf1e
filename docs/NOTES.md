@@ -214,6 +214,16 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   belt's +2/+4/+6, negative levels 1-10; `buffAmount` keeps a saved amount valid) and `flags`: 'noDexAc' (characterStats
   drops a Dex bonus and dodge bonuses from AC) and 'halfSpeed' (computeView halves speed). Targets 'melee-attack',
   'melee-damage' and 'ranged-attack' stack with 'attack'/'damage' by the usual rules (effectTotals works out the extra).
+- Effect catalog (`js/effect-catalog.js` MORE_BUFFS, appended to BUFFS): the longer lists (polymorphs, more spells, class
+  abilities, magic items, the rest of the Core Rulebook conditions and combat modifiers). Each entry has a `ref`
+  ({ spell } / { item } / { cls, feature } / { talent }, with `with`/`also` for text that says "as <earlier spell>") that
+  the Details popup shows and `rules.test.js` checks: the text must exist and contain every bonus number. `forms` (a
+  polymorph's animal, a mutagen's ability) are picked like amounts (1 = first form; effects.js turns them into `levels`);
+  a form's `size` (or a buff's `setSize`) sets `fx.setSize`, which computeView uses instead of the race size. Targets
+  'skill:<Name>' hit one skill (Craft/Perform/Profession: every specialty; app.js `oneSkillFx`). `bonuses(n, mods)` gets
+  the ability modifiers without effects (`setEffectMods`, from computeView) for smite's Charisma. Skill totals add the
+  size modifier on Stealth/Fly (`sizeSkillModifier`). Left out: medium spirits, kineticist burn/overflow, effects that only
+  apply against one creature type or need a roll each round (use custom effects).
 - Class choices (`js/talents.js`, data from `build_foundry_talents.py`): the Foundry class-abilities pack by tag (e.g.
   "Rage Power" -> kind `rage-power`; Foundry's "(ROG)"-style name codes are dropped, "(UC)" becomes "(Unchained)",
   "(SHA)" "(shaman)"; entries without a Foundry book get it from PSRD by name, the rest are skipped), then Archives of

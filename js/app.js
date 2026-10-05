@@ -1,5 +1,5 @@
 // Page code: loads the data, builds the controls, switches tabs, and shows the results from the rules modules.
-import {
+import { levelIncreases, abilityModifier, finalScores,
   ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
@@ -28,7 +28,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
@@ -1154,7 +1154,7 @@ function skillTotalFor(name) {
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
                       racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
-                      traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + flawSkill(name) });
+                      traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + oneSkillFx(name) + flawSkill(name), size: view.size });
 }
 
 // A flaw's penalty on a skill: Feeble (Str, Dex and Con skills) and Inattentive (Perception).
@@ -1201,6 +1201,11 @@ function showAbilityDetails(a) {
     ${skills.length ? `<p><b>Skills:</b> ${esc(skills.join(', '))}.</p>` : ''}
     <p class="hint">Change the base with − / + in its row; spells and items that raise it go in Active effects on the Character tab.</p>`);
 }
+
+// Effects on one skill ("skill:Stealth"; Craft, Perform and Profession count for every specialty): what they add on top of
+// the effects on all skills.
+const oneSkillKey = name => (view.stats.fx[`skill:${name}`] !== undefined ? `skill:${name}` : `skill:${splitSkill(name).base}`);
+const oneSkillFx = name => view.stats.fx[oneSkillKey(name)] || 0;
 
 // The archetypes chosen for a class, as records.
 function chosenArchetypes(classId) {
@@ -1274,8 +1279,13 @@ function computeView() {
   const flawFx = flawEffects(state.houseRules.flaws ? state.flaws : []);
   const customAll = [...state.customEffects, ...flawFx.effects,
     ...(flawFx.hpPerLevel ? [{ name: 'Frail (flaw)', target: 'hp', type: 'untyped', value: flawFx.hpPerLevel * classLevels.length, on: true }] : [])];
+  // Effects that use an ability modifier (smite evil's Charisma) use the scores without effects.
+  const plainMods = Object.fromEntries(Object.entries(finalScores(state.base, race, flexibleChoice))
+    .map(([a, v]) => [a, abilityModifier(v + (levelIncreases(classLevels.length, state.increases)[a] || 0))]));
+  setEffectMods(plainMods);
   const fx = effectTotals(state.buffs, customAll);
-  const size = shiftSize(race.size, fx.size);
+  // A polymorph sets your size; enlarge or reduce person moves it a step.
+  const size = shiftSize(fx.setSize || race.size, fx.size);
   const statsWith = (gearNow, effects = fx) => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
     increases: state.increases, favoredPicks,
@@ -2370,8 +2380,8 @@ function renderSkills(race, classes, scores, featNames) {
   showSkillDetails = name => {
     const ranks = state.skills[name] || 0;
     const b = skillBreakdown({ name, ranks, scores, isClassSkill: isClassSkill(name), racialBonuses: racial, raceName: race.name,
-      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'skills'),
-      effectTotal: view.stats.fx.skills });
+      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'skills' || x.target === oneSkillKey(name)),
+      effectTotal: view.stats.fx.skills + oneSkillFx(name), size: view.size });
     if (flawSkill(name)) { b.lines.push({ label: 'Flaw (Feeble or Inattentive)', value: flawSkill(name) }); b.total += flawSkill(name); }
     const info = skillInfo(name);
     openDetail(`${name} ${signed(b.total)}`, `
@@ -2393,7 +2403,7 @@ function renderSkills(race, classes, scores, featNames) {
 
     // A family row (plain "Craft") holds the box for adding specialties; ranks go on the specialties.
     if (info.family && !specialty) {
-      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills + flawSkill(name) });
+      const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills + oneSkillFx(name) + flawSkill(name), size: view.size });
       return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}
           <button type="button" class="add-specialty-button" data-open-specialty="${esc(name)}">+ Add a ${esc(name === 'Craft' ? 'craft' : name === 'Perform' ? 'type of performance' : 'profession')}</button></div></td>
@@ -2404,7 +2414,7 @@ function renderSkills(race, classes, scores, featNames) {
 
     const ranks = state.skills[name] || 0;
     const t = skillTotal({ name, ranks, scores, isClassSkill: classSkill, racialBonuses: racial, featNames, checkPenalty,
-                            traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + flawSkill(name) });
+                            traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + oneSkillFx(name) + flawSkill(name), size: view.size });
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
           ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
