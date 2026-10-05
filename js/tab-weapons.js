@@ -5,7 +5,7 @@ import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
-import { proficiencyTest, weaponAttack, weaponCost, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
+import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { formatGp, formatLbs } from './equipment.js';
@@ -255,6 +255,66 @@ function renderCombat(app, view, ctx) {
 }
 
 // The character's weapons, each with its quality, feats, proficiency, attack bonus and damage.
+// A Details button for one part of a weapon card (its popup is popWeaponPart).
+const wpart = (i, part, label) => ` <button type="button" class="skill-details" data-wpart="${i}|${part}" aria-label="${esc(label)}">Details</button>`;
+
+// The popups behind a weapon card's Size, Quality, Strength rating, Range and Cost Details.
+function popWeaponPart(app, i, part) {
+  const view = app.view;
+  const e = app.state.weapons[i];
+  const w = e && app.data.weaponsById.get(e.id);
+  if (!w) return;
+  const name = weaponLabel(w, e);
+  const table = (head, rows) => `<table class="skill-why">${head ? `<thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>` : ''}
+    <tbody>${rows.map(r => `<tr>${r.map((c, k) => `<td${k && k === r.length - 1 ? ' class="num"' : ''}>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  if (part === 'cost') {
+    const rows = weaponCostRows(w, e);
+    app.openDetail(`Price: ${name}`, `${table(null, rows.map(r => [r.label, `${r.gp < 0 ? '−' : ''}${formatGp(Math.abs(r.gp))}`]))}
+      <p><b>Total: ${esc(formatGp(weaponCost(w, e)))}</b></p>
+      <p class="hint">Magic weapons are always masterwork (300 gp). A weapon's magic price is its total bonus (enhancement plus
+        special abilities' bonuses) squared × 2,000 gp. This price counts on the Equipment tab.</p>`);
+  }
+  if (part === 'quality') {
+    const rows = [['Normal', '—', '—', '—'], ['Masterwork', '+1', '—', '+300 gp'],
+      ...[1, 2, 3, 4, 5].map(n => [`+${n}`, `+${n}`, `+${n}`, `+${formatGp(300 + n * n * 2000)}`])];
+    app.openDetail(`Quality: ${name}`, `${table(['Quality', 'Attack', 'Damage', 'Adds to the price'], rows)}
+      <p class="hint">Masterwork gives +1 on attack rolls only. An enhancement bonus adds to attack and damage rolls and lets the
+        weapon hurt creatures with damage reduction (+3 counts as cold iron and silver, +4 adamantine, +5 alignment). Special
+        abilities need at least +1, and the total bonus can't go above +10.</p>`);
+  }
+  if (part === 'size') {
+    const ctx = combatContext(app, view);
+    const s = attackArgs(app, view, ctx, e).sized;
+    const dice = sz => w.damage?.[{ Small: 's', Medium: 'm', Large: 'l' }[sz]] || '—';
+    const rows = [['You are', view.size], ['Made for', e.size || `${view.size} (your size)`], ['Damage dice', dice(s.diceSize)],
+      ['Held as', s.unusable ? 'too big to use' : s.weapon.group === w.group ? w.group : `${s.weapon.group} (it\u2019s ${w.group} for its own size)`],
+      ...s.rows.map(r => [r.label, signed(r.value)]),
+      ['Price and weight', e.size === 'Large' ? 'twice the price, twice the weight' : e.size === 'Small' ? 'the same price, half the weight' : 'as listed']];
+    app.openDetail(`Size: ${name}`, `${table(null, rows)}${s.notes.length ? `<p>${esc(s.notes.join(' '))}</p>` : ''}
+      <p class="hint">A weapon made for a bigger or smaller creature gives −2 on attacks per size step, uses that size's damage
+        dice, and takes one more hand per step larger (a light weapon becomes one-handed, then two-handed). Small: ${esc(dice('Small'))},
+        Medium: ${esc(dice('Medium'))}, Large: ${esc(dice('Large'))}.</p>`);
+  }
+  if (part === 'rating') {
+    const str = view.stats.mod.str;
+    const rating = compositeRating(w, e, str);
+    app.openDetail(`Strength rating: ${name}`, `${table(null, [['Your Strength bonus', signed(str)], ['Its strength rating', `+${rating}`],
+        ['Added to damage', signed(str < 0 ? str : Math.min(str, rating))], ['Attack penalty', str < rating ? '−2 (your Strength is below its rating)' : 'none'],
+        ['Price of the rating', `${ratingPrice(w)} gp a point`]])}
+      <p class="hint">A composite bow is made for a set Strength bonus. It adds your Strength bonus to damage up to that rating
+        (a Strength penalty always applies), and you take −2 on attacks if your Strength bonus is lower. An adaptive bow always
+        matches your Strength.</p>`);
+  }
+  if (part === 'range') {
+    const thrown = w.group !== 'ranged' || w.thrown;
+    const max = thrown ? 5 : 10;
+    const rows = Array.from({ length: max }, (_, k) => [`${k * w.range_ft + 1}–${(k + 1) * w.range_ft} ft.`, k ? `−${2 * k}` : '0']);
+    app.openDetail(`Range: ${name}`, `${table(['Distance', 'Attack'], rows)}
+      <p class="hint">Each full range increment (${w.range_ft} ft.) past the first gives −2 on the attack. A thrown weapon reaches at
+        most 5 increments, a projectile weapon 10.</p>`);
+  }
+}
+
 export function renderMyWeapons(app, view) {
   const { state, data } = app;
   if (!data.weaponsById) return;
@@ -305,7 +365,8 @@ export function renderMyWeapons(app, view) {
     const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
     return `<div class="weapon-card">
       <div class="weapon-head">
-        <button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>
+        <span class="weapon-title"><button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>
+        <button type="button" class="skill-details" data-show-weapon="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">Details</button></span>
         <button type="button" class="link" data-remove-weapon="${i}">remove</button>
       </div>
       <dl class="facts attack-line">
@@ -320,14 +381,14 @@ export function renderMyWeapons(app, view) {
         <dt>Critical</dt><dd>${esc(critText(w, crit))}${crit.fx.burst.length ? ` <span class="muted">(plus ${esc(crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', '))} per step above ×1)</span>` : ''}
           ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }, 'Roll crit damage') : ''}
           <button type="button" class="skill-details" data-attack-details="${i}" data-part="critical" aria-label="How this weapon's criticals work">Details</button></dd>
-        ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.</dd>` : ''}
-        <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}</dd>
+        ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.${wpart(i, 'range', 'Range increments')}</dd>` : ''}
+        <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}${wpart(i, 'cost', 'How the price adds up')}</dd>
       </dl>
       <div class="weapon-controls">
-        <label>Size <select data-weapon-size="${i}">
+        <span class="control-with-details"><label>Size <select data-weapon-size="${i}">
           <option value="">Your size (${esc(view.size)})</option>
           ${WEAPON_SIZES.map(z => `<option value="${z}"${e.size === z ? ' selected' : ''}>${z}</option>`).join('')}
-        </select></label>
+        </select></label>${wpart(i, 'size', 'What the weapon size changes')}</span>
         ${isComposite(w) ? (() => {
           // Composite bows: the strength rating (Str bonus added to damage, up to it; -2 attack if your Str is lower).
           const adaptive = (e.abilities || []).some(x => x.id === 'adaptive');
@@ -336,13 +397,13 @@ export function renderMyWeapons(app, view) {
             : `<label>Strength rating <select data-weapon-rating="${i}">
               ${Number.isInteger(e.strRating) ? '' : `<option value="" selected>Not set: matches your Strength (+${Math.max(0, str)})</option>`}
               ${Array.from({ length: 11 }, (_, n) => `<option value="${n}"${e.strRating === n ? ' selected' : ''}>+${n}${n ? ` (+${n * ratingPrice(w)} gp)` : ''}${n === Math.max(0, str) ? ' = your Strength' : ''}</option>`).join('')}
-            </select></label>${compositeRating(w, e, str) > str ? '<p class="warning small">Your Strength bonus is below its rating: −2 on attacks with it.</p>' : ''}`;
+            </select></label>${wpart(i, 'rating', 'The strength rating')}${compositeRating(w, e, str) > str ? '<p class="warning small">Your Strength bonus is below its rating: −2 on attacks with it.</p>' : ''}`;
         })() : ''}
-        <label>Quality <select data-weapon-quality="${i}">
+        <span class="control-with-details"><label>Quality <select data-weapon-quality="${i}">
           <option value="0"${quality === '0' ? ' selected' : ''}>Normal</option>
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
           ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}</option>`).join('')}
-        </select></label>
+        </select></label>${wpart(i, 'quality', 'What masterwork and magic do')}</span>
         ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
@@ -497,6 +558,12 @@ export function initWeaponsTab(app) {
                              combat: { ...app.state.combat, main: '', off: '' } });
     const show = e.target.closest('[data-show-weapon]');
     if (show) showWeapon(app, show.dataset.showWeapon);
+    const part = e.target.closest('[data-wpart]');
+    if (part) {
+      e.preventDefault();
+      const [i, which] = part.dataset.wpart.split('|');
+      popWeaponPart(app, Number(i), which);
+    }
     const why = e.target.closest('[data-attack-details]');
     if (why) showAttackDetails(app, Number(why.dataset.attackDetails), why.dataset.part || null);
     // Special abilities (treasure or purchases, at market price): remove one.

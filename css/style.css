@@ -781,3 +781,7 @@ table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mi
 .feat-chosen { list-style: none; padding: 0; margin: 0 0 10px; }
 .feat-chosen li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 5px 0; border-bottom: 1px solid var(--border); }
 .feat-chosen li .skill-details { margin-left: auto; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; }
+/* Weapons tab: a Details button beside a weapon card's controls. */
+.control-with-details { display: inline-flex; align-items: center; gap: 4px; }
+.weapon-head .skill-details, .weapon-card dd .skill-details, .weapon-controls .skill-details { font-size: 0.8rem; min-height: 28px; padding: 1px 8px; font-weight: 400; }
+.weapon-title { display: inline-flex; align-items: center; gap: 8px; }

@@ -400,6 +400,27 @@ export function weaponCost(weapon, entry = {}) {
     + (entry.crafted ? magic / 2 : magic);
 }
 
+// The parts of a weapon's price, for its Details: [{ label, gp }] adding up to weaponCost.
+export function weaponCostRows(weapon, entry = {}) {
+  const enh = entry.enh || 0;
+  const abilities = entry.abilities || [];
+  const mult = WEAPON_SIZE_COST[entry.size] || 1;
+  const rows = [{ label: `${weapon.name}${mult > 1 ? ` (made for a ${entry.size} creature: ×${mult})` : ''}`, gp: (weapon.price_gp || 0) * mult }];
+  if (isComposite(weapon) && Number.isInteger(entry.strRating) && entry.strRating) {
+    rows.push({ label: `Strength rating +${entry.strRating} (${ratingPrice(weapon)} gp a point)`, gp: entry.strRating * ratingPrice(weapon) });
+  }
+  if (enh > 0 || entry.masterwork || abilities.length) rows.push({ label: 'Masterwork', gp: 300 });
+  const bonus = enh + abilities.reduce((n, a) => n + (a.bonus || 0), 0);
+  if (bonus) {
+    const parts = [`+${enh} enhancement`, ...abilities.filter(a => a.bonus).map(a => `${a.name} +${a.bonus}`)].join(', ');
+    rows.push({ label: `Magic: total bonus +${bonus} (${parts}), squared × 2,000 gp`, gp: bonus * bonus * 2000 });
+  }
+  for (const a of abilities.filter(x => x.gp)) rows.push({ label: a.name, gp: a.gp });
+  const magic = magicPart(enh, abilities, 2000);
+  if (entry.crafted && magic) rows.push({ label: 'Crafted: the magic costs half', gp: -magic / 2 });
+  return rows;
+}
+
 // "+1 flaming Longsword", "Masterwork Dagger", "Club", "Greatsword (Large)".
 export function weaponLabel(weapon, entry = {}) {
   const prefix = magicPrefix(entry.enh || 0, entry.masterwork, entry.abilities || []);

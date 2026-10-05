@@ -22,7 +22,7 @@ import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
-import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, twoWeaponPenalties, twoWeaponAttack,
+import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, weaponCostRows, twoWeaponPenalties, twoWeaponAttack,
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
@@ -618,6 +618,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     check('adaptive composite: matches Strength', at(4, { strRating: 1, abilities: [{ id: 'adaptive' }] }).parts.strDamage, 4);
     check('composite longbow +3 rating: 100 + 300 gp', weaponCost(clb, { strRating: 3 }), 400);
     check('composite shortbow +2 rating: 75 + 150 gp', weaponCost(weapon('Composite Shortbow'), { strRating: 2 }), 225);
+    const entry = { enh: 2, strRating: 3, abilities: [{ id: 'flaming', name: 'Flaming', bonus: 1 }], crafted: true, size: 'Large' };
+    check('price rows add up to the price', weaponCostRows(clb, entry).reduce((n, r) => n + r.gp, 0), weaponCost(clb, entry));
   }
   check('Str to damage: crossbow none', strToDamage(weapon('Heavy Crossbow'), 3), 0);
   check('Str to damage: javelin (thrown)', strToDamage(weapon('Javelin'), 2), 2);
