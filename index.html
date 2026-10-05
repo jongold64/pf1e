@@ -165,6 +165,8 @@
       <section class="card wide" id="feats-card">
         <h2>Feats <span id="feat-count" class="count"></span>
           <button type="button" id="feat-count-details" class="skill-details" aria-label="Every feat slot and where it comes from">Details</button></h2>
+        <!-- The feats chosen, one line each. -->
+        <ul id="feat-chosen" class="feat-chosen" hidden></ul>
         <form class="search-row tab-search" id="feat-tab-search-form" role="search">
           <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
           <button type="submit" class="primary">Search</button>
@@ -548,6 +550,7 @@
         <details>
           <summary>Feats tab (feats, traits and flaws)</summary>
           <ul>
+            <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>.</li>
             <li><b>Details</b> beside the Feats count lists every feat slot (the level it comes at, where it comes from, the feat in it
               with ✓ / ✗) and your free class feats; tap a free feat's name to read it. <b>Details</b> beside the Traits count shows
               how many traits you get and why, each trait's category (the rules allow one per category) and what's counted.</li>

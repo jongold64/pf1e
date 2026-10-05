@@ -940,6 +940,10 @@ function buildControls() {
   const types = [...new Set(data.feats.flatMap(f => f.types || []))].sort();
   $('feat-type').innerHTML = '<option value="">All types</option>' +
     types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('feat-chosen').addEventListener('click', e => {
+    const fd = e.target.closest('[data-feat-details]');
+    if (fd) showFeatSlotDetails(fd.dataset.featDetails);
+  });
   $('feat-slots').addEventListener('click', e => {
     const fd = e.target.closest('[data-feat-details]');
     if (fd) { showFeatSlotDetails(fd.dataset.featDetails); return; }
@@ -2553,6 +2557,18 @@ function renderFeats(slots, granted, ctx) {
     const f = featByName(n);
     return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>` : esc(n);
   }).join(', ')}.` : '';
+
+  // The chosen feats, one line each, above the search.
+  const chosenLines = slots.filter(s => data.featsById.has(state.feats[s.id])).sort((a, b) => a.charLevel - b.charLevel).map(slot => {
+    const f = data.featsById.get(state.feats[slot.id]);
+    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+    const choice = view.featChoices.find(c => c.slotId === slot.id);
+    return `<li>${STATUS_ICON[check.status]} <b>${esc(f.name)}</b>${choice?.value ? ` (${esc(choiceLabel(choice))})` : ''}
+      <small class="muted">${esc(slot.label)}</small>
+      <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="${esc(f.name)}: about this feat">Details</button></li>`;
+  });
+  $('feat-chosen').innerHTML = chosenLines.join('');
+  $('feat-chosen').hidden = !chosenLines.length;
 
   $('feat-slots').innerHTML = slots.map(slot => {
     const f = data.featsById.get(state.feats[slot.id]);

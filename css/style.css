@@ -777,3 +777,7 @@ table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%,
 table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 /* Classes tab: the classes' sections at the top, then a line before the class lines and levels. */
 .class-info-top { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+/* Feats tab: the chosen feats, one line each, above the search. */
+.feat-chosen { list-style: none; padding: 0; margin: 0 0 10px; }
+.feat-chosen li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.feat-chosen li .skill-details { margin-left: auto; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; }
