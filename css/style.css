@@ -791,3 +791,14 @@ table.skill-why tr.changed td, table.skill-why tr.mine td { background: color-mi
 /* Magic Items tab: Details beside owned items and the count. */
 #my-items-rows .skill-details, #my-items-card h2 .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 1px 8px; margin-left: 6px; }
 table.skill-why tr.over td { background: color-mix(in srgb, var(--danger, #b42318) 10%, transparent); }
+/* Weapons tab: each weapon on one line (name, Attack, Damage, Critical with Roll buttons, Details); its size shrinks to fit
+   (fitWeaponLines), so the buttons are sized in em. Details opens the rest below. */
+.weapon-line { display: flex; align-items: center; gap: 0.7em; white-space: nowrap; overflow: hidden; }
+.weapon-line .weapon-name { font-weight: 700; font-size: 1.05em; }
+.weapon-line .wl-part { display: inline-flex; align-items: center; gap: 0.35em; }
+.weapon-line .wl-k { color: var(--muted); font-size: 0.85em; }
+.weapon-line b { font-size: 1.05em; }
+.weapon-line button.roll-button, .weapon-line .skill-details { font-size: 0.8em; min-height: 2.1em; padding: 0.1em 0.6em; margin: 0; font-weight: 400; }
+.weapon-line .wl-more { margin-left: auto; }
+.weapon-line .wl-more.on { background: var(--accent); color: #fff; }
+.weapon-more { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }

@@ -23,7 +23,7 @@ import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-ite
 import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
-import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
+import { fitWeaponLines, initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
@@ -515,7 +515,7 @@ function showTab(name) {
   if (name === 'magic-items') renderItemsTab(app);
   if (name === 'craft') renderCrafting(app, 'craft');
   if (name === 'equipment') renderEquipmentTab(app);
-  if (name === 'weapons') renderWeaponsTab(app);
+  if (name === 'weapons') { renderWeaponsTab(app); requestAnimationFrame(() => fitWeaponLines()); }
 }
 
 function buildControls() {

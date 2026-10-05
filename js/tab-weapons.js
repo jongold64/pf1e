@@ -363,10 +363,23 @@ export function renderMyWeapons(app, view) {
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
       `<label class="check-row small"><input type="checkbox" data-weapon-flag="${key}" data-index="${i}" ${e[key] ? 'checked' : ''}> ${esc(feat)} (${what})</label>`).join('');
     const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
+    // One line: the weapon, its attack, damage and critical with a Roll button each, and Details to open everything else.
+    const open = openWeapons.has(i);
+    const warn = !isProficient || args.sized.unusable ? ` <span class="warning" title="${esc(args.sized.unusable ? 'Too big for you to wield' : 'Not proficient: −4 on attack rolls')}">⚠</span>` : '';
     return `<div class="weapon-card">
+      <div class="weapon-line">
+        <button type="button" class="link item-link weapon-name" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>${warn}
+        <span class="wl-part"><span class="wl-k">Attack</span> <b>${esc(attackText(a))}</b>
+          ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</span>
+        <span class="wl-part"><span class="wl-k">Damage</span> <b>${esc(damageWithExtras(a.damage, crit.fx))}</b>
+          ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] })}</span>
+        <span class="wl-part"><span class="wl-k">Critical</span> <b>${esc(critText(w, crit))}</b>
+          ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }) : ''}</span>
+        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-weapon-more="${i}" aria-expanded="${open}" aria-label="Everything about ${esc(w.name)}">Details</button>
+      </div>
+      <div class="weapon-more"${open ? '' : ' hidden'}>
       <div class="weapon-head">
-        <span class="weapon-title"><button type="button" class="link item-link" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>
-        <button type="button" class="skill-details" data-show-weapon="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">Details</button></span>
+        <span class="weapon-title"><button type="button" class="skill-details" data-show-weapon="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">About the ${esc(w.name.toLowerCase())}</button></span>
         <button type="button" class="link" data-remove-weapon="${i}">remove</button>
       </div>
       <dl class="facts attack-line">
@@ -420,9 +433,25 @@ export function renderMyWeapons(app, view) {
         : `Made for a ${esc(e.size)} creature: ${args.sized.penalty} on attack rolls, ${esc(e.size)} damage dice${args.sized.weapon.group !== w.group
           ? `, and it counts as ${esc(args.sized.weapon.group)} for you` : ''}.${args.sized.notes.length ? ` ${esc(args.sized.notes.join(' '))}` : ''}`}</p>` : ''}
       ${titanLevels(app, view).titanMauler ? '<p class="hint">Titan Mauler: Big Game Hunter gives +1 on attacks and +1 dodge AC in melee against larger creatures; Titanic Rage (14th) adds enlarge person when raging (switch it on under Active effects).</p>' : ''}
+      </div>
     </div>`;
   }).join('') || '<p class="hint">No weapons yet. Choose one below and add it.</p>';
+  fitWeaponLines();
 }
+
+// Weapons whose details are open (by their place in the list), kept across redraws.
+const openWeapons = new Set();
+
+// Each weapon's line stays on one line: its text shrinks (down to 55%) until it fits. Run after drawing and on resize;
+// a hidden tab has no width, so it's run again when the Weapons tab opens.
+export function fitWeaponLines() {
+  for (const el of document.querySelectorAll('#my-weapons .weapon-line')) {
+    el.style.fontSize = '';
+    if (!el.clientWidth) continue;
+    for (let size = 100; el.scrollWidth > el.clientWidth && size > 55; size -= 3) el.style.fontSize = `${size - 3}%`;
+  }
+}
+window.addEventListener('resize', () => fitWeaponLines());
 
 // Details popup for one carried weapon: everything that adds to its attack roll and to its damage.
 // part: 'damage' shows only the damage (with special abilities' extra dice and critical damage); otherwise attack and damage.
@@ -552,7 +581,19 @@ export function initWeaponsTab(app) {
     if (btn) app.update({ weapons: [...app.state.weapons, newEntry(app, app.data.weaponsById.get(btn.dataset.addWeapon) || { id: btn.dataset.addWeapon })] });
   });
   $('my-weapons').addEventListener('click', e => {
+    const more = e.target.closest('[data-weapon-more]');
+    if (more) {
+      const i = Number(more.dataset.weaponMore);
+      const box = more.closest('.weapon-card').querySelector('.weapon-more');
+      box.hidden = !box.hidden;
+      if (box.hidden) openWeapons.delete(i); else openWeapons.add(i);
+      more.classList.toggle('on', !box.hidden);
+      more.setAttribute('aria-expanded', String(!box.hidden));
+      return;
+    }
     const remove = e.target.closest('[data-remove-weapon]');
+    // The list shifts up, so which details are open is forgotten.
+    if (remove) openWeapons.clear();
     // Removing a weapon moves the others up the list, so the two-weapon choices are cleared.
     if (remove) app.update({ weapons: app.state.weapons.filter((_, i) => i !== Number(remove.dataset.removeWeapon)),
                              combat: { ...app.state.combat, main: '', off: '' } });
