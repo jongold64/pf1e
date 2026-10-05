@@ -802,3 +802,21 @@ table.skill-why tr.over td { background: color-mix(in srgb, var(--danger, #b4231
 .weapon-line .wl-more { margin-left: auto; }
 .weapon-line .wl-more.on { background: var(--accent); color: #fff; }
 .weapon-more { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+/* One-line summaries (armor, spells, magic items; weapons use the same): name, key numbers with Roll buttons, Details at
+   the end. fitLines shrinks the text to keep it on one line, so buttons inside are sized in em. */
+.fit-line { display: flex; align-items: center; gap: 0.7em; white-space: nowrap; overflow: hidden; }
+.fit-line .line-name { font-weight: 700; font-size: 1.05em; }
+.fit-line .wl-part { display: inline-flex; align-items: center; gap: 0.35em; }
+.fit-line .wl-k { color: var(--muted); font-size: 0.85em; }
+.fit-line b { font-size: 1.05em; }
+.fit-line button.roll-button, .fit-line .skill-details { font-size: 0.8em; min-height: 2.1em; padding: 0.1em 0.6em; margin: 0; font-weight: 400; }
+.fit-line .wl-more { margin-left: auto; }
+.fit-line .wl-more.on { background: var(--accent); color: #fff; }
+.line-more { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.line-list .line-card, .my-spell-rows .line-card { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; margin-bottom: 7px; list-style: none; }
+.my-spell-rows { padding: 0; }
+.line-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.line-controls .base { display: inline-flex; align-items: center; gap: 6px; }
+/* The one-line cards override older row styles: a block with a full border, and Details at the far right. */
+.my-spell-rows li.line-card, .my-spell-rows li.line-card:last-child { display: block; border: 1px solid var(--border); padding: 7px 10px; }
+.fit-line .skill-details.wl-more { margin-left: auto !important; }

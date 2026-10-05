@@ -254,10 +254,7 @@
       <section class="card wide" id="my-items-card">
         <h2>My magic items <span id="my-items-count" class="count"></span>
           <button type="button" id="my-items-slots" class="skill-details" aria-label="Which body slots your items fill">Details</button></h2>
-        <table class="inventory">
-          <thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Weight</th></tr></thead>
-          <tbody id="my-items-rows"></tbody>
-        </table>
+        <div id="my-items-rows" class="line-list"></div>
         <p id="my-items-total" class="hint"></p>
       </section>
       <section class="card wide">
@@ -295,8 +292,10 @@
         </form>
         <ul id="armor-search-results" class="search-results" hidden></ul>
       </section>
-      <section class="card">
+      <section class="card wide line-card">
         <h2>Armor</h2>
+        <div id="armor-line" class="fit-line item-line"></div>
+        <div id="armor-more" class="line-more">
         <div class="row armor-pick"><select id="armor-select" aria-label="Armor"></select>
           <button type="button" class="skill-details" data-armor-part="armor|item" aria-label="The armor in a popup">Details</button></div>
         <div class="row enh-row"><label>Quality <select id="armor-enh"></select></label>
@@ -304,9 +303,12 @@
         <div class="row enh-row"><label>Material <select id="armor-material"></select></label>
           <button type="button" class="skill-details" data-armor-part="armor|material" aria-label="What the material changes">Details</button></div>
         <div id="armor-info" class="info"></div>
+        </div>
       </section>
-      <section class="card">
+      <section class="card wide line-card">
         <h2>Shield</h2>
+        <div id="shield-line" class="fit-line item-line"></div>
+        <div id="shield-more" class="line-more">
         <div class="row armor-pick"><select id="shield-select" aria-label="Shield"></select>
           <button type="button" class="skill-details" data-armor-part="shield|item" aria-label="The shield in a popup">Details</button></div>
         <div class="row enh-row"><label>Quality <select id="shield-enh"></select></label>
@@ -314,6 +316,7 @@
         <div class="row enh-row"><label>Material <select id="shield-material"></select></label>
           <button type="button" class="skill-details" data-armor-part="shield|material" aria-label="What the material changes">Details</button></div>
         <div id="shield-info" class="info"></div>
+        </div>
       </section>
       <section class="card wide">
         <h2>In this armor</h2>
@@ -573,6 +576,8 @@
         <details>
           <summary>Armor tab</summary>
           <ul>
+            <li>The <b>Armor</b> and <b>Shield</b> cards start with one line (what you wear, its bonus, Dex limit, check penalty, spell
+              failure); <b>Details</b> at the end opens the choices and full stats. With nothing worn, they stay open.</li>
             <li><b>Details</b> beside the armor or shield opens it (stats, quality and material, Update, add special abilities, take
               it off). Beside <b>Quality</b>: what masterwork and +1 to +5 do and cost for it, and its price so far. Beside
               <b>Material</b>: what the chosen material changes compared with the usual one, and every material it can be made of.</li>
@@ -621,6 +626,7 @@
         <details>
           <summary>Spells tab</summary>
           <ul>
+            <li>In <b>My spells</b>, each spell is one line (its main numbers with Roll buttons); <b>Details</b> opens the rest.</li>
             <li>Under each class in Spells per day, a line gives your caster level, concentration, save DC and spell resistance
               check; its <b>Details</b> shows how each is worked out. In <b>My spells</b>, <b>Details</b> beside a spell opens it
               (with Remove), and beside a level's count it shows how many of that level you can know or prepare.</li>
@@ -636,6 +642,8 @@
         <details>
           <summary>Magic Items tab</summary>
           <ul>
+            <li>In <b>My magic items</b>, each item is one line (slot, how many, cost, weight); <b>Details</b> opens how many, the
+              cost breakdown and the item itself.</li>
             <li>In <b>My magic items</b>, <b>Details</b> beside an item opens it (with One more and Remove); beside a potion, scroll
               or wand it shows how it's used, its caster level, save DC and price. <b>Details</b> beside the count shows which body
               slot each item fills, and warns when two compete for one slot.</li>

@@ -1,6 +1,6 @@
 // Armor tab: choose worn armor and a shield, with an optional magic bonus, and see what they do.
 import { magicPrefix, magicPart } from './crafting.js';
-import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { openLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass, speedInArmor } from './armor.js';
 import { MONK_IDS, slowedSpeed } from './rules.js';
 import { materialsFor, withMaterial } from './materials.js';
@@ -268,6 +268,22 @@ export function renderArmorTab(app, view) {
       note: 'This price counts on the Equipment tab.' });
     return `<p><b>Price with quality and abilities:</b> ${esc(formatGp(total))}${whyButton(`price-${k}`, 'the price')}</p>`;
   };
+  // One line each for the armor and the shield (Details opens the choices and full stats; with nothing worn they stay open).
+  for (const k of ['armor', 'shield']) {
+    const item = gear[k];
+    const enh = state[`${k}Enh`], mw = state[`${k}Mw`];
+    const open = openLines.has(k) || !item;
+    const penalty = item ? Math.min(0, item.check_penalty + ((enh > 0 || mw) && !item.mw_included ? 1 : 0)) : 0;
+    $(`${k}-line`).innerHTML = (item ? `<b class="line-name">${esc([magicPrefix(enh, mw, state[`${k}Abilities`]), item.name].filter(Boolean).join(' '))}</b>
+        <span class="wl-part"><span class="wl-k">${k === 'shield' ? 'Shield' : 'Armor'}</span> <b>${esc(signed(item.bonus + enh))}</b></span>
+        <span class="wl-part"><span class="wl-k">Max Dex</span> <b>${esc(item.max_dex === null || item.max_dex === undefined ? '—' : signed(item.max_dex))}</b></span>
+        <span class="wl-part"><span class="wl-k">Check</span> <b>${penalty}</b></span>
+        <span class="wl-part"><span class="wl-k">Spell failure</span> <b>${item.spell_failure}%</b></span>
+        ${item.dr ? `<span class="wl-part"><span class="wl-k">DR</span> <b>${item.dr}/—</b></span>` : ''}`
+      : `<span class="muted">No ${k === 'shield' ? 'shield' : 'armor'}: choose one below</span>`)
+      + `<button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${k}" aria-expanded="${open}" aria-label="Choose and see everything about it">Details</button>`;
+    $(`${k}-more`).hidden = !open;
+  }
   $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) + price('armor') : '<p>Unarmored.</p>';
   $('shield-info').innerHTML = gear.shield ? armorDetails(gear.shield) + abilities(state.shieldAbilities) + price('shield') : '<p>No shield.</p>';
 

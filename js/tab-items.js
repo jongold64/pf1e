@@ -1,6 +1,6 @@
 // Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
 // side panel for the item being looked at.
-import { $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem } from './tab-crafting.js';
@@ -152,16 +152,26 @@ export function renderMyItems(app) {
     ], total: each !== null && each !== undefined ? formatGp(each * e.qty) : '—',
       note: e.crafted ? 'Crafted items count at what they cost to make.' : 'Bought or found items count at their market price.' });
     allRows.push({ label: `${name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, text: each !== null && each !== undefined ? formatGp(each * e.qty) : 'no price' });
-    return `<tr><td><button type="button" class="link item-link" data-show-item="${esc(item.id)}">${esc(entryName(item, e.option))}</button>
-        <button type="button" class="skill-details" data-owned-pop="${i}" aria-label="${esc(name)} in a popup">Details</button>
-        <div class="breakdown">${esc(item.category)}${item.slot && !['none', 'slotless'].includes(item.slot) ? ` · ${esc(item.slot)}` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div></td>
-      <td><span class="base">
-        <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
-        <span class="value">${e.qty}</span>
-        <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
-      </span></td>
-      <td>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</td>
-      <td>${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</td></tr>`;
+    // One line: the item, its slot, how many, cost and weight; Details opens the rest.
+    const key = `item-${i}`;
+    const open = openLines.has(key);
+    const slot = item.slot && !['none', 'slotless'].includes(String(item.slot).replace(/[^a-z]/gi, '').toLowerCase()) ? String(item.slot).replace(/[^a-z ]/gi, '') : '';
+    return `<div class="line-card"><div class="fit-line item-line">
+        <button type="button" class="link item-link line-name" data-show-item="${esc(item.id)}">${esc(name)}</button>
+        ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
+        <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
+        <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
+        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}">Details</button></div>
+      <div class="line-more"${open ? '' : ' hidden'}>
+        <div class="breakdown">${esc(item.category)}${slot ? ` · ${esc(slot)} slot` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div>
+        <div class="line-controls">
+          <button type="button" class="skill-details" data-owned-pop="${i}" aria-label="${esc(name)} in a popup">About it</button>
+          <span class="base">How many
+            <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
+            <span class="value">${e.qty}</span>
+            <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
+          <span>Cost ${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</span>
+        </div></div></div>`;
   }).join('') + app.state.craftedItems.map((e, i) => {
     const info = SPELL_ITEMS[e.kind];
     const name = `${info.label} of ${e.spellName}`;
@@ -175,17 +185,25 @@ export function renderMyItems(app) {
     ], total: formatGp(craftedItemCost(e) * e.qty),
       note: e.bought ? 'Bought or found: counts at the market price.' : 'Made by the character: counts at the cost to make.' });
     allRows.push({ label: `${name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, text: formatGp(craftedItemCost(e) * e.qty) });
-    return `<tr><td>${esc(SPELL_ITEMS[e.kind].label)} of ${esc(e.spellName)}
-        <button type="button" class="skill-details" data-made-pop="${i}" aria-label="${esc(name)} in a popup">Details</button>
-        <div class="breakdown">caster level ${e.cl} · ${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div></td>
-      <td><span class="base">
-        <button type="button" data-made-qty="${i}" data-step="-1" aria-label="One fewer">−</button>
-        <span class="value">${e.qty}</span>
-        <button type="button" data-made-qty="${i}" data-step="1" aria-label="One more">+</button>
-      </span></td>
-      <td>${esc(formatGp(craftedItemCost(e) * e.qty))}${whyButton(`c-${i}`, name)}</td><td>—</td></tr>`;
+    const key = `made-${i}`;
+    const open = openLines.has(key);
+    return `<div class="line-card"><div class="fit-line item-line">
+        <span class="line-name">${esc(name)}</span>
+        <span class="wl-k">caster level ${e.cl}</span>${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
+        <span class="wl-part"><b>${esc(formatGp(craftedItemCost(e) * e.qty))}</b></span>
+        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}">Details</button></div>
+      <div class="line-more"${open ? '' : ' hidden'}>
+        <div class="breakdown">${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div>
+        <div class="line-controls">
+          <button type="button" class="skill-details" data-made-pop="${i}" aria-label="${esc(name)} in a popup">About it</button>
+          <span class="base">How many
+            <button type="button" data-made-qty="${i}" data-step="-1" aria-label="One fewer">−</button>
+            <span class="value">${e.qty}</span>
+            <button type="button" data-made-qty="${i}" data-step="1" aria-label="One more">+</button></span>
+          <span>Cost ${esc(formatGp(craftedItemCost(e) * e.qty))}${whyButton(`c-${i}`, name)}</span>
+        </div></div></div>`;
   }).join('')
-    || '<tr><td colspan="4" class="hint">No magic items yet. Choose one below, then add it.</td></tr>';
+    || '<p class="hint">No magic items yet. Choose one below, then add it.</p>';
   const listedTotals = magicItemTotals(owned, byId);
   const totals = { ...listedTotals, cost: listedTotals.cost + app.state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0) };
   itemWhy.set('total', { title: `My magic items: ${formatGp(totals.cost)}`, rows: allRows, total: formatGp(totals.cost),

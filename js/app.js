@@ -16,14 +16,14 @@ import {
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
-import { $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
+import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
-import { fitWeaponLines, initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
+import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
@@ -515,7 +515,8 @@ function showTab(name) {
   if (name === 'magic-items') renderItemsTab(app);
   if (name === 'craft') renderCrafting(app, 'craft');
   if (name === 'equipment') renderEquipmentTab(app);
-  if (name === 'weapons') { renderWeaponsTab(app); requestAnimationFrame(() => fitWeaponLines()); }
+  if (name === 'weapons') renderWeaponsTab(app);
+  requestAnimationFrame(() => fitLines());
 }
 
 function buildControls() {
@@ -1946,6 +1947,20 @@ function renderClasses(view) {
   }).join('');
 }
 
+// A one-line summary's Details: opens or closes the rest of it (.line-more in the same .line-card), remembered by key.
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-line-more]');
+  if (!b) return;
+  e.preventDefault();
+  const more = b.closest('.line-card')?.querySelector('.line-more');
+  if (!more) return;
+  more.hidden = !more.hidden;
+  if (more.hidden) openLines.delete(b.dataset.lineMore); else openLines.add(b.dataset.lineMore);
+  b.classList.toggle('on', !more.hidden);
+  b.setAttribute('aria-expanded', String(!more.hidden));
+});
+window.addEventListener('resize', () => fitLines());
+
 function render() {
   view = computeView();
   const { race, cls, stats } = view;
@@ -2093,6 +2108,7 @@ function render() {
   if (tab === 'craft') renderCrafting(app, 'craft');
   if (tab === 'weapons') renderMyWeapons(app, view);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
+  requestAnimationFrame(() => fitLines());
 }
 
 // A Details popup's table: one row per thing that adds, then the total.

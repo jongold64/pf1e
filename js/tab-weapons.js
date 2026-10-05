@@ -1,6 +1,6 @@
 // Weapons tab: the character's weapons with attack bonus and damage, and every weapon (by category) with a
 // side panel for the weapon being looked at.
-import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { fitLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { SIZE_AC, MONK_IDS, smite } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
@@ -367,7 +367,7 @@ export function renderMyWeapons(app, view) {
     const open = openWeapons.has(i);
     const warn = !isProficient || args.sized.unusable ? ` <span class="warning" title="${esc(args.sized.unusable ? 'Too big for you to wield' : 'Not proficient: −4 on attack rolls')}">⚠</span>` : '';
     return `<div class="weapon-card">
-      <div class="weapon-line">
+      <div class="weapon-line fit-line">
         <button type="button" class="link item-link weapon-name" data-show-weapon="${esc(w.id)}">${esc(weaponLabel(w, e))}</button>${warn}
         <span class="wl-part"><span class="wl-k">Attack</span> <b>${esc(attackText(a))}</b>
           ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}</span>
@@ -445,13 +445,8 @@ const openWeapons = new Set();
 // Each weapon's line stays on one line: its text shrinks (down to 55%) until it fits. Run after drawing and on resize;
 // a hidden tab has no width, so it's run again when the Weapons tab opens.
 export function fitWeaponLines() {
-  for (const el of document.querySelectorAll('#my-weapons .weapon-line')) {
-    el.style.fontSize = '';
-    if (!el.clientWidth) continue;
-    for (let size = 100; el.scrollWidth > el.clientWidth && size > 55; size -= 3) el.style.fontSize = `${size - 3}%`;
-  }
+  fitLines($('my-weapons'));
 }
-window.addEventListener('resize', () => fitWeaponLines());
 
 // Details popup for one carried weapon: everything that adds to its attack roll and to its damage.
 // part: 'damage' shows only the damage (with special abilities' extra dice and critical damage); otherwise attack and damage.

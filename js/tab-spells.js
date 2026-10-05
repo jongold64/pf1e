@@ -1,6 +1,6 @@
 // Spells tab: the character's chosen spells, and their class spell list (grouped by spell level) with a side
 // panel for the spell being looked at.
-import { $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
+import { openLines, fitLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { activeBonuses } from './effects.js';
 import { spellsPerDay } from './rules.js';
 import { spellContext, spellLines, srCheck } from './spell-math.js';
@@ -121,11 +121,21 @@ function renderMySpells(app, view) {
         `${l.why?.attack || l.why?.dc ? ` <button type="button" class="skill-details" data-spell-details="${esc(key)}" aria-label="What makes up these numbers">Details</button>` : ''}</span>`;
     });
     if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
-    return `<li><span class="spell-row"><button type="button" class="chip" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>` +
-      `<button type="button" class="chip-remove" data-remove-spell="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">×</button>` +
-      `<button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">Details</button></span>` +
-      (numbers.length ? `<span class="spell-numbers">${numbers.join('')}</span>` : '') +
-      '</li>';
+    // One line: the spell, its main numbers (attack or save, damage) with their Roll buttons, and Details for the rest.
+    const key = `spell-${cls.id}-${s.id}`;
+    const open = openLines.has(key);
+    const main = lines[0];
+    return `<li class="line-card"><div class="fit-line spell-one">
+        <button type="button" class="link item-link line-name" data-show-spell="${esc(s.id)}">${esc(s.name)}</button>
+        ${main ? `<span class="wl-part">${main.label ? `<span class="wl-k">${esc(main.label)}</span> ` : ''}<b>${esc(main.text)}</b>${main.roll ? ` ${spellRollButtons(main.roll)}` : ''}</span>`
+          : `<span class="wl-k">${esc(s.school || '')}${s.duration ? ` · ${esc(s.duration)}` : ''}</span>`}
+        ${lines.length > 1 ? `<span class="wl-k">+${lines.length - 1} more</span>` : ''}
+        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${esc(key)}" aria-expanded="${open}" aria-label="Everything about ${esc(s.name)}">Details</button></div>
+      <div class="line-more"${open ? '' : ' hidden'}>
+        <span class="spell-row"><button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">About ${esc(s.name)}</button>
+          <button type="button" class="link" data-remove-spell="${esc(s.id)}">remove</button></span>
+        ${numbers.length ? `<span class="spell-numbers">${numbers.join('')}</span>` : '<p class="hint">No attack, save or damage to work out.</p>'}
+      </div></li>`;
   };
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {
@@ -150,6 +160,7 @@ function renderMySpells(app, view) {
   }
   $('my-spells').innerHTML = groups.join('') ||
     '<p class="hint">No spells yet. Choose a spell below, then "Add to my spells".</p>';
+  requestAnimationFrame(() => fitLines($('my-spells')));
 }
 
 // How many spells of one level the character keeps (My spells' level Details): known spells from the class table for

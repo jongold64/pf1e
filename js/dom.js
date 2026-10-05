@@ -2,6 +2,20 @@
 
 export const $ = id => document.getElementById(id);
 
+// One-line summaries (class "fit-line"): each one's text shrinks (down to 55%) until it fits on one line. A line on a
+// hidden tab has no width yet, so this runs again after every redraw, when a tab opens and when the window is resized.
+export function fitLines(root = document) {
+  for (const el of root.querySelectorAll('.fit-line')) {
+    el.style.fontSize = '';
+    if (!el.clientWidth) continue;
+    for (let size = 100; el.scrollWidth > el.clientWidth && size > 55; size -= 3) el.style.fontSize = `${size - 3}%`;
+  }
+}
+
+// Which one-line summaries have their Details open (by key: "armor", "spell-wizard-fireball", "item-0"...), kept across
+// redraws. A "Details" button with data-line-more="key" opens or closes the .line-more beside its line (app.js).
+export const openLines = new Set();
+
 export function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
