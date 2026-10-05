@@ -5,6 +5,7 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTot
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
 import { showArmorWhy } from './tab-armor.js';
+import { carryingCapacity, encumbrance } from './rules.js';
 
 let selectedId = null;
 let listed = false;
@@ -155,15 +156,43 @@ export async function renderEquipment(app, view) {
         .map(r => ({ label: r.label, text: r.weight === null ? 'no weight listed' : formatLbs(r.weight) })),
       note: 'Coins are not counted.' },
   };
+  // Gold: the class's starting gold and the wealth-by-level table (your level marked).
+  const sw = view.cls.starting_wealth;
+  moneyDetails.gold = { title: `Gold: ${formatGp(gold)}`, html: `
+    <p>${state.gold === null ? `You haven't entered an amount, so your ${esc(view.cls.name.toLowerCase())} starting gold is used.` : 'The amount you entered.'}
+      Everything bought (armor, weapons, equipment, magic items) is taken from it in <b>Left</b>.</p>
+    <h3>Starting gold (1st level)</h3>
+    <p>${start ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}average ${esc(formatGp(start))}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>
+    <h3>Wealth by level (characters made above 1st level)</h3>
+    <table class="skill-why"><tbody>${Object.entries(WEALTH_BY_LEVEL).map(([lv, gp]) => `<tr${Number(lv) === state.level ? ' class="mine"' : ''}>
+      <td>Level ${lv}${Number(lv) === state.level ? ' (you)' : ''}</td><td class="num">${esc(formatGp(gp))}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">Core Rulebook: a new character above 1st level starts with this much gear; spend no more than half on one item.</p>` };
+  // Carrying capacity for your Strength and size, and what each load does.
+  const strNow = view.stats.scores.str;
+  const cap = carryingCapacity(strNow, view.race.size);
+  const loadNow = encumbrance(carriedWeight, cap);
+  moneyDetails.carry = { title: `Carrying capacity (Str ${strNow}, ${view.race.size})`, html: `
+    <table class="skill-why"><thead><tr><th>Load</th><th class="num">Up to</th><th>What it does</th></tr></thead><tbody>
+      <tr${loadNow.load === 'light' ? ' class="mine"' : ''}><td>Light</td><td class="num">${cap.light} lbs.</td><td>nothing</td></tr>
+      <tr${loadNow.load === 'medium' ? ' class="mine"' : ''}><td>Medium</td><td class="num">${cap.medium} lbs.</td><td>max Dex +3, check penalty −3, slower speed, run ×4</td></tr>
+      <tr${loadNow.load === 'heavy' ? ' class="mine"' : ''}><td>Heavy</td><td class="num">${cap.heavy} lbs.</td><td>max Dex +1, check penalty −6, slower speed, run ×3</td></tr>
+      <tr><td>Lift over your head</td><td class="num">${cap.heavy} lbs.</td><td></td></tr>
+      <tr><td>Lift off the ground</td><td class="num">${cap.heavy * 2} lbs.</td><td>you can only stagger around</td></tr>
+      <tr><td>Push or drag</td><td class="num">${cap.heavy * 5} lbs.</td><td></td></tr></tbody></table>
+    <p>You carry <b>${esc(formatLbs(carriedWeight))}</b>: a <b>${esc(loadNow.load)}</b> load.
+      ${state.houseRules.encumbrance ? 'The Encumbrance house rule is on, so its effects count in your numbers.' : 'Switch on the Encumbrance house rule (Character tab) to count its effects.'}</p>
+    <p class="hint">Strength here includes active effects. Small characters carry ¾ as much, Large ones twice as much. A load\u2019s
+      Dex limit and check penalty don\u2019t add to armor\u2019s: the worse counts.</p>` };
   const details = key => ` <button type="button" class="skill-details" data-money-details="${key}" aria-label="What makes up this total">Details</button>`;
   $('money-summary').innerHTML = [
-    ['Gold', esc(formatGp(gold))],
+    ['Gold', esc(formatGp(gold)) + details('gold')],
     ['Armor and shield', esc(formatGp(armorSpend)) + details('armor')],
     ['Equipment', esc(formatGp(gearSpend)) + details('gear')],
     ['Weapons', esc(formatGp(weaponSpend)) + details('weapons')],
     ['Magic items', esc(formatGp(magic.cost)) + details('magic')],
     ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>${details('left')}`],
     ['Weight carried', esc(formatLbs(carriedWeight)) + details('weight')],
+    ['Carrying capacity', esc(`light ${cap.light}, medium ${cap.medium}, heavy ${cap.heavy} lbs. (${loadNow.load} now)`) + details('carry')],
     // Encumbrance house rule: the load and the limits for this character's Strength and size.
     ...(view.load ? [['Load', esc(`${view.load.load[0].toUpperCase()}${view.load.load.slice(1)} (light up to ${view.load.capacity.light} lbs., `
       + `medium ${view.load.capacity.medium}, heavy ${view.load.capacity.heavy})`)]] : []),
@@ -229,6 +258,7 @@ export function initEquipmentTab(app) {
     const b = e.target.closest('[data-money-details]');
     const d = b && moneyDetails[b.dataset.moneyDetails];
     if (!d) return;
+    if (d.html) { app.openDetail(d.title, d.html); return; }
     const rows = d.rows.length ? d.rows.map(r => `<tr><td>${esc(r.label)}${r.note ? ` <small class="muted">(${esc(r.note)})</small>` : ''}</td>
       <td class="num">${esc(r.text)}</td></tr>`).join('') : '<tr><td colspan="2" class="muted">Nothing yet.</td></tr>';
     app.openDetail(d.title, `<table class="skill-why"><tbody>${rows}</tbody>
