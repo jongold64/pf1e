@@ -1025,6 +1025,7 @@ function buildControls() {
   initEquipmentTab(app);
   initWeaponsTab(app);
   initSearch(app);
+  initGuide();
   initTabSearches();
 }
 
@@ -1945,6 +1946,32 @@ function renderClasses(view) {
       <ol class="features">${features}</ol>
     </details>`;
   }).join('');
+}
+
+// The Guide: a Details button on each section's heading opens the section in a popup, with a button to go to the tab it's
+// about (the heading names it: "Weapons tab", "Magic Items tab", "Search ...").
+function initGuide() {
+  const toTab = { character: 'character', abilities: 'abilities', classes: 'classes', skills: 'skills', feats: 'feats', armor: 'armor',
+                  weapons: 'weapons', spells: 'spells', 'magic items': 'magic-items', craft: 'craft', equipment: 'equipment' };
+  for (const d of document.querySelectorAll('#tab-guide details')) {
+    const summary = d.querySelector('summary');
+    if (!summary || summary.querySelector('.skill-details')) continue;
+    const title = summary.textContent.trim();
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'skill-details';
+    b.textContent = 'Details';
+    b.setAttribute('aria-label', `${title} in a popup`);
+    b.addEventListener('click', e => {
+      e.preventDefault();  // in the heading: don't open or close the section
+      const m = title.toLowerCase().match(/^(character|abilities|classes|skills|feats|armor|weapons|spells|magic items|craft|equipment) tab/);
+      const body = [...d.children].filter(x => x !== summary).map(x => x.outerHTML).join('');
+      openDetail(title, `<div class="guide-pop">${body}</div>`,
+        m ? [{ label: `Go to the ${m[1].replace(/\b\w/g, c => c.toUpperCase())} tab`, primary: true, run: () => showTab(toTab[m[1]]) }]
+          : /search/i.test(title) ? [{ label: 'Open Search', primary: true, run: () => $('char-search').click() }] : []);
+    });
+    summary.appendChild(b);
+  }
 }
 
 // A one-line summary's Details: opens or closes the rest of it (.line-more in the same .line-card), remembered by key.
