@@ -820,3 +820,5 @@ table.skill-why tr.over td { background: color-mix(in srgb, var(--danger, #b4231
 /* The one-line cards override older row styles: a block with a full border, and Details at the far right. */
 .my-spell-rows li.line-card, .my-spell-rows li.line-card:last-child { display: block; border: 1px solid var(--border); padding: 7px 10px; }
 .fit-line .skill-details.wl-more { margin-left: auto !important; }
+/* Craft card: Details beside its choices. */
+#craft-body .skill-details, #buy-body .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin: 4px 0 4px 4px; }

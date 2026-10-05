@@ -278,6 +278,77 @@ export function abilityPicker(app, category, picks, attrs) {
       </select>${browse}</div>`;
 }
 
+// A Details button beside one of the crafting card's choices (its popup is craftInfo).
+const info = (key, label) => ` <button type="button" class="skill-details" data-craft-info="${key}" aria-label="${esc(label)}">Details</button>`;
+
+// The popups behind those buttons: what each kind of item needs and costs, the enhancement bonuses, the caster level,
+// how requirements work, and the item or spell itself.
+function craftInfo(app, c, key) {
+  const form = c.form;
+  const have = new Set(app.view.haveFeats);
+  const feat = f => `${have.has(f) ? '✓' : '✗'} ${f}`;
+  const table = (head, rows) => `<table class="skill-why"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${r.map(x => `<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  if (key === 'kind') {
+    app.openDetail('What each kind of item needs', `${table(['Item', 'Feat', 'Lowest caster level', 'Price'], [
+        ['Magic weapon', feat('Craft Magic Arms and Armor'), '3 × its bonus', 'bonus² × 2,000 gp + 300 gp masterwork'],
+        ['Magic armor or shield', feat('Craft Magic Arms and Armor'), '3 × its bonus', 'bonus² × 1,000 gp + 150 gp masterwork'],
+        ['Potion (spells up to 3rd)', feat('Brew Potion'), 'the spell\u2019s', '50 gp × spell level × caster level'],
+        ['Scroll (any spell level)', feat('Scribe Scroll'), 'the spell\u2019s', '25 gp × spell level × caster level'],
+        ['Wand (spells up to 4th)', feat('Craft Wand'), 'the spell\u2019s', '750 gp × spell level × caster level'],
+        ['Wondrous item', feat('Craft Wondrous Item'), '3', 'as listed'], ['Ring', feat('Forge Ring'), '7', 'as listed'],
+        ['Rod', feat('Craft Rod'), '9', 'as listed'], ['Staff', feat('Craft Staff'), '11', 'as listed']])}
+      <p class="hint">${c.mode === 'buy' ? 'Buying or finding an item needs none of this: you pay the market price.'
+        : 'Making an item costs half its price in materials (a masterwork weapon or armor, and costly spell components, are paid in full), takes 8 hours per 1,000 gp of the price, and needs a Spellcraft check (DC 5 + caster level). Level 0 spells count as ½.'}</p>`);
+  }
+  if (key === 'enh') {
+    const weapon = form.kind === 'weapon';
+    const per = weapon ? 2000 : 1000;
+    app.openDetail(`${weapon ? 'Weapon' : 'Armor'} enhancement bonuses`, `${table(['Bonus', 'Price of the magic', 'Cost to make', 'Lowest caster level'],
+        [1, 2, 3, 4, 5].map(n => [`+${n}`, formatGp(n * n * per), formatGp(n * n * per / 2), String(3 * n)]))}
+      <p class="hint">Special abilities add their bonus to the total before it's squared (a +1 flaming ${weapon ? 'weapon' : 'armor'} is priced as +2),
+        and the total can't go above +10. The ${weapon ? 'weapon' : 'armor'} must be masterwork (${weapon ? '300' : '150'} gp, paid in full).</p>`);
+  }
+  if (key === 'cl') {
+    app.openDetail('Caster level', `<p>The caster level is how strongly the item casts its spell: a higher one makes the spell
+      stronger where it scales (more damage, longer duration, harder to dispel) and raises the price and cost (they multiply by
+      it) and the Spellcraft DC (5 + caster level). It can't be lower than the lowest level that can cast the spell, nor higher
+      than your own caster level when you make it.</p>`);
+  }
+  if (key === 'reqs') {
+    app.openDetail('Requirements', `<p>Each requirement you don't meet adds +5 to the Spellcraft DC, but you can still try. Two
+      can't be skipped: the item creation feat, and (for potions, scrolls and wands) the spell itself, which you must be able to
+      cast. Requirements the app checks are marked ✓ or ✗; tick "I meet this" for the ones it can't check, and count any others
+      with − / +.</p>`);
+  }
+  // The weapon, armor or spell itself, in a popup here (the Craft tab stays open).
+  if (key === 'target') {
+    if (form.kind === 'weapon') {
+      const e = app.state.weapons[form.weapon];
+      const w = e && app.data.weaponsById?.get(e.id);
+      if (!w) { app.openDetail('No weapon', '<p>Add a weapon on the Weapons tab first.</p>'); return; }
+      app.openDetail(weaponLabel(w, e), `<p class="hint">${esc(w.category || '')} · ${esc(w.proficiency || '')} · ${esc(w.source || '')}</p>
+        ${facts([['Damage (Medium)', w.damage?.m || null], ['Critical', w.critical || null], ['Range', w.range_ft ? `${w.range_ft} ft.` : null],
+                 ['Type', w.type || null], ['Special', (w.special || []).join(', ') || null], ['Price', w.price || null], ['Weight', w.weight_lbs ? `${w.weight_lbs} lbs.` : null]])}
+        ${w.description ? paragraphs(w.description) : ''}`);
+    } else {
+      const id = app.state[`${form.target === 'shield' ? 'shield' : 'armor'}Id`];
+      const a = id && app.data.armorById.get(id);
+      if (!a) { app.openDetail('Nothing worn', '<p>Choose armor or a shield on the Armor tab first.</p>'); return; }
+      app.openDetail(a.name, `${facts([[a.category === 'shield' ? 'Shield bonus' : 'Armor bonus', signed(a.bonus)], ['Max Dex bonus', a.max_dex === null ? 'no limit' : signed(a.max_dex)],
+                 ['Armor check penalty', a.check_penalty], ['Arcane spell failure', `${a.spell_failure}%`], ['Price', a.price_gp !== null ? formatGp(a.price_gp) : null]])}
+        ${a.description ? paragraphs(a.description) : ''}`);
+    }
+  }
+  if (key === 'spell' && form.spell) {
+    const sp = (app.data.spells || []).find(x => x.id === String(form.spell).split('|').pop());
+    if (sp) app.openDetail(sp.name, `<p class="hint">${esc(sp.school || '')} · ${esc(Object.entries(sp.levels || {}).map(([k, v]) => `${k} ${v}`).join(', '))}</p>
+      ${facts([['Casting time', sp.casting_time || null], ['Range', sp.range || null], ['Duration', sp.duration || null],
+               ['Saving throw', sp.saving_throw || null], ['Spell resistance', sp.spell_resistance || null]])}
+      ${paragraphs(sp.description || '')}`);
+  }
+}
+
 function kindControls(app, list, p, c) {
   const { state, data } = app;
   const form = c.form;
@@ -287,22 +358,22 @@ function kindControls(app, list, p, c) {
       ? `<label>Weapon <select data-craft="weapon">${state.weapons.map((e, i) => {
           const w = data.weaponsById?.get(e.id);
           return w ? `<option value="${i}"${i === form.weapon ? ' selected' : ''}>${esc(weaponLabel(w, e))}</option>` : '';
-        }).join('')}</select></label>`
+        }).join('')}</select></label>${info('target', 'The weapon')}`
       : `<label>Make magic <select data-craft="target">
           <option value="armor"${form.target === 'armor' ? ' selected' : ''}>worn armor${data.armorById.get(state.armorId) ? ` (${esc(data.armorById.get(state.armorId).name)})` : ''}</option>
           <option value="shield"${form.target === 'shield' ? ' selected' : ''}>shield${data.armorById.get(state.shieldId) ? ` (${esc(data.armorById.get(state.shieldId).name)})` : ''}</option>
-        </select></label>`;
+        </select></label>${info('target', 'The armor or shield')}`;
     return `${pickTarget}
       <label>Enhancement bonus <select data-craft="enh">${[1, 2, 3, 4, 5].map(n =>
-        `<option value="${n}"${n === form.enh ? ' selected' : ''}>+${n}</option>`).join('')}</select></label>
+        `<option value="${n}"${n === form.enh ? ' selected' : ''}>+${n}</option>`).join('')}</select></label>${info('enh', 'Each enhancement bonus')}
       ${abilityPicker(app, isWeapon ? 'Weapon Special Abilities' : 'Armor and Shield Special Abilities', form.abilities,
                       { option: 'data-craft-option', remove: 'data-craft-remove', add: 'data-craft="add-ability"' })}`;
   }
   if (form.kind === 'spell') {
     const kindSelect = `<label>${c.mode === 'buy' ? 'Add a' : 'Make a'} <select data-craft="spellKind">${Object.entries(SPELL_ITEMS).map(([k, v]) =>
-      `<option value="${k}"${k === form.spellKind ? ' selected' : ''}>${v.label.toLowerCase()} (spells up to level ${v.maxSpellLevel})</option>`).join('')}</select></label>`;
+      `<option value="${k}"${k === form.spellKind ? ' selected' : ''}>${v.label.toLowerCase()} (spells up to level ${v.maxSpellLevel})</option>`).join('')}</select></label>${info('kind', 'Potions, scrolls and wands')}`;
     const clInput = p.clRange ? `<label>Caster level <select data-craft="cl">${Array.from({ length: p.clRange[1] - p.clRange[0] + 1 }, (_, i) => p.clRange[0] + i)
-      .map(n => `<option value="${n}"${n === p.itemCL ? ' selected' : ''}>${n}</option>`).join('')}</select></label>` : '';
+      .map(n => `<option value="${n}"${n === p.itemCL ? ' selected' : ''}>${n}</option>`).join('')}</select></label>${info('cl', 'What the caster level changes')}` : '';
     if (c.mode === 'buy') {
       // Any spell, grouped by its lowest level on any class list.
       const max = SPELL_ITEMS[form.spellKind].maxSpellLevel;
@@ -314,7 +385,7 @@ function kindControls(app, list, p, c) {
       const groups = [...byLevel.keys()].sort((a, b) => a - b).map(lv => `<optgroup label="Level ${lv}">${byLevel.get(lv)
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(s => `<option value="${esc(s.id)}"${form.spell === s.id ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</optgroup>`).join('');
-      return `${kindSelect}<label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${clInput}`;
+      return `${kindSelect}<label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${form.spell ? info('spell', 'The spell') : ''}${clInput}`;
     }
     const canCast = canCastWith(app, list);
     const groups = list.map(x => {
@@ -325,7 +396,7 @@ function kindControls(app, list, p, c) {
         `<option value="${esc(x.cls.id)}|${esc(s.id)}"${form.spell === `${x.cls.id}|${s.id}` ? ' selected' : ''}>${esc(s.name)} (level ${s.levels[x.cls.id]})</option>`).join('')}</optgroup>` : '';
     }).join('');
     return `${kindSelect}
-      <label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${clInput}
+      <label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${form.spell ? info('spell', 'The spell') : ''}${clInput}
       ${list.some(x => x.spontaneous) ? '<p class="hint">Sorcerers, bards and other spontaneous casters can use only spells they know: add them under My spells on the Spells tab.</p>' : ''}`;
   }
   const item = data.itemsById.get(form.itemId);
@@ -340,7 +411,7 @@ function renderCard(app, c) {
   const list = casters(app);
   const p = plan(app, list, c);
   const kinds = `<label>${c.mode === 'buy' ? 'What to add' : 'What to make'} <select data-craft="kind">${c.kinds.map(([k, label]) =>
-    `<option value="${k}"${k === form.kind ? ' selected' : ''}>${label}</option>`).join('')}</select></label>`;
+    `<option value="${k}"${k === form.kind ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${info('kind', 'What each kind of item needs')}`;
   if (p.empty) {
     $(c.body).innerHTML = `${kinds}${kindControls(app, list, p, c)}<p class="hint">${esc(p.empty)}</p>`;
     return;
@@ -403,7 +474,7 @@ function renderCard(app, c) {
       ${p.noRequirements ? '<li class="hint">The data doesn\'t list this item\'s requirements (most Ultimate Equipment items); count any you don\'t meet below.</li>' : ''}
     </ul>
     <div class="craft-extra">
-      <span>Other requirements you don't meet</span>
+      <span>Other requirements you don't meet${info('reqs', 'How requirements work')}</span>
       <span class="base"><button type="button" data-craft-extra="-1" aria-label="One fewer">−</button><span class="value">${form.extraUnmet}</span>
         <button type="button" data-craft-extra="1" aria-label="One more">+</button></span>
       <label class="check-row"><input type="checkbox" data-craft="rushed"${form.rushed ? ' checked' : ''}> Rush it (half the time, +5 DC)</label>
@@ -486,6 +557,8 @@ function initCard(app, c) {
     redraw();
   });
   card.addEventListener('click', e => {
+    const ci = e.target.closest('[data-craft-info]');
+    if (ci) { e.preventDefault(); craftInfo(app, c, ci.dataset.craftInfo); return; }
     const w = e.target.closest('[data-craft-why]');
     const d = w && cardWhy.get(c.mode)?.[w.dataset.craftWhy];
     if (d) {
