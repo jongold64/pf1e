@@ -25,6 +25,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_foundry_talents.py', 'data/talents.json'),
                     # Oracle mysteries (class skills, bonus spells, revelations, final revelation) from the Archives of Nethys.
                     ('build_aon_mysteries.py', 'data/mysteries.json'),
+                    # What each skill does (Core Rulebook), for the Skills tab's Details.
+                    ('build_skills.py', 'data/skills.json'),
                     ('build_feats.py', 'data/feats.json'),
                     # Paizo feats from later books, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py.
                     *([('build_d20_feats.py', 'data/feats.json')]

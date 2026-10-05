@@ -2303,6 +2303,21 @@ function openSpecialtyPicker(base) {
     </div>`);
 }
 
+// What a skill does, as the SRD gives it (data/skills.json, Core Rulebook): its description, then each section (Check,
+// Action, Try Again, Special, Untrained...) with its tables. "Knowledge (arcana)", "Craft (bows)": the skill's own entry.
+function skillTextHtml(name) {
+  const base = splitSkill(name).base || name;
+  const s = data.skillTextByName?.get(base) || data.skillTextByName?.get(name);
+  if (!s) return '';
+  const blocks = list => list.map(x => (x.table !== undefined
+    ? `<div class="table-scroll"><table class="skill-why srd-table">${x.table && x.table !== x.rows[0]?.[0] ? `<caption>${esc(x.table)}</caption>` : ''}
+        ${x.rows.map((r, i) => `<tr>${r.map(c => (i ? `<td>${esc(c)}</td>` : `<th>${esc(c)}</th>`)).join('')}</tr>`).join('')}</table></div>`
+    : paragraphs(x.text))).join('');
+  return `<div class="skill-text"><h3>What ${esc(base)} does</h3><p>${esc(s.description)}</p>
+    ${s.sections.map(sec => `${sec.name ? `<h4>${esc(sec.name)}</h4>` : ''}${blocks(sec.blocks)}`).join('')}
+    <p class="hint">${esc(s.source)}, ${esc(base)} skill.</p></div>`;
+}
+
 // The Skills tab's Details popup for one skill, and the one for skill ranks (set by renderSkills, which has what they need).
 let showSkillDetails = () => {};
 let showRankDetails = () => {};
@@ -2362,7 +2377,8 @@ function renderSkills(race, classes, scores, featNames) {
       ${b.usable ? '' : '<p class="warning">Trained only: the Core Rulebook allows no use of this skill without at least 1 rank. The Roll button is there in case your group allows it.</p>'}
       ${b.limited ? `<p class="hint">${esc(b.limited)}</p>` : ''}
       ${info.acp && !checkPenalty ? '<p class="hint">Armor check penalties would apply to this skill.</p>' : ''}
-      ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}`);
+      ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}
+      ${skillTextHtml(name)}`);
   };
   const details = name => `<button type="button" class="skill-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}">Details</button>`;
   $('skill-rows').innerHTML =
@@ -2911,7 +2927,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -2923,6 +2939,7 @@ async function start() {
       fetch('data/drawbacks.json').then(r => r.json()),
       fetch('data/talents.json').then(r => r.json()),
       fetch('data/mysteries.json').then(r => r.json()),
+      fetch('data/skills.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -2942,6 +2959,7 @@ async function start() {
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
+  data.skillTextByName = new Map(data.skillTexts.map(s => [s.name, s]));
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));

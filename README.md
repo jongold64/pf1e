@@ -94,6 +94,10 @@ All text is plain text (no HTML). Every record has an `id` (like `half-orc` or `
 - `level` (the minimum class level its text names, or null), `repeatable`, `mystery` (revelations), `school`
   (occultist focus powers)
 
+**Skill** (`skills.json`, for example `acrobatics`): `description`, `sections` ({ `name`: Check, Action, Try Again...,
+`blocks`: paragraphs `{ text }` or tables `{ table, rows }` with the header row first}). Knowledge, Craft, Perform and
+Profession are one record each.
+
 **Oracle mystery** (`mysteries.json`, for example `flame`): `deities`, `class_skills`, `bonus_spells` (as printed),
 `revelations` (names, matched to `talents.json` by name), `final_revelation`.
 
@@ -107,7 +111,7 @@ All text is plain text (no HTML). Every record has an `id` (like `half-orc` or `
 - A few facts missing from the source text were filled in by hand in `scripts/build_races.py`
   (half-elf and half-orc subtypes, svirfneblin speed, gathlain and wyrwood creature types).
 - The source has no Benefit text for the feat Talented Magician.
-- Skill descriptions are not included yet.
+- Skill descriptions cover the Core Rulebook text only (later books' new skill uses aren't included).
 
 ## Spot checks
 

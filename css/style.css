@@ -826,3 +826,10 @@ table.skill-why tr.over td { background: color-mix(in srgb, var(--danger, #b4231
 .guide summary .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 26px; padding: 1px 8px; margin-left: 8px; }
 .guide-pop ul { padding-left: 20px; }
 .guide-pop li { margin-bottom: 6px; }
+/* A skill's SRD text in its Details popup. */
+.skill-text { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+.skill-text h4 { margin: 12px 0 4px; }
+table.srd-table { margin: 6px 0 10px; }
+table.srd-table th { font-size: 0.85rem; }
+table.srd-table td { font-size: 0.85rem; }
+table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
