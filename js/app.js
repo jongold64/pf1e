@@ -1387,21 +1387,35 @@ function talentPicker(cls, level, openFeatures) {
           <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
             : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
           <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
-      }).join('')}</ul>${rule.browse && open.length ? browseTalents(cls, rule, open[0], openFeatures) : ''}`;
+      }).join('')}</ul>${rule.browse && open.length ? browseTalents(cls, rule, open, openFeatures) : ''}`;
   }).join('')}</div>`;
 }
 
-// Every option of a one-time pick (the oracle's curse) as a list, each with Details (and Choose in the popup).
-function browseTalents(cls, rule, slot, openFeatures) {
-  const opts = talentOptions(slot, data.talents).sort((a, b) => a.talent.name.localeCompare(b.talent.name));
+// Every option of a rule (the oracle's curse, revelations) as a list, each with Details. Choose in the popup fills the
+// first empty pick it fits (its level); a chosen one is ticked, and its popup has Change and Remove.
+function browseTalents(cls, rule, slots, openFeatures) {
+  const last = slots[slots.length - 1];
+  const mysteryList = rule.needs === 'mystery' ? data.mysteryByName.get(state.mystery) : null;
+  const elsewhere = Object.entries(state.talents).filter(([k]) => !slots.some(s => s.id === k)).map(([, v]) => v);
+  const opts = talentOptions(last, data.talents, { taken: elsewhere, mystery: state.mystery, revelationNames: mysteryList?.revelations })
+    .sort((a, b) => a.talent.name.localeCompare(b.talent.name))
+    .map(({ talent: t, why }) => {
+      const mineSlot = slots.find(s => state.talents[s.id] === t.id);
+      const target = slots.find(s => !state.talents[s.id] && (!t.level || t.level <= s.classLevel));
+      const full = slots.every(s => state.talents[s.id]);
+      return { t, slot: mineSlot || target, why: mineSlot ? '' : why || (full ? 'every pick is chosen' : !target ? `needs ${ordinal(t.level)} level` : '') };
+    });
   const key = `tbrowse-${cls.id}-${rule.key}`;
+  const what = rule.plural || `${rule.label}s`;
   return `<details class="arch-feature arch-browse" data-key="${esc(key)}"${openFeatures?.has(key) ? ' open' : ''}>
-      <summary>Browse all ${opts.length} ${esc(pluralOf(rule) === rule.label ? `${rule.label.toLowerCase()}s` : pluralOf(rule).toLowerCase())}</summary>
-      <ul class="pick-list">${opts.map(({ talent: t, why }) => {
-        const mine = state.talents[slot.id] === t.id;
-        return `<li class="with-details"><button type="button" data-talent-browse="${esc(t.id)}" data-slot="${esc(slot.id)}" data-why="${esc(why)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(t.name)}
-            <small>${esc(why || t.source)}</small></button>
-          <button type="button" class="skill-details" data-talent-browse="${esc(t.id)}" data-slot="${esc(slot.id)}" data-why="${esc(why)}" aria-label="${esc(t.name)} in a popup">Details</button></li>`;
+      <summary>Browse all ${opts.length} ${esc(what === rule.label ? `${what.toLowerCase()}s` : what.toLowerCase())}${mysteryList ? ` (${esc(mysteryList.name)} mystery)` : ''}</summary>
+      ${rule.needs === 'mystery' && !mysteryList ? '<p class="hint">Choose your mystery to see only its revelations.</p>' : ''}
+      <ul class="pick-list">${opts.map(({ t, slot, why }) => {
+        const mine = slot && state.talents[slot.id] === t.id;
+        const attrs = `data-talent-browse="${esc(t.id)}" data-slot="${esc(slot?.id || '')}" data-why="${esc(why)}"`;
+        return `<li class="with-details"><button type="button" ${attrs}${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(t.name)}
+            <small>${esc(mine ? `chosen at ${ordinal(slot.classLevel)} level` : why || `${t.source}${t.level ? ` · ${ordinal(t.level)} level` : ''}`)}</small></button>
+          <button type="button" class="skill-details" ${attrs} aria-label="${esc(t.name)} in a popup">Details</button></li>`;
       }).join('')}</ul></details>`;
 }
 
