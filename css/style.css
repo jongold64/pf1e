@@ -757,3 +757,8 @@ table.skill-why th.num { text-align: right; }
 .talent-list .talent-option .talent-buttons { flex: none; display: flex; gap: 6px; align-items: center; }
 .mystery-pick { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .abilities-card .abilities button.skill-details { width: auto; padding: 2px 8px; font-size: 0.8rem; min-height: 30px; }
+/* Class Details: the level table (your levels shaded). */
+.table-scroll { overflow-x: auto; }
+table.class-table td, table.class-table th { font-size: 0.85rem; vertical-align: top; }
+table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.class-line summary button.skill-details, .class-block summary button.skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin-left: 6px; }

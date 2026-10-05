@@ -759,6 +759,17 @@ function buildControls() {
     if (from === undefined || !e.target.value) return;
     update({ classLevels: state.classLevels.map(id => (id === from ? e.target.value : id)) });
   });
+  // Details on a class line or a class's section (inside its heading, so it doesn't open or close it).
+  for (const box of ['class-levels', 'class-info']) {
+    $(box).addEventListener('click', e => {
+      const b = e.target.closest('[data-class-pop]');
+      if (!b) return;
+      e.preventDefault();
+      popClass(b.dataset.classPop);
+    });
+  }
+  $('add-level-details').addEventListener('click', () => popClass($('add-level-class').value || state.classLevels.at(-1)));
+  $('favored-details').addEventListener('click', () => popFavored());
   $('class-levels').addEventListener('click', e => {
     const more = e.target.closest('[data-class-more]');
     if (more && state.classLevels.length < 20) update({ classLevels: [...state.classLevels, more.dataset.classMore] });
@@ -1381,6 +1392,58 @@ function renderFavoredSummary(view) {
       ${option ? '<button type="button" data-favored-all="option">Racial option</button>' : ''}</div>`;
 }
 
+// A class in a popup: book, hit die, skill ranks, alignment, starting wealth, class skills, a prestige class's
+// requirements, and its level table (base attack bonus, saves, features) with the levels you have marked.
+function popClass(id) {
+  const c = data.classes.find(x => x.id === id);
+  if (!c) return;
+  const mine = view.counts.find(e => e.cls.id === id)?.level || 0;
+  const req = view.requirements.get(id);
+  const reqHtml = req ? `<h3>Requirements ${STATUS_ICON[req.status]} ${esc(STATUS_WORD[req.status])}</h3>
+      <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>`
+    : c.category === 'prestige' && c.requirements ? `<h3>Requirements</h3>${paragraphs(Array.isArray(c.requirements) ? c.requirements.map(r => r.text || r).join('\n\n') : String(c.requirements))}` : '';
+  const rows = c.progression.map(r => `<tr${r.level <= mine ? ' class="mine"' : ''}><td>${r.level}</td><td>${esc(formatBab(r.bab))}</td>
+      <td>+${r.fort}</td><td>+${r.ref}</td><td>+${r.will}</td><td>${esc((r.special || []).join(', '))}</td></tr>`).join('');
+  const total = state.classLevels.length;
+  openDetail(c.name, `<p class="hint">${esc(c.category)} class · ${esc(sourceText(c))}${mine ? ` · you have ${mine} level${mine === 1 ? '' : 's'}` : ''}</p>
+    ${paragraphs(c.summary || c.role || '')}
+    ${facts([['Hit die', c.hit_die], ['Skill ranks per level', `${c.skill_ranks_per_level} + Int modifier`], ['Alignment', c.alignment || null],
+             ['Starting wealth', c.starting_wealth?.dice ? `${c.starting_wealth.dice} (average ${c.starting_wealth.average_gp} gp)` : null],
+             ['Class skills', (c.class_skills || []).map(s => s.skill).join(', ') || null]])}
+    ${reqHtml}
+    <h3>Level table</h3>
+    <div class="table-scroll"><table class="skill-why class-table"><thead><tr><th>Level</th><th>Base attack</th><th>Fort</th><th>Ref</th><th>Will</th><th>Special</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    ${mine ? '<p class="hint">Your levels are shaded. Tap a feature in the class\u2019s section to read it.</p>' : ''}`,
+    [...(total < 20 ? [{ label: `Add a level of ${c.name}`, primary: true, run: () => update({ classLevels: [...state.classLevels, id] }) }] : []),
+     ...(mine && total > 1 ? [{ label: `Remove a ${c.name} level`, run: () => {
+       const i = state.classLevels.lastIndexOf(id);
+       update({ classLevels: state.classLevels.filter((_, j) => j !== i), favoredPicks: state.favoredPicks.filter((_, j) => j !== i) });
+     } }] : [])]);
+}
+
+// Favored class bonuses in a popup: what's chosen at each favored class level, what it all adds up to, and every
+// favored class option the race has.
+function popFavored() {
+  const fav = view.classes.find(c => c.id === view.favoredClassId);
+  if (!fav) return;
+  const picks = view.favoredPicks.map((p, i) => [i + 1, p]).filter(([, p]) => p);
+  const option = favoredOption(view.race, fav);
+  const n = k => picks.filter(([, p]) => p === k).length;
+  const label = { hp: '+1 hit point', skill: '+1 skill rank', option: 'racial option' };
+  const optTotal = option && n('option') ? favoredOptionTotal(option, n('option')) : '';
+  openDetail(`Favored class: ${fav.name}`, `
+    <p>Each level you take in your favored class gives one extra: +1 hit point, +1 skill rank, or your race's option for
+      that class. Other classes' levels give none.</p>
+    <table class="skill-why"><tbody>${picks.map(([lv, p]) => `<tr><td>Level ${lv}</td><td>${esc(label[p])}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td><b>In all</b></td><td><b>${esc([n('hp') && `+${n('hp')} hit points`, n('skill') && `+${n('skill')} skill ranks`,
+        n('option') && `racial option ×${n('option')}${optTotal ? ` (${optTotal})` : ''}`].filter(Boolean).join(', ') || 'none yet')}</b></td></tr></tfoot></table>
+    ${option ? `<p><b>${esc(view.race.name)} option for ${esc(fav.name)}:</b> ${esc(option.text)}</p>`
+      : `<p class="hint">${esc(view.race.name)} has no favored class option for ${esc(fav.name)}.</p>`}
+    <details class="rules"><summary>Every ${esc(view.race.name)} favored class option (${(view.race.favored_class_options || []).length})</summary>
+      <ul class="plain-list">${(view.race.favored_class_options || []).map(o => `<li><b>${esc(o.class)}:</b> ${esc(o.text)}</li>`).join('')}</ul></details>`);
+}
+
 // The domains a class has, one line each for the printed sheet: powers (with the level they start at) and spells.
 function domainLines(clsId) {
   if (clsId === 'druid' && state.natureBond !== 'domain') return ['Nature bond: animal companion'];
@@ -1758,7 +1821,8 @@ function renderClasses(view) {
         ${choicesAt(i + 1).map(t => `<div class="level-choice">${esc(t)}</div>`).join('')}</li>`).join('');
     return `<li><details class="class-line" data-class-line="${esc(id)}"${openLines.has(id) ? ' open' : ''}>
       <summary><b>${esc(c.name)}</b> <span class="count">${levels.length} level${levels.length === 1 ? '' : 's'}</span>
-        <small class="muted">(level${levels.length === 1 ? '' : 's'} ${ranges(levels.map(i => i + 1))})</small> ${req ? STATUS_ICON[req.status] : ''}</summary>
+        <small class="muted">(level${levels.length === 1 ? '' : 's'} ${ranges(levels.map(i => i + 1))})</small> ${req ? STATUS_ICON[req.status] : ''}
+        <button type="button" class="skill-details" data-class-pop="${esc(id)}" aria-label="${esc(c.name)} in a popup">Details</button></summary>
       <div class="class-line-body">
         <div class="slot-buttons">
           <button type="button" data-class-more="${esc(id)}"${classLevels.length >= 20 ? ' disabled' : ''}>+ Add a ${esc(c.name)} level</button>
@@ -1833,7 +1897,8 @@ function renderClasses(view) {
     const isOpen = open.has(e.cls.id) || (req && req.status !== 'met');
     const names = e.cls.archetypes?.length ? ` · ${esc(e.cls.archetypes.join(', '))}` : '';
     return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
-      <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level</summary>
+      <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level
+        <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
       ${reqHtml}
       ${domainPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}

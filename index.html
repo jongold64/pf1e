@@ -155,10 +155,12 @@
         <div class="slot-buttons add-level-row">
           <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
           <button type="button" id="add-level">Add</button>
+          <button type="button" id="add-level-details" class="skill-details" aria-label="The chosen class in a popup">Details</button>
           <button type="button" id="remove-level">Remove last level</button>
         </div>
         <div class="favored-row">
           <label>Favored class <select id="favored-class"></select></label>
+          <button type="button" id="favored-details" class="skill-details" aria-label="Favored class bonuses in a popup">Details</button>
           <div id="favored-summary" class="favored-summary"></div>
         </div>
         <div id="caster-choices"></div>
@@ -486,6 +488,11 @@
               (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the
               choices made there (favored class bonus, feats, traits, ability increases), add or remove a level of it, or change it
               to another class. In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level.</li>
+            <li><b>Details</b> on a class line, on a class's section, or beside <b>Add a level of</b> (for the class chosen there)
+              shows the class: book, hit die, skill ranks, alignment, class skills, requirements for a prestige class, and its
+              level table (base attack, saves and features) with your levels marked, with Add a level and Remove a level.
+              <b>Details</b> beside <b>Favored class</b> shows what your favored class bonuses add up to and every favored class
+              option your race has.</li>
             <li>Open a class's section to add <b>archetypes</b> and to see its features by level: tap any feature to read what it does.
               Struck-out features were replaced by an archetype; coloured ones come from it.</li>
             <li>Under the archetype list, <b>Browse all … archetypes</b> lists every one with why it can't be taken (if it can't);
