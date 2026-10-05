@@ -905,14 +905,8 @@ function buildControls() {
       const { [name]: _, ...rest } = state.skills;
       update({ skills: next ? { ...rest, [name]: next } : rest });
     }
-    const add = e.target.closest('[data-add-specialty]');
-    if (add) {
-      const base = add.dataset.addSpecialty;
-      const input = $('skill-rows').querySelector(`input[data-specialty-for="${base}"]`);
-      const specialty = input.value.trim().replace(/[()]/g, '').toLowerCase();
-      const name = `${base} (${specialty})`;
-      if (specialty && !state.specialties.includes(name)) update({ specialties: [...state.specialties, name] });
-    }
+    const open = e.target.closest('[data-open-specialty]');
+    if (open) openSpecialtyPicker(open.dataset.openSpecialty);
     const remove = e.target.closest('[data-remove-specialty]');
     if (remove) {
       const name = remove.dataset.removeSpecialty;
@@ -920,17 +914,24 @@ function buildControls() {
       update({ specialties: state.specialties.filter(n => n !== name), skills: rest });
     }
   });
-  // Choosing a craft from the list adds it.
-  $('skill-rows').addEventListener('change', e => {
-    if (!e.target.matches('[data-craft-pick]') || !e.target.value) return;
-    const name = `Craft (${e.target.value})`;
+  // The Craft / Perform / Profession popup: tap one from the list, or type your own and press Add (or Enter).
+  const addSpecialty = (base, value) => {
+    const specialty = String(value || '').trim().replace(/[()]/g, '').toLowerCase();
+    const name = `${base} (${specialty})`;
+    if (!specialty) return;
     if (!state.specialties.includes(name)) update({ specialties: [...state.specialties, name] });
+    $('detail-dialog').close();
+  };
+  $('detail-body').addEventListener('click', e => {
+    const box = e.target.closest('.specialty-picker');
+    if (!box) return;
+    const pick = e.target.closest('[data-specialty-pick]');
+    if (pick) addSpecialty(box.dataset.base, pick.dataset.specialtyPick);
+    if (e.target.closest('[data-specialty-add]')) addSpecialty(box.dataset.base, box.querySelector('input').value);
   });
-  // Enter in a specialty box works like its Add button.
-  $('skill-rows').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && e.target.dataset.specialtyFor) {
-      $('skill-rows').querySelector(`[data-add-specialty="${e.target.dataset.specialtyFor}"]`).click();
-    }
+  $('detail-body').addEventListener('keydown', e => {
+    const box = e.target.closest('.specialty-picker');
+    if (box && e.key === 'Enter' && e.target.matches('input')) { e.preventDefault(); addSpecialty(box.dataset.base, e.target.value); }
   });
 
   // Feats
@@ -2206,6 +2207,28 @@ function showExtraHp() {
     <h3>Temporary hit points</h3><ul class="xtra-list">${rows}</ul></div>`);
 }
 
+// Perform types (Core Rulebook) and the Core Rulebook's example professions, offered when adding one.
+const PERFORM_TYPES = ['act', 'comedy', 'dance', 'keyboard instruments', 'oratory', 'percussion instruments', 'sing', 'string instruments', 'wind instruments'];
+const PROFESSIONS = ['architect', 'baker', 'barrister', 'brewer', 'butcher', 'clerk', 'cook', 'courtesan', 'driver', 'engineer',
+  'farmer', 'fisherman', 'gambler', 'gardener', 'herbalist', 'innkeeper', 'librarian', 'merchant', 'midwife', 'miller', 'miner',
+  'porter', 'sailor', 'scribe', 'shepherd', 'soldier', 'stable master', 'tanner', 'trapper', 'woodcutter'];
+
+// Adding a Craft, Perform or Profession skill, in a popup: the usual ones to tap (ones you have are left out), and a box
+// to type any other.
+function openSpecialtyPicker(base) {
+  const list = { Craft: CRAFTS, Perform: PERFORM_TYPES, Profession: PROFESSIONS }[base] || [];
+  const left = list.filter(c => !state.specialties.includes(`${base} (${c})`));
+  const what = base === 'Craft' ? 'craft' : base === 'Perform' ? 'type of performance' : 'profession';
+  openDetail(`Add a ${what}`, `<div class="specialty-picker" data-base="${esc(base)}">
+      <ul class="pick-list specialty-list">${left.map(c => `<li><button type="button" data-specialty-pick="${esc(c)}">${esc(c[0].toUpperCase() + c.slice(1))}</button></li>`).join('')}</ul>
+      <div class="add-specialty">
+        <input type="text" placeholder="Or type another ${esc(what)}" aria-label="Another ${esc(what)}">
+        <button type="button" class="primary" data-specialty-add>Add</button>
+      </div>
+      <p class="hint">It becomes its own skill row (${esc(base)} (…)) where you put ranks.${base === 'Perform' ? ' A bard\u2019s versatile performance uses these.' : ''}</p>
+    </div>`);
+}
+
 // The Skills tab's Details popup for one skill, and the one for skill ranks (set by renderSkills, which has what they need).
 let showSkillDetails = () => {};
 let showRankDetails = () => {};
@@ -2282,13 +2305,7 @@ function renderSkills(race, classes, scores, featNames) {
       const untrained = skillTotal({ name, ranks: 0, scores, isClassSkill: false, checkPenalty, effectBonus: view.stats.fx.skills + flawSkill(name) });
       return `<tr class="family" data-row-skill="${esc(name)}">
         <td><div class="skill-name">${esc(name)} ${tags}</div>
-          ${name === 'Craft' ? `<div class="add-specialty"><select data-craft-pick aria-label="Add a Craft skill">
-              <option value="">Add a craft…</option>${CRAFTS.filter(c => !state.specialties.includes(`Craft (${c})`))
-                .map(c => `<option value="${esc(c)}">${esc(c[0].toUpperCase() + c.slice(1))}</option>`).join('')}</select></div>` : ''}
-          <div class="add-specialty">
-            <input type="text" data-specialty-for="${esc(name)}" placeholder="${name === 'Craft' ? 'Or type another craft' : `Add a specialty, e.g. ${name === 'Perform' ? 'sing' : 'sailor'}`}" aria-label="${esc(name)} specialty">
-            <button type="button" data-add-specialty="${esc(name)}">Add</button>
-          </div></td>
+          <button type="button" class="add-specialty-button" data-open-specialty="${esc(name)}">+ Add a ${esc(name === 'Craft' ? 'craft' : name === 'Perform' ? 'type of performance' : 'profession')}</button></td>
         <td></td>
         <td class="total">${signed(untrained.total)}${rollButton({ title: `${name} check (untrained)`, check: name, plain: true, groups: [{ attacks: [untrained.total] }] })}${details(name)}</td>
       </tr>`;
