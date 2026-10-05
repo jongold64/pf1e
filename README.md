@@ -88,6 +88,12 @@ All text is plain text (no HTML). Every record has an `id` (like `half-orc` or `
 - `benefit`, `normal`, `special`; story feats also have `goal` and `completion_benefit`
 - Mythic feats have `mythic_of` pointing to the regular feat
 
+**Class talent** (`talents.json`, for example `powerful-blow`): the options classes choose at set levels.
+
+- `kind` (`rage-power`, `rogue-talent`, `hex`, `mercy`, `ki-power`, ...), `classes` (class ids that list it), `text`
+- `level` (the minimum class level its text names, or null), `repeatable`, `mystery` (revelations), `school`
+  (occultist focus powers)
+
 916 of 1,227 feats have prerequisites that are fully machine-readable. The rest include at least one
 `other` entry, such as "Small size or smaller" or "proficiency with the selected weapon".
 

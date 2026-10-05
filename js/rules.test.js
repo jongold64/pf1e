@@ -17,7 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize } from './effects.js';
 import { flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, slotKinds } from './talents.js';
+import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf } from './talents.js';
 import { companionLevel, companionStats, parseAttacks } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1391,7 +1391,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('barbarian 7: rage powers at 2, 4, 6', talentSlots('barbarian', 7).map(s => s.classLevel).join(), '2,4,6');
   check('witch 1: one hex', talentSlots('witch', 1).length, 1);
   check('bard 6: two versatile performances', talentSlots('bard', 6).length, 2);
-  check('fighter: none', talentSlots('fighter', 20).length, 0);
+  check('wizard: none', talentSlots('wizard', 20).length, 0);
   const rogue = talentSlots('rogue', 10);
   check('rogue 8th slot: rogue talents only', slotKinds(rogue[3]).join(), 'rogue-talent');
   check('rogue 10th slot: advanced talents too', slotKinds(rogue[4]).join(), 'rogue-talent,advanced-rogue-talent');
@@ -1401,7 +1401,27 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('options: the slot kind only', opts.length, 3);
   check('taken / too high / repeatable', opts.map(o => o.why || 'ok').join(), 'already taken,needs 8th level,ok');
   const rev = [{ id: 'x', kind: 'revelation', mystery: 'Flame' }, { id: 'y', kind: 'revelation', mystery: 'Bones' }];
-  check('oracle: only the mystery revelations', talentOptions(talentSlots('oracle', 1)[0], rev, { mystery: 'Flame' }).map(o => o.talent.id).join(), 'x');
+  check('paladin 9: mercies at 3, 6, 9', talentSlots('paladin', 9).map(s => s.classLevel).join(), '3,6,9');
+  check('unchained monk 5: ki powers 4 and a style strike', talentSlots('monk-unchained', 5).map(s => s.rule.key).join(), 'ki-power,style-strike');
+  check('skald 7: 2 rage powers, 2 versatile performances', talentSlots('skald', 7).length, 4);
+  check('ranger favored enemy: a fixed list', !!ruleOf('ranger|favored-enemy|5').choices.Undead, true);
+  const stance = [{ id: 's1', name: 'Accurate Stance (Unchained)', kind: 'rage-power' }, { id: 'f1', name: 'Animal Fury', kind: 'rage-power' },
+                  { id: 'f2', name: 'Animal Fury (Unchained)', kind: 'rage-power' }];
+  check('core barbarian: no unchained versions', talentOptions(talentSlots('barbarian', 2)[0], stance).map(o => o.talent.id).join(), 'f1');
+  check('unchained barbarian: the unchained version only', talentOptions(talentSlots('barbarian-unchained', 2)[0], stance).map(o => o.talent.id).join(), 's1,f2');
+  const arch = (text, cls = 'barbarian') => archetypeEffects(cls, [{ name: 'A', features: [{ name: 'F', text }] }]);
+  check('archetype: replaces the rage powers gained at 4th, 8th, and 12th levels',
+    Object.keys(arch('This replaces the rage powers gained at 4th, 8th, and 12th levels.').replaced['rage-power']).join(), '4,8,12');
+  check('archetype: the rage power gained at second level', Object.keys(arch('This replaces the rage power gained at second level.').replaced['rage-power']).join(), '2');
+  check('archetype: weapon training 3 and 4', Object.keys(arch('This ability replaces weapon training 3 and 4.', 'fighter').replaced['weapon-training']).join(), '13,17');
+  check("archetype: the ranger's second favored enemy", Object.keys(arch("This replaces the ranger's second favored enemy.", 'ranger').replaced['favored-enemy']).join(), '5');
+  check('archetype: the 1st-level arcanist exploit', Object.keys(arch('This ability replaces the 1st-level arcanist exploit.', 'arcanist').replaced['arcanist-exploit']).join(), '1');
+  check('archetype: replaces versatile performance (all)', Object.keys(arch('This replaces versatile performance.', 'bard').replaced['versatile-performance']).length, 5);
+  check('archetype: in place of a rage power is a note, not a replacement',
+    [!!arch('She can take Catch Off-Guard in place of a rage power.').replaced['rage-power'], arch('She can take Catch Off-Guard in place of a rage power.').notes['rage-power'].length].join(), 'false,1');
+  check('archetype: another feature named in passing replaces nothing',
+    Object.keys(arch('This ability replaces metakinesis and infusion specialization.', 'kineticist').replaced).length, 0);
+  check('oracle: only the mystery revelations', talentOptions(talentSlots('oracle', 1).find(s => s.rule.key === 'revelation'), rev, { mystery: 'Flame' }).map(o => o.talent.id).join(), 'x');
 }
 
 const failed = results.filter(r => !r.pass);

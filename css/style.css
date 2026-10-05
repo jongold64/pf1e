@@ -749,3 +749,6 @@ table.skill-why th.num { text-align: right; }
 .talent-list .talent-option details { flex: 1; min-width: 0; }
 .talent-list .talent-option.unavailable { opacity: 0.6; }
 .talent-list .talent-option button { flex: none; }
+.talent-slots li.replaced { opacity: 0.7; }
+.talent-notes { font-size: 0.85rem; margin: 2px 0 6px; }
+.talent-notes ul { margin: 4px 0; padding-left: 18px; }

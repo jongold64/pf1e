@@ -30,7 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
-import { TALENT_RULES, VERSATILE_PERFORMANCE, talentSlots, talentOptions, mysteries } from './talents.js';
+import { talentSlots, talentOptions, mysteries, ruleOf, pluralOf, archetypeEffects } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -240,8 +240,8 @@ function load(saved) {
   // Class choices: known slots holding a known option (a talent id, or a Perform type for versatile performance).
   const tal = state.talents && typeof state.talents === 'object' && !Array.isArray(state.talents) ? state.talents : {};
   state.talents = Object.fromEntries(Object.entries(tal).filter(([slot, v]) => {
-    const [cid] = slot.split('|');
-    return TALENT_RULES[cid] && typeof v === 'string' && (data.talentsById.has(v) || VERSATILE_PERFORMANCE[v]);
+    const rule = ruleOf(slot);
+    return rule && typeof v === 'string' && (rule.choices ? Object.hasOwn(rule.choices, v) : data.talentsById.has(v));
   }));
   if (typeof state.mystery !== 'string' || !mysteries(data.talents).includes(state.mystery)) state.mystery = '';
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
@@ -480,9 +480,9 @@ function fillSheet() {
     app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
     // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
     talentLines: (cid, lv) => [...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
-      const picks = talentSlots(cid, lv).filter(s => s.rule === rule && state.talents[s.id])
+      const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
         .map(s => `${data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]} (${s.classLevel})`);
-      return picks.length ? `${rule.label}s: ${picks.join(', ')}` : '';
+      return picks.length ? `${pluralOf(rule)}: ${picks.join(', ')}` : '';
     }).filter(Boolean),
     featLabel: slot => {
       const f = data.featsById.get(state.feats[slot.id]);
@@ -1123,6 +1123,14 @@ function chosenArchetypes(classId) {
   return (state.archetypes[classId] || []).map(id => data.archetypesById.get(id)).filter(Boolean);
 }
 
+// A class's choice slots up to a class level, each with replacedBy (the archetype that replaces that pick, or ''),
+// and the archetypes' other notes on them by rule key.
+function classChoiceSlots(classId, classLevel) {
+  const fx = archetypeEffects(classId, chosenArchetypes(classId));
+  return { notes: fx.notes,
+           slots: talentSlots(classId, classLevel).map(s => ({ ...s, replacedBy: fx.replaced[s.rule.key]?.[s.classLevel] || '' })) };
+}
+
 // The racial +2 choice: one ability, or two with Dual Talent (a human alternate trait).
 function flexibleFor(race) {
   return race.dual_talent ? [state.flexible, state.flexible2] : state.flexible;
@@ -1326,26 +1334,30 @@ function domainLines(clsId) {
   });
 }
 
-// Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
-// the chosen domains with their powers (each in a fold-out, with the level it starts at) and domain spells, and a
-// list to choose another. A subdomain shows its domain's powers and spells with its own swapped in.
 // Class choices for one class (Classes card): a list per kind (rage powers...) with a line per pick slot: the choice and
 // its Details, or Choose. An oracle chooses a mystery first, which decides the revelations offered.
 function talentPicker(cls, level) {
-  const slots = talentSlots(cls.id, level);
+  const { slots, notes } = classChoiceSlots(cls.id, level);
   if (!slots.length) return '';
   const groups = [...new Set(slots.map(s => s.rule))];
   const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<label class="row-label">Mystery <select data-mystery>
       <option value="">Choose your mystery…</option>${mysteries(data.talents).map(m => `<option${m === state.mystery ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select></label>` : '';
   return `<div class="talents">${mysteryPick}${groups.map(rule => {
     const mine = slots.filter(s => s.rule === rule);
-    const chosen = mine.filter(s => state.talents[s.id]).length;
-    return `<h4>${esc(rule.label)}s <span class="count">${chosen} of ${mine.length} chosen</span></h4>
+    const open = mine.filter(s => !s.replacedBy);
+    const chosen = open.filter(s => state.talents[s.id]).length;
+    const said = notes[rule.key] || [];
+    // An archetype's changes that aren't whole picks ("can take X in place of a rage power"): the sentences, to apply.
+    const noteList = said.length ? `<details class="talent-notes"><summary>Your archetype changes these (${said.length})</summary>
+        <ul>${said.map(n => `<li><b>${esc(n.name)}:</b> ${esc(n.text)}</li>`).join('')}</ul></details>` : '';
+    return `<h4>${esc(pluralOf(rule))} <span class="count">${chosen} of ${open.length} chosen</span></h4>${noteList}
       <ul class="talent-slots">${mine.map(s => {
+        if (s.replacedBy) return `<li class="replaced"><span class="muted">${esc(ordinal(s.classLevel))}</span> <span class="hint">replaced by ${esc(s.replacedBy)}</span></li>`;
         const v = state.talents[s.id];
         const t = data.talentsById.get(v);
-        const name = t ? t.name : v ? `${v} (${VERSATILE_PERFORMANCE[v].join(' and ')})` : '';
+        const name = t ? t.name : v || '';
         return `<li><span class="muted">${esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
+          ${!t && v && rule.choices?.[v] ? `<small class="muted">${esc(rule.choices[v])}</small>` : ''}
           <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>` : ''}
           <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
       }).join('')}</ul>`;
@@ -1361,10 +1373,11 @@ function openTalentPicker(slotId, search = '') {
   if (!cls || !slot) return;
   const q = search.trim().toLowerCase();
   let list;
-  if (slot.rule.perform) {
-    const taken = Object.entries(state.talents).filter(([k, v]) => k !== slotId && k.startsWith(`${cid}|`)).map(([, v]) => v);
-    list = Object.entries(VERSATILE_PERFORMANCE).filter(([p]) => !taken.includes(p)).map(([p, skills]) => `<li class="talent-option">
-        <div><b>${esc(p)}</b> <small class="muted">use your Perform (${esc(p.toLowerCase())}) bonus for ${esc(skills.join(' and '))} checks</small></div>
+  if (slot.rule.choices) {
+    // A fixed list (Perform types, favored enemies, weapon groups...): each can be chosen once per class and rule.
+    const taken = Object.entries(state.talents).filter(([k]) => k !== slotId && k.startsWith(`${cid}|${key}|`)).map(([, v]) => v);
+    list = Object.entries(slot.rule.choices).filter(([p]) => !taken.includes(p)).map(([p, what]) => `<li class="talent-option">
+        <div><b>${esc(p)}</b> <small class="muted">${esc(what)}</small></div>
         <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></li>`).join('');
   } else {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
@@ -1378,7 +1391,7 @@ function openTalentPicker(slotId, search = '') {
   }
   const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
   openDetail(`${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
-      ${slot.rule.perform ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
+      ${slot.rule.choices ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
       ${mysteryNote}<ul class="plain-list talent-list">${list}</ul></div>`,
     state.talents[slotId] ? [{ label: 'Clear this choice', run: () => { const t = { ...state.talents }; delete t[slotId]; update({ talents: t }); } }] : []);
   document.querySelector('#detail-body .talent-search')?.focus();
@@ -1395,6 +1408,9 @@ function popTalent(id, slotId) {
               { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
 }
 
+// Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
+// the chosen domains with their powers (each in a fold-out, with the level it starts at) and domain spells, and a
+// list to choose another. A subdomain shows its domain's powers and spells with its own swapped in.
 function domainPicker(cls, level, openFeatures) {
   const rule = DOMAIN_CLASSES[cls.id];
   if (!rule) return '';
@@ -1577,9 +1593,9 @@ function renderClasses(view) {
     // Class choices: the k-th level in a class is a character level; a pick at class level k shows here.
     const c = classLevels[lv - 1];
     const k = classLevels.slice(0, lv).filter(x => x.id === c.id).length;
-    for (const s of talentSlots(c.id, k).filter(x => x.classLevel === k)) {
+    for (const s of classChoiceSlots(c.id, k).slots.filter(x => x.classLevel === k)) {
       const v = state.talents[s.id];
-      out.push(`${s.rule.label}: ${data.talentsById.get(v)?.name || v || 'not chosen yet'}`);
+      out.push(`${s.rule.label}: ${s.replacedBy ? `replaced by ${s.replacedBy}` : data.talentsById.get(v)?.name || v || 'not chosen yet'}`);
     }
     const inc = INCREASE_LEVELS.indexOf(lv);
     if (inc >= 0) out.push(state.increases[inc] ? `Ability increase: +1 ${ABILITY_NAMES[state.increases[inc]]}` : 'Ability increase: not chosen yet');

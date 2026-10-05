@@ -200,13 +200,25 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   domains; `domainConflict` stops a subdomain going with its own domain; `domainGrants` gives a subdomain its domain's
   powers minus the one it `replaces`, and the domain's spells with its own swapped in. The druid's domain spell slot
   (`extraSlotOn('druid')`) follows the Nature bond; the Spells tab lists domain spells, the sheet prints `domainLines`.
-- Class choices (`js/talents.js`, data from `build_foundry_talents.py`: the Foundry class-abilities pack by tag, e.g.
-  "Rage Power" -> kind `rage-power`; entries without a Foundry book get it from PSRD by name, the rest are skipped):
-  `TALENT_RULES` = class id -> rules { key, label, kinds, levels, later: [{ from, kinds }], needs: 'mystery', perform },
-  hand-entered from the class tables. `state.talents` = { "class|key|classLevel": talent id or, for bard versatile
-  performance, a Perform type }; `state.mystery` filters oracle revelations. `talentOptions` greys out taken (unless
-  `repeatable`) and too-high-level options. Text only: they don't change numbers. Not available: oracle curses
-  (no book in the data), paladin mercies (one Foundry entry).
+- Class choices (`js/talents.js`, data from `build_foundry_talents.py`): the Foundry class-abilities pack by tag (e.g.
+  "Rage Power" -> kind `rage-power`; Foundry's "(ROG)"-style name codes are dropped, "(UC)" becomes "(Unchained)",
+  "(SHA)" "(shaman)"; entries without a Foundry book get it from PSRD by name, the rest are skipped), then Archives of
+  Nethys list pages (`AON_LISTS`, cached in ../aonprd-classes/lists: "Name (Su) (Book pg. N): text" entries, with
+  headings that switch the kind or level) for the kinds Foundry doesn't tag (mercies, ki powers, phrenic amplifications,
+  mesmerist tricks...) and to fill in options Foundry has without a book; the same option in a related kind
+  (`GROUPS`) is kept once with the classes merged. Antipaladin cruelties, stalwart defender powers, battle herald
+  commands and loremaster secrets come from the class texts in classes.json (`CLASS_TEXT_LISTS`).
+  `TALENT_RULES` = class id -> rules { key, label, plural, kinds, levels, later: [{ from, kinds }], needs: 'mystery',
+  classOnly, choices }, hand-entered from the class tables; `choices` is a fixed list (Perform types, favored enemies
+  and terrains, weapon groups, rogue's edge skills, rage prophet spells). `state.talents` = { "class|key|classLevel":
+  talent id or a `choices` key }; `state.mystery` filters oracle revelations. `talentOptions` greys out taken (unless
+  `repeatable`) and too-high-level options, hides "(Unchained)" options from core classes (and the core twin from
+  unchained ones). `archetypeEffects` reads the chosen archetypes' "replaces ..." sentences: named levels ("gained at
+  4th, 8th, and 12th levels", "the 1st-level", "at second level"), numbered picks ("weapon training 3 and 4", "second
+  favored enemy") or the whole feature; the words before and after the term must fit (`LEAD_OK`, `AFTER_OK`) so
+  "infusion specialization" or "final revelation" don't count. Other mentions ("in place of", "alters") become notes.
+  Text only: choices don't change numbers. Gaps: about 560 Foundry options (mostly later-book revelations, rogue
+  talents, rage powers, discoveries) have no book anywhere and are left out.
 - Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the
   race from the heading, Monster Codex ones via `MC_CLASSES`; `NOT_ARCHETYPES` skips the antipaladin's "Class
   Features") then `build_aon_archetypes.py`: every other Paizo archetype from the Archives of Nethys (d20pfsrd lacks
