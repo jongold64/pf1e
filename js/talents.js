@@ -4,7 +4,7 @@
 //
 // Each rule: { key, label, plural, kinds (data kinds allowed), levels (class levels with a pick),
 // later: [{ from, kinds }] (more kinds allowed from a class level: advanced rogue talents at 10th...),
-// needs: 'mystery' (oracle revelations follow the mystery), classOnly (only options listed for this class: witch and
+// needs: 'mystery' (oracle revelations follow the mystery), browse (a one-time pick with a Browse all list), classOnly (only options listed for this class: witch and
 // shaman hexes share names but not lists), choices: { option: what it does } (a fixed list instead of data) }.
 // The levels follow the Core Rulebook and later books' class tables.
 
@@ -64,7 +64,7 @@ export const TALENT_RULES = {
   alchemist: [{ key: 'discovery', label: 'Discovery', plural: 'Discoveries', kinds: ['discovery'], levels: even() }],
   investigator: [{ key: 'investigator-talent', label: 'Investigator talent', kinds: ['investigator-talent'], levels: odd(3) }],
   magus: [{ key: 'magus-arcana', label: 'Magus arcana', plural: 'Magus arcana', kinds: ['magus-arcana'], levels: [3, 6, 9, 12, 15, 18] }],
-  oracle: [{ key: 'curse', label: "Oracle's curse", plural: "Oracle's curse", kinds: ['oracle-curse'], levels: [1] },
+  oracle: [{ key: 'curse', label: "Oracle's curse", plural: "Oracle's curse", kinds: ['oracle-curse'], levels: [1], browse: true },
            { key: 'revelation', label: 'Revelation', kinds: ['revelation'], levels: [1, 3, 7, 11, 15, 19], needs: 'mystery' }],
   arcanist: [{ key: 'arcanist-exploit', label: 'Arcanist exploit', kinds: ['arcanist-exploit'], levels: odd(),
                later: [{ from: 11, kinds: ['greater-arcanist-exploit'] }] }],

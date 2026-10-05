@@ -791,6 +791,9 @@ function buildControls() {
     if (tp) popTalent(tp.dataset.talentPop, tp.dataset.slot);
     const cp = e.target.closest('[data-choice-pop]');
     if (cp) popChoice(cp.dataset.choicePop, cp.dataset.slot);
+    const tb = e.target.closest('[data-talent-browse]');
+    if (tb) popTalent(tb.dataset.talentBrowse, state.talents[tb.dataset.slot] === tb.dataset.talentBrowse ? tb.dataset.slot : null,
+                      state.talents[tb.dataset.slot] === tb.dataset.talentBrowse ? null : { slotId: tb.dataset.slot, why: tb.dataset.why, browse: true });
     const mp = e.target.closest('[data-mystery-pop]');
     if (mp) popMystery(mp.dataset.mysteryPop);
   });
@@ -1384,8 +1387,22 @@ function talentPicker(cls, level, openFeatures) {
           <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
             : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
           <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
-      }).join('')}</ul>`;
+      }).join('')}</ul>${rule.browse && open.length ? browseTalents(cls, rule, open[0], openFeatures) : ''}`;
   }).join('')}</div>`;
+}
+
+// Every option of a one-time pick (the oracle's curse) as a list, each with Details (and Choose in the popup).
+function browseTalents(cls, rule, slot, openFeatures) {
+  const opts = talentOptions(slot, data.talents).sort((a, b) => a.talent.name.localeCompare(b.talent.name));
+  const key = `tbrowse-${cls.id}-${rule.key}`;
+  return `<details class="arch-feature arch-browse" data-key="${esc(key)}"${openFeatures?.has(key) ? ' open' : ''}>
+      <summary>Browse all ${opts.length} ${esc(pluralOf(rule) === rule.label ? `${rule.label.toLowerCase()}s` : pluralOf(rule).toLowerCase())}</summary>
+      <ul class="pick-list">${opts.map(({ talent: t, why }) => {
+        const mine = state.talents[slot.id] === t.id;
+        return `<li class="with-details"><button type="button" data-talent-browse="${esc(t.id)}" data-slot="${esc(slot.id)}" data-why="${esc(why)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(t.name)}
+            <small>${esc(why || t.source)}</small></button>
+          <button type="button" class="skill-details" data-talent-browse="${esc(t.id)}" data-slot="${esc(slot.id)}" data-why="${esc(why)}" aria-label="${esc(t.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details>`;
 }
 
 // The list to choose a class option for one slot, in the details window: a search box, then every option that fits
@@ -1461,9 +1478,9 @@ function popTalent(id, slotId, preview = null) {
                   { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
 }
 
-function talentPreviewActions(value, { slotId, search, why }) {
+function talentPreviewActions(value, { slotId, search, why, browse }) {
   return [...(why ? [] : [{ label: 'Choose', primary: true, run: () => update({ talents: { ...state.talents, [slotId]: value } }) }]),
-          { label: 'Back to the list', run: () => setTimeout(() => openTalentPicker(slotId, search), 0) }];
+          ...(browse ? [] : [{ label: 'Back to the list', run: () => setTimeout(() => openTalentPicker(slotId, search), 0) }])];
 }
 
 // One entry of a fixed list (a Perform type, favored enemy, weapon group...): what it gives, and the same buttons.
