@@ -1029,9 +1029,8 @@ function buildControls() {
   initTabSearches();
 }
 
-// Search boxes on the Feats, Skills and Armor tabs (Spells, Magic Items and Equipment have theirs in
-// their own modules). Each looks only through what its tab covers.
-let skillFilter = '';
+// Search boxes on the Feats and Armor tabs (Spells, Magic Items and Equipment have theirs in their own modules). Each
+// looks only through what its tab covers.
 function initTabSearches() {
   const live = (formId, inputId, run) => {
     $(formId).addEventListener('submit', e => { e.preventDefault(); run(); });
@@ -1041,10 +1040,6 @@ function initTabSearches() {
   $('feat-tab-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-feat-result]');
     if (btn) openFeatForSlots(btn.dataset.featResult);
-  });
-  live('skill-search-form', 'skill-search', () => {
-    skillFilter = $('skill-search').value.trim().toLowerCase();
-    render();
   });
   live('armor-search-form', 'armor-search', renderArmorSearch);
   $('armor-search-results').addEventListener('click', e => {
@@ -2344,8 +2339,7 @@ function renderSkills(race, classes, scores, featNames) {
       <p>${used > available ? `<b class="warning">${used - available} more than you have.</b>` : `<b>${available - used} left.</b>`}
         At most ${state.level} rank${state.level === 1 ? '' : 's'} in one skill (your level).</p>`);
   };
-  // The Skills tab's search shows only matching rows.
-  const shownNames = skillFilter ? names.filter(n => n.toLowerCase().includes(skillFilter)) : names;
+  const shownNames = names;
   $('skill-count').textContent = `${used} of ${available} ranks used`;
   $('skill-count').classList.toggle('over', used > available);
 
@@ -2371,7 +2365,7 @@ function renderSkills(race, classes, scores, featNames) {
       ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}`);
   };
   const details = name => `<button type="button" class="skill-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}">Details</button>`;
-  $('skill-rows').innerHTML = (shownNames.length ? '' : '<tr><td colspan="3" class="hint">No skill matches that search.</td></tr>') +
+  $('skill-rows').innerHTML =
     shownNames.map(name => {
     const info = skillInfo(name);
     // Only Craft/Perform/Profession have player-added specialties; "Knowledge (arcana)" is a skill of its own.
