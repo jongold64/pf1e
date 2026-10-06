@@ -105,6 +105,12 @@ Profession are one record each.
 `class_skill` (sorcerers), `bonus_spells` ([{ `level` (class level), `name` }]), `bonus_feats` (names), `arcana`
 (sorcerers), `powers` ([{ `name`, `level`, `text` }]). From the Archives of Nethys bloodline pages.
 
+**Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class
+choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base-form`), `classes` (ids), `name`, `text`,
+`parent` (a focused school's school), `facts` ([label, text] pairs: edicts, challenge, alignment, starting statistics...),
+`class_skills`, `spells` ([{ `level`, `name` }]) with `spells_by` (`class` or `spell` level), `powers` ([{ `name`, `level`,
+`text` }]), `hexes` (a spirit's hex names).
+
 916 of 1,227 feats have prerequisites that are fully machine-readable. The rest include at least one
 `other` entry, such as "Small size or smaller" or "proficiency with the selected weapon".
 

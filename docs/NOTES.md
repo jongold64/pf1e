@@ -246,12 +246,20 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   page's book) where Foundry has none. `state.mystery` is a mystery name; `talentOptions(..., { revelationNames })`
   offers the revelations its page lists, by name (shared ones like Brain Drain are one record; a name with versions
   per mystery keeps the mystery's own).
+  Class paths: `build_aon_class_paths.py` -> data/class-paths.json from the AoN pages for wizard schools (each school page
+  holds its focused schools; "Cheliax: ... School" regional ones take the name after the colon; an elemental page's
+  focused schools take the element as parent), witch patrons (one page of "Name (Book): 2nd — spell, ..." lines), shaman
+  spirits (spirit/greater/true abilities at 1/8/16, manifestation 20, spells by spell level, hex names), cavalier orders
+  (class skills from "adds X and Y to his list of class skills" or "gains X and Y as class skills"; also the samurai's),
+  unchained eidolon subtypes (evolutions by level) and both summoners' base forms (starting statistics as facts). Powers
+  need an (Su)/(Ex)/(Sp) tag here and take the level their first sentence names. app.js `PATH_RULES` (class -> kinds),
+  `PATH_ENTRIES` (class table entry -> name/powers/spell), `PATH_SPELLS`; bloodlines are reshaped to the same records at
+  load (`data.paths`). `state.paths` = { "class|kind": id, "wizard|opposition": [names] } (older `state.bloodlines`
+  migrates in load()). `pathPicker`, `popPath`, `pathEntry`, `pathSkills`, `pathLines` (printed sheet, with the mystery).
   Bloodlines: `build_aon_bloodlines.py` -> data/bloodlines.json from the AoN sorcerer and bloodrager bloodline pages (class
   skill, bonus spells with class levels, bonus feats cleaned of "*" and run-in book codes, arcana, powers: a power's level is
-  the one its first two sentences name, else 1st). `state.bloodlines` = { sorcerer | bloodrager: id }. app.js
-  `bloodlinePicker`/`popBloodline`; `bloodlineEntry` names the class table's "Bloodline power"/"bloodline spell"/"Bloodline"
-  entries; `bloodlineSkills()` is a pseudo-class for `classSkillTest` ("Knowledge (any one)" not counted);
-  `setBloodlineFeats` (feats.js, called in computeView) limits the 'bloodline' bonus feat rule (slotAccepts passes the slot
+  the one its first two sentences name, else 1st), shown and chosen like the class paths above; `pathSkills()` is a
+  pseudo-class for `classSkillTest` ("Knowledge (any one)" not counted); `setBloodlineFeats` (feats.js, called in computeView) limits the 'bloodline' bonus feat rule (slotAccepts passes the slot
   for its clsId). `choicesLeft` counts a class's unmade picks (bloodline, mystery, empty slots): its section stays open.
   Text only: choices don't change numbers. Gaps: about 560 Foundry options (mostly later-book revelations, rogue
   talents, rage powers, discoveries) have no book anywhere and are left out.

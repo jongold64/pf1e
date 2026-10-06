@@ -123,7 +123,7 @@ const state = {
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
   talents: {},     // class choices by slot ("barbarian|rage-power|4" -> talent id; bard versatile performance -> Perform type)
   mystery: '',     // an oracle's mystery (for which revelations fit)
-  bloodlines: {},  // a sorcerer's and a bloodrager's bloodline: { sorcerer: 'sorcerer-aberrant' } (data/bloodlines.json ids)
+  paths: {},       // one-time class choices by "class|kind": { 'wizard|school': 'school-evocation', 'wizard|opposition': [names] }
   drawback: '',    // Drawbacks house rule: the drawback taken (data/drawbacks.json id), '' for none
   flaws: [],       // Flaws house rule: up to two { id (flaws.js FLAWS, or 'other'), choice? (Pathetic's ability), name, effect }
   armorId: '',     // worn armor (data/armor.json id), '' for none
@@ -246,8 +246,17 @@ function load(saved) {
     return rule && typeof v === 'string' && (rule.choices ? Object.hasOwn(rule.choices, v) : data.talentsById.has(v));
   }));
   if (typeof state.mystery !== 'string' || !data.mysteries.some(m => m.name === state.mystery)) state.mystery = '';
-  const bl = state.bloodlines && typeof state.bloodlines === 'object' && !Array.isArray(state.bloodlines) ? state.bloodlines : {};
-  state.bloodlines = Object.fromEntries(Object.entries(bl).filter(([cid, id]) => data.bloodlinesById.get(id)?.cls === cid));
+  const ps = state.paths && typeof state.paths === 'object' && !Array.isArray(state.paths) ? { ...state.paths } : {};
+  // Bloodlines saved by an earlier version ({ sorcerer: id }) move into paths.
+  const oldBloodlines = state.bloodlines && typeof state.bloodlines === 'object' ? state.bloodlines : {};
+  for (const [cid, id] of Object.entries(oldBloodlines)) ps[`${cid}|bloodline`] ??= id;
+  delete state.bloodlines;
+  state.paths = Object.fromEntries(Object.entries(ps).filter(([key, v]) => {
+    const [cid, kind] = key.split('|');
+    if (kind === 'opposition') return Array.isArray(v) && v.length <= 2 && v.every(n => CLASSIC_SCHOOLS.includes(n));
+    const x = data.pathsById.get(v);
+    return !!x && x.kind === kind && x.classes.includes(cid) && !!PATH_RULES[cid]?.some(r => r.kind === kind);
+  }));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
@@ -485,11 +494,11 @@ function fillSheet() {
   $('print-sheet').innerHTML = buildSheet({
     app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
     // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
-    talentLines: (cid, lv) => [...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
+    talentLines: (cid, lv) => [...pathLines(cid, lv), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
       const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
         .map(s => `${data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]} (${s.fromFeat ? 'feat' : s.classLevel})`);
       return picks.length ? `${pluralOf(rule)}: ${picks.join(', ')}` : '';
-    }).filter(Boolean),
+    }).filter(Boolean)],
     featLabel: slot => {
       const f = data.featsById.get(state.feats[slot.id]);
       if (!f) return null;
@@ -816,12 +825,24 @@ function buildControls() {
                       state.talents[tb.dataset.slot] === tb.dataset.talentBrowse ? null : { slotId: tb.dataset.slot, why: tb.dataset.why, browse: true });
     const mp = e.target.closest('[data-mystery-pop]');
     if (mp) popMystery(mp.dataset.mysteryPop);
-    const bp = e.target.closest('[data-bloodline-pop]');
-    if (bp) popBloodline(bp.dataset.bloodlinePop);
+    const pp = e.target.closest('[data-path-pop]');
+    if (pp) popPath(pp.dataset.pathPop, pp.dataset.pathKey);
   });
   $('class-info').addEventListener('change', e => {
     if (e.target.matches('[data-mystery]')) update({ mystery: e.target.value });
-    if (e.target.matches('[data-bloodline]')) update({ bloodlines: { ...state.bloodlines, [e.target.dataset.bloodline]: e.target.value } });
+    if (e.target.matches('[data-path]')) {
+      const x = { ...state.paths, [e.target.dataset.path]: e.target.value };
+      if (!e.target.value) delete x[e.target.dataset.path];
+      // A new school starts its opposition schools afresh.
+      if (e.target.dataset.path.endsWith('|school')) delete x[e.target.dataset.path.replace('|school', '|opposition')];
+      update({ paths: x });
+    }
+    if (e.target.matches('[data-opposition]')) {
+      const key = `${e.target.dataset.opposition}|opposition`;
+      const opp = [...(state.paths[key] || [])];
+      opp[Number(e.target.dataset.index)] = e.target.value;
+      update({ paths: { ...state.paths, [key]: opp.filter(Boolean) } });
+    }
   });
   // The class option picker lives in the details window.
   $('detail-body').addEventListener('input', e => {
@@ -1155,7 +1176,7 @@ function kiTradesFor(cls) {
 
 // A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
 function skillTotalFor(name) {
-  const isClassSkill = classSkillTest([...view.classes, bloodlineSkills()])(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name);
   const featNames = [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
@@ -1290,7 +1311,7 @@ function computeView() {
     .map(([a, v]) => [a, abilityModifier(v + (levelIncreases(classLevels.length, state.increases)[a] || 0))]));
   setEffectMods(plainMods);
   // Bloodline feat slots take only the chosen bloodline's bonus feats.
-  setBloodlineFeats(Object.fromEntries(Object.entries(state.bloodlines).map(([cid, id]) => [cid, data.bloodlinesById.get(id)?.bonus_feats || []])));
+  setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats]).filter(([, f]) => f)));
   const fx = effectTotals(state.buffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.
   const size = shiftSize(fx.setSize || race.size, fx.size);
@@ -1323,7 +1344,8 @@ function computeView() {
   const cfArgs = {
     archetypes: Object.fromEntries(Object.keys(state.archetypes).map(cid => [cid, chosenArchetypes(cid)])),
     choices: [...Object.entries(state.talents).map(([slot, v]) => ({ label: ruleOf(slot)?.label || '', value: data.talentsById.get(v)?.name || v })),
-              ...Object.values(state.bloodlines).map(id => ({ label: 'Bloodline', value: data.bloodlinesById.get(id)?.name || '' }))],
+              ...Object.entries(state.paths).filter(([k]) => !k.endsWith('|opposition'))
+                .map(([k, id]) => ({ label: PATH_RULES[k.split('|')[0]]?.find(r => r.kind === k.split('|')[1])?.label || '', value: data.pathsById.get(id)?.name || '' }))],
     talentNames: Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
     featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
     classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
@@ -1507,85 +1529,154 @@ function domainLines(clsId) {
   });
 }
 
-// Classes with a bloodline (data/bloodlines.json), and the chosen one's record.
-const BLOODLINE_CLASSES = ['sorcerer', 'bloodrager'];
-const bloodlineOf = cid => data.bloodlinesById.get(state.bloodlines[cid]) || null;
+// One-time choices that shape a class (data/class-paths.json, and bloodlines.json made to look the same at load): a
+// sorcerer's or bloodrager's bloodline, a wizard's arcane school, a witch's patron, a shaman's spirit, a cavalier's or
+// samurai's order, a summoner's eidolon. state.paths holds them by "class|kind" ("wizard|school" -> record id), and a
+// wizard's opposition schools as "wizard|opposition" -> [school names].
+const PATH_RULES = {
+  sorcerer: [{ kind: 'bloodline', label: 'Bloodline', plural: 'bloodlines' }],
+  bloodrager: [{ kind: 'bloodline', label: 'Bloodline', plural: 'bloodlines' }],
+  wizard: [{ kind: 'school', label: 'Arcane school', plural: 'arcane schools' }],
+  witch: [{ kind: 'patron', label: 'Patron', plural: 'patrons' }],
+  shaman: [{ kind: 'spirit', label: 'Spirit', plural: 'spirits' }],
+  cavalier: [{ kind: 'order', label: 'Order', plural: 'orders' }],
+  samurai: [{ kind: 'order', label: 'Order', plural: 'orders' }],
+  summoner: [{ kind: 'base-form', label: 'Eidolon base form', plural: 'base forms' }],
+  'summoner-unchained': [{ kind: 'eidolon-subtype', label: 'Eidolon subtype', plural: 'eidolon subtypes' },
+                         { kind: 'base-form', label: 'Eidolon base form', plural: 'base forms' }],
+};
+// The class table entries a choice fills in: with its name, its power(s) at that level, or its spell at that level.
+const PATH_ENTRIES = {
+  bloodline: { bloodline: 'name', 'bloodline power': 'powers', 'bloodline spell': 'spell' },
+  school: { 'arcane school': 'name' },
+  spirit: { spirit: 'powers', 'spirit (greater)': 'powers', 'spirit (true)': 'powers', manifestation: 'powers' },
+  order: { order: 'name', 'order ability': 'powers' },
+  'eidolon-subtype': { eidolon: 'name' },
+};
+// What a choice's bonus spells are called, and when they come: [title, note].
+const PATH_SPELLS = {
+  bloodline: (x, cls) => [`${x.name} bloodline spells`, `added to your spells known at these ${cls.name.toLowerCase()} levels`],
+  patron: (x, cls) => [`${x.name} patron spells`, `added to your spells known at these ${cls.name.toLowerCase()} levels`],
+  spirit: x => [`${x.name} spirit magic spells`, 'one spirit magic slot of each spell level, for these spells'],
+};
+// The eight schools a specialist wizard picks two opposition schools from.
+const CLASSIC_SCHOOLS = ['Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
+const pathOf = (cid, kind) => data.pathsById.get(state.paths[`${cid}|${kind}`]) || null;
+const pathsFor = cid => (PATH_RULES[cid] || []).map(rule => ({ rule, path: pathOf(cid, rule.kind) }));
+// A specialist's own classic school (a focused school's is its school's); null for universalists and elemental schools.
+const classicSchool = path => [path?.name, path?.parent].find(n => CLASSIC_SCHOOLS.includes(n)) || null;
 
-// The chosen bloodlines' class skills (sorcerers), as a class record for classSkillTest. "Knowledge (any one)" isn't
-// counted (the player picks it; the Details says so).
-function bloodlineSkills() {
-  const skills = view.classes.filter(c => c.id === 'sorcerer').map(c => bloodlineOf(c.id)?.class_skill)
-    .filter(s => s && !/any one/i.test(s)).map(s => s.replace(/\((\w)/, (m, c) => `(${c.toLowerCase()}`));
-  return { id: 'bloodline', class_skills: skills.map(skill => ({ skill })) };
+// The chosen choices' class skills (bloodlines, orders), as a class record for classSkillTest. "Knowledge (any one)"
+// isn't counted (the player picks it; the Details says so).
+function pathSkills() {
+  const skills = view.classes.flatMap(c => pathsFor(c.id).flatMap(({ path }) => path?.class_skills || []))
+    .filter(s => !/any one/i.test(s)).map(s => s.replace(/\((\w)/, (m, c) => `(${c.toLowerCase()}`));
+  return { id: 'class-paths', class_skills: skills.map(skill => ({ skill })) };
 }
 
-// A class table entry the bloodline fills in: "Bloodline power" at a level is that level's power, "bloodline spell" the
-// spell, the bloodrager's "Bloodline" the bloodline itself. { name, text } or null.
-function bloodlineEntry(cid, level, entry) {
-  const b = bloodlineOf(cid);
-  if (!b) return null;
+// A class table entry a choice fills in ("Bloodline power" at 3rd: that level's power; "Order ability": the order's;
+// "arcane school": the school). { name, text } or null.
+function pathEntry(cid, level, entry) {
   const e = entry.toLowerCase();
-  if (e === 'bloodline power') {
-    const ps = b.powers.filter(p => p.level === level);
-    return ps.length ? { name: ps.map(p => p.name).join(', '), text: ps.map(p => `${p.name}: ${p.text}`).join('\n\n') } : null;
+  for (const { rule, path } of pathsFor(cid)) {
+    const how = path && PATH_ENTRIES[rule.kind]?.[e];
+    if (how === 'name') return { name: path.name, text: path.text || `${rule.label}: ${path.name}.` };
+    if (how === 'powers') {
+      const ps = path.powers.filter(x => x.level === level);
+      if (ps.length) return { name: ps.map(x => x.name).join(', '), text: ps.map(x => `${x.name}: ${x.text}`).join('\n\n') };
+    }
+    if (how === 'spell') {
+      const sp = path.spells.find(x => x.level === level);
+      if (sp) return { name: sp.name, text: `Your ${path.name} ${rule.label.toLowerCase()} adds ${sp.name} to your spells known at ${ordinal(level)} level.` };
+    }
   }
-  if (e === 'bloodline spell') {
-    const sp = b.bonus_spells.find(x => x.level === level);
-    return sp ? { name: sp.name, text: `Your ${b.name} bloodline adds ${sp.name} to your spells known at ${ordinal(level)} level.` } : null;
-  }
-  if (e === 'bloodline') return { name: b.name, text: b.text };
   return null;
 }
 
-// How many choices a class still has to make at its level: its bloodline or mystery, and empty class choice picks.
+// How many choices a class still has to make at its level: its bloodline, school (and opposition schools), patron,
+// spirit, order or eidolon, its mystery, and empty class choice picks.
 function choicesLeft(cls, level) {
   const { slots } = classChoiceSlots(cls.id, level);
   let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
-  if (BLOODLINE_CLASSES.includes(cls.id) && !bloodlineOf(cls.id)) n++;
+  for (const { path } of pathsFor(cls.id)) if (!path) n++;
+  if (classicSchool(pathOf(cls.id, 'school')) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
   return n;
 }
 
-// A sorcerer's or bloodrager's bloodline (Classes card): a list, Details for the chosen one, its powers by level (the ones
-// reached ticked), and every bloodline with its own Details.
-function bloodlinePicker(cls, level, openFeatures) {
-  if (!BLOODLINE_CLASSES.includes(cls.id)) return '';
-  const all = data.bloodlines.filter(b => b.cls === cls.id);
-  const b = bloodlineOf(cls.id);
-  const key = `bbrowse-${cls.id}`;
-  return `<div class="talents"><h4>Bloodline</h4><div class="mystery-pick"><label class="row-label">Bloodline <select data-bloodline="${esc(cls.id)}">
-      <option value="">Choose your bloodline…</option>${all.map(x => `<option value="${esc(x.id)}"${b?.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
-      ${b ? `<button type="button" class="skill-details" data-bloodline-pop="${esc(b.id)}">Details</button>` : ''}</div>
-    ${b ? `<ul class="talent-slots">${b.powers.map(p => `<li${p.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(p.level))}</span>
-        ${p.level <= level ? `<b>${esc(p.name)}</b>` : `<span class="muted">${esc(p.name)}</span>`}</li>`).join('')}</ul>` : ''}
-    <details class="arch-feature arch-browse" data-key="${esc(key)}"${openFeatures?.has(key) ? ' open' : ''}>
-      <summary>Browse all ${all.length} bloodlines</summary>
-      <ul class="pick-list">${all.map(x => {
-        const mine = x.id === b?.id;
-        return `<li class="with-details"><button type="button" data-bloodline-pop="${esc(x.id)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
-            <small>${esc(x.source)}</small></button>
-          <button type="button" class="skill-details" data-bloodline-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup">Details</button></li>`;
-      }).join('')}</ul></details></div>`;
+// A class's one-time choices (Classes card): a list for each, Details for the chosen one, its powers by level (the ones
+// not reached yet greyed), every option with its own Details, and a specialist wizard's two opposition schools.
+function pathPicker(cls, level, openFeatures) {
+  return pathsFor(cls.id).map(({ rule, path }) => {
+    const key = `${cls.id}|${rule.kind}`;
+    const all = data.paths.filter(x => x.kind === rule.kind && x.classes.includes(cls.id));
+    const label = x => (x.parent ? `${x.name} (${x.parent})` : x.name);
+    const browseKey = `pbrowse-${key}`;
+    const own = classicSchool(path);
+    const opp = state.paths[`${cls.id}|opposition`] || [];
+    const oppPick = rule.kind !== 'school' || !path ? ''
+      : own ? `<div class="mystery-pick">${[0, 1].map(i => `<label class="row-label">Opposition school ${i + 1}
+          <select data-opposition="${esc(cls.id)}" data-index="${i}"><option value="">Choose…</option>${CLASSIC_SCHOOLS.filter(n => n !== own && (n === opp[i] || !opp.includes(n)))
+            .map(n => `<option${n === opp[i] ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`).join('')}</div>
+          <p class="hint">Preparing a spell from an opposition school uses two spell slots of that level.</p>`
+      : `<p class="hint">${path.name === 'Universalist' || path.parent === 'Universalist' ? 'A universalist has no opposition schools.'
+          : 'An elemental school has its opposed element as its opposition school (see Details).'}</p>`;
+    return `<div class="talents"><h4>${esc(rule.label)}</h4><div class="mystery-pick"><label class="row-label">${esc(rule.label)} <select data-path="${esc(key)}">
+        <option value="">Choose your ${esc(rule.label.toLowerCase())}…</option>${all.map(x => `<option value="${esc(x.id)}"${path?.id === x.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('')}</select></label>
+        ${path ? `<button type="button" class="skill-details" data-path-pop="${esc(path.id)}" data-path-key="${esc(key)}">Details</button>` : ''}</div>
+      ${oppPick}
+      ${path?.powers.length ? `<ul class="talent-slots">${path.powers.map(x => `<li${x.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(x.level))}</span>
+          ${x.level <= level ? `<b>${esc(x.name)}</b>` : `<span class="muted">${esc(x.name)}</span>`}</li>`).join('')}</ul>` : ''}
+      <details class="arch-feature arch-browse" data-key="${esc(browseKey)}"${openFeatures?.has(browseKey) ? ' open' : ''}>
+        <summary>Browse all ${all.length} ${esc(rule.plural)}</summary>
+        <ul class="pick-list">${all.map(x => {
+          const mine = x.id === path?.id;
+          return `<li class="with-details"><button type="button" data-path-pop="${esc(x.id)}" data-path-key="${esc(key)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(label(x))}
+              <small>${esc(x.source)}</small></button>
+            <button type="button" class="skill-details" data-path-pop="${esc(x.id)}" data-path-key="${esc(key)}" aria-label="${esc(x.name)} in a popup">Details</button></li>`;
+        }).join('')}</ul></details></div>`;
+  }).join('');
 }
 
-// A bloodline in a popup: book, its text, class skill, bonus spells and feats, arcana and each power (by level), with
-// Choose or Remove.
-function popBloodline(id) {
-  const b = data.bloodlinesById.get(id);
+// One option in a popup: book, text, class skills, bonus spells, hexes, its other facts and each power (by level), with
+// Choose or Remove for the class it was opened from (`key` "cavalier|order").
+function popPath(id, key) {
+  const b = data.pathsById.get(id);
   if (!b) return;
-  const cls = data.classes.find(c => c.id === b.cls);
-  const mine = state.bloodlines[b.cls] === b.id;
-  const spells = b.bonus_spells.map(s => `${s.name} (${ordinal(s.level)})`).join(', ');
-  openDetail(`${b.name} bloodline`, `<p class="hint">${esc(cls?.name || b.cls)} bloodline · ${esc(b.source)}${mine ? ' · your bloodline' : ''}</p>
-    ${paragraphs(b.text)}
-    ${facts([['Class skill', b.class_skill || null], ['Bonus spells', spells || null], ['Bonus feats', b.bonus_feats.join(', ') || null],
-             ['Bloodline arcana', b.arcana || null]])}
-    ${/any one/i.test(b.class_skill) ? '<p class="hint">Pick the Knowledge skill yourself: the app doesn\u2019t count it as a class skill.</p>' : ''}
-    <h3>Bloodline powers</h3>
-    <ul class="plain-list">${b.powers.map(p => `<li><details><summary><b>${esc(p.name)}</b> <small class="muted">${esc(ordinal(p.level))} level</small></summary>
-      ${paragraphs(p.text)}</details></li>`).join('')}</ul>`,
-    mine ? [{ label: 'Remove it', run: () => { const x = { ...state.bloodlines }; delete x[b.cls]; update({ bloodlines: x }); } }]
-         : [{ label: `Choose ${b.name}`, primary: true, run: () => update({ bloodlines: { ...state.bloodlines, [b.cls]: b.id } }) }]);
+  const [cid, kind] = key.split('|');
+  const rule = PATH_RULES[cid]?.find(r => r.kind === kind);
+  const cls = data.classes.find(c => c.id === cid);
+  const mine = state.paths[key] === b.id;
+  const spells = b.spells.map(x => `${x.name} (${ordinal(x.level)})`).join(', ');
+  const remove = () => {
+    const x = { ...state.paths };
+    delete x[key];
+    if (kind === 'school') delete x[`${cid}|opposition`];
+    update({ paths: x });
+  };
+  openDetail(`${b.name}${rule ? ` ${rule.label.toLowerCase().replace(/^eidolon /, '')}` : ''}`, `<p class="hint">${esc(cls?.name || cid)} ${esc(rule?.label.toLowerCase() || kind)} · ${esc(b.source)}${b.parent ? ` · focused school of ${esc(b.parent)}` : ''}${mine ? ` · your ${esc(rule?.label.toLowerCase() || kind)}` : ''}</p>
+    ${paragraphs(b.text || '')}
+    ${facts([['Class skills', b.class_skills.join(', ') || null],
+             [b.spells_by === 'spell' ? 'Spells (by spell level)' : 'Bonus spells (by class level)', spells || null],
+             ['Hexes', b.hexes.join(', ') || null], ...b.facts])}
+    ${b.class_skills.some(x => /any one/i.test(x)) ? '<p class="hint">Pick the Knowledge skill yourself: the app doesn\u2019t count it as a class skill.</p>' : ''}
+    ${b.powers.length ? `<h3>Powers</h3>
+    <ul class="plain-list">${b.powers.map(x => `<li><details><summary><b>${esc(x.name)}</b> <small class="muted">${esc(ordinal(x.level))} level</small></summary>
+      ${paragraphs(x.text)}</details></li>`).join('')}</ul>` : ''}`,
+    mine ? [{ label: 'Remove it', run: remove }]
+         : [{ label: `Choose ${b.name}`, primary: true, run: () => update({ paths: { ...state.paths, [key]: b.id } }) }]);
+}
+
+// A class's one-time choices, one line each for the printed sheet: "Bloodline: Aberrant (Acidic Ray 1st, Long Limbs 3rd)".
+function pathLines(cid, level) {
+  const lines = pathsFor(cid).filter(({ path }) => path).map(({ rule, path }) => {
+    const ps = path.powers.filter(x => x.level <= level).map(x => `${x.name} ${ordinal(x.level)}`);
+    return `${rule.label}: ${path.name}${ps.length ? ` (${ps.join(', ')})` : ''}`;
+  });
+  const opp = state.paths[`${cid}|opposition`];
+  if (opp?.length) lines.push(`Opposition schools: ${opp.join(', ')}`);
+  if (talentSlots(cid, level).some(s => s.rule.needs === 'mystery') && state.mystery) lines.unshift(`Mystery: ${state.mystery}`);
+  return lines;
 }
 
 // Class choices for one class (Classes card): a list per kind (rage powers...) with a line per pick slot: the choice and
@@ -2019,7 +2110,7 @@ function renderClasses(view) {
     const described = s => featureDescription(e.cls, s) || 'The class data has no description for this entry.';
     const features = e.cls.progression.slice(0, e.level).map(r => {
       const own = (r.special || []).map(s => {
-        const b = bloodlineEntry(e.cls.id, r.level, s);
+        const b = pathEntry(e.cls.id, r.level, s);
         return b ? term(`${esc(s)}: ${esc(b.name)}`, `${b.name} (${s})`, b.text) : term(esc(s), s, described(s));
       });
       const gone = (r.replaced || []).map(s => {
@@ -2034,7 +2125,7 @@ function renderClasses(view) {
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
-    // Choices still to make (bloodline, mystery, rage powers...) keep the section open and are counted on its line.
+    // Choices still to make (bloodline, school, order, mystery, rage powers...) keep the section open and are counted on its line.
     const left = choicesLeft(e.cls, e.level);
     const isOpen = open.has(e.cls.id) || (req && req.status !== 'met') || left > 0;
     const names = e.cls.archetypes?.length ? ` · ${esc(e.cls.archetypes.join(', '))}` : '';
@@ -2044,7 +2135,7 @@ function renderClasses(view) {
         <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
       ${reqHtml}
       ${domainPicker(e.cls, e.level, openFeatures)}
-      ${bloodlinePicker(e.cls, e.level, openFeatures)}
+      ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
@@ -2433,7 +2524,7 @@ let showRankDetails = () => {};
 
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
-  const byClass = classSkillTest([...classes, bloodlineSkills()]);
+  const byClass = classSkillTest([...classes, pathSkills()]);
   const isClassSkill = name => byClass(name) || view.traitFx.classSkills.has(name);
   const racial = racialSkillBonuses(race);
   const byLevel = skillRanksByLevel({
@@ -2852,9 +2943,10 @@ function spellTable(c, spells) {
     const g = domainGrants(d, data.domainsById);
     return `<p class="hint"><b>${esc(d.name)} domain spells:</b> ${esc(Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))} ${n}`).join(', '))}</p>`;
   }).join('');
-  const blood = bloodlineOf(cls.id);
-  const bloodLine = blood?.bonus_spells.length ? `<p class="hint"><b>${esc(blood.name)} bloodline spells</b> (added to your spells known at these ${esc(cls.name.toLowerCase())} levels):
-    ${esc(blood.bonus_spells.map(s => `${ordinal(s.level)} ${s.name}`).join(', '))}</p>` : '';
+  // A bloodline's, patron's or spirit's spells.
+  const bloodLine = pathsFor(cls.id).filter(({ rule, path }) => path?.spells.length && PATH_SPELLS[rule.kind]).map(({ rule, path }) =>
+    `<p class="hint"><b>${esc(PATH_SPELLS[rule.kind](path, cls)[0])}</b> (${esc(PATH_SPELLS[rule.kind](path, cls)[1])}):
+      ${esc(path.spells.map(x => `${ordinal(x.level)} ${x.name}`).join(', '))}</p>`).join('');
   // Caster level, concentration, save DC and spell resistance check, with a Details popup of how each is worked out.
   const sc = spellContext({ cls, effectiveLevel: c.effectiveLevel, stats: view.stats, size: view.size, featChoices: view.featChoices, haveFeats: view.haveFeats });
   const castKey = `${cls.id}|cast`;
@@ -3039,7 +3131,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -3053,6 +3145,7 @@ async function start() {
       fetch('data/mysteries.json').then(r => r.json()),
       fetch('data/skills.json').then(r => r.json()),
       fetch('data/bloodlines.json').then(r => r.json()),
+      fetch('data/class-paths.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -3072,7 +3165,13 @@ async function start() {
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
-  data.bloodlinesById = new Map(data.bloodlines.map(b => [b.id, b]));
+  // Bloodlines in the shape of the other one-time class choices.
+  data.paths = [...data.classPaths, ...data.bloodlines.map(b => ({
+    id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
+    facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),
+    class_skills: b.class_skill ? [b.class_skill] : [], spells: b.bonus_spells, spells_by: 'class', powers: b.powers, hexes: [],
+    bonus_feats: b.bonus_feats }))];
+  data.pathsById = new Map(data.paths.map(x => [x.id, x]));
   data.skillTextByName = new Map(data.skillTexts.map(s => [s.name, s]));
   roster = openRoster();
   currentId = roster.current;
