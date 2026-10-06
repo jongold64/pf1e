@@ -246,6 +246,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   page's book) where Foundry has none. `state.mystery` is a mystery name; `talentOptions(..., { revelationNames })`
   offers the revelations its page lists, by name (shared ones like Brain Drain are one record; a name with versions
   per mystery keeps the mystery's own).
+  Bloodlines: `build_aon_bloodlines.py` -> data/bloodlines.json from the AoN sorcerer and bloodrager bloodline pages (class
+  skill, bonus spells with class levels, bonus feats cleaned of "*" and run-in book codes, arcana, powers: a power's level is
+  the one its first two sentences name, else 1st). `state.bloodlines` = { sorcerer | bloodrager: id }. app.js
+  `bloodlinePicker`/`popBloodline`; `bloodlineEntry` names the class table's "Bloodline power"/"bloodline spell"/"Bloodline"
+  entries; `bloodlineSkills()` is a pseudo-class for `classSkillTest` ("Knowledge (any one)" not counted);
+  `setBloodlineFeats` (feats.js, called in computeView) limits the 'bloodline' bonus feat rule (slotAccepts passes the slot
+  for its clsId). `choicesLeft` counts a class's unmade picks (bloodline, mystery, empty slots): its section stays open.
   Text only: choices don't change numbers. Gaps: about 560 Foundry options (mostly later-book revelations, rogue
   talents, rage powers, discoveries) have no book anywhere and are left out.
 - Archetype data: `build_archetypes.py` (PSRD: `class_archetype` sections, ARG "Name (Class)" racial archetypes with the

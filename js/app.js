@@ -7,7 +7,7 @@ import { levelIncreases, abilityModifier, finalScores,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
-  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied,
+  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied, setBloodlineFeats,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
@@ -123,6 +123,7 @@ const state = {
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
   talents: {},     // class choices by slot ("barbarian|rage-power|4" -> talent id; bard versatile performance -> Perform type)
   mystery: '',     // an oracle's mystery (for which revelations fit)
+  bloodlines: {},  // a sorcerer's and a bloodrager's bloodline: { sorcerer: 'sorcerer-aberrant' } (data/bloodlines.json ids)
   drawback: '',    // Drawbacks house rule: the drawback taken (data/drawbacks.json id), '' for none
   flaws: [],       // Flaws house rule: up to two { id (flaws.js FLAWS, or 'other'), choice? (Pathetic's ability), name, effect }
   armorId: '',     // worn armor (data/armor.json id), '' for none
@@ -245,6 +246,8 @@ function load(saved) {
     return rule && typeof v === 'string' && (rule.choices ? Object.hasOwn(rule.choices, v) : data.talentsById.has(v));
   }));
   if (typeof state.mystery !== 'string' || !data.mysteries.some(m => m.name === state.mystery)) state.mystery = '';
+  const bl = state.bloodlines && typeof state.bloodlines === 'object' && !Array.isArray(state.bloodlines) ? state.bloodlines : {};
+  state.bloodlines = Object.fromEntries(Object.entries(bl).filter(([cid, id]) => data.bloodlinesById.get(id)?.cls === cid));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
@@ -813,9 +816,12 @@ function buildControls() {
                       state.talents[tb.dataset.slot] === tb.dataset.talentBrowse ? null : { slotId: tb.dataset.slot, why: tb.dataset.why, browse: true });
     const mp = e.target.closest('[data-mystery-pop]');
     if (mp) popMystery(mp.dataset.mysteryPop);
+    const bp = e.target.closest('[data-bloodline-pop]');
+    if (bp) popBloodline(bp.dataset.bloodlinePop);
   });
   $('class-info').addEventListener('change', e => {
     if (e.target.matches('[data-mystery]')) update({ mystery: e.target.value });
+    if (e.target.matches('[data-bloodline]')) update({ bloodlines: { ...state.bloodlines, [e.target.dataset.bloodline]: e.target.value } });
   });
   // The class option picker lives in the details window.
   $('detail-body').addEventListener('input', e => {
@@ -1149,7 +1155,7 @@ function kiTradesFor(cls) {
 
 // A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
 function skillTotalFor(name) {
-  const isClassSkill = classSkillTest(view.classes)(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = classSkillTest([...view.classes, bloodlineSkills()])(name) || view.traitFx.classSkills.has(name);
   const featNames = [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
@@ -1283,6 +1289,8 @@ function computeView() {
   const plainMods = Object.fromEntries(Object.entries(finalScores(state.base, race, flexibleChoice))
     .map(([a, v]) => [a, abilityModifier(v + (levelIncreases(classLevels.length, state.increases)[a] || 0))]));
   setEffectMods(plainMods);
+  // Bloodline feat slots take only the chosen bloodline's bonus feats.
+  setBloodlineFeats(Object.fromEntries(Object.entries(state.bloodlines).map(([cid, id]) => [cid, data.bloodlinesById.get(id)?.bonus_feats || []])));
   const fx = effectTotals(state.buffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.
   const size = shiftSize(fx.setSize || race.size, fx.size);
@@ -1314,7 +1322,8 @@ function computeView() {
   // For class feature prerequisites: archetypes, class choice picks and chosen options.
   const cfArgs = {
     archetypes: Object.fromEntries(Object.keys(state.archetypes).map(cid => [cid, chosenArchetypes(cid)])),
-    choices: Object.entries(state.talents).map(([slot, v]) => ({ label: ruleOf(slot)?.label || '', value: data.talentsById.get(v)?.name || v })),
+    choices: [...Object.entries(state.talents).map(([slot, v]) => ({ label: ruleOf(slot)?.label || '', value: data.talentsById.get(v)?.name || v })),
+              ...Object.values(state.bloodlines).map(id => ({ label: 'Bloodline', value: data.bloodlinesById.get(id)?.name || '' }))],
     talentNames: Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
     featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
     classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
@@ -1496,6 +1505,87 @@ function domainLines(clsId) {
     const spells = clsId === 'inquisitor' ? '' : Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${lv}: ${n}`).join(', ');
     return `${d.name}${d.kind === 'inquisition' ? ' inquisition' : ' domain'}: ${powers}${spells ? `. Spells ${spells}` : ''}`;
   });
+}
+
+// Classes with a bloodline (data/bloodlines.json), and the chosen one's record.
+const BLOODLINE_CLASSES = ['sorcerer', 'bloodrager'];
+const bloodlineOf = cid => data.bloodlinesById.get(state.bloodlines[cid]) || null;
+
+// The chosen bloodlines' class skills (sorcerers), as a class record for classSkillTest. "Knowledge (any one)" isn't
+// counted (the player picks it; the Details says so).
+function bloodlineSkills() {
+  const skills = view.classes.filter(c => c.id === 'sorcerer').map(c => bloodlineOf(c.id)?.class_skill)
+    .filter(s => s && !/any one/i.test(s)).map(s => s.replace(/\((\w)/, (m, c) => `(${c.toLowerCase()}`));
+  return { id: 'bloodline', class_skills: skills.map(skill => ({ skill })) };
+}
+
+// A class table entry the bloodline fills in: "Bloodline power" at a level is that level's power, "bloodline spell" the
+// spell, the bloodrager's "Bloodline" the bloodline itself. { name, text } or null.
+function bloodlineEntry(cid, level, entry) {
+  const b = bloodlineOf(cid);
+  if (!b) return null;
+  const e = entry.toLowerCase();
+  if (e === 'bloodline power') {
+    const ps = b.powers.filter(p => p.level === level);
+    return ps.length ? { name: ps.map(p => p.name).join(', '), text: ps.map(p => `${p.name}: ${p.text}`).join('\n\n') } : null;
+  }
+  if (e === 'bloodline spell') {
+    const sp = b.bonus_spells.find(x => x.level === level);
+    return sp ? { name: sp.name, text: `Your ${b.name} bloodline adds ${sp.name} to your spells known at ${ordinal(level)} level.` } : null;
+  }
+  if (e === 'bloodline') return { name: b.name, text: b.text };
+  return null;
+}
+
+// How many choices a class still has to make at its level: its bloodline or mystery, and empty class choice picks.
+function choicesLeft(cls, level) {
+  const { slots } = classChoiceSlots(cls.id, level);
+  let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
+  if (BLOODLINE_CLASSES.includes(cls.id) && !bloodlineOf(cls.id)) n++;
+  if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
+  return n;
+}
+
+// A sorcerer's or bloodrager's bloodline (Classes card): a list, Details for the chosen one, its powers by level (the ones
+// reached ticked), and every bloodline with its own Details.
+function bloodlinePicker(cls, level, openFeatures) {
+  if (!BLOODLINE_CLASSES.includes(cls.id)) return '';
+  const all = data.bloodlines.filter(b => b.cls === cls.id);
+  const b = bloodlineOf(cls.id);
+  const key = `bbrowse-${cls.id}`;
+  return `<div class="talents"><h4>Bloodline</h4><div class="mystery-pick"><label class="row-label">Bloodline <select data-bloodline="${esc(cls.id)}">
+      <option value="">Choose your bloodline…</option>${all.map(x => `<option value="${esc(x.id)}"${b?.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      ${b ? `<button type="button" class="skill-details" data-bloodline-pop="${esc(b.id)}">Details</button>` : ''}</div>
+    ${b ? `<ul class="talent-slots">${b.powers.map(p => `<li${p.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(p.level))}</span>
+        ${p.level <= level ? `<b>${esc(p.name)}</b>` : `<span class="muted">${esc(p.name)}</span>`}</li>`).join('')}</ul>` : ''}
+    <details class="arch-feature arch-browse" data-key="${esc(key)}"${openFeatures?.has(key) ? ' open' : ''}>
+      <summary>Browse all ${all.length} bloodlines</summary>
+      <ul class="pick-list">${all.map(x => {
+        const mine = x.id === b?.id;
+        return `<li class="with-details"><button type="button" data-bloodline-pop="${esc(x.id)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
+            <small>${esc(x.source)}</small></button>
+          <button type="button" class="skill-details" data-bloodline-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup">Details</button></li>`;
+      }).join('')}</ul></details></div>`;
+}
+
+// A bloodline in a popup: book, its text, class skill, bonus spells and feats, arcana and each power (by level), with
+// Choose or Remove.
+function popBloodline(id) {
+  const b = data.bloodlinesById.get(id);
+  if (!b) return;
+  const cls = data.classes.find(c => c.id === b.cls);
+  const mine = state.bloodlines[b.cls] === b.id;
+  const spells = b.bonus_spells.map(s => `${s.name} (${ordinal(s.level)})`).join(', ');
+  openDetail(`${b.name} bloodline`, `<p class="hint">${esc(cls?.name || b.cls)} bloodline · ${esc(b.source)}${mine ? ' · your bloodline' : ''}</p>
+    ${paragraphs(b.text)}
+    ${facts([['Class skill', b.class_skill || null], ['Bonus spells', spells || null], ['Bonus feats', b.bonus_feats.join(', ') || null],
+             ['Bloodline arcana', b.arcana || null]])}
+    ${/any one/i.test(b.class_skill) ? '<p class="hint">Pick the Knowledge skill yourself: the app doesn\u2019t count it as a class skill.</p>' : ''}
+    <h3>Bloodline powers</h3>
+    <ul class="plain-list">${b.powers.map(p => `<li><details><summary><b>${esc(p.name)}</b> <small class="muted">${esc(ordinal(p.level))} level</small></summary>
+      ${paragraphs(p.text)}</details></li>`).join('')}</ul>`,
+    mine ? [{ label: 'Remove it', run: () => { const x = { ...state.bloodlines }; delete x[b.cls]; update({ bloodlines: x }); } }]
+         : [{ label: `Choose ${b.name}`, primary: true, run: () => update({ bloodlines: { ...state.bloodlines, [b.cls]: b.id } }) }]);
 }
 
 // Class choices for one class (Classes card): a list per kind (rage powers...) with a line per pick slot: the choice and
@@ -1928,7 +2018,10 @@ function renderClasses(view) {
     };
     const described = s => featureDescription(e.cls, s) || 'The class data has no description for this entry.';
     const features = e.cls.progression.slice(0, e.level).map(r => {
-      const own = (r.special || []).map(s => term(esc(s), s, described(s)));
+      const own = (r.special || []).map(s => {
+        const b = bloodlineEntry(e.cls.id, r.level, s);
+        return b ? term(`${esc(s)}: ${esc(b.name)}`, `${b.name} (${s})`, b.text) : term(esc(s), s, described(s));
+      });
       const gone = (r.replaced || []).map(s => {
         const ki = s.match(/^ki power \(traded for (.+)\)$/);
         const why = ki ? `Given up so an archetype can replace ${ki[1]}, which this class doesn't have.`
@@ -1941,13 +2034,17 @@ function renderClasses(view) {
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
-    const isOpen = open.has(e.cls.id) || (req && req.status !== 'met');
+    // Choices still to make (bloodline, mystery, rage powers...) keep the section open and are counted on its line.
+    const left = choicesLeft(e.cls, e.level);
+    const isOpen = open.has(e.cls.id) || (req && req.status !== 'met') || left > 0;
     const names = e.cls.archetypes?.length ? ` · ${esc(e.cls.archetypes.join(', '))}` : '';
     return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level
+        ${left ? `<span class="tag">${left} choice${left === 1 ? '' : 's'} to make</span>` : ''}
         <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
       ${reqHtml}
       ${domainPicker(e.cls, e.level, openFeatures)}
+      ${bloodlinePicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${features}</ol>
@@ -2336,7 +2433,7 @@ let showRankDetails = () => {};
 
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
-  const byClass = classSkillTest(classes);
+  const byClass = classSkillTest([...classes, bloodlineSkills()]);
   const isClassSkill = name => byClass(name) || view.traitFx.classSkills.has(name);
   const racial = racialSkillBonuses(race);
   const byLevel = skillRanksByLevel({
@@ -2755,6 +2852,9 @@ function spellTable(c, spells) {
     const g = domainGrants(d, data.domainsById);
     return `<p class="hint"><b>${esc(d.name)} domain spells:</b> ${esc(Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))} ${n}`).join(', '))}</p>`;
   }).join('');
+  const blood = bloodlineOf(cls.id);
+  const bloodLine = blood?.bonus_spells.length ? `<p class="hint"><b>${esc(blood.name)} bloodline spells</b> (added to your spells known at these ${esc(cls.name.toLowerCase())} levels):
+    ${esc(blood.bonus_spells.map(s => `${ordinal(s.level)} ${s.name}`).join(', '))}</p>` : '';
   // Caster level, concentration, save DC and spell resistance check, with a Details popup of how each is worked out.
   const sc = spellContext({ cls, effectiveLevel: c.effectiveLevel, stats: view.stats, size: view.size, featChoices: view.featChoices, haveFeats: view.haveFeats });
   const castKey = `${cls.id}|cast`;
@@ -2780,7 +2880,7 @@ function spellTable(c, spells) {
       · Save DC <b>${10 + sc.castMod} + spell level</b> · Spell resistance check <b>${signed(sc.cl + sc.penetration)}</b>
       <button type="button" class="skill-details" data-spellday="${esc(castKey)}" aria-label="How these are worked out">Details</button></p>` : '';
   const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
-    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${castLine}${extraBox}${domainLine}`;
+    <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${castLine}${extraBox}${domainLine}${bloodLine}`;
   if (spells.rows.length === 0) {
     return `${head}<p class="hint">${esc(cls.name)}s start casting spells at level ${spells.firstLevel}.</p>`;
   }
@@ -2939,7 +3039,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -2952,6 +3052,7 @@ async function start() {
       fetch('data/talents.json').then(r => r.json()),
       fetch('data/mysteries.json').then(r => r.json()),
       fetch('data/skills.json').then(r => r.json()),
+      fetch('data/bloodlines.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -2971,6 +3072,7 @@ async function start() {
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
+  data.bloodlinesById = new Map(data.bloodlines.map(b => [b.id, b]));
   data.skillTextByName = new Map(data.skillTexts.map(s => [s.name, s]));
   roster = openRoster();
   currentId = roster.current;

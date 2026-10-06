@@ -38,7 +38,7 @@ import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
-import { slotCharacterLevel } from './feats.js';
+import { slotCharacterLevel, setBloodlineFeats } from './feats.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -224,6 +224,17 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const fighterSlot = slot('fighter', 1, 'class-fighter-L1');
   check('fighter slot takes Power Attack', slotAccepts(fighterSlot, feat('Power Attack')), true);
   check('fighter slot refuses Toughness', slotAccepts(fighterSlot, feat('Toughness')), false);
+  // A bloodline feat slot takes the chosen bloodline's bonus feats ("Skill Focus (Knowledge [dungeoneering])" counts as
+  // Skill Focus); with no bloodline chosen, any feat.
+  const bloodSlot = featSlots({ cls: cls('sorcerer'), level: 7 }).find(s => s.ruleId === 'bloodline');
+  check('sorcerer 7 has a bloodline feat slot', !!bloodSlot, true);
+  setBloodlineFeats({});
+  check('no bloodline: any feat', slotAccepts(bloodSlot, feat('Power Attack')), true);
+  setBloodlineFeats({ sorcerer: ['Combat Casting', 'Skill Focus (Knowledge [dungeoneering])'] });
+  check('bloodline feat on the list', slotAccepts(bloodSlot, feat('Combat Casting')), true);
+  check('Skill Focus counts', slotAccepts(bloodSlot, feat('Skill Focus')), true);
+  check('feat not on the list', slotAccepts(bloodSlot, feat('Power Attack')), false);
+  setBloodlineFeats({});
   const wizSlot = slot('wizard', 5, 'class-wizard-L5');
   check('wizard slot takes Empower Spell', slotAccepts(wizSlot, feat('Empower Spell')), true);
   check('wizard slot takes Spell Mastery', slotAccepts(wizSlot, feat('Spell Mastery')), true);

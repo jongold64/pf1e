@@ -101,6 +101,10 @@ Profession are one record each.
 **Oracle mystery** (`mysteries.json`, for example `flame`): `deities`, `class_skills`, `bonus_spells` (as printed),
 `revelations` (names, matched to `talents.json` by name), `final_revelation`.
 
+**Bloodline** (`bloodlines.json`, for example `sorcerer-aberrant`): `cls` (`sorcerer` or `bloodrager`), `name`, `text`,
+`class_skill` (sorcerers), `bonus_spells` ([{ `level` (class level), `name` }]), `bonus_feats` (names), `arcana`
+(sorcerers), `powers` ([{ `name`, `level`, `text` }]). From the Archives of Nethys bloodline pages.
+
 916 of 1,227 feats have prerequisites that are fully machine-readable. The rest include at least one
 `other` entry, such as "Small size or smaller" or "proficiency with the selected weapon".
 

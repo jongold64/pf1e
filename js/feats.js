@@ -40,8 +40,17 @@ export const BONUS_FEAT_RULES = {
   teamwork: { note: 'Must be a teamwork feat.', allowed: f => hasType(f, 'Teamwork') },
   rangerStyle: { note: 'Must be from your combat style\'s list (not checked). Prerequisites are waived.',
                  allowed: null, waivePrereqs: true },
-  bloodline: { note: 'Must be from your bloodline\'s list (not checked).', allowed: null },
+  bloodline: { note: 'Must be from your bloodline\'s list.',
+               allowed: (f, slotLevel, slot) => !BLOODLINE_FEATS[slot?.clsId] || BLOODLINE_FEATS[slot.clsId].includes(lower(f.name)) },
 };
+
+// The bonus feats of each class's chosen bloodline ({ sorcerer: [names] }), set by the app; a class without a bloodline
+// chosen takes any feat. "Skill Focus (Knowledge [arcana])" counts as Skill Focus.
+let BLOODLINE_FEATS = {};
+export function setBloodlineFeats(byClass) {
+  BLOODLINE_FEATS = Object.fromEntries(Object.entries(byClass || {}).map(([c, names]) =>
+    [c, names.map(n => lower(n.replace(/\s*\(.*$/, '')))]));
+}
 
 // Which class-table entries give a bonus feat, and the rule that applies to it.
 function bonusFeatRule(cls, special) {
@@ -111,7 +120,7 @@ export function slotCharacterLevel(slot, classLevels) {
 export function slotAccepts(slot, feat) {
   if (slot.kind !== 'class') return true;
   const allowed = BONUS_FEAT_RULES[slot.ruleId]?.allowed;
-  return !allowed || allowed(feat, slot.level);
+  return !allowed || allowed(feat, slot.level, slot);
 }
 
 // Feats a class gets for free, taken from its class table (e.g. a wizard's Scribe Scroll).
