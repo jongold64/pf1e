@@ -1,6 +1,6 @@
 // Traits card on the Feats tab: a slot for each trait the character gets (2, or 3 with the Extra Campaign Trait
-// house rule), and a picker with every published trait, searchable and filtered by category. No limits are checked
-// (the player's choice).
+// house rule), and a picker with every published trait, searchable and filtered by category. A trait from a category
+// another slot already has can't be chosen: the rules allow one trait from each category.
 import { $, esc, paragraphs } from './dom.js';
 import { traitSlotCount, traitSlotLabels } from './traits.js';
 
@@ -43,18 +43,31 @@ export function renderTraits(app) {
   $('trait-note').textContent = extra.length ? `Not counted (no slot for it now): ${extra.map(t => t.name).join(', ')}.` : '';
 }
 
+// The traits in the other slots (not the one being chosen).
+function otherTraits(app) {
+  return app.state.traits.slice(0, traitSlotCount(app.state.houseRules, app.state.drawback)).filter((id, i) => id && i !== pickerSlot)
+    .map(id => app.data.traitsById.get(id)).filter(Boolean);
+}
+
+// Why a trait can't go in the slot being chosen: another slot has a trait of its category. '' when it can.
+function blockedBy(app, t) {
+  const same = otherTraits(app).find(o => o.category === t.category);
+  return same ? `You already have a ${t.category} trait (${same.name}): the rules allow one trait from each category.` : '';
+}
+
 function renderPicker(app) {
   const search = $('trait-search').value.trim().toLowerCase();
   const category = $('trait-category').value;
   const list = app.data.traits.filter(t => (!category || t.category === category)
     && (!search || t.name.toLowerCase().includes(search) || (t.requirement || '').toLowerCase().includes(search)));
   $('trait-picker-count').textContent = `${list.length} trait${list.length === 1 ? '' : 's'}`;
-  $('trait-list').innerHTML = list.map(t => `<details class="feat-item">
+  $('trait-list').innerHTML = list.map(t => `<details class="feat-item${blockedBy(app, t) ? ' unavailable' : ''}">
       <summary><span class="feat-name">${esc(t.name)}</span> <small>${esc(t.category)}${t.requirement ? ` · ${esc(t.requirement)}` : ''}</small>
         <button type="button" class="skill-details" data-trait-pop="${esc(t.id)}" aria-label="${esc(t.name)} in a popup">Details</button></summary>
       <div class="feat-body"><p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
-        <button type="button" class="primary" data-trait-pick="${esc(t.id)}">Choose ${esc(t.name)}</button></div>
+        ${blockedBy(app, t) ? `<p class="warning">${esc(blockedBy(app, t))}</p>`
+          : `<button type="button" class="primary" data-trait-pick="${esc(t.id)}">Choose ${esc(t.name)}</button>`}</div>
     </details>`).join('') || '<p class="hint">No traits match.</p>';
 }
 
@@ -143,6 +156,8 @@ export function initTraits(app) {
   $('trait-category').addEventListener('change', () => renderPicker(app));
   $('trait-picker-close').addEventListener('click', () => $('trait-picker').close());
   const choose = id => {
+    const t = app.data.traitsById.get(id);
+    if (!t || blockedBy(app, t)) return;
     const traits = [...app.state.traits];
     while (traits.length < pickerSlot) traits.push(null);
     traits[pickerSlot] = id;
@@ -156,8 +171,7 @@ export function initTraits(app) {
       e.preventDefault();  // it sits in the row's summary: don't open or close the row
       const t = app.data.traitsById.get(pop.dataset.traitPop);
       if (!t) return;
-      const others = app.state.traits.slice(0, traitSlotCount(app.state.houseRules, app.state.drawback)).filter((id, i) => id && i !== pickerSlot)
-        .map(id => app.data.traitsById.get(id)).filter(Boolean);
+      const others = otherTraits(app);
       const e2 = t.effects || {};
       const lines = [];
       const vs = (mine, get, what) => {
@@ -168,12 +182,12 @@ export function initTraits(app) {
       if (e2.initiative) vs(e2.initiative, o => o.effects?.initiative, 'initiative');
       for (const [skill, n] of Object.entries(e2.skills || {})) vs(n, o => o.effects?.skills?.[skill], skill);
       if ((e2.class_skills || []).length) lines.push(`Class skill: ${e2.class_skills.join(', ')}`);
-      const sameCategory = others.find(o => o.category === t.category);
+      const blocked = blockedBy(app, t);
       app.openDetail(t.name, `<p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
         <h3>In the app</h3>${lines.length ? `<ul class="plain-list">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`
           : '<p>Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).</p>'}
-        ${sameCategory ? `<p class="warning">You already have a ${esc(t.category)} trait (${esc(sameCategory.name)}); by the rules your traits should come from different categories.</p>` : ''}`,
-        [{ label: `Choose ${t.name}`, primary: true, run: () => choose(t.id) }]);
+        ${blocked ? `<p class="warning">${esc(blocked)}</p>` : ''}`,
+        blocked ? [] : [{ label: `Choose ${t.name}`, primary: true, run: () => choose(t.id) }]);
       return;
     }
     const pick = e.target.closest('[data-trait-pick]');

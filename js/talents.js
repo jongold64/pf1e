@@ -125,6 +125,9 @@ export function featTalentSlots(feats, classLevels) {
   return out;
 }
 
+// 1st, 2nd, 3rd, 4th... 11th-13th.
+const nth = n => `${n}${[11, 12, 13].includes(n % 100) ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
+
 // A rule's heading: "Rage powers", "Mercies".
 export const pluralOf = rule => rule.plural || `${rule.label}s`;
 
@@ -174,7 +177,7 @@ export function talentOptions(slot, all, { taken = [], mystery = '', revelationN
       && (!slot.rule.classOnly || !t.classes?.length || t.classes.includes(slot.classId))
       && (slot.rule.needs !== 'mystery' || !mystery || !t.mystery || t.mystery === mystery))
     .map(t => ({ talent: t,
-                 why: taken.includes(t.id) && !t.repeatable ? 'already taken' : t.level && t.level > slot.classLevel ? `needs ${t.level}th level` : '' }));
+                 why: taken.includes(t.id) && !t.repeatable ? 'already taken' : t.level && t.level > slot.classLevel ? `needs ${nth(t.level)} level` : '' }));
 }
 
 // The mysteries revelations are listed under (when no mysteries list is loaded).

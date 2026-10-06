@@ -2,6 +2,7 @@
 // No page code here, so these functions can be tested on their own.
 
 import { magicPart, magicPrefix } from './crafting.js';
+import { weaponMaterialById } from './materials.js';
 const lower = s => String(s ?? '').toLowerCase();
 
 // Which weapons a class and race are proficient with, read from the class's "Weapon and Armor Proficiency"
@@ -210,8 +211,11 @@ export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRu
 // chosen is sized for the wielder).
 export function weaponWeight(weapon, entry = {}, wielderSize = 'Medium') {
   const size = entry.size || wielderSize;
-  return (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[size] ?? (size === 'Tiny' ? 0.5 : 1));
+  return (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[size] ?? (size === 'Tiny' ? 0.5 : 1)) * (materialOf(entry)?.weight || 1);
 }
+
+// The special material a carried weapon is made of (materials.js), or null.
+export const materialOf = entry => weaponMaterialById.get(entry?.material) || null;
 
 // Power Attack and Deadly Aim: -1 attack / +2 damage, one step more at BAB +4 and every +4 after.
 export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
@@ -238,7 +242,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const abilityMod = mod[abilityUsed];
   const focus = (entry.focus && has.has('Weapon Focus') ? 1 : 0) + (entry.greaterFocus && has.has('Greater Weapon Focus') ? 1 : 0);
   const spec = (entry.spec && has.has('Weapon Specialization') ? 2 : 0) + (entry.greaterSpec && has.has('Greater Weapon Specialization') ? 2 : 0);
-  const itemBonus = enh > 0 ? enh : entry.masterwork ? 1 : 0;  // masterwork: +1 to attack only
+  const material = materialOf(entry);
+  // Masterwork (or a material that's always masterwork): +1 to attack only.
+  const itemBonus = enh > 0 ? enh : entry.masterwork || material?.mw ? 1 : 0;
 
   // Strength to damage depends on how the weapon is held.
   let strDamage;
@@ -280,7 +286,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const ends = String(allDice ?? '').split('/');
   const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
   // bonusDamage: extra damage such as smite evil's (+paladin level).
-  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage;
+  // A material's damage change (alchemical silver -1 with a slashing or piercing weapon, bone and gold -2).
+  const materialDamage = material?.damage?.(weapon) || 0;
+  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage;
   return {
     attacks: attackBabs.map(b => b + toHit),
     babs: attackBabs,
@@ -289,7 +297,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
              penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit,
-             rating, tooWeak },
+             rating, tooWeak, materialDamage, material: material?.name || '' },
   };
 }
 
@@ -305,7 +313,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
   add(attackRows, 'Size', p.sizeAttack);
   add(attackRows, 'Weapon size (and archetype rules)', p.misfit);
-  add(attackRows, p.enh > 0 ? 'Enhancement bonus' : 'Masterwork', p.itemBonus);
+  add(attackRows, p.enh > 0 ? 'Enhancement bonus' : p.material ? `Masterwork (${p.material})` : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
   add(attackRows, proficiencyLabel, p.proficiency);
   add(attackRows, 'Armor or shield penalty', p.armorPenalty);
@@ -328,6 +336,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(damageRows, 'Weapon Specialization', p.spec);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
   add(damageRows, 'Extra damage (smite)', p.bonusDamage);
+  add(damageRows, `${p.material} (minimum 1 damage)`, p.materialDamage);
   for (const [rows, target, total] of [[attackRows, 'attack', p.effectAttack], [damageRows, 'damage', p.effectDamage]]) {
     const mine = effects.filter(e => e.target === target);
     for (const e of mine) rows.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
@@ -389,15 +398,11 @@ export function flurryBabs(kind, classLevel, classBab, bab) {
 // a magic weapon (Core Rulebook, Magic Weapons). Magic weapons are always masterwork.
 // Special abilities add their bonus equivalent (or flat price); a crafted weapon's magic part costs half (Core
 // Rulebook, Magic Item Creation), the masterwork weapon itself full price.
+// A weapon made for a Large creature costs twice as much (the masterwork and magic costs don't change). A composite
+// bow's strength rating: 100 gp (longbow) or 75 gp (shortbow) per point. A special material adds its price (cold iron
+// doubles the weapon's, +2,000 gp once magic); one that's always masterwork has the masterwork cost in its price.
 export function weaponCost(weapon, entry = {}) {
-  const enh = entry.enh || 0;
-  const abilities = entry.abilities || [];
-  const magic = magicPart(enh, abilities, 2000);
-  // A weapon made for a Large creature costs twice as much (the masterwork and magic costs don't change).
-  // A composite bow's strength rating: 100 gp (longbow) or 75 gp (shortbow) per point.
-  const rating = isComposite(weapon) && Number.isInteger(entry.strRating) ? entry.strRating * ratingPrice(weapon) : 0;
-  return (weapon.price_gp || 0) * (WEAPON_SIZE_COST[entry.size] || 1) + rating + (enh > 0 || entry.masterwork || abilities.length ? 300 : 0)
-    + (entry.crafted ? magic / 2 : magic);
+  return weaponCostRows(weapon, entry).reduce((n, r) => n + r.gp, 0);
 }
 
 // The parts of a weapon's price, for its Details: [{ label, gp }] adding up to weaponCost.
@@ -409,7 +414,13 @@ export function weaponCostRows(weapon, entry = {}) {
   if (isComposite(weapon) && Number.isInteger(entry.strRating) && entry.strRating) {
     rows.push({ label: `Strength rating +${entry.strRating} (${ratingPrice(weapon)} gp a point)`, gp: entry.strRating * ratingPrice(weapon) });
   }
-  if (enh > 0 || entry.masterwork || abilities.length) rows.push({ label: 'Masterwork', gp: 300 });
+  const material = materialOf(entry);
+  if (material) {
+    const weight = (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[entry.size] || 1);
+    rows.push({ label: `${material.name} (${material.priceText})`,
+                gp: material.extra(weapon, { base: (weapon.price_gp || 0) * mult, weight, magic: enh > 0 || abilities.length > 0 }) });
+  }
+  if ((enh > 0 || entry.masterwork || abilities.length) && !material?.mw) rows.push({ label: 'Masterwork', gp: 300 });
   const bonus = enh + abilities.reduce((n, a) => n + (a.bonus || 0), 0);
   if (bonus) {
     const parts = [`+${enh} enhancement`, ...abilities.filter(a => a.bonus).map(a => `${a.name} +${a.bonus}`)].join(', ');
@@ -421,9 +432,12 @@ export function weaponCostRows(weapon, entry = {}) {
   return rows;
 }
 
-// "+1 flaming Longsword", "Masterwork Dagger", "Club", "Greatsword (Large)".
+// "+1 flaming Longsword", "Masterwork Dagger", "Club", "Greatsword (Large)", "Cold iron Longsword".
 export function weaponLabel(weapon, entry = {}) {
-  const prefix = magicPrefix(entry.enh || 0, entry.masterwork, entry.abilities || []);
+  const material = materialOf(entry);
+  // "+1 flaming cold iron Longsword", "Mithral Rapier".
+  const prefix = [magicPrefix(entry.enh || 0, entry.masterwork && !material?.mw, entry.abilities || []), material?.name.toLowerCase()]
+    .filter(Boolean).join(' ').replace(/^[a-z]/, c => c.toUpperCase());
   const rated = isComposite(weapon) && Number.isInteger(entry.strRating) && !(entry.abilities || []).some(a => a.id === 'adaptive')
     ? ` (+${entry.strRating} Str)` : '';
   const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated;

@@ -27,7 +27,7 @@ import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from '.
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
-import { withMaterial, materialById } from './materials.js';
+import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
@@ -344,6 +344,8 @@ function load(saved) {
                  ...Object.fromEntries(FLAGS.filter(f => e[f] === true).map(f => [f, true])),
                  ...(cleanAbilities(e.abilities).length ? { abilities: cleanAbilities(e.abilities) } : {}),
                  ...(WEAPON_SIZES.includes(e.size) ? { size: e.size } : {}),
+                 // A special material (materials.js WEAPON_MATERIALS).
+                 ...(weaponMaterialById.has(e.material) ? { material: e.material } : {}),
                  // A composite bow's strength rating (0-10); none on older saves (counts as your Strength).
                  ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}) }));
   // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.
@@ -1711,7 +1713,7 @@ function talentPicker(cls, level, openFeatures) {
         const v = state.talents[s.id];
         const t = data.talentsById.get(v);
         const name = t ? t.name : v || '';
-        return `<li><span class="muted">${s.fromFeat ? `${esc(s.fromFeat)} (feat)` : esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
+        return `<li><span class="muted">${s.fromFeat ? `${esc(s.fromFeat)} (feat at ${esc(ordinal(s.classLevel))} level)` : esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
           ${!t && v && rule.choices?.[v] ? `<small class="muted">${esc(rule.choices[v])}</small>` : ''}
           <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
             : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
@@ -1776,7 +1778,12 @@ function openTalentPicker(slotId, search = '') {
         ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</span></li>`).join('') || '<li class="hint">Nothing matches.</li>';
   }
   const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
-  openDetail(slot.fromFeat ? `${slot.rule.label}: from ${slot.fromFeat}` : `${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
+  // A feat's pick is chosen as of the class level when the feat was taken (options needing a higher level can't be taken).
+  const featNote = slot.fromFeat ? `<p class="hint">You took ${esc(slot.fromFeat)} at character level ${slot.charLevel}, as a ${esc(ordinal(slot.classLevel))}-level
+      ${esc(cls.name.toLowerCase())}, so this pick counts as ${esc(ordinal(slot.classLevel))} level. To take an option that needs a higher level, take the
+      feat in a later feat slot (Feats tab).</p>` : '';
+  openDetail(slot.fromFeat ? `${slot.rule.label}: from ${slot.fromFeat} (${ordinal(slot.classLevel)} level)` : `${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
+      ${featNote}
       ${slot.rule.choices ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
       ${mysteryNote}<ul class="plain-list talent-list">${list}</ul></div>`,
     state.talents[slotId] ? [{ label: 'Clear this choice', run: () => { const t = { ...state.talents }; delete t[slotId]; update({ talents: t }); } }] : []);

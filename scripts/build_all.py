@@ -57,5 +57,7 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Adds post-2015 spells to the PSRD ones, so it runs after build_spells.py.
                     ('build_foundry_spells.py', 'data/spells.json'),
                     ('build_equipment.py', 'data/equipment.json'), ('build_weapons.py', 'data/weapons.json'),
+                    # Weapons from later Paizo books PSRD lacks (butchering axe...), added to build_weapons.py's (AoN).
+                    ('build_aon_weapons.py', 'data/weapons.json'),
                     ('build_license.py', 'LICENSE-OGL.txt'), ('validate.py', 'data')]:
     subprocess.run([sys.executable, os.path.join(here, script), os.path.join(here, '..', out)], check=True, env=os.environ)

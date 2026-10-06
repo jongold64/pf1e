@@ -8,6 +8,7 @@ import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
+import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
 
@@ -418,6 +419,10 @@ export function renderMyWeapons(app, view) {
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
           ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}</option>`).join('')}
         </select></label>${wpart(i, 'quality', 'What masterwork and magic do')}</span>
+        ${weaponMaterialsFor(w).length ? `<label>Material <select data-weapon-material="${i}">
+          <option value="">Normal (steel or wood)</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}
+        </select></label>` : ''}
+        ${weaponMaterialById.get(e.material) ? `<p class="hint">${esc(weaponMaterialById.get(e.material).name)}: ${esc(weaponMaterialById.get(e.material).notes)}${weaponMaterialById.get(e.material).mw ? ' Always masterwork (+1 on attacks).' : ''}</p>` : ''}
         ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
@@ -620,6 +625,12 @@ export function initWeaponsTab(app) {
     }
     const rating = e.target.dataset.weaponRating;
     if (rating !== undefined && e.target.value !== '') { changeEntry(app, Number(rating), { strRating: Number(e.target.value) }); return; }
+    const material = e.target.dataset.weaponMaterial;
+    if (material !== undefined) {
+      const { material: _old, ...rest } = app.state.weapons[Number(material)];
+      app.update({ weapons: app.state.weapons.map((x, j) => (j === Number(material) ? (e.target.value ? { ...rest, material: e.target.value } : rest) : x)) });
+      return;
+    }
     const quality = e.target.dataset.weaponQuality;
     if (quality !== undefined) {
       const v = e.target.value;

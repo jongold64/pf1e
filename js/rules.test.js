@@ -10,11 +10,11 @@ import { normalize, buildIndex, search } from './search.js';
 import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, formatGp, formatLbs,
          magicItemStats, magicItemTotals, ownable } from './equipment.js';
 import { paragraphs, ordinal } from './dom.js';
-import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight, bigWeaponRules } from './weapons.js';
+import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight, bigWeaponRules, weaponLabel } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
-import { withMaterial, materialsFor } from './materials.js';
+import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
@@ -699,6 +699,30 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('longsword price', weaponCost(ls), 15);
   check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);
   check('+2 longsword: 15 + 300 + 8,000', weaponCost(ls, { enh: 2 }), 8315);
+
+  // Weapon materials (Core Rulebook / Ultimate Equipment, Special Materials).
+  check('cold iron longsword: twice the price', weaponCost(ls, { material: 'cold-iron' }), 30);
+  check('+1 cold iron longsword: 30 + 300 + 2,000 + 2,000', weaponCost(ls, { material: 'cold-iron', enh: 1 }), 4330);
+  check('adamantine longsword: +3,000, masterwork included', weaponCost(ls, { material: 'adamantine', masterwork: true }), 3015);
+  check('adamantine: +1 on attacks without choosing masterwork',
+    weaponAttack({ weapon: ls, entry: { material: 'adamantine' }, bab: [1], mod }).parts.itemBonus, 1);
+  check('mithral rapier: +500 gp a pound', weaponCost(weapon('Rapier'), { material: 'mithral' }), 20 + 500 * weapon('Rapier').weight_lbs);
+  check('mithral rapier: half weight', weaponWeight(weapon('Rapier'), { material: 'mithral' }), weapon('Rapier').weight_lbs / 2);
+  const dagger = weapon('Dagger');
+  check('silver dagger: +20 gp (light)', weaponCost(dagger, { material: 'silver' }), 22);
+  check('silver dagger: -1 damage', weaponAttack({ weapon: dagger, entry: { material: 'silver' }, bab: [1], mod }).parts.damageBonus,
+    weaponAttack({ weapon: dagger, bab: [1], mod }).parts.damageBonus - 1);
+  const staff = weapon('Quarterstaff');
+  check('darkwood quarterstaff: masterwork + 10 gp a pound', weaponCost(staff, { material: 'darkwood' }), 300 + 10 * staff.weight_lbs);
+  check('a quarterstaff is never cold iron', weaponMaterialsFor(staff).some(m => m.id === 'cold-iron'), false);
+  check('a quarterstaff can be darkwood', weaponMaterialsFor(staff).some(m => m.id === 'darkwood'), true);
+  check('label', weaponLabel(ls, { material: 'cold-iron', enh: 1 }), '+1 cold iron Longsword');
+  check('label without magic', weaponLabel(ls, { material: 'mithral' }), 'Mithral Longsword');
+  check('material price rows add up', weaponCostRows(ls, { material: 'cold-iron', enh: 1 }).reduce((n, r) => n + r.gp, 0), 4330);
+  // Weapons from later books (build_aon_weapons.py): the butchering axe.
+  const axe = weapon('Butchering axe');
+  check('butchering axe', axe && `${axe.proficiency} ${axe.group} ${axe.damage.m} ${axe.damage.l} x${axe.multiplier} ${axe.source}`,
+    "exotic two-handed 3d6 4d6 x3 Adventurer's Armory 2");
 }
 
 // Multiclassing

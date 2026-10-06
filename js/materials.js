@@ -108,3 +108,67 @@ export function withMaterial(item, materialId) {
     dr: m.dr ? m.dr(item) : 0,
   };
 }
+
+// Special materials for weapons (Core Rulebook and Ultimate Equipment, Special Materials). Each: which weapons it fits
+// (`fits(w)`), what it adds to the price (`extra(w, { base, weight, magic })`: base = the weapon's price, weight its
+// weight, magic = whether it has an enhancement or special ability) with `priceText`, `mw` (always masterwork, the
+// masterwork cost included), `weight` (multiplier), `damage(w)` (on damage rolls) and `notes` (what it does in play).
+// The rules leave some fits to the GM ("mostly wooden", "has metal parts"); these follow the books' examples.
+const NONMETAL_WEAPON = /\b(club|greatclub|quarterstaff|bo staff|hanbo|staff|sling|blowgun|whip|net|lasso|bolas|sap|boomerang|shortbow|longbow|bow|hornbow|throwing arrow cord)\b/i;
+const WOODEN_WEAPON = /\b(bow|crossbow|club|greatclub|quarterstaff|staff|hanbo|spear|shortspear|longspear|javelin|lance|pike|boomerang|tonfa|nunchaku|crook)\b/i;
+const HAFTED_WEAPON = /\b(axe|waraxe|greataxe|handaxe|halberd|glaive|guisarme|ranseur|bardiche|bec de corbin|hammer|warhammer|maul|pick|mace|morningstar|flail|trident|scythe|fauchard|naginata|spear|lance|pike)\b/i;
+const melee = w => w.group !== 'ranged' && w.id !== 'unarmed-strike';
+const metalWeapon = w => w.id !== 'unarmed-strike' && w.group !== 'ranged' && !NONMETAL_WEAPON.test(w.name);
+const woodenWeapon = w => WOODEN_WEAPON.test(w.name);
+const hafted = w => woodenWeapon(w) || HAFTED_WEAPON.test(w.name);
+const pierceOrSlash = w => /[PS]/.test(w.type || '');
+const lightOrOne = w => ['light', 'one-handed'].includes(w.group);
+const spearLike = w => /\b(spear|shortspear|longspear|javelin)\b/i.test(w.name);
+
+export const WEAPON_MATERIALS = [
+  { id: 'adamantine', name: 'Adamantine', mw: true, fits: metalWeapon, extra: () => 3000, priceText: '+3,000 gp (masterwork included)',
+    notes: 'Bypasses DR/adamantine; ignores hardness below 20 when sundering or attacking objects.' },
+  { id: 'blood-crystal', name: 'Blood crystal', fits: w => metalWeapon(w) && pierceOrSlash(w), extra: () => 1500, priceText: '+1,500 gp',
+    notes: '+1 damage on a hit against a creature suffering a bleed effect; half the weapon\u2019s hit points.' },
+  { id: 'bone', name: 'Bone', fits: w => melee(w) && (lightOrOne(w) || (w.group === 'two-handed' && w.type === 'B') || spearLike(w)),
+    extra: (w, x) => -x.base / 2, priceText: 'half price', damage: () => -2,
+    notes: '\u22122 on damage rolls (minimum 1); fragile; half hardness (a magic bone weapon isn\u2019t fragile).' },
+  { id: 'bronze', name: 'Bronze', fits: w => metalWeapon(w) && (lightOrOne(w) || /\b(spear|axe|rhomphaia)\b/i.test(w.name)),
+    extra: () => 0, priceText: 'same price', notes: 'Fragile (unless magically strengthened).' },
+  { id: 'cold-iron', name: 'Cold iron', fits: metalWeapon, extra: (w, x) => x.base + (x.magic ? 2000 : 0),
+    priceText: 'twice the price, +2,000 gp once it\u2019s magic', notes: 'Bypasses DR/cold iron (demons, fey).' },
+  { id: 'darkwood', name: 'Darkwood', mw: true, weight: 0.5, fits: woodenWeapon, extra: (w, x) => 300 + 10 * x.weight,
+    priceText: 'masterwork +10 gp per pound', notes: 'Half weight.' },
+  { id: 'elysian-bronze', name: 'Elysian bronze', fits: metalWeapon, extra: () => 1000, priceText: '+1,000 gp',
+    notes: '+1 damage against magical beasts and monstrous humanoids (multiplied on a critical hit); after damaging one, +1 on attacks against that kind for 24 hours.' },
+  { id: 'fire-forged-steel', name: 'Fire-forged steel', mw: true, fits: metalWeapon, extra: () => 600, priceText: '+600 gp (masterwork included)',
+    notes: 'After taking 10 or more fire damage, +1d4 fire damage for 2 rounds (1d6 for 4 rounds with fire-forged armor).' },
+  { id: 'frost-forged-steel', name: 'Frost-forged steel', mw: true, fits: metalWeapon, extra: () => 600, priceText: '+600 gp (masterwork included)',
+    notes: 'After taking 10 or more cold damage, +1d4 cold damage for 2 rounds (1d6 for 4 rounds with frost-forged armor).' },
+  { id: 'gold', name: 'Gold', weight: 1.5, fits: w => metalWeapon(w) && w.group === 'light' && pierceOrSlash(w),
+    extra: (w, x) => 9 * x.base, priceText: '10 times the price', damage: () => -2,
+    notes: '\u22122 on damage rolls (minimum 1); fragile; half hardness; 50% heavier.' },
+  { id: 'greenwood', name: 'Greenwood', mw: true, fits: woodenWeapon, extra: (w, x) => 300 + 50 * x.weight,
+    priceText: 'masterwork +50 gp per pound', notes: 'Heals itself when damp on fertile soil; takes a quarter damage from fire.' },
+  { id: 'living-steel', name: 'Living steel', fits: metalWeapon, extra: () => 500, priceText: '+500 gp',
+    notes: 'Repairs 2 hit points of damage a day (1 if broken).' },
+  { id: 'mithral', name: 'Mithral', mw: true, weight: 0.5, fits: metalWeapon, extra: (w, x) => 500 * x.weight,
+    priceText: '+500 gp per pound (masterwork included)', notes: 'Counts as silver against damage reduction; half weight.' },
+  { id: 'obsidian', name: 'Obsidian', weight: 0.75, fits: w => melee(w) && ((lightOrOne(w) && pierceOrSlash(w)) || spearLike(w)),
+    extra: (w, x) => -x.base / 2, priceText: 'half price', notes: 'Fragile; half hardness; 75% of the weight.' },
+  { id: 'silver', name: 'Alchemical silver', fits: metalWeapon,
+    extra: w => (w.group === 'light' ? 20 : w.group === 'two-handed' || /double/.test((w.special || []).join(' ')) ? 180 : 90),
+    priceText: '+20 gp light, +90 gp one-handed, +180 gp two-handed or double', damage: w => (pierceOrSlash(w) ? -1 : 0),
+    notes: 'Bypasses DR/silver (lycanthropes, devils); \u22121 on damage with a slashing or piercing weapon (minimum 1).' },
+  { id: 'stone', name: 'Stone', weight: 0.75, fits: w => melee(w) && ((lightOrOne(w) && w.type === 'B') || spearLike(w)),
+    extra: (w, x) => -x.base * 3 / 4, priceText: 'a quarter of the price', notes: 'Fragile; half hardness; 75% of the weight.' },
+  { id: 'viridium', name: 'Viridium', fits: w => melee(w) && pierceOrSlash(w), extra: () => 200, priceText: '+200 gp',
+    notes: 'A hit gives leprosy (Fort DC 12); a critical hit greenblood oil (Fort DC 13); fragile; carrying it unshielded risks leprosy daily.' },
+  { id: 'whipwood', name: 'Whipwood', fits: w => melee(w) && hafted(w), extra: () => 500, priceText: '+500 gp',
+    notes: '+2 CMD against sunder attempts on it; +5 hit points.' },
+  { id: 'wyroot', name: 'Wyroot', fits: w => melee(w) && hafted(w), extra: () => 1000, priceText: '+1,000 gp (holds 1 life point)',
+    notes: 'A confirmed critical hit stores 1 life point; a swift action turns it into 1 ki or arcane pool point.' },
+];
+export const weaponMaterialById = new Map(WEAPON_MATERIALS.map(m => [m.id, m]));
+// The materials a weapon can be made of.
+export const weaponMaterialsFor = w => WEAPON_MATERIALS.filter(m => m.fits(w));

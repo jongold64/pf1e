@@ -1,5 +1,36 @@
 [
   {
+    "id": "baston-fighting-stick",
+    "name": "Baston fighting stick",
+    "source": "Merchant's Manifest",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "monk",
+      "see text"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "These weapons are treated sticks of wood, either left bare or covered in elaborate decorative designs. Baston fighting sticks vary in length from 2 to 4 feet, with thicknesses varying between 1 to 3 inches. In most applications, these weapons are similar to clubs or quarterstaffs, but in the hands of a trained expert, they truly shine. A creature with the Combat Reflexes feat treats the weapon as having the blocking and performance weapon special features (Pathfinder RPG Ultimate Equipment 22).",
+    "origin": "aonprd"
+  },
+  {
     "id": "battle-aspergillum",
     "name": "Battle Aspergillum",
     "source": "Ultimate Equipment",
@@ -123,6 +154,67 @@
     "weight_lbs": 8,
     "finesse": false,
     "description": "This spear has a metal crossbar to protect you against onrushing attackers. If you ready a boar spear against a charge and your attack hits, you gain a +2 shield bonus to your AC against that creature until your next turn."
+  },
+  {
+    "id": "boarding-pike",
+    "name": "Boarding pike",
+    "source": "Pirates of the Inner Sea",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "brace",
+      "reach"
+    ],
+    "price": "8 gp",
+    "price_gp": 8.0,
+    "weight_lbs": 9.0,
+    "finesse": false,
+    "description": "A boarding pike is an 8-foot-long pole topped with a foot-long tapered metal tip. Boarding pikes look much like longspears, but the metal pike is designed to flow into the wooden haft, leaving no grooves, collars, or spikes that could trap salt water and cause rust. Boarding pikes are mainly used defensively, to repel boarding actions. The pikes are kept in brackets around the mast, so sailors can quickly grab pikes and brace them against the gunwale to repel boarders.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "brass-knife",
+    "name": "Brass knife",
+    "source": "Pirates of the Inner Sea",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "P or S",
+    "special": [
+      "fragile"
+    ],
+    "price": "2 gp",
+    "price_gp": 2.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "Pirates often carry long brass knives for working aboard a ship. Though brass doesn’t hold as sharp an edge as steel, it isn’t vulnerable to rust like steel is. In a pinch, a pirate can use his brass knife as a weapon. Mostly, though, they are used for cutting ropes, cleaning fish, and other sundry tasks.",
+    "origin": "aonprd"
   },
   {
     "id": "brass-knuckles",
@@ -308,6 +400,67 @@
     "description": "This metal glove lets you deal lethal damage rather than nonlethal damage with unarmed strikes. A strike with a gauntlet is otherwise considered an unarmed attack. The cost and weight given are for a single gauntlet. Medium and heavy armors (except breastplates) come with gauntlets. Your opponent cannot use a disarm action to disarm you of gauntlets."
   },
   {
+    "id": "hanbo",
+    "name": "Hanbo",
+    "source": "Adventurer's Armory",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "monk",
+      "trip"
+    ],
+    "price": "1 gp",
+    "price_gp": 1.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "The hanbo is a staff less than a yard long, often carved to look like a walking stick.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "handwraps",
+    "name": "Handwraps",
+    "source": "Martial Arts Handbook",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "—",
+    "special": [
+      "see text"
+    ],
+    "price": "1 sp",
+    "price_gp": 1.0,
+    "weight_lbs": null,
+    "finesse": true,
+    "description": "Many unarmed fighters wrap their hands in cloth to minimize injuries to their fists. Some martial artists also weave small coins or metal bars into their handwraps, adding special material effects as well. Handwraps don’t alter the damage a character’s unarmed attacks deal. However, masterwork handwraps can be enchanted as weapons, providing their benefits on unarmed attacks the character makes with her hands. A character can’t benefit from both handwraps and other items that provide enhancement bonuses or weapon special abilities (such as an amulet of mighty fists) on the same attack.",
+    "origin": "aonprd"
+  },
+  {
     "id": "heavy-crossbow",
     "name": "Heavy Crossbow",
     "source": "Ultimate Equipment",
@@ -338,6 +491,36 @@
     "description": "You draw a heavy crossbow back by turning a small winch. Loading a heavy crossbow is a full-round action that provokes attacks of opportunity. A heavy crossbow fires crossbow bolts.\n\nNormally, operating a heavy crossbow requires two hands. However, you can shoot, but not load, a heavy crossbow with one hand at a -4 penalty on attack rolls. You can shoot a heavy crossbow with each hand, but you take a penalty on attack rolls as if attacking with two one-handed weapons. This penalty is cumulative with the penalty for one-handed firing."
   },
   {
+    "id": "hook-hand",
+    "name": "Hook hand",
+    "source": "Villain Codex",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "disarm"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "Pirates who lose a hand in the course of their adventures sometimes attach hooks to their wrists. Hook hands can’t be disarmed. They generally don’t interfere with day-to-day activities, but can’t be used for tasks that would require an actual hand (such as completing somatic components, drawing arrows, or holding a weapon with both hands).",
+    "origin": "aonprd"
+  },
+  {
     "id": "javelin",
     "name": "Javelin",
     "source": "Ultimate Equipment",
@@ -366,6 +549,124 @@
     "weight_lbs": 2,
     "finesse": false,
     "description": "A javelin is a thin throwing spear . Since it is not designed for melee, you are treated as nonproficient with it and take a -4 penalty on attack rolls if you use a javelin as a melee weapon."
+  },
+  {
+    "id": "kumade",
+    "name": "Kumade",
+    "source": "Melee Tactics Toolbox",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "grapple"
+    ],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "Adapted from a garden rake, the kumade consists of a wood or bamboo pole topped with a metal claw. The rake head doubles as a grappling hook. When a kumade is secured to a surface, such as a rafter or window sill, its handle can be climbed as a 5-foot length of rope.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "kumade-collapsible",
+    "name": "Kumade, collapsible",
+    "source": "Melee Tactics Toolbox",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "grapple"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This weapon acts as a kumade, but the handle consists of bamboo sections held together by a taut rope running through the center. Releasing the rope is a standard action that provokes attacks of opportunity and causes the weapon to collapse into a bundle that fits into a backpack. Reassembling the collapsible kumade requires a full-round action that provokes attacks of opportunity.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "kunai",
+    "name": "Kunai",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "B or P",
+    "special": [],
+    "price": "2 gp",
+    "price_gp": 2.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Crafted from a single piece of iron, a kunai has a leaf-shaped blade and a ring for a pommel. Adapted from the common trowel, the kunai has a thick blade that is sharpened only near the tip. Unlike finer weapons, the kunai can readily substitute for a crowbar or piton without being damaged in the process.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "lantern-staff",
+    "name": "Lantern staff",
+    "source": "Adventurer's Armory 2",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "see text"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 9.0,
+    "finesse": false,
+    "description": "This long metal staff has reservoirs for lamp oil, and a lantern-like structure at its head. The lantern staff is fueled as and provides light as a hooded lantern. While lit, attacks with the lantern staff deal 1 point of fire damage in addition to the normal damage. Any effects that apply to a quarterstaff, except those that require it be used as a double weapon, also apply to a lantern staff.",
+    "origin": "aonprd"
   },
   {
     "id": "light-crossbow",
@@ -752,6 +1053,36 @@
     "description": "A spear is 5 feet in length and can be thrown."
   },
   {
+    "id": "spider-leg-sickle",
+    "name": "Spider-leg sickle",
+    "source": "The House on Hook Street",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "trip"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "This wickedly curved sickle is cast in the form of a segmented spider’s leg. It has the same statistics as a normal sickle and can trip opponents, but deals piercing damage rather than slashing damage. The leatherwrapped handle contains a hollow recess that can hold a single dose of poison. Filling the reservoir is a full-round action that carries the usual risks of poisoning yourself. Once filled, the reservoir keeps the blade saturated and viable for up to 2 hours. The first successful attack made with the spider-leg sickle during this time administers and expends the dose of poison. Mog-Lathar’s deacons carry masterwork versions of these weapons. The cult uses blue whinnis poison, and within the radius of the dreamstone’s effects the unconsciousness effect may trigger lucid dreaming.",
+    "origin": "aonprd"
+  },
+  {
     "id": "spiked-gauntlet",
     "name": "Spiked Gauntlet",
     "source": "Ultimate Equipment",
@@ -780,6 +1111,123 @@
     "weight_lbs": 1,
     "finesse": true,
     "description": "This is a gauntlet of thick leather or metal with blades or spikes protruding from above the knuckles, allowing the wearer to stab with the force of a punch. The cost and weight given are for a single gauntlet. An attack with a spiked gauntlet is considered an armed attack. Your opponent cannot disarm you of spiked gauntlets."
+  },
+  {
+    "id": "spring-blade",
+    "name": "Spring blade",
+    "source": "Ultimate Intrigue",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "P or S",
+    "special": [],
+    "price": "70 gp",
+    "price_gp": 70.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This 4-inch blade is attached via a hinge to a wooden handle with a slot in the center, into which the blade can be folded. With a click of a switch, a spring thrusts the blade outward, where it locks into place until it is reset. Releasing the blade is a free action, and resetting it is a move action. The handle must be in your hand for the blade to be released; placing it in your hand requires the same type of action as drawing a weapon. A spring blade is easy to conceal: an observer must succeed at a DC 20 Perception check to notice the blade hidden within the wooden handle, and you gain a +4 bonus on Sleight of Hand checks to conceal a spring blade on your body.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "stingchuck",
+    "name": "Stingchuck",
+    "source": "Adventurer's Armory",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "B",
+    "special": [
+      "see text"
+    ],
+    "price": "—",
+    "price_gp": null,
+    "weight_lbs": 9.0,
+    "finesse": false,
+    "description": "A stingchuck is a foul bag made of a humanoid’s head with the brain removed and the skull heavily scored so that it bursts open when thrown. Normally filled with biting vermin, it acts as a splash weapon. When it hits, the vermin bite and sting the target, dealing 1d6 points of damage and forcing a DC 11 Fortitude save to avoid being nauseated for 1d3 rounds. Each round a creature remains nauseated by a stingchuck, it takes 1 additional point of damage from the biting vermin. All creatures within the splash effect take 1 point of damage from the vermin but do not risk being nauseated.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "stonebow",
+    "name": "Stonebow",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 50,
+    "type": "B",
+    "special": [],
+    "price": "35 gp",
+    "price_gp": 35.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "A stonebow, or bullet crossbow, resembles a light crossbow except for the distinct U-shaped bend in the stock. Instead of bolts, the stonebow shoots sling bullets. The bow has two strings with a leather pocket between them to hold the bullet. Loading a stonebow is a move action (a free action if you have the Rapid Reload feat) that provokes attacks of opportunity.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "traveling-kettle",
+    "name": "Traveling kettle",
+    "source": "Martial Arts Handbook",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "monk",
+      "see text"
+    ],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "These small tea kettles are made with clamping lids and heavily reinforced handles, allowing them to be swung like a club. A traveling kettle with boiling water inside deals an additional 1 point of fire damage on a hit. Boiling water cools to a nondamaging temperature after 5 minutes.",
+    "origin": "aonprd"
   },
   {
     "id": "unarmed-strike",
@@ -895,6 +1343,37 @@
     "description": "An underwater light crossbow functions like its normal counterpart above water, and can be used underwater. When fired underwater, the crossbow has a range increment of 20 feet. Anyone proficient with a normal light crossbow can use an underwater light crossbow."
   },
   {
+    "id": "weighted-spear",
+    "name": "Weighted spear",
+    "source": "Melee Tactics Toolbox",
+    "category": "Simple Weapons",
+    "proficiency": "simple",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4/1d3",
+      "s": "1d6/1d4",
+      "m": "1d8/1d6",
+      "l": "2d6/1d8"
+    },
+    "critical": "x3/x2",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "B or P",
+    "special": [
+      "brace",
+      "double"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "This pole has a spear head at one end and a mace head at the other. It can be wielded like a standard spear (though it isn’t balanced for throwing), or it can be used as a double weapon, alternately thrusting and bashing.",
+    "origin": "aonprd"
+  },
+  {
     "id": "wooden-stake",
     "name": "Wooden Stake",
     "source": "Ultimate Equipment",
@@ -955,6 +1434,37 @@
     "weight_lbs": 1,
     "finesse": false,
     "description": "An amentum is a long leather thong that attaches to a standard javelin. Before throwing, the amentum is wound about the javelin's shaft. You then throw the javelin while gripping the amentum, imparting spin on the weapon and greatly improving its range. Attaching an amentum to a javelin is a move action, and winding it is a full-round action. Javelins can be stored with amenta already wound about them. A javelin wound with an amentum is considered a martial weapon."
+  },
+  {
+    "id": "ankus",
+    "name": "Ankus",
+    "source": "Melee Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "disarm",
+      "trip"
+    ],
+    "price": "8 gp",
+    "price_gp": 8.0,
+    "weight_lbs": 5.0,
+    "finesse": false,
+    "description": "Also known as an elephant goad, this tool consists of a 2- to 3-foot rod ending in a spearhead and a backward-facing hook. Traditionally used to train and direct large animals, the ankus can be used as a weapon in a pinch.",
+    "origin": "aonprd"
   },
   {
     "id": "armor-spikes",
@@ -1147,6 +1657,64 @@
     "description": "The blade of this polearm is a curved or hooked chopping blade with a spiked projection on the back of the blade. The spike is commonly used to block and parry. When fighting defensively or with full defense, this weapon gives you a +1 shield bonus to AC. A mounted opponent hit by a bill takes a -1 penalty on his Ride check to stay mounted."
   },
   {
+    "id": "blade-boot",
+    "name": "Blade boot",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "see text"
+    ],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Blade boots come with a spring-mounted knife that pops out when triggered with the right combination of toe presses. You can use a blade boot as an off-hand weapon. Releasing the knife is a swift action; rearming it is a full-round action. When the blade is extended, you treat normal terrain as difficult and difficult terrain as impassable.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "boarding-axe",
+    "name": "Boarding axe",
+    "source": "Adventurer's Armory 2",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [],
+    "price": "6 gp",
+    "price_gp": 6.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "A boarding axe is similar to a handaxe, but features a spike that allows the weapon to do either slashing or piercing damage. When in hand, a boarding axe grants a +2 circumstance bonus on Climb checks to scale wooden or other penetrable surfaces, such as ice.",
+    "origin": "aonprd"
+  },
+  {
     "id": "butterfly-sword",
     "name": "Butterfly Sword",
     "source": "Ultimate Equipment",
@@ -1179,6 +1747,37 @@
     "description": "These short matching swords come in pairs, cleverly nested together to appear as a single blade. Both weapons can be drawn at the same time, and they can be separated as a free action and wielded in both hands to make wickedly effective chops and slashes. Their thin, broad blades extend just 1 foot in length. A butterfly sword has a hardwood grip covered with braided cord, and a metal D-shaped guard to protect the wielder's hand. The listed price is for a pair of butterfly swords. Masterwork butterfly swords cost 320 gp for the pair. If you add magical enhancement bonuses or properties to a butterfly sword, treat each sword in the pair as a separate weapon (for example, adding a +1 magical enhancement bonus to a pair of masterwork butterfly swords costs 4,000 gp)."
   },
   {
+    "id": "cat-o-nine-tails",
+    "name": "Cat-o'-nine-tails",
+    "source": "Adventurer's Armory 2",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "disarm",
+      "nonlethal"
+    ],
+    "price": "1 gp",
+    "price_gp": 1.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This short whip is made of nine knotted thongs about 3 feet in length. A cat-o’-nine-tails deals no damage to any creature with an armor bonus of +1 or higher or a natural armor bonus of +3 or higher.",
+    "origin": "aonprd"
+  },
+  {
     "id": "chakram",
     "name": "Chakram",
     "source": "Ultimate Equipment",
@@ -1207,6 +1806,67 @@
     "weight_lbs": 1,
     "finesse": false,
     "description": "The chakram is a simple, elegant, and highly portable thrown weapon. It is a flat, open-centered metal discus with a sharpened edge. You can wield the chakram as a melee weapon, but it is not designed for such use; you take a -1 penalty on your attack roll with the weapon and must succeed at a DC 15 Reflex save or cut yourself on the blade (half damage, no Strength modifier). You do not need to make this save if wearing heavy armor."
+  },
+  {
+    "id": "combat-scabbard",
+    "name": "Combat scabbard",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "improvised",
+      "see text"
+    ],
+    "price": "1 gp",
+    "price_gp": 1.0,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "This scabbard is an improvised weapon designed to allow you to remove it from your belt as a swift action when drawing the weapon it contains. Taking the Equipment Trick feat (see page 22) for a scabbard gives you additional combat options for using a scabbard. For the purpose of fighter weapon groups, a scabbard for a heavy blade is considered a hammer, and a scabbard for a light blade is considered a close weapon.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "combat-scabbard-sharpened",
+    "name": "Combat scabbard, sharpened",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "see text"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "This combat scabbard has a sharp blade on the outer edge, allowing you to use it as a weapon (see also page 6).",
+    "origin": "aonprd"
   },
   {
     "id": "composite-longbow",
@@ -1267,6 +1927,34 @@
     "weight_lbs": 2,
     "finesse": false,
     "description": "You need at least two hands to use a bow, regardless of its size. You can use a composite shortbow while mounted. All composite bows are made with a particular strength rating (that is, each requires a minimum Strength modifier to use with proficiency). If your Strength modifier is lower than the strength rating of the composite bow, you can't effectively use it, so you take a -2 penalty on attacks with it. The default composite shortbow requires a Strength modifier of +0 or higher to use with proficiency. A composite shortbow can be made with a high strength rating to take advantage of an above-average Strength score; this feature allows you to add your Strength modifier on damage rolls, up to the maximum bonus indicated for the bow. Each point of Strength bonus granted by the bow adds 75 gp to its cost. you have a negative modifier due to low Strength, apply it to damage rolls when you use a composite shortbow. A composite shortbow fires arrows.\n\nFor the purposes of Weapon Proficiency, Weapon Focus, and similar feats, a composite shortbow is treated as if it were a shortbow."
+  },
+  {
+    "id": "cutlass",
+    "name": "Cutlass",
+    "source": "Adventurer's Armory 2",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This short, curved sword is favored by seafarers for closequarters combat. It is treated as a scimitar for any effects that apply to scimitars.",
+    "origin": "aonprd"
   },
   {
     "id": "dogslicer",
@@ -1332,6 +2020,36 @@
     "weight_lbs": 3,
     "finesse": false,
     "description": "The tip of this 3-foot-long, straight-bladed sword is bent into two staggered, opposing sharpened spurs that can be used to pull weapons from an opponent's hands."
+  },
+  {
+    "id": "dueling-dagger",
+    "name": "Dueling dagger",
+    "source": "Adventurer's Armory 2",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "P or S",
+    "special": [
+      "see text"
+    ],
+    "price": "12 gp",
+    "price_gp": 12.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This dagger is used in the off hand to block attacks. When you fight defensively or use Combat Expertise while wielding a dueling dagger, your bonus to AC increases by 1. This benefit applies even if you did not attack with the dueling dagger. If you aren’t proficient with a dueling dagger, you treat it as a dagger and gain no special benefits. Any effects that apply to daggers apply to dueling daggers.",
+    "origin": "aonprd"
   },
   {
     "id": "earth-breaker",
@@ -1419,6 +2137,62 @@
     "weight_lbs": 5,
     "finesse": false,
     "description": "A flail consists of a spiked metal ball, connected to a handle by a sturdy chain."
+  },
+  {
+    "id": "gandasa",
+    "name": "Gandasa",
+    "source": "Melee Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "2d4",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "A gandasa is a wide, single-edged dagger on a 2-foot handle and is wielded in combat like an axe. This weapon is also known as an elephant knife because the connection between the blade and the handle is often decorated to resemble a stylized elephant head.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "gastraphetes",
+    "name": "Gastraphetes",
+    "source": "Distant Shores",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d8",
+      "s": "1d10",
+      "m": "1d12",
+      "l": "3d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 120,
+    "type": "P",
+    "special": [],
+    "price": "65 gp",
+    "price_gp": 65.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "The gastraphetes, sometimes called a “belly bow,” is an oversized crossbow reloaded by pressing one end against the ground, the other against one’s abdomen, and locking the string in place through ratchet action. Reloading takes a full-round action, uses two hands, and requires that the wielder be standing. Wielding a gastraphetes requires two hands, and due to the weapon’s bulk, firing it while standing without support (such as a wall, a window, or a stand) imposes a –4 penalty on attack rolls; you take no penalty for firing a gastraphetes while prone. A Large or larger creature can use a gastraphetes one size smaller than itself without any support, but takes the normal penalty for firing an inappropriately sized weapon.",
+    "origin": "aonprd"
   },
   {
     "id": "gladius",
@@ -1891,6 +2665,34 @@
     "description": "Also called a mambele, danisco, goleyo, njiga, or any of many lesser-known names, this three-bladed dagger is intended for throwing but can be used as a melee weapon. Though the basic three-blade design is most common, hunga mungas can take a wide variety of forms."
   },
   {
+    "id": "hurlbat",
+    "name": "Hurlbat",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 10,
+    "type": "P and S",
+    "special": [],
+    "price": "8 gp",
+    "price_gp": 8.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "A hurlbat is a throwing axe made from a single piece of flat metal. Every extremity of the hurlbat is sharpened, including the point of the handle. You can wield the hurlbat as a melee weapon, but it’s not designed for such use; you take a –1 penalty on melee attack rolls with the weapon, and you must succeed at a DC 15 Reflex save when making melee attacks to avoid cutting yourself on an edge and taking 1 point of slashing damage. You don’t need to attempt this save while wearing heavy armor.",
+    "origin": "aonprd"
+  },
+  {
     "id": "iron-brush",
     "name": "Iron Brush",
     "source": "Ultimate Equipment",
@@ -1981,6 +2783,34 @@
     "weight_lbs": 1,
     "finesse": true,
     "description": "This batonlike weapon is fitted with a metal hook that can be used to block and pin an opponent's weapon. Some variations are tipped with a sharpened metal spike or blade."
+  },
+  {
+    "id": "katar-tri-bladed",
+    "name": "Katar, tri-bladed",
+    "source": "Adventurer's Armory 2",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x4",
+    "threat": 20,
+    "multiplier": 4,
+    "range_ft": null,
+    "type": "P",
+    "special": [],
+    "price": "6 gp",
+    "price_gp": 6.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Where most punching daggers boast a single thick blade, the tri-bladed katar features a fan of three splayed razor edges. Any effects that apply to a punching dagger also apply to a tri-bladed katar.",
+    "origin": "aonprd"
   },
   {
     "id": "kerambit",
@@ -2224,6 +3054,36 @@
     "description": "You can bash with a light shield instead of using it for defense. The shield entries for light shields appear on page 12."
   },
   {
+    "id": "lizard-king-war-trident",
+    "name": "Lizard king war trident",
+    "source": "Classic Monsters Revisited",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": null,
+      "s": "see text",
+      "m": "see text",
+      "l": null
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 10,
+    "type": "P",
+    "special": [
+      "brace"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "Upon his 100th birthday, a lizard king’s status is officially acknowledged, and he is honored with the presentation of a special weapon, the war trident, reserved exclusively for the use of his kind. These large, two-handed tridents are much heavier than normal (12 pounds) in order to take advantage of their wielders’ great strength, and as a result they lose their range increment but deal 1d10 points of damage and have a ×3 critical hit multiplier. In addition, extensive ritualistic practice with this weapon gives the lizard king the Improved Critical (war trident) feat as a bonus feat. A war trident is worth 20 gp, although most are masterwork and many are inlaid with precious metals and fetch higher prices.",
+    "origin": "aonprd"
+  },
+  {
     "id": "longbow",
     "name": "Longbow",
     "source": "Ultimate Equipment",
@@ -2348,6 +3208,65 @@
     "weight_lbs": 1,
     "finesse": true,
     "description": "What seems to be an ordinary baton sheaths a pair of matching slender-bladed daggers-perfectly balanced throwing blades."
+  },
+  {
+    "id": "machete",
+    "name": "Machete",
+    "source": "Melee Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "This tool is a wide, single-edged blade about 2 feet in length. Most often used to hack through dense vegetation, it works equally well as a weapon. A character proficient with a machete gains a +1 circumstance bonus on Survival checks to get along in the wild.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "manople",
+    "name": "Manople",
+    "source": "Melee Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "blocking",
+      "disarm"
+    ],
+    "price": "17 gp",
+    "price_gp": 17.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This rigid, fingerless gauntlet has three blades projecting from the gauntlet’s hand. The central blade is straight and double edged, while the side blades are curved like the prongs of a sai. You can’t use the hand on which a manople is worn for anything else. A manople takes a full-round action to don, and gives you a +10 bonus to your CMD against disarm attempts.",
+    "origin": "aonprd"
   },
   {
     "id": "mattock",
@@ -2540,6 +3459,34 @@
     "description": "This large crook of sharpened metal makes it easy to trip and catch fleeing opponents. Invented by ogres, most ogre hooks are Large and crudely fashioned-often from metal torn from previous victims' weapons and armor. Despite their poor workmanship, the rarity and peril involved in getting ogre hooks make such items quite valuable."
   },
   {
+    "id": "phaleros",
+    "name": "Phaleros",
+    "source": "Distant Shores",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 20,
+    "type": "P",
+    "special": [],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 3.0,
+    "finesse": false,
+    "description": "A phaleros is a type of metal javelin that stores a splash weapon in a small cage between the haft and the spearhead. When a phaleros strikes its target, the spearhead compresses toward the haft and breaks the payload, showering the target with its contents as though you had struck the target’s square with the splash weapon. On a critical hit, you instead treat the target as though it had suffered a direct hit from the splash weapon. A phaleros is reusable, and reloading one with a splash weapon is a process that takes two rounds and provokes attacks of opportunity.",
+    "origin": "aonprd"
+  },
+  {
     "id": "pilum",
     "name": "Pilum",
     "source": "Ultimate Equipment",
@@ -2570,6 +3517,36 @@
     "weight_lbs": 4,
     "finesse": false,
     "description": "The tip of this heavy javelin is designed to break off and embed itself into a shield once it hits. Like ammunition, a thrown pilum that hits its target is destroyed. If you hit a shield-bearing opponent with a pilum, he loses the AC bonuses from that shield until he takes a standard action to pry the remnants of the pilum from his shield."
+  },
+  {
+    "id": "planson",
+    "name": "Planson",
+    "source": "Melee Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B or P",
+    "special": [
+      "brace"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "This 5-foot tapered pole is bound in metal with a narrow metal spike projecting from the top. The planson can be used as a club or as a sturdy, if top-heavy, spear to stop a charge.",
+    "origin": "aonprd"
   },
   {
     "id": "poisoned-sand-tube",
@@ -2665,6 +3642,36 @@
     "weight_lbs": 2,
     "finesse": true,
     "description": "You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier to attack rolls with a rapier sized for you, even though it isn't a light weapon. You can't wield a rapier in two hands in order to apply 1-1/2 times your Strength modifier to its damage."
+  },
+  {
+    "id": "reflex-bow",
+    "name": "Reflex bow",
+    "source": "Merchant's Manifest",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 100,
+    "type": "P",
+    "special": [
+      "see text"
+    ],
+    "price": "125 gp",
+    "price_gp": 125.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "These C-shaped bows are most often used in the Hongal tundra by the outriders of Tianjing, and in rare cases by the nobility of Xa Hoi. The unique shape and craft of these bows allows them to shoot with the same velocity and power as a longbow. The shorter size also allows them to be wielded easily while mounted on horseback (or atop any other steed). While mounted, you gain a +1 circumstance bonus on attack rolls with a reflex bow. All reflex bows are composite bows and can be modified to benefit from high Strength scores in the same way as composite bows. Effects that apply to both longbows and shortbows also apply to reflex bows.",
+    "origin": "aonprd"
   },
   {
     "id": "rhomphaia",
@@ -2765,6 +3772,38 @@
     "weight_lbs": 2,
     "finesse": true,
     "description": "This weapon consists of a soft wrapping around a hard, dense core, typically a leather sheath around a lead rod. The head is wider than the handle and designed to spread out the force of the blow, making it less likely to draw blood or break bones."
+  },
+  {
+    "id": "sarissa",
+    "name": "Sarissa",
+    "source": "Giant Hunter's Handbook",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "brace",
+      "reach",
+      "see text"
+    ],
+    "price": "12 gp",
+    "price_gp": 12.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "This spearlike weapon is about 15 feet long. Its unwieldy length is counterbalanced by a heavy brass base. A sarissa provides extended reach—tripling your reach rather than doubling it. A Medium wielder would threaten spaces 10 to 15 feet away, but not adjacent squares or squares 5 to 10 feet away (as with a typical reach weapon). Because of its great length and weight, a sarissa can be used to attack foes in only one direction each round. You must select a cone each round before you make any attacks with the sarissa. The weapon threatens only foes within this cone and within its extended reach. You can’t change the area you threaten with the sarissa until your next turn. While you carry the sarissa pointed upward (typical for overland movement), you threaten only squares in the sarissa’s reach in a cone pointed upward.",
+    "origin": "aonprd"
   },
   {
     "id": "scimitar",
@@ -3067,6 +4106,36 @@
     "description": "This weapon is similar to a shortspear with a flexible rattan or bamboo shaft and an elaborately barbed head. The barbs can snag flesh, clothing, or armor to ensnare an enemy."
   },
   {
+    "id": "spear-sling",
+    "name": "Spear-sling",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "see text"
+    ],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "A spear-sling consists of a hollow tube with a loop of elastic material, such as rubber or sinew, attached to one end. The wielder draws a harpoon, javelin, shortspear, or spear through the tube, pulling the loop taut. Releasing the loop propels the shaft forward like a bow does an arrow. A harpoon, javelin, shortspear, spear, or other weapon shot from a spear-sling is treated as a projectile weapon instead of a thrown weapon, increasing its maximum range and allowing it to be used underwater. Using a spear-sling requires two hands. Loading a spear-sling is a standard action (a move action if the wielder has the Rapid Reload feat) that provokes attacks of opportunity.",
+    "origin": "aonprd"
+  },
+  {
     "id": "spiked-armor",
     "name": "Spiked Armor",
     "source": "Ultimate Equipment",
@@ -3235,6 +4304,34 @@
     "description": "From a central metal ring, four tapering metal blades extend from this weapon like points on a compass rose. By gripping the crossbar that runs through the weapon's open middle, a wielder can strike with it as a deadly melee weapon. Alternatively, by gripping it by the outer rim, a starknife's light, aerodynamic design allows it to be thrown short distances in a manner similar to a chakram."
   },
   {
+    "id": "switchblade-knife",
+    "name": "Switchblade knife",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "P",
+    "special": [],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This knife has a springloaded blade hidden inside the handle. It can be designed to look like another type of object (a DC 15 Perception check reveals the deception). If held in your hand, you can activate it as a free action. This weapon is treated as a dagger.",
+    "origin": "aonprd"
+  },
+  {
     "id": "sword-cane",
     "name": "Sword Cane",
     "source": "Ultimate Equipment",
@@ -3265,6 +4362,37 @@
     "description": "This slender light blade lies within a wooden container that serves as both its scabbard and hiding place. You can draw the blade as a swift action (or a free action if you have the Quick Draw feat). An observer must succeed at a DC 20 Perception check to realize an undrawn sword cane is a weapon rather than a walking stick; the DC decreases to 10 if the observer is able to handle the weapon. You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier to attack rolls with a sword cane sized for you, even though it isn't a light weapon. You can't wield a sword cane in two hands in order to apply 1-1/2 times your Strength modifier to damage."
   },
   {
+    "id": "syringe-spear",
+    "name": "Syringe spear",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 20,
+    "type": "P",
+    "special": [
+      "brace",
+      "see text"
+    ],
+    "price": "100 gp",
+    "price_gp": 100.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "The blade of this weapon, which is also called an injection spear, contains a thin tube or bore that connects to a hollow container just beneath the crosspiece. A successful hit with the spear injects the liquid contents of the container (typically poison or a potion) into the target. Refilling a syringe spear takes 1 minute.",
+    "origin": "aonprd"
+  },
+  {
     "id": "tailblade",
     "name": "Tailblade",
     "source": "Advanced Race Guide",
@@ -3290,6 +4418,34 @@
     "weight_lbs": 1,
     "finesse": true,
     "description": "A tailblade is a small, sharp knife designed to be strapped to the tip of a wielder's tail. It takes a full-round action to strap on or remove a tailblade. The wearer can loosely attach the tailblade (without strapping it securely in place) as a move action, but using a loosely attached tailblade gives the wielder a -4 penalty on all attack rolls made with the weapon, and other creatures get a +4 bonus on disarm combat maneuver checks to disarm the tailblade. A ratfolk wielding a tailblade can make a tail attack, adding its Strength modifier to the tailblade's damage. Ratfolk are considered proficient with such attacks and can apply feats or effects appropriate to natural attacks to tail attacks made with a tailblade. If used as part of a full attack action, attacks with a tailblade are considered secondary attacks."
+  },
+  {
+    "id": "tailblade-ratfolk",
+    "name": "Tailblade, ratfolk",
+    "source": "Advanced Race Guide",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1",
+      "s": "1d2",
+      "m": "1d3",
+      "l": "1d4"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "11 gp",
+    "price_gp": 11.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "A tailblade is a small, sharp knife designed to be strapped to the tip of a wielder's tail. It takes a full-round action to strap on or remove a tailblade. The wearer can loosely attach the tailblade (without strapping it securely in place) as a move action, but using a loosely attached tailblade gives the wielder a –4 penalty on all attack rolls made with the weapon, and other creatures get a +4 bonus on disarm combat maneuver checks to disarm the tailblade. A ratfolk wielding a tailblade can make a tail attack, adding its Strength modifier to the tailblade's damage. Ratfolk are considered proficient with such attacks and can apply feats or effects appropriate to natural attacks to tail attacks made with a tailblade. If used as part of a full attack action, attacks with a tailblade are considered secondary attacks.",
+    "origin": "aonprd"
   },
   {
     "id": "tepoztopilli",
@@ -3355,6 +4511,62 @@
     "weight_lbs": 2,
     "finesse": false,
     "description": "This Stone Age weapon, also called a macuahuitl, is made from a length of tempered wood. It has bits of shark teeth, obsidian, glass, or similar materials studded all along its length."
+  },
+  {
+    "id": "terbutje-steel",
+    "name": "Terbutje, steel",
+    "source": "Adventurer's Armory",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This is a forged weapon built to look much like a common terbutje. It lacks the fragility of its non-metallic counterpart.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "throwing-arrow-cord",
+    "name": "Throwing arrow cord",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 60,
+    "type": "P",
+    "special": [],
+    "price": "—",
+    "price_gp": null,
+    "weight_lbs": null,
+    "finesse": false,
+    "description": "This simple fiber or leather cord has a knot at either end. One end is wound once around the notch of a throwing arrow (see New Ammunition, below). The cord runs taut along the shaft to the front of the arrow, where you hold the arrow to throw. The remainder of the cord wraps around your hand. The cord dramatically increases the throwing arrow’s range. Attaching the cord to a throwing arrow is a move action that requires two hands and provokes attacks of opportunity. The Rapid Reload feat can be taken for throwing arrow cords, allowing you to load a throwing arrow as a free action.",
+    "origin": "aonprd"
   },
   {
     "id": "throwing-axe",
@@ -3547,6 +4759,34 @@
     "description": "This weapon consists of a small metal tube hidden within a sleeve; the tube holds a short, spring-loaded bamboo shaft. You gain a +2 bonus on Sleight of Hand checks made to conceal a tube arrow shooter on your body. Releasing the fastener allows the spring to force the arrow out. Once a shaft is fired, the tube must be reloaded before it can be used again. Reloading a tube is a full-round action, or a standard action if the wielder has the Rapid Reload feat."
   },
   {
+    "id": "war-razor",
+    "name": "War razor",
+    "source": "Book of the Damned",
+    "category": "Martial Weapons",
+    "proficiency": "martial",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "8 gp",
+    "price_gp": 8.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "To all appearances, a war razor is an oversized razor or flip knife. Since the razor folds into the handle, no sheath is required, making the weapon easy to hide and thus granting the wielder a +2 bonus on Sleight of Hand checks to conceal the weapon on her body.",
+    "origin": "aonprd"
+  },
+  {
     "id": "warhammer",
     "name": "Warhammer",
     "source": "Ultimate Equipment",
@@ -3642,6 +4882,156 @@
     "description": "The aklys is a hooked throwing club with a 20-foot-long cord, usually of woven leather; you can retrieve the aklys after throwing it as a move action. The hook allows you to make trip attacks at range. Some aklyses have holes drilled through them and whistle when flung."
   },
   {
+    "id": "aldori-dueling-sword",
+    "name": "Aldori dueling sword",
+    "source": "Adventurer's Guide",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "These slightly curved swords measure just over 3 feet in length. An Aldori dueling sword can be used as a martial weapon (in which case it functions as a longsword), but if you have the feat Exotic Weapon Proficiency (Aldori dueling sword), you can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier to attack rolls with an Aldori dueling sword sized for you, even though it isn’t a light weapon. You can also wield an Aldori dueling sword in two hands to apply 1-1/2 times your Strength bonus to damage rolls.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "axe-gauntlet-dwarven-heavy",
+    "name": "Axe-gauntlet, dwarven heavy",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "blocking",
+      "disarm"
+    ],
+    "price": "21 gp",
+    "price_gp": 21.0,
+    "weight_lbs": 5.0,
+    "finesse": false,
+    "description": "An axe-gauntlet is a locked gauntlet covering the hand and forearm up to and over the elbow, with an axe blade built around the gauntlet’s permanently closed fist. Axe-gauntlets were developed during the long Quest for Sky, when dwarven warriors often had to engage in running fights against larger, stronger opponents in areas the dwarves did not intend to ever return to. Losing a weapon in such circumstances often made it irretrievable, and the axe-gauntlet became popular with rearguard warriors. Though these weapons have seen significantly less use since the dwarves reached the surface, some dwarven warriors still appreciate the reliability of such designs. An axe-gauntlet takes a full-round action to don, and it gives you a +10 bonus to your CMD against disarm attempts. You can’t use the hand on which an axe-gauntlet is worn for anything else.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "axe-gauntlet-dwarven-light",
+    "name": "Axe-gauntlet, dwarven light",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "blocking",
+      "disarm"
+    ],
+    "price": "16 gp",
+    "price_gp": 16.0,
+    "weight_lbs": 5.0,
+    "finesse": true,
+    "description": "An axe-gauntlet is a locked gauntlet covering the hand and forearm up to and over the elbow, with an axe blade built around the gauntlet’s permanently closed fist. Axe-gauntlets were developed during the long Quest for Sky, when dwarven warriors often had to engage in running fights against larger, stronger opponents in areas the dwarves did not intend to ever return to. Losing a weapon in such circumstances often made it irretrievable, and the axe-gauntlet became popular with rearguard warriors. Though these weapons have seen significantly less use since the dwarves reached the surface, some dwarven warriors still appreciate the reliability of such designs. An axe-gauntlet takes a full-round action to don, and it gives you a +10 bonus to your CMD against disarm attempts. You can’t use the hand on which an axe-gauntlet is worn for anything else.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "barbazu-beard",
+    "name": "Barbazu beard",
+    "source": "Cheliax, Empire of Devils",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 5.0,
+    "finesse": true,
+    "description": "Popular in Egorian but rarely seen elsewhere, a barbazu beard is an intimidating helm with a full facemask wrought to look like a snarling barbazu’s head. Extending from the chin area of the face guard is a razor-sharp blade much like an actual barbazu’s beard, usually 8 inches long but sometimes longer. A barbazu beard can be used as an off-hand weapon that requires no hands to use; thus, a warrior could combine use of a barbazu beard with a two-handed weapon. It otherwise follows all rules for using an off-hand weapon. Attacking with a barbazu beard provokes an attack of opportunity. Because it is so close to the wearer’s face, using a barbazu beard against creatures harmful to touch (such as fire elementals and acidic oozes) has the same risks as using a natural weapon or unarmed strike against these creatures.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "barbed-spear",
+    "name": "Barbed spear",
+    "source": "Giant Hunter's Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "fragile",
+      "reach",
+      "see text"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "A barbed spear is a 10-foot-long polearm with a fourpronged head similar to a caltrop. The head is connected to the pole by a single weak bolt, giving the weapon the fragile condition. When you use a barbed spear to attack a creature that is prone, flying above you, or at least one size category larger than you, you can make a melee attack with a –4 penalty to jam the barbed head into the target’s foot. If you’re successful, the target takes 1 point of damage and the barbed head breaks off in the target’s foot. The barb then acts as a caltrop, wounding the creature’s foot and halving its speed. This movement penalty lasts for 24 hours, or until the creature is treated with a successful DC 15 Heal check or receives at least 1 point of magical healing. Like caltrops, barbed spears may not work against unusual opponents. A barbed spear that embeds its caltrop-like head into a target’s foot gains the broken condition, and can’t be used as a weapon until it’s repaired.",
+    "origin": "aonprd"
+  },
+  {
     "id": "bastard-sword",
     "name": "Bastard Sword",
     "source": "Ultimate Equipment",
@@ -3670,6 +5060,97 @@
     "weight_lbs": 6,
     "finesse": false,
     "description": "A bastard sword is about 4 feet in length, making it too large to use in one hand without special training; thus, it is an exotic weapon. You can use a bastard sword two-handed as a martial weapon."
+  },
+  {
+    "id": "battle-ladder-gnome",
+    "name": "Battle ladder, gnome",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3/1d3",
+      "s": "1d4/1d4",
+      "m": "1d6/1d6",
+      "l": "1d8/1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "double",
+      "trip",
+      "see text"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "Gnomes use these narrow, reinforced, 4-foot ladders as weapons. Fighting with a battle ladder is like fighting with a quarterstaff, except that the spaces in the ladder can be used to entangle limbs, granting the ladder the trip weapon feature.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "battle-poi",
+    "name": "Battle poi",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": "1d3 fire",
+      "m": "1d4 fire",
+      "l": null
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "fire",
+    "special": [],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "This pair of arm-length chains has handles at one end and heavy fuel-soaked torch heads at the other. The weight of the poi is insufficient to deal physical damage, but the burning fuel deals fire damage. If you are proficient in battle poi, you are treated as if you have the Two-Weapon Fighting feat for the purposes of making poi attacks. Poi can be extinguished by spending a full round action smothering them in sand or submerging them in water.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "bladed-scarf",
+    "name": "Bladed scarf",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "disarm",
+      "trip"
+    ],
+    "price": "12 gp",
+    "price_gp": 12.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Knowing that seductive performances can bring out the worst in watchers, some Varisians craft rows of razor-sharp blades into their scarves. The skill required in using such scarves effectively and not revealing their deadly nature makes them exotic weapons. If you are proficient with a bladed scarf, you deal 1d4 points of slashing damage to any creature that makes a successful grapple check against you while you wield the scarf. You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier on attack rolls with a bladed scarf sized for you, even though it isn’t a light weapon.",
+    "origin": "aonprd"
   },
   {
     "id": "bo-staff",
@@ -3704,6 +5185,38 @@
     "weight_lbs": 3,
     "finesse": false,
     "description": "Similar to a quarterstaff, only more slender and tapered at one end, the bo staff is both a defensive device and a weapon."
+  },
+  {
+    "id": "boarding-gaff",
+    "name": "Boarding gaff",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3/1d3",
+      "s": "1d4/1d4",
+      "m": "1d6/1d6",
+      "l": "1d8/1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "double",
+      "reach",
+      "trip"
+    ],
+    "price": "8 gp",
+    "price_gp": 8.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "A boarding gaff, or gaff hook, is a long pole with a hook for spearing fish. Pirates often add extra, heavier hooks to both ends of boarding gaffs to assist with boarding actions, giving the weapon its common name. A boarding gaff can also be used for fishing.",
+    "origin": "aonprd"
   },
   {
     "id": "bolas",
@@ -3771,6 +5284,94 @@
     "description": "The boomerang is primarily a hunting tool, but it is not uncommon for these versatile thrown weapons to be carried into battle. A boomerang is made of wood and is flat, with a long haft, a pronounced forward curve, and a sharp backward bend at the head. A hunting boomerang does not fly in a returning path."
   },
   {
+    "id": "broken-back-seax",
+    "name": "Broken-back seax",
+    "source": "Martial Arts Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P & S",
+    "special": [
+      "see text"
+    ],
+    "price": "40 gp",
+    "price_gp": 40.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "Used in Avistan since before Earthfall, seaxes are straight, single-edged blades. The broken-back seax is the size of a short sword, and has a broad blade with a distinctive trapezoidal shape. If your Strength score is less than 15, you take a –2 penalty on attack rolls with a broken-back seax, as you’re unable to put enough force into the blows to land them effectively.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "butchering-axe",
+    "name": "Butchering axe",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": "1d12",
+      "m": "3d6",
+      "l": "4d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "see text"
+    ],
+    "price": "65 gp",
+    "price_gp": 65.0,
+    "weight_lbs": 25.0,
+    "finesse": false,
+    "description": "A creation of the orc smiths of Belkzen, this axe has an oversized head bristling with spikes and a long, thick haft that only barely counterbalances its weight. If your Strength is less than 19 (or 17 for a Small or smaller butchering axe), you take a –2 penalty on attacks with it, as you’re unable to maneuver its daunting size and weight.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "butterfly-knife",
+    "name": "Butterfly knife",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This weapon has a blade concealed between the two halves of the handle that can be brought to bear quickly. If you are proficient with it (or have the Quick Draw feat), you may open it as a free action; a nonproficient user must spend a move action to open it. Otherwise, treat it as a dagger. When it’s closed, you gain a +2 bonus on Sleight of Hand checks made to conceal it on your body.",
+    "origin": "aonprd"
+  },
+  {
     "id": "chain-spear",
     "name": "Chain Spear",
     "source": "Ultimate Equipment",
@@ -3801,6 +5402,96 @@
     "weight_lbs": 13,
     "finesse": false,
     "description": "This vicious weapon is often used in gladiatorial events due to its versatility. The body of the weapon is a standard short spear, primarily used for thrusting. The butt of the spear is fitted with a length of chain, often spiked, with a hook at the end. The hook and chain may be used to make trip attacks. If your trip attack fails by 10 or more, you may drop the chain spear to avoid being knocked prone."
+  },
+  {
+    "id": "chain-hammer",
+    "name": "Chain-hammer",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d3/1d3",
+      "s": "1d4/1d4",
+      "m": "1d6/1d6",
+      "l": "1d8/1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 20,
+    "type": "B",
+    "special": [
+      "double",
+      "see text"
+    ],
+    "price": "34  gp",
+    "price_gp": 34.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "This pair of hammers is linked by a loose chain. While the two hammers are balanced to wield in melee together, the chain is long enough that you can throw one hammer a short distance and then pull it back; pulling the chain to retrieve the thrown hammer is a move action. The chain-hammer’s maximum throwing range is 10 feet. Dwarf rangers are fond of using chain-hammers, often using a locked gauntlet to make sure one of the hammers remains secure.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "crook",
+    "name": "Crook",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "reach",
+      "trip"
+    ],
+    "price": "1 gp",
+    "price_gp": 1.0,
+    "weight_lbs": 5.0,
+    "finesse": false,
+    "description": "This common herder’s tool is a wooden pole with a hooked end. When using a crook, you can ignore the penalty for not having two hands free when making a combat maneuver check to initiate a grapple against a creature you threaten.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "crystal-chakram",
+    "name": "Crystal chakram",
+    "source": "Classic Horrors Revisited",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "Shaped and carved from quartz or stranger subterranean crystals, these circular throwing discs have jagged razor-sharp edges. When a crystal chakram strikes a foe, the weapon shatters into tiny sharp fragments; if it misses, there is a 50% chance the chakram shatters when it hits the ground or another solid object; otherwise it can be retrieved and used again. A crystal chakram is treated as ammunition for the purpose of creating magic weapons.",
+    "origin": "aonprd"
   },
   {
     "id": "dan-bong",
@@ -3837,6 +5528,68 @@
     "description": "These short, blunt sticks are held in the hands to enhance unarmed martial techniques and secured by a cord looped over the thumb. They provide the wielder with the ability to lock an opponent and target pressure points, granting you a +2 bonus on combat maneuver checks to grapple."
   },
   {
+    "id": "deer-horn-knife",
+    "name": "Deer horn knife",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 20,
+    "type": "P",
+    "special": [
+      "blocking",
+      "monk"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "This flat, metal weapon consists of two joined crescent-shaped blades overlapping to form a hollow center with four projecting points. The blades can differ in length. One side of the center is wrapped to serve as a grip while the other acts as a guard. Deer horn knives are traditionally used in pairs.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "dire-bolas",
+    "name": "Dire bolas",
+    "source": "Giant Hunter's Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "B",
+    "special": [
+      "nonlethal",
+      "trip"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This specialized bolas can be used to perform ranged trip combat maneuvers against creatures far larger than the wielder. It consists of a pair of metal weights connected by a silk rope 20 feet long. Because of the great size and weight of the bolas, you need both hands to swing it around your head, and considerable time to get the weights up to speed. Making a ranged attack with it is a full-round action. You can use a dire bolas to trip a creature whose size is up to three size categories larger than yours.",
+    "origin": "aonprd"
+  },
+  {
     "id": "dire-flail",
     "name": "Dire Flail",
     "source": "Ultimate Equipment",
@@ -3871,6 +5624,67 @@
     "description": "A dire flail consists of two spheres of spiked iron dangling from chains at opposite ends of a long haft. This weapon excels at short but powerful strikes, and is typically swung in a constant churning motion. The wielder of a dire flail must have great strength, both to use the weapon effectively and to keep from tiring out."
   },
   {
+    "id": "dorn-dergar-dwarven",
+    "name": "Dorn-dergar, dwarven",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "reach",
+      "see text"
+    ],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 15.0,
+    "finesse": false,
+    "description": "This 10-foot-long chain is weighted at the end by a ball of solid iron the size of a large fist. By adjusting the slack of the chain, the weapon can be used either with or without reach. Changing between using it as a normal weapon and a reach weapon is a move action.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "doru",
+    "name": "Doru",
+    "source": "Distant Shores",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 20,
+    "type": "P",
+    "special": [
+      "brace"
+    ],
+    "price": "4 gp",
+    "price_gp": 4.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "Balanced by a metal butt, this large spear is weighted so that it can be used in one hand by a proficient wielder. You can use a doru two-handed as a simple weapon. You can also use a doru as a onehanded martial weapon, but its critical hit multiplier decreases to ×2.",
+    "origin": "aonprd"
+  },
+  {
     "id": "double-crossbow",
     "name": "Double Crossbow",
     "source": "Ultimate Equipment",
@@ -3901,6 +5715,36 @@
     "weight_lbs": 18,
     "finesse": false,
     "description": "This heavy weapon fires a pair of iron-tipped bolts with a single squeeze of the trigger. Because of its size and weight, you take a -4 penalty on your attack roll if you're proficient with it, or -8 if you're not. If the attack hits, the target takes damage from both bolts. Critical hits, sneak attack damage, and other precision-based damage apply to only the first bolt. Reloading one bolt is a standard action; the Rapid Reload feat reduces this to a move action. Crossbow Mastery allows you to reload both bolts as a move action. A double crossbow fires crossbow bolts."
+  },
+  {
+    "id": "double-spear",
+    "name": "Double spear",
+    "source": "Martial Arts Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4/1d4",
+      "s": "1d6/1d6",
+      "m": "1d8/1d8",
+      "l": "2d6/2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "double"
+    ],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "This long, heavy spear has a point at each end, allowing it to be used as a double weapon.",
+    "origin": "aonprd"
   },
   {
     "id": "double-walking-stick-katana",
@@ -3970,6 +5814,34 @@
     "description": "This weapon comprises a pair of kama connected with an 8-foot length of chain. The wielder can attack as if armed with a single kama in each hand or extend the chain to make a single reach attack. By swinging the chain, the wielder can whip the kama about to disarm or trip opponents. Furthermore, if one of the weapons is dropped, the wielder can retrieve it as a free action by pulling on the chain."
   },
   {
+    "id": "dwarven-maulaxe",
+    "name": "Dwarven maulaxe",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 10,
+    "type": "B or S",
+    "special": [],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 5.0,
+    "finesse": true,
+    "description": "This versatile weapon looks like a heavy-headed axe, but a proficient wielder can use the blunt back of the head to deal bludgeoning damage.",
+    "origin": "aonprd"
+  },
+  {
     "id": "dwarven-urgrosh",
     "name": "Dwarven Urgrosh",
     "source": "Ultimate Equipment",
@@ -4033,6 +5905,37 @@
     "description": "A dwarven waraxe has a large, ornate head mounted on a thick handle, making it too large to use in one hand without special training; thus, it is an exotic weapon. A Medium character can use a dwarven waraxe two-handed as a martial weapon, or a Large creature can use it one-handed in the same way. A dwarf treats a dwarven waraxe as a martial weapon even when using it in one hand."
   },
   {
+    "id": "elven-branched-spear",
+    "name": "Elven branched spear",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "brace",
+      "reach"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 10.0,
+    "finesse": true,
+    "description": "Behind this long pole weapon’s spearhead, several short branches project from the shaft at irregular intervals, each angled forward and tipped with a smaller leaf like blade. When you make attacks of opportunity provoked by movement, you gain a +2 bonus on attack rolls. You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier on attack rolls with an elven branched spear sized for you, even though it isn’t a light weapon. Elves treat elven branched spears as martial weapons.",
+    "origin": "aonprd"
+  },
+  {
     "id": "elven-curve-blade",
     "name": "Elven Curve Blade",
     "source": "Ultimate Equipment",
@@ -4061,6 +5964,66 @@
     "weight_lbs": 7,
     "finesse": true,
     "description": "Essentially a longer version of a scimitar, but with a thinner blade, the elven curve blade is exceptionally rare. You receive a +2 circumstance bonus to your CMD whenever a foe attempts to sunder your elven curve blade because of its flexible metal.\n\nYou can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier on attack rolls with an elven curve blade that is sized for you, even though it isn't a light weapon."
+  },
+  {
+    "id": "elven-leafblade",
+    "name": "Elven leafblade",
+    "source": "Adventurer's Guide",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "see text"
+    ],
+    "price": "40 gp",
+    "price_gp": 40.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "Elves have traditionally eschewed the use of larger weaponry, opting instead for lighter weapons that take advantage of their wielders’ agility and poise. The elven curve blade is perhaps the bestknown weapon in this category, but the leafblade (often partnered with the substantially longer thornblade) embraces these fighting styles to an even greater extent. This short sword has a blade reminiscent of a long, narrow leaf and is suitable both for slashing swings and targeted thrusts. These weapons are designed to be wielded alongside elven thornblades. Attacks with an elven leafblade gain a +2 bonus on attack rolls made to confirm critical hits.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "elven-thornblade",
+    "name": "Elven thornblade",
+    "source": "Adventurer's Guide",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "see text"
+    ],
+    "price": "60 gp",
+    "price_gp": 60.0,
+    "weight_lbs": 4.0,
+    "finesse": true,
+    "description": "This blade is suited for thrusts and parries, making it especially capable of inflicting deep, penetrating wounds. A wielder with Weapon Finesse can apply her Dexterity modifier to attack rolls with an elven thornblade instead of her Strength modifier. An elven thornblade grants no additional benefit when wielded two-handed. In addition, attacks with an elven thornblade gain a +2 bonus on attack rolls made to confirm critical hits.",
+    "origin": "aonprd"
   },
   {
     "id": "emei-piercer",
@@ -4095,6 +6058,34 @@
     "description": "This weapon is used to augment unarmed martial techniques. It consists of an 8- to 10-inch-long, dual-pointed steel spike set on swivels and mounted on a ring, so that it can be spun around at high speeds when slipped over the wielder's ring finger. The ring prevents the wielder from being disarmed and turns unarmed strikes into piercing attacks."
   },
   {
+    "id": "estoc",
+    "name": "Estoc",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "2d3",
+      "m": "2d4",
+      "l": "2d6"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 4.0,
+    "finesse": true,
+    "description": "An estoc is a sword about as long as a bastard sword, but designed exclusively for thrusting attacks. Its “blade” is a steel spike with a triangular, square, or hexagonal crosssection. Like the bastard sword, an estoc requires special training to use it one handed, but it can also be wielded as a two-handed martial weapon. When you wield an estoc with one hand, treat it as a one-handed weapon; when you wield an estoc with two hands, treat it as a two-handed weapon. If you can use the estoc proficiently with one hand, you can also use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier on attack rolls when wielding an estoc sized for you with one or two hands, even though it isn’t a light weapon.",
+    "origin": "aonprd"
+  },
+  {
     "id": "falcata",
     "name": "Falcata",
     "source": "Ultimate Equipment",
@@ -4123,6 +6114,37 @@
     "weight_lbs": 4,
     "finesse": false,
     "description": "This heavy blade has a single sharp edge, concave at the bottom and convex at the top, with a hook-shaped hilt. Its shape distributes the weight to give it the momentum of an axe with the cutting edge of a sword, much like a larger version of a kukri. The hooked hilt is sometimes carved to resemble the head of a horse or bird of prey, and may have a thin chain stretched across its opening, acting as a partial guard for the hand and fingers."
+  },
+  {
+    "id": "fauchard",
+    "name": "Fauchard",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "reach",
+      "trip"
+    ],
+    "price": "14 gp",
+    "price_gp": 14.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "Like a glaive, the fauchard is a curved blade at the end of a pole. However, the cutting edge of a fauchard is along the concave side, like that of a sickle or scythe.",
+    "origin": "aonprd"
   },
   {
     "id": "fighting-fan",
@@ -4158,6 +6180,160 @@
     "description": "Made to resemble a courtier's fan, this device consists of silk paper stretched and folded over a folding frame of hardened steel. Folding fans are typically wielded in pairs using a technique that distracts the opponent. The fans sport sharp tips, which can be poisoned. For a list of appropriate poisons, see Poisons on page 110."
   },
   {
+    "id": "flailpole",
+    "name": "Flailpole",
+    "source": "Gnomes of Golarion",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "disarm",
+      "reach",
+      "trip"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "This is simply a heavy flail mounted on the end of a long polearm. It has the reach and trip weapon qualities.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "flambard",
+    "name": "Flambard",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "sunder"
+    ],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "This two-handed sword has a wavy blade that is especially useful for cutting through wooden weapons. If you are proficient with this weapon, you gain a +4 bonus on any sunder attempts made against weapons with a wooden haft; otherwise you may use this sword as a bastard sword.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "flask-pike",
+    "name": "Flask pike",
+    "source": "Giant Hunter's Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "reach",
+      "see text"
+    ],
+    "price": "30 gp",
+    "price_gp": 30.0,
+    "weight_lbs": 9.0,
+    "finesse": false,
+    "description": "This pike has a hollow spot near its tip into which a flask can be strapped. If the flask is filled with an alchemical splash weapon and you hit a creature with the pike, the target is also hit with the splash weapon. This uses up the contents of the flask. Because of the added weight of a flask, attacks with the flask pike take a –2 penalty when it’s loaded with one. Reloading the flask pike is a full-round action that provokes attacks of opportunity.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "flask-thrower",
+    "name": "Flask thrower",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 20,
+    "type": "—",
+    "special": [
+      "see text"
+    ],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This staff has a cradle at the end, designed to hold alchemical weapons such as acid. A flask thrower significantly extends the range of thrown substances that deal splash damage, such as acid, alchemist’s fire, or holy water, as well as that of tools such as tanglefoot bags, thunderstones, or caltrops.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "flindbar",
+    "name": "Flindbar",
+    "source": "Monster Codex",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B and P",
+    "special": [
+      "disarm",
+      "trip"
+    ],
+    "price": "9 gp",
+    "price_gp": 9.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "This one-handed weapon is similar to a nunchaku in that it consists of a pair of bars linked with heavy chain. However, a flindbar’s bars are made of iron and are capped with a ring of spikes or studs. Since it’s much heaver than a nunchaku, it is not a light weapon.",
+    "origin": "aonprd"
+  },
+  {
     "id": "flying-blade",
     "name": "Flying Blade",
     "source": "Ultimate Equipment",
@@ -4189,6 +6365,132 @@
     "weight_lbs": 12,
     "finesse": false,
     "description": "A flying blade is a large, crescent-shaped blade anchored to a 10-foot chain. You fight with a flying blade by spinning it about your head or by snapping it toward an opponent. Because the flying blade is a clumsy weapon, you receive a -2 penalty on attack rolls with it, but when you make attacks of opportunity provoked by movement, you receive a +2 bonus on attack rolls instead of the penalty."
+  },
+  {
+    "id": "flying-talon",
+    "name": "Flying talon",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "disarm",
+      "reach",
+      "trip",
+      "see text"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 5.0,
+    "finesse": true,
+    "description": "This weapon consists of a three-pronged, barbed hook attached to a length of chain. Due to the weapon’s unwieldiness, you cannot make attacks of opportunity with a flying talon and do not threaten any squares with it.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "garrote",
+    "name": "Garrote",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "grapple",
+      "see text"
+    ],
+    "price": "3 gp",
+    "price_gp": 3.0,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "A garrote is a length of wire or thin rope with wooden handles at both ends. The wire is placed across a victim's throat and crossed behind the neck; when the handles are pulled tight, the garrote strangles him. In order for you to use a garrote, your opponent must be helpless or unaware of you. You must make a grapple check (though you avoid the –4 penalty for not having two hands free) to successfully begin garroting your opponent. Sneak attack damage does not apply to a garrote. Your garroted opponent must make a concentration check (DC 20 + your CMB + level of the spell he’s casting) to cast a spell with a verbal component, use a command word item, or use any magic requiring speech. You gain the following additional option when grappling with a garrote.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "giant-sticker-dwarven",
+    "name": "Giant-sticker, dwarven",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "2d6",
+      "l": "3d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "brace",
+      "reach"
+    ],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "This heavy bladed spear is specifically designed for use against giants, who have long reach and the ability to soak up large amounts of damage.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "gnome-flick-mace",
+    "name": "Gnome flick-mace",
+    "source": "Gnomes of Golarion",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "reach",
+      "trip"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "The description for this item was cut from Gnomes of Golarion. - Nethys",
+    "origin": "aonprd"
   },
   {
     "id": "gnome-hooked-hammer",
@@ -4224,6 +6526,67 @@
     "description": "A gnome hooked hammer is a double weapon-an ingenious tool with a hammer head at one end of its haft and a long, curved pick at the other. The hammer's blunt head is a bludgeoning weapon that deals 1d6 points of damage (critical multiplier ×3). Its hook is a piercing weapon that deals 1d4 points of damage (critical multiplier ×4). You can use either head as the primary weapon. Gnomes treat hooked hammers as martial weapons."
   },
   {
+    "id": "gnome-pincher",
+    "name": "Gnome pincher",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "disarm",
+      "see text"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "This odd weapon is a 2-foot rod topped with four blunt claws. Squeezing the handle causes the claws to close. You can use the gnome pincher to attempt a disarm or stealAPG combat maneuver with a +2 bonus. You can transfer an object from the pincher to your free hand as a free action. Gnomes treat pinchers as martial weapons.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "grappling-hook",
+    "name": "Grappling hook",
+    "source": "Pirates of the Inner Sea",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "P",
+    "special": [
+      "grapple"
+    ],
+    "price": "6 gp",
+    "price_gp": 6.0,
+    "weight_lbs": 14.0,
+    "finesse": false,
+    "description": "A grappling hook is usually thought of as a climbing instrument, but is also used to grapple enemy ships and draw them close before a boarding action.",
+    "origin": "aonprd"
+  },
+  {
     "id": "great-terbutje",
     "name": "Great Terbutje",
     "source": "Ultimate Equipment",
@@ -4256,6 +6619,66 @@
     "description": "This Stone Age weapon is a 4-foot-long version of the terbutje. It is too large to use in one hand without special training; thus, it is an exotic weapon. You can use a great terbutje two-handed as a martial weapon."
   },
   {
+    "id": "halfling-double-sling",
+    "name": "Halfling double sling",
+    "source": "Halflings of Golarion",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 50,
+    "type": "B",
+    "special": [
+      "double (see text)"
+    ],
+    "price": "10 gp",
+    "price_gp": 10.0,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "At first glance resembling a baton-like stick with a sling dangling from each end, this weapon requires extraordinary skill, or halfling acrobatics, to use to full effect. You can use a double sling as a normal sling, or use the second end to make one additional ranged attack each round. You take the normal penalties for fighting with two weapons when you use both ends of a double sling (as if it were a double weapon); the Two- Weapon Fighting feat reduces these penalties as normal. Reloading one end of a double sling is a move action ( just like a normal sling), so unless you have an ability or feat (such as Ammo Drop) that allows you to quickly reload a sling, you cannot normally make multiple attacks per round for several consecutive rounds with this weapon.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "halfling-rope-shot",
+    "name": "Halfling rope-shot",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "disarm"
+    ],
+    "price": "1 gp",
+    "price_gp": 1.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "One end of this short rope has a sling bullet wrapped in a monkey’s fist knot, and the other end is tied in a small loop. You wrap the loop around your wrist as a full-round action and swing the weighted end like a flail. If the loop is properly attached to your wrist and you drop the rope-shot or are disarmed, you can recover it as a swift action. Removing the weapon’s loop is a full-round action. You get a +2 bonus on Sleight of Hand checks made to conceal a rope-shot on your body. Halflings treat rope-shots as martial weapons.",
+    "origin": "aonprd"
+  },
+  {
     "id": "halfling-sling-staff",
     "name": "Halfling Sling Staff",
     "source": "Ultimate Equipment",
@@ -4284,6 +6707,37 @@
     "weight_lbs": 3,
     "finesse": false,
     "description": "Made from a specially designed sling attached to a short club, a halfling sling staff can be used by a proficient wielder to devastating effect. Your Strength modifier applies to damage rolls when you use a halfling sling staff, just as it does for thrown weapons. You can fire, but not load, a halfling sling staff with one hand. Loading a halfling sling staff is a move action that requires two hands and provokes attacks of opportunity.\n\nA halfling sling staff fires bullets. You can hurl ordinary stones with a halfling sling staff, but stones are not as dense or as round as bullets. Thus, such an attack deals damage as if the weapon were designed for a creature one size category smaller than you and you take a -1 penalty on attack rolls.\n\nA halfling sling staff can be used as a simple weapon that deals bludgeoning damage equal to that of a club of its size. Halflings treat halfling sling staves as martial weapons."
+  },
+  {
+    "id": "halfling-stitched-sling",
+    "name": "Halfling stitched sling",
+    "source": "Halflings of Golarion",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "disarm",
+      "trip"
+    ],
+    "price": "—",
+    "price_gp": null,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "Technically not a unique kind of weapon, a stitched sling is a sling, staff sling, or double sling whose cup is sewn closed around the ammunition, creating a weak sort of light flail. The ammunition sewn into the sling is irrelevant to the type and amount of damage it causes. A stitched sling cannot be used to fire ammunition unless the thread or cord holding the cup closed is cut open (a full-round action that provokes attacks of opportunity).",
+    "origin": "aonprd"
   },
   {
     "id": "hand-crossbow",
@@ -4349,6 +6803,94 @@
     "description": "A harpoon is a barbed spear with an attached rope 50 feet or less in length. Most harpoons have metal points, but some use ivory or are made entirely of wood. If you are proficient with the harpoon, it is a grappling weapon. A harpoon's weight includes 10 pounds for the weight of 50 feet of hemp rope. The weight can be reduced by using shorter or lighter rope. If you are not proficient with a harpoon, treat it like a spear."
   },
   {
+    "id": "heavy-crank-crossbow",
+    "name": "Heavy crank crossbow",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 120,
+    "type": "P",
+    "special": [],
+    "price": "400 gp",
+    "price_gp": 400.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "This heavy crossbow has a winch mounted below the stock. Up to 50 feet of silk rope can be wound onto the winch as a full-round action that provokes attacks of opportunity. The wound rope can be attached to a barbed bolt (see New Ammunition on page 19) or grappling boltUE as part of a loading action. After firing such a bolt, the wielder can use the winch to retract the rope or pull herself along the rope if the bolt is secure. When used with a barbed bolt, the winch provides a +2 bonus on grapple combat maneuver checks to pull the target toward you. When used with a grappling boltUE, the winch provides a +2 bonus on Climb checks.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "heavy-slavers-crossbow",
+    "name": "Heavy slaver's crossbow",
+    "source": "Monster Codex",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "19-20/see \"bolas bolts\" text",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 80,
+    "type": "B",
+    "special": [
+      "nonlethal",
+      "trip",
+      "see text"
+    ],
+    "price": "400 gp",
+    "price_gp": 400.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "This crossbow shoots ammunition called bolas bolts instead of crossbow bolts. It comes in both light and heavy varieties (but not double, hand, or repeating crossbow varieties) with the same reload action as a conventional crossbow of its type.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "heavy-wrist-launcher",
+    "name": "Heavy wrist launcher",
+    "source": "Ultimate Intrigue",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 30,
+    "type": "P",
+    "special": [],
+    "price": "250 gp",
+    "price_gp": 250.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "A larger version of the wrist launcher, this device fires a single crossbow bolt instead of a featherweight dart. If you are proficient with hand crossbows, you are also proficient with heavy wrist launchers.",
+    "origin": "aonprd"
+  },
+  {
     "id": "helmet-dwarven-boulder",
     "name": "Helmet, Dwarven Boulder",
     "source": "Advanced Race Guide",
@@ -4412,6 +6954,90 @@
     "description": "The hooked end of this axe's blade can be used to disarm foes or pull them off balance. A hooked axe can be used as a martial weapon (in which case it functions like a battleaxe)."
   },
   {
+    "id": "hornbow-orc",
+    "name": "Hornbow, orc",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "2d6",
+      "l": "3d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 80,
+    "type": "P",
+    "special": [],
+    "price": "130 gp",
+    "price_gp": 130.0,
+    "weight_lbs": 7.0,
+    "finesse": false,
+    "description": "Larger even than a longbow, these bows are often made from the horns of great beasts. Though they have a shorter range than other bows, their greater destructive power is highly favored by orcs and their kin. All hornbows are composite bows and can be modified to benefit from high Strength scores in the same way as other composite bows. Any effect that applies to both longbows and shortbows also applies to hornbows.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "horse-bow",
+    "name": "Horse bow",
+    "source": "Merchant's Manifest",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 110,
+    "type": "P",
+    "special": [],
+    "price": "150 gp",
+    "price_gp": 150.0,
+    "weight_lbs": 3.0,
+    "finesse": false,
+    "description": "The horse bow functions like a composite longbow, but it is designed to be used on horseback. A rider using a horse bow can make ranged attacks while mounted; furthermore, she does not take a penalty to attack rolls when her mount is taking a double move action, and she takes only a –4 penalty on attack rolls when her mount is running. The price of this item is for a default horse bow; each point of Strength bonus granted by the horse bow adds 150 gp to its cost.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "injection-spear",
+    "name": "Injection spear",
+    "source": "Pathfinder #61: Shards of Sin",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [],
+    "price": "60 gp",
+    "price_gp": 60.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "This exotic two-handed weapon allows the user to inject targets with liquid on a hit. The spear’s reservoir can hold up to 5 doses of a single fluid—a single dose is automatically injected when the spear hits a target. A non-proficient user can wield an injection spear as a standard spear but cannot trigger the injection. An injection spear is otherwise identical to a normal spear, save that it cannot be thrown, weighs 8 pounds, cannot be used to brace, and costs 60 gp.",
+    "origin": "aonprd"
+  },
+  {
     "id": "kama",
     "name": "Kama",
     "source": "Ultimate Equipment",
@@ -4443,6 +7069,36 @@
     "weight_lbs": 2,
     "finesse": true,
     "description": "Similar to a sickle-and in some regions still used to reap grain-a kama is a short, curved blade attached to a simple handle, usually made of wood. It is sometimes also referred to as a kai, and is frequently used in pairs by martial artists."
+  },
+  {
+    "id": "kasatha-spinal-sword",
+    "name": "Kasatha spinal sword",
+    "source": "People of the Stars",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "fragile"
+    ],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "This light one-handed sword is covered in bony spines that make it easier to poison opponents. The save DC of a nonmagical injury poison applied to a kasatha spinal sword increases by 2. Kasathas treat kasatha spinal swords as martial weapons.",
+    "origin": "aonprd"
   },
   {
     "id": "katana",
@@ -4537,6 +7193,36 @@
     "weight_lbs": 8,
     "finesse": false,
     "description": "This heavy blade has a convex curve near the end, making its overall shape similar to that of a battleaxe. A typical khopesh is 20 to 24 inches in length. Its curved shape allows the wielder to hook around defenses and trip foes. The elegant shape of a khopesh leads some artisans to cover them in ornate decorations."
+  },
+  {
+    "id": "knobkerrie",
+    "name": "Knobkerrie",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 20,
+    "type": "B",
+    "special": [
+      "see text"
+    ],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "A knobkerrie, or iwisa, is carved from a single piece of hardwood with a shaft 2 to 4 feet long surmounted by a bulbous knob. The knobkerrie is a traditional hunting weapon among the Zenj people of the Mwangi, but it’s also used as a symbol of authority. Many tribal elders use decorated knobkerries as scepters or canes. A knobkerrie is thrown end-over-end. If you are proficient, you gain a +1 bonus on ranged attack rolls with a knobkerrie against opponents using bucklers, light shields, or heavy shields. If you aren’t proficient with a knobkerrie, treat it as a club.",
+    "origin": "aonprd"
   },
   {
     "id": "knuckle-axe",
@@ -4672,6 +7358,124 @@
     "description": "This weapon consists of a foot-long double-edged blade, with another smaller, curved hook-blade sticking out the side like a rooster's spur. The blade is strung to a large iron hoop with a 10-foot length of rope. The blade can be used as an off-handed melee weapon or thrown like a dagger, while the rope and circlet can be whipped around and swung at opponents as a bludgeoning reach weapon."
   },
   {
+    "id": "lasso",
+    "name": "Lasso",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "—",
+    "special": [
+      "see text"
+    ],
+    "price": "1 sp",
+    "price_gp": 1.0,
+    "weight_lbs": 5.0,
+    "finesse": false,
+    "description": "This thrown weapon is a length of rope with a simple open knot on one end that allows you entangle a foe like you would using a net. The DC to cast a spell while entangled with a lasso is 10 + the spell level being cast. An entangled creature can slip free with a successful DC 15 Escape Artist check as a full-round action. The lasso has 2 hit points and AC 10, and requires a DC 23 Strength check to break it. On a successful hit, the lasso tightens; to use it again you must spend a standard action sliding the knot to enlarge the loop.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "launching-crossbow",
+    "name": "Launching crossbow",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 30,
+    "type": "—",
+    "special": [],
+    "price": "75 gp",
+    "price_gp": 75.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "This stubby-looking crossbow has a cup-like attachment rather than a groove for a bolt. It is designed to launch splash weapons. Loading a launching crossbow is a full-round action.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "light-crank-crossbow",
+    "name": "Light crank crossbow",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": 80,
+    "type": "P",
+    "special": [],
+    "price": "250 gp",
+    "price_gp": 250.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "This weapon functions as a heavy crank crossbow, except that its damage, critical, and range values are equivalent to those of a light crossbow. Its lighter construction means it provides only a +1 bonus on Climb checks and grapple combat maneuver checks to pull the target toward you.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "light-slavers-crossbow",
+    "name": "Light slaver's crossbow",
+    "source": "Monster Codex",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/see \"bolas bolts\" text",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 40,
+    "type": "B",
+    "special": [
+      "nonlethal",
+      "trip",
+      "see text"
+    ],
+    "price": "250 gp",
+    "price_gp": 250.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "This crossbow shoots ammunition called bolas bolts instead of crossbow bolts. It comes in both light and heavy varieties (but not double, hand, or repeating crossbow varieties) with the same reload action as a conventional crossbow of its type.",
+    "origin": "aonprd"
+  },
+  {
     "id": "longaxe-dwarven",
     "name": "Longaxe, Dwarven",
     "source": "Advanced Race Guide",
@@ -4762,6 +7566,36 @@
     "description": "The madu is a round, light leather shield with two animal horns-usually from an antelope-extending from opposite sides. If you are proficient with the madu, you may use it to fight defensively with a -2 penalty instead of the normal -4, and your attack penalty for using Combat Expertise improves by +1 (minimum -1 penalty). You cannot hold anything else in the hand that bears a madu. If you are not proficient with the it, treat it as a light spiked shield. A madu can't be disarmed. It can be crafted entirely out of metal, but both versions offer the same basic protection and attack benefits, though they respond differently to some spells and effects. A druid can use a leather madu, but not a steel madu."
   },
   {
+    "id": "madu-leather-steel",
+    "name": "Madu (leather/steel)",
+    "source": "Ultimate Equipment",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "performance"
+    ],
+    "price": "40 gp/50 gp",
+    "price_gp": 40.0,
+    "weight_lbs": 5.0,
+    "finesse": true,
+    "description": "The madu is a round, light leather shield with two animal horns—usually from an antelope—extending from opposite sides. If you are proficient with the madu, you may use it to fight defensively with a –2 penalty instead of the normal –4, and your attack penalty for using Combat Expertise improves by +1 (minimum –1 penalty). You cannot hold anything else in the hand that bears a madu. If you are not proficient with the it, treat it as a light spiked shield. A madu can’t be disarmed. It can be crafted entirely out of metal, but both versions offer the same basic protection and attack benefits, though they respond differently to some spells and effects. A druid can use a leather madu, but not a steel madu.",
+    "origin": "aonprd"
+  },
+  {
     "id": "mancatcher",
     "name": "Mancatcher",
     "source": "Ultimate Equipment",
@@ -4826,6 +7660,36 @@
     "weight_lbs": 10,
     "finesse": false,
     "description": "This weapon consists of one or two spherical weights attached by a 10-foot chain. You whirl the weights and wrap them around an opponent's body. If you succeed at a trip attempt with a meteor hammer, you can drag your opponent 5 feet closer to you rather than knocking her prone. You may use this weapon in two different ways: In meteor mode you use it as a double weapon, while in fortress mode you cannot use it as a double weapon but gain reach and a +1 shield bonus to AC. Switching between these two modes is a free action decided at the start of your turn."
+  },
+  {
+    "id": "net",
+    "name": "Net",
+    "source": "Ranged Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "—",
+    "special": [
+      "see text"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "A net is used to entangle enemies. When you throw a net, you make a ranged touch attack against your target. A net’s maximum range is 10 feet. If you hit, the target is entangled. An entangled creature takes a –2 penalty on attack rolls and a –4 penalty to Dexterity, can move at only half speed, and cannot charge or run. If you control the trailing rope by succeeding at an opposed Strength check while holding it, the entangled creature can move only within the limits that the rope allows. If the entangled creature attempts to cast a spell, it must succeed at a concentration check with a DC of 15 + the spell’s level or be unable to cast the spell.",
+    "origin": "aonprd"
   },
   {
     "id": "nine-section-whip",
@@ -4928,6 +7792,36 @@
     "description": "A cruel weapon with blades placed at opposite ends of a long haft, an orc double axe is a double weapon. Though invented by and traditionally associated with orcs, the double axe can be crafted and wielded by other races as well, though many disdain it for its extreme weight and clumsiness. Because of the blades at either end of the axe, the wielder must hold an orc double axe in the middle of its haft, and utilize a weaving, slashing fighting style more akin to that of a quarterstaff than to that of a greataxe or battleaxe."
   },
   {
+    "id": "orc-skull-ram",
+    "name": "Orc skull ram",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "reach"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 20.0,
+    "finesse": false,
+    "description": "This weapon consists of a wooden log with a shoulder strap to carry some of the weight. The name comes from the orc tradition of making the ram’s head out of a large skull. On a successful critical hit with a skull ram, you can attempt a combat maneuver check to bull rush your opponent as a free action.",
+    "origin": "aonprd"
+  },
+  {
     "id": "pata",
     "name": "Pata",
     "source": "Ultimate Equipment",
@@ -4960,6 +7854,92 @@
     "description": "An evolution of the punching dagger, the pata is a short sword that ends in a full, fingerless gauntlet hilt. You punch rather than stab with the weapon, allowing you to put more force behind each strike. While wearing a pata, you cannot use that hand for anything else. A pata provides a +10 bonus to your CMD against disarm attempts."
   },
   {
+    "id": "pelletbow-dwarven-heavy",
+    "name": "Pelletbow, dwarven heavy",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "19-20/x3",
+    "threat": 19,
+    "multiplier": 3,
+    "range_ft": 60,
+    "type": "B",
+    "special": [],
+    "price": "75 gp",
+    "price_gp": 75.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "The dwarven pelletbow is a crossbowlike weapon that is loaded with and fires sling bullets rather than bolts. A dwarven heavy pelletbow takes the same amount of time and effort to load as a light crossbow (normally a move action), and a dwarven light pelletbow can be reloaded as a free action (allowing characters to attack with it multiple times in a round). Normally a pelletbow takes two hands to operate, but you can shoot (but not load) a pelletbow with one hand by taking a –2 penalty on attack rolls. You can shoot one pelletbow with each hand, but you take a penalty on attack rolls for attacking with two weapons (treating the heavy pelletbow as a one-handed weapon and the light pelletbow as a light weapon).",
+    "origin": "aonprd"
+  },
+  {
+    "id": "pelletbow-dwarven-light",
+    "name": "Pelletbow, dwarven light",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x3",
+    "threat": 19,
+    "multiplier": 3,
+    "range_ft": 40,
+    "type": "B",
+    "special": [],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "The dwarven pelletbow is a crossbowlike weapon that is loaded with and fires sling bullets rather than bolts. A dwarven heavy pelletbow takes the same amount of time and effort to load as a light crossbow (normally a move action), and a dwarven light pelletbow can be reloaded as a free action (allowing characters to attack with it multiple times in a round). Normally a pelletbow takes two hands to operate, but you can shoot (but not load) a pelletbow with one hand by taking a –2 penalty on attack rolls. You can shoot one pelletbow with each hand, but you take a penalty on attack rolls for attacking with two weapons (treating the heavy pelletbow as a one-handed weapon and the light pelletbow as a light weapon).",
+    "origin": "aonprd"
+  },
+  {
+    "id": "piston-maul-gnome",
+    "name": "Piston maul, gnome",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B",
+    "special": [
+      "see text"
+    ],
+    "price": "70 gp",
+    "price_gp": 70.0,
+    "weight_lbs": 15.0,
+    "finesse": false,
+    "description": "An alchemically fired piston in the head of this two-handed hammer strikes targets with astounding force. Successful sunder attacks made with a piston maul deal an additional 4 points of damage. A piston maul requires a thunderstone to function; otherwise, it functions as a greatclub. Inserting a thunderstone into the weapon’s compartment is a standard action, and powers the weapon for 24 hours, after which the thunderstone is consumed.",
+    "origin": "aonprd"
+  },
+  {
     "id": "quadrens",
     "name": "Quadrens",
     "source": "Ultimate Equipment",
@@ -4990,6 +7970,64 @@
     "weight_lbs": 2,
     "finesse": true,
     "description": "A quadrens looks similar to a sturdy dagger, but with four spikes mounted in a square pattern in place of a blade. When you score a critical hit with a quadrens, the resulting gaping wound causes 1 point of bleed damage. In addition to punching through hide and armor, the spikes can also be used to snag opponents' blades and twist them out of their grips."
+  },
+  {
+    "id": "ram-hammer-dwarven",
+    "name": "Ram hammer, dwarven",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 10,
+    "type": "B",
+    "special": [],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 5.0,
+    "finesse": false,
+    "description": "The dwarven ram hammer is designed to be thrown or used in melee, with a long leather strap that is wrapped around the wrist when used to deliver blows in close combat but unfurled to aid in swinging the weapon when the hammer is thrown.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "razor-drow",
+    "name": "Razor, drow",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "see text"
+    ],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Meant for quick strikes and slashes, this long, slender knife is incredibly sharp along one edge. Drow swashbucklers and assassins are particularly fond of these weapons. A confirmed critical hit or successful sneak attack with a drow razor deals an additional 2 points of damage; this damage is precision damage and is not multiplied on a critical hit. A character with the drow’s weapon familiarity racial trait treats the drow razor as a martial weapon.",
+    "origin": "aonprd"
   },
   {
     "id": "repeating-hand-crossbow",
@@ -5106,6 +8144,37 @@
     "description": "This sword is used almost exclusively by the life-hating urdefhans (Bestiary 2 276). The sword is the size of a longsword but consists of two serrated blades placed side by side."
   },
   {
+    "id": "ripsaw-glaive-gnome",
+    "name": "Ripsaw glaive, gnome",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "reach",
+      "see text"
+    ],
+    "price": "30 gp",
+    "price_gp": 30.0,
+    "weight_lbs": 12.0,
+    "finesse": false,
+    "description": "The blade of this glaive is serrated and mounted on an axle, around which a heavy cord is wrapped. When the cord is pulled as a move action, the blade spins rapidly for a number of rounds equal to your Strength bonus. While the blade is spinning, you gain a +2 bonus on damage rolls with the weapon. When the blade is not spinning, treat this weapon as a glaive.",
+    "origin": "aonprd"
+  },
+  {
     "id": "rope-dart",
     "name": "Rope Dart",
     "source": "Ultimate Equipment",
@@ -5140,6 +8209,34 @@
     "description": "This deceptively complex weapon appears to be nothing more than a 12-foot rope attached to a 6-inch-long, conical metal spike. Similar to a meteor hammer, it can be whirled at great speeds, then aimed to strike and pierce opponents with great reach. Once it strikes, the wielder can quickly retrieve the weapon with a tug of the rope as a free action."
   },
   {
+    "id": "rope-gauntlet",
+    "name": "Rope gauntlet",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "B (or S)",
+    "special": [],
+    "price": "2 sp",
+    "price_gp": 2.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "By wrapping your hands and forearms in thin but tough hemp ropes and then soaking the makeshift gloves in water for weight and expansion, you can transform your fists into rock-hard weapons easily capable of killing in a fistfight. Each rope gauntlet takes a full minute to wrap and another minute to soak, but once applied the gauntlet can be worn for a day; removing a rope gauntlet takes 1 full round. When wearing rope gauntlets, you are considered armed and your attacks deal normal damage. If you are proficient with rope gauntlets, you may use the rough edges of the ropes to deal slashing damage rather than bludgeoning damage. Your fingers are mostly exposed, allowing you to wield or carry items in your hands while wearing rope gauntlets, but the constriction of the weapon at your knuckles gives you a –2 penalty on all precision-based tasks involving your hands (such opening locks).",
+    "origin": "aonprd"
+  },
+  {
     "id": "sai",
     "name": "Sai",
     "source": "Ultimate Equipment",
@@ -5171,6 +8268,37 @@
     "weight_lbs": 1,
     "finesse": true,
     "description": "A sai is a metal spike flanked by a pair of prongs used to trap an enemy's weapon. When wielding a sai, you get a +2 bonus on combat maneuver checks to sunder an enemy's weapon. Though pointed, a sai is not usually used for stabbing. Instead, it is used primarily to bludgeon foes, punching with the hilt, or else to catch and disarm weapons between its tines. Sais are often wielded in pairs."
+  },
+  {
+    "id": "sanpkhang",
+    "name": "Sanpkhang",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "monk",
+      "see text"
+    ],
+    "price": "60 gp",
+    "price_gp": 60.0,
+    "weight_lbs": 1.0,
+    "finesse": true,
+    "description": "This elaborate knife is carved with special barbs and grooves, meant to channel toxins into the bloodstream. Any injury poison delivered with a sanpkhang has its DC increased by 1, or by 2 if delivered as part of a critical hit or sneak attack. The vishkanya’sARG weapon familiarity racial trait grants proficiency with the sanpkhang.",
+    "origin": "aonprd"
   },
   {
     "id": "sawtooth-sabre",
@@ -5265,6 +8393,36 @@
     "description": "This unusual sword has a straight 2-foot-long blade with six shorter L-shaped blades protruding from it, three on each side in a staggered pattern. The shorter blades can be used to snag opponents' clothing or armor, or can target weapons in order to disarm them. To snag armor or clothing, the attacker makes a trip attempt. If successful, the victim doesn't fall prone, but instead is snagged and stumbles forward, leaving the victim flat-footed for the remainder of the round."
   },
   {
+    "id": "shoanti-bolas",
+    "name": "Shoanti bolas",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 10,
+    "type": "B and P",
+    "special": [
+      "trip"
+    ],
+    "price": "15 gp",
+    "price_gp": 15.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "This spiked bolas functions as a standard bolas, but deals lethal damage rather than nonlethal damage.",
+    "origin": "aonprd"
+  },
+  {
     "id": "shotel",
     "name": "Shotel",
     "source": "Ultimate Equipment",
@@ -5295,6 +8453,36 @@
     "weight_lbs": 3,
     "finesse": false,
     "description": "The shotel is a downward-curving sword designed to reach over or around an opponent's shield. You gain a +1 bonus on attack rolls with a shotel against opponents using bucklers, light shields, or heavy shields. The curve of a shotel's blade varies from sword to sword, and some models are double-edged, while others are single-edged, with the back edge able to be braced against a shield for additional power. Shotels are particularly useful for hooking mounted combatants and ripping them from their steeds."
+  },
+  {
+    "id": "shrillshaft-javelin",
+    "name": "Shrillshaft javelin",
+    "source": "Gnomes of Golarion",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 30,
+    "type": "P",
+    "special": [
+      "see text"
+    ],
+    "price": "35 gp",
+    "price_gp": 35.0,
+    "weight_lbs": 3.0,
+    "finesse": false,
+    "description": "This single-use javelin bears a thunderstone in its haft, just behind the weapon’s head. If you hit with one of these javelins, the target takes javelin damage as normal and is the center of the thunderstone’s effect. If you miss, roll to see where the javelin lands (as if determining a miss with a splash weapon); that square becomes the center of the thunderstone’s effect.",
+    "origin": "aonprd"
   },
   {
     "id": "shuriken",
@@ -5393,6 +8581,65 @@
     "description": "This blade is a smaller, lighter version of the shotel. You gain a +1 bonus on attack rolls with a sica against opponents using bucklers, light shields, or heavy shields."
   },
   {
+    "id": "sickle-sword",
+    "name": "Sickle-sword",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "1d8",
+      "l": "2d6"
+    },
+    "critical": "19-20/x2",
+    "threat": 19,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "distracting",
+      "see text"
+    ],
+    "price": "20 gp",
+    "price_gp": 20.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "Favored by those residents of Irrisen with no talent for witchcraft, this exotic blade curves multiple times along its 3-1/2 feet. The sickle-sword’s hilt is long and curved, and its blade bears a small secondary grip partway up its length. These allow a wielder with a free hand to rapidly twist the sword in unpredictable ways. When wielding a sickle-sword in one hand and nothing in the other, you can spend a swift action to gain a +2 bonus on your next attack roll before the end of your turn.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "sling-glove",
+    "name": "Sling glove",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d2",
+      "s": "1d3",
+      "m": "1d4",
+      "l": "1d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 50,
+    "type": "B",
+    "special": [],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "This curved, scooped-shaped, 2-foot-long wicker basket attaches to your wrist, allowing you to throw fist-sized stones at great speed merely by whipping your arm forward. Loading a sling glove is a free action that does not provoke an attack of opportunity so long as you have a free hand. You take –4 penalty when throwing a stone at an adjacent target and cannot use the weapon to attack creatures in your space.",
+    "origin": "aonprd"
+  },
+  {
     "id": "snag-net",
     "name": "Snag Net",
     "source": "Advanced Race Guide",
@@ -5421,6 +8668,34 @@
     "weight_lbs": 10,
     "finesse": false,
     "description": "This short, wide net is covered in barbed loops and slipknots. It works like a typical net exotic weapon, except it has the trip weapon special feature. If you entangle an opponent and hold the trailing rope, on your turn in place of a melee attack you may make a trip combat maneuver check against that opponent; if you succeed, you may trip the opponent or deal 1 point of piercing damage to the opponent. The concentration DC to cast while entangled in a snag net is 17 + the spell's level. The Escape Artist DC to escape a snag net is 22."
+  },
+  {
+    "id": "sphinx-hammer-dwarven",
+    "name": "Sphinx hammer, dwarven",
+    "source": "Heroes from the Fringe",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 20,
+    "type": "B",
+    "special": [],
+    "price": "45 gp",
+    "price_gp": 45.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "The dwarven sphinx hammer is a long-handled hammer with a striking head that is artfully designed to look like a ram-headed criosphinx. Most commonly found among the Pahmet, the dwarven sphinx hammer is balanced for use as both a melee weapon and a thrown weapon.",
+    "origin": "aonprd"
   },
   {
     "id": "spiked-chain",
@@ -5454,6 +8729,130 @@
     "weight_lbs": 10,
     "finesse": true,
     "description": "A spiked chain is about 4 feet in length and covered in wicked barbs. Some have metal hoops to use as handgrips. You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier to attack rolls with a spiked chain sized for you, even though it isn't a light weapon."
+  },
+  {
+    "id": "spiral-rapier",
+    "name": "Spiral rapier",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P",
+    "special": [
+      "blocking",
+      "disarm",
+      "see text"
+    ],
+    "price": "80 gp",
+    "price_gp": 80.0,
+    "weight_lbs": 3.0,
+    "finesse": true,
+    "description": "This rapier like weapon has a thicker blade than normal, which is shaped into a corkscrewing spiral of sharpened edges. These edges can catch enemy weapons, making it ideal for disarming or parrying. You can use the Weapon Finesse feat to apply your Dexterity modifier instead of your Strength modifier to attack rolls with a spiral rapier sized for you, even though it isn’t a light weapon. You can’t wield a spiral rapier in two hands in order to apply 1-1/2 times your Strength modifier to its damage. Any effects that apply to rapiers also apply to a spiral rapier.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "split-blade-sword",
+    "name": "Split-blade sword",
+    "source": "Martial Arts Handbook",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d6",
+      "s": "1d10",
+      "m": "2d6",
+      "l": "3d6"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "S",
+    "special": [
+      "disarm",
+      "trip",
+      "see text"
+    ],
+    "price": "200 gp",
+    "price_gp": 200.0,
+    "weight_lbs": 8.0,
+    "finesse": false,
+    "description": "Patterned after the fiery blades masterfully wielded by Sarenite angels, the split-blade sword is both a holy symbol and a difficult-yet-effective weapon. A split-blade sword resembles a large scimitar whose blade splits into two about two-thirds of the way toward the tip. If your Dexterity score is less than 15, you take a –2 penalty on attacks rolls with a split-blade sword, as you’re unable to maneuver its unusual blade.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "stormshaft-javelin",
+    "name": "Stormshaft javelin",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 30,
+    "type": "P",
+    "special": [
+      "see text"
+    ],
+    "price": "35 gp",
+    "price_gp": 35.0,
+    "weight_lbs": 3.0,
+    "finesse": false,
+    "description": "This single-use javelin bears a thunderstone just behind the head. If you successfully strike a target with one of these javelins, the creature takes damage as normal and is the center of the thunderstone’s effect. If you miss, roll to see where the javelin lands (as if determining a miss with a splash weapon); that square becomes the center of the thunderstone’s effect.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "switchscythe",
+    "name": "Switchscythe",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d4",
+      "s": "1d6",
+      "m": "2d4",
+      "l": "2d6"
+    },
+    "critical": "x4",
+    "threat": 20,
+    "multiplier": 4,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "trip"
+    ],
+    "price": "18 gp",
+    "price_gp": 18.0,
+    "weight_lbs": 10.0,
+    "finesse": false,
+    "description": "This scythe has a spring-loaded blade that folds down into the weapon’s handle. Opening the scythe blade is a swift action, and closing it again is a standard action. You can use Bluff or Sleight of Hand to treat a closed switchscythe as a hidden weapon; the apparatus can be disguised with 1 minute of work, which grants a +5 bonus on such checks. This disguise is ruined when the weapon is opened and must be reapplied to hide the weapon again. Any effects that apply to a scythe also apply to a switchscythe.",
+    "origin": "aonprd"
   },
   {
     "id": "swordbreaker-dagger",
@@ -5617,6 +9016,34 @@
     "description": "A slight improvement over the greatclub, this weapon consists of a long, slender length of wood or metal whose upper half is shod with a thick sheet of studded iron. The iron gives added weight and strength to the club, while the studs are designed to crack helmets and armor."
   },
   {
+    "id": "thorn-bow",
+    "name": "Thorn bow",
+    "source": "Adventurer's Armory",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 40,
+    "type": "P",
+    "special": [],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 2.0,
+    "finesse": false,
+    "description": "This polished rosewood bow is studded with thorns and tiny flowers; treat it as a shortbow.",
+    "origin": "aonprd"
+  },
+  {
     "id": "throwing-shield",
     "name": "Throwing Shield",
     "source": "Ultimate Equipment",
@@ -5648,6 +9075,62 @@
     "weight_lbs": null,
     "finesse": false,
     "description": "This shield is designed for throwing and has specially designed straps that allow you to unclasp and throw it as a free action. Tower shields cannot be throwing shields. Neither a shield's enhancement bonus to AC nor its shield spikes apply on your attack or damage rolls. A throwing shield can't be disarmed."
+  },
+  {
+    "id": "tongi",
+    "name": "Tongi",
+    "source": "Melee Tactics Toolbox",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "one-handed",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "19-20/x3",
+    "threat": 19,
+    "multiplier": 3,
+    "range_ft": null,
+    "type": "P",
+    "special": [],
+    "price": "18 gp",
+    "price_gp": 18.0,
+    "weight_lbs": 4.0,
+    "finesse": false,
+    "description": "This rare weapon resembles a battleaxe with wedges cut out of the head, presenting four sharp points that splay from the handle rather than a single convex blade.",
+    "origin": "aonprd"
+  },
+  {
+    "id": "totem-spear",
+    "name": "Totem spear",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "two-handed",
+    "firearm": false,
+    "thrown": true,
+    "damage": {
+      "t": "1d6",
+      "s": "1d8",
+      "m": "1d10",
+      "l": "2d8"
+    },
+    "critical": "x3",
+    "threat": 20,
+    "multiplier": 3,
+    "range_ft": 10,
+    "type": "P or B",
+    "special": [],
+    "price": "25 gp",
+    "price_gp": 25.0,
+    "weight_lbs": 6.0,
+    "finesse": false,
+    "description": "Favored by the Shoanti of the Sklar-Quah, totem spears combine deadly weapons with the mournful music of Varisia’s displaced natives. The shovel-like heads of these broad spears are decorated with variously oriented hollows. In addition to its use as a weapon, a totem spear can be played using the Perform (wind instrument) skill.",
+    "origin": "aonprd"
   },
   {
     "id": "two-bladed-sword",
@@ -5778,6 +9261,36 @@
     "description": "These short, slender blades are between 1 to 2 feet long. They are primarily used as back-up weapons, to decapitate defeated enemies, or to commit seppuku (ritual suicide) as a matter of honor. These blades are specifically worn by samurai and are intended to be paired with a katana. Together, this set of blades is referred to as a daisho."
   },
   {
+    "id": "war-shield-dwarven",
+    "name": "War-shield, dwarven",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "see text"
+    ],
+    "price": "50 gp",
+    "price_gp": 50.0,
+    "weight_lbs": 8.0,
+    "finesse": true,
+    "description": "This shield’s sides are cut into jagged angles and honed to razor sharpness. Dwarven skirmishers often wield these shields in pairs, savagely hacking opponents to pieces, while some dwarven scoundrels enjoy the shields’ imposing appearance and ease of use. If you have the Two-Weapon Fighting feat and are wielding two dwarven war-shields, increase the higher of the two shield bonuses by 1. You lose this benefit for 1 round when you make a shield bash with one or both dwarven war-shields (unless you have the Improved Shield Bash feat or a similar benefit). A hand holding a dwarven warshield can’t be used for anything else. A dwarven war-shield gains no benefit from shield spikes.",
+    "origin": "aonprd"
+  },
+  {
     "id": "waraxe-dwarven-double",
     "name": "Waraxe, Dwarven Double",
     "source": "Advanced Race Guide",
@@ -5805,6 +9318,37 @@
     "weight_lbs": 12,
     "finesse": false,
     "description": "This hefty waraxe is similar to the common dwarven waraxe, but its recurved blade spans forward and back from its head like a deadly butterfly. A dwarven double waraxe grants a +1 bonus on all attack rolls after the first when using Cleave or Great Cleave."
+  },
+  {
+    "id": "waveblade",
+    "name": "Waveblade",
+    "source": "Adventurer's Armory 2",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "light",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": "1d3",
+      "s": "1d4",
+      "m": "1d6",
+      "l": "1d8"
+    },
+    "critical": "18-20/x2",
+    "threat": 18,
+    "multiplier": 2,
+    "range_ft": null,
+    "type": "P or S",
+    "special": [
+      "monk",
+      "see text"
+    ],
+    "price": "5 gp",
+    "price_gp": 5.0,
+    "weight_lbs": 2.0,
+    "finesse": true,
+    "description": "Also known as a “scorpion’s tail” due to its unique, stinger-like shape, this short, double-curved blade has no hilt but features a knuckle guard. You gain a +2 bonus to your CMD against disarm attempts made to disarm you of a waveblade.",
+    "origin": "aonprd"
   },
   {
     "id": "whip",
@@ -5872,6 +9416,34 @@
     "weight_lbs": 2,
     "finesse": false,
     "description": "This short lash has a reach of only 10 feet, but is otherwise identical to a normal whip. The wielder gains a +2 circumstance bonus on Handle Animal checks to push a trained animal and on Intimidate checks made to demoralize any animal as long as the animal is within the whip's reach. When using the whip to demoralize a trained animal, the wielder may choose to fascinate the animal rather than causing it to become shaken for the same duration as the shaken condition, but the fascinate effect ends if line of sight between the wielder and the animal is broken."
+  },
+  {
+    "id": "wrist-launcher",
+    "name": "Wrist launcher",
+    "source": "Ultimate Intrigue",
+    "category": "Exotic Weapons",
+    "proficiency": "exotic",
+    "group": "ranged",
+    "firearm": false,
+    "thrown": false,
+    "damage": {
+      "t": null,
+      "s": null,
+      "m": null,
+      "l": null
+    },
+    "critical": "—",
+    "threat": 20,
+    "multiplier": 2,
+    "range_ft": 20,
+    "type": "P",
+    "special": [],
+    "price": "200 gp",
+    "price_gp": 200.0,
+    "weight_lbs": 1.0,
+    "finesse": false,
+    "description": "This slender tube is strapped to one forearm and designed to be concealed beneath the sleeve, where the wielder can fire a featherweight dart with a twist of the wrist. The launcher functions by means of a tightly compressed spring, and must be reloaded and re-cocked with a separate ramrod as a full-round action. After firing, the wearer can attempt a Sleight of Hand check opposed by opponents’ Perception checks to keep the wrist launcher concealed. If you are proficient with hand crossbows, you are also proficient with wrist launchers.",
+    "origin": "aonprd"
   },
   {
     "id": "axe-musket",

@@ -749,7 +749,7 @@ table.skill-why th.num { text-align: right; }
   background: var(--bg); color: var(--text); padding: 0 10px; margin-bottom: 8px; }
 .talent-list .talent-option { display: flex; gap: 8px; align-items: flex-start; border-top: 1px solid var(--border); padding: 6px 0; }
 .talent-list .talent-option details { flex: 1; min-width: 0; }
-.talent-list .talent-option.unavailable { opacity: 0.6; }
+.talent-list .talent-option.unavailable, #trait-list .feat-item.unavailable { opacity: 0.6; }
 .talent-list .talent-option button { flex: none; }
 .talent-slots li.replaced { opacity: 0.7; }
 .talent-notes { font-size: 0.85rem; margin: 2px 0 6px; }

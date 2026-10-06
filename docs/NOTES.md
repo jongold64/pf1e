@@ -203,6 +203,15 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   changes. Extra fields: `mw_included` (no +150 gp or second -1 penalty), `move_category` (mithral one lighter: speed and
   bard/magus spell failure; proficiency still uses `category`), `metal` (druids), `dr` (adamantine), `material_notes`.
   Mithral/darkleaf "-3 check penalty" and darkwood's "-2" include the masterwork 1; eel hide's "-1" is read the same way.
+- Weapon materials (`js/materials.js` WEAPON_MATERIALS, hand-entered from the same chapters): a carried weapon's
+  `material` id. Each has `fits(w)` (name lists for metal, wooden and hafted weapons plus group and damage type, after the
+  books' examples), `extra(w, { base, weight, magic })` (price added: cold iron doubles, +2,000 gp once magic; bone,
+  obsidian and stone are negative), `mw` (masterwork in the price: no +300 row, +1 attack), `weight`, `damage(w)`, `notes`.
+  weapons.js `materialOf`; weaponCost is the sum of weaponCostRows.
+- Later weapons: `build_aon_weapons.py` (after build_weapons.py) adds AoN simple/martial/exotic weapons PSRD lacks (name
+  matched by sorted words and by letters run together: "Heavy mace"/"Mace, heavy", "Short sword"/"Shortsword"), Paizo
+  books with notices only; Tiny/Large dice from Core Rulebook Table 6-5 (3d6 -> 4d6 added). `origin: 'aonprd'`. Not added:
+  ammunition, firearms and siege weapons; "see text" rules (the butchering axe's -2 below Str 19) aren't applied.
 - Domains (`js/domains.js`, data from `build_domains.py`: PSRD cleric domains, APG subdomains, UM druid domains, inquisitions):
   `state.domains` = { class id: [domain ids] } (cleric 2, inquisitor 1, druid 1) and `state.natureBond` ('companion' |
   'domain'). `domainChoices` limits the druid to Air/Animal/Earth/Fire/Plant/Water/Weather, their subdomains and druid
