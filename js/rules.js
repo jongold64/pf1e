@@ -124,7 +124,8 @@ export function bonusSpells(abilityMod, spellLevel) {
 // `scores` are final ability scores; `extraSlot` turns on an optional EXTRA_SLOTS entry.
 // Each row: { spellLevel, base, bonus, extra, total, known, canCast }. `base` and `known` are null
 // when the class table has no number for that spell level (e.g. a sorcerer's cantrips per day).
-export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
+// knownChange: added to each spells known number (a crossblooded sorcerer: -1, not below 0).
+export function spellsPerDay({ cls, level, scores, extraSlot = false, knownChange = 0 }) {
   const ability = CASTING_ABILITY[cls.id];
   if (!ability) return null;
   const row = cls.progression[level - 1];
@@ -149,7 +150,7 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false }) {
       bonus,
       extra,
       total: base === null ? null : (canCast ? base + bonus + extra : 0),
-      known: known[sl] ?? null,
+      known: known[sl] === undefined || known[sl] === null ? null : Math.max(0, known[sl] + knownChange),
       prepared: prepared[sl] ?? null,
       canCast,
     };
@@ -340,7 +341,8 @@ export function initiativeBreakdown(stats, haveFeats = [], traits = [], effects 
 // don't stack) and active effects (effectTotal is their total after stacking). Returns { lines: [{ label, value, note? }], total }.
 const SAVE_INFO = { fort: ['con', 'Constitution', 'Great Fortitude'], ref: ['dex', 'Dexterity', 'Lightning Reflexes'],
                     will: ['wis', 'Wisdom', 'Iron Will'] };
-export function saveBreakdown({ save, counts, mod, featNames = [], traits = [], effects = [], effectTotal = 0 }) {
+// extra: other lines ({ label, value }), such as a crossblooded archetype's -2 on Will.
+export function saveBreakdown({ save, counts, mod, featNames = [], traits = [], effects = [], effectTotal = 0, extra = [] }) {
   const [ability, abilityName, feat] = SAVE_INFO[save];
   const lines = counts.map(e => ({ label: `${e.cls.name} ${e.level} base save`, value: e.cls.progression[e.level - 1][save] || 0 }));
   lines.push({ label: `${abilityName} modifier`, value: mod[ability] });
@@ -348,6 +350,7 @@ export function saveBreakdown({ save, counts, mod, featNames = [], traits = [], 
   const withTrait = traits.filter(t => t.effects?.saves?.[save]).sort((a, b) => b.effects.saves[save] - a.effects.saves[save]);
   withTrait.forEach((t, i) => lines.push({ label: `Trait: ${t.name}`, value: i === 0 ? t.effects.saves[save] : 0,
                                            note: i === 0 ? '' : `+${t.effects.saves[save]}, does not stack with another trait bonus` }));
+  lines.push(...extra);
   for (const e of effects) lines.push({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` });
   const listed = effects.reduce((n, e) => n + e.value, 0);
   if (listed !== effectTotal) lines.push({ label: 'Effects of the same type do not stack', value: effectTotal - listed });

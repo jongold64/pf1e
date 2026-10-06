@@ -172,6 +172,7 @@ let currentId = null;
 // Shared with the tab modules.
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
+  knownChange: cid => knownChange(cid),
   showAcDetails: column => showAcDetails(column),
   get view() { return view; },
 };
@@ -252,8 +253,10 @@ function load(saved) {
   for (const [cid, id] of Object.entries(oldBloodlines)) ps[`${cid}|bloodline`] ??= id;
   delete state.bloodlines;
   state.paths = Object.fromEntries(Object.entries(ps).filter(([key, v]) => {
-    const [cid, kind] = key.split('|');
-    if (kind === 'opposition') return Array.isArray(v) && v.length <= 2 && v.every(n => CLASSIC_SCHOOLS.includes(n));
+    const [cid, slot] = key.split('|');
+    if (slot === 'opposition') return Array.isArray(v) && v.length <= 2 && v.every(n => CLASSIC_SCHOOLS.includes(n));
+    if (slot === 'crosspower') return !!CROSSBLOODED[cid] && v && typeof v === 'object' && Object.values(v).every(x => typeof x === 'string');
+    const kind = slot === 'bloodline2' && CROSSBLOODED[cid] ? 'bloodline' : slot;
     const x = data.pathsById.get(v);
     return !!x && x.kind === kind && x.classes.includes(cid) && !!PATH_RULES[cid]?.some(r => r.kind === kind);
   }));
@@ -494,7 +497,7 @@ function fillSheet() {
   const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent,
     [...(dt.nextElementSibling?.childNodes || [])].filter(n => n.nodeName !== 'BUTTON').map(n => n.textContent).join('').trim()]);
   $('print-sheet').innerHTML = buildSheet({
-    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines,
+    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines, knownChange,
     // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
     talentLines: (cid, lv) => [...pathLines(cid, lv), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
       const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
@@ -838,6 +841,13 @@ function buildControls() {
       // A new school starts its opposition schools afresh.
       if (e.target.dataset.path.endsWith('|school')) delete x[e.target.dataset.path.replace('|school', '|opposition')];
       update({ paths: x });
+    }
+    if (e.target.matches('[data-cross-power]')) {
+      const key = `${e.target.dataset.crossPower}|crosspower`;
+      const picks = { ...(state.paths[key] || {}) };
+      if (e.target.value) picks[e.target.dataset.level] = e.target.value;
+      else delete picks[e.target.dataset.level];
+      update({ paths: { ...state.paths, [key]: picks } });
     }
     if (e.target.matches('[data-opposition]')) {
       const key = `${e.target.dataset.opposition}|opposition`;
@@ -1262,6 +1272,13 @@ function flexibleFor(race) {
   return race.dual_talent ? [state.flexible, state.flexible2] : state.flexible;
 }
 
+// A crossblooded sorcerer knows one fewer spell of each level (cantrips too).
+const knownChange = cid => (cid === 'sorcerer' && isCrossblooded(cid) ? -1 : 0);
+
+// A crossblooded archetype's -2 on Will saves.
+const crossWill = () => (Object.keys(CROSSBLOODED).some(isCrossblooded) ? -2 : 0);
+const withCrossblooded = fb => ({ ...fb, will: (fb.will || 0) + crossWill() });
+
 // Trait save bonuses added to the feat bonuses characterStats takes.
 function withTraitSaves(fb, traitFx) {
   return { ...fb, fort: (fb.fort || 0) + traitFx.saves.fort, ref: (fb.ref || 0) + traitFx.saves.ref, will: (fb.will || 0) + traitFx.saves.will };
@@ -1313,14 +1330,15 @@ function computeView() {
     .map(([a, v]) => [a, abilityModifier(v + (levelIncreases(classLevels.length, state.increases)[a] || 0))]));
   setEffectMods(plainMods);
   // Bloodline feat slots take only the chosen bloodline's bonus feats.
-  setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats]).filter(([, f]) => f)));
+  setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats
+    && [...pathOf(cid, 'bloodline').bonus_feats, ...(isCrossblooded(cid) ? pathOf(cid, 'bloodline2')?.bonus_feats || [] : [])]]).filter(([, f]) => f)));
   const fx = effectTotals(state.buffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.
   const size = shiftSize(fx.setSize || race.size, fx.size);
   const statsWith = (gearNow, effects = fx) => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
     increases: state.increases, favoredPicks,
-    featBonuses: withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx), gear: gearNow,
+    featBonuses: withCrossblooded(withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx)), gear: gearNow,
     effects, size,
   });
   // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
@@ -1347,7 +1365,8 @@ function computeView() {
     archetypes: Object.fromEntries(Object.keys(state.archetypes).map(cid => [cid, chosenArchetypes(cid)])),
     choices: [...Object.entries(state.talents).map(([slot, v]) => ({ label: ruleOf(slot)?.label || '', value: data.talentsById.get(v)?.name || v })),
               ...Object.entries(state.paths).filter(([k]) => !k.endsWith('|opposition'))
-                .map(([k, id]) => ({ label: PATH_RULES[k.split('|')[0]]?.find(r => r.kind === k.split('|')[1])?.label || '', value: data.pathsById.get(id)?.name || '' }))],
+                .filter(([k]) => !k.endsWith('|crosspower'))
+                .map(([k, id]) => ({ label: rulesFor(k.split('|')[0]).find(r => slotOf(r) === k.split('|')[1])?.label || '', value: data.pathsById.get(id)?.name || '' }))],
     talentNames: Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
     featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
     classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
@@ -1563,8 +1582,37 @@ const PATH_SPELLS = {
 };
 // The eight schools a specialist wizard picks two opposition schools from.
 const CLASSIC_SCHOOLS = ['Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
-const pathOf = (cid, kind) => data.pathsById.get(state.paths[`${cid}|${kind}`]) || null;
-const pathsFor = cid => (PATH_RULES[cid] || []).map(rule => ({ rule, path: pathOf(cid, rule.kind) }));
+// Crossblooded archetypes (sorcerer, bloodrager): a second bloodline, a choice of power at each power level, both
+// bloodlines' class skills, arcana and bonus feats, -2 on Will saves (the sorcerer also knows one fewer spell a level).
+const CROSSBLOODED = { sorcerer: 'sorcerer-crossblooded', bloodrager: 'bloodrager-crossblooded-rager' };
+const isCrossblooded = cid => !!CROSSBLOODED[cid] && (state.archetypes[cid] || []).includes(CROSSBLOODED[cid]);
+// A class's one-time choices, each kept under "class|slot" (the slot is the kind, or "bloodline2" for the second bloodline).
+const rulesFor = cid => [...(PATH_RULES[cid] || []),
+  ...(isCrossblooded(cid) ? [{ kind: 'bloodline', slot: 'bloodline2', label: 'Second bloodline', plural: 'bloodlines' }] : [])];
+const slotOf = rule => rule.slot || rule.kind;
+const pathOf = (cid, slot) => data.pathsById.get(state.paths[`${cid}|${slot}`]) || null;
+const pathsFor = cid => rulesFor(cid).map(rule => ({ rule, path: pathOf(cid, slotOf(rule)) }));
+
+// A crossblooded character's power levels (both bloodlines') and the powers open at one: the new ones and earlier ones
+// not taken at another level. Picks: state.paths["class|crosspower"] = { level: "bloodline id|power name" }.
+function crossPowerLevels(cid) {
+  const both = [pathOf(cid, 'bloodline'), pathOf(cid, 'bloodline2')];
+  return both.every(Boolean) ? [...new Set(both.flatMap(b => b.powers.map(p => p.level)))].sort((a, b) => a - b) : [];
+}
+const crossPicks = cid => state.paths[`${cid}|crosspower`] || {};
+function crossPowerOptions(cid, level) {
+  const picks = crossPicks(cid);
+  const takenElsewhere = new Set(Object.entries(picks).filter(([lv]) => Number(lv) !== level).map(([, v]) => v));
+  return [pathOf(cid, 'bloodline'), pathOf(cid, 'bloodline2')].flatMap(b => b.powers.filter(p => p.level <= level)
+    .map(p => ({ value: `${b.id}|${p.name}`, bloodline: b, power: p, isNew: p.level === level })))
+    .filter(o => !takenElsewhere.has(o.value));
+}
+const crossPower = value => {
+  const [id, name] = String(value || '').split('|');
+  const b = data.pathsById.get(id);
+  const p = b?.powers.find(x => x.name === name);
+  return p ? { bloodline: b, power: p } : null;
+};
 // A specialist's own classic school (a focused school's is its school's); null for universalists and elemental schools.
 const classicSchool = path => [path?.name, path?.parent].find(n => CLASSIC_SCHOOLS.includes(n)) || null;
 
@@ -1580,6 +1628,17 @@ function pathSkills() {
 // "arcane school": the school). { name, text } or null.
 function pathEntry(cid, level, entry) {
   const e = entry.toLowerCase();
+  if (isCrossblooded(cid) && crossPowerLevels(cid).length && ['bloodline power', 'bloodline spell'].includes(e)) {
+    const both = [pathOf(cid, 'bloodline'), pathOf(cid, 'bloodline2')];
+    if (e === 'bloodline spell') {
+      const sp = both.map(b => b.spells.find(x => x.level === level)).filter(Boolean);
+      return sp.length ? { name: sp.map(x => x.name).join(' or '), text: `A crossblooded character learns one of these at ${ordinal(level)} level: ${sp.map(x => x.name).join(' or ')} (or a lower-level bonus spell not yet chosen).` } : null;
+    }
+    const pick = crossPower(crossPicks(cid)[level]);
+    if (pick) return { name: pick.power.name, text: `${pick.power.name} (${pick.bloodline.name}): ${pick.power.text}` };
+    const ps = both.flatMap(b => b.powers.filter(x => x.level === level));
+    return ps.length ? { name: `${ps.map(x => x.name).join(' or ')} (not chosen)`, text: ps.map(x => `${x.name}: ${x.text}`).join('\n\n') } : null;
+  }
   for (const { rule, path } of pathsFor(cid)) {
     const how = path && PATH_ENTRIES[rule.kind]?.[e];
     if (how === 'name') return { name: path.name, text: path.text || `${rule.label}: ${path.name}.` };
@@ -1602,6 +1661,7 @@ function choicesLeft(cls, level) {
   let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
   for (const { path } of pathsFor(cls.id)) if (!path) n++;
   if (classicSchool(pathOf(cls.id, 'school')) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
+  if (isCrossblooded(cls.id)) n += crossPowerLevels(cls.id).filter(lv => lv <= level && !crossPower(crossPicks(cls.id)[lv])).length;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
   return n;
 }
@@ -1609,8 +1669,9 @@ function choicesLeft(cls, level) {
 // A class's one-time choices (Classes card): a list for each, Details for the chosen one, its powers by level (the ones
 // not reached yet greyed), every option with its own Details, and a specialist wizard's two opposition schools.
 function pathPicker(cls, level, openFeatures) {
+  const cross = isCrossblooded(cls.id);
   return pathsFor(cls.id).map(({ rule, path }) => {
-    const key = `${cls.id}|${rule.kind}`;
+    const key = `${cls.id}|${slotOf(rule)}`;
     const all = data.paths.filter(x => x.kind === rule.kind && x.classes.includes(cls.id));
     const label = x => (x.parent ? `${x.name} (${x.parent})` : x.name);
     const browseKey = `pbrowse-${key}`;
@@ -1627,8 +1688,9 @@ function pathPicker(cls, level, openFeatures) {
         <option value="">Choose your ${esc(rule.label.toLowerCase())}…</option>${all.map(x => `<option value="${esc(x.id)}"${path?.id === x.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('')}</select></label>
         ${path ? `<button type="button" class="skill-details" data-path-pop="${esc(path.id)}" data-path-key="${esc(key)}">Details</button>` : ''}</div>
       ${oppPick}
-      ${path?.powers.length ? `<ul class="talent-slots">${path.powers.map(x => `<li${x.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(x.level))}</span>
+      ${path?.powers.length && !(cross && rule.kind === 'bloodline') ? `<ul class="talent-slots">${path.powers.map(x => `<li${x.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(x.level))}</span>
           ${x.level <= level ? `<b>${esc(x.name)}</b>` : `<span class="muted">${esc(x.name)}</span>`}</li>`).join('')}</ul>` : ''}
+      ${cross && rule.slot === 'bloodline2' ? crossPowerPicker(cls, level) : ''}
       <details class="arch-feature arch-browse" data-key="${esc(browseKey)}"${openFeatures?.has(browseKey) ? ' open' : ''}>
         <summary>Browse all ${all.length} ${esc(rule.plural)}</summary>
         <ul class="pick-list">${all.map(x => {
@@ -1640,13 +1702,33 @@ function pathPicker(cls, level, openFeatures) {
   }).join('');
 }
 
+// A crossblooded character's bloodline powers: at each power level reached, one of the two new powers or an earlier one
+// not taken yet; later levels show the two to come.
+function crossPowerPicker(cls, level) {
+  const levels = crossPowerLevels(cls.id);
+  if (!levels.length) return '<p class="hint">Crossblooded: choose both bloodlines, then a bloodline power at each power level.</p>';
+  const picks = crossPicks(cls.id);
+  return `<h4>Bloodline powers (crossblooded: one at each power level)</h4><ul class="talent-slots">${levels.map(lv => {
+    if (lv > level) {
+      const both = [pathOf(cls.id, 'bloodline'), pathOf(cls.id, 'bloodline2')].flatMap(b => b.powers.filter(p => p.level === lv).map(p => p.name));
+      return `<li class="replaced"><span class="muted">${esc(ordinal(lv))}</span> <span class="muted">${esc(both.join(' or '))}</span></li>`;
+    }
+    const opts = crossPowerOptions(cls.id, lv);
+    return `<li><span class="muted">${esc(ordinal(lv))}</span> <select data-cross-power="${esc(cls.id)}" data-level="${lv}" aria-label="Bloodline power at ${esc(ordinal(lv))} level">
+      <option value="">Choose a power…</option>${opts.map(o => `<option value="${esc(o.value)}"${picks[lv] === o.value ? ' selected' : ''}>${esc(o.power.name)} (${esc(o.bloodline.name)}${o.isNew ? '' : `, ${ordinal(o.power.level)} level`})</option>`).join('')}</select></li>`;
+  }).join('')}</ul>
+  <p class="hint">Bonus spells: at each bonus spell level you learn one of the two bloodlines' spells (or a lower-level one not yet chosen). Both
+    bloodlines' arcana and class skills count, and bloodline feats come from both lists.</p>`;
+}
+
 // One option in a popup: book, text, class skills, bonus spells, hexes, its other facts and each power (by level), with
 // Choose or Remove for the class it was opened from (`key` "cavalier|order").
 function popPath(id, key) {
   const b = data.pathsById.get(id);
   if (!b) return;
-  const [cid, kind] = key.split('|');
-  const rule = PATH_RULES[cid]?.find(r => r.kind === kind);
+  const [cid, slot] = key.split('|');
+  const rule = rulesFor(cid).find(r => slotOf(r) === slot);
+  const kind = rule?.kind || slot;
   const cls = data.classes.find(c => c.id === cid);
   const mine = state.paths[key] === b.id;
   const spells = b.spells.map(x => `${x.name} (${ordinal(x.level)})`).join(', ');
@@ -1671,12 +1753,18 @@ function popPath(id, key) {
 
 // A class's one-time choices, one line each for the printed sheet: "Bloodline: Aberrant (Acidic Ray 1st, Long Limbs 3rd)".
 function pathLines(cid, level) {
+  const cross = isCrossblooded(cid);
   const lines = pathsFor(cid).filter(({ path }) => path).map(({ rule, path }) => {
-    const ps = path.powers.filter(x => x.level <= level).map(x => `${x.name} ${ordinal(x.level)}`);
+    const ps = cross && rule.kind === 'bloodline' ? [] : path.powers.filter(x => x.level <= level).map(x => `${x.name} ${ordinal(x.level)}`);
     return `${rule.label}: ${path.name}${ps.length ? ` (${ps.join(', ')})` : ''}`;
   });
   const opp = state.paths[`${cid}|opposition`];
   if (opp?.length) lines.push(`Opposition schools: ${opp.join(', ')}`);
+  if (cross) {
+    const ps = Object.entries(crossPicks(cid)).map(([lv, v]) => [Number(lv), crossPower(v)]).filter(([lv, p]) => p && lv <= level)
+      .sort((a, b) => a[0] - b[0]).map(([lv, p]) => `${p.power.name} ${ordinal(lv)}`);
+    if (ps.length) lines.push(`Bloodline powers: ${ps.join(', ')}`);
+  }
   if (talentSlots(cid, level).some(s => s.rule.needs === 'mystery') && state.mystery) lines.unshift(`Mystery: ${state.mystery}`);
   return lines;
 }
@@ -2352,7 +2440,8 @@ function detailsTable(lines, total, totalText = signed(total)) {
 function showSaveDetails(name) {
   const save = { Fortitude: 'fort', Reflex: 'ref', Will: 'will' }[name];
   const b = saveBreakdown({ save, counts: view.counts, mod: view.stats.mod, featNames: view.haveFeats, traits: view.traits,
-    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save), effectTotal: view.stats.fx[save] });
+    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save), effectTotal: view.stats.fx[save],
+    extra: save === 'will' && crossWill() ? [{ label: 'Crossblooded (archetype)', value: crossWill() }] : [] });
   openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
     + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : ''));
 }
@@ -2922,7 +3011,7 @@ const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '
 
 function renderSpells(view) {
   const tables = view.casting.casting.map(c => ({
-    c, spells: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores, extraSlot: extraSlotOn(c.cls.id) }),
+    c, spells: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores, extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id) }),
   }));
   $('spells-card').hidden = !tables.length;
   $('no-spells').hidden = tables.length > 0;

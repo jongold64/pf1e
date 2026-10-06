@@ -265,6 +265,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `PATH_ENTRIES` (class table entry -> name/powers/spell), `PATH_SPELLS`; bloodlines are reshaped to the same records at
   load (`data.paths`). `state.paths` = { "class|kind": id, "wizard|opposition": [names] } (older `state.bloodlines`
   migrates in load()). `pathPicker`, `popPath`, `pathEntry`, `pathSkills`, `pathLines` (printed sheet, with the mystery).
+  Crossblooded (`CROSSBLOODED`: sorcerer-crossblooded, bloodrager-crossblooded-rager): `rulesFor(cid)` adds a rule with
+  `slot: 'bloodline2'` (keys are "class|slot"); "class|crosspower" = { level: "bloodline id|power name" } (one of the new
+  powers or an earlier unchosen one, `crossPowerOptions`); pathEntry names the chosen power and "spell or spell";
+  bonus feats from both lists; `withCrossblooded` -2 Will (saveBreakdown `extra` line); `knownChange` -1 spells known
+  (spellsPerDay `knownChange`, passed by app.js, sheet.js and tab-spells via `app.knownChange`).
   Bloodlines: `build_aon_bloodlines.py` -> data/bloodlines.json from the AoN sorcerer and bloodrager bloodline pages (class
   skill, bonus spells with class levels, bonus feats cleaned of "*" and run-in book codes, arcana, powers: a power's level is
   the one its first two sentences name, else 1st), shown and chosen like the class paths above; `pathSkills()` is a

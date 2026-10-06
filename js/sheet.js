@@ -19,7 +19,8 @@ const table = (head, rows) => (rows.length ? `<table class="sheet-table"><thead>
 
 // parts: { app, view, name, weapons (weaponSummaries), skills ([{ name, ranks, total }]), moneyRows ([[label, value]]),
 //          featLabel(slot) -> "Weapon Focus (longsword)" or null, extraSlotOn(clsId) }
-export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLabel, extraSlotOn, domainLines = () => [], talentLines = () => [] }) {
+export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLabel, extraSlotOn, domainLines = () => [], talentLines = () => [],
+                            knownChange = () => 0 }) {
   const { state, data } = app;
   const { race, stats } = view;
   const classes = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
@@ -91,7 +92,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
 
   // Spells per day for each casting class, then the chosen spells by spell level.
   const spellTables = view.casting.casting.map(c => {
-    const t = spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: stats.scores, extraSlot: extraSlotOn(c.cls.id) });
+    const t = spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: stats.scores, extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id) });
     if (!t || !t.rows.length) return '';
     const showKnown = t.rows.some(r => r.known !== null);
     const showPrepared = t.rows.some(r => r.prepared !== null);

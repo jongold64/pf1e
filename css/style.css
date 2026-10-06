@@ -120,6 +120,12 @@ label.level-row { margin-top: 10px; justify-content: flex-start; }
 .increases .warning:empty { display: none; }
 details { margin-top: 6px; }
 summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; color: var(--accent); }
+/* Anything that opens when tapped shows ▶ (▼ once open). A summary laid out as flex loses the browser's own arrow, so
+   it's drawn here for every one. */
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: '▶'; flex: none; margin-right: 8px; color: var(--accent); font-weight: 400; font-size: 0.75em; line-height: 1; }
+details[open] > summary::before { content: '▼'; }
 ol.features { list-style: none; padding: 0; margin: 6px 0 0; }
 ol.features li { padding: 3px 0; border-bottom: 1px solid var(--border); }
 ol.features b { display: inline-block; min-width: 2.2em; color: var(--text); }
@@ -712,7 +718,7 @@ table.skill-why th.num { text-align: right; }
 /* A card that folds up: its heading is the summary. */
 .card-fold > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
 .card-fold > summary::-webkit-details-marker { display: none; }
-.card-fold > summary::before { content: '▸'; color: var(--accent); font-size: 1.1rem; }
+.card-fold > summary::before { content: '▸'; color: var(--accent); font-size: 1.1rem; margin-right: 0; }
 .card-fold[open] > summary::before { content: '▾'; }
 .card-fold > summary h2 { margin: 0; }
 .pop-armor-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }

@@ -700,6 +700,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);
   check('+2 longsword: 15 + 300 + 8,000', weaponCost(ls, { enh: 2 }), 8315);
 
+  // Crossblooded sorcerer: one fewer spell known of each level, not below 0.
+  const sorc = cls('sorcerer');
+  const plainKnown = spellsPerDay({ cls: sorc, level: 4, scores: { cha: 16 } }).rows.map(r => r.known);
+  check('crossblooded: one fewer spell known', spellsPerDay({ cls: sorc, level: 4, scores: { cha: 16 }, knownChange: -1 }).rows.map(r => r.known).join(),
+    plainKnown.map(n => (n === null ? null : Math.max(0, n - 1))).join());
+
   // Weapon materials (Core Rulebook / Ultimate Equipment, Special Materials).
   check('cold iron longsword: twice the price', weaponCost(ls, { material: 'cold-iron' }), 30);
   check('+1 cold iron longsword: 30 + 300 + 2,000 + 2,000', weaponCost(ls, { material: 'cold-iron', enh: 1 }), 4330);
