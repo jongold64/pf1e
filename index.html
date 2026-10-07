@@ -17,6 +17,17 @@
 <body>
   <header>
     <h1>PF1e Character Builder</h1>
+    <!-- The character buttons share the title's line (shown once the app has loaded). -->
+    <div class="char-buttons" id="char-buttons" hidden>
+      <button type="button" id="char-new">New</button>
+      <button type="button" id="char-copy">Duplicate</button>
+      <button type="button" id="char-delete">Delete</button>
+      <button type="button" id="char-export">Export</button>
+      <button type="button" id="char-import">Import</button>
+      <button type="button" id="char-print">Print</button>
+      <button type="button" id="char-search">🔍 Search</button>
+      <input type="file" id="char-file" accept=".json,application/json" hidden>
+    </div>
     <p class="subtitle" id="subtitle"></p>
   </header>
 
@@ -28,16 +39,6 @@
       <label class="char-pick" id="char-pick">Character <select id="char-select"></select></label>
       <div class="char-pick" id="char-only" hidden>Character <span class="char-current" id="char-current"></span></div>
       <label class="char-pick">Name <input id="char-name" type="text" maxlength="60" autocomplete="off"></label>
-      <div class="char-buttons">
-        <button type="button" id="char-new">New</button>
-        <button type="button" id="char-copy">Duplicate</button>
-        <button type="button" id="char-delete">Delete</button>
-        <button type="button" id="char-export">Export</button>
-        <button type="button" id="char-import">Import</button>
-        <button type="button" id="char-print">Print</button>
-        <button type="button" id="char-search">🔍 Search</button>
-        <input type="file" id="char-file" accept=".json,application/json" hidden>
-      </div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button type="button" role="tab" data-tab="character">Character</button>
@@ -418,7 +419,7 @@
           <summary>Saving, switching and printing characters</summary>
           <ul>
             <li>Everything saves automatically in this browser. Each device (laptop, tablet) keeps its own characters.</li>
-            <li>Use the <b>Character</b> list at the top to switch between characters; <b>New</b>, <b>Duplicate</b> and <b>Delete</b> are next to it.
+            <li>Use the <b>Character</b> list at the top to switch between characters; <b>New</b>, <b>Duplicate</b>, <b>Delete</b> and the other character buttons are on the title's line at the very top.
               With only one character saved, its name is shown there as plain text; the list appears once you have two or more.
               Type a <b>Name</b> to label one.</li>
             <li>To move a character to another device: <b>Export</b> saves a file; on the other device, <b>Import</b> that file.</li>

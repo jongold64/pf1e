@@ -3326,6 +3326,7 @@ async function start() {
   initRolls();
   $('loading').hidden = true;
   $('app').hidden = false;
+  $('char-buttons').hidden = false;
   render();
   showTab(location.hash.slice(1));
 }
