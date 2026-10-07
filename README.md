@@ -109,7 +109,7 @@ Weapons from after 2015 (Adventurer's Armory 2, Inner Sea Combat...) come from t
 (`origin: "aonprd"`); their Tiny and Large damage is worked out from the Core Rulebook table.
 
 **Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class
-choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base-form`), `classes` (ids), `name`, `text`,
+choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base-form`, `variant-channeling`), `classes` (ids), `name`, `text`,
 `parent` (a focused school's school), `facts` ([label, text] pairs: edicts, challenge, alignment, starting statistics...),
 `class_skills`, `spells` ([{ `level`, `name` }]) with `spells_by` (`class` or `spell` level), `powers` ([{ `name`, `level`,
 `text` }]), `hexes` (a spirit's hex names).

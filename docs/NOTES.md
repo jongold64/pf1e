@@ -265,6 +265,9 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `PATH_ENTRIES` (class table entry -> name/powers/spell), `PATH_SPELLS`; bloodlines are reshaped to the same records at
   load (`data.paths`). `state.paths` = { "class|kind": id, "wizard|opposition": [names] } (older `state.bloodlines`
   migrates in load()). `pathPicker`, `popPath`, `pathEntry`, `pathSkills`, `pathLines` (printed sheet, with the mystery).
+  Variant channeling (AoN ClericVariantChanneling page, "Name (Book): Heal: ... Harm: ...") is kind 'variant-channeling'
+  for cleric/warpriest/paladin/oracle: `VARIANT_CHANNELING` rule with `optional` (not counted by choicesLeft), `none`
+  (the empty choice's text) and `note`. The class section's "Also" row: features whose name isn't on the level table.
   Crossblooded (`CROSSBLOODED`: sorcerer-crossblooded, bloodrager-crossblooded-rager): `rulesFor(cid)` adds a rule with
   `slot: 'bloodline2'` (keys are "class|slot"); "class|crosspower" = { level: "bloodline id|power name" } (one of the new
   powers or an earlier unchosen one, `crossPowerOptions`); pathEntry names the chosen power and "spell or spell";

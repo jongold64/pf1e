@@ -1566,6 +1566,10 @@ const PATH_RULES = {
   'summoner-unchained': [{ kind: 'eidolon-subtype', label: 'Eidolon subtype', plural: 'eidolon subtypes' },
                          { kind: 'base-form', label: 'Eidolon base form', plural: 'base forms' }],
 };
+// Variant channeling: an optional choice (standard channel energy otherwise) for the classes whose channeling serves a deity.
+const VARIANT_CHANNELING = { kind: 'variant-channeling', label: 'Variant channeling', plural: 'variant channelings', optional: true, none: 'Standard channel energy',
+  note: 'Optional (Ultimate Magic): chosen once, after one part of your deity’s portfolio. Healing heals half as much but adds the effect; harming deals half damage but adds the effect (a save negates the effect only). A channel bonus or penalty is 1, 2 at 5th level and +1 every 5 levels after (5 at most). Paladins and warpriests can use it if they serve a deity, oracles with the Life mystery.' };
+for (const cid of ['cleric', 'warpriest', 'paladin', 'oracle']) PATH_RULES[cid] = [...(PATH_RULES[cid] || []), VARIANT_CHANNELING];
 // The class table entries a choice fills in: with its name, its power(s) at that level, or its spell at that level.
 const PATH_ENTRIES = {
   bloodline: { bloodline: 'name', 'bloodline power': 'powers', 'bloodline spell': 'spell' },
@@ -1659,7 +1663,7 @@ function pathEntry(cid, level, entry) {
 function choicesLeft(cls, level) {
   const { slots } = classChoiceSlots(cls.id, level);
   let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
-  for (const { path } of pathsFor(cls.id)) if (!path) n++;
+  for (const { rule, path } of pathsFor(cls.id)) if (!path && !rule.optional) n++;
   if (classicSchool(pathOf(cls.id, 'school')) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
   if (isCrossblooded(cls.id)) n += crossPowerLevels(cls.id).filter(lv => lv <= level && !crossPower(crossPicks(cls.id)[lv])).length;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
@@ -1685,8 +1689,9 @@ function pathPicker(cls, level, openFeatures) {
       : `<p class="hint">${path.name === 'Universalist' || path.parent === 'Universalist' ? 'A universalist has no opposition schools.'
           : 'An elemental school has its opposed element as its opposition school (see Details).'}</p>`;
     return `<div class="talents"><h4>${esc(rule.label)}</h4><div class="mystery-pick"><label class="row-label">${esc(rule.label)} <select data-path="${esc(key)}">
-        <option value="">Choose your ${esc(rule.label.toLowerCase())}…</option>${all.map(x => `<option value="${esc(x.id)}"${path?.id === x.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('')}</select></label>
+        <option value="">${esc(rule.none || `Choose your ${rule.label.toLowerCase()}…`)}</option>${all.map(x => `<option value="${esc(x.id)}"${path?.id === x.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('')}</select></label>
         ${path ? `<button type="button" class="skill-details" data-path-pop="${esc(path.id)}" data-path-key="${esc(key)}">Details</button>` : ''}</div>
+      ${rule.note ? `<p class="hint">${esc(rule.note)}</p>` : ''}
       ${oppPick}
       ${path?.powers.length && !(cross && rule.kind === 'bloodline') ? `<ul class="talent-slots">${path.powers.map(x => `<li${x.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(x.level))}</span>
           ${x.level <= level ? `<b>${esc(x.name)}</b>` : `<span class="muted">${esc(x.name)}</span>`}</li>`).join('')}</ul>` : ''}
@@ -1740,6 +1745,7 @@ function popPath(id, key) {
   };
   openDetail(`${b.name}${rule ? ` ${rule.label.toLowerCase().replace(/^eidolon /, '')}` : ''}`, `<p class="hint">${esc(cls?.name || cid)} ${esc(rule?.label.toLowerCase() || kind)} · ${esc(b.source)}${b.parent ? ` · focused school of ${esc(b.parent)}` : ''}${mine ? ` · your ${esc(rule?.label.toLowerCase() || kind)}` : ''}</p>
     ${paragraphs(b.text || '')}
+    ${rule?.note ? `<p class="hint">${esc(rule.note)}</p>` : ''}
     ${facts([['Class skills', b.class_skills.join(', ') || null],
              [b.spells_by === 'spell' ? 'Spells (by spell level)' : 'Bonus spells (by class level)', spells || null],
              ['Hexes', b.hexes.join(', ') || null], ...b.facts])}
@@ -2217,6 +2223,13 @@ function renderClasses(view) {
       const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch'));
       return `<li><b>${r.level}</b> <span class="terms">${[...own, ...gone, ...added].join('') || '—'}</span></li>`;
     }).join('');
+    // Class features the level table doesn't list (spontaneous casting, bonus languages, proficiencies...), each with its text.
+    const onTable = e.cls.progression.flatMap(r => r.special || []).map(x => x.toLowerCase().replace(/[\s+\-]*\d.*$/, '').trim()).filter(Boolean);
+    const offTable = (e.cls.features || []).filter(f => {
+      const n = f.name.toLowerCase();
+      return !onTable.some(t => t.startsWith(n) || n.startsWith(t));
+    });
+    const alsoRow = offTable.length ? `<li><b title="Not on the level table">Also</b> <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text)).join('')}</span></li>` : '';
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
@@ -2233,7 +2246,7 @@ function renderClasses(view) {
       ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
-      <ol class="features">${features}</ol>
+      <ol class="features">${alsoRow}${features}</ol>
     </details>`;
   }).join('');
 }

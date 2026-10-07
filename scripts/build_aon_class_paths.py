@@ -202,10 +202,25 @@ def eidolons():
     return out
 
 
+def variant_channelings():
+    """Variant channeling (Ultimate Magic and later): one page of "Air/Sky/Wind (Book pg. 28): Heal: ... Harm: ..." entries,
+    for clerics and others whose channel energy serves a deity (paladins, warpriests, Life oracles)."""
+    text = page_text(aon_page('ClericVariantChanneling', 'https://aonprd.com/ClericVariantChanneling.aspx'))
+    out = []
+    for m in re.finditer(r"\n([A-Z][A-Za-z'’/, \-]{2,60}) \(([^()]+?)\):\s*(Heal:.+)", text):
+        body = m.group(3)
+        heal, _, harm = body.partition(' Harm:')
+        r = record('variant-channeling', ['cleric', 'warpriest', 'paladin', 'oracle'], m.group(1).strip(), first_book(m.group(2)), '')
+        r['text'] = ''
+        r['facts'] = [['Heal (positive energy)', heal.replace('Heal:', '', 1).strip()], ['Harm (negative energy)', harm.strip()]]
+        out.append(r)
+    return out
+
+
 def main():
     notices = load_notices()
     out, skipped = [], []
-    for r in [*schools(), *patrons(), *spirits(), *orders(), *eidolons()]:
+    for r in [*schools(), *patrons(), *spirits(), *orders(), *eidolons(), *variant_channelings()]:
         if not r['source'] or not find_notices(notices, r['source']):
             skipped.append(f"{r['kind']} {r['name']} ({r['source'] or 'no book'})")
             continue
