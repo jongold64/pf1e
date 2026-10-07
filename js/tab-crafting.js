@@ -15,16 +15,40 @@ import { rollButton } from './roll-ui.js';
 
 const HIGH = { str: 30, dex: 30, con: 30, int: 30, wis: 30, cha: 30 };
 const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0,
-                           itemId: '', option: '', rushed: false, confirmed: new Set(), extraUnmet: 0, message: '' });
+                           itemId: '', option: '', rushed: false, confirmed: new Set(), extraUnmet: 0, message: '',
+                           wsearch: '', wslot: '' });
 
 // The two cards. Each keeps what's being planned while the page is open (not saved with the character).
 const CARDS = {
   craft: { mode: 'craft', card: 'craft-card', body: 'craft-body', form: newForm('weapon'),
            kinds: [['weapon', 'Magic weapon'], ['armor', 'Magic armor or shield'], ['spell', 'Potion, scroll or wand'],
-                   ['item', 'Magic item from the list']] },
+                   ['wondrous', 'Wondrous item'], ['item', 'Magic item from the list']] },
   buy: { mode: 'buy', card: 'buy-card', body: 'buy-body', form: newForm('weapon'),
          kinds: [['weapon', 'Magic weapon'], ['armor', 'Magic armor or shield'], ['spell', 'Potion, scroll or wand']] },
 };
+
+// Wondrous items to choose from on the Craft tab: their body slot as one word ("none" for slotless), and the ones
+// matching the search box and slot filter, by name.
+const slotOf = item => {
+  const s = String(item.slot || '').toLowerCase().replace(/<.*|\(.*|;.*/g, '').trim();
+  return !s || s === '-' || s === 'none' ? 'slotless' : s === 'wrist' ? 'wrists' : s;
+};
+function wondrousItems(app) {
+  return app.data.wondrous ??= app.data.items.filter(x => itemKind(x) === 'wondrous').sort((a, b) => a.name.localeCompare(b.name));
+}
+function wondrousMatches(app, form) {
+  const q = form.wsearch.trim().toLowerCase();
+  return wondrousItems(app).filter(x => (!form.wslot || slotOf(x) === form.wslot) && (!q || x.name.toLowerCase().includes(q)));
+}
+// The options of the wondrous item list: the matches (the chosen one kept even when it doesn't match), at most 300.
+function wondrousOptions(app, form) {
+  const list = wondrousMatches(app, form);
+  const chosen = app.data.itemsById.get(form.itemId);
+  const shown = [...(chosen && itemKind(chosen) === 'wondrous' && !list.includes(chosen) ? [chosen] : []), ...list.slice(0, 300)];
+  return `<option value="">${list.length ? `Choose one of ${list.length} item${list.length === 1 ? '' : 's'}…` : 'No items match'}</option>`
+    + shown.map(x => `<option value="${esc(x.id)}"${x.id === form.itemId ? ' selected' : ''}>${esc(x.name)}${x.price_gp ? ` (${esc(formatGp(x.price_gp))})` : ''}</option>`).join('')
+    + (list.length > 300 ? '<option disabled>… type in the search box to see more</option>' : '');
+}
 
 // The character's spellcasting: each casting class's caster level, highest spell level it can cast, and whether it
 // casts spontaneously (then a spell must be one it knows: "My spells" on the Spells tab).
@@ -216,8 +240,9 @@ function plan(app, list, c) {
     };
   }
 
-  // A listed item (craft mode only).
+  // A listed item (craft mode only): chosen in the wondrous item list here, or from the Magic Items tab.
   const item = data.itemsById.get(form.itemId);
+  if (form.kind === 'wondrous' && (!item || itemKind(item) !== 'wondrous')) return { empty: 'Choose a wondrous item above (search by name, or pick a slot).' };
   if (!item) return { empty: 'Choose an item on the Magic Items tab and press "Craft this item" in its details.' };
   const kind = itemKind(item);
   const option = form.option || item.price_options?.[0]?.label || null;
@@ -401,6 +426,16 @@ function kindControls(app, list, p, c) {
   }
   const item = data.itemsById.get(form.itemId);
   const opts = item?.price_options || [];
+  if (form.kind === 'wondrous') {
+    const slots = [...new Set(wondrousItems(app).map(slotOf))].sort((a, b) => (a === 'slotless') - (b === 'slotless') || a.localeCompare(b));
+    const chosen = item && itemKind(item) === 'wondrous' ? item : null;
+    return `<label>Search <input type="search" data-craft="wsearch" value="${esc(form.wsearch)}" placeholder="Name, e.g. cloak" autocomplete="off"></label>
+      <label>Slot <select data-craft="wslot"><option value="">Any slot</option>${slots.map(s => `<option value="${esc(s)}"${s === form.wslot ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select></label>
+      <label>Item <select data-craft="witem">${wondrousOptions(app, form)}</select></label>
+      ${chosen ? `<p><small class="muted">${esc(slotOf(chosen))} slot · caster level ${esc(chosen.cl ?? '?')} · ${esc(chosen.source || '')}</small>
+        <button type="button" class="skill-details" data-craft-item-pop="${esc(chosen.id)}">Details</button></p>
+        ${opts.length ? `<label>Version <select data-craft="option">${opts.map(o => `<option value="${esc(o.label)}"${o.label === (form.option || opts[0].label) ? ' selected' : ''}>${esc(o.label)} (${esc(formatGp(o.price_gp))})</option>`).join('')}</select></label>` : ''}` : ''}`;
+  }
   return item ? `<p><b>${esc(item.name)}</b> <small class="muted">${esc(item.category)} · caster level ${esc(item.cl ?? '?')}</small></p>
       ${opts.length ? `<label>Version <select data-craft="option">${opts.map(o => `<option value="${esc(o.label)}"${o.label === (form.option || opts[0].label) ? ' selected' : ''}>${esc(o.label)} (${esc(formatGp(o.price_gp))})</option>`).join('')}</select></label>` : ''}`
     : '';
@@ -548,6 +583,9 @@ function initCard(app, c) {
     else if (k === 'spell') { form.spell = t.value; form.cl = 0; reset(); }
     else if (k === 'cl') form.cl = Number(t.value);
     else if (k === 'option') { form.option = t.value; reset(); }
+    else if (k === 'wslot') form.wslot = t.value;
+    else if (k === 'witem') { form.itemId = t.value; form.option = ''; form.extraUnmet = 0; reset(); }
+    else if (k === 'wsearch') return;
     else if (k === 'rushed') form.rushed = t.checked;
     else if (t.dataset.craftOption !== undefined) form.abilities[Number(t.dataset.craftOption)].option = t.value;
     else if (t.dataset.craftConfirm !== undefined) {
@@ -556,7 +594,23 @@ function initCard(app, c) {
     } else return;
     redraw();
   });
+  // The wondrous item search narrows the item list as you type (the list is rebuilt in place, so the box keeps focus).
+  card.addEventListener('input', e => {
+    if (e.target.dataset.craft !== 'wsearch') return;
+    form.wsearch = e.target.value;
+    const sel = card.querySelector('[data-craft="witem"]');
+    if (sel) sel.innerHTML = wondrousOptions(app, form);
+  });
   card.addEventListener('click', e => {
+    const ip = e.target.closest('[data-craft-item-pop]');
+    if (ip) {
+      const it = app.data.itemsById.get(ip.dataset.craftItemPop);
+      if (it) app.openDetail(it.name, `<p class="hint">${esc(it.category)} · ${esc(slotOf(it))} slot · ${esc(it.source || '')}</p>
+        ${facts([['Price', it.price], ['Aura', it.aura], ['Caster level', it.cl], ['Weight', it.weight]])}
+        ${paragraphs(it.description) || '<p class="hint">The source has no description for it.</p>'}
+        ${it.construction?.requirements || it.construction?.cost ? `<h4>Construction</h4>${facts([['Requirements', it.construction.requirements], ['Cost', it.construction.cost]])}` : ''}`);
+      return;
+    }
     const ci = e.target.closest('[data-craft-info]');
     if (ci) { e.preventDefault(); craftInfo(app, c, ci.dataset.craftInfo); return; }
     const w = e.target.closest('[data-craft-why]');
