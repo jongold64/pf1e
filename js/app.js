@@ -416,7 +416,6 @@ function renderCharacterBar() {
   $('char-only').hidden = several;
   $('char-current').textContent = characterLabel(state);
   if (document.activeElement !== $('char-name')) $('char-name').value = state.name;
-  $('char-name').placeholder = characterLabel({ ...state, name: '' });
 }
 
 function switchCharacter(id, character = undefined) {
