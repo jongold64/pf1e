@@ -410,6 +410,11 @@ function renderCharacterBar() {
   $('char-select').innerHTML = roster.characters.map(c =>
     `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}</option>`).join('');
   $('char-select').value = currentId;
+  // One saved character: nothing to switch to, so its name is plain text rather than a list.
+  const several = roster.characters.length > 1;
+  $('char-pick').hidden = !several;
+  $('char-only').hidden = several;
+  $('char-current').textContent = characterLabel(state);
   if (document.activeElement !== $('char-name')) $('char-name').value = state.name;
   $('char-name').placeholder = characterLabel({ ...state, name: '' });
 }

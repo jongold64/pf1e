@@ -24,7 +24,9 @@
 
   <div id="app" hidden>
     <div class="char-bar">
-      <label class="char-pick">Character <select id="char-select"></select></label>
+      <!-- The saved characters to switch between: a list once there are two or more, otherwise just the character's name. -->
+      <label class="char-pick" id="char-pick">Character <select id="char-select"></select></label>
+      <div class="char-pick" id="char-only" hidden>Character <span class="char-current" id="char-current"></span></div>
       <label class="char-pick">Name <input id="char-name" type="text" maxlength="60" autocomplete="off"></label>
       <div class="char-buttons">
         <button type="button" id="char-new">New</button>
@@ -417,6 +419,7 @@
           <ul>
             <li>Everything saves automatically in this browser. Each device (laptop, tablet) keeps its own characters.</li>
             <li>Use the <b>Character</b> list at the top to switch between characters; <b>New</b>, <b>Duplicate</b> and <b>Delete</b> are next to it.
+              With only one character saved, its name is shown there as plain text; the list appears once you have two or more.
               Type a <b>Name</b> to label one.</li>
             <li>To move a character to another device: <b>Export</b> saves a file; on the other device, <b>Import</b> that file.</li>
             <li><b>Print</b> makes a one-page character sheet.</li>
