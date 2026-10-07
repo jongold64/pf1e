@@ -12,7 +12,7 @@ import { WEALTH_BY_LEVEL, startingGold, armorCost, entryStats, equipmentTotals, 
 import { paragraphs, ordinal } from './dom.js';
 import { abilityDamage, damageWithExtras, attackBreakdown, weaponAttack as weaponAttackForDetails, sizedWeapon, weaponWeight, bigWeaponRules, weaponLabel } from './weapons.js';
 import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, craftDC, parseRequirements, checkRequirements as checkCraftRequirements, listedCost, magicPart } from './crafting.js';
-import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown } from './rules.js';
+import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown, scoreRange, BUDGETS } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
@@ -705,6 +705,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const plainKnown = spellsPerDay({ cls: sorc, level: 4, scores: { cha: 16 } }).rows.map(r => r.known);
   check('crossblooded: one fewer spell known', spellsPerDay({ cls: sorc, level: 4, scores: { cha: 16 }, knownChange: -1 }).rows.map(r => r.known).join(),
     plainKnown.map(n => (n === null ? null : Math.max(0, n - 1))).join());
+
+  // Ability scores: point buy 7-18; Custom (entered by hand) 3-25.
+  check('point buy range', scoreRange(15).join('-'), '7-18');
+  check('custom range', scoreRange('custom').join('-'), '3-25');
+  check('custom is a budget choice', BUDGETS.some(b => b.points === 'custom'), true);
 
   // Weapon materials (Core Rulebook / Ultimate Equipment, Special Materials).
   check('cold iron longsword: twice the price', weaponCost(ls, { material: 'cold-iron' }), 30);

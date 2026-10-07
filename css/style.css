@@ -90,6 +90,7 @@ table.abilities { width: 100%; border-collapse: collapse; }
 .abilities th, .abilities td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); }
 .abilities th:first-child, .abilities td:first-child { text-align: left; }
 .abilities .base { display: inline-flex; align-items: center; gap: 6px; }
+.abilities .base-input { width: 3.5em; text-align: center; font-size: 1rem; min-height: 36px; }
 .abilities button { width: 40px; padding: 0; font-size: 1.3rem; }
 .abilities .value { min-width: 2ch; font-weight: 600; }
 .abilities .score { font-weight: 700; font-size: 1.1rem; }

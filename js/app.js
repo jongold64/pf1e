@@ -1,6 +1,6 @@
 // Page code: loads the data, builds the controls, switches tabs, and shows the results from the rules modules.
 import { levelIncreases, abilityModifier, finalScores,
-  ABILITIES, ABILITY_NAMES, BUDGETS, MIN_SCORE, MAX_SCORE, POINT_COSTS, INCREASE_LEVELS,
+  ABILITIES, ABILITY_NAMES, BUDGETS, POINT_COSTS, INCREASE_LEVELS, scoreRange,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
@@ -221,7 +221,9 @@ function load(saved) {
   // Saves from before multiclassing have one class and a level instead of a class for each level.
   if (saved && !Array.isArray(saved.classLevels)) state.classLevels = [];
   for (const a of ABILITIES) {
-    if (!(state.base[a] in POINT_COSTS)) state.base[a] = 10;
+    // Point buy: 7-18; scores entered by hand (Custom): 3-25.
+    const [lo, hi] = scoreRange(state.budget);
+    if (!(Number.isInteger(state.base[a]) && state.base[a] >= lo && state.base[a] <= hi)) state.base[a] = 10;
   }
   if (!(Number.isInteger(state.level) && state.level >= 1 && state.level <= 20)) state.level = 1;
   state.increases = INCREASE_LEVELS.map((_, i) =>
@@ -539,6 +541,7 @@ function showTab(name) {
 function buildControls() {
   $('race').innerHTML = groupedOptions(data.races, RACE_GROUPS);
   $('budget').innerHTML = BUDGETS.map(b => `<option value="${b.points}">${b.label}</option>`).join('');
+
   $('flexible').innerHTML = ABILITIES.map(a => `<option value="${a}">${ABILITY_NAMES[a]}</option>`).join('');
   $('flexible2').innerHTML = $('flexible').innerHTML;
 
@@ -555,6 +558,7 @@ function buildControls() {
       <td><span class="base">
         <button type="button" data-ability="${a}" data-step="-1" aria-label="Lower ${ABILITY_NAMES[a]}">−</button>
         <span class="value" id="base-${a}"></span>
+        <input type="number" class="base-input" id="base-input-${a}" inputmode="numeric" min="3" max="25" aria-label="${ABILITY_NAMES[a]} score" hidden>
         <button type="button" data-ability="${a}" data-step="1" aria-label="Raise ${ABILITY_NAMES[a]}">+</button>
       </span></td>
       <td id="race-${a}"></td>
@@ -923,9 +927,24 @@ function buildControls() {
     const i = Number(e.target.dataset.increase);
     update({ increases: state.increases.map((a, j) => (j === i ? e.target.value : a)) });
   });
-  $('budget').addEventListener('change', e => update({ budget: Number(e.target.value) }));
+  $('budget').addEventListener('change', e => {
+    const budget = e.target.value === 'custom' ? 'custom' : Number(e.target.value);
+    // Back to a point buy: scores entered by hand outside 7-18 come into range.
+    const [lo, hi] = scoreRange(budget);
+    update({ budget, base: Object.fromEntries(ABILITIES.map(a => [a, Math.min(hi, Math.max(lo, state.base[a]))])) });
+  });
   $('flexible').addEventListener('change', e => update({ flexible: e.target.value }));
   $('flexible2').addEventListener('change', e => update({ flexible2: e.target.value }));
+  // Custom: a box to type each base score in (rolled or given scores).
+  $('ability-rows').addEventListener('change', e => {
+    const box = e.target.closest('.base-input');
+    if (!box) return;
+    const a = box.id.replace('base-input-', '');
+    const [lo, hi] = scoreRange(state.budget);
+    const n = Math.round(Number(box.value));
+    if (box.value !== '' && Number.isFinite(n)) update({ base: { ...state.base, [a]: Math.min(hi, Math.max(lo, n)) } });
+    else box.value = state.base[a];
+  });
   $('ability-rows').addEventListener('click', e => {
     const why = e.target.closest('[data-ability-details]');
     if (why) { showAbilityDetails(why.dataset.abilityDetails); return; }
@@ -933,7 +952,8 @@ function buildControls() {
     if (!btn) return;
     const a = btn.dataset.ability;
     const next = state.base[a] + Number(btn.dataset.step);
-    if (next >= MIN_SCORE && next <= MAX_SCORE) update({ base: { ...state.base, [a]: next } });
+    const [lo, hi] = scoreRange(state.budget);
+    if (next >= lo && next <= hi) update({ base: { ...state.base, [a]: next } });
   });
 
   // Skills
@@ -1221,7 +1241,8 @@ function showAbilityDetails(a) {
   const incLevels = INCREASE_LEVELS.filter((lv, i) => state.level >= lv && state.increases[i] === a);
   const fx = countedBonuses(activeBonuses(state.buffs, view.customAll).filter(x => x.target === a));
   const rows = [
-    [`Base (point buy, costs ${POINT_COSTS[state.base[a]]} point${Math.abs(POINT_COSTS[state.base[a]]) === 1 ? '' : 's'})`, String(state.base[a])],
+    [state.budget === 'custom' ? 'Base (entered by hand)'
+      : `Base (point buy, costs ${POINT_COSTS[state.base[a]]} point${Math.abs(POINT_COSTS[state.base[a]]) === 1 ? '' : 's'})`, String(state.base[a])],
     ...(racial ? [[`${race.name}${race.flexible_ability_bonus ? ' (your choice of ability)' : ''}`, signed(racial)]] : []),
     ...(incLevels.length ? [[`Ability increase${incLevels.length > 1 ? 's' : ''} at level ${incLevels.join(', ')}`, signed(incLevels.length)]] : []),
     ...fx.map(x => [`${x.source} (${x.type})${x.counts ? '' : ': doesn\u2019t count, a bigger bonus of this type is on'}`, x.counts ? signed(x.value) : `(${signed(x.value)})`]),
@@ -2319,10 +2340,16 @@ function render() {
   renderCharacterBar();
 
   // Point buy
-  const spent = pointsSpent(state.base);
-  const left = state.budget - spent;
-  $('points').textContent = left >= 0 ? `${spent} spent, ${left} left` : `${spent} spent, ${-left} over budget`;
-  $('points').classList.toggle('over', left < 0);
+  const custom = state.budget === 'custom';
+  if (custom) {
+    $('points').textContent = 'Scores entered by hand (rolled or given), 3 to 25: no points counted.';
+    $('points').classList.remove('over');
+  } else {
+    const spent = pointsSpent(state.base);
+    const left = state.budget - spent;
+    $('points').textContent = left >= 0 ? `${spent} spent, ${left} left` : `${spent} spent, ${-left} over budget`;
+    $('points').classList.toggle('over', left < 0);
+  }
 
   // Ability rows
   $('flexible-row').hidden = !race.flexible_ability_bonus;
@@ -2330,7 +2357,10 @@ function render() {
   const adj = racialAdjustments(race, view.flexibleChoice);
   for (const a of ABILITIES) {
     $(`base-${a}`).textContent = state.base[a];
-    $(`base-${a}`).title = `Costs ${POINT_COSTS[state.base[a]]} points`;
+    $(`base-${a}`).title = custom ? 'Entered by hand' : `Costs ${POINT_COSTS[state.base[a]]} points`;
+    $(`base-${a}`).hidden = custom;
+    $(`base-input-${a}`).hidden = !custom;
+    if (document.activeElement !== $(`base-input-${a}`)) $(`base-input-${a}`).value = state.base[a];
     $(`race-${a}`).textContent = adj[a] ? signed(adj[a]) : '';
     $(`inc-${a}`).textContent = stats.increases[a] ? signed(stats.increases[a]) : '';
     $(`score-${a}`).textContent = stats.scores[a];

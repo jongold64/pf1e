@@ -19,7 +19,13 @@ export const BUDGETS = [
   { points: 15, label: 'Standard fantasy (15)' },
   { points: 20, label: 'High fantasy (20)' },
   { points: 25, label: 'Epic fantasy (25)' },
+  // Scores typed in by hand (rolled, or given by the GM): no points counted.
+  { points: 'custom', label: 'Custom (enter scores: rolled or given)' },
 ];
+// The base scores allowed: point buy 7-18; entered by hand 3-25.
+export const CUSTOM_MIN = 3;
+export const CUSTOM_MAX = 25;
+export const scoreRange = budget => (budget === 'custom' ? [CUSTOM_MIN, CUSTOM_MAX] : [MIN_SCORE, MAX_SCORE]);
 
 // Size modifier to AC and attack rolls.
 export const SIZE_AC = { Fine: 8, Diminutive: 4, Tiny: 2, Small: 1, Medium: 0, Large: -1, Huge: -2 };
