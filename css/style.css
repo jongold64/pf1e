@@ -38,12 +38,10 @@ body {
   line-height: 1.4;
 }
 
-/* The title with the character buttons on its line; the race and class under it. The buttons share what's left of the
+/* The title with the character buttons on its line (the race and class show in the Character field below). The buttons share what's left of the
    line, their text shrinking with the screen so all seven fit; on a phone-narrow screen they wrap below the title. */
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; max-width: 900px; margin: 0 auto 12px; }
 h1 { margin: 0; font-size: 1.5rem; color: var(--accent); white-space: nowrap; flex: none; }
-.subtitle { margin: 0; color: var(--muted); }
-header .subtitle { flex-basis: 100%; }
 header .char-buttons { flex: 1 1 0; min-width: 0; display: flex; flex-wrap: nowrap; gap: 4px; }
 header .char-buttons[hidden] { display: none; }
 header .char-buttons button { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 0 4px; white-space: nowrap;

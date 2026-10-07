@@ -2341,7 +2341,6 @@ function render() {
 
   renderAlternates(data.races.find(r => r.id === state.race));
   renderClasses(view);
-  $('subtitle').textContent = `${race.name} ${view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')}`;
   renderCharacterBar();
 
   // Point buy
