@@ -217,10 +217,35 @@ def variant_channelings():
     return out
 
 
+def feat_list(text):
+    """'Far Shot, Point-Blank Shot, Precise Shot, and Rapid Shot' -> names (commas inside brackets kept)."""
+    return [f.strip().rstrip('.') for f in re.split(r',\s*(?:and\s+)?(?![^()]*\))|\s+and\s+(?![^()]*\))', text) if f.strip()]
+
+
+def combat_styles():
+    """Ranger combat styles: one page of "ArcherySource Core Rulebook pg. 65" sections, each listing its combat style feats
+    and the ones it adds at 6th and 10th level."""
+    text = page_text(aon_page('RangerCombatStyles', 'https://aonprd.com/RangerCombatStyles.aspx'))
+    out = []
+    for title, book, body in sections(text):
+        first = re.search(r'following list whenever he gains a combat style feat:\s*(.+?)\.\s', body)
+        if not first:
+            continue
+        tiers = {2: feat_list(first.group(1))}
+        for lv, names in re.findall(r'At (\d+)(?:st|nd|rd|th) level, he adds (.+?) to the list', body):
+            tiers[int(lv)] = feat_list(names)
+        r = record('combat-style', ['ranger'], title, book, body)
+        r['text'] = intro(body)
+        r['style_feats'] = {str(k): v for k, v in sorted(tiers.items())}
+        r['facts'] = [[f'Feats from {k}{"nd" if k == 2 else "th"} level', ', '.join(v)] for k, v in sorted(tiers.items())]
+        out.append(r)
+    return out
+
+
 def main():
     notices = load_notices()
     out, skipped = [], []
-    for r in [*schools(), *patrons(), *spirits(), *orders(), *eidolons(), *variant_channelings()]:
+    for r in [*schools(), *patrons(), *spirits(), *orders(), *eidolons(), *variant_channelings(), *combat_styles()]:
         if not r['source'] or not find_notices(notices, r['source']):
             skipped.append(f"{r['kind']} {r['name']} ({r['source'] or 'no book'})")
             continue

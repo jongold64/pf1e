@@ -7,7 +7,7 @@ import { levelIncreases, abilityModifier, finalScores,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
-  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied, setBloodlineFeats,
+  repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied, setBloodlineFeats, setStyleFeats,
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
@@ -131,7 +131,7 @@ const state = {
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
   shieldMw: false,
   // Animal companion: animal id (data/companions.json), name, ability increases ('str'...), feat names, tricks, skill ranks.
-  companion: { animal: '', name: '', increases: [], feats: [], tricks: [], skills: {} },
+  companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0 },
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -287,6 +287,11 @@ function load(saved) {
     name: String(comp.name || '').slice(0, 40),
     increases: list(comp.increases).slice(0, 4).map(a => (['str', 'dex', 'con', 'int', 'wis', 'cha'].includes(a) ? a : 'str')),
     feats: list(comp.feats).slice(0, 8).map(n => String(n || '')),
+    // The natural attack each feat is for (Weapon Focus, Improved Natural Attack), by feat position.
+    featPicks: list(comp.featPicks).slice(0, 8).map(n => String(n || '')),
+    // Barding: an armor id from data/armor.json and its enhancement bonus.
+    armorId: data.armorById.has(comp.armorId) && data.armorById.get(comp.armorId).category !== 'shield' ? comp.armorId : '',
+    armorEnh: Number.isInteger(comp.armorEnh) && comp.armorEnh >= 0 && comp.armorEnh <= 5 ? comp.armorEnh : 0,
     tricks: [...new Set(list(comp.tricks).filter(t => TRICKS.includes(t)))],
     skills: Object.fromEntries(Object.entries(comp.skills && typeof comp.skills === 'object' ? comp.skills : {})
       .filter(([n, r]) => ANIMAL_SKILLS.includes(n) && Number.isInteger(r) && r > 0 && r <= 20)),
@@ -1369,6 +1374,7 @@ function computeView() {
     .map(([a, v]) => [a, abilityModifier(v + (levelIncreases(classLevels.length, state.increases)[a] || 0))]));
   setEffectMods(plainMods);
   // Bloodline feat slots take only the chosen bloodline's bonus feats.
+  setStyleFeats(Object.fromEntries(['ranger'].map(cid => [cid, pathOf(cid, 'combat-style')?.style_feats]).filter(([, f]) => f)));
   setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats
     && [...pathOf(cid, 'bloodline').bonus_feats, ...(isCrossblooded(cid) ? pathOf(cid, 'bloodline2')?.bonus_feats || [] : [])]]).filter(([, f]) => f)));
   const fx = effectTotals(state.buffs, customAll);
@@ -1410,7 +1416,11 @@ function computeView() {
     featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
     classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
   };
-  const ctx = featContext({ race, counts, casting: casting.casting, scores: plainScores, bab: stats.bab[0], haveFeats, skillRanks, ...cfArgs });
+  // The animal companion's effective druid level for a set of class levels (domains with the Animal Companion power count).
+  const companionFor = cs => companionLevel(cs, { natureBond: state.natureBond, animalDomain: cid => (state.domains[cid] || [])
+    .some(id => { const d = data.domainsById.get(id); return d && domainGrants(d, data.domainsById).powers.some(p => p.name === 'Animal Companion'); }) });
+  const ctx = featContext({ race, counts, casting: casting.casting, scores: plainScores, bab: stats.bab[0], haveFeats, skillRanks, ...cfArgs,
+                           companion: companionFor(counts).level });
 
   // The character as it was at an earlier level, for feats taken then and for prestige class requirements:
   // BAB, saves, spellcasting and ability increases from those levels, feats from slots reached by then (and free
@@ -1431,7 +1441,8 @@ function computeView() {
       ];
       const ranks = Object.fromEntries(Object.entries(skillRanks).map(([n, r]) => [n, Math.min(r, lv)]));
       contexts.set(key, featContext({ race, counts: beforeCounts, casting: castingClasses(beforeCounts, state.casterChoices).casting,
-                                     scores: beforeStats.scores, bab: beforeStats.bab[0], haveFeats: feats, skillRanks: ranks, ...cfArgs }));
+                                     scores: beforeStats.scores, bab: beforeStats.bab[0], haveFeats: feats, skillRanks: ranks, ...cfArgs,
+                                     companion: companionFor(beforeCounts).level }));
     }
     return contexts.get(key);
   };
@@ -1458,8 +1469,7 @@ function computeView() {
     load, fx, size, flawFx, customAll,
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
-    companion: companionLevel(counts, { natureBond: state.natureBond, animalDomain: cid => (state.domains[cid] || [])
-      .some(id => { const d = data.domainsById.get(id); return d && domainGrants(d, data.domainsById).powers.some(p => p.name === 'Animal Companion'); }) }),
+    companion: companionFor(counts),
   };
 }
 
@@ -1609,6 +1619,9 @@ const PATH_RULES = {
 const VARIANT_CHANNELING = { kind: 'variant-channeling', label: 'Variant channeling', plural: 'variant channelings', optional: true, none: 'Standard channel energy',
   note: 'Optional (Ultimate Magic): chosen once, after one part of your deity’s portfolio. Healing heals half as much but adds the effect; harming deals half damage but adds the effect (a save negates the effect only). A channel bonus or penalty is 1, 2 at 5th level and +1 every 5 levels after (5 at most). Paladins and warpriests can use it if they serve a deity, oracles with the Life mystery.' };
 for (const cid of ['cleric', 'warpriest', 'paladin', 'oracle']) PATH_RULES[cid] = [...(PATH_RULES[cid] || []), VARIANT_CHANNELING];
+// A ranger's combat style (chosen at 2nd level): its feats are the ones his combat style feat slots take.
+PATH_RULES.ranger = [{ kind: 'combat-style', label: 'Combat style', plural: 'combat styles', fromLevel: 2,
+  note: 'Chosen at 2nd level. Combat style feats (2nd, 6th, 10th, 14th and 18th level) come from its list, without their prerequisites; the list grows at 6th and 10th level.' }];
 // The class table entries a choice fills in: with its name, its power(s) at that level, or its spell at that level.
 const PATH_ENTRIES = {
   bloodline: { bloodline: 'name', 'bloodline power': 'powers', 'bloodline spell': 'spell' },
@@ -1702,7 +1715,7 @@ function pathEntry(cid, level, entry) {
 function choicesLeft(cls, level) {
   const { slots } = classChoiceSlots(cls.id, level);
   let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
-  for (const { rule, path } of pathsFor(cls.id)) if (!path && !rule.optional) n++;
+  for (const { rule, path } of pathsFor(cls.id)) if (!path && !rule.optional && !(rule.fromLevel > level)) n++;
   if (classicSchool(pathOf(cls.id, 'school')) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
   if (isCrossblooded(cls.id)) n += crossPowerLevels(cls.id).filter(lv => lv <= level && !crossPower(crossPicks(cls.id)[lv])).length;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;

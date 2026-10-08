@@ -9,7 +9,26 @@ import { skillInfo } from './skills.js';
 // Animal skills (Core Rulebook): an animal companion can put ranks only in these, and they're its class skills.
 export const ANIMAL_SKILLS = ['Acrobatics', 'Climb', 'Escape Artist', 'Fly', 'Intimidate', 'Perception', 'Stealth', 'Survival', 'Swim'];
 // Tricks an animal can learn (Core Rulebook, Handle Animal).
-export const TRICKS = ['Attack', 'Come', 'Defend', 'Down', 'Fetch', 'Guard', 'Heel', 'Perform', 'Seek', 'Stay', 'Track', 'Work'];
+// "Attack (all creatures)": Attack taught a second time, so the animal attacks any creature, undead and aberrations too
+// (Handle Animal: it counts as two tricks, the first being Attack).
+export const TRICKS = ['Attack', 'Attack (all creatures)', 'Come', 'Defend', 'Down', 'Fetch', 'Guard', 'Heel', 'Perform', 'Seek', 'Stay', 'Track', 'Work'];
+// Feats a companion takes for one of its natural attacks.
+export const ATTACK_FEATS = ['Weapon Focus', 'Improved Natural Attack'];
+
+// Barding (Core Rulebook, Armor for Unusual Creatures): a nonhumanoid's armor costs and weighs this much times the
+// listed armor; masterwork and magic cost the same as usual. Tiny or smaller creatures get half the armor bonus.
+const BARDING_COST = { Fine: 1, Diminutive: 1, Tiny: 1, Small: 2, Medium: 2, Large: 4, Huge: 8, Gargantuan: 16, Colossal: 32 };
+const BARDING_WEIGHT = { Fine: 0.1, Diminutive: 0.1, Tiny: 0.1, Small: 0.5, Medium: 1, Large: 2, Huge: 5, Gargantuan: 8, Colossal: 12 };
+export function bardingCost(armor, size, enh = 0) {
+  return (armor.price_gp || 0) * (BARDING_COST[size] || 2) + (enh > 0 ? 150 + enh * enh * 1000 : 0);
+}
+export const bardingWeight = (armor, size) => (armor.weight_lbs || 0) * (BARDING_WEIGHT[size] || 1);
+// The companion's size at an effective druid level (its advancement can make it bigger).
+export const companionSize = (animal, level) => (animal.advancement && level >= animal.advancement.level ? animal.advancement.size : null) || animal.size;
+// Damage one step up (Improved Natural Attack), as a Medium weapon's dice become a Large one's.
+const STEP_UP = { '1d2': '1d3', '1d3': '1d4', '1d4': '1d6', '1d6': '1d8', '1d8': '2d6', '1d10': '2d8', '1d12': '3d6', '2d4': '2d6', '2d6': '3d6', '2d8': '3d8', '3d6': '4d6' };
+// Speed in medium or heavy armor (barding too): 20 -> 15, 30 -> 20, 40 -> 30, 50 -> 35, 60 -> 40.
+const ARMORED_SPEED = { 20: 15, 30: 20, 40: 30, 50: 35, 60: 40 };
 
 // Natural attacks that are secondary (Bestiary, Universal Monster Rules); the Horse marks its hooves with *.
 const SECONDARY = /^(hoof|hooves|tentacles?|tail slap|wings?|pincers?)$/;
@@ -82,7 +101,18 @@ export function companionStats(animal, level, progression, choices = {}) {
   const sizeAc = SIZE_AC[size] ?? 0;
   const natural = animal.natural_armor + (adv?.natural_armor || 0) + row.natural_armor + (has('Improved Natural Armor') ? 1 : 0);
   const dodge = fb.dodgeAc;
-  const ac = 10 + natural + mod.dex + sizeAc + dodge;
+  // Barding (choices.armor = { item, enh }): its armor bonus (half for Tiny or smaller) plus enhancement, its max Dex,
+  // and its check penalty (1 less if masterwork or magic) on Str and Dex skills, and on attacks too without the Armor
+  // Proficiency feat for its kind.
+  const barding = choices.armor?.item || null;
+  const bEnh = choices.armor?.enh || 0;
+  const tiny = ['Fine', 'Diminutive', 'Tiny'].includes(size);
+  const armorAc = barding ? (tiny ? Math.floor(barding.bonus / 2) : barding.bonus) + bEnh : 0;
+  const profFeat = barding ? `Armor Proficiency, ${barding.category[0].toUpperCase()}${barding.category.slice(1)}` : '';
+  const armorProficient = !barding || has(profFeat);
+  const acp = barding ? Math.min(0, (barding.check_penalty || 0) + (bEnh > 0 || choices.armor?.mw ? 1 : 0)) : 0;
+  const dexAc = barding && barding.max_dex !== null && barding.max_dex !== undefined ? Math.min(mod.dex, barding.max_dex) : mod.dex;
+  const ac = 10 + natural + armorAc + dexAc + sizeAc + dodge;
   const cmSize = -sizeAc;
 
   // Natural attacks: primary ones at BAB + Str (Dex with Weapon Finesse if higher) + size; secondary ones at -5
@@ -92,19 +122,27 @@ export function companionStats(animal, level, progression, choices = {}) {
   const totalAttacks = real.reduce((n, x) => n + x.count, 0);
   const multiattack = level >= 9 && totalAttacks >= 3 || has('Multiattack');
   const hitMod = has('Weapon Finesse') ? Math.max(mod.str, mod.dex) : mod.str;
+  // Feats taken for one natural attack: choices.featPicks[i] names the attack for feats[i].
+  const pickedFor = (feat, name) => feats.some((f, i) => f === feat && (choices.featPicks || [])[i] === name);
+  const armorAttack = armorProficient ? 0 : acp;
   const lines = attacks.map(x => {
     const single = totalAttacks === 1 && !x.secondary;
     const strDamage = x.secondary ? (mod.str > 0 ? Math.floor(mod.str / 2) : mod.str) : single && mod.str > 0 ? Math.floor(mod.str * 1.5) : mod.str;
-    const bonus = row.bab + hitMod + sizeAc + (x.secondary ? (multiattack ? -2 : -5) : 0);
+    const focus = pickedFor('Weapon Focus', x.name) ? 1 : 0;
+    const dice = pickedFor('Improved Natural Attack', x.name) && STEP_UP[x.dice] ? STEP_UP[x.dice] : x.dice;
+    const bonus = row.bab + hitMod + sizeAc + (x.secondary ? (multiattack ? -2 : -5) : 0) + focus + armorAttack;
     const finesse = has('Weapon Finesse') && mod.dex > mod.str;
     const why = {
       attack: [{ label: 'Base attack bonus', value: row.bab }, { label: finesse ? 'Dexterity modifier (Weapon Finesse)' : 'Strength modifier', value: hitMod },
         ...(sizeAc ? [{ label: `Size (${size})`, value: sizeAc }] : []),
-        ...(x.secondary ? [{ label: multiattack ? 'Secondary attack (with Multiattack)' : 'Secondary attack', value: multiattack ? -2 : -5 }] : [])],
-      damage: [{ label: 'Dice', text: x.dice || '—' }, { label: x.secondary ? 'Half Strength (secondary attack)' : single && mod.str > 0
+        ...(x.secondary ? [{ label: multiattack ? 'Secondary attack (with Multiattack)' : 'Secondary attack', value: multiattack ? -2 : -5 }] : []),
+        ...(focus ? [{ label: `Feat: Weapon Focus (${x.name})`, value: 1 }] : []),
+        ...(armorAttack ? [{ label: `Barding without ${profFeat}`, value: armorAttack }] : [])],
+      damage: [{ label: dice !== x.dice ? `Dice (Improved Natural Attack: ${x.dice} becomes ${dice})` : 'Dice', text: dice || '—' },
+        { label: x.secondary ? 'Half Strength (secondary attack)' : single && mod.str > 0
         ? 'Strength × 1 1/2 (its only natural attack)' : 'Strength', value: strDamage }],
     };
-    return { ...x, bonus, damageBonus: strDamage, why, damage: x.dice ? `${x.dice}${strDamage ? (strDamage > 0 ? `+${strDamage}` : strDamage) : ''}` : null };
+    return { ...x, dice, bonus, damageBonus: strDamage, why, damage: dice ? `${dice}${strDamage ? (strDamage > 0 ? `+${strDamage}` : strDamage) : ''}` : null };
   });
 
   // Skills: ranks only in animal skills (at most HD each), all class skills.
@@ -113,10 +151,12 @@ export function companionStats(animal, level, progression, choices = {}) {
     const info = skillInfo(name);
     const ranks = Math.min(row.hd, skillRanks[name] || 0);
     const sizeSkill = (name === 'Stealth' ? STEALTH_SIZE[size] || 0 : 0) + (name === 'Fly' ? FLY_SIZE[size] || 0 : 0);
-    const total = ranks + mod[info.ability] + (ranks > 0 ? 3 : 0) + sizeSkill;
+    const armorSkill = info.acp ? acp : 0;
+    const total = ranks + mod[info.ability] + (ranks > 0 ? 3 : 0) + sizeSkill + armorSkill;
     const why = [{ label: 'Ranks', value: ranks }, { label: `${ABILITY_NAME[info.ability]} modifier`, value: mod[info.ability] },
       ...(ranks > 0 ? [{ label: 'Class skill (animal skills, with at least 1 rank)', value: 3 }] : []),
-      ...(sizeSkill ? [{ label: `Size (${size})`, value: sizeSkill }] : [])];
+      ...(sizeSkill ? [{ label: `Size (${size})`, value: sizeSkill }] : []),
+      ...(armorSkill ? [{ label: 'Barding check penalty', value: armorSkill }] : [])];
     return { name, ranks, total, ability: info.ability, why };
   });
   const ranksUsed = skills.reduce((n, s) => n + s.ranks, 0);
@@ -134,7 +174,8 @@ export function companionStats(animal, level, progression, choices = {}) {
     ac: [{ label: 'Base', ac: 10, touch: 10, flat: 10 },
       { label: `Natural armor (${animal.name} ${animal.natural_armor >= 0 ? '+' : ''}${animal.natural_armor}${adv?.natural_armor ? `, advancement +${adv.natural_armor}` : ''}${row.natural_armor ? `, companion table +${row.natural_armor}` : ''}${has('Improved Natural Armor') ? ', Improved Natural Armor +1' : ''})`,
         ac: natural, touch: null, flat: natural },
-      { label: 'Dexterity modifier', ac: mod.dex, touch: mod.dex, flat: mod.dex < 0 ? mod.dex : null },
+      ...(barding ? [{ label: `Barding: ${barding.name}${bEnh ? ` +${bEnh}` : ''}${tiny ? ' (half for Tiny or smaller)' : ''}`, ac: armorAc, touch: null, flat: armorAc }] : []),
+      { label: dexAc !== mod.dex ? `Dexterity modifier (barding allows at most +${barding.max_dex})` : 'Dexterity modifier', ac: dexAc, touch: dexAc, flat: dexAc < 0 ? dexAc : null },
       ...(sizeAc ? [{ label: `Size (${size})`, ac: sizeAc, touch: sizeAc, flat: sizeAc }] : []),
       ...(dodge ? [{ label: 'Feat: Dodge', ac: dodge, touch: dodge, flat: null }] : [])],
     fort: saveWhy('fort', 'con', 'Great Fortitude'),
@@ -150,12 +191,16 @@ export function companionStats(animal, level, progression, choices = {}) {
   return {
     level, row, size, scores, mod, hp, hd: row.hd, bab: row.bab,
     fort: row.fort + mod.con + fb.fort, ref: row.ref + mod.dex + fb.ref, will: row.will + mod.wis + fb.will,
-    natural, ac, touch: ac - natural, flatFooted: ac - Math.max(0, mod.dex) - dodge,
+    natural, ac, touch: ac - natural - armorAc, flatFooted: ac - Math.max(0, dexAc) - dodge,
+    barding: barding ? { item: barding, enh: bEnh, ac: armorAc, acp, proficient: armorProficient, profFeat } : null,
     cmb: row.bab + mod.str + cmSize, cmd: 10 + row.bab + mod.str + mod.dex + cmSize + dodge,
     init: mod.dex + (has('Improved Initiative') ? 4 : 0),
     attacks: lines, multiattack, secondAttackNote: level >= 9 && totalAttacks < 3
       ? 'Multiattack: with fewer than three natural attacks, it gets a second attack with its primary natural weapon at -5.' : '',
-    speed: animal.speed,
+    // Medium or heavy barding slows it (land speed); a flying animal can't fly in it.
+    speed: barding && ['medium', 'heavy'].includes(barding.category)
+      ? String(animal.speed || '').replace(/^(\d+)/, n => String(ARMORED_SPEED[Number(n)] ?? n)) + (/fly/i.test(animal.speed || '') ? ' (can\u2019t fly in medium or heavy barding)' : '')
+      : animal.speed,
     skills, ranksUsed, ranksTotal: row.skills,
     featCount: row.feats, tricksBonus: row.tricks,
     increasesAllowed: allowed,

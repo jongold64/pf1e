@@ -18,7 +18,7 @@ import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
-import { companionLevel, companionStats, parseAttacks } from './companion.js';
+import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -38,7 +38,7 @@ import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
 import { spellFailureByClass } from './armor.js';
-import { slotCharacterLevel, setBloodlineFeats } from './feats.js';
+import { slotCharacterLevel, setBloodlineFeats, setStyleFeats } from './feats.js';
 
 const results = [];
 function check(name, actual, expected) {
@@ -1321,6 +1321,43 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('ape at 9th: Multiattack with 3 attacks', companionStats(animal('ape'), 9, comp.progression).multiattack, true);
   check('attacks parsed with riders', JSON.stringify(parseAttacks('bite (1d6 plus trip), 2 claws (1d4)').map(x => [x.count, x.name, x.dice, x.rider])),
     JSON.stringify([[1, 'bite', '1d6', 'trip'], [2, 'claws', '1d4', '']]));
+  // Barding: a wolf at 1st (AC 14: natural +2... Dex +2) in a chain shirt (+4, max Dex 4, check -2).
+  const armorData = await fetch('data/armor.json').then(r => r.json());
+  const shirt = armorData.find(x => x.id === 'chain-shirt');
+  const scale = armorData.find(x => x.id === 'scale-mail');
+  const wb = companionStats(animal('wolf'), 1, comp.progression, { armor: { item: shirt, enh: 0 } });
+  check('wolf in a chain shirt: AC 18, touch unchanged', `${wb.ac} ${wb.touch}`, `${w1.ac + 4} ${w1.touch}`);
+  check('no Armor Proficiency, Light: -2 on its bite', wb.attacks[0].bonus, w1.attacks[0].bonus - 2);
+  check('with the feat: no attack penalty', companionStats(animal('wolf'), 1, comp.progression, { feats: ['Armor Proficiency, Light'], armor: { item: shirt, enh: 0 } }).attacks[0].bonus, w1.attacks[0].bonus);
+  check('scale mail barding slows a wolf (50 ft.) to 35 ft.', /^35 ft/.test(companionStats(animal('wolf'), 1, comp.progression, { armor: { item: scale, enh: 0 } }).speed), true);
+  check('chain shirt barding for a Medium animal: x2 cost', bardingCost(shirt, 'Medium'), shirt.price_gp * 2);
+  check('for a Large animal: x4, +1 adds 1,150 gp', bardingCost(shirt, 'Large', 1), shirt.price_gp * 4 + 1150);
+  // Weapon Focus and Improved Natural Attack for the bite.
+  const wf = companionStats(animal('wolf'), 3, comp.progression, { feats: ['Weapon Focus', 'Improved Natural Attack'], featPicks: ['bite', 'bite'] });
+  const w3 = companionStats(animal('wolf'), 3, comp.progression);
+  check('Weapon Focus (bite): +1', wf.attacks[0].bonus, w3.attacks[0].bonus + 1);
+  check('Improved Natural Attack (bite): 1d6 becomes 1d8', wf.attacks[0].dice, '1d8');
+}
+
+// "Animal companion" prerequisites (Boon Companion) met by any class feature that gives one (a ranger's hunter's bond).
+{
+  const ranger = classes.find(c => c.id === 'ranger');
+  const base = { counts: [{ cls: ranger, level: 5 }], haveFeats: new Set(), featureWords: null };
+  check('ranger 5 with a companion: animal companion met', classFeatureStatus('animal companion', { ...base, companion: 2 }), 'met');
+  check('Boon Companion text form', classFeatureStatus('Animal companion class feature or familiar class feature', { ...base, companion: 2 }), 'met');
+}
+
+// Ranger combat style feat slots: the style's feats up to the slot's level; prerequisites waived.
+{
+  const ranger = classes.find(c => c.id === 'ranger');
+  const styleSlot = lv => featSlots({ cls: ranger, level: lv }).find(s => s.ruleId === 'rangerStyle' && s.level === lv);
+  setStyleFeats({ ranger: { 2: ['Far Shot', 'Point-Blank Shot', 'Precise Shot', 'Rapid Shot'], 6: ['Manyshot'], 10: ['Pinpoint Targeting'] } });
+  check('archery at 2nd: Rapid Shot', slotAccepts(styleSlot(2), feat('Rapid Shot')), true);
+  check('archery at 2nd: not Manyshot yet', slotAccepts(styleSlot(2), feat('Manyshot')), false);
+  check('archery at 6th: Manyshot', slotAccepts(styleSlot(6), feat('Manyshot')), true);
+  check('archery: not Power Attack', slotAccepts(styleSlot(6), feat('Power Attack')), false);
+  setStyleFeats({});
+  check('no style chosen: any feat', slotAccepts(styleSlot(2), feat('Power Attack')), true);
 }
 
 // Saving throw details.

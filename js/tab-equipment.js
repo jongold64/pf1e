@@ -6,6 +6,7 @@ import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
 import { showArmorWhy } from './tab-armor.js';
 import { carryingCapacity, encumbrance } from './rules.js';
+import { bardingCost, companionSize } from './companion.js';
 
 let selectedId = null;
 let listed = false;
@@ -108,7 +109,12 @@ export async function renderEquipment(app, view) {
     plain: armorCost(a, state[`${k}Enh`], state[`${k}Mw`]),
     weight: (a.weight_lbs || 0) * sizeFactor, crafted: state[`${k}Crafted`],
   }));
-  const armorSpend = wornItems.reduce((n, x) => n + x.cost, 0);
+  // The animal companion's barding (bought like armor; the animal carries it, not you).
+  const compAnimal = view.companion?.level && data.companions?.animals.find(a => a.id === state.companion.animal);
+  const barding = compAnimal && data.armorById.get(state.companion.armorId);
+  const bardingRow = barding ? { name: `Barding for ${state.companion.name || compAnimal.name}: ${barding.name}${state.companion.armorEnh ? ` +${state.companion.armorEnh}` : ''}`,
+    cost: bardingCost(barding, companionSize(compAnimal, view.companion.level), state.companion.armorEnh || 0), weight: null } : null;
+  const armorSpend = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);
   const gearSpend = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
   const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
@@ -140,7 +146,8 @@ export async function renderEquipment(app, view) {
                                        cost: craftedItemCost(e) * e.qty, note: e.bought ? '' : 'crafting cost', weight: null })),
   ];
   const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), weight: weaponWeight(w, e, view.race.size) }));
-  const armorRows = wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.crafted ? 'crafted: magic at half price' : '', weight: x.weight }));
+  const armorRows = [...wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.crafted ? 'crafted: magic at half price' : '', weight: x.weight })),
+    ...(bardingRow ? [{ label: bardingRow.name, cost: bardingRow.cost, note: 'worn by your companion', weight: null }] : [])];
   const money = rows => rows.map(r => ({ label: r.label, text: formatGp(r.cost), note: r.note }));
   moneyDetails = {
     armor: { title: `Armor and shield: ${formatGp(armorSpend)}`, rows: money(armorRows), total: formatGp(armorSpend) },
@@ -152,7 +159,7 @@ export async function renderEquipment(app, view) {
       { label: 'Armor and shield', text: `− ${formatGp(armorSpend)}` }, { label: 'Equipment', text: `− ${formatGp(gearSpend)}` },
       { label: 'Weapons', text: `− ${formatGp(weaponSpend)}` }, { label: 'Magic items', text: `− ${formatGp(magic.cost)}` }] },
     weight: { title: `Weight carried: ${formatLbs(carriedWeight)}`, total: formatLbs(carriedWeight),
-      rows: [...armorRows, ...weaponRows, ...gearRows, ...magicRows.filter(r => r.weight !== null)]
+      rows: [...armorRows.filter(r => r.weight !== null), ...weaponRows, ...gearRows, ...magicRows.filter(r => r.weight !== null)]
         .map(r => ({ label: r.label, text: r.weight === null ? 'no weight listed' : formatLbs(r.weight) })),
       note: 'Coins are not counted.' },
   };

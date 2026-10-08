@@ -269,6 +269,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `PATH_ENTRIES` (class table entry -> name/powers/spell), `PATH_SPELLS`; bloodlines are reshaped to the same records at
   load (`data.paths`). `state.paths` = { "class|kind": id, "wizard|opposition": [names] } (older `state.bloodlines`
   migrates in load()). `pathPicker`, `popPath`, `pathEntry`, `pathSkills`, `pathLines` (printed sheet, with the mystery).
+  Combat styles (AoN RangerCombatStyles page): kind 'combat-style', `style_feats` { "2"|"6"|"10": [feat names] };
+  PATH_RULES.ranger with `fromLevel: 2`; feats.js `setStyleFeats` limits the 'rangerStyle' slots (tiers up to the slot's
+  class level). Companion: featContext `companion` (effective druid level at that point) makes "animal companion"
+  prerequisites met; companion.js `bardingCost`/`bardingWeight` (nonhumanoid table), barding in companionStats
+  (`choices.armor` = { item, enh }, built by tab-companion `companionChoices`), `featPicks` for ATTACK_FEATS, the
+  "Attack (all creatures)" trick; tab-equipment adds the barding to the armor spend (not to carried weight).
   Variant channeling (AoN ClericVariantChanneling page, "Name (Book): Heal: ... Harm: ...") is kind 'variant-channeling'
   for cleric/warpriest/paladin/oracle: `VARIANT_CHANNELING` rule with `optional` (not counted by choicesLeft), `none`
   (the empty choice's text) and `note`. The class section's "Also" row: features whose name isn't on the level table.

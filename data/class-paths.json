@@ -11041,5 +11041,1275 @@
   "powers": [],
   "hexes": [],
   "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-archery",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Archery",
+  "source": "Core Rulebook",
+  "text": "If the ranger selects archery, he can choose from the following list whenever he gains a combat style feat: Far Shot, Point-Blank Shot, Precise Shot, and Rapid Shot. At 6th level, he adds Crossbow Mastery, Improved Precise Shot, and Manyshot to the list. At 10th level, he adds Pinpoint Targeting and Shot on the Run to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Far Shot, Point-Blank Shot, Precise Shot, Rapid Shot"
+   ],
+   [
+    "Feats from 6th level",
+    "Crossbow Mastery, Improved Precise Shot, Manyshot"
+   ],
+   [
+    "Feats from 10th level",
+    "Pinpoint Targeting, Shot on the Run"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Far Shot",
+    "Point-Blank Shot",
+    "Precise Shot",
+    "Rapid Shot"
+   ],
+   "6": [
+    "Crossbow Mastery",
+    "Improved Precise Shot",
+    "Manyshot"
+   ],
+   "10": [
+    "Pinpoint Targeting",
+    "Shot on the Run"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-crossbow",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Crossbow",
+  "source": "Advanced Player's Guide",
+  "text": "If the ranger selects crossbow, he can choose from the following list whenever he gains a combat style feat: Deadly Aim, Focused Shot, Precise Shot, and Rapid Reload. At 6th level, he adds Crossbow Mastery and Improved Precise Shot to the list. At 10th level, he adds Pinpoint Targeting and Shot on the Run to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Deadly Aim, Focused Shot, Precise Shot, Rapid Reload"
+   ],
+   [
+    "Feats from 6th level",
+    "Crossbow Mastery, Improved Precise Shot"
+   ],
+   [
+    "Feats from 10th level",
+    "Pinpoint Targeting, Shot on the Run"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Deadly Aim",
+    "Focused Shot",
+    "Precise Shot",
+    "Rapid Reload"
+   ],
+   "6": [
+    "Crossbow Mastery",
+    "Improved Precise Shot"
+   ],
+   "10": [
+    "Pinpoint Targeting",
+    "Shot on the Run"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-deceptive",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Deceptive",
+  "source": "Ultimate Intrigue",
+  "text": "If the ranger selects deceptive, he can choose from the following list whenever he gains a combat style feat: Disengaging Feint, Improved Feint, Ranged Feint, and Two-Weapon Feint. At 6th level, he adds Greater Feint and Misdirection Tactics to the list. At 10th level, he adds Disengaging Shot and Passing Trick to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Disengaging Feint, Improved Feint, Ranged Feint, Two-Weapon Feint"
+   ],
+   [
+    "Feats from 6th level",
+    "Greater Feint, Misdirection Tactics"
+   ],
+   [
+    "Feats from 10th level",
+    "Disengaging Shot, Passing Trick"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Disengaging Feint",
+    "Improved Feint",
+    "Ranged Feint",
+    "Two-Weapon Feint"
+   ],
+   "6": [
+    "Greater Feint",
+    "Misdirection Tactics"
+   ],
+   "10": [
+    "Disengaging Shot",
+    "Passing Trick"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-elemental",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Elemental",
+  "source": "Disciple's Doctrine",
+  "text": "If the ranger selects elemental, he can choose from the following list whenever he gains a combat style feat: Aquadynamic Focus, Scorching Weapons, Stony Step, and Wind Stance. At 6th level, he adds Inner Flame and Lightning Stance to the list. At 10th level, he adds Blazing Aura and Whirlwind Attack to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Aquadynamic Focus, Scorching Weapons, Stony Step, Wind Stance"
+   ],
+   [
+    "Feats from 6th level",
+    "Inner Flame, Lightning Stance"
+   ],
+   [
+    "Feats from 10th level",
+    "Blazing Aura, Whirlwind Attack"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Aquadynamic Focus",
+    "Scorching Weapons",
+    "Stony Step",
+    "Wind Stance"
+   ],
+   "6": [
+    "Inner Flame",
+    "Lightning Stance"
+   ],
+   "10": [
+    "Blazing Aura",
+    "Whirlwind Attack"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-achaekek",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Achaekek)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (achaekek), he can choose from the following list whenever he gains a combat style feat: Double Slice, Exotic Weapon Proficiency (sawtooth sabre), Two-Weapon Feint, and Two-Weapon Fighting. At 6th level, he adds Improved Two-Weapon Feint and Two-Weapon Defense to the list. At 10th level, he adds Greater Two-Weapon Fighting and Two-Weapon Rend to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Double Slice, Exotic Weapon Proficiency (sawtooth sabre), Two-Weapon Feint, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Two-Weapon Feint, Two-Weapon Defense"
+   ],
+   [
+    "Feats from 10th level",
+    "Greater Two-Weapon Fighting, Two-Weapon Rend"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Double Slice",
+    "Exotic Weapon Proficiency (sawtooth sabre)",
+    "Two-Weapon Feint",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "Improved Two-Weapon Feint",
+    "Two-Weapon Defense"
+   ],
+   "10": [
+    "Greater Two-Weapon Fighting",
+    "Two-Weapon Rend"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-besmara",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Besmara)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (besmara), he can choose from the following list whenever he gains a combat style feat: Agile Maneuvers, Improved Dirty Trick, Improved Feint, and Weapon Finesse. At 6th level, he adds Greater Feint and Quick Dirty Trick to the list. At 10th level, he adds Critical Focus and Disengaging Flourish to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Agile Maneuvers, Improved Dirty Trick, Improved Feint, Weapon Finesse"
+   ],
+   [
+    "Feats from 6th level",
+    "Greater Feint, Quick Dirty Trick"
+   ],
+   [
+    "Feats from 10th level",
+    "Critical Focus, Disengaging Flourish"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Agile Maneuvers",
+    "Improved Dirty Trick",
+    "Improved Feint",
+    "Weapon Finesse"
+   ],
+   "6": [
+    "Greater Feint",
+    "Quick Dirty Trick"
+   ],
+   "10": [
+    "Critical Focus",
+    "Disengaging Flourish"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-calistria",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Calistria)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (calistria), he can choose from the following list whenever he gains a combat style feat: Combat Reflexes, Exotic Weapon Proficiency (Whip), Weapon Finesse, and Whip Mastery. At 6th level, he adds Improved Trip and Improved Whip Mastery to the list. At 10th level, he adds Greater Trip and Greater Whip Mastery to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Combat Reflexes, Exotic Weapon Proficiency (Whip), Weapon Finesse, Whip Mastery"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Trip, Improved Whip Mastery"
+   ],
+   [
+    "Feats from 10th level",
+    "Greater Trip, Greater Whip Mastery"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Combat Reflexes",
+    "Exotic Weapon Proficiency (Whip)",
+    "Weapon Finesse",
+    "Whip Mastery"
+   ],
+   "6": [
+    "Improved Trip",
+    "Improved Whip Mastery"
+   ],
+   "10": [
+    "Greater Trip",
+    "Greater Whip Mastery"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-cayden-cailean",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Cayden Cailean)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (cayden cailean), he can choose from the following list whenever he gains a combat style feat: Catch Off-Guard, Combat Expertise, Combat Reflexes, and Weapon Finesse. At 6th level, he adds Improved Disarm and Lunge to the list. At 10th level, he adds Disarming Strike and Improved Critical (rapier) to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Catch Off-Guard, Combat Expertise, Combat Reflexes, Weapon Finesse"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Disarm, Lunge"
+   ],
+   [
+    "Feats from 10th level",
+    "Disarming Strike, Improved Critical (rapier)"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Catch Off-Guard",
+    "Combat Expertise",
+    "Combat Reflexes",
+    "Weapon Finesse"
+   ],
+   "6": [
+    "Improved Disarm",
+    "Lunge"
+   ],
+   "10": [
+    "Disarming Strike",
+    "Improved Critical (rapier)"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-desna",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Desna)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (desna), he can choose from the following list whenever he gains a combat style feat: Quick Draw, Point-Blank Shot, Rapid Shot, and Weapon Finesse. At 6th level, he adds Distance Thrower and Opening Volley to the list. At 10th level, he adds Close-Quarters Thrower and Shot on the Run to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Quick Draw, Point-Blank Shot, Rapid Shot, Weapon Finesse"
+   ],
+   [
+    "Feats from 6th level",
+    "Distance Thrower, Opening Volley"
+   ],
+   [
+    "Feats from 10th level",
+    "Close-Quarters Thrower, Shot on the Run"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Quick Draw",
+    "Point-Blank Shot",
+    "Rapid Shot",
+    "Weapon Finesse"
+   ],
+   "6": [
+    "Distance Thrower",
+    "Opening Volley"
+   ],
+   "10": [
+    "Close-Quarters Thrower",
+    "Shot on the Run"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-erastil",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Erastil)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (erastil), he can choose from the following list whenever he gains a combat style feat: Deadly Aim, Far Shot, Point-Blank Shot, and Precise Shot. At 6th level, he adds Clustered Shots and Snap Shot to the list. At 10th level, he adds Improved Snap Shot and Pinpoint Targeting to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Deadly Aim, Far Shot, Point-Blank Shot, Precise Shot"
+   ],
+   [
+    "Feats from 6th level",
+    "Clustered Shots, Snap Shot"
+   ],
+   [
+    "Feats from 10th level",
+    "Improved Snap Shot, Pinpoint Targeting"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Deadly Aim",
+    "Far Shot",
+    "Point-Blank Shot",
+    "Precise Shot"
+   ],
+   "6": [
+    "Clustered Shots",
+    "Snap Shot"
+   ],
+   "10": [
+    "Improved Snap Shot",
+    "Pinpoint Targeting"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-gorum",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Gorum)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (gorum), he can choose from the following list whenever he gains a combat style feat: Cleave, Improved Bull Rush, Power Attack, and Shield of Swings. At 6th level, he adds Cleaving Finish and Vital Strike to the list. At 10th level, he adds Death or Glory and Improved Vital Strike to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Cleave, Improved Bull Rush, Power Attack, Shield of Swings"
+   ],
+   [
+    "Feats from 6th level",
+    "Cleaving Finish, Vital Strike"
+   ],
+   [
+    "Feats from 10th level",
+    "Death or Glory, Improved Vital Strike"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Cleave",
+    "Improved Bull Rush",
+    "Power Attack",
+    "Shield of Swings"
+   ],
+   "6": [
+    "Cleaving Finish",
+    "Vital Strike"
+   ],
+   "10": [
+    "Death or Glory",
+    "Improved Vital Strike"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-gozreh",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Gozreh)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (gozreh), he can choose from the following list whenever he gains a combat style feat: Deadly Aim, Distance Thrower, Point-Blank Shot, and Two-Handed Thrower. At 6th level, he adds Lunge and Precise Shot to the list. At 10th level, he adds Impaling Critical (trident) and Strike Back to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Deadly Aim, Distance Thrower, Point-Blank Shot, Two-Handed Thrower"
+   ],
+   [
+    "Feats from 6th level",
+    "Lunge, Precise Shot"
+   ],
+   [
+    "Feats from 10th level",
+    "Impaling Critical (trident), Strike Back"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Deadly Aim",
+    "Distance Thrower",
+    "Point-Blank Shot",
+    "Two-Handed Thrower"
+   ],
+   "6": [
+    "Lunge",
+    "Precise Shot"
+   ],
+   "10": [
+    "Impaling Critical (trident)",
+    "Strike Back"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-iomedae",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Iomedae)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (iomedae), he can choose from the following list whenever he gains a combat style feat: Bodyguard, Improved Shield Bash, Step Up, and Two-Weapon Fighting. At 6th level, he adds In Harm's Way and Shield Slam to the list. At 10th level, he adds Bashing Finish and Shield Master to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Bodyguard, Improved Shield Bash, Step Up, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "In Harm's Way, Shield Slam"
+   ],
+   [
+    "Feats from 10th level",
+    "Bashing Finish, Shield Master"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Bodyguard",
+    "Improved Shield Bash",
+    "Step Up",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "In Harm's Way",
+    "Shield Slam"
+   ],
+   "10": [
+    "Bashing Finish",
+    "Shield Master"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-irori",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Irori)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (irori), he can choose from the following list whenever he gains a combat style feat: Improved Grapple, Improved Unarmed Strike, Monastic Legacy, and Two-Weapon Fighting. At 6th level, he adds Improved Trip and Spring Attack to the list. At 10th level, he adds Ki Throw and Stunning Fist to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Improved Grapple, Improved Unarmed Strike, Monastic Legacy, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Trip, Spring Attack"
+   ],
+   [
+    "Feats from 10th level",
+    "Ki Throw, Stunning Fist"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Improved Grapple",
+    "Improved Unarmed Strike",
+    "Monastic Legacy",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "Improved Trip",
+    "Spring Attack"
+   ],
+   "10": [
+    "Ki Throw",
+    "Stunning Fist"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-kurgess",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Kurgess)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (kurgess), he can choose from the following list whenever he gains a combat style feat: Charging Hurler, Deadly Aim, Improved Grapple, and Opening Volley. At 6th level, he adds Improved Charging Hurler and Greater Grapple to the list. At 10th level, he adds Pinning Knockout and Shot on the Run to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Charging Hurler, Deadly Aim, Improved Grapple, Opening Volley"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Charging Hurler, Greater Grapple"
+   ],
+   [
+    "Feats from 10th level",
+    "Pinning Knockout, Shot on the Run"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Charging Hurler",
+    "Deadly Aim",
+    "Improved Grapple",
+    "Opening Volley"
+   ],
+   "6": [
+    "Improved Charging Hurler",
+    "Greater Grapple"
+   ],
+   "10": [
+    "Pinning Knockout",
+    "Shot on the Run"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-lamashtu",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Lamashtu)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (lamashtu), he can choose from the following list whenever he gains a combat style feat: Cleave, Furious Focus, Power Attack, and Pushing Assault. At 6th level, he adds Bloody Assault and Vital Strike to the list. At 10th level, he adds Dreadful Carnage and Improved Vital Strike to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Cleave, Furious Focus, Power Attack, Pushing Assault"
+   ],
+   [
+    "Feats from 6th level",
+    "Bloody Assault, Vital Strike"
+   ],
+   [
+    "Feats from 10th level",
+    "Dreadful Carnage, Improved Vital Strike"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Cleave",
+    "Furious Focus",
+    "Power Attack",
+    "Pushing Assault"
+   ],
+   "6": [
+    "Bloody Assault",
+    "Vital Strike"
+   ],
+   "10": [
+    "Dreadful Carnage",
+    "Improved Vital Strike"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-norgorber",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Norgorber)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (norgorber), he can choose from the following list whenever he gains a combat style feat: Blind-Fight, Quick Draw, Wave Strike, and Weapon Finesse. At 6th level, he adds Improved Critical (short sword) and Improved Feint to the list. At 10th level, he adds Deadly Finish and Greater Blind-Fight to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Blind-Fight, Quick Draw, Wave Strike, Weapon Finesse"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Critical (short sword), Improved Feint"
+   ],
+   [
+    "Feats from 10th level",
+    "Deadly Finish, Greater Blind-Fight"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Blind-Fight",
+    "Quick Draw",
+    "Wave Strike",
+    "Weapon Finesse"
+   ],
+   "6": [
+    "Improved Critical (short sword)",
+    "Improved Feint"
+   ],
+   "10": [
+    "Deadly Finish",
+    "Greater Blind-Fight"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-sarenrae",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Sarenrae)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (sarenrae), he can choose from the following list whenever he gains a combat style feat: Improved Initiative, Mobility, Nimble Moves, and Sidestep. At 6th level, he adds Whirlwind Attack and Wind Stance to the list. At 10th level, he adds Lightning Stance and Spring Attack to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Improved Initiative, Mobility, Nimble Moves, Sidestep"
+   ],
+   [
+    "Feats from 6th level",
+    "Whirlwind Attack, Wind Stance"
+   ],
+   [
+    "Feats from 10th level",
+    "Lightning Stance, Spring Attack"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Improved Initiative",
+    "Mobility",
+    "Nimble Moves",
+    "Sidestep"
+   ],
+   "6": [
+    "Whirlwind Attack",
+    "Wind Stance"
+   ],
+   "10": [
+    "Lightning Stance",
+    "Spring Attack"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-torag",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Torag)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (torag), he can choose from the following list whenever he gains a combat style feat: Bludgeoner, Improved Sunder, Power Attack, and Shield Focus. At 6th level, he adds Felling Smash and Greater Sunder to the list. At 10th level, he adds Greater Shield Focus and Sundering Strike to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Bludgeoner, Improved Sunder, Power Attack, Shield Focus"
+   ],
+   [
+    "Feats from 6th level",
+    "Felling Smash, Greater Sunder"
+   ],
+   [
+    "Feats from 10th level",
+    "Greater Shield Focus, Sundering Strike"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Bludgeoner",
+    "Improved Sunder",
+    "Power Attack",
+    "Shield Focus"
+   ],
+   "6": [
+    "Felling Smash",
+    "Greater Sunder"
+   ],
+   "10": [
+    "Greater Shield Focus",
+    "Sundering Strike"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-faithful-zon-kuthon",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Faithful (Zon-Kuthon)",
+  "source": "Inner Sea Combat",
+  "text": "If the ranger selects faithful (zon-kuthon), he can choose from the following list whenever he gains a combat style feat: Agile Maneuvers, Disruptive, Exotic Weapon Proficiency (spiked chain), and Weapon Finesse. At 6th level, he adds Bloody Assault and Improved Trip to the list. At 10th level, he adds Bleeding Critical and Pin Down to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Agile Maneuvers, Disruptive, Exotic Weapon Proficiency (spiked chain), Weapon Finesse"
+   ],
+   [
+    "Feats from 6th level",
+    "Bloody Assault, Improved Trip"
+   ],
+   [
+    "Feats from 10th level",
+    "Bleeding Critical, Pin Down"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Agile Maneuvers",
+    "Disruptive",
+    "Exotic Weapon Proficiency (spiked chain)",
+    "Weapon Finesse"
+   ],
+   "6": [
+    "Bloody Assault",
+    "Improved Trip"
+   ],
+   "10": [
+    "Bleeding Critical",
+    "Pin Down"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-menacing",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Menacing",
+  "source": "Ultimate Intrigue",
+  "text": "If the ranger selects menacing, he can choose from the following list whenever he gains a combat style feat: Dazzling Display, Enforcer, Gory Finish, and Intimidating Prowess. At 6th level, he adds Martial Dominance and Shatter Defenses to the list. At 10th level, he adds Dreadful Carnage and Improved Critical to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Dazzling Display, Enforcer, Gory Finish, Intimidating Prowess"
+   ],
+   [
+    "Feats from 6th level",
+    "Martial Dominance, Shatter Defenses"
+   ],
+   [
+    "Feats from 10th level",
+    "Dreadful Carnage, Improved Critical"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Dazzling Display",
+    "Enforcer",
+    "Gory Finish",
+    "Intimidating Prowess"
+   ],
+   "6": [
+    "Martial Dominance",
+    "Shatter Defenses"
+   ],
+   "10": [
+    "Dreadful Carnage",
+    "Improved Critical"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-mounted-combat",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Mounted Combat",
+  "source": "Advanced Player's Guide",
+  "text": "If the ranger selects mounted combat, he can choose from the following list whenever he gains a combat style feat: Mounted Combat, Mounted Archery, Ride-By Attack, and Trick Riding. At 6th level, he adds Mounted Shield and Spirited Charge to the list. At 10th level, he adds Mounted Skirmisher and Unseat to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Mounted Combat, Mounted Archery, Ride-By Attack, Trick Riding"
+   ],
+   [
+    "Feats from 6th level",
+    "Mounted Shield, Spirited Charge"
+   ],
+   [
+    "Feats from 10th level",
+    "Mounted Skirmisher, Unseat"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Mounted Combat",
+    "Mounted Archery",
+    "Ride-By Attack",
+    "Trick Riding"
+   ],
+   "6": [
+    "Mounted Shield",
+    "Spirited Charge"
+   ],
+   "10": [
+    "Mounted Skirmisher",
+    "Unseat"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-natural-weapon",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Natural Weapon",
+  "source": "Advanced Player's Guide",
+  "text": "If the ranger selects natural weapon, he can choose from the following list whenever he gains a combat style feat: Aspect of the Beast, Improved Natural Attack, Rending Claws, and Weapon Focus. At 6th level, he adds Eldritch Claws and Vital Strike to the list. At 10th level, he adds Multiattack and Improved Vital Strike to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Aspect of the Beast, Improved Natural Attack, Rending Claws, Weapon Focus"
+   ],
+   [
+    "Feats from 6th level",
+    "Eldritch Claws, Vital Strike"
+   ],
+   [
+    "Feats from 10th level",
+    "Multiattack, Improved Vital Strike"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Aspect of the Beast",
+    "Improved Natural Attack",
+    "Rending Claws",
+    "Weapon Focus"
+   ],
+   "6": [
+    "Eldritch Claws",
+    "Vital Strike"
+   ],
+   "10": [
+    "Multiattack",
+    "Improved Vital Strike"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-thrown-weapon",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Thrown Weapon",
+  "source": "Advanced Class Guide",
+  "text": "If the ranger selects thrown weapon, he can choose from the following list whenever he gains a combat style feat: Distance Thrower, Precise Shot, Quick Draw, and Two-Weapon Fighting. At 6th level, he adds Close-Quarters Thrower and False Opening to the list. At 10th level, he adds Pinpoint Targeting and Shot on the Run to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Distance Thrower, Precise Shot, Quick Draw, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "Close-Quarters Thrower, False Opening"
+   ],
+   [
+    "Feats from 10th level",
+    "Pinpoint Targeting, Shot on the Run"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Distance Thrower",
+    "Precise Shot",
+    "Quick Draw",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "Close-Quarters Thrower",
+    "False Opening"
+   ],
+   "10": [
+    "Pinpoint Targeting",
+    "Shot on the Run"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-two-handed-weapon",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Two-Handed Weapon",
+  "source": "Advanced Player's Guide",
+  "text": "If the ranger selects two-handed weapon, he can choose from the following list whenever he gains a combat style feat: Cleave, Power Attack, Pushing Assault, and Shield of Swings. At 6th level, he adds Furious Focus and Great Cleave to the list. At 10th level, he adds Dreadful Carnage and Improved Sunder to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Cleave, Power Attack, Pushing Assault, Shield of Swings"
+   ],
+   [
+    "Feats from 6th level",
+    "Furious Focus, Great Cleave"
+   ],
+   [
+    "Feats from 10th level",
+    "Dreadful Carnage, Improved Sunder"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Cleave",
+    "Power Attack",
+    "Pushing Assault",
+    "Shield of Swings"
+   ],
+   "6": [
+    "Furious Focus",
+    "Great Cleave"
+   ],
+   "10": [
+    "Dreadful Carnage",
+    "Improved Sunder"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-two-weapon-combat",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Two-Weapon Combat",
+  "source": "Core Rulebook",
+  "text": "If the ranger selects two-weapon combat, he can choose from the following list whenever he gains a combat style feat: Double Slice, Improved Shield Bash, Quick Draw, and Two-Weapon Fighting. At 6th level, he adds Improved Two-Weapon Fighting and Two-Weapon Defense to the list. At 10th level, he adds Greater Two-Weapon Fighting and Two-Weapon Rend to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Double Slice, Improved Shield Bash, Quick Draw, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "Improved Two-Weapon Fighting, Two-Weapon Defense"
+   ],
+   [
+    "Feats from 10th level",
+    "Greater Two-Weapon Fighting, Two-Weapon Rend"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Double Slice",
+    "Improved Shield Bash",
+    "Quick Draw",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "Improved Two-Weapon Fighting",
+    "Two-Weapon Defense"
+   ],
+   "10": [
+    "Greater Two-Weapon Fighting",
+    "Two-Weapon Rend"
+   ]
+  },
+  "origin": "aonprd"
+ },
+ {
+  "id": "combat-style-weapon-and-shield",
+  "kind": "combat-style",
+  "classes": [
+   "ranger"
+  ],
+  "name": "Weapon and Shield",
+  "source": "Advanced Player's Guide",
+  "text": "If the ranger selects weapon and shield, he can choose from the following list whenever he gains a combat style feat: Improved Shield Bash, Shield Focus, Shield Slam, and Two-Weapon Fighting. At 6th level, he adds Saving Shield and Shield Master to the list. At 10th level, he adds Bashing Finish and Greater Shield Focus to the list.",
+  "parent": null,
+  "facts": [
+   [
+    "Feats from 2nd level",
+    "Improved Shield Bash, Shield Focus, Shield Slam, Two-Weapon Fighting"
+   ],
+   [
+    "Feats from 6th level",
+    "Saving Shield, Shield Master"
+   ],
+   [
+    "Feats from 10th level",
+    "Bashing Finish, Greater Shield Focus"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "style_feats": {
+   "2": [
+    "Improved Shield Bash",
+    "Shield Focus",
+    "Shield Slam",
+    "Two-Weapon Fighting"
+   ],
+   "6": [
+    "Saving Shield",
+    "Shield Master"
+   ],
+   "10": [
+    "Bashing Finish",
+    "Greater Shield Focus"
+   ]
+  },
+  "origin": "aonprd"
  }
 ]

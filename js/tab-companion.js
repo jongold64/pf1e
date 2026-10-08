@@ -3,7 +3,13 @@
 // buttons. Choices are kept in state.companion.
 import { $, esc, signed, paragraphs, facts } from './dom.js';
 import { rollButton } from './roll-ui.js';
-import { TRICKS, companionStats } from './companion.js';
+import { TRICKS, ATTACK_FEATS, companionStats, bardingCost, bardingWeight } from './companion.js';
+import { formatGp, formatLbs } from './equipment.js';
+
+// The companion's choices as companionStats takes them (the barding as its armor record).
+export const companionChoices = (state, data) => ({ ...state.companion,
+  armor: state.companion.armorId && data.armorById.get(state.companion.armorId)
+    ? { item: data.armorById.get(state.companion.armorId), enh: state.companion.armorEnh || 0 } : null });
 
 const ABILITY_NAMES = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
 
@@ -36,7 +42,7 @@ export function renderCompanion(app, view) {
     box.innerHTML = picker;
     return;
   }
-  const s = companionStats(animal, cl.level, data.companions.progression, c);
+  const s = companionStats(animal, cl.level, data.companions.progression, companionChoices(state, data));
   const title = c.name || animal.name;
   const roll = (label, n) => rollButton({ title: `${title}: ${label}`, check: label, plain: true, groups: [{ attacks: [n] }] });
   const why = (key, what) => `<button type="button" class="skill-details" data-comp-why="${esc(key)}" aria-label="What adds to ${esc(what)}">Details</button>`;
@@ -66,8 +72,25 @@ export function renderCompanion(app, view) {
       <button type="button" data-comp-skill="${esc(k.name)}" data-step="1" aria-label="More ranks">+</button></span></td>
       <td class="total">${signed(k.total)}${roll(k.name, k.total)}${why(`skill-${k.name}`, k.name)}</td></tr>`).join('');
   const featOptions = data.feats.filter(f => !(f.types || []).includes('Mythic')).map(f => f.name).sort();
-  const feats = Array.from({ length: s.featCount }, (_, i) => `<select data-comp-feat="${i}" aria-label="Companion feat ${i + 1}">
-      <option value="">Feat ${i + 1}…</option>${featOptions.map(n => `<option${c.feats[i] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`).join('');
+  // Weapon Focus and Improved Natural Attack: which natural attack each is for.
+  const attackNames = [...new Set(s.attacks.map(x => x.name))];
+  const feats = Array.from({ length: s.featCount }, (_, i) => `<div class="companion-feat"><select data-comp-feat="${i}" aria-label="Companion feat ${i + 1}">
+      <option value="">Feat ${i + 1}…</option>${featOptions.map(n => `<option${c.feats[i] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
+      ${ATTACK_FEATS.includes(c.feats[i]) ? `<select data-comp-pick="${i}" aria-label="Natural attack for ${esc(c.feats[i])}">
+        <option value="">Which attack…</option>${attackNames.map(n => `<option${(c.featPicks || [])[i] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}</div>`).join('');
+  // Barding: armor for the animal (any light, medium or heavy armor), with its enhancement bonus.
+  const bardingList = data.armor.filter(a => a.category !== 'shield');
+  const b = s.barding;
+  const bardingHtml = `<h3>Barding (armor)</h3>
+    <div class="companion-pick"><select data-comp="armor" aria-label="Barding"><option value="">None</option>${['light', 'medium', 'heavy'].map(cat =>
+      `<optgroup label="${cat[0].toUpperCase()}${cat.slice(1)}">${bardingList.filter(a => a.category === cat).map(a => `<option value="${esc(a.id)}"${a.id === c.armorId ? ' selected' : ''}>${esc(a.name)} (+${a.bonus})</option>`).join('')}</optgroup>`).join('')}</select>
+      ${b ? `<select data-comp="armorEnh" aria-label="Barding quality">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}"${n === (c.armorEnh || 0) ? ' selected' : ''}>${n ? `+${n}` : 'Normal'}</option>`).join('')}</select>` : ''}</div>
+    ${b ? `<p class="hint">+${b.ac} armor to AC${b.item.max_dex !== null ? `, Dex bonus at most +${b.item.max_dex}` : ''}${b.acp ? `, ${b.acp} on Str and Dex skills` : ''}.
+        Costs ${esc(formatGp(bardingCost(b.item, s.size, b.enh)))} and weighs ${esc(formatLbs(bardingWeight(b.item, s.size)))} (${esc(s.size)} animal: barding costs more than a person's armor),
+        counted in your gold on the Equipment tab.</p>
+      ${b.proficient ? '' : `<p class="warning">Without the ${esc(b.profFeat)} feat, its check penalty (${b.acp}) also applies to its attack rolls.</p>`}
+      ${['medium', 'heavy'].includes(b.item.category) ? '<p class="hint">Medium or heavy barding slows it, and a flying animal can\u2019t fly in it.</p>' : ''}`
+      : '<p class="hint">Companions can wear armor (barding); it needs the Armor Proficiency feats to use without penalty on attacks.</p>'}`;
   const tricks = TRICKS.map(t => `<label class="check-row small"><input type="checkbox" data-comp-trick="${esc(t)}"${c.tricks.includes(t) ? ' checked' : ''}> ${esc(t)}
       <button type="button" class="skill-details" data-trick-pop="${esc(t)}" aria-label="What ${esc(t)} does">Details</button></label>`).join('');
   const specials = [...new Set(s.specials)].map(name => {
@@ -91,6 +114,7 @@ export function renderCompanion(app, view) {
     </div>
     <h3>Ability scores</h3><table class="companion-scores"><tr>${scores}</tr></table>
     ${incs ? `<p class="row-label">Ability score increases ${incs}</p>` : ''}
+    ${bardingHtml}
     <h3>Companion abilities</h3><div class="companion-specials">${specials}</div>
     <div class="companion-grid">
       <div><h3>Skills <span class="count${s.ranksUsed > s.ranksTotal ? ' over' : ''}">${s.ranksUsed} of ${s.ranksTotal} ranks</span></h3>
@@ -175,11 +199,13 @@ function popAnimal(app, id) {
 // A trick in a popup (Core Rulebook, Handle Animal): what the animal does, the DC to teach it, and Teach / Forget.
 function popTrick(app, name) {
   const { state, data } = app;
-  const t = (data.companions.tricks || []).find(x => x.name === name);
+  const t = name === 'Attack (all creatures)'
+    ? { name, dc: 20, text: 'Attack taught a second time: the animal attacks all creatures, including unnatural ones such as undead and aberrations, not just humanoids, monstrous humanoids, giants and animals. It counts as two tricks (Attack and this one).' }
+    : (data.companions.tricks || []).find(x => x.name === name);
   if (!t) return;
   const known = state.companion.tricks.includes(name);
   const animal = data.companions.animals.find(a => a.id === state.companion.animal);
-  const s = animal && companionStats(animal, app.view.companion.level, data.companions.progression, state.companion);
+  const s = animal && companionStats(animal, app.view.companion.level, data.companions.progression, companionChoices(state, data));
   const limit = s?.scores.int ? s.scores.int * 3 + s.tricksBonus : null;
   app.openDetail(`${t.name} (trick)`, `<p class="hint">Handle Animal · Core Rulebook</p>${paragraphs(t.text)}
     ${facts([['To teach it', `DC ${t.dc} Handle Animal check, after 1 week of work`], ['To push it without the trick', 'DC 25 Handle Animal check']])}
@@ -196,6 +222,13 @@ export function initCompanion(app) {
   box.addEventListener('change', e => {
     const t = e.target;
     if (t.dataset.comp === 'animal') set({ animal: t.value });
+    else if (t.dataset.comp === 'armor') set({ armorId: t.value, armorEnh: t.value ? state.companion.armorEnh || 0 : 0 });
+    else if (t.dataset.comp === 'armorEnh') set({ armorEnh: Number(t.value) });
+    else if (t.dataset.compPick !== undefined) {
+      const picks = [...(state.companion.featPicks || [])];
+      picks[Number(t.dataset.compPick)] = t.value;
+      set({ featPicks: Array.from(picks, x => x || '') });
+    }
     else if (t.dataset.comp === 'name') set({ name: t.value.slice(0, 40) });
     else if (t.dataset.compInc !== undefined) {
       const inc = [...state.companion.increases];
@@ -207,7 +240,11 @@ export function initCompanion(app) {
       set({ feats: Array.from(feats, x => x || '') });
     } else if (t.dataset.compTrick) {
       const name = t.dataset.compTrick;
-      set({ tricks: t.checked ? [...state.companion.tricks, name] : state.companion.tricks.filter(x => x !== name) });
+      let tricks = t.checked ? [...state.companion.tricks, name] : state.companion.tricks.filter(x => x !== name);
+      // Attack taught twice (all creatures) includes Attack itself.
+      if (t.checked && name === 'Attack (all creatures)' && !tricks.includes('Attack')) tricks.push('Attack');
+      if (!t.checked && name === 'Attack') tricks = tricks.filter(x => x !== 'Attack (all creatures)');
+      set({ tricks });
     }
   });
   box.addEventListener('click', e => {

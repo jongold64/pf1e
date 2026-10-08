@@ -38,8 +38,9 @@ export const BONUS_FEAT_RULES = {
   'monk-unchained': { note: 'Must be from the monk bonus feat list. Prerequisites are waived.',
                       allowed: (f, slotLevel) => monkFeatList(slotLevel).includes(f.name), waivePrereqs: true },
   teamwork: { note: 'Must be a teamwork feat.', allowed: f => hasType(f, 'Teamwork') },
-  rangerStyle: { note: 'Must be from your combat style\'s list (not checked). Prerequisites are waived.',
-                 allowed: null, waivePrereqs: true },
+  rangerStyle: { note: 'Must be from your combat style\'s list (more feats join it at 6th and 10th level). Prerequisites are waived.',
+                 allowed: (f, slotLevel, slot) => !STYLE_FEATS[slot?.clsId] || styleFeatsAt(STYLE_FEATS[slot.clsId], slotLevel).includes(lower(f.name)),
+                 waivePrereqs: true },
   bloodline: { note: 'Must be from your bloodline\'s list.',
                allowed: (f, slotLevel, slot) => !BLOODLINE_FEATS[slot?.clsId] || BLOODLINE_FEATS[slot.clsId].includes(lower(f.name)) },
 };
@@ -51,6 +52,13 @@ export function setBloodlineFeats(byClass) {
   BLOODLINE_FEATS = Object.fromEntries(Object.entries(byClass || {}).map(([c, names]) =>
     [c, names.map(n => lower(n.replace(/\s*\(.*$/, '')))]));
 }
+
+// A ranger's combat style feats ({ ranger: { "2": [names], "6": [...], "10": [...] } }), set by the app; with no style
+// chosen, any feat. A combat style feat slot of class level n takes the feats of the tiers up to n.
+let STYLE_FEATS = {};
+export function setStyleFeats(byClass) { STYLE_FEATS = byClass || {}; }
+const styleFeatsAt = (tiers, level) => Object.entries(tiers).filter(([lv]) => Number(lv) <= level)
+  .flatMap(([, names]) => names.map(n => lower(n.replace(/\s*\(.*$/, ''))));
 
 // Which class-table entries give a bonus feat, and the rule that applies to it.
 function bonusFeatRule(cls, special) {
@@ -191,7 +199,7 @@ export function casterLevel(cls, level) {
 // rage powers, talents, hexes...), featureWords (featureIndex: every feature name in the data, to tell a feature the
 // character lacks from one the app doesn't know).
 export function featContext({ race, cls, level, counts = null, casting = null, scores, bab, haveFeats, skillRanks = null,
-                              archetypes = {}, choices = [], talentNames = [], featureWords = null, classNames = null }) {
+                              archetypes = {}, choices = [], talentNames = [], featureWords = null, classNames = null, companion = 0 }) {
   const classes = counts || [{ cls, level }];
   const casters = casting || classes.map(e => ({ cls: e.cls, effectiveLevel: e.level }));
   let maxSpellLevel = -1;
@@ -210,6 +218,9 @@ export function featContext({ race, cls, level, counts = null, casting = null, s
     skillRanks,
     haveFeats: new Set(haveFeats.map(lower)),
     archetypes, choices, talentNames, featureWords,
+    // The animal companion's effective druid level (0 for none): any class feature that gives one counts as "animal
+    // companion" (a ranger's hunter's bond, a cavalier's mount...).
+    companion,
     // Every class id and name (lower case), to tell a class the character lacks from a name that isn't a class.
     classNames,
   };
@@ -294,6 +305,7 @@ export function classFeatureStatus(text, ctx) {
 
 function oneFeatureStatus(text, ctx) {
   if (ctx.haveFeats?.has(lower(text))) return 'met';
+  if (/^animal companion( class feature)?$/i.test(text.trim()) && ctx.companion > 0) return 'met';
   const q = text.match(/^(.*?)\s*\((.+)\)$/);
   const want = words(q ? q[1] : text).map(singular).filter(w => !FILLER.has(w));
   let has = ctx.counts.some(e => classHas(e, want, ctx)) || (ctx.talentNames || []).some(n => hasWords(want, n));
