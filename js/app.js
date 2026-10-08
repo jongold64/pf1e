@@ -33,6 +33,7 @@ import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, weaponTraining } from './class-features.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
@@ -1361,6 +1362,8 @@ function computeView() {
   const armorGear = armorEffects({
     armor: withMaterial(data.armorById.get(state.armorId), state.armorMaterial) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
     shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
+    // A fighter's armor training lowers the check penalty, raises the max Dex and lets him move normally in armor.
+    training: armorTrainingStage(counts),
   });
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules, state.drawback)).map(id => data.traitsById.get(id)).filter(Boolean);
@@ -1378,14 +1381,14 @@ function computeView() {
   setStyleFeats(Object.fromEntries(['ranger'].map(cid => [cid, pathOf(cid, 'combat-style')?.style_feats]).filter(([, f]) => f)));
   setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats
     && [...pathOf(cid, 'bloodline').bonus_feats, ...(isCrossblooded(cid) ? pathOf(cid, 'bloodline2')?.bonus_feats || [] : [])]]).filter(([, f]) => f)));
-  const fx = effectTotals(state.buffs, customAll);
+  let fx = effectTotals(state.buffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.
   const size = shiftSize(fx.setSize || race.size, fx.size);
   const statsWith = (gearNow, effects = fx) => characterStats({
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
     increases: state.increases, favoredPicks,
     featBonuses: withCrossblooded(withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx)), gear: gearNow,
-    effects, size,
+    effects, size, uncanny: uncannyDodge(counts),
   });
   // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
   // (the worse of the two counts, they don't add up). Strength doesn't depend on gear, so it comes from a first pass.
@@ -1401,6 +1404,15 @@ function computeView() {
       gear = { ...armorGear, maxDex: caps.length ? Math.min(...caps) : null,
                checkPenalty: Math.min(armorGear.checkPenalty, enc.checkPenalty) };
     }
+  }
+  // Class features that are always on (class-features.js: divine grace, bardic knowledge, nimble...), as effects so they
+  // follow the stacking rules and show in every Details. They use the ability scores with effects (a Cha buff raises
+  // divine grace), which they don't change themselves.
+  const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
+                                                shield: !!gear.shield, load: load?.load || 'light' });
+  if (classFx.length) {
+    customAll.push(...classFx);
+    fx = effectTotals(state.buffs, customAll);
   }
   const stats = statsWith(gear);
   // Feat prerequisites use the scores without temporary effects.
@@ -1472,6 +1484,8 @@ function computeView() {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed,
+    // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: situationalBonuses(counts),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     companion: companionFor(counts),
@@ -2523,10 +2537,16 @@ function detailsTable(lines, total, totalText = signed(total)) {
 function showSaveDetails(name) {
   const save = { Fortitude: 'fort', Reflex: 'ref', Will: 'will' }[name];
   const b = saveBreakdown({ save, counts: view.counts, mod: view.stats.mod, featNames: view.haveFeats, traits: view.traits,
-    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save), effectTotal: view.stats.fx[save],
+    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save || x.target === 'saves'), effectTotal: view.stats.fx[save],
     extra: save === 'will' && crossWill() ? [{ label: 'Crossblooded (archetype)', value: crossWill() }] : [] });
   openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
-    + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : ''));
+    + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : '')
+    + situationalHtml(view.situational?.[save]));
+}
+
+// Class features that only count in some situations (bravery against fear, trap sense...), under a Details table.
+function situationalHtml(notes) {
+  return notes?.length ? `<h3>In some situations</h3><ul class="plain-list">${notes.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
 }
 
 // Details popup for AC, touch and flat-footed AC (Race card).
@@ -2558,7 +2578,8 @@ function showAcDetails(column = null) {
       <th class="num">Flat-footed</th></tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><td><b>Total</b></td><td class="num"><b>${b.totals.ac}</b></td><td class="num"><b>${b.totals.touch}</b></td>
       <td class="num"><b>${b.totals.flat}</b></td></tr></tfoot></table>
-    <p class="hint">Touch attacks ignore armor, shields and natural armor. Flat-footed, you lose your Dex bonus and dodge bonuses.</p>`);
+    <p class="hint">Touch attacks ignore armor, shields and natural armor. Flat-footed, you lose your Dex bonus and dodge bonuses.</p>
+    ${situationalHtml(view.situational?.ac)}`);
 }
 
 // Details popup for CMB and CMD (Race card).
@@ -2757,6 +2778,7 @@ function renderSkills(race, classes, scores, featNames) {
       ${b.limited ? `<p class="hint">${esc(b.limited)}</p>` : ''}
       ${info.acp && !checkPenalty ? '<p class="hint">Armor check penalties would apply to this skill.</p>' : ''}
       ${b.lines.length <= 2 && b.usable ? '<p class="hint">With no ranks, a skill uses just its ability modifier (and any bonuses).</p>' : ''}
+      ${situationalHtml(view.situational?.skills[splitSkill(name).base] || view.situational?.skills[name])}
       ${skillTextHtml(name)}`);
   };
   const details = name => `<button type="button" class="skill-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}">Details</button>`;

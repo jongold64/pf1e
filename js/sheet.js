@@ -43,6 +43,9 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],
     ['Fortitude', signed(stats.fort)], ['Reflex', signed(stats.ref)], ['Will', signed(stats.will)], ['CMD', cmd],
     ['Armor', worn || 'none'],
+    // Damage reduction from armor (adamantine) and class levels (barbarian, monk...).
+    ...((view.gear.dr || view.classDr?.length) ? [['Damage reduction', [...(view.gear.dr ? [`${view.gear.dr}/— (adamantine)`] : []),
+      ...(view.classDr || []).map(d => `${d.value}/${d.against} (${d.source})`)].join(', ')]] : []),
     // Active effects counted in these numbers (Active effects card).
     ...(activeEffects.length ? [['Active effects', activeEffects.join(', ')]] : []),
     // Action Points house rule: hero points now, or none for an antihero.

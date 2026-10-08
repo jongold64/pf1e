@@ -16,17 +16,22 @@ const PROFICIENCY = {
 // Combined effect of worn armor and a shield (either can be null). `armorEnh` / `shieldEnh` are magic
 // enhancement bonuses (+1 to +5); magic armor is always masterwork, which lowers its check penalty by 1.
 // armorMw / shieldMw: masterwork but not magic (magic armor is always masterwork).
-export function armorEffects({ armor = null, shield = null, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false } = {}) {
-  const penalty = (item, enh, mw) => (item ? Math.min(0, item.check_penalty + ((enh > 0 || mw) && !item.mw_included ? 1 : 0)) : 0);
-  const caps = [armor?.max_dex, shield?.max_dex].filter(v => v !== null && v !== undefined);
+// training: a fighter's armor training step (0-4): the armor's check penalty that much lower (not below 0) and its max
+// Dex that much higher; medium armor doesn't slow from step 1, heavy armor from step 2.
+export function armorEffects({ armor = null, shield = null, armorEnh = 0, shieldEnh = 0, armorMw = false, shieldMw = false, training = 0 } = {}) {
+  const penalty = (item, enh, mw, less = 0) => (item ? Math.min(0, item.check_penalty + ((enh > 0 || mw) && !item.mw_included ? 1 : 0) + less) : 0);
+  const armorMaxDex = armor && armor.max_dex !== null && armor.max_dex !== undefined ? armor.max_dex + (training || 0) : armor?.max_dex;
+  const caps = [armorMaxDex, shield?.max_dex].filter(v => v !== null && v !== undefined);
+  const moveCat = armor ? armor.move_category || armor.category : null;
   return {
     armorBonus: armor ? armor.bonus + armorEnh : 0,
     shieldBonus: shield ? shield.bonus + shieldEnh : 0,
     maxDex: caps.length ? Math.min(...caps) : null,
-    checkPenalty: penalty(armor, armorEnh, armorMw) + penalty(shield, shieldEnh, shieldMw),
+    checkPenalty: penalty(armor, armorEnh, armorMw, training || 0) + penalty(shield, shieldEnh, shieldMw),
     spellFailure: (armor?.spell_failure || 0) + (shield?.spell_failure || 0),
     // Medium and heavy armor slow the wearer (mithral counts as one category lighter: move_category).
-    slows: armor ? ['medium', 'heavy'].includes(armor.move_category || armor.category) : false,
+    slows: armor ? (moveCat === 'medium' && !(training >= 1)) || (moveCat === 'heavy' && !(training >= 2)) : false,
+    training: training || 0,
     // Damage reduction from adamantine armor.
     dr: armor?.dr || 0,
     armor, shield, armorEnh, shieldEnh, armorMw, shieldMw,

@@ -232,7 +232,7 @@ export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
                                proficient = true, armorPenalty = 0, unarmedDamage = null,
                                hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0,
-                               effectAttack = 0, effectDamage = 0, misfit = 0 }) {
+                               effectAttack = 0, effectDamage = 0, misfit = 0, training = [] }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -279,7 +279,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   }
 
   // misfit: -2 per size step for a weapon made for a different size of creature.
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak;
+  // Weapon training (fighter's weapon groups, swashbuckler's): [{ label, value }] on attack and damage rolls.
+  const trained = training.reduce((n, t) => n + t.value, 0);
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak + trained;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
@@ -288,7 +290,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // bonusDamage: extra damage such as smite evil's (+paladin level).
   // A material's damage change (alchemical silver -1 with a slashing or piercing weapon, bone and gold -2).
   const materialDamage = material?.damage?.(weapon) || 0;
-  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage;
+  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained;
   return {
     attacks: attackBabs.map(b => b + toHit),
     babs: attackBabs,
@@ -297,7 +299,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
              penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit,
-             rating, tooWeak, materialDamage, material: material?.name || '' },
+             rating, tooWeak, materialDamage, material: material?.name || '', training },
   };
 }
 
@@ -315,6 +317,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(attackRows, 'Weapon size (and archetype rules)', p.misfit);
   add(attackRows, p.enh > 0 ? 'Enhancement bonus' : p.material ? `Masterwork (${p.material})` : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
+  for (const t of p.training || []) add(attackRows, t.label, t.value);
   add(attackRows, proficiencyLabel, p.proficiency);
   add(attackRows, 'Armor or shield penalty', p.armorPenalty);
   add(attackRows, penaltyLabel, p.penalty);
@@ -334,6 +337,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   else add(damageRows, strLabel, p.strDamage);
   add(damageRows, 'Enhancement bonus', p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
+  for (const t of p.training || []) add(damageRows, t.label, t.value);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
   add(damageRows, 'Extra damage (smite)', p.bonusDamage);
   add(damageRows, `${p.material} (minimum 1 damage)`, p.materialDamage);

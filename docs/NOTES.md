@@ -203,6 +203,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   changes. Extra fields: `mw_included` (no +150 gp or second -1 penalty), `move_category` (mithral one lighter: speed and
   bard/magus spell failure; proficiency still uses `category`), `metal` (druids), `dr` (adamantine), `material_notes`.
   Mithral/darkleaf "-3 check penalty" and darkwood's "-2" include the masterwork 1; eel hide's "-1" is read the same way.
+- Class features (`js/class-features.js`): `classFeatureEffects` turns always-on features into custom-effect records
+  (`classFeature: true`) appended to `customAll` after the first stats pass (so Cha/Wis include buffs) and `fx` is
+  recomputed; `armorTrainingStage` -> armorEffects `training`; `uncannyDodge` -> characterStats `uncanny` (flat-footed =
+  AC; acBreakdown notes it on the Dex row); `classDamageReduction` -> view.classDr (Armor tab, sheet);
+  `weaponTraining(counts, weapon, fighterGroups)` -> weaponAttack `training` (weapons.json `groups` from AoN pages, CRB
+  list fallback, firearms = Firearms); `situationalBonuses` -> view.situational, shown by app.js `situationalHtml`.
+  Save Details list 'saves'-target effects too.
 - Weapon materials (`js/materials.js` WEAPON_MATERIALS, hand-entered from the same chapters): a carried weapon's
   `material` id. Each has `fits(w)` (name lists for metal, wooden and hafted weapons plus group and damage type, after the
   books' examples), `extra(w, { base, weight, magic })` (price added: cold iron doubles, +2,000 gp once magic; bone,

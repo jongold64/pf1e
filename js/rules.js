@@ -194,7 +194,7 @@ export function babList(total) {
 // gear is what worn armor and a shield do (armorEffects in armor.js); leave it out for no armor.
 export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
                                  flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null,
-                                 effects = null, size: sizeNow = null }) {
+                                 effects = null, size: sizeNow = null, uncanny = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const total = levels.length;
   const counts = classCounts(levels);
@@ -251,14 +251,14 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
     dexAc,
     naturalArmor: acParts.naturalPart,
     // Touch loses armor, shield and natural armor; flat-footed loses a Dex bonus and dodge bonuses (a Dex penalty
-    // still applies).
+    // still applies), unless uncanny dodge (a class feature) keeps them.
     touch: acParts.touch,
-    flatFooted: acParts.flatFooted,
+    flatFooted: uncanny && !noDex ? acParts.ac : acParts.flatFooted,
     fx,
     // The pieces of AC, for the Details popup (acBreakdown).
     acInfo: { armor: g.armorBonus, shield: g.shieldBonus, armorPart: acParts.armorPart, shieldPart: acParts.shieldPart,
               natural: raceAc.natural, dex: dexAc, dexMod: mod.dex, maxDex: g.maxDex, size, classAc, featDodge: fb.dodgeAc,
-              raceDodge: raceAc.dodge, wis: mod.wis },
+              raceDodge: raceAc.dodge, wis: mod.wis, uncanny: uncanny && !noDex ? uncanny : null },
   };
 }
 
@@ -277,15 +277,19 @@ export function acBreakdown(stats, names = {}, effects = []) {
   add('Base', 10);
   if (i.armor) add(`Armor: ${names.armor || 'worn armor'}`, i.armor, { touch: false });
   if (i.shield) add(`Shield: ${names.shield || 'shield'}`, i.shield, { touch: false });
-  add(`Dexterity modifier`, i.dex, { flat: i.dex < 0, note: i.maxDex !== null && i.dexMod > i.maxDex ? `Dex ${i.dexMod >= 0 ? '+' : ''}${i.dexMod}, capped by armor` : '' });
+  // Uncanny dodge keeps the Dex bonus (and so dodge bonuses) when flat-footed.
+  const keep = !!i.uncanny;
+  add(`Dexterity modifier`, i.dex, { flat: keep || i.dex < 0, note: [i.maxDex !== null && i.dexMod > i.maxDex ? `Dex ${i.dexMod >= 0 ? '+' : ''}${i.dexMod}, capped by armor` : '',
+    keep ? `kept when flat-footed: uncanny dodge (${i.uncanny}), dodge bonuses too` : ''].filter(Boolean).join('; ') });
   add('Size', i.size);
   if (i.natural) add(`Natural armor (${names.race || 'race'})`, i.natural, { touch: false });
-  if (i.featDodge) add('Feat: Dodge', i.featDodge, { flat: false });
-  if (i.raceDodge) add(`Dodge bonus (${names.race || 'race'})`, i.raceDodge, { flat: false });
+  if (i.featDodge) add('Feat: Dodge', i.featDodge, { flat: keep });
+  if (i.raceDodge) add(`Dodge bonus (${names.race || 'race'})`, i.raceDodge, { flat: keep });
   if (i.classAc) add(`${names.monk || 'Monk'} AC bonus (Wis + class)`, i.classAc);
   for (const e of effects) {
-    add(`Effect: ${e.source}`, e.value, { touch: !NOT_TOUCH.has(e.type), flat: !(e.type === 'dodge' && e.value > 0), note: `${e.type} bonus` });
+    add(`Effect: ${e.source}`, e.value, { touch: !NOT_TOUCH.has(e.type), flat: keep || !(e.type === 'dodge' && e.value > 0), note: `${e.type} bonus` });
   }
+
   // What the stacking rules take off: same-type effects, and armor / shield / natural armor bonuses that compete.
   const listed = (col, f) => rows.reduce((n, r) => n + (f(r) ?? 0), 0);
   const fix = (label, target) => {

@@ -343,6 +343,9 @@ export function renderArmorTab(app, view) {
     ['Armor check penalty', gear.checkPenalty ? `${gear.checkPenalty} on Str and Dex skills` : 'none', 'acp'],
     ['Arcane spell failure', spellFailureText(gear, view.counts), 'asf'],
     ...(gear.dr ? [['Damage reduction', `${gear.dr}/— (adamantine)`]] : []),
+    // Class damage reduction (barbarian, bloodrager, fighter's armor mastery, monk's perfect self...).
+    ...(view.classDr || []).map(d => [`Damage reduction (${d.source})`, `${d.value}/${d.against}`]),
+    ...(gear.training ? [['Armor training (fighter)', `check penalty ${gear.training} lower, max Dex ${gear.training} higher${gear.armor ? '' : ' (when wearing armor)'}`]] : []),
     ...[gear.armor, gear.shield].filter(a => a?.material_notes).map(a => [a.material, a.material_notes]),
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
       (gear.slows && view.speed === base && base ? ' (not slowed)' : ''), 'speed'],

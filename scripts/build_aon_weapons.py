@@ -5,9 +5,11 @@ weapon's page gives its book, category (light, one-handed, two-handed, ranged), 
 Large damage come from the Core Rulebook's table of weapon damage by size. Only weapons from a book whose OGL notice is
 known are added; ammunition, firearms and siege weapons are left out.
 
+Also gives every weapon its fighter weapon groups (`groups`), from its AoN page.
+
 Usage: python build_aon_weapons.py path/to/weapons.json   (run after build_weapons.py; adds to the file)
 """
-import json, re, sys, urllib.parse
+import json, os, re, sys, urllib.parse
 from collections import Counter
 from bs4 import BeautifulSoup
 from common import slug
@@ -83,6 +85,27 @@ def details(name):
             'description': desc}
 
 
+# PSRD weapon names the Core Rulebook's weapon group lists write differently.
+GROUP_ALIASES = {'armor spikes': 'spiked armor', 'shield, heavy; steel': 'heavy shield', 'shield, heavy; wooden': 'heavy shield',
+                 'spiked light shield': 'spiked shield', 'spiked shield, light': 'spiked shield', 'mace': 'light mace'}
+
+
+def core_groups(classes_path):
+    """Weapon name (lower case) -> fighter weapon groups, from the fighter's Weapon Training text (Core Rulebook):
+    "Axes: battleaxe, dwarven waraxe, ... and throwing axe."."""
+    fighter = next(c for c in json.load(open(classes_path, encoding='utf-8')) if c['id'] == 'fighter')
+    text = next(f['text'] for f in fighter['features'] if f['name'].startswith('Weapon Training'))
+    out = {}
+    for group, names in re.findall(r'(?m)^([A-Z][A-Za-z, ]+?): (.+?)\.\s*$', text):
+        group = {'Pole Arms': 'Polearms'}.get(group, group)
+        group = group[0].upper() + group[1:].lower()
+        for n in re.split(r',\s*(?:and\s+)?|\s+and\s+', names):
+            n = n.strip().lower()
+            if n and not n.startswith('all '):
+                out.setdefault(n, []).append(group)
+    return out
+
+
 def main():
     path = sys.argv[1]
     weapons = json.load(open(path, encoding='utf-8'))
@@ -118,6 +141,24 @@ def main():
                 'description': d['description'], 'origin': ORIGIN,
             })
             have |= keys(name)
+    # Fighter weapon groups (weapon training) for every weapon, PSRD ones too, from its AoN page ("Double; Monk"), as
+    # the app names them ("Blades, heavy").
+    aon_names = {}
+    for prof in ('Simple', 'Martial', 'Exotic', 'Firearm'):
+        for name, _ in rows(prof):
+            for k in keys(name):
+                aon_names.setdefault(k, name)
+    core = core_groups(os.path.join(os.path.dirname(os.path.abspath(path)), 'classes.json'))
+    for w in weapons + added:
+        aon = next((aon_names[k] for k in keys(w['name']) if k in aon_names), None)
+        groups = details(aon)['weapon_groups'] if aon else ''
+        w['groups'] = [g.strip()[0].upper() + g.strip()[1:].lower() for g in groups.split(';') if g.strip()]
+        # Not matched on AoN: firearms are the Firearms group; others by the Core Rulebook's lists (by name or alias).
+        if not w['groups'] and w.get('firearm'):
+            w['groups'] = ['Firearms']
+        if not w['groups']:
+            n = w['name'].lower()
+            w['groups'] = core.get(GROUP_ALIASES.get(n, n), [])
     ids = {w['id'] for w in weapons}
     for w in added:
         if w['id'] in ids:

@@ -8,6 +8,7 @@ import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
+import { weaponTraining } from './class-features.js';
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -132,6 +133,8 @@ function attackArgs(app, view, ctx, e) {
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
+    // Weapon training: the fighter's groups (picked at 5th, 9th, 13th, 17th, in that order) and the swashbuckler's.
+    training: weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || '')),
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
     powerBab: view.stats.bab[0],
     // Active effects' bonuses on attack and damage rolls (bless, divine favor...).

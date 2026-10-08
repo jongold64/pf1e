@@ -105,7 +105,8 @@ Profession are one record each.
 `class_skill` (sorcerers), `bonus_spells` ([{ `level` (class level), `name` }]), `bonus_feats` (names), `arcana`
 (sorcerers), `powers` ([{ `name`, `level`, `text` }]). From the Archives of Nethys bloodline pages.
 
-Weapons from after 2015 (Adventurer's Armory 2, Inner Sea Combat...) come from the Archives of Nethys lists
+Every weapon has `groups`, its fighter weapon groups ("Blades, heavy", "Monk"...) from its Archives of Nethys page (the
+Core Rulebook's lists where AoN has none; firearms are Firearms). Weapons from after 2015 (Adventurer's Armory 2, Inner Sea Combat...) come from the Archives of Nethys lists
 (`origin: "aonprd"`); their Tiny and Large damage is worked out from the Core Rulebook table.
 
 **Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class

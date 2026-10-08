@@ -19,6 +19,8 @@ import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUF
 import { flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
+import { armorEffects as armorFx } from './armor.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1363,6 +1365,36 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const w3 = companionStats(animal('wolf'), 3, comp.progression);
   check('Weapon Focus (bite): +1', wf.attacks[0].bonus, w3.attacks[0].bonus + 1);
   check('Improved Natural Attack (bite): 1d6 becomes 1d8', wf.attacks[0].dice, '1d8');
+}
+
+// Class features that always count (class-features.js).
+{
+  const c = id => classes.find(x => x.id === id);
+  const one = (id, lv) => [{ cls: c(id), level: lv }];
+  const fxOf = (id, lv, opts) => classFeatureEffects(one(id, lv), opts);
+  const val = (list, name, target) => { const e = list.find(x => x.name === name); return e && [e, ...(e.more || [])].find(p => p.target === target)?.value; };
+  check('paladin 2, Cha +3: divine grace +3 on saves', val(fxOf('paladin', 2, { mod: { cha: 3 } }), 'Divine grace', 'saves'), 3);
+  check('paladin 1: no divine grace yet', fxOf('paladin', 1, { mod: { cha: 3 } }).length, 0);
+  check('bard 5: bardic knowledge +2 on Knowledge (arcana)', val(fxOf('bard', 5), 'Bardic knowledge', 'skill:Knowledge (arcana)'), 2);
+  check('bard 1: bardic knowledge at least +1', val(fxOf('bard', 1), 'Bardic knowledge', 'skill:Knowledge (local)'), 1);
+  check('druid: nature sense +2 Survival', val(fxOf('druid', 1), 'Nature sense', 'skill:Survival'), 2);
+  check('inquisitor 4, Wis +3: cunning initiative +3', val(fxOf('inquisitor', 4, { mod: { wis: 3 } }), 'Cunning initiative', 'init'), 3);
+  check('inquisitor 4: stern gaze +2 Sense Motive', val(fxOf('inquisitor', 4, { mod: {} }), 'Stern gaze', 'skill:Sense Motive'), 2);
+  check('rogue 6: trapfinding +3 Disable Device', val(fxOf('rogue', 6), 'Trapfinding', 'skill:Disable Device'), 3);
+  check('gunslinger 6: nimble +2 dodge', val(fxOf('gunslinger', 6), 'Nimble', 'ac'), 2);
+  check('gunslinger in medium armor: no nimble', fxOf('gunslinger', 6, { armorCategory: 'medium' }).length, 0);
+  check('brawler 9: AC bonus +2 (AC and CMD)', `${val(fxOf('brawler', 9), 'AC bonus (brawler)', 'ac')} ${val(fxOf('brawler', 9), 'AC bonus (brawler)', 'cmd')}`, '2 2');
+  check('fighter 7: armor training 2', armorTrainingStage(one('fighter', 7)), 2);
+  const fp = armorFx({ armor: { bonus: 9, max_dex: 1, check_penalty: -6, category: 'heavy', spell_failure: 35 }, training: 2 });
+  check('armor training 2 in full plate: penalty -4, max Dex 3, not slowed', `${fp.checkPenalty} ${fp.maxDex} ${fp.slows}`, '-4 3 false');
+  check('barbarian 2: uncanny dodge', uncannyDodge(one('barbarian', 2)), 'Barbarian');
+  check('rogue 3: no uncanny dodge yet', uncannyDodge(one('rogue', 3)), null);
+  check('barbarian 13: DR 3/—', classDamageReduction(one('barbarian', 13)).map(d => `${d.value}/${d.against}`).join(), '3/—');
+  const sword = { name: 'Longsword', group: 'one-handed', type: 'S', groups: ['Blades, heavy'] };
+  check('fighter 9, heavy blades at 5th, axes at 9th: longsword +2', weaponTraining(one('fighter', 9), sword, ['Blades, heavy', 'Axes']).map(t => t.value).join(), '2');
+  check('fighter 9: no training with a weapon outside the groups', weaponTraining(one('fighter', 9), { ...sword, groups: ['Hammers'] }, ['Blades, heavy', 'Axes']).length, 0);
+  check('swashbuckler 9 with a rapier: +2', weaponTraining(one('swashbuckler', 9), { name: 'Rapier', group: 'one-handed', type: 'P' }).map(t => t.value).join(), '2');
+  check('fighter 6: bravery +2 vs fear (note)', situationalBonuses(one('fighter', 6)).will.some(t => /\+2/.test(t)), true);
 }
 
 // "Animal companion" prerequisites (Boon Companion) met by any class feature that gives one (a ranger's hunter's bond).
