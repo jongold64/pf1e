@@ -33,6 +33,7 @@ import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
+import { renderFamiliar } from './tab-familiar.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, weaponTraining } from './class-features.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -264,7 +265,7 @@ function load(saved) {
     if (slot === 'crosspower') return !!CROSSBLOODED[cid] && v && typeof v === 'object' && Object.values(v).every(x => typeof x === 'string');
     const kind = slot === 'bloodline2' && CROSSBLOODED[cid] ? 'bloodline' : slot;
     const x = data.pathsById.get(v);
-    const rule = PATH_RULES[cid]?.find(r => r.kind === kind);
+    const rule = PATH_RULES[cid]?.find(r => r.kind === kind) || (cid === 'sorcerer' && kind === 'arcane-bond' ? SORCERER_BOND : null);
     return !!x && !!rule && (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cid);
   }));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
@@ -1412,7 +1413,7 @@ function computeView() {
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
                                                 shield: !!gear.shield, load: load?.load || 'light' });
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
-  const familiarNow = ['wizard', 'witch'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, PATH_RULES[cid][0].kind))
+  const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
     .find(p => p?.kind === 'familiar');
   const familiar = familiarNow?.master_bonus?.length ? familiarNow : null;
   if (familiar) {
@@ -1493,6 +1494,13 @@ function computeView() {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed,
+    // The familiar (if any) and its master's numbers for its statistics (familiar.js).
+    familiar: familiarNow ? { path: familiarNow, master: {
+      // Levels in classes that give a familiar stack (wizard with a familiar bond, witch, Arcane bloodline sorcerer).
+      familiarLevel: counts.filter(e => ['wizard', 'witch'].includes(e.cls.id) || (e.cls.id === 'sorcerer' && arcaneSorcerer())).reduce((n, e) => n + e.level, 0),
+      level: classLevels.length, hp: stats.hp, bab: stats.bab[0], skillRanks: state.skills,
+      baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
+      casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
     classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
@@ -1681,7 +1689,12 @@ const CROSSBLOODED = { sorcerer: 'sorcerer-crossblooded', bloodrager: 'bloodrage
 const isCrossblooded = cid => !!CROSSBLOODED[cid] && (state.archetypes[cid] || []).includes(CROSSBLOODED[cid]);
 // A class's one-time choices, each kept under "class|slot" (the slot is the kind, or "bloodline2" for the second bloodline).
 const rulesFor = cid => [...(PATH_RULES[cid] || []),
-  ...(isCrossblooded(cid) ? [{ kind: 'bloodline', slot: 'bloodline2', label: 'Second bloodline', plural: 'bloodlines' }] : [])];
+  ...(isCrossblooded(cid) ? [{ kind: 'bloodline', slot: 'bloodline2', label: 'Second bloodline', plural: 'bloodlines' }] : []),
+  ...(cid === 'sorcerer' && arcaneSorcerer() ? [SORCERER_BOND] : [])];
+// A sorcerer of the Arcane bloodline gets an arcane bond at 1st level, as a wizard (Core Rulebook, Arcane bloodline).
+const SORCERER_BOND = { kind: 'arcane-bond', kinds: ['arcane-bond', 'familiar'], label: 'Arcane bond', plural: 'arcane bonds',
+  note: 'Arcane bloodline: an arcane bond as a wizard of your sorcerer level (your sorcerer and wizard levels stack for it).' };
+const arcaneSorcerer = () => ['sorcerer|bloodline', 'sorcerer|bloodline2'].some(k => state.paths[k] === 'sorcerer-arcane');
 const slotOf = rule => rule.slot || rule.kind;
 const pathOf = (cid, slot) => data.pathsById.get(state.paths[`${cid}|${slot}`]) || null;
 const pathsFor = cid => rulesFor(cid).map(rule => ({ rule, path: pathOf(cid, slotOf(rule)) }));
@@ -1765,8 +1778,9 @@ function pathPicker(cls, level, openFeatures) {
   const cross = isCrossblooded(cls.id);
   return pathsFor(cls.id).map(({ rule, path }) => {
     const key = `${cls.id}|${slotOf(rule)}`;
-    const all = data.paths.filter(x => (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cls.id));
-    const label = x => (x.parent ? `${x.name} (${x.parent})` : x.name);
+    const all = data.paths.filter(x => (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cls.id)
+      && (!x.improved || view.haveFeats.includes('Improved Familiar') || state.paths[`${cls.id}|${slotOf(rule)}`] === x.id));
+    const label = x => (x.parent ? `${x.name} (${x.parent})` : x.improved ? `${x.name} (improved familiar, caster level ${x.min_level})` : x.name);
     const browseKey = `pbrowse-${key}`;
     const own = classicSchool(path);
     const opp = state.paths[`${cls.id}|opposition`] || [];
@@ -2529,6 +2543,7 @@ function render() {
   renderTraits(app);
   renderEffects(app, view);
   renderCompanion(app, view);
+  renderFamiliar(app, view);
   renderFlaws();
   renderDrawback();
   renderHeroPoints();

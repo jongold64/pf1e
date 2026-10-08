@@ -21,6 +21,7 @@ import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTa
 import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
 import { armorEffects as armorFx } from './armor.js';
+import { familiarStats } from './familiar.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1395,6 +1396,24 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('fighter 9: no training with a weapon outside the groups', weaponTraining(one('fighter', 9), { ...sword, groups: ['Hammers'] }, ['Blades, heavy', 'Axes']).length, 0);
   check('swashbuckler 9 with a rapier: +2', weaponTraining(one('swashbuckler', 9), { name: 'Rapier', group: 'one-handed', type: 'P' }).map(t => t.value).join(), '2');
   check('fighter 6: bravery +2 vs fear (note)', situationalBonuses(one('fighter', 6)).will.some(t => /\+2/.test(t)), true);
+}
+
+// Familiars at the master's level (Core Rulebook): a cat (Bestiary) for a 5th-level wizard with 27 hp, BAB +2, base
+// saves Fort +1 Ref +1 Will +4, 5 ranks of Perception.
+{
+  const cat = { size: 'Tiny', type: 'animal', ac: 14, touch: 14, flat: 12, hd: 1, fort: 1, ref: 4, will: 1, bab: 0, cmb: 0, cmd: 6,
+    scores: { str: 3, dex: 15, con: 8, int: 2, wis: 12, cha: 7 }, melee: '2 claws +4 (1d2–4), bite +4 (1d3–4)',
+    skills: [['Climb', 6], ['Perception', 5], ['Stealth', 14]], racial: '+4 Climb, +4 Stealth' };
+  const f = familiarStats(cat, { familiarLevel: 5, level: 5, hp: 27, bab: 2, baseSaves: { fort: 1, ref: 1, will: 4 }, skillRanks: { Perception: 5 } });
+  check('cat familiar at 5th: hp 13 (half of 27)', f.hp, 13);
+  check('natural armor +3 at 5th: AC 17, flat-footed 15, touch 14', `${f.ac} ${f.flat} ${f.touch}`, '17 15 14');
+  check('Int 8 at 5th', f.scores.int, 8);
+  check('Will: master base +4, its Wis +1', f.saves.will, 5);
+  check('Reflex: its own base +2 (better than master +1), Dex +2', f.saves.ref, 4);
+  check('attacks moved to BAB +2', f.melee, '2 claws +6 (1d2–4), bite +6 (1d3–4)');
+  check('Perception: master 5 ranks + Wis 1 + class skill 3 = +9', f.skills.find(x => x.name === 'Perception').total, 9);
+  check('abilities at 5th include speak with master', f.abilities.includes('Speak with master'), true);
+  check('CMB +2', f.cmb, 2);
 }
 
 // "Animal companion" prerequisites (Boon Companion) met by any class feature that gives one (a ranger's hunter's bond).

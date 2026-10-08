@@ -279,7 +279,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   Familiars: `build_aon_familiars.py` -> data/familiars.json (bonded objects kind 'arcane-bond', familiars kind
   'familiar' with `master_bonus` effects read from "Master gains a +3 bonus on Stealth checks"); merged into data.paths.
   A rule can list `kinds` (wizard's arcane bond takes both). The chosen familiar's master bonus is a class effect;
-  `withFamiliarNotes` adds the Alertness note.
+  `withFamiliarNotes` adds the Alertness note. Familiars carry `stats` parsed from their AoN monster page (stat_block:
+  size, AC parts, hp/HD, saves, speed, melee/ranged, scores, BAB/CMB/CMD, feats, skills + racial, SQ, abilities); the
+  Improved Familiar table adds `improved`, `min_level`, `alignment` (listed only with the feat). js/familiar.js
+  `familiarStats(stats, master)` applies the Core Rulebook familiar rules; tab-familiar.js draws the card from
+  view.familiar ({ path, master: { familiarLevel, level, hp, bab, baseSaves, skillRanks, casterLevel } }). Arcane
+  bloodline sorcerers get `SORCERER_BOND` via rulesFor.
   Combat styles (AoN RangerCombatStyles page): kind 'combat-style', `style_feats` { "2"|"6"|"10": [feat names] };
   PATH_RULES.ranger with `fromLevel: 2`; feats.js `setStyleFeats` limits the 'rangerStyle' slots (tiers up to the slot's
   class level). Companion: featContext `companion` (effective druid level at that point) makes "animal companion"

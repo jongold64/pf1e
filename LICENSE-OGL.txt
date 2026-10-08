@@ -214,6 +214,8 @@ Pathfinder Player Companion: Arcane Anthology © 2016, Paizo Inc.; Authors: Alex
 Pathfinder Player Companion: Armor Master's Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, Robert Brookes, Anthony Li, Luis Loza, and David Schwartz.
 Pathfinder Player Companion: Bastards of Golarion © 2014, Paizo Publishing, LLC; Authors: Judy Bauer, Neal Litherland, Ryan Macklin, and David N. Ross.
 Pathfinder Adventure Path #91: Battle of Bloodmarch Hill © 2015, Paizo Inc.; Authors: Patrick Renie, with Tyler Beck, Adam Daigle, Richard Pett, Stephen Radney-MacFarland, and David Schwartz.
+Rot Grub from the Tome of Horrors, Revised, © 2002, Necromancer Games, Inc.; Author Scott Greene and Clark Peterson, based on original material by Gary Gygax.
+Flumph from the Tome of Horrors Complete © 2011, Necromancer Games, Inc.; published and distributed by Frog God Games; Author: Scott Greene, based on original material by Ian McDowell and Douglas Naismith.
 Pathfinder Roleplaying Game Bestiary 5 © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, John Bennett, Logan Bonner, Creighton Broadhurst, Robert Brookes, Benjamin Bruck, Jason Bulmahn, Adam Daigle, Thurston Hillman, Eric Hindley, Joe Homes, James Jacobs, Amanda Hamon Kunz, Ben McFarland, Jason Nelson, Thom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, Wes Schneider, David Schwartz, Mark Seifter, Mike Shel, James L. Sutter, and Linda Zayas-Palmer.
 Pathfinder Roleplaying Game Bestiary 6 © 2017, Paizo Inc.; Authors: Robert Brookes, Benjamin Bruck, John Compton, Paris Crenshaw, Adam Daigle, Crystal Frasier, James Jacobs, Thurston Hillman, Tim Hitchcock, Brandon Hodge, Jason Keeley, Isabelle Lee, Jason Nelson, Tim Nightengale, F. Wesley Schneider, David Schwartz, Mark Seifter, Todd Stewart, Josh Vogt, and Linda Zayas-Palmer.
 Pathfinder Player Companion: Black Markets © 2015, Paizo Inc.; Authors: Ron Lundeen, Jason Nelson, David N. Ross, and David Schwartz.
@@ -253,10 +255,12 @@ Pathfinder Player Companion: Champions of Corruption © 2014, Paizo Inc.; Author
 Pathfinder Player Companion: Champions of Purity © 2013, Paizo Publishing, LLC; Authors: Jessica Blomstrom, Adam Daigle, Shaun Hocking, Daniel Marthaler, Tork Shaw, and Christina Stiles.
 Pathfinder Companion: Cheliax, Empire of Devils. Copyright 2009, Paizo Publishing, LLC; Authors: Jonathan H. Keith, Colin McComb, Steven E. Schend, Leandra Christine Schneider, and Amber E. Scott.
 Pathfinder Chronicles – Cheliax: Empire of Devils Copyright 2009, Paizo Publishing, LLC Authors: Jonathan H. Keith, Colin McComb, Steven E. Schend, Leandra Christine Schneider, and Amber E. Scott
+Cave Fisher from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Lawrence Schick.
+Skulk from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Simon Muth.
+Pathfinder Campaign Setting: Cheliax, The Infernal Empire © 2015, Paizo Inc.; Authors: Amanda Hamon Kunz, Ron Lundeen, and Mark Moreland.
 Pathfinder Player Companion: Chronicle of Legends © 2019, Paizo Inc.; Authors: Calder CaDavid, Vanessa Hoskins, Mike Kimmel, Isabelle Lee, Matt Morris, Mikhail Rekun, and Michael Sayre.
 Pathfinder Player Companion: Chronicle of Legends © 2019, Paizo Publishing, LLC; Authors: Calder CaDavid, Vanessa Hoskins, Mike Kimmel, Isabelle Lee, Matt Morris, Mikhail Rekun, and Michael Sayre.
 Aurumvorax from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
-Flumph from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Ian McDowell and Douglas Naismith.
 Foo Creature from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Gloomwing from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Monadic Deva from the Tome of Horrors Complete © 2011, Necromancer Games Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -273,7 +277,6 @@ Brownie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., publ
 Dark Stalker from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Simon Muth.
 Dragon Horse from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Huecuva from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Underworld Oracle.
-Skulk from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Simon Muth.
 Spriggan from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley, based on original material by Roger Moore and Gary Gygax.
 Pathfinder Player Companion: Cohorts and Companions © 2015, Paizo Inc.; Authors: Brian Duckwitz, Philip Minchin, and Jason Nelson.
 Dragon, Faerie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Brian Jaeger and Gary Gygax.
@@ -287,7 +290,6 @@ Pathfinder Adventure Path volume #30: The Twice-Damned Prince. © 2010, Paizo Pu
 Council of Thieves Player's Guide © 2009, Paizo Publishing, LLC; Contributing Authors: James Jacobs, F. Wesley Schneider, Amber Scott, and Hank Woon.
 Advanced Bestiary © 2014, Green Ronin Publishing, LLC; Author: Jeff Hersh, Developer: Owen K. C. Stephens.
 The Book of Fiends © 2003, Green Ronin Publishing, LLC; Authors: Aaron Loeb, Erik Mona, Chris Pramas, and Robert J. Schwalb.
-Cave Fisher from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Lawrence Schick.
 Cinder Ghoul from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Erica Balsley.
 Corpse Orgy from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Gloomwing from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Nigel Morgan.
@@ -337,6 +339,9 @@ Pathfinder Player Companion: Faiths of Purity. © 2011, Paizo Publishing, LLC; A
 Carbuncle from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Albie Fiore.
 Pathfinder Player Companion: Familiar Folio © 2015, Paizo Inc.; Authors: Will McCardell, Philip Minchin, Mark Seifter, and Jerome Virnich.
 Pathfinder Adventure Path #116: Fangs of War © 2017, Paizo Inc.; Authors: Ron Lundeen, with John Compton, Adam Daigle, Crystal Frasier, Michelle Jones, and Mark Moreland.
+Iron Cobra from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Philip Masters.
+Yellow Musk Creeper from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Albie Fiore.
+Pathfinder Module: Gallows of Madness © 2016, Paizo Inc.; Authors: Benjamin Bruck, Mikko Kallio, and Mike Kimmel.
 Troll, Rock from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Player Companion: Giant Hunter’s Handbook © 2014, Paizo Inc.; Authors: Alexander Augunas, Luis Loza, Ron Lundeen, and David Ross.
 Giant, Wood from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Wizards of the Coast.
@@ -397,6 +402,7 @@ Spriggan from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pub
 Pathfinder Campaign Setting: Inner Sea Races © 2015, Paizo Inc.; Authors: Ross Byers, John Compton, Adam Daigle, Crystal Frasier, Matthew Goodall, Alex Greenshields, James Jacobs, Amanda Hamon Kunz, Ron Lundeen, Rob McCreary, Jessica Price, David N. Ross, Owen K.C. Stephens, James L. Sutter, Russ Taylor, and Jerome Virnich.
 Pathfinder Campaign Setting: Inner Sea Taverns © 2018, Paizo Inc.; Authors: Kate Baker, Eleanor Ferron, Michelle Jones, Jason Keeley, Luis Loza, Jacob W. Michaels, Joe Pasini, and David N. Ross.
 Pathfinder Campaign Setting: Inner Sea Temples © 2016, Paizo Inc.; Authors: Robert Brookes, Liz Courts, Mikko Kallio, Jeffrey Swank, and Larry Wilhelm.
+Pathfinder Module: Ire of the Storm © 2016, Paizo Inc.; Author: Thurston Hillman.
 Dark Creeper from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Rik Shepard.
 Pathfinder Adventure Path #86: Lords of Rust © 2014, Paizo Inc.; Authors: Nicolas Logue, with Adam Daigle, Jim Groves, James Jacobs, Sean K Reynolds, and Amber E. Scott.
 Pathfinder Adventure Path #89: Palace of Fallen Stars © 2014, Paizo Inc.; Authors: Tim Hitchcock, with Benjamin Bruck, Sean K Reynolds, Amber E. Scott, and Larry Wilhelm.
@@ -467,11 +473,26 @@ Pathfinder Campaign Setting: Osirion, Legacy of Pharaohs © 2014, Paizo Publishi
 PAP25. Copyright 2009, Paizo Publishing, LLC; Author: Sean K Reynolds
 PPC:AM © 2014, Paizo Inc.; Authors: Jason Nelson, Patrick Renie, and David N. Ross.
 Pathfinder Campaign Setting: Path of the Hellknight © 2016, Paizo Inc.; Author: F. Wesley Schneider.
+Slime Mold from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
+Tick, Giant from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
+Pathfinder Adventure Path #103: The Hellfire Compact © 2016, Paizo Inc.; Authors: F. Wesley Schneider, with Paris Crenshaw, Mikko Kallio, Jason Keeley, Rob McCreary, Mark Moreland, and Josh Vogt.
+Pathfinder Adventure Path #118: Siege of Stone © 2017, Paizo Inc.; Authors: Thurston Hillman, with Paris Crenshaw, Crystal Frasier, Patchen Mortimer, and Kalervo Oikarinen.
 Aerial Servant from the Tome of Horrors Complete © 2011, Necromancer Games, Inc.; Published and distributed by Frog God Games; Authors: Clark Greene and Clark Peterson, based on original material by Gary Gygax.
-Iron Cobra from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Philip Masters.
+Armies of the Abyss © 2002, Green Ronin Publishing; Authors: Erik Mona and Chris Pramas.
+The Avatar’s Handbook © 2003, Green Ronin Publishing; Authors: Jesse Decker and Chris Thomasson.
+Book of the Righteous © 2002, Aaron Loeb.
+Legions of Hell © 2001, Green Ronin Publishing; Author: Chris Pramas.
+The Unholy Warrior’s Handbook © 2003, Green Ronin Publishing; Author: Robert J. Schwalb.
+Pathfinder Adventure Path #133: Secrets of Roderic’s Cove © 2018, Paizo Inc.; Authors: Adam Daigle, with James Jacobs, Mikko Kallio, Luis Loza, Jacob W. Michaels, and Conor J. Owens.
 Necrophidius from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Simon Tillbrook.
 Pathfinder Adventure Path #139: The Dead Roads © 2019, Paizo Inc.; Authors: Ron Lundeen, with Crystal Frasier, Kyle T. Raes, Matt Morris, Mikhail Rekun, and Mike Welham.
 Pathfinder Adventure Path #144: Midwives to Death © 2019, Paizo Inc.; Authors: John Compton, with Adam Daigle, Eleanor Ferron, Thurston Hillman, James Jacobs, Jason Keeley, Luis Loza, Ron Lundeen, Robert G. McCreary, Erik Mona, Michael Sayre, Owen K. C. Stephens, Mark Seifter, and Linda Zayas-Palmer.
+Pathfinder Adventure Path volume #25: Bastards of Erebus. © 2009, Paizo Publishing, LLC; Author: Sean K Reynolds.
+Pathfinder Adventure Path #36: Sound of a Thousand Screams. © 2010, Paizo Publishing, LLC; Author: Richard Pett.
+Pathfinder Adventure Path #40: Vaults of Madness. © 2010, Paizo Publishing, LLC; Author Greg A. Vaughan.
+Dead Man’s Chest © 2005 Necromancer Games, Inc.; Authors: Lance Hawvermale, Rob Mason, Robert Hunter, Patrick Goulah, Greg Ragland, Matt McGee, Chris Bernhardt, Casey W. Christofferson, Chad Coulter, Skeeter Green, and Travis Hawvermale, with additional contributions by Erica Balsley, Lindsey Barrentine, Jay Decker, Rachel Mason, and Nadine Oatmeyer.
+Freeport Companion: Pathfinder Roleplaying Game Edition © 2008, Green Ronin Publishing, LLC; Authors: Robert J. Schwalb; Adam Daigle; Brandon Hodge; John E. Ling, Jr.; and Greg A. Vaughan.
+Pathfinder Adventure Path #55: The Wormwood Mutiny © 2012, Paizo Publishing, LLC; Author: Richard Pett.
 Abyssal Larva from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author Scott Greene.
 Cave Moray from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author Scott Greene and Clark Peterson, based on original material by Gary Gygax.
 Devil, Nupperibo from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author Scott Greene, based on original material by Gary Gygax.
@@ -488,6 +509,10 @@ Ooze, Entropic from the Tome of Horrors Complete © 2011, Necromancer Games, Inc
 Ooze, Glacial from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pit Hag from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Adventure Path #72: The Witch Queen’s Revenge © 2013, Paizo Publishing, LLC; Author: Greg A. Vaughan.
+Pathfinder Adventure Path #73: The Worldwound Incursion © 2013, Paizo Publishing, LLC; Author: Amber E. Scott.
+Pathfinder Adventure Path #85: Fires of Creation © 2014, Paizo Inc.; Authors: Neil Spicer, with Mark Garringer, Amber E. Scott, Russ Taylor, and Mike Wellham.
+Animal Lord, Cat Lord from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
+Pathfinder Adventure Path #87: The Choking Tower © 2014, Paizo Inc.; Authors: Ron Lundeen, with Paris Crenshaw, Mark Garringer, Patrick Renie, and Amber E. Scott.
 Pathfinder 15: The Armageddon Echo. Copyright 2009, Paizo Publishing, LLC; Author: Jason Bulmahn
 Pathfinder 16: Endless Night. Copyright 2008, Paizo Publishing, LLC; Author: F. Wesley Schneider.
 Pathfinder 26: The Sixfold Trial. Copyright 2009, Paizo Publishing, LLC; Author: Richard Pett
@@ -506,11 +531,6 @@ Pathfinder Player Companion: People of the Sands © 2013, Paizo Publishing, LLC;
 Pathfinder Player Companion: People of the Stars © 2014, Paizo Inc.; Authors: Ethan Day-Jones, Jim Groves, Jonathan H. Keith, Andrew Romine, David N. Ross, and James L. Sutter.
 Pathfinder Player Companion: People of the Wastes © 2017, Paizo Inc.; Authors: Logan Bonner, John Compton, Nathan King, Luis Loza, Christopher Wasko, and Linda Zayas-Palmer.
 Pathfinder Player Companion: Pirates of the Inner Sea © 2012, Paizo Publishing, LLC. All Rights Reserved. Paizo Publishing, LLC, the Paizo golem logo, Pathfinder, and GameMastery are registered trademarks of Paizo Publishing, LLC; Pathfinder Adventure Path, Pathfinder Campaign Setting, Pathfinder Module, Pathfinder Player Companion, Pathfinder Roleplaying Game, Pathfinder Society, and Pathfinder Tales are trademarks of Paizo Publishing, LLC.
-Armies of the Abyss © 2002, Green Ronin Publishing; Authors: Erik Mona and Chris Pramas.
-The Avatar’s Handbook © 2003, Green Ronin Publishing; Authors: Jesse Decker and Chris Thomasson.
-Book of the Righteous © 2002, Aaron Loeb.
-Legions of Hell © 2001, Green Ronin Publishing; Author: Chris Pramas.
-The Unholy Warrior’s Handbook © 2003, Green Ronin Publishing; Author: Robert J. Schwalb.
 Moon Dog from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Roleplaying Game Planar Adventures © 2018, Paizo Inc.; Authors: Robert Brookes, John Compton, Paris Crenshaw, Eleanor Ferron, Thurston Hillman, James Jacobs, Isabelle Lee, Lyz Liddell, Ron Lundeen, Joe Pasini, Lacy Pellazar, Jessica Price, Mark Seifter, F. Wesley Schneider, Todd Stewart, James L. Sutter, and Linda Zayas-Palmer.
 Pathfinder Player Companion: Plane-Hopper’s Handbook © 2018, Paizo Inc.; Authors: James Case, John Compton, Leo Glass, Avi Kool, Adrian Ng, Lacy Pellazar, Daniel Reed, Mikhail Rekun, Amber E. Scott, Tork Shaw, and Linda Zayas-Palmer.
@@ -560,9 +580,6 @@ Serpent's Skull Player's Guide © 2010, Paizo Publishing, LLC; Author: Mark More
 Pathfinder Adventure Path #62: Curse of the Lady’s Light © 2012, Paizo Publishing, LLC; Author: Mike Shel.
 Pathfinder Adventure Path #65: Into the Nightmare Rift © 2012, Paizo Publishing, LLC; Author: Richard Pett.
 Pathfinder Adventure Path: Shattered Star Player’s Guide © 2012, Paizo Publishing, LLC; Author: Adam Daigle, Mark Moreland, F. Wesley Schneider, James L Sutter.
-Dead Man’s Chest © 2005 Necromancer Games, Inc.; Authors: Lance Hawvermale, Rob Mason, Robert Hunter, Patrick Goulah, Greg Ragland, Matt McGee, Chris Bernhardt, Casey W. Christofferson, Chad Coulter, Skeeter Green, and Travis Hawvermale, with additional contributions by Erica Balsley, Lindsey Barrentine, Jay Decker, Rachel Mason, and Nadine Oatmeyer.
-Freeport Companion: Pathfinder Roleplaying Game Edition © 2008, Green Ronin Publishing, LLC; Authors: Robert J. Schwalb; Adam Daigle; Brandon Hodge; John E. Ling, Jr.; and Greg A. Vaughan.
-Pathfinder Adventure Path #55: The Wormwood Mutiny © 2012, Paizo Publishing, LLC; Author: Richard Pett.
 Mummy of the Deep from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Zombie, Brine from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Adventure Path #56: Raiders of the Fever Sea © 2012, Paizo Publishing, LLC; Author: Greg A. Vaughan.
@@ -585,14 +602,12 @@ Pathfinder Adventure Path #131: The Reaper's Right Hand © 2018, Paizo Inc.; Aut
 Pathfinder Roleplaying Game: The World of Vampire Hunter D © 2016, Paizo Inc.; Author: F. Wesley Schneider.
 Rot Grub from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene and Clark Peterson, based on original material by Gary Gygax.
 Pathfinder Adventure Path #140: Eulogy for Roslar’s Coffer © 2019, Paizo Inc.; Authors: Jason Keeley, with Eleanor Ferron, Sarah E. Hood, Lyz Liddell, Luis Loza, Crystal Malarsky, Jen McTeague, and Mikhail Rekun.
-Animal Lord, Cat Lord from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Adventure Path #143: Borne by the Sun’s Grace © 2019, Paizo Inc.; Authors: Luis Loza, with Carlos Cabrera, Crystal Frasier, and Mikhail Rekun.
 Pathfinder Roleplaying Game Core Rulebook. © 2010, Paizo Publishing, LLC; Author: Jason Bulmahn, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
 Kech from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Muckdweller from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Roleplaying Game Ultimate Intrigue © 2016, Paizo Inc.; Authors: Jesse Benner, John Bennett, Logan Bonner, Robert Brookes, Jason Bulmahn, Ross Byers, Robert N. Emerson, Amanda Hamon Kunz, Steven Helt, Thurston Hillman, Tim Hitchcock, Mikko Kallio, Rob McCreary, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Alexander Riggs, David N. Ross, David Schwartz, Mark Seifter, Linda Zayas-Palmer.
 Daemon, Ceustodaemon (Guardian Daemon) from the Tome of Horrors, Revised. © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by E. Gary Gygax.
-Slime Mold from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Roleplaying Game Ultimate Wilderness © 2017, Paizo Inc.; Authors: Alexander Augunas, John Bennett, Robert Brookes, John Compton, Dan Dillon, Steven T. Helt, Thurston Hillman, Eric Hindley, Mikko Kallio, Jason Keeley, Isabelle Lee, Jason Nelson, Stephen Radney-MacFarland, Alex Riggs, David N. Ross, David Schwartz, Mark Seifter, Jeffery Swank, and Linda Zayas-Palmer.
 Pathfinder Player Companion: Undead Slayer’s Handbook © 2014, Paizo Publishing, LLC; Authors: Dennis Baker, Jay Loomis, Alex Putnam, Adam Roy, Tork Shaw, and Larry Wilhelm.
 Pathfinder Player Companion: Varisia, Birthplace of Legends © 2012, Paizo Publishing, LLC; Authors: F. Wesley Schneider, Amber E. Scott, Tork Shaw, James L. Sutter, and Jerome Virnich.

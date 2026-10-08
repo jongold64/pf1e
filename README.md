@@ -111,7 +111,8 @@ Core Rulebook's lists where AoN has none; firearms are Firearms). Weapons from a
 
 **Familiar** (`familiars.json`): the arcane bond choices in the class path shape: bonded objects (`kind: "arcane-bond"`)
 and familiars (`kind: "familiar"`, `facts` with what the master gains, `master_bonus`: [{ `target`, `type`, `value` }] when
-it's a plain bonus).
+it's a plain bonus), `stats` (the creature's base statistics from its Bestiary stat block), and for improved familiars
+`improved`, `min_level` (arcane caster level) and `alignment`.
 
 **Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class
 choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base-form`, `variant-channeling`), `classes` (ids), `name`, `text`,
