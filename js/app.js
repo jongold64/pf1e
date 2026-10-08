@@ -821,6 +821,14 @@ function buildControls() {
     const id = $('add-level-class').value || state.classLevels.at(-1);
     if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, id] });
   });
+  // Start over: all the character's levels become one level of the chosen class (its favored class too). Choices tied to
+  // the old classes (archetypes, class choices) stay saved but don't count unless that class is taken again.
+  $('restart').addEventListener('click', () => {
+    const id = $('restart-class').value;
+    const cls = data.classes.find(c => c.id === id);
+    if (!cls || !confirm(`Remove all ${state.classLevels.length} level${state.classLevels.length === 1 ? '' : 's'} and start again as a 1st-level ${cls.name}?`)) return;
+    update({ classLevels: [id], favoredPicks: state.favoredPicks.slice(0, 1), favoredClass: id });
+  });
   $('remove-level').addEventListener('click', () => {
     if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
   });
@@ -2200,6 +2208,11 @@ function renderClasses(view) {
   const keep = addSel.value || classLevels.at(-1).id;
   addSel.innerHTML = allOptions;
   addSel.value = keep;
+  // Start over: classes that can be taken at 1st level (not prestige classes).
+  const restartSel = $('restart-class');
+  const restartKeep = restartSel.value;
+  restartSel.innerHTML = baseOptions;
+  restartSel.value = [...restartSel.options].some(o => o.value === restartKeep) ? restartKeep : restartSel.options[0]?.value || '';
   $('add-level').disabled = classLevels.length >= 20;
   $('remove-level').disabled = classLevels.length <= 1;
 

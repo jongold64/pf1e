@@ -149,6 +149,13 @@
           <button type="button" id="add-level-details" class="skill-details" aria-label="The chosen class in a popup">Details</button>
           <button type="button" id="remove-level">Remove last level</button>
         </div>
+        <!-- Starting over: every level replaced by one level of a new class (the last level can't be removed). -->
+        <div class="slot-buttons add-level-row">
+          <label>Start over as <select id="restart-class" aria-label="Class to start over as"></select></label>
+          <button type="button" id="restart">Start over</button>
+        </div>
+        <p class="hint">To change one class into another and keep its levels, open its line above and use <b>Change to</b>.
+          The favored class only chooses among the classes you have.</p>
         <div class="favored-row">
           <label>Favored class <select id="favored-class"></select></label>
           <button type="button" id="favored-details" class="skill-details" aria-label="Favored class bonuses in a popup">Details</button>
@@ -516,6 +523,9 @@
               (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the
               choices made there (favored class bonus, feats, traits, ability increases), add or remove a level of it, or change it
               to another class. In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level.</li>
+            <li><b>Start over as</b> a class, then <b>Start over</b>: every level is removed and the character becomes a 1st-level
+              character of that class (its favored class too). Race, ability scores, feats, traits and gear stay. (The last level
+              can't be removed on its own: a character always has at least one.)</li>
             <li><b>Details</b> on a class line, on a class's section, or beside <b>Add a level of</b> (for the class chosen there)
               shows the class: book, hit die, skill ranks, alignment, class skills, requirements for a prestige class, and its
               level table (base attack, saves and features) with your levels marked, with Add a level and Remove a level.
