@@ -86,9 +86,10 @@ export async function renderEquipment(app, view) {
                        state.weapons.length ? app.loadWeapons() : null]);
     view = app.view;
   }
-  const start = startingGold(view.cls, data.classes);
+  const maxGold = !!state.houseRules.maxGold;
+  const start = startingGold(view.cls, data.classes, maxGold);
   const wealth = WEALTH_BY_LEVEL[state.level];
-  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} starting gold (${formatGp(start)})` : 'No starting gold listed';
+  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} ${maxGold ? 'maximum ' : ''}starting gold (${formatGp(start)})` : 'No starting gold listed';
   $('gold-start').disabled = !start;
   $('gold-wealth').hidden = !wealth;
   if (wealth) $('gold-wealth').textContent = `Use wealth for level ${state.level} (${formatGp(wealth)})`;
@@ -169,7 +170,7 @@ export async function renderEquipment(app, view) {
     <p>${state.gold === null ? `You haven't entered an amount, so your ${esc(view.cls.name.toLowerCase())} starting gold is used.` : 'The amount you entered.'}
       Everything bought (armor, weapons, equipment, magic items) is taken from it in <b>Left</b>.</p>
     <h3>Starting gold (1st level)</h3>
-    <p>${start ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}average ${esc(formatGp(start))}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>
+    <p>${start ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}${maxGold ? `maximum ${esc(formatGp(start))} (Max Starting Gold house rule; the average is ${esc(formatGp(startingGold(view.cls, data.classes)))})` : `average ${esc(formatGp(start))}`}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>
     <h3>Wealth by level (characters made above 1st level)</h3>
     <table class="skill-why"><tbody>${Object.entries(WEALTH_BY_LEVEL).map(([lv, gp]) => `<tr${Number(lv) === state.level ? ' class="mine"' : ''}>
       <td>Level ${lv}${Number(lv) === state.level ? ' (you)' : ''}</td><td class="num">${esc(formatGp(gp))}</td></tr>`).join('')}</tbody></table>
@@ -342,7 +343,7 @@ export function initEquipmentTab(app) {
     const n = Number(e.target.value);
     app.update({ gold: Number.isFinite(n) && n >= 0 ? n : null });
   });
-  $('gold-start').addEventListener('click', () => app.update({ gold: startingGold(app.view.cls, app.data.classes) }));
+  $('gold-start').addEventListener('click', () => app.update({ gold: startingGold(app.view.cls, app.data.classes, !!app.state.houseRules.maxGold) }));
   $('gold-wealth').addEventListener('click', () => app.update({ gold: WEALTH_BY_LEVEL[app.state.level] }));
 }
 

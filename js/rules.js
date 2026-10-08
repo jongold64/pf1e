@@ -518,9 +518,25 @@ export function encumbrance(weight, capacity) {
 // rounded to 5 feet.
 export function slowedSpeed(speed) {
   if (speed === null || speed === undefined) return speed;
-  if (speed === 30) return 20;
-  if (speed === 20) return 15;
+  // Core Rulebook (armor, load and barding tables): 20 -> 15, 30 -> 20, 40 -> 30, 50 -> 35, 60 -> 40.
+  const table = { 20: 15, 30: 20, 40: 30, 50: 35, 60: 40 };
+  if (table[speed]) return table[speed];
   return Math.max(5, Math.round(speed * 2 / 3 / 5) * 5);
+}
+
+// Fast movement (Core Rulebook and later): barbarians, unchained barbarians and bloodragers gain +10 ft. from 1st level
+// unless they wear heavy armor or carry a heavy load; monks (and unchained monks) +10 ft. at 3rd level and every 3 levels
+// after, only without armor and with a light load. It's added to the base speed, before armor or load slow it.
+// counts: [{ cls, level }]; armorCategory: the worn armor's category for movement (null for none); load: 'light' etc.
+// Returns [{ label, value }].
+export function fastMovement(counts, { armorCategory = null, load = 'light' } = {}) {
+  const out = [];
+  const raging = counts.find(e => ['barbarian', 'barbarian-unchained', 'bloodrager'].includes(e.cls.id) && e.level >= 1);
+  if (raging && armorCategory !== 'heavy' && load !== 'heavy') out.push({ label: `Fast movement (${raging.cls.name})`, value: 10 });
+  const monk = counts.filter(e => ['monk', 'monk-unchained'].includes(e.cls.id)).sort((a, b) => b.level - a.level)[0];
+  const monkBonus = monk ? 10 * Math.floor(monk.level / 3) : 0;
+  if (monkBonus && !armorCategory && load === 'light') out.push({ label: `Fast movement (${monk.cls.name} ${monk.level})`, value: monkBonus });
+  return out;
 }
 
 // Initiative: Dex modifier, +4 with Improved Initiative.

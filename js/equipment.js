@@ -11,10 +11,14 @@ export const WEALTH_BY_LEVEL = {
 
 // Average starting gold for a 1st-level character of this class. Alternate classes without their own
 // figure use the class they're based on (antipaladin -> paladin).
-export function startingGold(cls, classes = []) {
-  if (cls.starting_wealth?.average_gp) return cls.starting_wealth.average_gp;
-  const parent = classes.find(c => c.name === cls.alternate_of);
-  return parent?.starting_wealth?.average_gp ?? null;
+// max (Max Starting Gold house rule): the most the class's dice can roll ("3d6 x 10 gp" -> 180) instead of the average.
+export function startingGold(cls, classes = [], max = false) {
+  const wealth = cls.starting_wealth?.average_gp ? cls.starting_wealth
+    : classes.find(c => c.name === cls.alternate_of)?.starting_wealth;
+  if (!wealth?.average_gp) return null;
+  if (!max) return wealth.average_gp;
+  const m = String(wealth.dice || '').match(/(\d+)d(\d+)\s*[x×]\s*(\d+)/i);
+  return m ? Number(m[1]) * Number(m[2]) * Number(m[3]) : wealth.average_gp;
 }
 
 // Price of worn armor or a shield: base price, plus masterwork (150 gp; magic armor is always masterwork) and the

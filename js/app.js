@@ -3,7 +3,7 @@ import { levelIncreases, abilityModifier, finalScores,
   ABILITIES, ABILITY_NAMES, BUDGETS, POINT_COSTS, INCREASE_LEVELS, scoreRange,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
-  currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed,
+  currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed, fastMovement,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
@@ -158,6 +158,7 @@ const state = {
 const HOUSE_RULES = [
   ['encumbrance', 'Encumbrance', 'Encumbrance: what you carry (armor, weapons, equipment, magic items; not coins) sets your load; a medium or heavy load limits Dex, adds a check penalty and slows you.'],
   ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
+  ['maxGold', 'Max Starting Gold', "Max Starting Gold: a 1st-level character starts with the most its class's starting gold roll can give (a barbarian's 3d6 × 10 gp: 180 gp) instead of the average (105 gp)."],
   ['actionPoints', 'Action Points', "Action Points: Pathfinder's hero points (Advanced Player's Guide), in the Race card: 1 to start, 1 more each level gained, at most 3, and at most 1 spent a round."],
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
   ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
@@ -1453,11 +1454,15 @@ function computeView() {
     const before = classLevels.slice(0, classLevels.findIndex(c => c.id === e.cls.id));
     requirements.set(e.cls.id, prestigeCheck(e.cls, before, race, before.length ? contextAt(before.length) : null));
   }
-  const baseSpeed = flawFx.halfSpeed && race.base_speed ? Math.floor(race.base_speed / 2 / 5) * 5 : race.base_speed;
+  // Fast movement (barbarian, bloodrager, monk) adds to the base speed before armor or load slow it.
+  const fastMove = race.base_speed ? fastMovement(counts, { armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
+                                                           load: load?.load || 'light' }) : [];
+  const raceSpeed = flawFx.halfSpeed && race.base_speed ? Math.floor(race.base_speed / 2 / 5) * 5 : race.base_speed;
+  const baseSpeed = raceSpeed && raceSpeed + fastMove.reduce((n, x) => n + x.value, 0);
   let speed = speedInArmor(baseSpeed, gear, race);
   // A medium or heavy load slows like medium or heavy armor (not both); dwarves' Slow and Steady ignores it.
   if (load?.slows && !(race.traits || []).some(t => t.name === 'Slow and Steady')) {
-    speed = Math.min(speed ?? Infinity, slowedSpeed(race.base_speed));
+    speed = Math.min(speed ?? Infinity, slowedSpeed(baseSpeed));
   }
   // Enhancement bonuses to speed from effects (haste, longstrider...).
   if (speed !== null && speed !== undefined && fx.speed) speed = Math.max(5, speed + fx.speed);
@@ -1466,7 +1471,7 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
-    load, fx, size, flawFx, customAll,
+    load, fx, size, flawFx, customAll, fastMove, baseSpeed,
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     companion: companionFor(counts),

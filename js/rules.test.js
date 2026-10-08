@@ -26,7 +26,7 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, w
          flurryBabs } from './weapons.js';
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
-         carryingCapacity, encumbrance, slowedSpeed } from './rules.js';
+         carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
 import { exportData, importData } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -700,6 +700,32 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('masterwork longsword', weaponCost(ls, { masterwork: true }), 315);
   check('+2 longsword: 15 + 300 + 8,000', weaponCost(ls, { enh: 2 }), 8315);
 
+  // Fast movement: barbarian +10 (not in heavy armor or with a heavy load); monk +10 per 3 levels, unarmored and light load.
+  const fastFt = (id, lv, opts) => fastMovement([{ cls: cls(id), level: lv }], opts).reduce((n, x) => n + x.value, 0);
+  check('barbarian 1: +10 ft.', fastFt('barbarian', 1), 10);
+  check('barbarian in medium armor: still +10', fastFt('barbarian', 1, { armorCategory: 'medium' }), 10);
+  check('barbarian in heavy armor: none', fastFt('barbarian', 1, { armorCategory: 'heavy' }), 0);
+  check('monk 6: +20 ft.', fastFt('monk', 6), 20);
+  check('monk in light armor: none', fastFt('monk', 6, { armorCategory: 'light' }), 0);
+  check('fighter: none', fastFt('fighter', 5), 0);
+  check('40 ft. slowed by a load or armor: 30 ft.', slowedSpeed(40), 30);
+  // Max Starting Gold house rule: the most the dice can give.
+  check('barbarian starting gold: average 105', startingGold(cls('barbarian')), 105);
+  check('barbarian starting gold: maximum 180 (3d6 x 10)', startingGold(cls('barbarian'), classes, true), 180);
+
+  // Fast movement: barbarian +10 (not in heavy armor or with a heavy load); monk +10 per 3 levels, unarmored and light load.
+  const fm = (id, lv, opts) => fastMovement([{ cls: cls(id), level: lv }], opts).reduce((n, x) => n + x.value, 0);
+  check('barbarian 1: +10 ft.', fm('barbarian', 1), 10);
+  check('barbarian in medium armor: still +10', fm('barbarian', 1, { armorCategory: 'medium' }), 10);
+  check('barbarian in heavy armor: none', fm('barbarian', 1, { armorCategory: 'heavy' }), 0);
+  check('monk 6: +20 ft.', fm('monk', 6), 20);
+  check('monk in light armor: none', fm('monk', 6, { armorCategory: 'light' }), 0);
+  check('fighter: none', fm('fighter', 5), 0);
+  check('40 ft. slowed by a load or armor: 30 ft.', slowedSpeed(40), 30);
+  // Max Starting Gold house rule: the most the dice can give.
+  check('barbarian starting gold: average 105', startingGold(cls('barbarian')), 105);
+  check('barbarian starting gold: maximum 180 (3d6 x 10)', startingGold(cls('barbarian'), classes, true), 180);
+
   // Crossblooded sorcerer: one fewer spell known of each level, not below 0.
   const sorc = cls('sorcerer');
   const plainKnown = spellsPerDay({ cls: sorc, level: 4, scores: { cha: 16 } }).rows.map(r => r.known);
@@ -910,7 +936,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Small carries three quarters', carryingCapacity(10, 'Small').heavy, 75);
   check('loads', [30, 50, 90, 120].map(w => encumbrance(w, carryingCapacity(10)).load).join(' '), 'light medium heavy overloaded');
   check('medium load: max Dex +3, -3 check penalty', JSON.stringify(encumbrance(50, carryingCapacity(10))), '{"load":"medium","maxDex":3,"checkPenalty":-3,"slows":true}');
-  check('slowed speeds', [30, 20, 40, 15].map(slowedSpeed).join(' '), '20 15 25 10');
+  check('slowed speeds (40 ft. -> 30 ft., Core Rulebook table)', [30, 20, 40, 15].map(slowedSpeed).join(' '), '20 15 30 10');
   check('initiative: Dex +2, +4 with Improved Initiative', `${initiative(ftr)} ${initiative(ftr, ['Improved Initiative'])}`, '2 6');
   const hm = characterStats({ race: race('halfling'), cls: cls('monk'), level: 1, baseScores: scores(10, 14, 10, 10, 14, 10) });
   // Halfling monk 1: Str 8 (-1), Dex 16 (+3), Wis 14 (+2), Small. CMB 0 - 1 - 1 = -2; CMD 10 + 0 - 1 + 3 - 1 + 2 Wis = 13

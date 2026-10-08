@@ -323,11 +323,14 @@ export function renderArmorTab(app, view) {
     ...byClass.map(e => ({ label: `${e.cls.name} spells`, text: e.chance ? `${e.chance}%` : 'none (class feature)' })),
   ], note: 'Only arcane spells with somatic components can fail; divine spells never do.' });
   // Speed: the race's, slowed by medium or heavy armor or load, plus effects.
-  const base = view.race.base_speed;
+  // The race's speed, plus fast movement (barbarian, monk...), before armor or load.
+  const base = view.baseSpeed ?? view.race.base_speed;
   const armorSpeed = speedInArmor(base, gear, view.race);
   const loadSpeed = view.load?.slows && !(view.race.traits || []).some(t => t.name === 'Slow and Steady') ? slowedSpeed(base) : null;
   armorWhy.set('speed', { title: `Speed: ${view.speed ?? '—'} ft.`, total: view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`, rows: [
-    { label: `${view.race.name} base speed`, text: base === null || base === undefined ? '—' : `${base} ft.` },
+    { label: `${view.race.name} base speed`, text: view.race.base_speed === null || view.race.base_speed === undefined ? '—' : `${view.race.base_speed} ft.` },
+    ...(view.fastMove || []).map(x => ({ label: x.label, text: `+${x.value} ft.` })),
+    ...(view.fastMove?.length ? [{ label: 'Base speed', text: `${base} ft.` }] : []),
     ...(gear.slows ? [{ label: armorSpeed === base ? 'Medium or heavy armor (does not slow this race)' : `In ${gear.armor.move_category || gear.armor.category} armor`, text: `${armorSpeed} ft.` }] : []),
     ...(loadSpeed !== null ? [{ label: `Your ${view.load.load} load (the slower of armor and load counts)`, text: `${loadSpeed} ft.` }] : []),
     ...(view.stats.fx.speed ? [{ label: 'Active effects (haste, longstrider...)', text: `${view.stats.fx.speed > 0 ? '+' : ''}${view.stats.fx.speed} ft.` }] : []),
@@ -342,7 +345,7 @@ export function renderArmorTab(app, view) {
     ...(gear.dr ? [['Damage reduction', `${gear.dr}/— (adamantine)`]] : []),
     ...[gear.armor, gear.shield].filter(a => a?.material_notes).map(a => [a.material, a.material_notes]),
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
-      (gear.slows && view.speed === view.race.base_speed && view.race.base_speed ? ' (not slowed)' : ''), 'speed'],
+      (gear.slows && view.speed === base && base ? ' (not slowed)' : ''), 'speed'],
   ];
   renderArmorList(app);
   $('armor-summary').innerHTML = rows.map(([k, v, key]) => `<dt>${esc(k)}</dt><dd>${esc(v)}${key ? whyButton(key, k) : ''}</dd>`).join('');

@@ -64,7 +64,10 @@ export function speedInArmor(baseSpeed, effects, race) {
   if ((race?.traits || []).some(t => t.name === 'Slow and Steady')) return baseSpeed;
   if (baseSpeed === 30) return effects.armor.speed_30 ?? baseSpeed;
   if (baseSpeed === 20) return effects.armor.speed_20 ?? baseSpeed;
-  return baseSpeed;
+  // Other speeds (a barbarian's 40 ft. with fast movement): the armor table's steps, 40 -> 30, 50 -> 35, 60 -> 40;
+  // armor that doesn't slow a 30-ft. creature doesn't slow these either.
+  if (effects.armor.speed_30 === 30) return baseSpeed;
+  return { 40: 30, 50: 35, 60: 40 }[baseSpeed] ?? Math.max(5, Math.round(baseSpeed * 2 / 3 / 5) * 5);
 }
 
 // Attack roll penalty from worn armor and shield: an item's armor check penalty applies to attacks when not
