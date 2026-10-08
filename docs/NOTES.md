@@ -223,6 +223,10 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   belt's +2/+4/+6, negative levels 1-10; `buffAmount` keeps a saved amount valid) and `flags`: 'noDexAc' (characterStats
   drops a Dex bonus and dodge bonuses from AC) and 'halfSpeed' (computeView halves speed). Targets 'melee-attack',
   'melee-damage' and 'ranged-attack' stack with 'attack'/'damage' by the usual rules (effectTotals works out the extra).
+- Prepared spells (tab-spells.js `renderPrepared`): `state.prepared` = { class id: { spell level: [{ id, cast }] } } for
+  casting classes whose table has no spells known (and the arcanist: its "spells prepared" number). Slots per level =
+  spellsPerDay total with `app.extraSlotOn` (school/domain slot, tagged on the last slot) and `app.knownChange`.
+  SPELLBOOK classes pick from state.spells; others from the class list at that level plus their My spells below it.
 - Effect catalog (`js/effect-catalog.js` MORE_BUFFS, appended to BUFFS): the longer lists (polymorphs, more spells, class
   abilities, magic items, the rest of the Core Rulebook conditions and combat modifiers). Each entry has a `ref`
   ({ spell } / { item } / { cls, feature } / { talent }, with `with`/`also` for text that says "as <earlier spell>") that

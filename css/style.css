@@ -99,6 +99,9 @@ table.abilities { width: 100%; border-collapse: collapse; }
 .abilities th, .abilities td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); }
 .abilities th:first-child, .abilities td:first-child { text-align: left; }
 .char-current { font-weight: 600; padding: 6px 2px; }
+.prep-slots > li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 0; border-top: 1px solid var(--border); }
+.prep-slots select { flex: 1 1 220px; min-width: 0; max-width: 100%; }
+.prep-slot.cast select { text-decoration: line-through; opacity: 0.7; }
 .abilities .base { display: inline-flex; align-items: center; gap: 6px; }
 .abilities .base-input { width: 3.5em; text-align: center; font-size: 1rem; min-height: 36px; }
 .abilities button { width: 40px; padding: 0; font-size: 1.3rem; }

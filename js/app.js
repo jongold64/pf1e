@@ -146,6 +146,7 @@ const state = {
   gold: null,      // gold the character has; null means the class's average starting gold
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
+  prepared: {},    // today's prepared spells: { class id: { spell level: [{ id ('' for an empty slot), cast }] } }
   magicItems: [],  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'
   weapons: [],     // [{ id, enh, masterwork, focus, greaterFocus, spec, greaterSpec, proficient }] from data/weapons.json
   // Combat options on the Weapons tab: Power Attack / Deadly Aim / Rapid Shot switched on, and the weapons used
@@ -173,6 +174,7 @@ let currentId = null;
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
   knownChange: cid => knownChange(cid),
+  extraSlotOn: cid => extraSlotOn(cid),
   showAcDetails: column => showAcDetails(column),
   get view() { return view; },
 };
@@ -338,6 +340,10 @@ function load(saved) {
     .map(e => (MERGED[e.id] ? { id: MERGED[e.id], variant: 'Masterwork', qty: e.qty }
       : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
   state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
+  const prep = state.prepared && typeof state.prepared === 'object' && !Array.isArray(state.prepared) ? state.prepared : {};
+  state.prepared = Object.fromEntries(Object.entries(prep).filter(([, lv]) => lv && typeof lv === 'object').map(([cid, lv]) =>
+    [cid, Object.fromEntries(Object.entries(lv).filter(([l, slots]) => /^[0-9]$/.test(l) && Array.isArray(slots)).map(([l, slots]) =>
+      [l, slots.slice(0, 30).map(x => ({ id: typeof x?.id === 'string' ? x.id : '', cast: x?.cast === true }))]))]));
   state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,

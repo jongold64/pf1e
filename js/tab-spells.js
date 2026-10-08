@@ -2,7 +2,7 @@
 // panel for the spell being looked at.
 import { openLines, fitLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { activeBonuses } from './effects.js';
-import { spellsPerDay } from './rules.js';
+import { spellsPerDay, EXTRA_SLOTS } from './rules.js';
 import { spellContext, spellLines, srCheck } from './spell-math.js';
 import { rollButton } from './roll-ui.js';
 
@@ -233,6 +233,7 @@ function showLineDetails(app, key) {
 }
 
 export function initSpellList(app) {
+  initPrepared(app);
   $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
   $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
   $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
@@ -264,6 +265,104 @@ export function initSpellList(app) {
   }
 }
 
+// Prepared casters' spells for today. Spellbook classes prepare from their spellbook (My spells); the others (clerics,
+// druids...) from their whole class list, their own My spells first.
+const SPELLBOOK = new Set(['wizard', 'witch', 'magus', 'arcanist', 'alchemist', 'investigator']);
+function preparers(app, view) {
+  return view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
+                                                                            extraSlot: app.extraSlotOn?.(c.cls.id), knownChange: app.knownChange?.(c.cls.id) || 0 }) }))
+    .filter(x => x.table && (x.cls.id === 'arcanist' || x.table.rows.every(r => r.known === null)));
+}
+// How many slots of each spell level today: the spells per day (cantrips: the number prepared); an arcanist prepares
+// the "spells prepared" number and casts from them.
+const slotCount = (cls, r) => (!r.canCast ? 0 : cls.id === 'arcanist' ? r.prepared ?? 0 : r.total ?? 0);
+
+function renderPrepared(app, view) {
+  const list = preparers(app, view);
+  $('prepared-card').hidden = !list.length;
+  if (!list.length) return;
+  const byId = new Map(app.data.spells.map(s => [s.id, s]));
+  const mine = new Set(app.state.spells);
+  let filled = 0, slots = 0;
+  const html = list.map(({ cls, table }) => {
+    const prep = app.state.prepared[cls.id] || {};
+    const levels = table.rows.filter(r => slotCount(cls, r) > 0).map(r => {
+      const lv = r.spellLevel;
+      const n = slotCount(cls, r);
+      const saved = prep[lv] || [];
+      // The spells that fit a slot of this level: this level or lower from the spellbook; for the others, this level from
+      // the whole list and lower ones from their My spells (keeping the lists short).
+      const pool = (SPELLBOOK.has(cls.id) ? [...mine].map(id => byId.get(id))
+        : app.data.spells.filter(s => s.levels[cls.id] === lv || (mine.has(s.id) && s.levels[cls.id] < lv)))
+        .filter(s => s && s.levels[cls.id] !== undefined && s.levels[cls.id] <= lv)
+        .sort((a, b) => (mine.has(b.id) - mine.has(a.id)) || (b.levels[cls.id] - a.levels[cls.id]) || a.name.localeCompare(b.name));
+      const extraName = r.extra && EXTRA_SLOTS[cls.id]?.name;
+      const rows = Array.from({ length: n }, (_, i) => {
+        const slot = saved[i] || { id: '', cast: false };
+        const s = byId.get(slot.id);
+        slots++;
+        if (s) filled++;
+        const key = `${cls.id}|${lv}|${i}`;
+        const label = x => `${x.name}${x.levels[cls.id] < lv ? ` (${x.levels[cls.id] === 0 ? 'cantrip' : LEVEL_NAMES[x.levels[cls.id]].replace(' spells', '')}, in a higher slot)` : ''}`;
+        const opts = pool.map(x => `<option value="${esc(x.id)}"${x.id === slot.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('');
+        return `<li class="prep-slot${slot.cast ? ' cast' : ''}">
+          ${extraName && i === n - 1 ? `<span class="tag">${esc(extraName)} slot</span>` : ''}
+          <select data-prep="${esc(key)}" aria-label="${esc(LEVEL_NAMES[lv])} slot ${i + 1}"><option value="">— empty —</option>${opts}</select>
+          ${s ? `<button type="button" class="skill-details" data-prep-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">About</button>` : ''}
+          ${lv > 0 && cls.id !== 'arcanist' && s ? `<label class="check-row small"><input type="checkbox" data-prep-cast="${esc(key)}"${slot.cast ? ' checked' : ''}> cast</label>` : ''}
+        </li>`;
+      }).join('');
+      const used = saved.slice(0, n).filter(x => x.cast && byId.has(x.id)).length;
+      const ready = saved.slice(0, n).filter(x => byId.has(x.id)).length;
+      return `<div class="my-spell-level"><h3>${LEVEL_NAMES[lv]} <span class="count">${ready} of ${n} prepared${lv > 0 && used ? `, ${used} cast` : ''}${lv === 0 ? ' · cast at will' : ''}</span></h3>
+        ${pool.length ? `<ul class="plain-list prep-slots">${rows}</ul>`
+          : `<p class="hint">${SPELLBOOK.has(cls.id) ? 'No spells of this level in your spellbook yet: add them to My spells.' : 'No spells of this level on the list.'}</p>`}
+        ${extraName ? `<p class="hint small">The ${esc(extraName.toLowerCase())} slot holds a ${cls.id === 'wizard' ? 'spell of your arcane school' : cls.id === 'shaman' ? 'spirit magic spell' : 'domain spell'}.</p>` : ''}</div>`;
+    }).join('');
+    return `${list.length > 1 ? `<h3>${esc(cls.name)}</h3>` : ''}${cls.id === 'arcanist' ? '<p class="hint">An arcanist prepares these and casts any of them with the spell slots on the Spells per day table.</p>' : ''}
+      ${SPELLBOOK.has(cls.id) ? '' : `<p class="hint">A ${esc(cls.name.toLowerCase())} prepares from the whole ${esc(cls.name.toLowerCase())} list; your My spells come first in each list.</p>`}
+      ${levels || '<p class="hint">No spell slots yet.</p>'}
+      <div class="slot-buttons"><button type="button" data-prep-newday="${esc(cls.id)}">New day (clear the cast ticks)</button>
+        <button type="button" data-prep-clear="${esc(cls.id)}">Clear all prepared</button></div>`;
+  }).join('');
+  $('prepared-count').textContent = slots ? `${filled} of ${slots}` : '';
+  $('prepared').innerHTML = html;
+}
+
+// Changes to today's prepared spells: fill or empty a slot, tick it cast, a new day, or clear all.
+function initPrepared(app) {
+  const setSlot = (key, change) => {
+    const [cid, lv, i] = key.split('|');
+    const prepared = structuredClone(app.state.prepared);
+    const slots = ((prepared[cid] ??= {})[lv] ??= []);
+    while (slots.length <= Number(i)) slots.push({ id: '', cast: false });
+    Object.assign(slots[Number(i)], change);
+    app.update({ prepared });
+  };
+  $('prepared').addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.prep) setSlot(t.dataset.prep, { id: t.value, cast: false });
+    else if (t.dataset.prepCast) setSlot(t.dataset.prepCast, { cast: t.checked });
+  });
+  $('prepared').addEventListener('click', e => {
+    const pop = e.target.closest('[data-prep-pop]');
+    if (pop) { popSpell(app, pop.dataset.prepPop); return; }
+    const day = e.target.closest('[data-prep-newday]');
+    if (day) {
+      const prepared = structuredClone(app.state.prepared);
+      for (const slots of Object.values(prepared[day.dataset.prepNewday] || {})) for (const s of slots) s.cast = false;
+      app.update({ prepared });
+      return;
+    }
+    const clear = e.target.closest('[data-prep-clear]');
+    if (clear && confirm('Empty every prepared spell slot?')) {
+      const prepared = structuredClone(app.state.prepared);
+      delete prepared[clear.dataset.prepClear];
+      app.update({ prepared });
+    }
+  });
+}
+
 export async function renderSpellList(app, view) {
   if (!app.data.spells) {
     $('spell-list').innerHTML = '<p class="hint">Loading spells…</p>';
@@ -275,6 +374,7 @@ export async function renderSpellList(app, view) {
   $('spell-class').innerHTML = withList.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   $('spell-class').value = cls.id;
   renderMySpells(app, view);
+  renderPrepared(app, view);
   const all = app.data.spells;
   const onList = all.filter(s => s.levels[cls.id] !== undefined);
   const filter = $('spell-filter').value.trim().toLowerCase();

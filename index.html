@@ -217,6 +217,12 @@
         <p id="my-spells-hint" class="hint"></p>
         <div id="my-spells"></div>
       </section>
+      <section class="card wide" id="prepared-card" hidden>
+        <h2>Prepared today <span id="prepared-count" class="count"></span></h2>
+        <p class="hint">Fill each of today's spell slots with a spell, and tick <b>cast</b> when you use it. A slot can hold a
+          lower-level spell. <b>New day</b> clears the ticks after a rest; the prepared spells stay until you change them.</p>
+        <div id="prepared"></div>
+      </section>
       <section class="card wide" id="no-spells" hidden>
         <h2>Spells</h2>
         <p id="no-spells-text"></p>
@@ -673,6 +679,12 @@
           <summary>Spells tab</summary>
           <ul>
             <li>In <b>My spells</b>, each spell is one line (its main numbers with Roll buttons); <b>Details</b> opens the rest.</li>
+            <li><b>Prepared today</b> (wizards, clerics, druids, magi and other casters who prepare spells): one slot for each spell
+              you can cast today at each level (bonus spells, and a wizard's school or a cleric's domain slot, included). Pick a
+              spell for each slot (wizards and other spellbook casters from My spells; clerics and druids from their whole list,
+              My spells first; a lower-level spell can go in a higher slot), tick <b>cast</b> when you use it, and press
+              <b>New day</b> after resting to clear the ticks. <b>About</b> opens the spell. The choices are saved with the
+              character.</li>
             <li>Under each class in Spells per day, a line gives your caster level, concentration, save DC and spell resistance
               check; its <b>Details</b> shows how each is worked out. In <b>My spells</b>, <b>Details</b> beside a spell opens it
               (with Remove), and beside a level's count it shows how many of that level you can know or prepare.</li>
