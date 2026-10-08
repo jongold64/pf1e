@@ -1,0 +1,3707 @@
+[
+ {
+  "id": "bond-amulet",
+  "kind": "arcane-bond",
+  "classes": [
+   "wizard"
+  ],
+  "name": "Bonded object: amulet",
+  "source": "Core Rulebook",
+  "text": "At 1st level, wizards form a powerful bond with an object or a creature. This bond can take one of two forms: a familiar or a bonded object. A familiar is a magical pet that enhances the wizard's skills and senses and can aid him in magic, while a bonded object is an item a wizard can use to cast additional spells or to serve as a magical item. Once a wizard makes this choice, it is permanent and cannot be changed. Rules for bonded items are given below, while rules for familiars are at the end of this section.\n\nWizards who select a bonded object begin play with one at no cost. Objects that are the subject of an arcane bond must fall into one of the following categories: amulet, ring, staff, wand, or weapon. These objects are always masterwork quality. Weapons acquired at 1st level are not made of any special material. If the object is an amulet or ring, it must be worn to have effect, while staves, wands, and weapons must be held in one hand. If a wizard attempts to cast a spell without his bonded object worn or in hand, he must make a concentration check or lose the spell. The DC for this check is equal to 20 + the spell's level. If the object is a ring or amulet, it occupies the ring or neck slot accordingly.\n\nA bonded object can be used once per day to cast any one spell that the wizard has in his spellbook and is capable of casting, even if the spell is not prepared. This spell is treated like any other spell cast by the wizard, including casting time, duration, and other effects dependent on the wizard's level. This spell cannot be modified by metamagic feats or other abilities. The bonded object cannot be used to cast spells from the wizard's opposition schools (see arcane school).\n\nA wizard can add additional magic abilities to his bonded object as if he has the required item creation feats and if he meets the level prerequisites of the feat. For example, a wizard with a bonded dagger must be at least 5th level to add magic abilities to the dagger (see the Craft Magic Arms and Armor feat in Feats). If the bonded object is a wand, it loses its wand abilities when its last charge is consumed, but it is not destroyed and it retains all of its bonded object properties and can be used to craft a new wand. The magic properties of a bonded object, including any magic abilities added to the object, only function for the wizard who owns it. If a bonded object's owner dies, or the item is replaced, the object reverts to being an ordinary masterwork item of the appropriate type.\n\nIf a bonded object is damaged, it is restored to full hit points the next time the wizard prepares his spells. If the object of an arcane bond is lost or destroyed, it can be replaced after 1 week in a special ritual that costs 200 gp per wizard level plus the cost of the masterwork item. This ritual takes 8 hours to complete. Items replaced in this way do not possess any of the additional enchantments of the previous bonded item. A wizard can designate an existing magic item as his bonded item. This functions in the same way as replacing a lost or destroyed item except that the new magic item retains its abilities while gaining the benefits and drawbacks of becoming a bonded item.",
+  "parent": null,
+  "facts": [],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "psrd"
+ },
+ {
+  "id": "bond-ring",
+  "kind": "arcane-bond",
+  "classes": [
+   "wizard"
+  ],
+  "name": "Bonded object: ring",
+  "source": "Core Rulebook",
+  "text": "At 1st level, wizards form a powerful bond with an object or a creature. This bond can take one of two forms: a familiar or a bonded object. A familiar is a magical pet that enhances the wizard's skills and senses and can aid him in magic, while a bonded object is an item a wizard can use to cast additional spells or to serve as a magical item. Once a wizard makes this choice, it is permanent and cannot be changed. Rules for bonded items are given below, while rules for familiars are at the end of this section.\n\nWizards who select a bonded object begin play with one at no cost. Objects that are the subject of an arcane bond must fall into one of the following categories: amulet, ring, staff, wand, or weapon. These objects are always masterwork quality. Weapons acquired at 1st level are not made of any special material. If the object is an amulet or ring, it must be worn to have effect, while staves, wands, and weapons must be held in one hand. If a wizard attempts to cast a spell without his bonded object worn or in hand, he must make a concentration check or lose the spell. The DC for this check is equal to 20 + the spell's level. If the object is a ring or amulet, it occupies the ring or neck slot accordingly.\n\nA bonded object can be used once per day to cast any one spell that the wizard has in his spellbook and is capable of casting, even if the spell is not prepared. This spell is treated like any other spell cast by the wizard, including casting time, duration, and other effects dependent on the wizard's level. This spell cannot be modified by metamagic feats or other abilities. The bonded object cannot be used to cast spells from the wizard's opposition schools (see arcane school).\n\nA wizard can add additional magic abilities to his bonded object as if he has the required item creation feats and if he meets the level prerequisites of the feat. For example, a wizard with a bonded dagger must be at least 5th level to add magic abilities to the dagger (see the Craft Magic Arms and Armor feat in Feats). If the bonded object is a wand, it loses its wand abilities when its last charge is consumed, but it is not destroyed and it retains all of its bonded object properties and can be used to craft a new wand. The magic properties of a bonded object, including any magic abilities added to the object, only function for the wizard who owns it. If a bonded object's owner dies, or the item is replaced, the object reverts to being an ordinary masterwork item of the appropriate type.\n\nIf a bonded object is damaged, it is restored to full hit points the next time the wizard prepares his spells. If the object of an arcane bond is lost or destroyed, it can be replaced after 1 week in a special ritual that costs 200 gp per wizard level plus the cost of the masterwork item. This ritual takes 8 hours to complete. Items replaced in this way do not possess any of the additional enchantments of the previous bonded item. A wizard can designate an existing magic item as his bonded item. This functions in the same way as replacing a lost or destroyed item except that the new magic item retains its abilities while gaining the benefits and drawbacks of becoming a bonded item.",
+  "parent": null,
+  "facts": [],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "psrd"
+ },
+ {
+  "id": "bond-staff",
+  "kind": "arcane-bond",
+  "classes": [
+   "wizard"
+  ],
+  "name": "Bonded object: staff",
+  "source": "Core Rulebook",
+  "text": "At 1st level, wizards form a powerful bond with an object or a creature. This bond can take one of two forms: a familiar or a bonded object. A familiar is a magical pet that enhances the wizard's skills and senses and can aid him in magic, while a bonded object is an item a wizard can use to cast additional spells or to serve as a magical item. Once a wizard makes this choice, it is permanent and cannot be changed. Rules for bonded items are given below, while rules for familiars are at the end of this section.\n\nWizards who select a bonded object begin play with one at no cost. Objects that are the subject of an arcane bond must fall into one of the following categories: amulet, ring, staff, wand, or weapon. These objects are always masterwork quality. Weapons acquired at 1st level are not made of any special material. If the object is an amulet or ring, it must be worn to have effect, while staves, wands, and weapons must be held in one hand. If a wizard attempts to cast a spell without his bonded object worn or in hand, he must make a concentration check or lose the spell. The DC for this check is equal to 20 + the spell's level. If the object is a ring or amulet, it occupies the ring or neck slot accordingly.\n\nA bonded object can be used once per day to cast any one spell that the wizard has in his spellbook and is capable of casting, even if the spell is not prepared. This spell is treated like any other spell cast by the wizard, including casting time, duration, and other effects dependent on the wizard's level. This spell cannot be modified by metamagic feats or other abilities. The bonded object cannot be used to cast spells from the wizard's opposition schools (see arcane school).\n\nA wizard can add additional magic abilities to his bonded object as if he has the required item creation feats and if he meets the level prerequisites of the feat. For example, a wizard with a bonded dagger must be at least 5th level to add magic abilities to the dagger (see the Craft Magic Arms and Armor feat in Feats). If the bonded object is a wand, it loses its wand abilities when its last charge is consumed, but it is not destroyed and it retains all of its bonded object properties and can be used to craft a new wand. The magic properties of a bonded object, including any magic abilities added to the object, only function for the wizard who owns it. If a bonded object's owner dies, or the item is replaced, the object reverts to being an ordinary masterwork item of the appropriate type.\n\nIf a bonded object is damaged, it is restored to full hit points the next time the wizard prepares his spells. If the object of an arcane bond is lost or destroyed, it can be replaced after 1 week in a special ritual that costs 200 gp per wizard level plus the cost of the masterwork item. This ritual takes 8 hours to complete. Items replaced in this way do not possess any of the additional enchantments of the previous bonded item. A wizard can designate an existing magic item as his bonded item. This functions in the same way as replacing a lost or destroyed item except that the new magic item retains its abilities while gaining the benefits and drawbacks of becoming a bonded item.",
+  "parent": null,
+  "facts": [],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "psrd"
+ },
+ {
+  "id": "bond-wand",
+  "kind": "arcane-bond",
+  "classes": [
+   "wizard"
+  ],
+  "name": "Bonded object: wand",
+  "source": "Core Rulebook",
+  "text": "At 1st level, wizards form a powerful bond with an object or a creature. This bond can take one of two forms: a familiar or a bonded object. A familiar is a magical pet that enhances the wizard's skills and senses and can aid him in magic, while a bonded object is an item a wizard can use to cast additional spells or to serve as a magical item. Once a wizard makes this choice, it is permanent and cannot be changed. Rules for bonded items are given below, while rules for familiars are at the end of this section.\n\nWizards who select a bonded object begin play with one at no cost. Objects that are the subject of an arcane bond must fall into one of the following categories: amulet, ring, staff, wand, or weapon. These objects are always masterwork quality. Weapons acquired at 1st level are not made of any special material. If the object is an amulet or ring, it must be worn to have effect, while staves, wands, and weapons must be held in one hand. If a wizard attempts to cast a spell without his bonded object worn or in hand, he must make a concentration check or lose the spell. The DC for this check is equal to 20 + the spell's level. If the object is a ring or amulet, it occupies the ring or neck slot accordingly.\n\nA bonded object can be used once per day to cast any one spell that the wizard has in his spellbook and is capable of casting, even if the spell is not prepared. This spell is treated like any other spell cast by the wizard, including casting time, duration, and other effects dependent on the wizard's level. This spell cannot be modified by metamagic feats or other abilities. The bonded object cannot be used to cast spells from the wizard's opposition schools (see arcane school).\n\nA wizard can add additional magic abilities to his bonded object as if he has the required item creation feats and if he meets the level prerequisites of the feat. For example, a wizard with a bonded dagger must be at least 5th level to add magic abilities to the dagger (see the Craft Magic Arms and Armor feat in Feats). If the bonded object is a wand, it loses its wand abilities when its last charge is consumed, but it is not destroyed and it retains all of its bonded object properties and can be used to craft a new wand. The magic properties of a bonded object, including any magic abilities added to the object, only function for the wizard who owns it. If a bonded object's owner dies, or the item is replaced, the object reverts to being an ordinary masterwork item of the appropriate type.\n\nIf a bonded object is damaged, it is restored to full hit points the next time the wizard prepares his spells. If the object of an arcane bond is lost or destroyed, it can be replaced after 1 week in a special ritual that costs 200 gp per wizard level plus the cost of the masterwork item. This ritual takes 8 hours to complete. Items replaced in this way do not possess any of the additional enchantments of the previous bonded item. A wizard can designate an existing magic item as his bonded item. This functions in the same way as replacing a lost or destroyed item except that the new magic item retains its abilities while gaining the benefits and drawbacks of becoming a bonded item.",
+  "parent": null,
+  "facts": [],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "psrd"
+ },
+ {
+  "id": "bond-weapon",
+  "kind": "arcane-bond",
+  "classes": [
+   "wizard"
+  ],
+  "name": "Bonded object: weapon",
+  "source": "Core Rulebook",
+  "text": "At 1st level, wizards form a powerful bond with an object or a creature. This bond can take one of two forms: a familiar or a bonded object. A familiar is a magical pet that enhances the wizard's skills and senses and can aid him in magic, while a bonded object is an item a wizard can use to cast additional spells or to serve as a magical item. Once a wizard makes this choice, it is permanent and cannot be changed. Rules for bonded items are given below, while rules for familiars are at the end of this section.\n\nWizards who select a bonded object begin play with one at no cost. Objects that are the subject of an arcane bond must fall into one of the following categories: amulet, ring, staff, wand, or weapon. These objects are always masterwork quality. Weapons acquired at 1st level are not made of any special material. If the object is an amulet or ring, it must be worn to have effect, while staves, wands, and weapons must be held in one hand. If a wizard attempts to cast a spell without his bonded object worn or in hand, he must make a concentration check or lose the spell. The DC for this check is equal to 20 + the spell's level. If the object is a ring or amulet, it occupies the ring or neck slot accordingly.\n\nA bonded object can be used once per day to cast any one spell that the wizard has in his spellbook and is capable of casting, even if the spell is not prepared. This spell is treated like any other spell cast by the wizard, including casting time, duration, and other effects dependent on the wizard's level. This spell cannot be modified by metamagic feats or other abilities. The bonded object cannot be used to cast spells from the wizard's opposition schools (see arcane school).\n\nA wizard can add additional magic abilities to his bonded object as if he has the required item creation feats and if he meets the level prerequisites of the feat. For example, a wizard with a bonded dagger must be at least 5th level to add magic abilities to the dagger (see the Craft Magic Arms and Armor feat in Feats). If the bonded object is a wand, it loses its wand abilities when its last charge is consumed, but it is not destroyed and it retains all of its bonded object properties and can be used to craft a new wand. The magic properties of a bonded object, including any magic abilities added to the object, only function for the wizard who owns it. If a bonded object's owner dies, or the item is replaced, the object reverts to being an ordinary masterwork item of the appropriate type.\n\nIf a bonded object is damaged, it is restored to full hit points the next time the wizard prepares his spells. If the object of an arcane bond is lost or destroyed, it can be replaced after 1 week in a special ritual that costs 200 gp per wizard level plus the cost of the masterwork item. This ritual takes 8 hours to complete. Items replaced in this way do not possess any of the additional enchantments of the previous bonded item. A wizard can designate an existing magic item as his bonded item. This functions in the same way as replacing a lost or destroyed item except that the new magic item retains its abilities while gaining the benefits and drawbacks of becoming a bonded item.",
+  "parent": null,
+  "facts": [],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "psrd"
+ },
+ {
+  "id": "familiar-archaeopteryx",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Archaeopteryx",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-arctic-fox",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Arctic fox",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves (use fox statistics, +4 Stealth to blend into snow)"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-arctic-hare",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Arctic hare",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-arctic-tern",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Arctic tern",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fly checks"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Fly",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-armadillo",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Armadillo",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-bat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Bat",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fly checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Fly",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-butterfly",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Butterfly",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Perform checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Perform",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-cat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Cat",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-cat-margay",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Cat, margay",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Bluff checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Bluff",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-centipede-house",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Centipede, house",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-chicken",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Chicken",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 hit points"
+   ],
+   [
+    "Also in",
+    "Bestiary 5, Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "hp",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-cockroach",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Cockroach",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 hit points"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "hp",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-compsognathus-dinosaur",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Compsognathus dinosaur",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ],
+   [
+    "Also in",
+    "Bestiary 2"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-crab-king",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Crab, king",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on combat maneuver checks to start and maintain a grapple"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-creeper-ivy",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Creeper ivy",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-dodo",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Dodo",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive, Bestiary 4"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-dolphin-popoto",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Dolphin, popoto",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-donkey-rat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Donkey rat",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-dwarf-caiman",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Dwarf caiman",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-dweomer-cap",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Dweomer cap",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Spellcraft checks to identify magic items"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-ermine",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Ermine",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves (use weasal statistics, +4 Stealth to blend into snow)"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-fire-salamander",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Fire salamander",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Escape Artist checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Escape Artist",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-flowering-lattice",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Flowering lattice",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Diplomacy checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Diplomacy",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-flying-fox",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Flying fox",
+  "source": "Bestiary 5",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-flying-squirrel",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Flying squirrel",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fly checks"
+   ],
+   [
+    "Also in",
+    "Bestiary 3"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Fly",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-fox",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Fox",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves"
+   ],
+   [
+    "Also in",
+    "Bestiary 3, Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-giant-flea",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Giant flea",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fortitude saves against disease (witch only)"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-giant-isopod",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Giant isopod",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-goat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Goat",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Survival checks"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic, Bestiary 3"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Survival",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-hawk",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Hawk",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on sight-based and opposed Perception checks in bright light"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-hedgehog",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Hedgehog",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Will saves"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "will",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-horned-lizard",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Horned lizard",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-ioun-wyrd",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Ioun wyrd",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-isopod-giant",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Isopod, giant",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-jerboa",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Jerboa",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-kakapo",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Kakapo",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-koala",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Koala",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-lamprey",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Lamprey",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 hit points"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "hp",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-lemming",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Lemming",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-leopard-slug",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Leopard slug",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-lich-newt",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Lich newt",
+  "source": "Pathfinder #115: Trail of the Hunted",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves against disease and poison"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-lizard",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Lizard",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-marine-iguana",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Marine iguana",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks (use dwarf caiman stats for marine iguanas)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-meerkat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Meerkat",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Escape Artist checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Escape Artist",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-mole",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Mole",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on smell-, taste-, and touch-based Perception checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-mongoose",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Mongoose",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves (use weasel stats for mongooses)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-monkey",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Monkey",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Acrobatics checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Acrobatics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-moth",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Moth",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Survival checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Survival",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-octopus-blue-ringed",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Octopus, blue-ringed",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-osprey",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Osprey",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Survival checks (use hawk stats for ospreys)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Survival",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-otter",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Otter",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Bestiary 3"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-owl",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Owl",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on sight-based and opposed Perception checks in shadows or darkness"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-parrot",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Parrot",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Linguistics checks (use raven stats for parrots)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Linguistics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-peacock",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Peacock",
+  "source": "Familiar Folio",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Intimidate checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Intimidate",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-peafowl",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Peafowl",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Intimidate checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Intimidate",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-penguin",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Penguin",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio, Bestiary 5"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-petrifern",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Petrifern",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-petromin",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Petromin",
+  "source": "Pathfinder #85: Fires of Creation",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-pig",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Pig",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Diplomacy checks"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic, Bestiary 3"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Diplomacy",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-platypus",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Platypus",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive, Bestiary 4"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-ptarmigan",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Ptarmigan",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-pufferfish",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Pufferfish",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-puffin",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Puffin",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Stealth checks"
+   ],
+   [
+    "Also in",
+    "Reign of Winter Player's Guide"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-rabbit",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Rabbit",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-raccoon",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Raccoon",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Sleight of Hand checks"
+   ],
+   [
+    "Also in",
+    "Bestiary 3"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Sleight of Hand",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-rat",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Rat",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-raven",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Raven*",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Appraise checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Appraise",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-ravenous-tumbleweed",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Ravenous tumbleweed",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a 10-foot bonus to speed when using the charge, run, or withdraw actions"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-razor-fern",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Razor fern",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-red-panda",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Red panda",
+  "source": "Bestiary 5",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Acrobatics checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Acrobatics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-rhamphorhynchus",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Rhamphorhynchus",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks"
+   ],
+   [
+    "Also in",
+    "Pathfinder #37: Souls for Smuggler's Shiv, Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-rock-tuatara",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Rock Tuatara",
+  "source": "Pathfinder #118: Siege of Stone",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks in rocky environments"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-sawleg-locust",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Sawleg locust",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Acrobatics checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Acrobatics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-scorpion-greensting",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Scorpion, greensting",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +4 bonus on initiative checks (if familiar is within 1 mile)"
+   ],
+   [
+    "Also in",
+    "Animal Archive, Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "init",
+    "type": "untyped",
+    "value": 4
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-sea-krait",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Sea krait",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves (use viper stats for sea kraits)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-seal",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Seal",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Swim checks"
+   ],
+   [
+    "Also in",
+    "Bestiary 5, Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Swim",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-shimmerwing-dragonfly",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Shimmerwing dragonfly",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fly checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Fly",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-skunk",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Skunk",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-sloth",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Sloth",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-snail-kite",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Snail kite",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Fly checks (use hawk stats for snail kites)"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Fly",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-snapping-turtle",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Snapping turtle",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ],
+   [
+    "Also in",
+    "Bestiary 2"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-snark",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Snark",
+  "source": "Pathfinder #119: Prisoners of the Blight",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Stealth checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Stealth",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-snowy-owl",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Snowy owl",
+  "source": "Reign of Winter Player's Guide",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on sight-based and opposed Perception checks when in shadows or darkness (use owl statistics, +4 Stealth to blend into snow)"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-spider-scarlet",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Spider, scarlet",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Climb checks (if familiar is within 1 mile)"
+   ],
+   [
+    "Also in",
+    "Animal Archive, Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Climb",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-spiny-starfish",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Spiny starfish",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "Master treats his effective character level as 4 higher to recover hit points by resting"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-squirrel",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Squirrel",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Escape Artist checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Escape Artist",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-suture-vine",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Suture vine",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Heal checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Heal",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-tardigrade-giant",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Tardigrade, giant",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Fortitude saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "fort",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-tarsier",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Tarsier",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Acrobatics checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Acrobatics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-thrush",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Thrush*",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Diplomacy checks"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Diplomacy",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-toad",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Toad",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "3 hit points"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "hp",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-torble",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Torble",
+  "source": "Pathfinder #25: The Bastards of Erebus",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Craft (alchemy) checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-toucan",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Toucan",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Diplomacy checks (use raven stats for toucans [cannot speak])"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Diplomacy",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-trilobite",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Trilobite",
+  "source": "Bestiary 5",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-tuatara",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Tuatara",
+  "source": "Bestiary 4",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Survival checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Survival",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-tullimonstrum",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Tullimonstrum",
+  "source": "Pathfinder #124: City in the Deep",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Perception checks"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Perception",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-turtle",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Turtle",
+  "source": "Animal Archive",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +1 natural armor bonus to AC"
+   ],
+   [
+    "Also in",
+    "Ultimate Magic"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ac",
+    "type": "natural armor",
+    "value": 1
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-vampire-squid",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Vampire squid",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-viper",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Viper",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Bluff checks"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Bluff",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-wallaby",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Wallaby",
+  "source": "Ultimate Wilderness",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +3 bonus on Acrobatics checks"
+   ],
+   [
+    "Also in",
+    "Familiar Folio"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "skill:Acrobatics",
+    "type": "untyped",
+    "value": 3
+   }
+  ],
+  "origin": "aonprd"
+ },
+ {
+  "id": "familiar-weasel",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "Weasel",
+  "source": "Core Rulebook",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Master gains",
+    "a +2 bonus on Reflex saves"
+   ],
+   [
+    "Also in",
+    "Animal Archive"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [
+   {
+    "target": "ref",
+    "type": "untyped",
+    "value": 2
+   }
+  ],
+  "origin": "aonprd"
+ }
+]

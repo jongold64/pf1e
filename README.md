@@ -109,6 +109,10 @@ Every weapon has `groups`, its fighter weapon groups ("Blades, heavy", "Monk"...
 Core Rulebook's lists where AoN has none; firearms are Firearms). Weapons from after 2015 (Adventurer's Armory 2, Inner Sea Combat...) come from the Archives of Nethys lists
 (`origin: "aonprd"`); their Tiny and Large damage is worked out from the Core Rulebook table.
 
+**Familiar** (`familiars.json`): the arcane bond choices in the class path shape: bonded objects (`kind: "arcane-bond"`)
+and familiars (`kind: "familiar"`, `facts` with what the master gains, `master_bonus`: [{ `target`, `type`, `value` }] when
+it's a plain bonus).
+
 **Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class
 choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base-form`, `variant-channeling`), `classes` (ids), `name`, `text`,
 `parent` (a focused school's school), `facts` ([label, text] pairs: edicts, challenge, alignment, starting statistics...),

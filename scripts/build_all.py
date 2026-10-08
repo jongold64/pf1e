@@ -29,6 +29,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_aon_bloodlines.py', 'data/bloodlines.json'),
                     # Wizard schools, witch patrons, shaman spirits, cavalier orders, eidolon subtypes and base forms (AoN).
                     ('build_aon_class_paths.py', 'data/class-paths.json'),
+                    # Arcane bonds: bonded objects and familiars with their master bonuses (AoN familiar table).
+                    ('build_aon_familiars.py', 'data/familiars.json'),
                     # What each skill does (Core Rulebook), for the Skills tab's Details.
                     ('build_skills.py', 'data/skills.json'),
                     ('build_feats.py', 'data/feats.json'),

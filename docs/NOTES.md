@@ -276,6 +276,10 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   `PATH_ENTRIES` (class table entry -> name/powers/spell), `PATH_SPELLS`; bloodlines are reshaped to the same records at
   load (`data.paths`). `state.paths` = { "class|kind": id, "wizard|opposition": [names] } (older `state.bloodlines`
   migrates in load()). `pathPicker`, `popPath`, `pathEntry`, `pathSkills`, `pathLines` (printed sheet, with the mystery).
+  Familiars: `build_aon_familiars.py` -> data/familiars.json (bonded objects kind 'arcane-bond', familiars kind
+  'familiar' with `master_bonus` effects read from "Master gains a +3 bonus on Stealth checks"); merged into data.paths.
+  A rule can list `kinds` (wizard's arcane bond takes both). The chosen familiar's master bonus is a class effect;
+  `withFamiliarNotes` adds the Alertness note.
   Combat styles (AoN RangerCombatStyles page): kind 'combat-style', `style_feats` { "2"|"6"|"10": [feat names] };
   PATH_RULES.ranger with `fromLevel: 2`; feats.js `setStyleFeats` limits the 'rangerStyle' slots (tiers up to the slot's
   class level). Companion: featContext `companion` (effective druid level at that point) makes "animal companion"

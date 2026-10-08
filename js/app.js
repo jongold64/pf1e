@@ -264,7 +264,8 @@ function load(saved) {
     if (slot === 'crosspower') return !!CROSSBLOODED[cid] && v && typeof v === 'object' && Object.values(v).every(x => typeof x === 'string');
     const kind = slot === 'bloodline2' && CROSSBLOODED[cid] ? 'bloodline' : slot;
     const x = data.pathsById.get(v);
-    return !!x && x.kind === kind && x.classes.includes(cid) && !!PATH_RULES[cid]?.some(r => r.kind === kind);
+    const rule = PATH_RULES[cid]?.find(r => r.kind === kind);
+    return !!x && !!rule && (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cid);
   }));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
@@ -1410,6 +1411,14 @@ function computeView() {
   // divine grace), which they don't change themselves.
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
                                                 shield: !!gear.shield, load: load?.load || 'light' });
+  // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
+  const familiarNow = ['wizard', 'witch'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, PATH_RULES[cid][0].kind))
+    .find(p => p?.kind === 'familiar');
+  const familiar = familiarNow?.master_bonus?.length ? familiarNow : null;
+  if (familiar) {
+    const [first, ...more] = familiar.master_bonus;
+    classFx.push({ name: `Familiar: ${familiar.name}`, ...first, ...(more.length ? { more } : {}), on: true, classFeature: true });
+  }
   if (classFx.length) {
     customAll.push(...classFx);
     fx = effectTotals(state.buffs, customAll);
@@ -1485,7 +1494,7 @@ function computeView() {
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
-    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: situationalBonuses(counts),
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     companion: companionFor(counts),
@@ -1638,6 +1647,13 @@ const PATH_RULES = {
 const VARIANT_CHANNELING = { kind: 'variant-channeling', label: 'Variant channeling', plural: 'variant channelings', optional: true, none: 'Standard channel energy',
   note: 'Optional (Ultimate Magic): chosen once, after one part of your deity’s portfolio. Healing heals half as much but adds the effect; harming deals half damage but adds the effect (a save negates the effect only). A channel bonus or penalty is 1, 2 at 5th level and +1 every 5 levels after (5 at most). Paladins and warpriests can use it if they serve a deity, oracles with the Life mystery.' };
 for (const cid of ['cleric', 'warpriest', 'paladin', 'oracle']) PATH_RULES[cid] = [...(PATH_RULES[cid] || []), VARIANT_CHANNELING];
+// Arcane bond (wizard): a bonded object or a familiar (data/familiars.json); a witch's familiar. A familiar's master bonus
+// (a cat's +3 Stealth...) is counted while it's within a mile, which the app assumes.
+PATH_RULES.wizard = [{ kind: 'arcane-bond', kinds: ['arcane-bond', 'familiar'], label: 'Arcane bond', plural: 'arcane bonds',
+  note: 'A bonded object (cast one spell a day from your spellbook through it) or a familiar (it gives you its master bonus while within a mile).' },
+  ...PATH_RULES.wizard];
+PATH_RULES.witch = [{ kind: 'familiar', label: 'Familiar', plural: 'familiars', note: 'Your familiar stores your spells; it also gives you its master bonus while within a mile.' },
+  ...PATH_RULES.witch];
 // A ranger's combat style (chosen at 2nd level): its feats are the ones his combat style feat slots take.
 PATH_RULES.ranger = [{ kind: 'combat-style', label: 'Combat style', plural: 'combat styles', fromLevel: 2,
   note: 'Chosen at 2nd level. Combat style feats (2nd, 6th, 10th, 14th and 18th level) come from its list, without their prerequisites; the list grows at 6th and 10th level.' }];
@@ -1647,6 +1663,8 @@ const PATH_ENTRIES = {
   school: { 'arcane school': 'name' },
   spirit: { spirit: 'powers', 'spirit (greater)': 'powers', 'spirit (true)': 'powers', manifestation: 'powers' },
   order: { order: 'name', 'order ability': 'powers' },
+  'arcane-bond': { 'arcane bond': 'name' },
+  familiar: { "witch's familiar": 'name' },
   'eidolon-subtype': { eidolon: 'name' },
 };
 // What a choice's bonus spells are called, and when they come: [title, note].
@@ -1747,7 +1765,7 @@ function pathPicker(cls, level, openFeatures) {
   const cross = isCrossblooded(cls.id);
   return pathsFor(cls.id).map(({ rule, path }) => {
     const key = `${cls.id}|${slotOf(rule)}`;
-    const all = data.paths.filter(x => x.kind === rule.kind && x.classes.includes(cls.id));
+    const all = data.paths.filter(x => (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cls.id));
     const label = x => (x.parent ? `${x.name} (${x.parent})` : x.name);
     const browseKey = `pbrowse-${key}`;
     const own = classicSchool(path);
@@ -2544,6 +2562,13 @@ function showSaveDetails(name) {
     + situationalHtml(view.situational?.[save]));
 }
 
+// A familiar within arm's reach gives its master the Alertness feat (+2 Perception and Sense Motive; +4 from 10 ranks).
+function withFamiliarNotes(notes, familiar) {
+  if (!familiar) return notes;
+  for (const k of ['Perception', 'Sense Motive']) (notes.skills[k] ??= []).push(`Familiar (${familiar.name}) within arm's reach: the Alertness feat, +2 (+4 with 10 or more ranks).`);
+  return notes;
+}
+
 // Class features that only count in some situations (bravery against fear, trap sense...), under a Details table.
 function situationalHtml(notes) {
   return notes?.length ? `<h3>In some situations</h3><ul class="plain-list">${notes.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
@@ -2611,7 +2636,13 @@ function showResultDetails(key) {
     const favoredHp = view.favoredPicks.filter(p => p === 'hp').length;
     if (favoredHp) rows.push({ label: `Favored class bonus: +1 hit point × ${favoredHp}`, text: `+${favoredHp}` });
     if (view.haveFeats.includes('Toughness')) rows.push({ label: 'Feat: Toughness', text: `+${Math.max(3, levels.length)}` });
-    if (stats.fx.hp) rows.push({ label: 'Active effects on hit points', text: signed(stats.fx.hp) });
+    // Effects on hit points, each named (a toad familiar, false life...); what the stacking rules leave out as one line.
+    if (stats.fx.hp) {
+      const hpFx = activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'hp');
+      for (const x of hpFx) rows.push({ label: `Effect: ${x.source}`, text: signed(x.value) });
+      const listed = hpFx.reduce((n, x) => n + x.value, 0);
+      if (listed !== stats.fx.hp) rows.push({ label: 'Effects of the same type do not stack', text: signed(stats.fx.hp - listed) });
+    }
     const listed = withCon + favoredHp + (view.haveFeats.includes('Toughness') ? Math.max(3, levels.length) : 0) + stats.fx.hp;
     if (listed !== stats.hp) rows.push({ label: 'Other', text: signed(stats.hp - listed) });
     openDetail(`Maximum hit points ${stats.hp}`, table(rows, String(stats.hp))
@@ -3332,7 +3363,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -3347,6 +3378,7 @@ async function start() {
       fetch('data/skills.json').then(r => r.json()),
       fetch('data/bloodlines.json').then(r => r.json()),
       fetch('data/class-paths.json').then(r => r.json()),
+      fetch('data/familiars.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -3367,7 +3399,7 @@ async function start() {
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
   // Bloodlines in the shape of the other one-time class choices.
-  data.paths = [...data.classPaths, ...data.bloodlines.map(b => ({
+  data.paths = [...data.classPaths, ...data.familiars, ...data.bloodlines.map(b => ({
     id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
     facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),
     class_skills: b.class_skill ? [b.class_skill] : [], spells: b.bonus_spells, spells_by: 'class', powers: b.powers, hexes: [],
