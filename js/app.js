@@ -133,7 +133,7 @@ const state = {
   armorMw: false,  // masterwork (non-magic); magic armor is always masterwork
   shieldMw: false,
   // Animal companion: animal id (data/companions.json), name, ability increases ('str'...), feat names, tricks, skill ranks.
-  companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0 },
+  companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0, armorMaterial: '', buffs: [] },
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -296,6 +296,10 @@ function load(saved) {
     // Barding: an armor id from data/armor.json and its enhancement bonus.
     armorId: data.armorById.has(comp.armorId) && data.armorById.get(comp.armorId).category !== 'shield' ? comp.armorId : '',
     armorEnh: Number.isInteger(comp.armorEnh) && comp.armorEnh >= 0 && comp.armorEnh <= 5 ? comp.armorEnh : 0,
+    armorMaterial: materialById.has(comp.armorMaterial) ? comp.armorMaterial : '',
+    // Spells and effects on the companion: Active effects catalog ids, with a caster level (1-20).
+    buffs: list(comp.buffs).filter(x => x && buffById.has(x.id)).map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)) }))
+      .filter((x, i, a) => a.findIndex(y => y.id === x.id) === i),
     tricks: [...new Set(list(comp.tricks).filter(t => TRICKS.includes(t)))],
     skills: Object.fromEntries(Object.entries(comp.skills && typeof comp.skills === 'object' ? comp.skills : {})
       .filter(([n, r]) => ANIMAL_SKILLS.includes(n) && Number.isInteger(r) && r > 0 && r <= 20)),
@@ -382,7 +386,7 @@ function load(saved) {
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
-  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot'].filter(k => c[k] === true).map(k => [k, true])),
+  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank'].filter(k => c[k] === true).map(k => [k, true])),
                    main: hand(c.main), off: hand(c.off) };
 }
 
@@ -1497,7 +1501,8 @@ function computeView() {
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
     familiar: familiarNow ? { path: familiarNow, master: {
       // Levels in classes that give a familiar stack (wizard with a familiar bond, witch, Arcane bloodline sorcerer).
-      familiarLevel: counts.filter(e => ['wizard', 'witch'].includes(e.cls.id) || (e.cls.id === 'sorcerer' && arcaneSorcerer())).reduce((n, e) => n + e.level, 0),
+      familiarLevel: (fl => (haveFeats.includes('Boon Companion') && !companionFor(counts).level ? Math.min(classLevels.length, fl + 4) : fl))(
+        counts.filter(e => ['wizard', 'witch'].includes(e.cls.id) || (e.cls.id === 'sorcerer' && arcaneSorcerer())).reduce((n, e) => n + e.level, 0)),
       level: classLevels.length, hp: stats.hp, bab: stats.bab[0], skillRanks: state.skills,
       baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
       casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
@@ -1505,7 +1510,9 @@ function computeView() {
     classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
-    companion: companionFor(counts),
+    // Boon Companion: the companion's level 4 higher (at most the character level).
+    companion: companionLevel(counts, { natureBond: state.natureBond, boon: haveFeats.includes('Boon Companion'), characterLevel: classLevels.length,
+      animalDomain: cid => (state.domains[cid] || []).some(id => { const d = data.domainsById.get(id); return d && domainGrants(d, data.domainsById).powers.some(p => p.name === 'Animal Companion'); }) }),
   };
 }
 
@@ -3064,7 +3071,9 @@ function renderFeats(slots, granted, ctx) {
   const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
   // Free feats from the classes: each name opens the feat.
-  $('granted-feats').innerHTML = granted.length ? `Free from your class${view.classes.length > 1 ? 'es' : ''}: ${granted.map(n => {
+  // Bonus feats the class table gives (a ranger's Endurance, a wizard's Scribe Scroll): they need no slot.
+  $('granted-feats').innerHTML = granted.length ? `<b>Bonus feats from your class${view.classes.length > 1 ? 'es' : ''}</b> (no slot needed; they count for
+    prerequisites and numbers): ${granted.map(n => {
     const f = featByName(n);
     return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>` : esc(n);
   }).join(', ')}.` : '';

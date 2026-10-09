@@ -185,7 +185,7 @@
           <button type="submit" class="primary">Search</button>
         </form>
         <ul id="feat-tab-results" class="search-results" hidden></ul>
-        <p id="granted-feats" class="hint granted-feats"></p>
+        <p id="granted-feats" class="granted-feats"></p>
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
@@ -615,7 +615,11 @@
               Dex limit and check penalty count (on attacks too without the Armor Proficiency feat for it), medium or heavy barding
               slows it, and its price (more than a person's armor) comes out of your gold on the Equipment tab.</li>
             <li>Feats that need an animal companion (Boon Companion...) count any class feature that gives one: a ranger's
-              hunter's bond, a hunter, a druid's nature bond.</li>
+              hunter's bond, a hunter, a druid's nature bond. <b>Boon Companion</b> raises the companion's level by 4 (up to your
+              character level; with no companion, your familiar's), shown in "Levels counted".</li>
+            <li>Barding can be made of a special material (mithral, adamantine...), and <b>Spells and effects on it</b> adds spells
+              cast on the companion (share spells: bull's strength, barkskin, magic fang...) and conditions, from the Active effects
+              lists, counted in its numbers.</li>
           </ul>
         </details>
 
@@ -710,7 +714,7 @@
               and <b>Details</b> shows what it does, its price, aura, caster level and what making it needs, with an Add button.</li>
             <li><b>Quality</b> sets masterwork or +1 to +5; <b>Special abilities</b> (flaming, keen, holy...) add their damage
               automatically. Situational ones (holy against evil) get their own Roll button.</li>
-            <li><b>Combat options</b> at the top: Power Attack, Deadly Aim, Rapid Shot (once you have the feats) and two-weapon fighting.
+            <li><b>Combat options</b> at the top: Power Attack, Deadly Aim, Rapid Shot, Point-Blank Shot (for targets within 30 ft.; once you have the feats) and two-weapon fighting.
               <b>Details</b> shows what each switch does at your base attack bonus, and how each hand's attack and the two-weapon penalties are worked out.</li>
             <li>A <b>composite bow</b> has a <b>Strength rating</b> (set when you add it to match your Strength bonus): it adds your
               Strength bonus to damage up to that rating, costs 100 gp (longbow) or 75 gp (shortbow) per point, and gives −2 on

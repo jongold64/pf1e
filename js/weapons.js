@@ -272,6 +272,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // Rapid Shot: one more ranged attack at the highest bonus, and -2 on all of them.
   let attackBabs = bab;
   let rapid = 0;
+  // Point-Blank Shot: +1 on attack and damage rolls with ranged weapons at ranges of up to 30 feet.
+  const pointBlank = !melee && options.pointBlank && has.has('Point-Blank Shot') ? 1 : 0;
+  if (pointBlank) used.push('Point-Blank Shot');
   if (!melee && options.rapidShot && has.has('Rapid Shot')) {
     attackBabs = [bab[0], ...bab];
     rapid = -2;
@@ -281,7 +284,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // misfit: -2 per size step for a weapon made for a different size of creature.
   // Weapon training (fighter's weapon groups, swashbuckler's): [{ label, value }] on attack and damage rolls.
   const trained = training.reduce((n, t) => n + t.value, 0);
-  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak + trained;
+  const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak + trained + pointBlank;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
@@ -290,7 +293,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // bonusDamage: extra damage such as smite evil's (+paladin level).
   // A material's damage change (alchemical silver -1 with a slashing or piercing weapon, bone and gold -2).
   const materialDamage = material?.damage?.(weapon) || 0;
-  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained;
+  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained + pointBlank;
   return {
     attacks: attackBabs.map(b => b + toHit),
     babs: attackBabs,
@@ -299,7 +302,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
              penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit,
-             rating, tooWeak, materialDamage, material: material?.name || '', training },
+             rating, tooWeak, materialDamage, material: material?.name || '', training, pointBlank },
   };
 }
 
@@ -323,6 +326,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(attackRows, penaltyLabel, p.penalty);
   add(attackRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerHit);
   add(attackRows, 'Rapid Shot', p.rapid);
+  add(attackRows, 'Point-Blank Shot (within 30 ft.)', p.pointBlank);
   add(attackRows, `Strength below the bow\u2019s strength rating (+${p.rating})`, p.tooWeak);
   const damageRows = [];
   // Which Strength rule applies: full, 1 1/2 times in two hands, half in the off hand, or a bow's limits.
@@ -340,6 +344,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   for (const t of p.training || []) add(damageRows, t.label, t.value);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
   add(damageRows, 'Extra damage (smite)', p.bonusDamage);
+  add(damageRows, 'Point-Blank Shot (within 30 ft.)', p.pointBlank);
   add(damageRows, `${p.material} (minimum 1 damage)`, p.materialDamage);
   for (const [rows, target, total] of [[attackRows, 'attack', p.effectAttack], [damageRows, 'damage', p.effectDamage]]) {
     const mine = effects.filter(e => e.target === target);

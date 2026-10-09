@@ -787,6 +787,8 @@ table.class-table tr.mine td { background: color-mix(in srgb, var(--accent) 10%,
 .specialty-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); max-height: 50vh; overflow-y: auto; margin-bottom: 10px; }
 .specialty-picker .add-specialty { display: flex; gap: 8px; }
 #feats-card h2 .skill-details, #traits-card h2 .skill-details, #skills-card h2 .skill-details { font-weight: 400; font-size: 0.8rem; min-height: 28px; padding: 1px 8px; margin-left: 6px; }
+.granted-feats { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+.granted-feats:empty { display: none; }
 .granted-feats button.link { font-size: inherit; padding: 0 2px; }
 /* Armor tab: a Details button beside the armor or shield, its quality and its material. */
 .armor-pick { display: flex; gap: 6px; align-items: center; }

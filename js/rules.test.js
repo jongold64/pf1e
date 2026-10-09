@@ -22,6 +22,7 @@ import { companionLevel, companionStats, parseAttacks, bardingCost } from './com
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
 import { armorEffects as armorFx } from './armor.js';
 import { familiarStats } from './familiar.js';
+import { effectTotals as effectTotalsT } from './effects.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
 import { levelsIn, grantedFeatsFor, proficiencyFeatsFor } from './feats.js';
@@ -1414,6 +1415,26 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Perception: master 5 ranks + Wis 1 + class skill 3 = +9', f.skills.find(x => x.name === 'Perception').total, 9);
   check('abilities at 5th include speak with master', f.abilities.includes('Speak with master'), true);
   check('CMB +2', f.cmb, 2);
+}
+
+// Boon Companion, effects on a companion, Point-Blank Shot.
+{
+  const comp = await fetch('data/companions.json').then(r => r.json());
+  const wolf = comp.animals.find(a => a.id === 'wolf');
+  const ranger = classes.find(x => x.id === 'ranger');
+  check('ranger 5: companion level 2', companionLevel([{ cls: ranger, level: 5 }]).level, 2);
+  check('with Boon Companion: 6 (2 + 4, at most character level 5 -> 5)', companionLevel([{ cls: ranger, level: 5 }], { boon: true, characterLevel: 5 }).level, 5);
+  check('ranger 8 with Boon Companion: 9 capped at 8', companionLevel([{ cls: ranger, level: 8 }], { boon: true, characterLevel: 8 }).level, 8);
+  const plainWolf = companionStats(wolf, 3, comp.progression);
+  const strong = companionStats(wolf, 3, comp.progression, { fx: effectTotalsT([{ id: 'bulls-strength', cl: 3 }, { id: 'barkskin', cl: 3 }]) });
+  check("bull's strength on the wolf: Str +4", strong.scores.str, plainWolf.scores.str + 4);
+  check("bull's strength: bite +2", strong.attacks[0].bonus, plainWolf.attacks[0].bonus + 2);
+  check('barkskin: AC +2 (natural armor enhancement), touch unchanged', `${strong.ac - plainWolf.ac} ${strong.touch - plainWolf.touch}`, '2 0');
+  const bow = { name: 'Longbow', group: 'ranged', damage: { m: '1d8' }, multiplier: 3, threat: 20 };
+  const pb = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'], options: { pointBlank: true } });
+  const plain = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'] });
+  check('Point-Blank Shot: +1 attack and damage', `${pb.attacks[0] - plain.attacks[0]} ${pb.parts.damageBonus - plain.parts.damageBonus}`, '1 1');
+  check('mithral chain shirt barding: masterwork not paid twice', bardingCost({ price_gp: 1100, mw_included: true }, 'Medium', 1), 2200 + 1000);
 }
 
 // "Animal companion" prerequisites (Boon Companion) met by any class feature that gives one (a ranger's hunter's bond).

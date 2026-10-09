@@ -7,6 +7,7 @@ import { craftedItemCost, magicPrefix } from './crafting.js';
 import { showArmorWhy } from './tab-armor.js';
 import { carryingCapacity, encumbrance } from './rules.js';
 import { bardingCost, companionSize } from './companion.js';
+import { withMaterial } from './materials.js';
 
 let selectedId = null;
 let listed = false;
@@ -112,7 +113,8 @@ export async function renderEquipment(app, view) {
   }));
   // The animal companion's barding (bought like armor; the animal carries it, not you).
   const compAnimal = view.companion?.level && data.companions?.animals.find(a => a.id === state.companion.animal);
-  const barding = compAnimal && data.armorById.get(state.companion.armorId);
+  const barding = compAnimal && data.armorById.get(state.companion.armorId)
+    && (withMaterial(data.armorById.get(state.companion.armorId), state.companion.armorMaterial) || data.armorById.get(state.companion.armorId));
   const bardingRow = barding ? { name: `Barding for ${state.companion.name || compAnimal.name}: ${barding.name}${state.companion.armorEnh ? ` +${state.companion.armorEnh}` : ''}`,
     cost: bardingCost(barding, companionSize(compAnimal, view.companion.level), state.companion.armorEnh || 0), weight: null } : null;
   const armorSpend = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);

@@ -3,7 +3,7 @@
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
-import { initCrafting, renderCrafting, craftListedItem } from './tab-crafting.js';
+import { initCrafting, renderCrafting, craftListedItem, openSpellItem } from './tab-crafting.js';
 
 let selectedId = null;
 let listed = false;
@@ -244,6 +244,8 @@ export function initItemsTab(app) {
     document.getElementById(`cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
   $('item-list').addEventListener('click', e => {
+    const si = e.target.closest('[data-spell-item]');
+    if (si) { openSpellItem(app, si.dataset.spellItem); return; }
     const pop = e.target.closest('[data-item-pop]');
     if (pop) { popItem(app, pop.dataset.itemPop); return; }
     const btn = e.target.closest('[data-item]');
@@ -304,6 +306,12 @@ function renderList(app) {
           <button type="button" class="skill-details" data-item-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup">Details</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No items match.</p>';
+  // Potions, scrolls and wands aren't in this list (any spell can be one): searching for them points to Add magic gear.
+  const spellItem = ['wand', 'potion', 'scroll'].find(k => filter.includes(k));
+  if (spellItem) {
+    $('item-list').insertAdjacentHTML('afterbegin', `<p class="hint">${spellItem[0].toUpperCase()}${spellItem.slice(1)}s of any spell are added in the
+      <b>Add magic gear</b> card: <button type="button" class="primary" data-spell-item="${spellItem}">Add a ${spellItem}</button></p>`);
+  }
   renderPanel(app);
 }
 

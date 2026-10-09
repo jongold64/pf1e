@@ -5,11 +5,17 @@ import { $, esc, signed, paragraphs, facts } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { TRICKS, ATTACK_FEATS, companionStats, bardingCost, bardingWeight } from './companion.js';
 import { formatGp, formatLbs } from './equipment.js';
+import { materialsFor, withMaterial } from './materials.js';
+import { BUFFS, buffById, buffAmount, effectTotals, EFFECT_GROUPS } from './effects.js';
 
 // The companion's choices as companionStats takes them (the barding as its armor record).
+// (Barding of a special material: the armor record as made of it.)
 export const companionChoices = (state, data) => ({ ...state.companion,
+  // Spells and effects on the companion, added up by the stacking rules.
+  fx: effectTotals(state.companion.buffs || [], []),
   armor: state.companion.armorId && data.armorById.get(state.companion.armorId)
-    ? { item: data.armorById.get(state.companion.armorId), enh: state.companion.armorEnh || 0 } : null });
+    ? { item: withMaterial(data.armorById.get(state.companion.armorId), state.companion.armorMaterial) || data.armorById.get(state.companion.armorId),
+        enh: state.companion.armorEnh || 0 } : null });
 
 const ABILITY_NAMES = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
 
@@ -84,6 +90,8 @@ export function renderCompanion(app, view) {
   const bardingHtml = `<h3>Barding (armor)</h3>
     <div class="companion-pick"><select data-comp="armor" aria-label="Barding"><option value="">None</option>${['light', 'medium', 'heavy'].map(cat =>
       `<optgroup label="${cat[0].toUpperCase()}${cat.slice(1)}">${bardingList.filter(a => a.category === cat).map(a => `<option value="${esc(a.id)}"${a.id === c.armorId ? ' selected' : ''}>${esc(a.name)} (+${a.bonus})</option>`).join('')}</optgroup>`).join('')}</select>
+      ${b && materialsFor(data.armorById.get(c.armorId)).length ? `<select data-comp="armorMaterial" aria-label="Barding material"><option value="">Normal material</option>${materialsFor(data.armorById.get(c.armorId)).map(m =>
+        `<option value="${esc(m.id)}"${m.id === c.armorMaterial ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select>` : ''}
       ${b ? `<select data-comp="armorEnh" aria-label="Barding quality">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}"${n === (c.armorEnh || 0) ? ' selected' : ''}>${n ? `+${n}` : 'Normal'}</option>`).join('')}</select>` : ''}</div>
     ${b ? `<p class="hint">+${b.ac} armor to AC${b.item.max_dex !== null ? `, Dex bonus at most +${b.item.max_dex}` : ''}${b.acp ? `, ${b.acp} on Str and Dex skills` : ''}.
         Costs ${esc(formatGp(bardingCost(b.item, s.size, b.enh)))} and weighs ${esc(formatLbs(bardingWeight(b.item, s.size)))} (${esc(s.size)} animal: barding costs more than a person's armor),
@@ -115,6 +123,7 @@ export function renderCompanion(app, view) {
     <h3>Ability scores</h3><table class="companion-scores"><tr>${scores}</tr></table>
     ${incs ? `<p class="row-label">Ability score increases ${incs}</p>` : ''}
     ${bardingHtml}
+    ${effectsHtml(c)}
     <h3>Companion abilities</h3><div class="companion-specials">${specials}</div>
     <div class="companion-grid">
       <div><h3>Skills <span class="count${s.ranksUsed > s.ranksTotal ? ' over' : ''}">${s.ranksUsed} of ${s.ranksTotal} ranks</span></h3>
@@ -127,6 +136,28 @@ export function renderCompanion(app, view) {
         <p class="hint">${s.tricksBonus} bonus trick${s.tricksBonus === 1 ? '' : 's'} free${intScore ? `; up to ${intScore * 3 + s.tricksBonus} in all (3 per point of Int, plus the bonus ones)` : ''}.</p>
         <div class="companion-tricks">${tricks}</div></div>
     </div>`;
+}
+
+// Spells and effects on the companion (share spells, a buff cast on it, a condition): each with its caster level (where
+// it grows) and Remove, and a list to add one, from the Active effects catalog.
+function effectsHtml(c) {
+  const on = (c.buffs || []).map(x => ({ x, buff: buffById.get(x.id) })).filter(({ buff }) => buff);
+  const mine = new Set(on.map(({ x }) => x.id));
+  const rows = on.map(({ x, buff }) => {
+    const levels = buff.levels || (buff.scales ? Array.from({ length: 20 }, (_, i) => i + 1) : null);
+    return `<li>${esc(buff.name)} ${levels ? `<select data-comp-buff-cl="${esc(buff.id)}" aria-label="${esc(buff.levelName || 'caster level')}">${levels.map(n =>
+      `<option value="${n}"${n === buffAmount(buff, x.cl) ? ' selected' : ''}>${buff.forms ? esc(buff.forms[n - 1].label) : `${buff.levelName === 'bonus' ? '+' : ''}${n}`}</option>`).join('')}</select>` : ''}
+      <button type="button" class="link" data-comp-buff-remove="${esc(buff.id)}">remove</button></li>`;
+  }).join('');
+  const groups = EFFECT_GROUPS.map(([g, label]) => {
+    const list = BUFFS.filter(b => (b.group || 'spell') === g && !mine.has(b.id)).sort((a, b) => a.name.localeCompare(b.name));
+    return list.length ? `<optgroup label="${esc(label)}">${list.map(b => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</optgroup>` : '';
+  }).join('');
+  return `<h3>Spells and effects on it <span class="count">${on.length}</span></h3>
+    <p class="hint">Spells cast on your companion (share spells lets you cast your "you" spells on it), and conditions it has: counted in
+      its numbers by the stacking rules. Size changes (enlarge) and polymorph forms aren't applied to it.</p>
+    ${rows ? `<ul class="plain-list">${rows}</ul>` : ''}
+    <select data-comp-buff-add aria-label="Add a spell or effect"><option value="">Add a spell or effect…</option>${groups}</select>`;
 }
 
 // A Details popup for one of the companion's numbers (key: hp, ac, fort, ref, will, init, cm, attack-N, skill-Name).
@@ -222,7 +253,10 @@ export function initCompanion(app) {
   box.addEventListener('change', e => {
     const t = e.target;
     if (t.dataset.comp === 'animal') set({ animal: t.value });
-    else if (t.dataset.comp === 'armor') set({ armorId: t.value, armorEnh: t.value ? state.companion.armorEnh || 0 : 0 });
+    else if (t.dataset.comp === 'armor') set({ armorId: t.value, armorEnh: t.value ? state.companion.armorEnh || 0 : 0, armorMaterial: '' });
+    else if (t.dataset.comp === 'armorMaterial') set({ armorMaterial: t.value });
+    else if (t.dataset.compBuffAdd !== undefined && t.value) set({ buffs: [...(state.companion.buffs || []), { id: t.value, cl: app.view.level }] });
+    else if (t.dataset.compBuffCl) set({ buffs: (state.companion.buffs || []).map(x => (x.id === t.dataset.compBuffCl ? { ...x, cl: Number(t.value) } : x)) });
     else if (t.dataset.comp === 'armorEnh') set({ armorEnh: Number(t.value) });
     else if (t.dataset.compPick !== undefined) {
       const picks = [...(state.companion.featPicks || [])];
@@ -252,6 +286,8 @@ export function initCompanion(app) {
     if (pop) { popAnimal(app, pop.dataset.animalPop); return; }
     const tp = e.target.closest('[data-trick-pop]');
     if (tp) { e.preventDefault(); popTrick(app, tp.dataset.trickPop); return; }
+    const rm = e.target.closest('[data-comp-buff-remove]');
+    if (rm) { set({ buffs: (state.companion.buffs || []).filter(x => x.id !== rm.dataset.compBuffRemove) }); return; }
     const w = e.target.closest('[data-comp-why]');
     if (w) { showWhy(app, w.dataset.compWhy); return; }
     const b = e.target.closest('[data-comp-skill]');

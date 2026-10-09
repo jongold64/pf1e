@@ -552,6 +552,14 @@ export function openMagicArmor(app, target, mode = 'buy') {
   $(c.card).scrollIntoView({ block: 'start' });
 }
 
+// A potion, scroll or wand from the Magic Items list's search: the Add magic gear card set to that kind.
+export function openSpellItem(app, spellKind) {
+  const c = CARDS.buy;
+  Object.assign(c.form, { kind: 'spell', spellKind, spell: '', cl: 0, confirmed: new Set(), extraUnmet: 0, message: '' });
+  renderCrafting(app, 'buy');
+  $(c.card).scrollIntoView({ block: 'start' });
+}
+
 // "Craft this item" in a magic item's details: plan it on the Craft tab.
 export function craftListedItem(app, id, option) {
   Object.assign(CARDS.craft.form, { kind: 'item', itemId: id, option: option || '', confirmed: new Set(), extraUnmet: 0, message: '' });

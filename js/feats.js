@@ -443,7 +443,8 @@ export function featApplied(name, { level = 1, choice = '', skillFeats = {} } = 
   if (name === 'Weapon Specialization' || name === 'Greater Weapon Specialization') return `+2 damage with the chosen weapon${what}: counted on the Weapons tab.`;
   if (name === 'Improved Critical') return `Doubles the threat range of the chosen weapon${what}: counted on the Weapons tab.`;
   if (name === 'Weapon Finesse') return 'Light and finesse weapons use Dex instead of Str on attack rolls when it is higher: counted on the Weapons tab.';
-  if (['Power Attack', 'Deadly Aim', 'Rapid Shot'].includes(name)) return 'Switch it on in Combat options on the Weapons tab; the attacks and damage change to match.';
+  if (['Power Attack', 'Deadly Aim', 'Rapid Shot', 'Point-Blank Shot'].includes(name)) return 'Switch it on in Combat options on the Weapons tab; the attacks and damage change to match.';
+  if (name === 'Boon Companion') return 'Your animal companion (or, without one, your familiar) counts as 4 levels higher, up to your character level: counted on its card.';
   if (['Two-Weapon Fighting', 'Improved Two-Weapon Fighting', 'Greater Two-Weapon Fighting', 'Double Slice'].includes(name)) {
     return 'Counted when you choose a main and off-hand weapon in Combat options on the Weapons tab.';
   }
