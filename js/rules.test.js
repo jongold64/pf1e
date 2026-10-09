@@ -1429,6 +1429,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const strong = companionStats(wolf, 3, comp.progression, { fx: effectTotalsT([{ id: 'bulls-strength', cl: 3 }, { id: 'barkskin', cl: 3 }]) });
   check("bull's strength on the wolf: Str +4", strong.scores.str, plainWolf.scores.str + 4);
   check("bull's strength: bite +2", strong.attacks[0].bonus, plainWolf.attacks[0].bonus + 2);
+  const big = companionStats(wolf, 3, comp.progression, { fx: effectTotalsT([{ id: 'enlarge-person', cl: 3 }]) });
+  check('enlarge person on a Medium wolf: Large', big.size, 'Large');
+  check('enlarge person: bite 1d6 becomes 1d8', big.attacks[0].dice, '1d8');
+  check('enlarge person: AC -1 (size) -1 (Dex -2)', big.ac, plainWolf.ac - 2);
+  check('enlarge person: bite -1 size, +1 Str (+2), so the same', big.attacks[0].bonus, plainWolf.attacks[0].bonus);
   check('barkskin: AC +2 (natural armor enhancement), touch unchanged', `${strong.ac - plainWolf.ac} ${strong.touch - plainWolf.touch}`, '2 0');
   const bow = { name: 'Longbow', group: 'ranged', damage: { m: '1d8' }, multiplier: 3, threat: 20 };
   const pb = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'], options: { pointBlank: true } });

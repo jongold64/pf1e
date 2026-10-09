@@ -288,7 +288,7 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   Companion extras: `companionLevel(..., { boon, characterLevel })` (Boon Companion +4, capped); barding material via
   materials.js withMaterial (bardingCost skips the masterwork 150 when `mw_included`); `state.companion.buffs` [{ id, cl }]
   -> effectTotals -> companionStats `choices.fx` (scores, AC by type via acWithEffects, saves, attack/damage, init,
-  CMB/CMD, skills, hp, land speed; size changes not applied). Point-Blank Shot is a Combat option (`pointBlank`).
+  CMB/CMD, skills, hp, land speed; `fx.size`/`setSize` change its size, with `stepDice` moving natural attack dice). Point-Blank Shot is a Combat option (`pointBlank`).
   Combat styles (AoN RangerCombatStyles page): kind 'combat-style', `style_feats` { "2"|"6"|"10": [feat names] };
   PATH_RULES.ranger with `fromLevel: 2`; feats.js `setStyleFeats` limits the 'rangerStyle' slots (tiers up to the slot's
   class level). Companion: featContext `companion` (effective druid level at that point) makes "animal companion"

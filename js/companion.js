@@ -4,7 +4,7 @@
 
 import { abilityModifier, SIZE_AC } from './rules.js';
 import { featEffects } from './feats.js';
-import { acWithEffects } from './effects.js';
+import { acWithEffects, shiftSize } from './effects.js';
 import { skillInfo } from './skills.js';
 
 // Animal skills (Core Rulebook): an animal companion can put ranks only in these, and they're its class skills.
@@ -29,6 +29,14 @@ export const bardingWeight = (armor, size) => (armor.weight_lbs || 0) * (BARDING
 export const companionSize = (animal, level) => (animal.advancement && level >= animal.advancement.level ? animal.advancement.size : null) || animal.size;
 // Damage one step up (Improved Natural Attack), as a Medium weapon's dice become a Large one's.
 const STEP_UP = { '1d2': '1d3', '1d3': '1d4', '1d4': '1d6', '1d6': '1d8', '1d8': '2d6', '1d10': '2d8', '1d12': '3d6', '2d4': '2d6', '2d6': '3d6', '2d8': '3d8', '3d6': '4d6' };
+// Natural attack dice a size step smaller (Core Rulebook damage tables), and a weapon's dice moved by size steps.
+const STEP_DOWN = { '1d3': '1d2', '1d4': '1d3', '1d6': '1d4', '1d8': '1d6', '1d10': '1d8', '1d12': '1d10', '2d4': '1d6', '2d6': '1d10', '2d8': '2d6', '3d6': '2d6', '3d8': '2d8', '4d6': '3d6' };
+const SIZE_LIST = ['Fine', 'Diminutive', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan', 'Colossal'];
+function stepDice(dice, steps) {
+  let d = dice;
+  for (let i = 0; i < Math.abs(steps) && d; i++) d = (steps > 0 ? STEP_UP : STEP_DOWN)[d] || d;
+  return d;
+}
 // Speed in medium or heavy armor (barding too): 20 -> 15, 30 -> 20, 40 -> 30, 50 -> 35, 60 -> 40.
 const ARMORED_SPEED = { 20: 15, 30: 20, 40: 30, 50: 35, 60: 40 };
 
@@ -86,7 +94,11 @@ export function increaseCount(progression, level) {
 export function companionStats(animal, level, progression, choices = {}) {
   const row = progression[Math.max(1, Math.min(20, level)) - 1];
   const adv = animal.advancement && level >= animal.advancement.level ? animal.advancement : null;
-  const size = adv?.size || animal.size;
+  // Spells and effects on it (choices.fx) can change its size: enlarge person a step bigger (reduce person smaller), a
+  // polymorph to a set size. Size changes its AC, attacks, CMB/CMD, Stealth and Fly, and its natural attacks' dice.
+  const naturalSize = adv?.size || animal.size;
+  const size = shiftSize(choices.fx?.setSize || naturalSize, choices.fx?.size || 0);
+  const sizeSteps = SIZE_LIST.indexOf(size) - SIZE_LIST.indexOf(naturalSize);
   const feats = choices.feats || [];
   const has = name => feats.includes(name);
 
@@ -141,7 +153,8 @@ export function companionStats(animal, level, progression, choices = {}) {
     const single = totalAttacks === 1 && !x.secondary;
     const strDamage = x.secondary ? (mod.str > 0 ? Math.floor(mod.str / 2) : mod.str) : single && mod.str > 0 ? Math.floor(mod.str * 1.5) : mod.str;
     const focus = pickedFor('Weapon Focus', x.name) ? 1 : 0;
-    const dice = pickedFor('Improved Natural Attack', x.name) && STEP_UP[x.dice] ? STEP_UP[x.dice] : x.dice;
+    const sizedDice = stepDice(x.dice, sizeSteps);
+    const dice = pickedFor('Improved Natural Attack', x.name) && STEP_UP[sizedDice] ? STEP_UP[sizedDice] : sizedDice;
     const bonus = row.bab + hitMod + sizeAc + (x.secondary ? (multiattack ? -2 : -5) : 0) + focus + armorAttack + fxAttack;
     const finesse = has('Weapon Finesse') && mod.dex > mod.str;
     const why = {
@@ -151,7 +164,7 @@ export function companionStats(animal, level, progression, choices = {}) {
         ...(focus ? [{ label: `Feat: Weapon Focus (${x.name})`, value: 1 }] : []),
         ...(armorAttack ? [{ label: `Barding without ${profFeat}`, value: armorAttack }] : []),
         ...(fxAttack ? [{ label: 'Spells and effects on it', value: fxAttack }] : [])],
-      damage: [{ label: dice !== x.dice ? `Dice (Improved Natural Attack: ${x.dice} becomes ${dice})` : 'Dice', text: dice || '—' },
+      damage: [{ label: dice !== x.dice ? `Dice (${[sizedDice !== x.dice ? size : '', dice !== sizedDice ? 'Improved Natural Attack' : ''].filter(Boolean).join(', ')}: ${x.dice} becomes ${dice})` : 'Dice', text: dice || '—' },
         { label: x.secondary ? 'Half Strength (secondary attack)' : single && mod.str > 0
         ? 'Strength × 1 1/2 (its only natural attack)' : 'Strength', value: strDamage },
         ...(fxDamage ? [{ label: 'Spells and effects on it', value: fxDamage }] : [])],
