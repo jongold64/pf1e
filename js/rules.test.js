@@ -22,6 +22,7 @@ import { companionLevel, companionStats, parseAttacks, bardingCost } from './com
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
 import { armorEffects as armorFx } from './armor.js';
 import { familiarStats } from './familiar.js';
+import { ammoPiecePrice, launcherOf } from './weapons.js';
 import { effectTotals as effectTotalsT } from './effects.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
 import { parseRequirement, castingByTradition, checkRequirements } from './prestige.js';
@@ -1443,6 +1444,18 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const pb = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'], options: { pointBlank: true } });
   const plain = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'] });
   check('Point-Blank Shot: +1 attack and damage', `${pb.attacks[0] - plain.attacks[0]} ${pb.parts.damageBonus - plain.parts.damageBonus}`, '1 1');
+  // Ammunition: price a piece; enhancement doesn't stack with the launcher's; silver -1 damage.
+  const arrows = { id: 'arrows', price_gp: 1, per: 20, launcher: 'bow' };
+  check('arrow: 1/20 gp a piece', ammoPiecePrice(arrows, {}), 0.05);
+  check('cold iron arrow: twice', ammoPiecePrice(arrows, { material: 'cold-iron' }), 0.1);
+  check('adamantine arrow: +60 gp', ammoPiecePrice(arrows, { material: 'adamantine' }), 60.05);
+  check('+1 arrow: 6 + 40 gp more', ammoPiecePrice(arrows, { enh: 1 }), 46.05);
+  const lb = { name: 'Longbow', group: 'ranged', damage: { m: '1d8' }, multiplier: 3, threat: 20 };
+  const plus2arrows = weaponAttack({ weapon: lb, entry: { enh: 1, ammo: { id: 'arrows', count: 20, enh: 2 } }, bab: [5], mod: { str: 0, dex: 3 } });
+  check('+1 bow, +2 arrows: +2 on attack and damage (not +3)', `${plus2arrows.parts.itemBonus} ${plus2arrows.parts.damageBonus}`, '2 2');
+  const silverArrows = weaponAttack({ weapon: lb, entry: { ammo: { id: 'arrows', count: 20, material: 'silver' } }, bab: [5], mod: { str: 0, dex: 3 } });
+  check('silver arrows: -1 damage', silverArrows.parts.damageBonus, -1);
+  check('launcher of a longbow', launcherOf(lb), 'bow');
   check('mithral chain shirt barding: masterwork not paid twice', bardingCost({ price_gp: 1100, mw_included: true }, 'Medium', 1), 2200 + 1000);
 }
 

@@ -855,3 +855,4 @@ table.srd-table { margin: 6px 0 10px; }
 table.srd-table th { font-size: 0.85rem; }
 table.srd-table td { font-size: 0.85rem; }
 table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
+#effects .buff-active li.kept b { color: var(--muted); }

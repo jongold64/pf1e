@@ -215,6 +215,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   books' examples), `extra(w, { base, weight, magic })` (price added: cold iron doubles, +2,000 gp once magic; bone,
   obsidian and stone are negative), `mw` (masterwork in the price: no +300 row, +1 attack), `weight`, `damage(w)`, `notes`.
   weapons.js `materialOf`; weaponCost is the sum of weaponCostRows.
+- Ammunition: `build_aon_weapons.py` also writes data/ammo.json (AoN ammo list: `per` bundle size, `price_gp` for the
+  bundle, `launcher` from the name; siege ammo left out). weapons.js `setAmmoData` (loadWeapons), `launcherOf`,
+  `ammoFor`, `AMMO_MATERIALS` (per-piece prices), `ammoPiecePrice`; a launcher's `entry.ammo` = { id, count, material,
+  enh }: weaponAttack takes the higher of launcher and ammo enhancement, the ammo material's damage change; cost rows
+  and weight include it. Kept effects: `state.buffs` entries can be `{ on: false }` (activeBonuses/effectTotals skip them).
 - Later weapons: `build_aon_weapons.py` (after build_weapons.py) adds AoN simple/martial/exotic weapons PSRD lacks (name
   matched by sorted words and by letters run together: "Heavy mace"/"Mace, heavy", "Short sword"/"Shortsword"), Paizo
   books with notices only; Tiny/Large dice from Core Rulebook Table 6-5 (3d6 -> 4d6 added). `origin: 'aonprd'`. Not added:

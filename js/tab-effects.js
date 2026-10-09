@@ -16,24 +16,29 @@ export function renderEffects(app, view) {
   const { state } = app;
   const box = $('effects');
   const openGroups = new Set([...box.querySelectorAll('details.buff-list[open]')].map(d => d.dataset.group));
-  const on = new Map(state.buffs.map(x => [x.id, x]));
-  const activeCount = state.buffs.length + state.customEffects.filter(c => c.on && c.value).length;
+  // Effects in your list: switched on, or kept switched off (unticked) so they're at hand for next time.
+  const saved = new Map(state.buffs.map(x => [x.id, x]));
+  const on = new Map(state.buffs.filter(x => x.on !== false).map(x => [x.id, x]));
+  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length;
   $('effects-count').textContent = activeCount ? `${activeCount} on` : '';
 
   const buffRow = buff => {
     const cur = on.get(buff.id);
-    const cl = cur?.cl ?? 1;
+    const kept = saved.get(buff.id);
+    const cl = kept?.cl ?? 1;
     // A caster or class level, or for items and negative levels a choice of amounts.
-    const level = !cur ? '' : buff.levels ? `<label class="cl-input">${esc(buff.levelName || 'amount')}
+    const level = !kept ? '' : buff.levels ? `<label class="cl-input">${esc(buff.levelName || 'amount')}
         <select data-buff-cl="${esc(buff.id)}">${buff.levels.map(n => `<option value="${n}"${n === buffAmount(buff, cl) ? ' selected' : ''}>${buff.forms ? esc(buff.forms[n - 1].label) : `${buff.levelName === 'bonus' ? '+' : ''}${n}`}</option>`).join('')}</select></label>`
       : buff.scales ? `<label class="cl-input">${esc(buff.levelName || 'caster level')}
         <input type="number" min="1" max="20" value="${cl}" data-buff-cl="${esc(buff.id)}"></label>` : '';
-    return `<li class="${cur ? 'on' : ''}"><label class="check-row small"><input type="checkbox" data-buff="${esc(buff.id)}"${cur ? ' checked' : ''}>
+    return `<li class="${cur ? 'on' : kept ? 'kept' : ''}"><label class="check-row small"><input type="checkbox" data-buff="${esc(buff.id)}"${cur ? ' checked' : ''}>
         <span><b>${esc(buff.name)}</b> <small class="muted">${esc(buffSummary(buff, cl))}</small></span>
         <button type="button" class="skill-details" data-buff-pop="${esc(buff.id)}" aria-label="${esc(buff.name)} in a popup">Details</button></label>${level}
+        ${kept ? `<button type="button" class="link" data-buff-remove="${esc(buff.id)}" aria-label="Take ${esc(buff.name)} off your list">remove</button>` : ''}
         ${cur && buff.note ? `<div class="hint">Not counted: ${esc(buff.note)}</div>` : ''}</li>`;
   };
-  const active = BUFFS.filter(b => on.has(b.id));
+  // Your list: every effect you've switched on, on or off now (the order you added them).
+  const active = state.buffs.map(x => buffById.get(x.id)).filter(Boolean);
   const options = (list, value) => list.map(([v, label]) => `<option value="${esc(v)}"${v === value ? ' selected' : ''}>${esc(label)}</option>`).join('');
   // Each custom effect: on/off and a name, then one line per bonus it gives (amount, type, what it applies to).
   const partRow = (i, k, p) => `<div class="fx-part">
@@ -65,13 +70,14 @@ export function renderEffects(app, view) {
       <p class="hint">Bonuses of the same type don't stack (only the highest counts), except dodge, circumstance and untyped
       ones; penalties all count. Armor and shield bonuses (mage armor, shield) don't add to worn armor's: the higher counts.</p>`
       : '<p class="hint">Nothing active. Switch on a spell, ability, item, circumstance or condition below, or add your own effect.</p>'}
-    ${active.length ? `<ul class="buff-active">${active.map(buffRow).join('')}</ul>` : ''}
+    ${active.length ? `<h3>Your effects</h3><p class="hint">Tick to switch one on, untick to switch it off: it stays here for next time
+      (favored terrain, flanking, a condition...). <b>remove</b> takes it off the list.</p><ul class="buff-active">${active.map(buffRow).join('')}</ul>` : ''}
     ${EFFECT_GROUPS.map(([g, label, hint]) => {
       const list = BUFFS.filter(b => (b.group || 'spell') === g);
       const n = list.filter(b => on.has(b.id)).length;
       return `<details class="buff-list" data-group="${g}"${openGroups.has(g) ? ' open' : ''}><summary>${esc(label)} <span class="count">${n ? `${n} on` : list.length}</span></summary>
         <p class="hint">${esc(hint)}</p>
-        <ul class="buff-grid">${list.filter(b => !on.has(b.id)).map(buffRow).join('') || '<li class="hint">All of these are on (above).</li>'}</ul></details>`;
+        <ul class="buff-grid">${list.filter(b => !saved.has(b.id)).map(buffRow).join('') || '<li class="hint">All of these are in your list (above).</li>'}</ul></details>`;
     }).join('')}
     <h3>Custom effects</h3>
     ${custom ? `<ul class="custom-effects">${custom}</ul>` : '<p class="hint">For anything not listed: a potion, an item, a class ability, a penalty (enter a negative number).</p>'}
@@ -84,8 +90,9 @@ async function popBuff(app, id) {
   const buff = buffById.get(id);
   if (!buff) return;
   const { state } = app;
-  const cur = state.buffs.find(x => x.id === id);
-  const cl = cur?.cl || app.view.level;
+  const kept = state.buffs.find(x => x.id === id);
+  const cur = kept && kept.on !== false ? kept : null;
+  const cl = kept?.cl || app.view.level;
   // The other effects on now, and which of them beat or match each of this buff's bonuses.
   const others = activeBonuses(state.buffs.filter(x => x.id !== id), app.view.customAll);
   const rows = buff.bonuses(buffAmount(buff, cl), effectMods()).flatMap(b => (b.target === 'saves' ? ['fort', 'ref', 'will'].map(t => ({ ...b, target: t })) : [b])).map(b => {
@@ -120,8 +127,10 @@ async function popBuff(app, id) {
     ${buff.forms ? `<p class="hint">Choose the form in its list (${buff.forms.length} forms)${buff.forms.some(f => f.size) ? '; your size becomes the form\u2019s' : ''}.</p>` : ''}
     ${spell ? `<h3>The spell</h3>${facts([['Range', spell.range], ['Duration', spell.duration], ['Target', spell.target || null], ['Saving throw', spell.saving_throw]])}
       <details class="rules"><summary>Spell text</summary>${paragraphs(spell.description)}</details>` : ''}`,
-    [cur ? { label: 'Switch it off', run: () => app.update({ buffs: state.buffs.filter(x => x.id !== id) }) }
-         : { label: 'Switch it on', primary: true, run: () => app.update({ buffs: [...state.buffs, { id, cl: buff.levels ? buff.levels[0] : app.view.level }] }) }]);
+    [cur ? { label: 'Switch it off', run: () => app.update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, on: false } : x)) }) }
+         : { label: 'Switch it on', primary: true, run: () => app.update({ buffs: kept ? state.buffs.map(x => (x.id === id ? { id: x.id, cl: x.cl } : x))
+             : [...state.buffs, { id, cl: buff.levels ? buff.levels[0] : app.view.level }] }) },
+     ...(kept ? [{ label: 'Remove from my list', run: () => app.update({ buffs: state.buffs.filter(x => x.id !== id) }) }] : [])]);
 }
 
 // A custom effect in a popup: what it applies to (all saves / all d20 rolls spelled out), whether it counts next to the
@@ -169,8 +178,10 @@ export function initEffects(app) {
     if (t.dataset.buff) {
       const id = t.dataset.buff;
       const fresh = buffById.get(id)?.levels ? buffById.get(id).levels[0] : app.view.level;
-      app.update({ buffs: t.checked ? [...state.buffs, { id, cl: state.buffs.find(x => x.id === id)?.cl || fresh }]
-        : state.buffs.filter(x => x.id !== id) });
+      // Ticking adds it to your list (or switches it back on); unticking keeps it in the list, switched off.
+      const kept = state.buffs.find(x => x.id === id);
+      app.update({ buffs: kept ? state.buffs.map(x => (x.id === id ? (t.checked ? { id: x.id, cl: x.cl } : { ...x, on: false }) : x))
+        : t.checked ? [...state.buffs, { id, cl: fresh }] : state.buffs });
     } else if (t.dataset.buffCl) {
       const cl = Math.min(20, Math.max(1, Math.floor(Number(t.value)) || 1));
       app.update({ buffs: state.buffs.map(x => (x.id === t.dataset.buffCl ? { ...x, cl } : x)) });
@@ -186,6 +197,8 @@ export function initEffects(app) {
     }
   });
   box.addEventListener('click', e => {
+    const rm = e.target.closest('[data-buff-remove]');
+    if (rm) { app.update({ buffs: state.buffs.filter(x => x.id !== rm.dataset.buffRemove) }); return; }
     const more = e.target.closest('[data-fx-more]');
     if (more) {
       const i = Number(more.dataset.fxMore);
@@ -204,7 +217,7 @@ export function initEffects(app) {
       const i = Number(e.target.closest('[data-fx-remove]').dataset.fxRemove);
       app.update({ customEffects: state.customEffects.filter((_, j) => j !== i) });
     } else if (e.target.closest('[data-fx-clear]')) {
-      app.update({ buffs: [], customEffects: state.customEffects.map(c => ({ ...c, on: false })) });
+      app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })), customEffects: state.customEffects.map(c => ({ ...c, on: false })) });
     }
   });
 }

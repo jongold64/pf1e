@@ -211,7 +211,35 @@ export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRu
 // chosen is sized for the wielder).
 export function weaponWeight(weapon, entry = {}, wielderSize = 'Medium') {
   const size = entry.size || wielderSize;
-  return (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[size] ?? (size === 'Tiny' ? 0.5 : 1)) * (materialOf(entry)?.weight || 1);
+  const ammo = entry.ammo && AMMO.get(entry.ammo.id);
+  const ammoWeight = ammo ? (ammo.weight_lbs || 0) / (ammo.per || 1) * (entry.ammo.count || 0) : 0;
+  return (weapon.weight_lbs || 0) * (WEAPON_SIZE_WEIGHT[size] ?? (size === 'Tiny' ? 0.5 : 1)) * (materialOf(entry)?.weight || 1) + ammoWeight;
+}
+
+// Ammunition (data/ammo.json, set once loaded) for a launcher's `entry.ammo` = { id, count, material, enh }.
+let AMMO = new Map();
+export function setAmmoData(list) { AMMO = new Map((list || []).map(a => [a.id, a])); }
+// The launcher a weapon shoots: 'bow', 'crossbow', 'sling', 'blowgun'... (null for weapons without ammunition).
+export function launcherOf(weapon) {
+  if (weapon.group !== 'ranged' || weapon.thrown || weapon.firearm) return null;
+  const n = lower(weapon.name);
+  return /crossbow/.test(n) ? 'crossbow' : /sling/.test(n) ? 'sling' : /blowgun/.test(n) ? 'blowgun' : /atlatl/.test(n) ? 'atlatl'
+    : /kestros/.test(n) ? 'kestros' : /throwing arrow cord/.test(n) ? 'throwing arrow cord' : /bow\b/.test(n) ? 'bow' : null;
+}
+export const ammoFor = weapon => [...AMMO.values()].filter(a => a.launcher === launcherOf(weapon));
+// Special materials for ammunition, priced per piece (the materials' ammunition lines; cold iron doubles the price).
+// mw: always masterwork. Their effects (bypassing DR...) are the weapon materials' (materials.js).
+export const AMMO_MATERIALS = { adamantine: { per: 60, mw: true }, 'blood-crystal': { per: 30 }, 'cold-iron': { double: true },
+  'elysian-bronze': { per: 20 }, 'fire-forged-steel': { per: 15, mw: true }, 'frost-forged-steel': { per: 15, mw: true },
+  'living-steel': { per: 10 }, silver: { per: 2 }, viridium: { per: 20 } };
+// One piece of ammunition's price: its own, its material, and magic (+1 to +5: priced like a weapon with that bonus for
+// 50 pieces, masterwork included: 6 gp a piece plus the bonus squared × 40 gp).
+export function ammoPiecePrice(ammo, a = {}) {
+  const base = (ammo.price_gp || 0) / (ammo.per || 1);
+  const mat = AMMO_MATERIALS[a.material];
+  const material = !mat ? 0 : mat.double ? base : mat.per;
+  const magic = a.enh > 0 ? (mat?.mw ? 0 : 6) + a.enh * a.enh * 40 : 0;
+  return base + material + magic;
 }
 
 // The special material a carried weapon is made of (materials.js), or null.
@@ -244,7 +272,13 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const spec = (entry.spec && has.has('Weapon Specialization') ? 2 : 0) + (entry.greaterSpec && has.has('Greater Weapon Specialization') ? 2 : 0);
   const material = materialOf(entry);
   // Masterwork (or a material that's always masterwork): +1 to attack only.
-  const itemBonus = enh > 0 ? enh : entry.masterwork || material?.mw ? 1 : 0;
+  const launcherBonus = enh > 0 ? enh : entry.masterwork || material?.mw ? 1 : 0;
+  // Ammunition: its enhancement bonus doesn't stack with the launcher's (the higher counts, on attack and damage).
+  const ammo = weapon.group === 'ranged' && entry.ammo?.id ? entry.ammo : null;
+  const ammoBonus = ammo ? (ammo.enh > 0 ? ammo.enh : AMMO_MATERIALS[ammo.material]?.mw ? 1 : 0) : 0;
+  const itemBonus = Math.max(launcherBonus, ammoBonus);
+  const damageEnh = Math.max(enh, ammo?.enh || 0);
+  const ammoMaterial = ammo ? weaponMaterialById.get(ammo.material) : null;
 
   // Strength to damage depends on how the weapon is held.
   let strDamage;
@@ -292,8 +326,8 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
   // bonusDamage: extra damage such as smite evil's (+paladin level).
   // A material's damage change (alchemical silver -1 with a slashing or piercing weapon, bone and gold -2).
-  const materialDamage = material?.damage?.(weapon) || 0;
-  const damageBonus = strDamage + enh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained + pointBlank;
+  const materialDamage = (ammoMaterial ? ammoMaterial.damage?.({ type: 'P' }) : material?.damage?.(weapon)) || 0;
+  const damageBonus = strDamage + damageEnh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained + pointBlank;
   return {
     attacks: attackBabs.map(b => b + toHit),
     babs: attackBabs,
@@ -302,7 +336,8 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
     used,
     parts: { abilityMod, sizeAttack, itemBonus, focus, proficiency: proficient ? 0 : -4, armorPenalty, damageBonus, spec,
              penalty, powerHit, powerDamage, strDamage, strMod: mod.str, effectAttack, effectDamage, rapid, enh, bonusDamage, dice, misfit,
-             rating, tooWeak, materialDamage, material: material?.name || '', training, pointBlank },
+             rating, tooWeak, materialDamage, material: (ammoMaterial || material)?.name || '', training, pointBlank,
+             fromAmmo: ammoBonus > launcherBonus, enhDamage: damageEnh },
   };
 }
 
@@ -318,7 +353,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
   add(attackRows, 'Size', p.sizeAttack);
   add(attackRows, 'Weapon size (and archetype rules)', p.misfit);
-  add(attackRows, p.enh > 0 ? 'Enhancement bonus' : p.material ? `Masterwork (${p.material})` : 'Masterwork', p.itemBonus);
+  add(attackRows, p.fromAmmo ? 'Ammunition\u2019s enhancement (the launcher\u2019s doesn\u2019t stack)' : p.enh > 0 ? 'Enhancement bonus' : p.material ? `Masterwork (${p.material})` : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
   for (const t of p.training || []) add(attackRows, t.label, t.value);
   add(attackRows, proficiencyLabel, p.proficiency);
@@ -339,7 +374,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
     : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
   if (p.rating !== null && p.rating !== undefined) damageRows.push({ label: strLabel, value: p.strDamage });
   else add(damageRows, strLabel, p.strDamage);
-  add(damageRows, 'Enhancement bonus', p.enh);
+  add(damageRows, p.enhDamage > p.enh ? 'Ammunition\u2019s enhancement bonus' : 'Enhancement bonus', p.enhDamage ?? p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
   for (const t of p.training || []) add(damageRows, t.label, t.value);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
@@ -436,6 +471,11 @@ export function weaponCostRows(weapon, entry = {}) {
     rows.push({ label: `Magic: total bonus +${bonus} (${parts}), squared × 2,000 gp`, gp: bonus * bonus * 2000 });
   }
   for (const a of abilities.filter(x => x.gp)) rows.push({ label: a.name, gp: a.gp });
+  const ammo = entry.ammo && AMMO.get(entry.ammo.id);
+  if (ammo && entry.ammo.count) {
+    const what = [entry.ammo.enh ? `+${entry.ammo.enh}` : '', weaponMaterialById.get(entry.ammo.material)?.name.toLowerCase(), lower(ammo.name)].filter(Boolean).join(' ');
+    rows.push({ label: `Ammunition: ${entry.ammo.count} ${what}`, gp: Math.round(ammoPiecePrice(ammo, entry.ammo) * entry.ammo.count * 100) / 100 });
+  }
   const magic = magicPart(enh, abilities, 2000);
   if (entry.crafted && magic) rows.push({ label: 'Crafted: the magic costs half', gp: -magic / 2 });
   return rows;

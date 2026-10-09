@@ -497,7 +497,7 @@
       "see text"
     ],
     "price": "1 sp",
-    "price_gp": 1.0,
+    "price_gp": 0.1,
     "weight_lbs": null,
     "finesse": true,
     "description": "Many unarmed fighters wrap their hands in cloth to minimize injuries to their fists. Some martial artists also weave small coins or metal bars into their handwraps, adding special material effects as well. Handwraps don’t alter the damage a character’s unarmed attacks deal. However, masterwork handwraps can be enchanted as weapons, providing their benefits on unarmed attacks the character makes with her hands. A character can’t benefit from both handwraps and other items that provide enhancement bonuses or weapon special abilities (such as an amulet of mighty fists) on the same attack.",
@@ -8057,7 +8057,7 @@
       "see text"
     ],
     "price": "1 sp",
-    "price_gp": 1.0,
+    "price_gp": 0.1,
     "weight_lbs": 5.0,
     "finesse": false,
     "description": "This thrown weapon is a length of rope with a simple open knot on one end that allows you entangle a foe like you would using a net. The DC to cast a spell while entangled with a lasso is 10 + the spell level being cast. An entangled creature can slip free with a successful DC 15 Escape Artist check as a full-round action. The lasso has 2 hit points and AC 10, and requires a DC 23 Strength check to break it. On a successful hit, the lasso tightens; to use it again you must spend a standard action sliding the knot to enlarge the loop.",
@@ -8987,7 +8987,7 @@
     "type": "B (or S)",
     "special": [],
     "price": "2 sp",
-    "price_gp": 2.0,
+    "price_gp": 0.2,
     "weight_lbs": 2.0,
     "finesse": true,
     "description": "By wrapping your hands and forearms in thin but tough hemp ropes and then soaking the makeshift gloves in water for weight and expansion, you can transform your fists into rock-hard weapons easily capable of killing in a fistfight. Each rope gauntlet takes a full minute to wrap and another minute to soak, but once applied the gauntlet can be worn for a day; removing a rope gauntlet takes 1 full round. When wearing rope gauntlets, you are considered armed and your attacks deal normal damage. If you are proficient with rope gauntlets, you may use the rough edges of the ropes to deal slashing damage rather than bludgeoning damage. Your fingers are mostly exposed, allowing you to wield or carry items in your hands while wearing rope gauntlets, but the constriction of the weapon at your knuckles gives you a –2 penalty on all precision-based tasks involving your hands (such opening locks).",

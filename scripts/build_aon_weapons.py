@@ -3,7 +3,7 @@ Aldori dueling sword...), from the Archives of Nethys weapon lists and pages (ca
 downloaded once). Each list row gives cost, damage (Small, Medium), critical, range, weight, type and special; the
 weapon's page gives its book, category (light, one-handed, two-handed, ranged), proficiency and description. Tiny and
 Large damage come from the Core Rulebook's table of weapon damage by size. Only weapons from a book whose OGL notice is
-known are added; ammunition, firearms and siege weapons are left out.
+known are added (firearms and siege weapons are left out); ammunition goes in ammo.json beside it.
 
 Also gives every weapon its fighter weapon groups (`groups`), from its AoN page.
 
@@ -56,6 +56,12 @@ def number(s):
     return float(m.group(0).replace(',', '')) if m else None
 
 
+def price_gp(s):
+    """'1 gp' -> 1, '5 sp' -> 0.5, '5 cp' -> 0.05 (None if there's no price)."""
+    m = re.search(r'([\d.,]+)\s*(gp|sp|cp)?', s or '')
+    return float(m.group(1).replace(',', '')) * {'gp': 1, 'sp': 0.1, 'cp': 0.01}[m.group(2) or 'gp'] if m else None
+
+
 def rows(prof):
     """[(name, cells)] from a proficiency's list page (several tables, one per category)."""
     page = aon_page('Weapons' + prof, f'https://aonprd.com/EquipmentWeapons.aspx?Proficiency={prof}')
@@ -106,6 +112,35 @@ def core_groups(classes_path):
     return out
 
 
+# Ammunition for siege engines (on the ammunition list too).
+SIEGE_AMMO = {'Ballista net', 'Flak', 'Flechette bolt', 'Weighted bolt'}
+# Which launcher each kind of ammunition is for, by its name.
+LAUNCHERS = [(r'repeating crossbow bolt', 'crossbow'), (r'\bbolt', 'crossbow'), (r'blowgun|featherweight dart', 'blowgun'),
+             (r'atlatl', 'atlatl'), (r'kestros', 'kestros'), (r'throwing arrow', 'throwing arrow cord'), (r'thorn', 'bow'),
+             (r'arrow', 'bow'), (r'bullet|stone', 'sling')]
+
+
+def ammunition(notices):
+    """Ammunition (arrows, bolts, sling bullets, darts...) from the AoN ammunition list: price for a bundle ("Arrows (20)":
+    20), its weight, launcher, book and description. Siege ammunition is left out."""
+    out, skipped = [], []
+    for name, c in rows('Ammo'):
+        d = details(name)
+        if not d['source'] or not find_notices(notices, d['source']):
+            skipped.append(f"{name} ({d['source'] or 'no book'})")
+            continue
+        launcher = next((l for pat, l in LAUNCHERS if re.search(pat, name, re.I)), None)
+        if not launcher or name in SIEGE_AMMO:
+            skipped.append(f'{name} (siege or unknown launcher)')
+            continue
+        per = re.search(r'\((\d+)\)', name + ' ' + (c.get('Cost') or ''))
+        out.append({'id': slug(re.sub(r'\s*\(\d+\)', '', name)), 'name': re.sub(r'\s*\(\d+\)', '', name), 'source': d['source'],
+                    'launcher': launcher, 'per': int(per.group(1)) if per else 1,
+                    'price_gp': price_gp(re.sub(r'\(\d+\)', '', c.get('Cost') or '')) or 0, 'weight_lbs': number(c.get('Weight')) if (c.get('Weight') or '').strip('—- ') else 0,
+                    'damage': dice(c.get('Dmg (M)')), 'special': (c.get('Special') or '').strip('—- ') or '', 'description': d['description'], 'origin': ORIGIN})
+    return out, skipped
+
+
 def main():
     path = sys.argv[1]
     weapons = json.load(open(path, encoding='utf-8'))
@@ -135,7 +170,7 @@ def main():
                 'damage': {'t': sized(m, 0), 's': s, 'm': m, 'l': sized(m, 1)},
                 'critical': c.get('Critical') or None, 'threat': threat, 'multiplier': mult,
                 'range_ft': int(rng.group(1)) if rng else None, 'type': c.get('Type') or None, 'special': special,
-                'price': c.get('Cost') or None, 'price_gp': number(c.get('Cost')),
+                'price': c.get('Cost') or None, 'price_gp': price_gp(c.get('Cost')),
                 'weight_lbs': number(c.get('Weight')),
                 'finesse': group == 'light' or bool(re.search(r'Weapon Finesse', d['description'])),
                 'description': d['description'], 'origin': ORIGIN,
@@ -168,6 +203,10 @@ def main():
     out = sorted(weapons + added, key=lambda w: (order.index(w['category']), w['name'].lower()))
     json.dump(out, open(path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
     print(len(added), 'weapons added', dict(Counter(w['category'] for w in added)), '; skipped:', skipped)
+    # Ammunition, in its own file beside weapons.json.
+    ammo, ammo_skipped = ammunition(notices)
+    json.dump(ammo, open(os.path.join(os.path.dirname(os.path.abspath(path)), 'ammo.json'), 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
+    print(len(ammo), 'kinds of ammunition; skipped:', ammo_skipped)
 
 
 if __name__ == '__main__':

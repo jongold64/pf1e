@@ -9,6 +9,25 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { weaponTraining } from './class-features.js';
+import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice } from './weapons.js';
+
+// A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
+// ammunition's enhancement and the launcher's don't stack (the higher counts); its material's effects show under it.
+function ammoControls(app, w, e, i) {
+  const kinds = ammoFor(w);
+  if (!launcherOf(w) || !kinds.length) return '';
+  const a = e.ammo || {};
+  const ammo = kinds.find(k => k.id === a.id);
+  const mat = weaponMaterialById.get(a.material);
+  return `<div class="ammo-controls"><label>Ammunition <select data-ammo="${i}" data-field="id"><option value="">None</option>${kinds.map(k =>
+      `<option value="${esc(k.id)}"${k.id === a.id ? ' selected' : ''}>${esc(k.name)}${k.per > 1 ? ` (${formatGp(k.price_gp)} for ${k.per})` : ` (${formatGp(k.price_gp)} each)`}</option>`).join('')}</select></label>
+    ${ammo ? `<label>How many <input type="number" min="0" max="9999" value="${a.count ?? ammo.per}" data-ammo="${i}" data-field="count" style="width:5em"></label>
+      <label>Material <select data-ammo="${i}" data-field="material"><option value="">Normal</option>${Object.keys(AMMO_MATERIALS).map(id =>
+        `<option value="${esc(id)}"${id === a.material ? ' selected' : ''}>${esc(weaponMaterialById.get(id)?.name || id)}</option>`).join('')}</select></label>
+      <label>Magic <select data-ammo="${i}" data-field="enh">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}"${n === (a.enh || 0) ? ' selected' : ''}>${n ? `+${n}` : 'none'}</option>`).join('')}</select></label>
+      <p class="hint">${esc(formatGp(Math.round(ammoPiecePrice(ammo, a) * 100) / 100))} a piece${a.count ? `, ${esc(formatGp(Math.round(ammoPiecePrice(ammo, a) * a.count * 100) / 100))} in all (in the weapon's cost)` : ''}.
+        ${mat ? `${esc(mat.name)}: ${esc(mat.notes)}` : ''}${a.enh ? ` A +${a.enh} arrow or bolt doesn’t add to the launcher’s bonus: the higher counts.` : ''}</p>` : ''}</div>`;
+}
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
 import { formatGp, formatLbs } from './equipment.js';
 import { rollButton } from './roll-ui.js';
@@ -429,6 +448,7 @@ export function renderMyWeapons(app, view) {
           <option value="">Normal (steel or wood)</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}
         </select></label>` : ''}
         ${weaponMaterialById.get(e.material) ? `<p class="hint">${esc(weaponMaterialById.get(e.material).name)}: ${esc(weaponMaterialById.get(e.material).notes)}${weaponMaterialById.get(e.material).mw ? ' Always masterwork (+1 on attacks).' : ''}</p>` : ''}
+        ${ammoControls(app, w, e, i)}
         ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
@@ -631,6 +651,20 @@ export function initWeaponsTab(app) {
     }
     const rating = e.target.dataset.weaponRating;
     if (rating !== undefined && e.target.value !== '') { changeEntry(app, Number(rating), { strRating: Number(e.target.value) }); return; }
+    // Ammunition: kind (a new kind starts at one bundle), how many, material, magic.
+    if (e.target.dataset.ammo !== undefined) {
+      const i = Number(e.target.dataset.ammo);
+      const cur = app.state.weapons[i].ammo || {};
+      const field = e.target.dataset.field;
+      const v = e.target.value;
+      const kind = field === 'id' ? ammoFor(app.data.weaponsById.get(app.state.weapons[i].id)).find(k => k.id === v) : null;
+      const next = field === 'id' ? (v ? { id: v, count: kind?.per || 1, enh: 0 } : null)
+        : { ...cur, [field]: field === 'material' ? v : Math.max(0, Math.floor(Number(v)) || 0) };
+      if (next && !next.material) delete next.material;
+      const { ammo: _old, ...rest } = app.state.weapons[i];
+      app.update({ weapons: app.state.weapons.map((x, j) => (j === i ? (next ? { ...rest, ammo: next } : rest) : x)) });
+      return;
+    }
     const material = e.target.dataset.weaponMaterial;
     if (material !== undefined) {
       const { material: _old, ...rest } = app.state.weapons[Number(material)];

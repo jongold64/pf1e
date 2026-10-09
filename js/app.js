@@ -11,7 +11,7 @@ import {
 } from './feats.js';
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
-import { proficiencyTest, weaponWeight, WEAPON_SIZES } from './weapons.js';
+import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIALS } from './weapons.js';
 import {
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
@@ -73,8 +73,11 @@ const loadItems = () => loadOnce('items', 'data/magic-items.json', items => {
   data.itemsById = new Map(items.map(i => [i.id, i]));
   return items;
 });
-const loadWeapons = () => loadOnce('weapons', 'data/weapons.json', weapons => {
+// Weapons, and the ammunition launchers use (data/ammo.json).
+const loadWeapons = () => loadOnce('weapons', 'data/weapons.json', async weapons => {
   data.weaponsById = new Map(weapons.map(w => [w.id, w]));
+  data.ammo = await fetch('data/ammo.json').then(r => r.json());
+  setAmmoData(data.ammo);
   return weapons;
 });
 const loadGear = () => loadOnce('gear', 'data/equipment.json', gear => {
@@ -307,7 +310,7 @@ function load(saved) {
   // Active effects: known buffs once each, caster level 1-20; custom effects with a known target and type.
   const seenBuffs = new Set();
   state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
-    .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)) }));
+    .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)), ...(x.on === false ? { on: false } : {}) }));
   state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
     .map(x => {
       const part = p => ({ target: TARGETS.some(([t]) => t === p?.target) ? p.target : 'attack',
@@ -370,6 +373,10 @@ function load(saved) {
                  ...(WEAPON_SIZES.includes(e.size) ? { size: e.size } : {}),
                  // A special material (materials.js WEAPON_MATERIALS).
                  ...(weaponMaterialById.has(e.material) ? { material: e.material } : {}),
+                 // A launcher's ammunition: data/ammo.json id, how many, material, enhancement (+0 to +5).
+                 ...(e.ammo && typeof e.ammo.id === 'string' ? { ammo: { id: e.ammo.id, count: Math.min(9999, Math.max(0, Math.floor(Number(e.ammo.count)) || 0)),
+                   ...(AMMO_MATERIALS[e.ammo.material] ? { material: e.ammo.material } : {}),
+                   enh: Number.isInteger(e.ammo.enh) && e.ammo.enh >= 0 && e.ammo.enh <= 5 ? e.ammo.enh : 0 } } : {}),
                  // A composite bow's strength rating (0-10); none on older saves (counts as your Strength).
                  ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}) }));
   // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.

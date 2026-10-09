@@ -211,9 +211,11 @@ export const buffById = new Map(BUFFS.map(x => [x.id, x]));
 
 // Every bonus from the buffs that are on ([{ id, cl }]) and custom effects ([{ name, target, type, value, on }]),
 // each with its source's name.
+// A buff kept in the list but switched off ({ on: false }) gives nothing.
 export function activeBonuses(buffs = [], custom = []) {
   const out = [];
-  for (const { id, cl } of buffs) {
+  for (const { id, cl, on } of buffs) {
+    if (on === false) continue;
     const buff = buffById.get(id);
     if (!buff) continue;
     for (const x of buff.bonuses(buffAmount(buff, Math.max(1, Number(cl) || 1)), MODS)) out.push({ ...x, source: buff.name });
@@ -258,7 +260,8 @@ export function stackTotal(bonuses) {
 // What the effects add up to: { str..., attack, damage, fort, ref, will, init, speed, skills, cmb, cmd, hp, size,
 // ac: { [type]: total } } (AC is kept by type, since armor, shield and natural armor bonuses compete with worn armor and
 // racial natural armor, and touch / flat-footed AC leave some types out). `size` is the size change in steps.
-export function effectTotals(buffs = [], custom = []) {
+export function effectTotals(allBuffs = [], custom = []) {
+  const buffs = allBuffs.filter(x => x.on !== false);
   const all = activeBonuses(buffs, custom);
   const totals = { ac: {} };
   for (const [t] of TARGETS) {
