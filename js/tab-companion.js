@@ -155,7 +155,7 @@ function effectsHtml(c) {
   }).join('');
   return `<h3>Spells and effects on it <span class="count">${on.length}</span></h3>
     <p class="hint">Spells cast on your companion (share spells lets you cast your "you" spells on it), and conditions it has: counted in
-      its numbers by the stacking rules. Enlarge person (and other size changes) makes it a size bigger: AC, attacks, CMB, Stealth and its bite or claw dice change with it.</p>
+      its numbers by the stacking rules. Enlarge person or animal growth (and other size changes) makes it a size bigger: AC, attacks, CMB, Stealth and its bite or claw dice change with it.</p>
     ${rows ? `<ul class="plain-list">${rows}</ul>` : ''}
     <select data-comp-buff-add aria-label="Add a spell or effect"><option value="">Add a spell or effect…</option>${groups}</select>`;
 }

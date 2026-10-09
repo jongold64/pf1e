@@ -65,6 +65,9 @@ export const MORE_BUFFS = [
     form('Large plant', 'Large', [sz('str', 4), sz('con', 2), na(4)])], 'Plant Shape II'),
   poly('plant-shape-3', 'Plant shape III', [form('Small plant', 'Small', [sz('con', 2), na(2)]), form('Medium plant', 'Medium', [sz('str', 2), b('con', 'enhancement', 2), na(2)]),
     form('Large plant', 'Large', [sz('str', 4), sz('con', 2), na(4)]), form('Huge plant', 'Huge', [sz('str', 8), sz('dex', -2), sz('con', 4), na(6)])], 'Plant Shape III'),
+  // Animal growth (animals only: an animal companion): a size bigger, +8 Str and +4 Con (size), -2 Dex, natural armor +2.
+  spell('animal-growth', 'Animal growth', [sz('str', 8), sz('con', 4), sz('dex', -2), b('ac', 'natural armor enhancement', 2)],
+        { size: 1, note: 'Animals only (an animal companion): its existing natural armor +2; speed unchanged' }),
   spell('righteous-might', 'Righteous might', [sz('str', 4), sz('con', 4), sz('dex', -2), b('ac', 'natural armor enhancement', 2)], { size: 1, note: 'DR 5 (10 at 15th) against evil or good' }),
   spell('iron-body', 'Iron body', [b('str', 'enhancement', 6), b('dex', 'untyped', -6)], { flags: ['halfSpeed'], note: '35% arcane spell failure and −6 check penalty as full plate; DR 15/adamantine; many immunities' }),
   spell('transformation', 'Transformation', [b('str', 'enhancement', 4), b('dex', 'enhancement', 4), b('con', 'enhancement', 4), b('ac', 'natural armor', 4), b('fort', 'competence', 5)],

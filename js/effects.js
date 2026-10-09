@@ -274,7 +274,10 @@ export function effectTotals(buffs = [], custom = []) {
   for (const type of new Set(all.filter(x => x.target === 'ac').map(x => x.type))) {
     totals.ac[type] = stackTotal(all.filter(x => x.target === 'ac' && x.type === type));
   }
-  totals.size = buffs.reduce((n, x) => n + (buffById.get(x.id)?.size || 0), 0);
+  // Size changes: magical effects that increase size don't stack (enlarge person and animal growth: one step), nor do
+  // ones that decrease it.
+  const steps = buffs.map(x => buffById.get(x.id)?.size || 0);
+  totals.size = Math.max(0, ...steps) + Math.min(0, ...steps);
   // A polymorph (or divine vessel...) sets your size: its form's size, or the spell's.
   for (const x of buffs) {
     const buff = buffById.get(x.id);

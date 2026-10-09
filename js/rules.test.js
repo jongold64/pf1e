@@ -1434,6 +1434,10 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('enlarge person: bite 1d6 becomes 1d8', big.attacks[0].dice, '1d8');
   check('enlarge person: AC -1 (size) -1 (Dex -2)', big.ac, plainWolf.ac - 2);
   check('enlarge person: bite -1 size, +1 Str (+2), so the same', big.attacks[0].bonus, plainWolf.attacks[0].bonus);
+  const grown = companionStats(wolf, 3, comp.progression, { fx: effectTotalsT([{ id: 'animal-growth', cl: 9 }]) });
+  check('animal growth: Large, Str +8, Con +4, bite 1d8', `${grown.size} ${grown.scores.str - plainWolf.scores.str} ${grown.scores.con - plainWolf.scores.con} ${grown.attacks[0].dice}`, 'Large 8 4 1d8');
+  check('animal growth and enlarge person together: still one size step', companionStats(wolf, 3, comp.progression,
+    { fx: effectTotalsT([{ id: 'animal-growth', cl: 9 }, { id: 'enlarge-person', cl: 9 }]) }).size, 'Large');
   check('barkskin: AC +2 (natural armor enhancement), touch unchanged', `${strong.ac - plainWolf.ac} ${strong.touch - plainWolf.touch}`, '2 0');
   const bow = { name: 'Longbow', group: 'ranged', damage: { m: '1d8' }, multiplier: 3, threat: 20 };
   const pb = weaponAttack({ weapon: bow, bab: [5], mod: { str: 0, dex: 3 }, haveFeats: ['Point-Blank Shot'], options: { pointBlank: true } });
