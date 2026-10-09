@@ -56,6 +56,7 @@ export function rollD20(bonus, rng = randomDie) {
 // always misses; a natural roll in the threat range is confirmed with another attack roll, and a confirmed critical
 // rolls the damage `mult` times. Returns { title, lines: [text] }.
 // options.maxHealing (house rule): healing groups (heal: true) give their maximum instead of being rolled.
+// options.autoCrit (house rule): a natural 20 is a confirmed critical, with no confirmation roll (other threats still roll).
 // Extra damage from weapon special abilities: `extra` dice on every hit (never multiplied), and `burst` dice on a
 // confirmed critical, rolled once per step of the multiplier above x1 (`steps`). Returns { total, text } or null.
 function rollExtras(g, steps, rng) {
@@ -116,9 +117,12 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       lines.push(`${prefix}Attack${n}: ${atk.text}${atk.natural === 20 ? ' (natural 20: hits)' : ''}${threat ? ', critical threat!' : ''}`);
       let times = 1;
       if (threat) {
-        const confirm = rollD20(bonus, rng);
         times = g.mult || 2;
-        under(`Confirm: ${confirm.text} (if it hits AC, ×${times} damage)`);
+        if (options.autoCrit && atk.natural === 20) under(`Natural 20: critical hit, no confirmation roll (Auto-Crit house rule), ×${times} damage`);
+        else {
+          const confirm = rollD20(bonus, rng);
+          under(`Confirm: ${confirm.text} (if it hits AC, ×${times} damage)`);
+        }
       }
       const dmg = rollDamage(g.damage, dmgRng);
       if (dmg) {

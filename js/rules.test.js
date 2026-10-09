@@ -22,6 +22,7 @@ import { companionLevel, companionStats, parseAttacks, bardingCost } from './com
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
 import { armorEffects as armorFx } from './armor.js';
 import { familiarStats } from './familiar.js';
+import { rollSpec as rollSpecT } from './dice.js';
 import { ammoPiecePrice, launcherOf } from './weapons.js';
 import { effectTotals as effectTotalsT } from './effects.js';
 import { castingClasses, advanceSlots } from './multiclass.js';
@@ -1416,6 +1417,17 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Perception: master 5 ranks + Wis 1 + class skill 3 = +9', f.skills.find(x => x.name === 'Perception').total, 9);
   check('abilities at 5th include speak with master', f.abilities.includes('Speak with master'), true);
   check('CMB +2', f.cmb, 2);
+}
+
+// Auto-Crit house rule: a natural 20 confirms itself; a 19 in the threat range still rolls to confirm.
+{
+  const dice = rolls => { let i = 0; return () => rolls[i++ % rolls.length]; };
+  const spec = { title: 'Longsword', groups: [{ attacks: [5], damage: '1d8+3', threat: 19, mult: 2 }] };
+  const nat20 = rollSpecT(spec, dice([20, 4, 4, 4, 4]), { autoCrit: true }).lines.join(' | ');
+  check('Auto-Crit: natural 20 needs no confirmation roll', /Confirm:/.test(nat20), false);
+  check('Auto-Crit: natural 20 rolls critical damage', /Critical damage/.test(nat20), true);
+  check('Auto-Crit: a 19 still rolls to confirm', /Confirm:/.test(rollSpecT(spec, dice([19, 4, 4, 4, 4]), { autoCrit: true }).lines.join(' | ')), true);
+  check('without Auto-Crit: a natural 20 rolls to confirm', /Confirm:/.test(rollSpecT(spec, dice([20, 4, 4, 4, 4])).lines.join(' | ')), true);
 }
 
 // Boon Companion, effects on a companion, Point-Blank Shot.

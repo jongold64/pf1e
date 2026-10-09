@@ -5,7 +5,7 @@ import { rollSpec } from './dice.js';
 
 const KEEP = 6;
 const history = [];
-// House rule options that change how rolls are made ({ maxHealing }).
+// House rule options that change how rolls are made ({ maxHealing, autoCrit }).
 let options = {};
 export function setRollOptions(o) {
   options = o;

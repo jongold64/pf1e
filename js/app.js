@@ -163,6 +163,7 @@ const state = {
 const HOUSE_RULES = [
   ['encumbrance', 'Encumbrance', 'Encumbrance: what you carry (armor, weapons, equipment, magic items; not coins) sets your load; a medium or heavy load limits Dex, adds a check penalty and slows you.'],
   ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
+  ['autoCrit', 'Auto-Crit', "Auto-Crit: a natural 20 on an attack roll is a confirmed critical hit, with no confirmation roll (other numbers in the threat range, like a longsword's 19, still roll to confirm)."],
   ['maxGold', 'Max Starting Gold', "Max Starting Gold: a 1st-level character starts with the most its class's starting gold roll can give (a barbarian's 3d6 × 10 gp: 180 gp) instead of the average (105 gp)."],
   ['actionPoints', 'Action Points', "Action Points: Pathfinder's hero points (Advanced Player's Guide), in the Race card: 1 to start, 1 more each level gained, at most 3, and at most 1 spent a round."],
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
@@ -2482,7 +2483,7 @@ function render() {
       <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
   }).join('');
   $('house-rules-note').textContent = HOUSE_RULES.filter(([k]) => state.houseRules[k]).map(([, , note]) => note).join(' ');
-  setRollOptions({ maxHealing: !!state.houseRules.maxHealing });
+  setRollOptions({ maxHealing: !!state.houseRules.maxHealing, autoCrit: !!state.houseRules.autoCrit });
 
   // Hit point tracker: current hit points (full unless damage has been applied) and what they mean at 0 or below.
   const hpNow = currentHp(state.hpCurrent, stats.hp);
