@@ -141,6 +141,30 @@ def ammunition(notices):
                     'launcher': launcher, 'per': int(per.group(1)) if per else 1,
                     'price_gp': price_gp(re.sub(r'\(\d+\)', '', c.get('Cost') or '')) or 0, 'weight_lbs': number(c.get('Weight')) if (c.get('Weight') or '').strip('—- ') else 0,
                     'damage': dice(c.get('Dmg (M)')), 'special': (c.get('Special') or '').strip('—- ') or '', 'description': d['description'], 'origin': ORIGIN})
+    # Firearm ammunition (the firearm page's Name / Cost / Weight table): bullets and pellets (each shot also needs a dose
+    # of black powder: `powder: true`), cartridges (powder included), and the black powder dose itself.
+    page = aon_page('WeaponsFirearm', 'https://aonprd.com/EquipmentWeapons.aspx?Proficiency=Firearm')
+    table = next((t for t in BeautifulSoup(page, 'html.parser').find_all('table')
+                  if [c.get_text(' ', strip=True) for c in t.find('tr').find_all(['th', 'td'])] == ['Name', 'Cost', 'Weight']), None)
+    seen = set()
+    for tr in table.find_all('tr')[1:] if table else []:
+        name, cost, weight = [c.get_text(' ', strip=True) for c in tr.find_all(['th', 'td'])][:3]
+        if not re.search(r'bullet|pellet|cartridge|black powder \(dose\)', name, re.I):
+            continue
+        per = re.search(r'\((\d+)(?: handfuls)?\)', name)
+        base = re.sub(r'\s*\((?:\d+(?: handfuls)?|handful|1)\)', '', name).strip()
+        if base.lower() in seen:
+            continue
+        d = details(name)
+        if not d['source'] or not find_notices(notices, d['source']):
+            skipped.append(f"{name} ({d['source'] or 'no book'})")
+            continue
+        seen.add(base.lower())
+        powder = bool(re.search(r'bullet|pellet', base, re.I)) and not re.search(r'cartridge', base, re.I)
+        out.append({'id': slug(base), 'name': base, 'source': d['source'],
+                    'launcher': 'powder' if 'powder' in base.lower() else 'firearm', 'per': int(per.group(1)) if per else 1,
+                    'price_gp': price_gp(cost) or 0, 'weight_lbs': number(weight) if weight.strip('—- ') else 0,
+                    'damage': None, 'special': '', 'powder': powder, 'description': d['description'], 'origin': ORIGIN})
     return out, skipped
 
 

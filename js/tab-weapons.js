@@ -22,11 +22,12 @@ function ammoControls(app, w, e, i) {
   return `<div class="ammo-controls"><label>Ammunition <select data-ammo="${i}" data-field="id"><option value="">None</option>${kinds.map(k =>
       `<option value="${esc(k.id)}"${k.id === a.id ? ' selected' : ''}>${esc(k.name)}${k.per > 1 ? ` (${formatGp(k.price_gp)} for ${k.per})` : ` (${formatGp(k.price_gp)} each)`}</option>`).join('')}</select></label>
     ${ammo ? `<label>How many <input type="number" min="0" max="9999" value="${a.count ?? ammo.per}" data-ammo="${i}" data-field="count" style="width:5em"></label>
-      <label>Material <select data-ammo="${i}" data-field="material"><option value="">Normal</option>${Object.keys(AMMO_MATERIALS).map(id =>
-        `<option value="${esc(id)}"${id === a.material ? ' selected' : ''}>${esc(weaponMaterialById.get(id)?.name || id)}</option>`).join('')}</select></label>
+      ${launcherOf(w) === 'firearm' ? '' : `<label>Material <select data-ammo="${i}" data-field="material"><option value="">Normal</option>${Object.keys(AMMO_MATERIALS).map(id =>
+        `<option value="${esc(id)}"${id === a.material ? ' selected' : ''}>${esc(weaponMaterialById.get(id)?.name || id)}</option>`).join('')}</select></label>`}
       <label>Magic <select data-ammo="${i}" data-field="enh">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}"${n === (a.enh || 0) ? ' selected' : ''}>${n ? `+${n}` : 'none'}</option>`).join('')}</select></label>
       <p class="hint">${esc(formatGp(Math.round(ammoPiecePrice(ammo, a) * 100) / 100))} a piece${a.count ? `, ${esc(formatGp(Math.round(ammoPiecePrice(ammo, a) * a.count * 100) / 100))} in all (in the weapon's cost)` : ''}.
-        ${mat ? `${esc(mat.name)}: ${esc(mat.notes)}` : ''}${a.enh ? ` A +${a.enh} arrow or bolt doesn’t add to the launcher’s bonus: the higher counts.` : ''}</p>` : ''}</div>`;
+        ${ammo.powder ? 'Each shot includes a dose of black powder (10 gp). ' : launcherOf(w) === 'firearm' ? 'A cartridge holds its own powder. ' : ''}${mat ? `${esc(mat.name)}: ${esc(mat.notes)}` : ''}${a.enh ? ` Magic ammunition doesn’t add to the weapon’s own bonus: the higher counts.` : ''}</p>
+      ${ammo.description ? `<details class="rules"><summary>About ${esc(ammo.name.toLowerCase())}</summary>${paragraphs(ammo.description)}</details>` : ''}` : ''}</div>`;
 }
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
 import { formatGp, formatLbs } from './equipment.js';

@@ -1478,6 +1478,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const silverArrows = weaponAttack({ weapon: lb, entry: { ammo: { id: 'arrows', count: 20, material: 'silver' } }, bab: [5], mod: { str: 0, dex: 3 } });
   check('silver arrows: -1 damage', silverArrows.parts.damageBonus, -1);
   check('launcher of a longbow', launcherOf(lb), 'bow');
+  check('a pistol shoots firearm ammunition', launcherOf({ name: 'Pistol', group: 'ranged', firearm: true }), 'firearm');
+  check('firearm bullet: 1 gp plus a 10 gp dose of black powder', ammoPiecePrice({ price_gp: 1, per: 1, powder: true }), 11);
+  check('paper cartridge: powder included', ammoPiecePrice({ price_gp: 12, per: 1, powder: false }), 12);
   check('mithral chain shirt barding: masterwork not paid twice', bardingCost({ price_gp: 1100, mw_included: true }, 'Medium', 1), 2200 + 1000);
 }
 

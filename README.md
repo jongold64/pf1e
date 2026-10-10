@@ -114,7 +114,7 @@ and familiars (`kind: "familiar"`, `facts` with what the master gains, `master_b
 it's a plain bonus), `stats` (the creature's base statistics from its Bestiary stat block), and for improved familiars
 `improved`, `min_level` (arcane caster level) and `alignment`.
 
-**Ammunition** (`ammo.json`, for example `arrows`): `launcher` (`bow`, `crossbow`, `sling`, `blowgun`...), `per` (how many
+**Ammunition** (`ammo.json`, for example `arrows`): `launcher` (`bow`, `crossbow`, `sling`, `blowgun`, `firearm`...; the black powder dose is `powder`), `powder` (a bullet or pellet that needs a dose each shot), `per` (how many
 the price buys), `price_gp`, `weight_lbs` (for that many), `damage` (where it has its own), `special`, `description`.
 
 **Class path** (`class-paths.json`, for example `school-evocation`, `order-order-of-the-lion`): the other one-time class

@@ -218,7 +218,8 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   weapons.js `materialOf`; weaponCost is the sum of weaponCostRows.
 - Ammunition: `build_aon_weapons.py` also writes data/ammo.json (AoN ammo list: `per` bundle size, `price_gp` for the
   bundle, `launcher` from the name; siege ammo left out). weapons.js `setAmmoData` (loadWeapons), `launcherOf`,
-  `ammoFor`, `AMMO_MATERIALS` (per-piece prices), `ammoPiecePrice`; a launcher's `entry.ammo` = { id, count, material,
+  `ammoFor`, `AMMO_MATERIALS` (per-piece prices), `ammoPiecePrice` (adds the black-powder-dose price to `powder` ammo);
+  firearm ammunition comes from the AoN firearm page's Name/Cost/Weight table (launcher 'firearm'; no material list); a launcher's `entry.ammo` = { id, count, material,
   enh }: weaponAttack takes the higher of launcher and ammo enhancement, the ammo material's damage change; cost rows
   and weight include it. Kept effects: `state.buffs` entries can be `{ on: false }` (activeBonuses/effectTotals skip them).
 - Later weapons: `build_aon_weapons.py` (after build_weapons.py) adds AoN simple/martial/exotic weapons PSRD lacks (name

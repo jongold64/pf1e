@@ -221,7 +221,8 @@ let AMMO = new Map();
 export function setAmmoData(list) { AMMO = new Map((list || []).map(a => [a.id, a])); }
 // The launcher a weapon shoots: 'bow', 'crossbow', 'sling', 'blowgun'... (null for weapons without ammunition).
 export function launcherOf(weapon) {
-  if (weapon.group !== 'ranged' || weapon.thrown || weapon.firearm) return null;
+  if (weapon.firearm) return 'firearm';
+  if (weapon.group !== 'ranged' || weapon.thrown) return null;
   const n = lower(weapon.name);
   return /crossbow/.test(n) ? 'crossbow' : /sling/.test(n) ? 'sling' : /blowgun/.test(n) ? 'blowgun' : /atlatl/.test(n) ? 'atlatl'
     : /kestros/.test(n) ? 'kestros' : /throwing arrow cord/.test(n) ? 'throwing arrow cord' : /bow\b/.test(n) ? 'bow' : null;
@@ -234,8 +235,10 @@ export const AMMO_MATERIALS = { adamantine: { per: 60, mw: true }, 'blood-crysta
   'living-steel': { per: 10 }, silver: { per: 2 }, viridium: { per: 20 } };
 // One piece of ammunition's price: its own, its material, and magic (+1 to +5: priced like a weapon with that bonus for
 // 50 pieces, masterwork included: 6 gp a piece plus the bonus squared × 40 gp).
+// Firearm bullets and pellets (`powder`) each need a dose of black powder: its price is added to every shot.
 export function ammoPiecePrice(ammo, a = {}) {
-  const base = (ammo.price_gp || 0) / (ammo.per || 1);
+  const powder = ammo.powder ? AMMO.get('black-powder-dose')?.price_gp ?? 10 : 0;
+  const base = (ammo.price_gp || 0) / (ammo.per || 1) + powder;
   const mat = AMMO_MATERIALS[a.material];
   const material = !mat ? 0 : mat.double ? base : mat.per;
   const magic = a.enh > 0 ? (mat?.mw ? 0 : 6) + a.enh * a.enh * 40 : 0;
