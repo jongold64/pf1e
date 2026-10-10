@@ -8,7 +8,7 @@ import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
-import { weaponTraining } from './class-features.js';
+import { weaponTraining, classWeaponDice } from './class-features.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
@@ -156,12 +156,17 @@ function attackArgs(app, view, ctx, e) {
   // Mauler's and Titan Fighter's rules for big weapons).
   const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip, !!e.lace);
   return {
-    weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
+    // Arcane archer enhance arrows: arrows fired from a bow are +1 at least.
+    weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w),
+      ...(view.counts.some(c => c.cls.id === 'arcane-archer') && launcherOf(w) === 'bow' ? { ammo: { ...(e.ammo || { id: 'enhance-arrows' }), enh: Math.max(1, e.ammo?.enh || 0) } } : {}) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
     // Weapon training: the fighter's groups (picked at 5th, 9th, 13th, 17th, in that order) and the swashbuckler's.
-    training: weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || '')),
+    training: weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || ''),
+      { mod: view.stats.mod, picks: view.archFx?.picks }),
+    // Warpriest sacred weapon / brawler close weapon mastery dice.
+    minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice || null,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
     powerBab: view.stats.bab[0],
     // Active effects' bonuses on attack and damage rolls (bless, divine favor...).

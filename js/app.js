@@ -12,7 +12,7 @@ import {
 import { castingClasses } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIALS } from './weapons.js';
-import {
+import { setUntrainedOk,
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
@@ -29,6 +29,7 @@ import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
+import { featureHandling, HANDLING } from './feature-coverage.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
@@ -36,7 +37,7 @@ import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTal
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
-import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, weaponTraining } from './class-features.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining } from './class-features.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
@@ -1282,7 +1283,7 @@ function kiTradesFor(cls) {
 
 // A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
 function skillTotalFor(name) {
-  const isClassSkill = classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = view.allClassSkills || classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name);
   const featNames = [...view.chosen.map(f => f.name),
     ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
@@ -1472,6 +1473,9 @@ function computeView() {
   // Class features that are always on (class-features.js: divine grace, bardic knowledge, nimble...), as effects so they
   // follow the stacking rules and show in every Details. They use the ability scores with effects (a Cha buff raises
   // divine grace), which they don't change themselves.
+  // Skills usable untrained / all class skills (jack-of-all-trades...).
+  const access = skillAccess(counts);
+  setUntrainedOk(access.untrained);
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
                                                 shield: !!gear.shield, load: load?.load || 'light' });
   // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
@@ -1557,7 +1561,7 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx,
-    load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
+    load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
     familiar: familiarNow ? { path: familiarNow, master: {
       // Levels in classes that give a familiar stack (wizard with a familiar bond, witch, Arcane bloodline sorcerer).
@@ -1567,7 +1571,7 @@ function computeView() {
       baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
       casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
-    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts), familiarNow),
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts, stats.mod), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).
@@ -2403,15 +2407,17 @@ function renderClasses(view) {
         for (const x of replacedEntries(baseCls, { features: [f] })) replacedBy.set(`${x.level}|${x.name}`, `${f.name} (${a.name})`);
       }
     }
-    const term = (label, title, text, cls = '') => {
-      classItems.push({ title, text: String(text || '').split(/\n{2,}/).filter(Boolean) });
-      return `<button type="button" class="term${cls}" data-term="${classItems.length - 1}" aria-expanded="false">${label}</button>`;
+    // How the builder handles a feature (feature-coverage.js): a coloured dot on it, and a line at the top of its text.
+    const howOf = s => featureHandling(e.cls.id, String(s).replace(/\s*\(.*?\)\s*$/, '').replace(/[\s+\-]*\d.*$/, '').trim() || s);
+    const term = (label, title, text, cls = '', how = null) => {
+      classItems.push({ title, text: [...(how ? [`How the builder uses it: ${HANDLING[how]}.`] : []), ...String(text || '').split(/\n{2,}/).filter(Boolean)] });
+      return `<button type="button" class="term${cls}" data-term="${classItems.length - 1}" aria-expanded="false">${label}${how ? `<span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</button>`;
     };
     const described = s => featureDescription(e.cls, s) || 'The class data has no description for this entry.';
     const features = e.cls.progression.slice(0, e.level).map(r => {
       const own = (r.special || []).map(s => {
         const b = pathEntry(e.cls.id, r.level, s);
-        return b ? term(`${esc(s)}: ${esc(b.name)}`, `${b.name} (${s})`, b.text) : term(esc(s), s, described(s));
+        return b ? term(`${esc(s)}: ${esc(b.name)}`, `${b.name} (${s})`, b.text, '', howOf(s)) : term(esc(s), s, described(s), '', howOf(s));
       });
       const gone = (r.replaced || []).map(s => {
         const ki = s.match(/^ki power \(traded for (.+)\)$/);
@@ -2428,7 +2434,7 @@ function renderClasses(view) {
       const n = f.name.toLowerCase();
       return !onTable.some(t => t.startsWith(n) || n.startsWith(t));
     });
-    const alsoRow = offTable.length ? `<li><b title="Not on the level table">Also</b> <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text)).join('')}</span></li>` : '';
+    const alsoRow = offTable.length ? `<li><b title="Not on the level table">Also</b> <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text, '', howOf(f.name))).join('')}</span></li>` : '';
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
@@ -2444,8 +2450,10 @@ function renderClasses(view) {
       ${domainPicker(e.cls, e.level, openFeatures)}
       ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
+      ${archChoiceHtml({ id: e.cls.id }, e.level)}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${alsoRow}${features}</ol>
+      <p class="hint how-legend">${['counted', 'roll', 'effect', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.</p>
     </details>`;
   }).join('');
 }
@@ -2622,6 +2630,10 @@ function render() {
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
         <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
     }).join('')}
+    ${classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0 }).map(c => `<div class="defense-row channel-row">
+      <span>${esc(c.name)}<small>${c.attack !== null ? `${esc(signed(c.attack))} · ` : ''}${esc(c.note)}${c.uses ? ` · ${c.uses}/day` : ''}</small></span>
+      <b>${esc(c.dice)}</b>${rollButton(c.attack !== null ? { title: c.name, check: c.name, groups: [{ attacks: [c.attack], damage: c.dice, threat: 20, mult: 2 }] }
+        : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] })}</div>`).join('')}
     ${smite(stats).map(sm => `<div class="defense-row channel-row"><span>${esc(sm.name)}<small>+${sm.attack} attack, +${sm.damage} damage
       (+${sm.firstHit} on the first hit against ${sm.name === 'Smite evil' ? 'evil outsiders, evil dragons and undead' : 'good outsiders, good dragons, and good clerics and paladins'}),
       +${sm.deflection} deflection to AC against the target · roll it on the Weapons tab</small></span><b>${sm.uses}/day</b></div>`).join('')}
@@ -2862,7 +2874,7 @@ let showRankDetails = () => {};
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
   const byClass = classSkillTest([...classes, pathSkills()]);
-  const isClassSkill = name => byClass(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = name => view.allClassSkills || byClass(name) || view.traitFx.classSkills.has(name);
   const racial = racialSkillBonuses(race);
   const byLevel = skillRanksByLevel({
     race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,

@@ -11,7 +11,7 @@ export function blackBlade(level) {
   return row ? { enh: row[1], int: row[2], wisCha: row[3], ego: row[4] } : null;
 }
 
-// Each archetype's choices. `weapons`: which weapons can be chosen. `fromLevel`: the class level it's chosen at.
+// Each archetype's (or class's, by class id) choices. `weapons`: which weapons can be chosen. `fromLevel`: the class level it's chosen at.
 export const ARCH_CHOICES = {
   'magus-kensai': [{ key: 'weapon', label: 'Chosen weapon', fromLevel: 1,
     hint: 'One martial or exotic melee weapon: you are proficient with it and gain Weapon Focus with it (and canny defense, perfect strike and the rest work with it).',
@@ -19,6 +19,18 @@ export const ARCH_CHOICES = {
   'magus-bladebound': [{ key: 'blade', label: 'Black blade', fromLevel: 3,
     hint: 'A one-handed slashing weapon, a rapier or a sword cane. It is added to your weapons for free; its enhancement bonus grows with your magus level.',
     weapons: w => (w.group === 'one-handed' && /S/.test(w.type || '')) || ['rapier', 'sword-cane'].includes(w.id) }],
+  warpriest: [{ key: 'focus', label: 'Focus weapon', fromLevel: 1,
+    hint: 'Weapon Focus with it as a bonus feat; sacred weapon damage dice with it (1d6, growing with your level) when they beat its own.',
+    weapons: w => !w.firearm }],
+  gunslinger: [5, 9, 13, 17].map((lv, i) => ({ key: `gun${i + 1}`, label: `Gun training (${['1st', '2nd', '3rd', '4th'][i]} firearm)`, fromLevel: lv,
+    hint: 'Add your Dexterity modifier on damage rolls with this type of firearm (its misfire value rises by 2 instead of 4).',
+    weapons: w => !!w.firearm })),
+  'rogue-unchained': [3, 11, 19].map((lv, i) => ({ key: `finesse${i + 1}`, label: `Finesse training (${['1st', '2nd', '3rd'][i]} weapon)`, fromLevel: lv,
+    hint: 'Add your Dexterity modifier instead of Strength on damage with this weapon.',
+    weapons: w => w.group !== 'ranged' && (w.finesse || w.group === 'light') })),
+  samurai: [{ key: 'expertise', label: 'Weapon expertise', fromLevel: 3,
+    hint: 'Draw it as a free action; +2 on rolls to confirm critical hits with it (not counted); samurai levels count as fighter levels for its feats.',
+    weapons: w => ['katana', 'longbow', 'naginata', 'wakizashi'].includes(w.id) }],
 };
 
 // The choices to make for a class's archetypes at a class level: [{ archetype, key, label, hint, weapons, id: saved key }].
@@ -30,15 +42,19 @@ export function archetypeChoices(archetypeIds = [], classLevel = 0) {
 // What the choices give, for every class: { feats: [{ name, weapon, from }], proficient: [weapon ids],
 // blades: [{ weapon, level }] }. counts: [{ cls, level }]; archetypes: state.archetypes; choices: state.archChoices.
 export function archetypeChoiceEffects(counts, archetypes = {}, choices = {}) {
-  const out = { feats: [], proficient: [], blades: [] };
+  const out = { feats: [], proficient: [], blades: [], picks: { focus: null, gun: [], finesse: [], expertise: null } };
   for (const { cls, level } of counts) {
-    for (const c of archetypeChoices(archetypes[cls.id] || [], level)) {
+    for (const c of archetypeChoices([cls.id, ...(archetypes[cls.id] || [])], level)) {
       const weapon = choices[c.id];
       if (!weapon) continue;
       if (c.archetype === 'magus-kensai') {
         out.proficient.push(weapon);
         out.feats.push({ name: 'Weapon Focus', weapon, from: 'Kensai' });
       }
+      if (c.archetype === 'warpriest') { out.picks.focus = weapon; out.feats.push({ name: 'Weapon Focus', weapon, from: 'Warpriest focus weapon' }); }
+      if (c.archetype === 'gunslinger') out.picks.gun.push(weapon);
+      if (c.archetype === 'rogue-unchained') out.picks.finesse.push(weapon);
+      if (c.archetype === 'samurai') out.picks.expertise = weapon;
       if (c.archetype === 'magus-bladebound') {
         out.blades.push({ weapon, level });
         // Alertness (Ex): while wielding the black blade, the magus has the Alertness feat.

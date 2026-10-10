@@ -562,3 +562,13 @@ check its Section 15 notice is in the license.
   race's AoN page; a trait's "Replaces X, Y" heading is kept in `replaces` (race-options.js `replaceClause` uses it before
   the text); the race's `aon_sources` feed build_license.py. `raceWithAlternates` also fixes `senses` (replaced vision lost,
   darkvision gained).
+- Class features (js/class-features.js): classFeatureEffects (always-on numbers: duelist, mesmerist, stalwart defender,
+  loremaster, ninja, dragon disciple natural armor...), classAbilityBoosts (rules.js, dragon disciple: part of the scores),
+  classDamageReduction (+ skald, paladin/antipaladin 17th/20th), weaponTraining rows ({ on: 'damage' } gun training and
+  precise strike; { swapStr } finesse training), classWeaponDice (sacred weapon, close weapon mastery -> weaponAttack
+  `minDice`), classAttacks (Character tab rows: sneak attack, studied strike, inspiration, bombs, kinetic blasts),
+  situationalBonuses(counts, mod) notes, skillAccess (jack-of-all-trades, Knowledge untrained: skills.js setUntrainedOk).
+  Class weapon choices share archetype-choices.js (keys by class id: warpriest, gunslinger, rogue-unchained, samurai;
+  `view.archFx.picks`). Medium spirit bonuses are Active effects (effect-catalog.js medium-spirit-*).
+- feature-coverage.js: `featureHandling(class, feature)` -> counted / roll / effect / note / choice / feat / spells / card
+  / text, the dot beside each feature on the Classes tab. When a feature becomes counted, add its name there.

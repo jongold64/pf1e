@@ -1887,6 +1887,55 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('magus 7: medium armor proficiency; 6: not', [grantedFeats(cls('magus'), 7, ['Armor Proficiency, Medium']).join(), grantedFeats(cls('magus'), 6, ['Armor Proficiency, Medium']).join()].join('|'), 'Armor Proficiency, Medium|');
 }
 
+// Batch two: dragon disciple, paladin damage reduction, situational notes, skill access, medium spirits.
+{
+  const { classAbilityBoosts } = await import('./rules.js');
+  const { classDamageReduction: dr, situationalBonuses: sit, skillAccess, classFeatureEffects: cfe } = await import('./class-features.js');
+  const ddc = cls('dragon-disciple');
+  check('dragon disciple 8: Str +4, Con +2, Int +2', Object.entries(classAbilityBoosts([{ cls: ddc, level: 8 }])).filter(([, v]) => v).map(([a, v]) => `${a}${v}`).join(), 'str4,con2,int2');
+  check('dragon disciple 4: natural armor +2', cfe([{ cls: ddc, level: 4 }], {}).find(e => e.name.startsWith('Natural armor'))?.value, 2);
+  check('natural armor increase stacks with racial natural armor, not on touch', JSON.stringify((({ ac, touch }) => ({ ac, touch }))(acWithEffects({ natural: 2 }, { 'natural armor increase': 1 }))), '{"ac":13,"touch":10}');
+  check('paladin 17: DR 5/evil; 20: DR 10/evil', [dr([{ cls: cls('paladin'), level: 17 }])[0]?.value, dr([{ cls: cls('paladin'), level: 20 }])[0]?.value].join(), '5,10');
+  check('druid 5, Cha +2: wild empathy d20 + 7', (sit([{ cls: cls('druid'), level: 5 }], { cha: 2 }).skills.Diplomacy || []).join(), 'Wild empathy (to influence an animal): d20 + 7 (class level + Charisma modifier).');
+  check('bard 10: Use Magic Device untrained; bard 9 not', [skillAccess([{ cls: cls('bard'), level: 10 }]).untrained('Use Magic Device'), skillAccess([{ cls: cls('bard'), level: 9 }]).untrained('Use Magic Device')].join(), 'true,false');
+  check('bard 16: all class skills', skillAccess([{ cls: cls('bard'), level: 16 }]).allClass, true);
+  check('medium 8 channeling a guardian: +3 AC, Fort, Ref', effectTotals([{ id: 'medium-spirit-guardian', cl: 8 }]).ac.untyped + ',' + effectTotals([{ id: 'medium-spirit-guardian', cl: 8 }]).fort, '3,3');
+}
+
+// Batch three: class attacks, gun and finesse training, class weapon dice, class choices.
+{
+  const { classAttacks, weaponTraining: wt, classWeaponDice } = await import('./class-features.js');
+  const { archetypeChoiceEffects: ace } = await import('./archetype-choices.js');
+  const ca = (list, o) => classAttacks(list.map(([id, level]) => ({ cls: cls(id), level })), o).map(c => `${c.name}:${c.attack ?? '-'}:${c.dice}`).join();
+  check('rogue 5 / assassin 3: sneak attack 3d6 + 2d6 = 5d6', ca([['rogue', 5], ['assassin', 3]], {}), 'Sneak attack:-:5d6');
+  check('alchemist 5, BAB 3, Dex +2, Int +3: bomb +6, 3d6+3', ca([['alchemist', 5]], { bab: [3], mod: { dex: 2, int: 3 } }), 'Bomb:6:3d6+3');
+  check('kineticist 5, Con +3: blasts 3d6+6 and 3d6+1', ca([['kineticist', 5]], { bab: [3], mod: { dex: 2, con: 3 } }), 'Kinetic blast (physical):5:3d6+6,Kinetic blast (energy):5:3d6+1');
+  const pistol = { id: 'pistol', firearm: true, group: 'ranged' };
+  check('gun training: Dex on damage only, with the chosen firearm', JSON.stringify(wt([{ cls: cls('gunslinger'), level: 5 }], pistol, [], { mod: { dex: 4 }, picks: { gun: ['pistol'] } })), '[{"label":"Gun training (Dexterity on damage)","value":4,"on":"damage"}]');
+  const g = ace([{ cls: cls('gunslinger'), level: 9 }], {}, { 'gunslinger:gun1': 'pistol', 'gunslinger:gun2': 'musket' });
+  check('gunslinger 9: two firearms chosen', g.picks.gun.join(), 'pistol,musket');
+  const w = ace([{ cls: cls('warpriest'), level: 1 }], {}, { 'warpriest:focus': 'longsword' });
+  check('warpriest focus weapon: Weapon Focus with it', w.feats.map(f => `${f.name}:${f.weapon}`).join(), 'Weapon Focus:longsword');
+  check('warpriest 10: sacred weapon 1d10 with the focus weapon', classWeaponDice([{ cls: cls('warpriest'), level: 10 }], { id: 'longsword' }, { focus: 'longsword' })?.dice, '1d10');
+  check('brawler 5: close weapon 1d6', classWeaponDice([{ cls: cls('brawler'), level: 5 }], { id: 'punching-dagger', groups: ['Close'] })?.dice, '1d6');
+  const rapier = { id: 'rapier', name: 'Rapier', group: 'one-handed', finesse: true, damage: { m: '1d6' }, type: 'P' };
+  const atk = weaponAttack({ weapon: rapier, entry: {}, bab: [3], mod: { str: 1, dex: 4 }, haveFeats: ['Weapon Finesse'], training: [{ label: 'Finesse training', value: 0, swapStr: true }] });
+  check('finesse training: Dex to damage with the rapier', atk.damage, '1d6+4');
+  const sacred = weaponAttack({ weapon: { id: 'dagger', name: 'Dagger', group: 'light', damage: { m: '1d4' } }, entry: {}, bab: [3], mod: { str: 0, dex: 0 }, minDice: '1d8' });
+  check('a bigger class die replaces the weapon die', sacred.damage, '1d8');
+}
+
+// Batch four: how each class feature is handled (feature-coverage.js), skald DR, duelist precise strike, notes.
+{
+  const { featureHandling } = await import('./feature-coverage.js');
+  const { classDamageReduction: dr, weaponTraining: wt, situationalBonuses: sit } = await import('./class-features.js');
+  check('feature tags', ['rogue:Sneak attack +3d6', 'ranger:1st favored enemy', 'barbarian:Rage power', 'assassin:+2 save bonus against poison', 'monk:Wild shape', 'cleric:channel energy 3d6', 'wizard:Scribe Scroll', 'druid:Wild shape (2/day)']
+    .map(x => featureHandling(...x.split(':'))).join(), 'roll,choice,choice,note,text,roll,feat,effect');
+  check('skald 14: DR 2/-', dr([{ cls: cls('skald'), level: 14 }])[0]?.value, 2);
+  check('duelist 5: precise strike +5 damage with a rapier', wt([{ cls: cls('duelist'), level: 5 }], { id: 'rapier', group: 'one-handed', type: 'P' }).map(t => `${t.value}:${t.on}`).join(), '5:damage');
+  check('summoner 12: shield ally +4 on AC note', sit([{ cls: cls('summoner'), level: 12 }]).ac.join().includes('+4 shield'), true);
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

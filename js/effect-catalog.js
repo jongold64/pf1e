@@ -385,6 +385,18 @@ export const MORE_BUFFS = [
     ['Invigorating', [b('attack', 'morale', 2), b('speed', 'enhancement', 10)], { when: 'after it removes fatigue (see its text)' }],
   ].map(([name, list, extra = {}]) => item(`mi-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '')}`, name, list, extra)),
 
+  // ---------------- Medium: the spirit bonus of the spirit channeled (+1, +1 at 4th and every 4 levels) ----------------
+  ...[['archmage', 'archmage', ['Appraise', 'Craft', ...KNOWLEDGE, 'Linguistics', 'Spellcraft'], [], 'concentration checks and Intelligence checks'],
+      ['champion', 'champion', ['Climb', 'Swim'], ['attack', 'damage', 'fort'], 'only non-spell damage; Strength checks'],
+      ['guardian', 'guardian', [], ['ac', 'fort', 'ref'], 'Constitution checks'],
+      ['hierophant', 'hierophant', ['Heal', 'Perception', 'Profession', 'Sense Motive', 'Survival'], ['will'], 'Wisdom checks'],
+      ['marshal', 'marshal', CHA_SKILLS, [], 'Charisma checks and spirit surge rolls'],
+      ['trickster', 'trickster', [], ['skills', 'ref'], 'Dexterity checks']]
+    .map(([id, spirit, skills, targets, note]) => ability(`medium-spirit-${id}`, `Spirit bonus: ${spirit} (medium)`, lv => {
+      const n = 1 + Math.floor(lv / 4);
+      return [...skills.map(s => sk(s, 'untyped', n)), ...targets.map(t => b(t, 'untyped', n))];
+    }, { scales: true, levelName: 'medium level', ref: { cls: 'medium', feature: 'Spirit Bonus' }, note: `also on ${note}` })),
+
   // ---------------- Circumstances ----------------
   { id: 'masterwork-tool', name: 'Masterwork tool', group: 'circumstance', bonuses: () => [b('skills', 'circumstance', 2)], note: 'on the skill the tool is for (all skills here)' },
 

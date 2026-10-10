@@ -199,6 +199,10 @@ export function sizeSkillModifier(name, size) {
 // Returns { total, usable, classBonus, racial, feat, armor, abilityMod }.
 // A trained-only skill with no ranks can't be used (usable: false).
 // traitBonuses: { skill name: bonus } from chosen traits.
+// Skills a class lets you use untrained (set by the app from class-features.js skillAccess): name -> true.
+let UNTRAINED_OK = () => false;
+export function setUntrainedOk(test) { UNTRAINED_OK = test || (() => false); }
+
 export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = {}, featNames = [], checkPenalty = 0, traitBonuses = {},
                              effectBonus = 0, size = 'Medium' }) {
   const info = skillInfo(name);
@@ -211,8 +215,8 @@ export function skillTotal({ name, ranks, scores, isClassSkill, racialBonuses = 
   const sizeMod = sizeSkillModifier(name, size);
   return {
     abilityMod, classBonus, racial, feat, armor, trait, effect: effectBonus, size: sizeMod,
-    usable: !(info.trained && ranks === 0) || !!info.untrained,
-    limited: info.trained && ranks === 0 ? info.untrained || '' : '',
+    usable: !(info.trained && ranks === 0) || !!info.untrained || UNTRAINED_OK(name),
+    limited: info.trained && ranks === 0 && !UNTRAINED_OK(name) ? info.untrained || '' : '',
     // effectBonus: active effects' bonus on all skill checks (heroism...).
     total: ranks + abilityMod + classBonus + racial + feat + armor + trait + effectBonus + sizeMod,
   };

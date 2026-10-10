@@ -11,7 +11,7 @@ import { MORE_BUFFS } from './effect-catalog.js';
 
 export const BONUS_TYPES = ['alchemical', 'armor', 'circumstance', 'competence', 'deflection', 'dodge', 'enhancement',
   'insight', 'luck', 'morale', 'natural armor', 'natural armor enhancement', 'profane', 'resistance', 'sacred', 'shield',
-  'size', 'untyped'];
+  'size', 'untyped', 'natural armor increase'];
 const STACKS = new Set(['dodge', 'circumstance', 'untyped']);
 
 export const TARGETS = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'],
@@ -309,9 +309,9 @@ export function acWithEffects({ base = 10, armor = 0, shield = 0, natural = 0, d
   const armorPart = Math.max(armor, acFx.armor || 0);
   const shieldPart = Math.max(shield, acFx.shield || 0);
   // (A creature with no natural armor counts as having +0, so barkskin still adds its bonus.)
-  const naturalPart = Math.max(natural, acFx['natural armor'] || 0) + (acFx['natural armor enhancement'] || 0);
+  const naturalPart = Math.max(natural, acFx['natural armor'] || 0) + (acFx['natural armor enhancement'] || 0) + (acFx['natural armor increase'] || 0);
   const dodgePart = dodge + (acFx.dodge || 0);
-  const rest = Object.entries(acFx).filter(([t]) => !['armor', 'shield', 'natural armor', 'natural armor enhancement', 'dodge'].includes(t))
+  const rest = Object.entries(acFx).filter(([t]) => !['armor', 'shield', 'natural armor', 'natural armor enhancement', 'natural armor increase', 'dodge'].includes(t))
     .reduce((n, [, v]) => n + v, 0);
   const ac = base + armorPart + shieldPart + naturalPart + dex + dodgePart + other + rest;
   return {

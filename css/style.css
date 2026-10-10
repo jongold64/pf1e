@@ -866,3 +866,15 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .item-fx { list-style: none; padding: 0; margin: 4px 0; }
 #effects .check-row input[type=checkbox], .item-fx .check-row input[type=checkbox] { flex: none; }
 .arch-choice { margin: 6px 0; } .arch-choice select { max-width: 100%; }
+
+/* Class feature handling dots (feature-coverage.js). */
+.how { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 5px; vertical-align: middle; }
+.how-counted { background: #2e7d32; }
+.how-roll { background: #8b2d1f; }
+.how-effect { background: #1565c0; }
+.how-note { background: #ef8f00; }
+.how-choice { background: #6a1b9a; }
+.how-feat { background: #00838f; }
+.how-spells { background: #5d4037; }
+.how-card { background: #757575; }
+.how-legend .how { margin: 0 2px 0 0; }

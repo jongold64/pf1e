@@ -276,7 +276,7 @@ export const powerAttackStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, size = 'Medium', haveFeats = [],
                                proficient = true, armorPenalty = 0, unarmedDamage = null,
                                hand = 'one', end = 0, penalty = 0, options = {}, powerBab = bab[0], bonusDamage = 0,
-                               effectAttack = 0, effectDamage = 0, misfit = 0, training = [] }) {
+                               effectAttack = 0, effectDamage = 0, misfit = 0, training = [], minDice = null }) {
   const has = new Set(haveFeats);
   const enh = entry.enh || 0;
   const melee = weapon.group !== 'ranged';
@@ -297,10 +297,12 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   const ammoMaterial = ammo ? weaponMaterialById.get(ammo.material) : null;
 
   // Strength to damage depends on how the weapon is held.
+  // Finesse training (unchained rogue): Dexterity instead of Strength on damage with the chosen weapon (melee).
+  const dmgMod = melee && training.some(t => t.swapStr) ? mod.dex : mod.str;
   let strDamage;
-  if (hand === 'off') strDamage = mod.str > 0 && !has.has('Double Slice') ? Math.floor(mod.str / 2) : mod.str;
-  else if ((hand === 'main' || hand === 'flurry') && melee) strDamage = mod.str;
-  else strDamage = strToDamage(weapon, mod.str, compositeRating(weapon, entry, mod.str));
+  if (hand === 'off') strDamage = dmgMod > 0 && !has.has('Double Slice') ? Math.floor(dmgMod / 2) : dmgMod;
+  else if ((hand === 'main' || hand === 'flurry') && melee) strDamage = dmgMod;
+  else strDamage = strToDamage(weapon, dmgMod, compositeRating(weapon, entry, mod.str));
   // A composite bow whose strength rating is above your Str bonus: -2 on attacks.
   const rating = compositeRating(weapon, entry, mod.str);
   const tooWeak = rating !== null && mod.str < rating ? -2 : 0;
@@ -333,17 +335,22 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
 
   // misfit: -2 per size step for a weapon made for a different size of creature.
   // Weapon training (fighter's weapon groups, swashbuckler's): [{ label, value }] on attack and damage rolls.
-  const trained = training.reduce((n, t) => n + t.value, 0);
+  // Training rows count on attack and damage, or only on damage (`on: 'damage'`: gun training).
+  const trained = training.filter(t => t.on !== 'damage').reduce((n, t) => n + t.value, 0);
+  const trainedDamage = training.reduce((n, t) => n + t.value, 0);
   const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak + trained + pointBlank;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
   // A double weapon lists each end's damage ("1d8/1d6").
   const ends = String(allDice ?? '').split('/');
-  const dice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
+  const ownDice = allDice && ends.length > 1 ? ends[Math.min(end, ends.length - 1)] : allDice;
+  // A class's bigger dice for this weapon (warpriest sacred weapon, brawler close weapon mastery), when higher.
+  const avg = d => { const m = String(d || '').match(/^(\d+)d(\d+)$/); return m ? Number(m[1]) * (Number(m[2]) + 1) / 2 : Number(d) || 0; };
+  const dice = minDice && avg(minDice) > avg(ownDice) ? minDice : ownDice;
   // bonusDamage: extra damage such as smite evil's (+paladin level).
   // A material's damage change (alchemical silver -1 with a slashing or piercing weapon, bone and gold -2).
   const materialDamage = (ammoMaterial ? ammoMaterial.damage?.({ type: 'P' }) : material?.damage?.(weapon)) || 0;
-  const damageBonus = strDamage + damageEnh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trained + pointBlank;
+  const damageBonus = strDamage + damageEnh + spec + powerDamage + bonusDamage + effectDamage + materialDamage + trainedDamage + pointBlank;
   return {
     attacks: attackBabs.map(b => b + toHit),
     babs: attackBabs,
@@ -371,7 +378,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   add(attackRows, 'Weapon size (and archetype rules)', p.misfit);
   add(attackRows, p.fromAmmo ? 'Ammunition\u2019s enhancement (the launcher\u2019s doesn\u2019t stack)' : p.enh > 0 ? 'Enhancement bonus' : p.material ? `Masterwork (${p.material})` : 'Masterwork', p.itemBonus);
   add(attackRows, 'Weapon Focus', p.focus);
-  for (const t of p.training || []) add(attackRows, t.label, t.value);
+  for (const t of (p.training || []).filter(x => x.on !== 'damage')) add(attackRows, t.label, t.value);
   add(attackRows, proficiencyLabel, p.proficiency);
   add(attackRows, 'Armor or shield penalty', p.armorPenalty);
   add(attackRows, penaltyLabel, p.penalty);
@@ -388,8 +395,9 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
     : sm > 0 && p.strDamage === Math.floor(sm * 1.5) ? 'Strength × 1½ (held in two hands)'
     : sm > 0 && p.strDamage === Math.floor(sm / 2) ? 'Strength × ½ (off hand)'
     : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
+  const strLabelNow = (p.training || []).some(t => t.swapStr) ? `Dexterity instead of Strength (finesse training)` : strLabel;
   if (p.rating !== null && p.rating !== undefined) damageRows.push({ label: strLabel, value: p.strDamage });
-  else add(damageRows, strLabel, p.strDamage);
+  else add(damageRows, strLabelNow, p.strDamage);
   add(damageRows, p.enhDamage > p.enh ? 'Ammunition\u2019s enhancement bonus' : 'Enhancement bonus', p.enhDamage ?? p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
   for (const t of p.training || []) add(damageRows, t.label, t.value);

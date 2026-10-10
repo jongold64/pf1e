@@ -194,6 +194,17 @@ export function babList(total) {
 // given, is the choice at each level instead ('hp', 'skill', 'option' or null).
 // featBonuses holds the numbers feats add ({ hp, fort, ref, will, dodgeAc }, see featEffects in feats.js).
 // gear is what worn armor and a shield do (armorEffects in armor.js); leave it out for no armor.
+// Ability score increases from class levels, gained as if through level advancement: the dragon disciple's ability
+// boosts (Str +2 at 2nd and 4th, Con +2 at 6th, Int +2 at 8th). counts: [{ cls, level }].
+export function classAbilityBoosts(counts) {
+  const out = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
+  const dd = Math.max(0, ...counts.filter(e => e.cls.id === 'dragon-disciple').map(e => e.level));
+  out.str += (dd >= 2 ? 2 : 0) + (dd >= 4 ? 2 : 0);
+  out.con += dd >= 6 ? 2 : 0;
+  out.int += dd >= 8 ? 2 : 0;
+  return out;
+}
+
 export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
                                  flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null,
                                  effects = null, size: sizeNow = null, uncanny = null }) {
@@ -204,6 +215,8 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   const fb = { hp: 0, fort: 0, ref: 0, will: 0, dodgeAc: 0, ...featBonuses };
   const racial = finalScores(baseScores, race, flexibleChoice);
   const inc = levelIncreases(total, increases);
+  const boosts = classAbilityBoosts(counts);
+  for (const a of ABILITIES) inc[a] = (inc[a] || 0) + boosts[a];
   // Active effects (effects.js effectTotals): ability bonuses, saves, hit points, AC by type; others are passed on as `fx`.
   const fx = { ac: {}, attack: 0, damage: 0, fort: 0, ref: 0, will: 0, init: 0, speed: 0, skills: 0, checks: 0, cmb: 0, cmd: 0, hp: 0, ...effects };
   const scores = Object.fromEntries(ABILITIES.map(a => [a, racial[a] + inc[a] + (fx[a] || 0)]));
