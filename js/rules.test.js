@@ -1878,6 +1878,15 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('free magic item costs nothing', magicItemTotals([{ id: 'x', qty: 1, free: true }], new Map([['x', { name: 'X', price_gp: 4000 }]])).cost, 0);
 }
 
+// More class features counted: duelist, mesmerist, stalwart defender; magus armor proficiency.
+{
+  const fx = (id, lv, opts) => classFeatureEffects([{ cls: cls(id), level: lv }], opts).map(e => `${e.name}:${e.value}`).join();
+  check('duelist 8, Int +3, no armor: reaction +4, canny +3, grace +2', fx('duelist', 8, { mod: { int: 3 } }), 'Improved reaction (duelist):4,Canny defense (duelist, with a melee weapon):3,Grace (duelist):2');
+  check('mesmerist 4, Cha +3: Bluff +2, Will +3', fx('mesmerist', 4, { mod: { cha: 3 } }), 'Consummate liar (mesmerist):2,Towering ego (mesmerist):3');
+  check('stalwart defender 7: +3 dodge AC', fx('stalwart-defender', 7, {}), 'AC bonus (stalwart defender):3');
+  check('magus 7: medium armor proficiency; 6: not', [grantedFeats(cls('magus'), 7, ['Armor Proficiency, Medium']).join(), grantedFeats(cls('magus'), 6, ['Armor Proficiency, Medium']).join()].join('|'), 'Armor Proficiency, Medium|');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

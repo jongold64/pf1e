@@ -65,7 +65,7 @@ function bonusFeatRule(cls, special) {
   const s = lower(special);
   if (s === 'bonus feat') return BONUS_FEAT_RULES[cls.id] ? cls.id : null;
   if (s === 'bonus combat feat') return 'brawler';
-  if (s === 'teamwork feat') return 'teamwork';
+  if (s === 'teamwork feat' || s === 'tactician') return 'teamwork';
   if (s === 'combat style feat') return 'rangerStyle';
   if (s === 'bloodline feat') return 'bloodline';
   return null;
@@ -141,6 +141,11 @@ export function grantedFeats(cls, level, featNames) {
       const s = lower(special);
       if (known.has(s)) out.add(known.get(s));
       if (s === 'unarmed strike') out.add('Improved Unarmed Strike');
+      // A magus gains medium armor proficiency at 7th level and heavy at 13th (an archetype that replaces them removes them).
+      if (cls.id === 'magus' && s === 'medium armor') out.add('Armor Proficiency, Medium');
+      if (cls.id === 'magus' && s === 'heavy armor') out.add('Armor Proficiency, Heavy');
+      // Swashbuckler finesse counts as Weapon Finesse.
+      if (s === 'swashbuckler finesse' && known.has('weapon finesse')) out.add('Weapon Finesse');
       // The unchained rogue's finesse training gives Weapon Finesse at 1st level.
       if (s === 'finesse training' && known.has('weapon finesse')) out.add('Weapon Finesse');
     }

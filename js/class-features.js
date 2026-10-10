@@ -64,6 +64,27 @@ export function classFeatureEffects(counts, { mod = {}, armorCategory = null, sh
     const v = Math.max(0, mod.wis || 0) + (shifter >= 4 ? Math.min(5, 1 + Math.floor((shifter - 4) / 4)) : 0);
     add('Defensive instinct', [{ target: 'ac', type: 'untyped', value: v }, { target: 'cmd', type: 'untyped', value: v }]);
   }
+  // Duelist: improved reaction (2nd: +2 initiative, 8th: +4); in light or no armor and no shield, canny defense (Int bonus
+  // up to the duelist level as a dodge bonus to AC, wielding a melee weapon) and grace (4th: +2 competence on Reflex).
+  const duelist = levelOf(counts, ['duelist']);
+  if (duelist >= 2) add('Improved reaction (duelist)', [{ target: 'init', type: 'untyped', value: duelist >= 8 ? 4 : 2 }]);
+  if (duelist && lightOrNone && !shield) {
+    if (mod.int > 0) add('Canny defense (duelist, with a melee weapon)', [{ target: 'ac', type: 'dodge', value: Math.min(mod.int, duelist) }]);
+    if (duelist >= 4) add('Grace (duelist)', [{ target: 'ref', type: 'competence', value: 2 }]);
+  }
+  // Mesmerist: consummate liar (half the level, at least 1, on Bluff); towering ego (2nd: Charisma bonus on Will saves).
+  const mes = levelOf(counts, ['mesmerist']);
+  if (mes) add('Consummate liar (mesmerist)', [{ target: 'skill:Bluff', type: 'untyped', value: half(mes) }]);
+  if (mes >= 2 && mod.cha > 0) add('Towering ego (mesmerist)', [{ target: 'will', type: 'untyped', value: mod.cha }]);
+  // Stalwart defender AC bonus: +1 dodge, +2 at 4th, +3 at 7th, +4 at 10th.
+  const stal = levelOf(counts, ['stalwart-defender']);
+  if (stal) add('AC bonus (stalwart defender)', [{ target: 'ac', type: 'dodge', value: 1 + Math.floor((stal - 1) / 3) }]);
+  // Loremaster lore (2nd): half the level on every Knowledge check (stacks with bardic knowledge).
+  const lore = levelOf(counts, ['loremaster']);
+  if (lore >= 2) add('Lore (loremaster)', KNOWLEDGE.map(target => ({ target, type: 'untyped', value: Math.floor(lore / 2) })));
+  // Ninja no trace (3rd): +1 insight on Disguise, +1 every 3 levels (also opposed Stealth while stationary: not counted).
+  const ninja = levelOf(counts, ['ninja']);
+  if (ninja >= 3) add('No trace (ninja)', [{ target: 'skill:Disguise', type: 'insight', value: Math.floor(ninja / 3) }]);
   return out;
 }
 
