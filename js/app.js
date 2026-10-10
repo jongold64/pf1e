@@ -37,6 +37,7 @@ import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTal
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
+import { initEidolon, renderEidolon } from './tab-eidolon.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining } from './class-features.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -141,6 +142,8 @@ const state = {
   shieldMw: false,
   // Animal companion: animal id (data/companions.json), name, ability increases ('str'...), feat names, tricks, skill ranks.
   companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0, armorMaterial: '', buffs: [] },
+  // A summoner's eidolon (tab-eidolon.js): name, evolutions [{ id (data/eidolons.json), choice }], ability score increases.
+  eidolon: { name: '', evolutions: [], increases: [] },
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -281,7 +284,8 @@ function load(saved) {
     if (slot === 'crosspower') return !!CROSSBLOODED[cid] && v && typeof v === 'object' && Object.values(v).every(x => typeof x === 'string');
     const kind = slot === 'bloodline2' && CROSSBLOODED[cid] ? 'bloodline' : slot;
     const x = data.pathsById.get(v);
-    const rule = PATH_RULES[cid]?.find(r => r.kind === kind) || (cid === 'sorcerer' && kind === 'arcane-bond' ? SORCERER_BOND : null);
+    // (A rule with its own slot, such as the kineticist's expanded elements, is found by that slot.)
+    const rule = PATH_RULES[cid]?.find(r => (r.slot || r.kind) === kind) || (cid === 'sorcerer' && kind === 'arcane-bond' ? SORCERER_BOND : null);
     return !!x && !!rule && (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cid);
   }));
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
@@ -300,6 +304,13 @@ function load(saved) {
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
   // Animal companion: only known animals, skills and tricks.
+  const eid = state.eidolon && typeof state.eidolon === 'object' && !Array.isArray(state.eidolon) ? state.eidolon : {};
+  state.eidolon = {
+    name: typeof eid.name === 'string' ? eid.name.slice(0, 40) : '',
+    evolutions: (Array.isArray(eid.evolutions) ? eid.evolutions : []).filter(x => x && typeof x.id === 'string').slice(0, 60)
+      .map(x => ({ id: x.id, ...(typeof x.choice === 'string' && x.choice ? { choice: x.choice } : {}) })),
+    increases: (Array.isArray(eid.increases) ? eid.increases : []).slice(0, 3).map(a => (['str', 'dex', 'con', 'int', 'wis', 'cha'].includes(a) ? a : '')),
+  };
   const comp = state.companion && typeof state.companion === 'object' ? state.companion : {};
   const list = x => (Array.isArray(x) ? x : []);
   state.companion = {
@@ -763,6 +774,7 @@ function buildControls() {
   initTraits(app);
   initEffects(app);
   initCompanion(app);
+  initEidolon(app);
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
   // Details on a drawback: its text, what it gives (an extra trait slot, and the trait in it), and Take / Remove.
   $('drawback-row').addEventListener('click', e => {
@@ -1476,8 +1488,9 @@ function computeView() {
   // Skills usable untrained / all class skills (jack-of-all-trades...).
   const access = skillAccess(counts);
   setUntrainedOk(access.untrained);
+  const element = (kineticElements()[0]?.name || '').toLowerCase();
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
-                                                shield: !!gear.shield, load: load?.load || 'light' });
+                                                shield: !!gear.shield, load: load?.load || 'light', element });
   // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
   classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield }));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
@@ -1563,6 +1576,10 @@ function computeView() {
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
+    // The summoner's eidolon: the summoner level, base form and (unchained) subtype chosen on the Classes tab.
+    eidolon: (cid => (cid ? { cls: cid, level: counts.find(c => c.cls.id === cid).level, form: pathOf(cid, 'base-form'),
+      subtype: cid === 'summoner-unchained' ? pathOf(cid, 'eidolon-subtype') : null } : null))(
+      ['summoner', 'summoner-unchained'].find(id => counts.some(c => c.cls.id === id))),
     familiar: familiarNow ? { path: familiarNow, master: {
       // Levels in classes that give a familiar stack (wizard with a familiar bond, witch, Arcane bloodline sorcerer).
       familiarLevel: (fl => (haveFeats.includes('Boon Companion') && !companionFor(counts).level ? Math.min(classLevels.length, fl + 4) : fl))(
@@ -1571,7 +1588,7 @@ function computeView() {
       baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
       casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
-    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield }), situational: withFamiliarNotes(situationalBonuses(counts, stats.mod), familiarNow),
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element }), situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element }), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).
@@ -1736,6 +1753,18 @@ PATH_RULES.witch = [{ kind: 'familiar', label: 'Familiar', plural: 'familiars', 
 // A ranger's combat style (chosen at 2nd level): its feats are the ones his combat style feat slots take.
 PATH_RULES.ranger = [{ kind: 'combat-style', label: 'Combat style', plural: 'combat styles', fromLevel: 2,
   note: 'Chosen at 2nd level. Combat style feats (2nd, 6th, 10th, 14th and 18th level) come from its list, without their prerequisites; the list grows at 6th and 10th level.' }];
+// The kineticist's elements (data/kineticist-elements.json): the elemental focus at 1st level, an expanded element at 7th
+// and 15th (the same one again for its composite blasts, or a new one).
+PATH_RULES.kineticist = [
+  { kind: 'element', label: 'Elemental focus', plural: 'elements',
+    note: 'Your primary element: its simple blast(s), its defense at 2nd level, its class skills and its wild talents.' },
+  { kind: 'element', slot: 'element2', label: 'Expanded element', plural: 'elements', fromLevel: 7,
+    note: '7th level: a new element (its blasts and wild talents), or your primary element again (its composite blasts).' },
+  { kind: 'element', slot: 'element3', label: 'Second expanded element', plural: 'elements', fromLevel: 15,
+    note: '15th level: another element, or one you have again for its composite blasts.' }];
+// The kineticist's chosen elements, primary first ([] for others).
+const kineticElements = () => ['element', 'element2', 'element3'].map(s => pathOf('kineticist', s)).filter(Boolean);
+
 // The class table entries a choice fills in: with its name, its power(s) at that level, or its spell at that level.
 const PATH_ENTRIES = {
   bloodline: { bloodline: 'name', 'bloodline power': 'powers', 'bloodline spell': 'spell' },
@@ -2041,7 +2070,8 @@ function openTalentPicker(slotId, search = '') {
         <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></span></li>`).join('');
   } else {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
-    const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery, revelationNames: data.mysteryByName.get(state.mystery)?.revelations })
+    const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery, revelationNames: data.mysteryByName.get(state.mystery)?.revelations,
+      elements: cid === 'kineticist' ? kineticElements().map(e => e.name.toLowerCase()) : null })
       .filter(o => !q || o.talent.name.toLowerCase().includes(q) || o.talent.text.toLowerCase().includes(q))
       .sort((a, b) => (!!a.why - !!b.why) || a.talent.name.localeCompare(b.talent.name));
     list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
@@ -2630,7 +2660,8 @@ function render() {
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
         <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
     }).join('')}
-    ${classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0 }).map(c => `<div class="defense-row channel-row">
+    ${classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
+      blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }).map(c => `<div class="defense-row channel-row">
       <span>${esc(c.name)}<small>${c.attack !== null ? `${esc(signed(c.attack))} · ` : ''}${esc(c.note)}${c.uses ? ` · ${c.uses}/day` : ''}</small></span>
       <b>${esc(c.dice)}</b>${rollButton(c.attack !== null ? { title: c.name, check: c.name, groups: [{ attacks: [c.attack], damage: c.dice, threat: 20, mult: 2 }] }
         : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] })}</div>`).join('')}
@@ -2647,6 +2678,7 @@ function render() {
   renderEffects(app, view);
   renderCompanion(app, view);
   renderFamiliar(app, view);
+  renderEidolon(app, view);
   renderFlaws();
   renderDrawback();
   renderHeroPoints();
@@ -3486,7 +3518,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -3502,6 +3534,8 @@ async function start() {
       fetch('data/bloodlines.json').then(r => r.json()),
       fetch('data/class-paths.json').then(r => r.json()),
       fetch('data/familiars.json').then(r => r.json()),
+      fetch('data/kineticist-elements.json').then(r => r.json()),
+      fetch('data/eidolons.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -3522,7 +3556,7 @@ async function start() {
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
   // Bloodlines in the shape of the other one-time class choices.
-  data.paths = [...data.classPaths, ...data.familiars, ...data.bloodlines.map(b => ({
+  data.paths = [...data.classPaths, ...data.familiars, ...data.kineticElements, ...data.bloodlines.map(b => ({
     id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
     facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),
     class_skills: b.class_skill ? [b.class_skill] : [], spells: b.bonus_spells, spells_by: 'class', powers: b.powers, hexes: [],

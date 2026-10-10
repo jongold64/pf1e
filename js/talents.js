@@ -155,7 +155,8 @@ export function slotKinds(slot) {
 // revelationNames (the chosen mystery's list) picks the oracle's revelations by name: a revelation several mysteries
 // share is one record, and a name with versions per mystery ("Assumed Form (Whimsy)") keeps the mystery's own.
 const baseName = n => n.replace(/\s*\(.*\)$/, '').toLowerCase().replace(/[^a-z]/g, '');
-export function talentOptions(slot, all, { taken = [], mystery = '', revelationNames = null } = {}) {
+// elements: a kineticist's chosen elements (lower case): a wild talent of another element says which element it needs.
+export function talentOptions(slot, all, { taken = [], mystery = '', revelationNames = null, elements = null } = {}) {
   if (slot.rule.needs === 'mystery' && revelationNames) {
     const want = new Set(revelationNames.map(baseName));
     const fits = all.filter(t => slot.rule.kinds.includes(t.kind) && want.has(baseName(t.name)));
@@ -177,7 +178,18 @@ export function talentOptions(slot, all, { taken = [], mystery = '', revelationN
       && (!slot.rule.classOnly || !t.classes?.length || t.classes.includes(slot.classId))
       && (slot.rule.needs !== 'mystery' || !mystery || !t.mystery || t.mystery === mystery))
     .map(t => ({ talent: t,
-                 why: taken.includes(t.id) && !t.repeatable ? 'already taken' : t.level && t.level > slot.classLevel ? `needs ${nth(t.level)} level` : '' }));
+                 why: taken.includes(t.id) && !t.repeatable ? 'already taken' : t.level && t.level > slot.classLevel ? `needs ${nth(t.level)} level`
+                   : elementNeeded(t, elements) }));
+}
+
+// A kineticist wild talent's element ("Element earth; ...", "Element earth or fire", "Element universal"): '' when one
+// of the chosen elements (or none chosen yet) can take it, else what it needs.
+function elementNeeded(t, elements) {
+  if (!elements?.length || !t.classes?.includes('kineticist')) return '';
+  const m = String(t.text || '').match(/^Element ([^;\n]+)/);
+  if (!m || /universal/i.test(m[1])) return '';
+  const need = m[1].toLowerCase();
+  return elements.some(e => need.includes(e)) ? '' : `needs the ${need} element`;
 }
 
 // The mysteries revelations are listed under (when no mysteries list is loaded).

@@ -37,8 +37,20 @@ data_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), 'data')
 used = set()
 for name in sorted(os.listdir(data_dir)):
     if name.endswith('.json'):
-        records = [r for r in json.load(open(os.path.join(data_dir, name), encoding='utf-8')) if isinstance(r, dict)]
+        loaded = json.load(open(os.path.join(data_dir, name), encoding='utf-8'))
+        records = [r for r in loaded if isinstance(r, dict)] if isinstance(loaded, list) else []
         used |= {r['source'] for r in records if r.get('origin')}
+        # Records nested anywhere (eidolons.json's evolutions, kineticist-elements.json's blasts) with an origin count too.
+        def walk(x):
+            if isinstance(x, dict):
+                if x.get('origin') and isinstance(x.get('source'), str):
+                    used.add(x['source'])
+                for v in x.values():
+                    walk(v)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v)
+        walk(loaded)
         # Races whose alternate traits / favored class options came from d20pfsrd pages list those books.
         used |= {b for r in records for b in r.get('d20_sources', [])}
         # Alternate racial traits and favored class options from Archives of Nethys (build_aon_race_traits.py).

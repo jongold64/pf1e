@@ -19,7 +19,8 @@ const KNOWLEDGE = ['arcana', 'dungeoneering', 'engineering', 'geography', 'histo
 
 // gear: { armorCategory (for movement: mithral counts one lighter), shield (bool) }; load: 'light' | 'medium' | 'heavy';
 // mod: ability modifiers (with effects). Returns effects as custom effects: [{ name, target, type, value, more, on }].
-export function classFeatureEffects(counts, { mod = {}, armorCategory = null, shield = false, load = 'light' } = {}) {
+// element: the kineticist's primary element (lower case), for its defense from 2nd level.
+export function classFeatureEffects(counts, { mod = {}, armorCategory = null, shield = false, load = 'light', element = '' } = {}) {
   const out = [];
   const add = (name, parts) => {
     const [first, ...more] = parts.filter(p => p.value);
@@ -85,6 +86,11 @@ export function classFeatureEffects(counts, { mod = {}, armorCategory = null, sh
   // Dragon disciple natural armor increase: +1 at 1st, +2 at 4th, +3 at 7th, added to existing natural armor.
   const dd = levelOf(counts, ['dragon-disciple']);
   if (dd) add('Natural armor increase (dragon disciple)', [{ target: 'ac', type: 'natural armor increase', value: dd >= 7 ? 3 : dd >= 4 ? 2 : 1 }]);
+  // Kineticist elemental defense (2nd): shroud of water (+4 armor bonus, +1 every 4 levels after 2nd; as a shield, +2),
+  // flesh of wood (+1 enhancement to natural armor). Flesh of stone's DR is in classDamageReduction.
+  const kin = levelOf(counts, ['kineticist']);
+  if (kin >= 2 && element === 'water') add('Shroud of water (kineticist, as armor)', [{ target: 'ac', type: 'armor', value: 4 + Math.floor((kin - 2) / 4) }]);
+  if (kin >= 2 && element === 'wood') add('Flesh of wood (kineticist)', [{ target: 'ac', type: 'natural armor enhancement', value: 1 }]);
   // Ninja no trace (3rd): +1 insight on Disguise, +1 every 3 levels (also opposed Stealth while stationary: not counted).
   const ninja = levelOf(counts, ['ninja']);
   if (ninja >= 3) add('No trace (ninja)', [{ target: 'skill:Disguise', type: 'insight', value: Math.floor(ninja / 3) }]);
@@ -108,13 +114,14 @@ export function uncannyDodge(counts) {
 
 // Damage reduction from class levels: [{ value, against, source }]. Different sources don't stack (the highest
 // counts), except as a class says.
-export function classDamageReduction(counts, { armor = null, shield = null } = {}) {
+export function classDamageReduction(counts, { armor = null, shield = null, element = '' } = {}) {
   const out = [];
   for (const e of counts) {
     const lv = e.level;
     if (['barbarian', 'barbarian-unchained', 'bloodrager'].includes(e.cls.id) && lv >= 7) {
       out.push({ value: Math.min(5, 1 + Math.floor((lv - 7) / 3)), against: '—', source: e.cls.name });
     }
+    if (e.cls.id === 'kineticist' && element === 'earth' && lv >= 2) out.push({ value: 1 + Math.floor((lv - 2) / 2), against: 'adamantine', source: 'Flesh of stone (kineticist)' });
     if (e.cls.id === 'skald' && lv >= 9) out.push({ value: lv >= 19 ? 3 : lv >= 14 ? 2 : 1, against: '—', source: e.cls.name });
     if (e.cls.id === 'stalwart-defender' && lv >= 5) out.push({ value: lv >= 10 ? 5 : lv >= 7 ? 3 : 1, against: '—', source: e.cls.name });
     if (e.cls.id === 'fighter' && lv >= 19 && (armor || shield)) out.push({ value: 5, against: '—', source: 'Armor mastery (fighter)' });
@@ -176,7 +183,9 @@ export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' 
 // Attacks and extra damage from class features, for the Character tab: sneak attack (the classes' dice stack), studied
 // strike, alchemist bombs (master chymist levels stack) and kinetic blasts. stats: { bab, mod, fx }; sizeAttack: the
 // size modifier on attacks. Each: { name, note, attack (or null), dice, uses? }.
-export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0 } = {}) {
+// blasts: the chosen elements' simple blasts ([{ name, type: 'physical' | 'energy', damage }]); without them, a generic
+// physical and energy blast.
+export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [] } = {}) {
   const out = [];
   const lv = id => levelOf(counts, [id]);
   const sneak = Math.ceil(lv('rogue') / 2) + Math.ceil(lv('rogue-unchained') / 2) + Math.ceil(lv('ninja') / 2) + Math.ceil(lv('assassin') / 2)
@@ -198,8 +207,13 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
   if (kin) {
     const n = 1 + Math.floor((kin - 1) / 2);
     const con = mod.con || 0;
-    out.push({ name: 'Kinetic blast (physical)', note: 'ranged attack, 30 ft.', attack: ranged, dice: `${n}d6+${n + con}` });
-    out.push({ name: 'Kinetic blast (energy)', note: 'ranged touch attack, 30 ft.', attack: ranged, dice: `${n}d6${Math.floor(con / 2) > 0 ? `+${Math.floor(con / 2)}` : ''}` });
+    const list = blasts.length ? blasts : [{ name: 'Kinetic blast (physical)', type: 'physical', damage: '' }, { name: 'Kinetic blast (energy)', type: 'energy', damage: '' }];
+    for (const b of list) {
+      const physical = b.type !== 'energy';
+      const bonus = physical ? n + con : Math.floor(con / 2);
+      out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}`,
+        attack: ranged, dice: `${n}d6${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}` });
+    }
   }
   return out;
 }
@@ -213,7 +227,7 @@ export function skillAccess(counts) {
 }
 
 // Bonuses that only apply in some situations, as notes: { fort, ref, will, ac, skills: { name: [text] } }.
-export function situationalBonuses(counts, mod = {}) {
+export function situationalBonuses(counts, mod = {}, { element = '' } = {}) {
   const n = { fort: [], ref: [], will: [], ac: [], skills: {} };
   const all = (text) => { n.fort.push(text); n.ref.push(text); n.will.push(text); };
   const skill = (name, text) => (n.skills[name] ??= []).push(text);
@@ -271,6 +285,12 @@ export function situationalBonuses(counts, mod = {}) {
   const duel = lv(['duelist']);
   if (duel >= 3) n.ac.push('Enhanced mobility (duelist, light or no armor, no shield): +4 AC against attacks of opportunity for moving out of a threatened square.');
   if (duel >= 7) n.ac.push(`Elaborate defense (duelist): +${Math.floor(duel / 3)} more dodge bonus when fighting defensively or in total defense.`);
+  const kin = lv(['kineticist']);
+  if (kin >= 2 && element === 'aether') n.ac.push(`Force ward (kineticist): ${kin} temporary hit points, lost first, regaining 1 a minute.`);
+  if (kin >= 2 && element === 'air') n.ac.push('Enveloping winds (kineticist): ranged attacks with physical weapons have a 20% miss chance against you.');
+  if (kin >= 2 && element === 'fire') n.ac.push('Searing flesh (kineticist): a creature that hits you with a natural or unarmed attack takes fire damage.');
+  if (kin >= 2 && element === 'void') n.will.push('Emptiness (kineticist): +1 on Will saves against emotion effects; negative energy resistance 2; 5% to ignore critical hits and sneak attacks.');
+  if (kin >= 2 && element === 'water') n.ac.push('Shroud of water (kineticist): counted as an armor bonus; as a shield it gives a +2 shield bonus instead.');
   if (lv(['vigilante']) >= 3) skill('Intimidate', `Unshakable (vigilante): others add ${lv(['vigilante'])} to the DC to Intimidate you.`);
   return n;
 }

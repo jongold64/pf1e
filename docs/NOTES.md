@@ -572,3 +572,13 @@ check its Section 15 notice is in the license.
   `view.archFx.picks`). Medium spirit bonuses are Active effects (effect-catalog.js medium-spirit-*).
 - feature-coverage.js: `featureHandling(class, feature)` -> counted / roll / effect / note / choice / feat / spells / card
   / text, the dot beside each feature on the Classes tab. When a feature becomes counted, add its name there.
+- Kineticist elements: `build_aon_kineticist.py` -> data/kineticist-elements.json (class-path records, kind "element":
+  class_skills, powers, blasts [{ name, type, damage }], composites, defense, talents by level). PATH_RULES.kineticist:
+  'element', 'element2' (7th), 'element3' (15th); `kineticElements()`. classAttacks `blasts`, classFeatureEffects /
+  classDamageReduction / situationalBonuses `element` (the primary one, for its defense). talents.js `elementNeeded`.
+  A path rule with its own `slot` is found by that slot when saved paths are cleaned (load()).
+- Eidolon: `build_aon_eidolon.py` -> data/eidolons.json ({ tables, evolutions } per class). js/eidolon.js `eidolonStats`
+  (base form facts, table row, evolutions: ability increase, improved natural armor, Large, extra feat, attack evolutions
+  read from their "deals XdY points of damage (… if Large, … if Huge)" text); tab-eidolon.js draws #eidolon-card (Classes
+  tab). state.eidolon = { name, evolutions: [{ id, choice }], increases }. build_license.py walks nested records with an
+  origin (evolutions, blasts) for their books.

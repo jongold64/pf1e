@@ -1936,6 +1936,31 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('summoner 12: shield ally +4 on AC note', sit([{ cls: cls('summoner'), level: 12 }]).ac.join().includes('+4 shield'), true);
 }
 
+// Eidolon (eidolon.js) and kineticist elements.
+{
+  const { eidolonStats, evolutionAttack } = await import('./eidolon.js');
+  const { talentOptions: to } = await import('./talents.js');
+  const { classAttacks: kca, classDamageReduction: kdr, classFeatureEffects: kfe } = await import('./class-features.js');
+  const [eid, paths, kin, tal] = await Promise.all(['eidolons', 'class-paths', 'kineticist-elements', 'talents'].map(n => fetch(`data/${n}.json`).then(r => r.json())));
+  const biped = paths.find(p => p.id === 'base-form-summoner-biped');
+  const st = eidolonStats({ level: 5, form: biped, chosen: [{ id: 'bite' }, { id: 'ability-increase', choice: 'str' }, { id: 'improved-natural-armor' }], increases: ['str'],
+                            table: eid.tables.summoner, evolutions: eid.evolutions.summoner });
+  check('eidolon (summoner 5, biped): Str 21, AC 20, hp 26, 4 of 8 points', [st.scores.str, st.ac, st.hp, st.used, st.pool].join(), '21,20,26,4,8');
+  check('eidolon attacks: 2 claws and a bite at +9', st.attacks.map(a => `${a.count}${a.name}${a.bonus}:${a.damage}`).join(), '2claw9:1d4+5,1bite9:1d6+5');
+  const large = eidolonStats({ level: 8, form: biped, chosen: [{ id: 'large' }], table: eid.tables.summoner, evolutions: eid.evolutions.summoner });
+  check('Large eidolon: Str +8 and its claws 1d6', [large.size, large.scores.str, large.attacks[0].damage.split('+')[0]].join(), 'Large,28,1d6');
+  check('every evolution with damage dice reads as an attack', eid.evolutions.summoner.filter(e => /points? of damage \(\d+d\d+ if Large/.test(e.text)).every(e => evolutionAttack(e) || /grappl/i.test(e.text)), true);
+  const earth = kin.find(e => e.id === 'element-earth');
+  check('earth element: Climb and Knowledge (dungeoneering), earth blast, flesh of stone', [earth.class_skills.join('/'), earth.blasts.map(b => b.name).join(), earth.defense.name].join('|'), 'Climb/Knowledge (dungeoneering)|Earth Blast|Flesh of Stone');
+  check('kineticist 6 earth: DR 3/adamantine', kdr([{ cls: cls('kineticist'), level: 6 }], { element: 'earth' }).map(d => `${d.value}/${d.against}`).join(), '3/adamantine');
+  check('kineticist 6 water: shroud of water +5 armor', kfe([{ cls: cls('kineticist'), level: 6 }], { element: 'water' }).find(e => e.name.startsWith('Shroud'))?.value, 5);
+  check('kineticist fire blast (energy): half Con', kca([{ cls: cls('kineticist'), level: 3 }], { bab: [2], mod: { dex: 2, con: 4 }, blasts: kin.find(e => e.id === 'element-fire').blasts }).map(c => c.dice).join(), '2d6+2');
+  const slot = { rule: { kinds: ['wild-talent'] }, classId: 'kineticist', classLevel: 6 };
+  const geo = to(slot, tal, { elements: ['earth'] });
+  check('wild talents of another element say which element they need', geo.find(o => o.talent.name === 'Basic Pyrokinesis')?.why, 'needs the fire element');
+  check('a universal or earth wild talent can be taken', [geo.find(o => o.talent.name === 'Basic Geokinesis')?.why].join(), '');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

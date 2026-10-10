@@ -33,7 +33,7 @@ const BY_NAME = new Map([
     'grace', 'consummate liar', 'towering ego', 'lore', 'no trace', 'medium armor', 'heavy armor', 'jack-of-all-trades',
     'keen recollection', 'focus weapon', 'close weapon mastery', 'enhance arrows', 'aura of righteousness', 'holy champion',
     'aura of depravity', 'unholy champion', 'perfect self', 'brawler\'s flurry', 'diminished spellcasting', 'martial training',
-    'fighter training', 'diverse training', 'weapon expertise', 'bomb-thrower', 'dr', 'improved uncannydodge', 'precise strike']),
+    'fighter training', 'diverse training', 'elemental defense', 'weapon expertise', 'bomb-thrower', 'dr', 'improved uncannydodge', 'precise strike']),
   ...list('roll', ['channel energy', 'channel positive energy', 'channel negative energy', 'lay on hands', 'touch of corruption',
     'sneak attack', 'studied strike', 'bomb', 'physical kinetic blast', 'energy kinetic blast', 'fervor', 'inspiration']),
   ...list('effect', ['inspire courage', 'inspire competence', 'inspire greatness', 'inspire heroics', 'inspired rage', 'rage', 'bloodrage', 'raging song', 'bardic performance', 'judgment', 'second judgment', 'third judgment',
@@ -53,8 +53,8 @@ const BY_NAME = new Map([
     'investigator talent', 'arcanist exploits', 'greater exploits', 'infusion', 'wild talents', 'mesmerist tricks', 'bold stare',
     'vigilante talent', 'social talent', 'ki powers', 'style strikes', 'spirit', 'versatile performance', 'mercy', 'cruelty',
     'phrenic amplifications', 'focus powers', 'shifter aspect', 'favored enemy', 'favored terrain', 'defensive powers',
-    "rogue's edge", 'secret', 'spirit guide', 'eidolon', 'spontaneous casting', 'rage power', 'ninja trick', 'slayer talent',
-    'arcanist exploit', 'defensive power', 'bloodline power', 'order ability', 'rage prophet mystery', 'vigilante specialization']),
+    "rogue's edge", 'secret', 'spirit guide', 'spontaneous casting', 'rage power', 'ninja trick', 'slayer talent',
+    'arcanist exploit', 'defensive power', 'elemental focus', 'expanded element', 'bloodline power', 'order ability', 'rage prophet mystery', 'vigilante specialization']),
   ...list('feat', ['bonus feat', 'bonus feats', 'bonus combat feats', 'combat style feat', 'teamwork feat', 'bloodline feat',
     'tactician', 'eschew materials', 'scribe scroll', 'brew potion', 'throw anything', 'endurance', 'combat reflexes',
     'deflect arrows', 'stunning fist', 'improved leadership', 'bonus combat feat']),
@@ -62,7 +62,7 @@ const BY_NAME = new Map([
     'medium spells', 'mesmerist spells', 'occultist spells', 'psychic spells', 'spiritualist spells', 'summoner spells',
     'alchemy', 'chaotic, evil, good, and lawful spells', 'spellbooks', 'knacks', 'blood casting', 'mystery spell', 'bloodline spell',
     'spirit magic']),
-  ...list('card', ['animal companion', "hunter's bond", 'mount', 'nature bond', "witch's familiar", 'summon familiar',
+  ...list('card', ['eidolon', 'animal companion', "hunter's bond", 'mount', 'nature bond', "witch's familiar", 'summon familiar',
     'spirit animal', 'companion bond', 'bonus trick', 'bonus tricks']),
 ]);
 const BY_CLASS = new Map([

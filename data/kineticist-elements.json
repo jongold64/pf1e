@@ -1,0 +1,1138 @@
+[
+  {
+    "id": "element-aether",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Aether",
+    "source": "Occult Adventures",
+    "text": "Kineticists who focus on the element of aether—a rare substance formed when elemental energy affects the Ethereal Plane—are called telekineticists. Telekineticists use strands of aether to move objects with their minds.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "telekinetic blast (physical, bludgeoning, piercing, or slashing)"
+      ],
+      [
+        "Defense",
+        "force ward"
+      ],
+      [
+        "Composite blasts",
+        "aetheric boost, force blast"
+      ]
+    ],
+    "class_skills": [
+      "Knowledge (engineering)",
+      "Sleight of Hand"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Telekinetic Blast (simple blast, physical: bludgeoning, piercing, or slashing)",
+        "level": 1,
+        "text": "You throw a nearby unattended object at a single foe as a ranged attack. The object must weigh no more than 5 pounds per kineticist level you possess. If the attack hits, the target and the thrown object each take the blast’s damage. Since the object is enfolded in strands of aether, even if you use this power on a magic weapon or other unusual object, the attack doesn’t use any of the magic weapon’s bonuses or effects; it simply deals your blast damage. Alternatively, you can loosen the strands of aether in order to deal damage to both the object and the target as though you had thrown the object yourself (instead of dealing your normal blast damage). You substitute your Constitution modifier for your Strength modifier if throwing the object would have added your Strength modifier on the damage roll, and you don’t take the –4 penalty on the attack roll for throwing an object that wasn’t designed to be thrown. In this case, the object’s special effects apply (including effects from its materials), and if the object is a weapon, you must be proficient with it and able to wield it with one hand; otherwise, the item deals damage as a one-handed improvised weapon for a creature of your size."
+      },
+      {
+        "name": "Force Ward (defense)",
+        "level": 2,
+        "text": "You constantly surround yourself with a ward of force. You gain a number of temporary hit points equal to your kineticist level. You always lose these temporary hit points first, even before other temporary hit points. If an attack deals less damage than you still have as temporary hit points from force ward, it still reduces those temporary hit points but otherwise counts as a miss for the purpose of abilities that trigger on a hit or a miss. These temporary hit points regenerate at a rate of 1 per minute. By accepting 1 point of burn as a standard action, you can increase the maximum number of temporary hit points provided by your force ward by half your kineticist level until the next time your burn is removed. If you use this ability multiple times, the increases stack. For every 2 points of burn you accept in this way, your force ward’s rate of regeneration increases by 1 hit point per minute. Whenever you accept burn while using an aether wild talent, you siphon some of the energy from the aether flowing through you and your force ward recovers a number of temporary hit points equal to your character level, up to its current maximum. You can dismiss or restore your force ward as an immediate action, but doing so doesn’t change the number of temporary hit points available, and the temporary hit points don’t recover while this ability is inactive."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Telekinetic Blast",
+        "type": "physical",
+        "damage": "bludgeoning, piercing, or slashing",
+        "source": "Occult Adventures",
+        "text": "You throw a nearby unattended object at a single foe as a ranged attack. The object must weigh no more than 5 pounds per kineticist level you possess. If the attack hits, the target and the thrown object each take the blast’s damage. Since the object is enfolded in strands of aether, even if you use this power on a magic weapon or other unusual object, the attack doesn’t use any of the magic weapon’s bonuses or effects; it simply deals your blast damage. Alternatively, you can loosen the strands of aether in order to deal damage to both the object and the target as though you had thrown the object yourself (instead of dealing your normal blast damage). You substitute your Constitution modifier for your Strength modifier if throwing the object would have added your Strength modifier on the damage roll, and you don’t take the –4 penalty on the attack roll for throwing an object that wasn’t designed to be thrown. In this case, the object’s special effects apply (including effects from its materials), and if the object is a weapon, you must be proficient with it and able to wield it with one hand; otherwise, the item deals damage as a one-handed improvised weapon for a creature of your size.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Aetheric Boost",
+        "type": "special",
+        "damage": "see text",
+        "source": "Occult Adventures",
+        "text": "You infuse a simple blast you know with aether, causing it to deal 1 additional point of damage of the same type for each of its damage dice; it otherwise acts as the simple blast. At 15th level, you can also infuse a composite blast with aether. To infuse a composite blast in this way, you must accept 1 additional point of burn.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Force Blast",
+        "type": "energy",
+        "damage": "force (see text)",
+        "source": "Occult Adventures",
+        "text": "You throw a burst of force at a foe. Force blast deals damage as a simple energy blast instead of a composite energy blast.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Force Ward",
+      "source": "Occult Adventures",
+      "text": "You constantly surround yourself with a ward of force. You gain a number of temporary hit points equal to your kineticist level. You always lose these temporary hit points first, even before other temporary hit points. If an attack deals less damage than you still have as temporary hit points from force ward, it still reduces those temporary hit points but otherwise counts as a miss for the purpose of abilities that trigger on a hit or a miss. These temporary hit points regenerate at a rate of 1 per minute. By accepting 1 point of burn as a standard action, you can increase the maximum number of temporary hit points provided by your force ward by half your kineticist level until the next time your burn is removed. If you use this ability multiple times, the increases stack. For every 2 points of burn you accept in this way, your force ward’s rate of regeneration increases by 1 hit point per minute. Whenever you accept burn while using an aether wild talent, you siphon some of the energy from the aether flowing through you and your force ward recovers a number of temporary hit points equal to your character level, up to its current maximum. You can dismiss or restore your force ward as an immediate action, but doing so doesn’t change the number of temporary hit points available, and the temporary hit points don’t recover while this ability is inactive.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic telekinesis",
+        "kinetic cover",
+        "kinetic healer",
+        "pushing infusion",
+        "telekinetic boomerang",
+        "telekinetic finesse"
+      ],
+      "2": [
+        "angelic protection",
+        "bowling infusion",
+        "telekinetic haul"
+      ],
+      "3": [
+        "foe throw",
+        "force hook",
+        "primal aether",
+        "self telekinesis",
+        "telekinetic invisibility",
+        "touchsight"
+      ],
+      "4": [
+        "healing burst",
+        "spying touchsight",
+        "telekinetic maneuvers"
+      ],
+      "5": [
+        "aether puppet",
+        "force barrier",
+        "self telekinesis, greater",
+        "touchsight, reactive"
+      ],
+      "6": [
+        "disintegrating infusion",
+        "kinetic revivification",
+        "suffocate"
+      ],
+      "7": [
+        "spell deflection"
+      ],
+      "8": [
+        "many throw",
+        "telekinetic deflection",
+        "telekinetic globe"
+      ],
+      "9": [
+        "aether architect"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-air",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Air",
+    "source": "Occult Adventures",
+    "text": "Kineticists who focus on the element of air are called aerokineticists. Aerokineticists often control air flow or electricity, specializing in mobility and ranged combat.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "air blast (physical, bludgeoning), electric blast (energy, electricity)"
+      ],
+      [
+        "Defense",
+        "enveloping winds"
+      ],
+      [
+        "Composite blasts",
+        "blizzard blast, charged water blast, plasma blast, sandstorm blast, spring blast, thunderstorm blast"
+      ]
+    ],
+    "class_skills": [
+      "Fly",
+      "Knowledge (nature)"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Air Blast (simple blast, physical: bludgeoning)",
+        "level": 1,
+        "text": "You batter a single foe with a gust of air."
+      },
+      {
+        "name": "Electric Blast (simple blast, energy: electricity)",
+        "level": 1,
+        "text": "You shoot an arc of electricity to shock a single foe."
+      },
+      {
+        "name": "Enveloping Winds (defense)",
+        "level": 2,
+        "text": "You constantly surround yourself with a whirling torrent of air, crackling arcs of lightning, or both to protect yourself from ranged attacks. All ranged attacks made with physical weapons suffer a 20% miss chance against you, except for attacks from massive weapons such as a giant’s thrown boulder or a ballista. This ability has no effect on ray attacks. The miss chance increases by 5% for every 5 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the miss chance by 5% until the next time your burn is removed. You can continue to accept points of burn to increase the miss chance further, up to a maximum of 75%. Whenever you accept burn while using an air wild talent, the energy surging through you causes your enveloping winds to also affect non-physical ranged attacks such as ray attacks for 1 round. You can dismiss or restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Air Blast",
+        "type": "physical",
+        "damage": "bludgeoning",
+        "source": "Occult Adventures",
+        "text": "You batter a single foe with a gust of air.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Electric Blast",
+        "type": "energy",
+        "damage": "electricity",
+        "source": "Occult Adventures",
+        "text": "You shoot an arc of electricity to shock a single foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Blizzard Blast",
+        "type": "physical",
+        "damage": "half piercing, half cold",
+        "source": "Occult Adventures",
+        "text": "You unleash a directed blizzard at a single target.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Charged Water Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half electricity",
+        "source": "Occult Adventures",
+        "text": "You slam a single foe with a stream of electrically charged water.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Plasma Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You launch a gust of air and then use your fire to superheat the gust into plasma just as it strikes a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Sandstorm Blast",
+        "type": "physical",
+        "damage": "piercing and slashing",
+        "source": "Occult Adventures",
+        "text": "You use your air to churn up sand, firing a flensing gust at a foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Spring Blast",
+        "type": "physical",
+        "damage": "half bludgeoning and half slashing or piercing",
+        "source": "Ultimate Wilderness",
+        "text": "Sharp blossoms and pummeling seeds buffet your foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Thunderstorm Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half electricity",
+        "source": "Occult Adventures",
+        "text": "You batter a single foe with a gust of air crackling with electricity.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Enveloping Winds",
+      "source": "Occult Adventures",
+      "text": "You constantly surround yourself with a whirling torrent of air, crackling arcs of lightning, or both to protect yourself from ranged attacks. All ranged attacks made with physical weapons suffer a 20% miss chance against you, except for attacks from massive weapons such as a giant’s thrown boulder or a ballista. This ability has no effect on ray attacks. The miss chance increases by 5% for every 5 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the miss chance by 5% until the next time your burn is removed. You can continue to accept points of burn to increase the miss chance further, up to a maximum of 75%. Whenever you accept burn while using an air wild talent, the energy surging through you causes your enveloping winds to also affect non-physical ranged attacks such as ray attacks for 1 round. You can dismiss or restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "aerial adaptation",
+        "air cushion",
+        "air shroud",
+        "air's leap",
+        "air's reach",
+        "basic aerokinesis",
+        "energize weapon",
+        "gusting infusion",
+        "pushing infusion",
+        "thundering infusion",
+        "voice of the wind"
+      ],
+      "2": [
+        "living capacitor",
+        "penetrating infusion",
+        "voice of the wind, greater"
+      ],
+      "3": [
+        "aerial evasion",
+        "bolt",
+        "celerity",
+        "engulfing winds",
+        "magnetic infusion",
+        "magnetism",
+        "synaptic infusion",
+        "torrent",
+        "windsight",
+        "wings of air"
+      ],
+      "4": [
+        "body of air",
+        "cyclone"
+      ],
+      "5": [
+        "air shroud, greater",
+        "chain",
+        "unfolding wind infusion",
+        "windsight, greater"
+      ],
+      "6": [
+        "suffocate",
+        "wind manipulator"
+      ],
+      "7": [
+        "cloud",
+        "sky walk"
+      ],
+      "8": [
+        "weather master"
+      ],
+      "9": [
+        "hurricane queen",
+        "magnetism, greater"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-earth",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Earth",
+    "source": "Occult Adventures",
+    "text": "Kineticists who focus on the element of earth are called geokineticists. Geokineticists manipulate the earth itself, and they are masters of defensive techniques.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "earth blast (physical, bludgeoning, piercing, or slashing)"
+      ],
+      [
+        "Defense",
+        "flesh of stone"
+      ],
+      [
+        "Composite blasts",
+        "autumn blast, magma blast, metal blast, mud blast, sandstorm blast"
+      ]
+    ],
+    "class_skills": [
+      "Climb",
+      "Knowledge (dungeoneering)"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Earth Blast (simple blast, physical: bludgeoning, piercing, or slashing)",
+        "level": 1,
+        "text": "You shape earth into clumps or shards and send them flying at a foe."
+      },
+      {
+        "name": "Flesh of Stone (defense)",
+        "level": 2,
+        "text": "Your skin hardens like stone, dampening the impact of most attacks. You gain DR 1/adamantine. This DR increases by 1 for every 2 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the DR by 1 until the next time your burn is removed, to a maximum DR equal to your kineticist level. Whenever you accept burn while using an earth wild talent, the energy surging through you causes your damage reduction to change from DR/adamantine to DR/— for 1 round. You can dismiss and restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Earth Blast",
+        "type": "physical",
+        "damage": "bludgeoning, piercing, or slashing",
+        "source": "Occult Adventures",
+        "text": "You shape earth into clumps or shards and send them flying at a foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Autumn Blast",
+        "type": "physical",
+        "damage": "any two of bludgeoning, piercing, and slashing (half each)",
+        "source": "Ultimate Wilderness",
+        "text": "A burst of fallen leaves and earthy decay batters a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Magma Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You use your fire to superheat the earth into a flow of magma, which you send against a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Metal Blast",
+        "type": "physical",
+        "damage": "bludgeoning, piercing, or slashing",
+        "source": "Occult Adventures",
+        "text": "You shape metal into clumps, shards, or blades and send them flying.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Mud Blast",
+        "type": "physical",
+        "damage": "bludgeoning",
+        "source": "Occult Adventures",
+        "text": "You infuse your water into the earth to create a powerful ball of mud and slam a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Sandstorm Blast",
+        "type": "physical",
+        "damage": "piercing and slashing",
+        "source": "Occult Adventures",
+        "text": "You use your air to churn up sand, firing a flensing gust at a foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Flesh of Stone",
+      "source": "Occult Adventures",
+      "text": "Your skin hardens like stone, dampening the impact of most attacks. You gain DR 1/adamantine. This DR increases by 1 for every 2 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the DR by 1 until the next time your burn is removed, to a maximum DR equal to your kineticist level. Whenever you accept burn while using an earth wild talent, the energy surging through you causes your damage reduction to change from DR/adamantine to DR/— for 1 round. You can dismiss and restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic geokinesis",
+        "earth walk",
+        "kinetic cover",
+        "pushing infusion"
+      ],
+      "2": [
+        "bowling infusion",
+        "earth climb",
+        "entangling infusion"
+      ],
+      "3": [
+        "clockwork heart",
+        "earth child",
+        "impale",
+        "jagged flesh",
+        "magnetic infusion",
+        "magnetism",
+        "pillar",
+        "rare-metal infusion",
+        "tremorsense"
+      ],
+      "4": [
+        "earthmeld",
+        "enduring earth",
+        "shift earth"
+      ],
+      "5": [
+        "clockwork puppet",
+        "earth glide",
+        "elemental transmission",
+        "spark of innovation",
+        "stone sculptor",
+        "tremor",
+        "tremorsense, greater",
+        "untwisting iron infusion"
+      ],
+      "6": [
+        "deadly earth"
+      ],
+      "7": [
+        "fragmentation",
+        "shift earth, greater"
+      ],
+      "8": [
+        "earth tongue"
+      ],
+      "9": [
+        "magnetism, greater",
+        "seismic master"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-fire",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Fire",
+    "source": "Occult Adventures",
+    "text": "Kineticists who focus on the element of fire are called pyrokineticists. Pyrokineticists wield elemental fire as a potent weapon, and they possess a powerful offense.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "fire blast (energy, fire)"
+      ],
+      [
+        "Defense",
+        "searing flesh"
+      ],
+      [
+        "Composite blasts",
+        "blue flame blast, magma blast, plasma blast, steam blast, summer blast"
+      ]
+    ],
+    "class_skills": [
+      "Escape Artist",
+      "Knowledge (nature)"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Fire Blast (simple blast, energy: fire)",
+        "level": 1,
+        "text": "You unleash a gout of flickering fire to burn a single foe."
+      },
+      {
+        "name": "Searing Flesh (defense)",
+        "level": 2,
+        "text": "Your body becomes painfully hot. Whenever a creature hits you with a natural attack or an unarmed strike, that creature takes 1 point of fire damage per 4 kineticist levels you possess (minimum 1 point of fire damage). A creature in a grapple with you takes double this amount of damage at the end of each of its turns. Weapons that strike you also take this damage, though the damage is unlikely to penetrate the weapon’s hardness. By accepting 1 point of burn, you can increase this damage by 1 point per 4 kineticist levels you possess until the next time your burn is removed. You can increase the damage in this way up to seven times.\n\nWhenever you accept burn while using a fire wild talent, the surging flame causes your searing flesh to deal double its current amount of damage for 1 round (a creature in a grapple with you takes a total of four times as much damage as normal). You can dismiss or restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Fire Blast",
+        "type": "energy",
+        "damage": "fire",
+        "source": "Occult Adventures",
+        "text": "You unleash a gout of flickering fire to burn a single foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Blue Flame Blast",
+        "type": "energy",
+        "damage": "fire",
+        "source": "Occult Adventures",
+        "text": "You unleash a concentrated blast of intense blue flame.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Magma Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You use your fire to superheat the earth into a flow of magma, which you send against a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Plasma Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You launch a gust of air and then use your fire to superheat the gust into plasma just as it strikes a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Steam Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You use your fire to superheat water into steam just as it strikes.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Summer Blast",
+        "type": "physical",
+        "damage": "half fire and half bludgeoning, piercing, or slashing",
+        "source": "Ultimate Wilderness",
+        "text": "A burning blast of heat and sun-dried foliage tears at your foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Searing Flesh",
+      "source": "Occult Adventures",
+      "text": "Your body becomes painfully hot. Whenever a creature hits you with a natural attack or an unarmed strike, that creature takes 1 point of fire damage per 4 kineticist levels you possess (minimum 1 point of fire damage). A creature in a grapple with you takes double this amount of damage at the end of each of its turns. Weapons that strike you also take this damage, though the damage is unlikely to penetrate the weapon’s hardness. By accepting 1 point of burn, you can increase this damage by 1 point per 4 kineticist levels you possess until the next time your burn is removed. You can increase the damage in this way up to seven times.\n\nWhenever you accept burn while using a fire wild talent, the surging flame causes your searing flesh to deal double its current amount of damage for 1 round (a creature in a grapple with you takes a total of four times as much damage as normal). You can dismiss or restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic pyrokinesis",
+        "burning infusion",
+        "cold adaptation",
+        "dazzling infusion",
+        "energize weapon",
+        "fan of flames",
+        "fire sculptor",
+        "fire's fury",
+        "heat adaptation"
+      ],
+      "2": [
+        "fire steed",
+        "flame trap",
+        "foxfire",
+        "penetrating infusion",
+        "searing flame"
+      ],
+      "3": [
+        "eruption",
+        "firesight",
+        "flame jet",
+        "foxfire infusion",
+        "heat wave",
+        "smoke storm",
+        "torrent"
+      ],
+      "4": [
+        "detonation",
+        "flash infusion",
+        "purifying flames"
+      ],
+      "5": [
+        "elemental transmission",
+        "fire corridor",
+        "flame jet, greater",
+        "flame shield, improved fire steed",
+        "trail of flames",
+        "unblinking flame infusion",
+        "unraveling infusion"
+      ],
+      "6": [
+        "brilliant infusion",
+        "purging flame"
+      ],
+      "7": [
+        "explosion",
+        "pure-flame infusion"
+      ],
+      "8": [
+        "greater fire steed"
+      ],
+      "9": [
+        "from the ashes"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-void",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Void",
+    "source": "Occult Origins",
+    "text": "Like aether, void forms where elemental energy meets another material, in this case the substance of the Negative Energy Plane. Chaokineticists command this strange force in a way that in some respects resembles the manipulation of aether.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "gravity blast (physical, bludgeoning), negative blast (energy, negative energy)"
+      ],
+      [
+        "Defense",
+        "emptiness"
+      ],
+      [
+        "Composite blasts",
+        "gravitic boost, negative admixture, void blast"
+      ]
+    ],
+    "class_skills": [
+      "Knowledge (dungeoneering)",
+      "Escape Artist"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Gravity Blast (simple blast, physical: bludgeoning)",
+        "level": 1,
+        "text": "You manipulate gravity to distort and buffet your foe’s body."
+      },
+      {
+        "name": "Negative Blast (simple blast, energy: negative energy)",
+        "level": 1,
+        "text": "You blast your foe with negative energy. This blast and its composite blasts never heal creatures, even if they would normally be healed by negative energy (though such creatures still take no damage)."
+      },
+      {
+        "name": "Emptiness (defense)",
+        "level": 2,
+        "text": "Your body becomes an empty husk, fueled by an internal void. You gain negative energy resistance 2, a 5% chance to ignore critical hits and sneak attacks, and a +1 bonus on Will saves against emotion effects. By accepting 1 point of burn, you can increase the resistance to negative energy by 2, the chance to ignore critical hits and sneak attacks by 5%, and the bonus on Will saves against emotion effects by 1 until the next time your burn is removed. The chance of ignoring critical hits and sneak attacks granted by this wild talent stacks with the chance granted by elemental overflow to a maximum of 100%. When you accept burn while using a void wild talent, your bonus on Will saves applies against all mind-affecting effects for 1 round. You can dismiss and restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Gravity Blast",
+        "type": "physical",
+        "damage": "bludgeoning",
+        "source": "Occult Origins",
+        "text": "You manipulate gravity to distort and buffet your foe’s body.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Negative Blast",
+        "type": "energy",
+        "damage": "negative energy",
+        "source": "Occult Origins",
+        "text": "You blast your foe with negative energy. This blast and its composite blasts never heal creatures, even if they would normally be healed by negative energy (though such creatures still take no damage).",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Gravitic Boost",
+        "type": "special",
+        "damage": "see text",
+        "source": "Occult Origins",
+        "text": "You infuse a simple physical blast with added gravity, increasing its damage dice from d6s to d8s; it otherwise deals damage as per the simple blast. At 15th level, you can also infuse a composite blast with gravity, though to do so you must accept 1 additional point of burn.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Negative Admixture",
+        "type": "energy",
+        "damage": "see text",
+        "source": "Occult Origins",
+        "text": "Choose another simple energy blast you know. Negative admixture’s damage is half negative energy, and half the chosen blast’s type.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Void Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half negative energy",
+        "source": "Occult Origins",
+        "text": "You call forth the power of the void to annihilate your foe.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Emptiness",
+      "source": "Occult Origins",
+      "text": "Your body becomes an empty husk, fueled by an internal void. You gain negative energy resistance 2, a 5% chance to ignore critical hits and sneak attacks, and a +1 bonus on Will saves against emotion effects. By accepting 1 point of burn, you can increase the resistance to negative energy by 2, the chance to ignore critical hits and sneak attacks by 5%, and the bonus on Will saves against emotion effects by 1 until the next time your burn is removed. The chance of ignoring critical hits and sneak attacks granted by this wild talent stacks with the chance granted by elemental overflow to a maximum of 100%. When you accept burn while using a void wild talent, your bonus on Will saves applies against all mind-affecting effects for 1 round. You can dismiss and restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic chaokinesis",
+        "dampening infusion",
+        "energize weapon",
+        "pulling infusion",
+        "pushing infusion",
+        "void healer"
+      ],
+      "2": [
+        "eyes of the void",
+        "no breath",
+        "weighing infusion"
+      ],
+      "3": [
+        "darkness infusion",
+        "gravity control",
+        "undead grip",
+        "unnerving infusion"
+      ],
+      "4": [
+        "absentia",
+        "corpse puppet",
+        "curse breaker",
+        "healing burst",
+        "singularity",
+        "turning blast"
+      ],
+      "5": [
+        "eyes of the void, greater",
+        "gravity control, greater",
+        "vampiric infusion"
+      ],
+      "6": [
+        "darkness infusion, greater",
+        "suffocate"
+      ],
+      "7": [
+        "enervating infusion"
+      ],
+      "8": [],
+      "9": [
+        "gravity master"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-water",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Water",
+    "source": "Occult Adventures",
+    "text": "Kineticists who focus on the element of water are called hydrokineticists. Hydrokineticists master the flow of water or the numbing chill of cold, and they are known for their versatility and flowing forms, like the ever-changing currents.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "cold blast (energy, cold), water blast (physical, bludgeoning)"
+      ],
+      [
+        "Defense",
+        "shroud of water"
+      ],
+      [
+        "Composite blasts",
+        "blizzard blast, charged water blast, ice blast, mud blast, steam blast, winter blast"
+      ]
+    ],
+    "class_skills": [
+      "Knowledge (nature)",
+      "Swim"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Cold Blast (simple blast, energy: cold)",
+        "level": 1,
+        "text": "You emit a beam of utter cold to freeze a single foe."
+      },
+      {
+        "name": "Water Blast (simple blast, physical: bludgeoning)",
+        "level": 1,
+        "text": "You slam a single foe with a stream of water."
+      },
+      {
+        "name": "Shroud of Water (defense)",
+        "level": 2,
+        "text": "You surround yourself with a shroud of water, ice, or both that protects you from harm. The shroud can either cover your body, functioning as armor, or float around you and block attacks, functioning as a shield. It grants either a +4 armor bonus to AC or a +2 shield bonus to AC, and you can change the type of bonus as a standard action. This bonus increases by 1 for every 4 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the bonus by 1 until the next time your burn is removed. You can increase the bonus multiple times in this way, but it can’t be increased by more than 50% of its starting value. When you change the shroud to grant a shield bonus, any bonus in excess of this limit doesn’t apply, but it remains if you change the shroud’s bonus type again. Whenever you accept burn while using a water wild talent, the water coalescing around you allows your shroud to grant both the armor bonus and the shield bonus for 1 round. You can dismiss or restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Cold Blast",
+        "type": "energy",
+        "damage": "cold",
+        "source": "Occult Adventures",
+        "text": "You emit a beam of utter cold to freeze a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Water Blast",
+        "type": "physical",
+        "damage": "bludgeoning",
+        "source": "Occult Adventures",
+        "text": "You slam a single foe with a stream of water.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Blizzard Blast",
+        "type": "physical",
+        "damage": "half piercing, half cold",
+        "source": "Occult Adventures",
+        "text": "You unleash a directed blizzard at a single target.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Charged Water Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half electricity",
+        "source": "Occult Adventures",
+        "text": "You slam a single foe with a stream of electrically charged water.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Ice Blast",
+        "type": "physical",
+        "damage": "half piercing, half cold",
+        "source": "Occult Adventures",
+        "text": "You shoot a chilling icicle to stab a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Mud Blast",
+        "type": "physical",
+        "damage": "bludgeoning",
+        "source": "Occult Adventures",
+        "text": "You infuse your water into the earth to create a powerful ball of mud and slam a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Steam Blast",
+        "type": "physical",
+        "damage": "half bludgeoning, half fire",
+        "source": "Occult Adventures",
+        "text": "You use your fire to superheat water into steam just as it strikes.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Winter Blast",
+        "type": "physical",
+        "damage": "half cold and half bludgeoning, piercing, or slashing",
+        "source": "Ultimate Wilderness",
+        "text": "You unleash a blast of frigid frost and jagged, bare branches at your target.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Shroud of Water",
+      "source": "Occult Adventures",
+      "text": "You surround yourself with a shroud of water, ice, or both that protects you from harm. The shroud can either cover your body, functioning as armor, or float around you and block attacks, functioning as a shield. It grants either a +4 armor bonus to AC or a +2 shield bonus to AC, and you can change the type of bonus as a standard action. This bonus increases by 1 for every 4 kineticist levels you possess beyond 2nd. By accepting 1 point of burn, you can increase the bonus by 1 until the next time your burn is removed. You can increase the bonus multiple times in this way, but it can’t be increased by more than 50% of its starting value. When you change the shroud to grant a shield bonus, any bonus in excess of this limit doesn’t apply, but it remains if you change the shroud’s bonus type again. Whenever you accept burn while using a water wild talent, the water coalescing around you allows your shroud to grant both the armor bonus and the shield bonus for 1 round. You can dismiss or restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic hydrokinesis",
+        "cold adaptation",
+        "energize weapon",
+        "heat adaptation",
+        "icewalker",
+        "kinetic cover",
+        "kinetic healer",
+        "pushing infusion",
+        "quenching infusion",
+        "slick",
+        "water alteration"
+      ],
+      "2": [
+        "angelic protection",
+        "entangling infusion",
+        "penetrating infusion",
+        "slick infusion",
+        "veil of mists"
+      ],
+      "3": [
+        "cold snap",
+        "impale",
+        "pillar",
+        "torrent",
+        "water manipulator",
+        "waterdancer"
+      ],
+      "4": [
+        "healing burst",
+        "ice sculptor",
+        "spray",
+        "watersense"
+      ],
+      "5": [
+        "chilling infusion",
+        "elemental transmission",
+        "shimmering mirage",
+        "splash of the styx",
+        "unbreaking waves infusion",
+        "waterdancer, greater",
+        "watersense, greater"
+      ],
+      "6": [
+        "ice path",
+        "kinetic revivification",
+        "suffocate"
+      ],
+      "7": [
+        "cloud",
+        "fragmentation"
+      ],
+      "8": [
+        "cryokinetic stasis",
+        "maelstrom"
+      ],
+      "9": [
+        "tidal wave"
+      ]
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "element-wood",
+    "kind": "element",
+    "classes": [
+      "kineticist"
+    ],
+    "name": "Wood",
+    "source": "Ultimate Wilderness",
+    "text": "Kineticists who focus on the concept of wood as an element are known as phytokineticists. Phytokineticists share a strong bond with the First World and channel the power of primordial life. As there is no “Elemental Plane of Wood,” the phytokineticist draws upon pockets of vital energy that form when the Elemental Planes grind against the borders of the First World.",
+    "parent": null,
+    "facts": [
+      [
+        "Simple blast",
+        "positive blast (energy, positive energy), wood blast (physical, bludgeoning, piercing, or slashing)"
+      ],
+      [
+        "Defense",
+        "flesh of wood"
+      ],
+      [
+        "Composite blasts",
+        "autumn blast, positive admixture, spring blast, summer blast, verdant blast, winter blast"
+      ]
+    ],
+    "class_skills": [
+      "Handle Animal",
+      "Knowledge (nature)"
+    ],
+    "spells": [],
+    "spells_by": "class",
+    "powers": [
+      {
+        "name": "Positive Blast (simple blast, energy: positive energy)",
+        "level": 1,
+        "text": "You blast your foe with positive energy. The positive energy damage from positive blast and its composites harms only undead and other creatures harmed by positive energy. It never heals creatures, even if they would be healed by positive energy, but it damages haunts and deals full damage to incorporeal undead."
+      },
+      {
+        "name": "Wood Blast (simple blast, physical: bludgeoning, piercing, or slashing)",
+        "level": 1,
+        "text": "You lash out with boughs, vines, or a deluge of stinging blooms."
+      },
+      {
+        "name": "Flesh of Wood (defense)",
+        "level": 2,
+        "text": "Your skin toughens like timber and can turn aside some blows. You gain a +1 enhancement bonus to your existing natural armor bonus. By accepting 1 point of burn, you can increase this enhancement bonus by 1. For every 3 levels beyond 2nd, you can accept 1 additional point of burn to further increase this enhancement bonus by 1 (to a maximum of +7 at 17th level). Whenever you accept burn while using a wood wild talent, phytokinetic power causes your full natural armor bonus to apply to your touch AC for 1 round. You can dismiss and restore this effect as an immediate action."
+      }
+    ],
+    "hexes": [],
+    "blasts": [
+      {
+        "name": "Positive Blast",
+        "type": "energy",
+        "damage": "positive energy",
+        "source": "Ultimate Wilderness",
+        "text": "You blast your foe with positive energy. The positive energy damage from positive blast and its composites harms only undead and other creatures harmed by positive energy. It never heals creatures, even if they would be healed by positive energy, but it damages haunts and deals full damage to incorporeal undead.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Wood Blast",
+        "type": "physical",
+        "damage": "bludgeoning, piercing, or slashing",
+        "source": "Ultimate Wilderness",
+        "text": "You lash out with boughs, vines, or a deluge of stinging blooms.",
+        "origin": "aonprd"
+      }
+    ],
+    "composites": [
+      {
+        "name": "Autumn Blast",
+        "type": "physical",
+        "damage": "any two of bludgeoning, piercing, and slashing (half each)",
+        "source": "Ultimate Wilderness",
+        "text": "A burst of fallen leaves and earthy decay batters a single foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Positive Admixture",
+        "type": "energy",
+        "damage": "see text",
+        "source": "Ultimate Wilderness",
+        "text": "Choose another energy simple blast you know. Positive admixture’s damage is half positive energy and half the chosen blast’s type.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Spring Blast",
+        "type": "physical",
+        "damage": "half bludgeoning and half slashing or piercing",
+        "source": "Ultimate Wilderness",
+        "text": "Sharp blossoms and pummeling seeds buffet your foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Summer Blast",
+        "type": "physical",
+        "damage": "half fire and half bludgeoning, piercing, or slashing",
+        "source": "Ultimate Wilderness",
+        "text": "A burning blast of heat and sun-dried foliage tears at your foe.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Verdant Blast",
+        "type": "physical",
+        "damage": "bludgeoning, piercing, slashing, and optionally positive energy",
+        "source": "Ultimate Wilderness",
+        "text": "You blast your foes with fanciful wild growth overflowing with positive energy from the First World. Verdant blast’s damage counts as positive energy damage only when it would be beneficial for you.",
+        "origin": "aonprd"
+      },
+      {
+        "name": "Winter Blast",
+        "type": "physical",
+        "damage": "half cold and half bludgeoning, piercing, or slashing",
+        "source": "Ultimate Wilderness",
+        "text": "You unleash a blast of frigid frost and jagged, bare branches at your target.",
+        "origin": "aonprd"
+      }
+    ],
+    "defense": {
+      "name": "Flesh of Wood",
+      "source": "Ultimate Wilderness",
+      "text": "Your skin toughens like timber and can turn aside some blows. You gain a +1 enhancement bonus to your existing natural armor bonus. By accepting 1 point of burn, you can increase this enhancement bonus by 1. For every 3 levels beyond 2nd, you can accept 1 additional point of burn to further increase this enhancement bonus by 1 (to a maximum of +7 at 17th level). Whenever you accept burn while using a wood wild talent, phytokinetic power causes your full natural armor bonus to apply to your touch AC for 1 round. You can dismiss and restore this effect as an immediate action.",
+      "origin": "aonprd"
+    },
+    "talents": {
+      "1": [
+        "basic phytokinesis",
+        "dazzling infusion",
+        "kinetic cover",
+        "photokinetic infusion",
+        "pushing infusion",
+        "roots",
+        "wood healer",
+        "woodland step"
+      ],
+      "2": [
+        "angelic protection",
+        "entangling infusion",
+        "foxfire",
+        "merciful foliage"
+      ],
+      "3": [
+        "brachiation",
+        "foxfire infusion",
+        "impale",
+        "pillar",
+        "thorn flesh",
+        "warp wood"
+      ],
+      "4": [
+        "greensight",
+        "healing burst",
+        "herbal antivenom",
+        "plant disguise",
+        "shape wood",
+        "toxic infusion",
+        "turning blast"
+      ],
+      "5": [
+        "plant puppet",
+        "spore infusion",
+        "wild growth",
+        "woodland step, greater"
+      ],
+      "6": [
+        "deadly earth",
+        "green tongue"
+      ],
+      "7": [
+        "green tongue, greater",
+        "toxic infusion, greater",
+        "tree step"
+      ],
+      "8": [
+        "wood soldiers"
+      ],
+      "9": [
+        "forest siege"
+      ]
+    },
+    "origin": "aonprd"
+  }
+]

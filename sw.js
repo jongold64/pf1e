@@ -7,7 +7,7 @@ const CACHE = 'pf1e-builder';
 const PRECACHE = [
   './', 'index.html', 'css/style.css', 'js/app.js', 'manifest.webmanifest', 'LICENSE-OGL.txt',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png', 'icons/icon.svg',
-  'data/races.json', 'data/classes.json', 'data/archetypes.json', 'data/domains.json', 'data/companions.json', 'data/drawbacks.json', 'data/talents.json', 'data/mysteries.json', 'data/bloodlines.json', 'data/class-paths.json', 'data/familiars.json', 'data/skills.json', 'data/feats.json', 'data/traits.json',
+  'data/races.json', 'data/classes.json', 'data/archetypes.json', 'data/domains.json', 'data/companions.json', 'data/drawbacks.json', 'data/talents.json', 'data/mysteries.json', 'data/bloodlines.json', 'data/class-paths.json', 'data/familiars.json', 'data/kineticist-elements.json', 'data/eidolons.json', 'data/skills.json', 'data/feats.json', 'data/traits.json',
   'data/armor.json', 'data/weapons.json', 'data/ammo.json', 'data/equipment.json', 'data/magic-items.json', 'data/spells.json',
 ];
 
