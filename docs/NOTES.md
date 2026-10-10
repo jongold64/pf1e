@@ -239,7 +239,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   (unticked), `on` (when-row keys switched on), `pick`. computeView: `itemBuffs` -> buffs with a `label` (activeBonuses uses it
   as the source), skipping ids you switched on yourself -> `view.buffs` (use it, not `state.buffs`, for any bonus list) and
   `view.fromItems`. The card's "From your magic items" (tab-effects.js `magicItemsHtml`, `popMagicItem`); the Magic Items tab
-  line has the same worn box. Catalog `mi-*` entries are the later items with plain bonuses (effect-catalog.js).
+  line has the same worn box. Catalog `mi-*` entries are the later items with plain bonuses (effect-catalog.js), and armor,
+  shield and weapon special abilities (catalog `ref.id` picks one item where two share a name: Brawling). `abilityEntries`
+  turns the worn armor's / shield's / weapons' abilities into entries (`ref` 'armor:j', 'shield:j', 'weapon:i:j'; their
+  sometimes-keys in the ability's `on`, kept by `cleanAbilities`). Rows, the What it gives table and the owned item's popup
+  are in `js/item-rows.js` (`ownedSources`, `itemRowHtml`, `givesHtml`, `popSource`, `updateSource`), used by the Active
+  effects card and the Magic Items tab. The card starts with On now (names of everything counting) and Counting now.
 - Active effects (`js/effects.js` BUFFS): each has a `group` (EFFECT_GROUPS: spells, conferred abilities, other
   adjustments = worn items, circumstances, combat conditions, conditions), optional `levels` (amounts to pick, e.g. a
   belt's +2/+4/+6, negative levels 1-10; `buffAmount` keeps a saved amount valid) and `flags`: 'noDexAc' (characterStats

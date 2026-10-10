@@ -4,6 +4,7 @@ import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem } from './tab-crafting.js';
+import { givesHtml, itemRowHtml, itemRowChange, itemRowClick, popSource } from './item-rows.js';
 
 let selectedId = null;
 let listed = false;
@@ -24,19 +25,8 @@ function addButtons(item) {
 }
 
 // The item in a popup (the list's Details button): everything the side panel shows, with Add and Craft as buttons.
-// An item you have, in a popup: its description and stats, with One more and Remove.
-function popOwned(app, i) {
-  const e = app.state.magicItems[i];
-  const item = e && app.data.itemsById.get(e.id);
-  if (!item) return;
-  const change = d => {
-    const owned = app.state.magicItems.map(x => ({ ...x }));
-    owned[i].qty += d;
-    app.update({ magicItems: owned.filter(x => x.qty > 0) });
-  };
-  app.openDetail(entryName(item, e.option), `<p class="hint">You have ${e.qty}${e.crafted ? ' (crafted: counted at the cost to make)' : ''}.</p>${itemDetails(item, false)}`,
-    [{ label: 'One more', run: () => change(1) }, { label: e.qty > 1 ? 'One fewer' : 'Remove it', run: () => change(-1) }]);
-}
+// An item you have, in a popup: what it gives, worn or not, and its description (the same popup as in Active effects).
+const popOwned = (app, i) => popSource(app, `m:${i}`);
 
 // A potion, scroll or wand you added, in a popup: how it's used, its caster level, save DC and price.
 function popMade(app, i) {
@@ -109,6 +99,8 @@ function itemDetails(item, withButtons = true) {
       ['Weight', item.weight],
     ])}
     ${withButtons ? addButtons(item) : ''}
+    ${givesHtml(item)}
+    <h4>Description</h4>
     ${paragraphs(item.description) || '<p class="hint">The source has no description for this item.</p>'}
     ${c.requirements || c.cost ? `<h4>Construction</h4>${facts([['Requirements', c.requirements], ['Cost', c.cost]])}` : ''}`;
 }
@@ -157,7 +149,7 @@ export function renderMyItems(app) {
     const open = openLines.has(key);
     const slot = item.slot && !['none', 'slotless'].includes(String(item.slot).replace(/[^a-z]/gi, '').toLowerCase()) ? String(item.slot).replace(/[^a-z ]/gi, '') : '';
     return `<div class="line-card"><div class="fit-line item-line">
-        <input type="checkbox" data-item-worn="${i}"${e.off ? '' : ' checked'} aria-label="${esc(name)} worn (its bonuses count in Active effects)" title="Worn: its bonuses count">
+        <input type="checkbox" data-src-worn="m:${i}"${e.off ? '' : ' checked'} aria-label="${esc(name)} worn (its bonuses count in Active effects)" title="Worn: its bonuses count">
         <button type="button" class="link item-link line-name" data-show-item="${esc(item.id)}">${esc(name)}</button>
         ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
@@ -165,6 +157,7 @@ export function renderMyItems(app) {
         <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}">Details</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <div class="breakdown">${esc(item.category)}${slot ? ` · ${esc(slot)} slot` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div>
+        <ul class="buff-active item-fx">${itemRowHtml({ ref: `m:${i}`, entry: e, item, worn: true }, { compact: true })}</ul>
         <div class="line-controls">
           <button type="button" class="skill-details" data-owned-pop="${i}" aria-label="${esc(name)} in a popup">About it</button>
           <span class="base">How many
@@ -262,14 +255,10 @@ export function initItemsTab(app) {
   });
   initCrafting(app);
   $('my-items-slots').addEventListener('click', () => popSlots(app));
-  // Worn or not: its bonuses count in Active effects while it's ticked.
-  $('my-items-rows').addEventListener('change', e => {
-    const t = e.target.closest('[data-item-worn]');
-    if (!t) return;
-    const i = Number(t.dataset.itemWorn);
-    app.update({ magicItems: app.state.magicItems.map((x, j) => { if (j !== i) return x; const { off, ...rest } = x; return t.checked ? rest : { ...rest, off: true }; }) });
-  });
+  // Worn or not, a bonus that applies sometimes, a belt's choice: the same switches as in Active effects (item-rows.js).
+  $('my-items-rows').addEventListener('change', e => itemRowChange(app, e.target));
   $('my-items-rows').addEventListener('click', e => {
+    if (itemRowClick(app, e)) return;
     const step = e.target.closest('[data-item-qty]');
     if (step) {
       const owned = app.state.magicItems.map(x => ({ ...x }));

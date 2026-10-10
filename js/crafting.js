@@ -85,7 +85,9 @@ export function cleanAbilities(list) {
   return (Array.isArray(list) ? list : []).filter(a => a && typeof a.id === 'string' && typeof a.name === 'string')
     .map(a => ({ id: a.id, name: a.name, ...(typeof a.option === 'string' && a.option ? { option: a.option } : {}),
                  ...(Number.isInteger(a.bonus) && a.bonus > 0 ? { bonus: a.bonus } : {}),
-                 ...(Number.isFinite(a.gp) && a.gp > 0 ? { gp: a.gp } : {}) }));
+                 ...(Number.isFinite(a.gp) && a.gp > 0 ? { gp: a.gp } : {}),
+                 // Its effects that apply only sometimes, switched on in Active effects (item-effects.js row keys).
+                 ...(Array.isArray(a.on) && a.on.some(k => typeof k === 'string') ? { on: a.on.filter(k => typeof k === 'string') } : {}) }));
 }
 
 // "+1 flaming keen" / "masterwork" / "" before a weapon's or armor's name.

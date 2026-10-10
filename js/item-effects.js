@@ -32,7 +32,8 @@ const iounColor = buff => buff.name.replace(/^.*?:\s*/, '').replace(/\s*\(.*\)$/
 // choose which two abilities); `when`: only sometimes (starts switched off).
 export function itemEffects(item, option) {
   const name = item.name.toLowerCase();
-  let catalog = BUFFS.filter(b => b.ref?.item && b.ref.item.toLowerCase() === name);
+  // (By the item's id where two items share a name: Brawling armor and Brawling weapons.)
+  let catalog = BUFFS.filter(b => b.ref?.item && (b.ref.id ? b.ref.id === item.id : b.ref.item.toLowerCase() === name));
   // Ioun stones: the stone's color is the option bought.
   if (name.startsWith('ioun stone')) {
     catalog = BUFFS.filter(b => b.id.startsWith('ioun-') && iounColor(b) === String(option || '').toLowerCase());
@@ -69,7 +70,7 @@ export function itemBuffs(entries = [], itemsById) {
   for (const e of entries) {
     const item = itemsById.get(e.id);
     if (!item) continue;
-    const itemName = e.option ? `${item.name} (${e.option})` : item.name;
+    const itemName = `${item.name}${e.option || e.where ? ` (${[e.option, e.where && `on your ${e.where}`].filter(Boolean).join(', ')})` : ''}`;
     for (const row of itemEffects(item, e.option)) {
       if (!rowOn(row, e)) continue;
       const buff = buffById.get(rowBuff(row, e));
@@ -80,4 +81,13 @@ export function itemBuffs(entries = [], itemsById) {
     }
   }
   return out;
+}
+
+// The special abilities on the armor and shield you wear and on your weapons, as entries like magic items' ({ id, option,
+// on }), with `ref` ('armor:<j>', 'shield:<j>', 'weapon:<i>:<j>') and `where` (what they're on). Weapon abilities' bonuses
+// only apply while you wield it, so they are all switched on by hand (catalog `when`).
+export function abilityEntries(state, weaponsById) {
+  const of = (list, ref, where) => (list || []).map((a, j) => ({ id: a.id, ...(a.option ? { option: a.option } : {}), ...(a.on ? { on: a.on } : {}), ref: `${ref}:${j}`, where }));
+  return [...(state.armorId ? of(state.armorAbilities, 'armor', 'armor') : []), ...(state.shieldId ? of(state.shieldAbilities, 'shield', 'shield') : []),
+    ...state.weapons.flatMap((w, i) => of(w.abilities, `weapon:${i}`, weaponsById?.get(w.id)?.name.toLowerCase() || 'weapon'))];
 }

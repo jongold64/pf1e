@@ -28,7 +28,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
-import { itemBuffs } from './item-effects.js';
+import { itemBuffs, abilityEntries } from './item-effects.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
@@ -1406,7 +1406,10 @@ function computeView() {
   // (The magic items data loads on first need; the page is drawn again once it's here.)
   if (state.magicItems.length && !data.itemsById) loadItems().then(() => render());
   const mine = new Set(state.buffs.filter(x => x.on !== false).map(x => x.id));
-  const fromItems = itemBuffs(state.magicItems, data.itemsById).filter(x => !mine.has(x.id));
+  // (Special abilities on worn armor, a shield and weapons count like items: shadow armor's Stealth bonus...)
+  if (!data.itemsById && [state.armorAbilities, state.shieldAbilities, ...state.weapons.map(w => w.abilities || [])].some(l => l.length)) loadItems().then(() => render());
+  if (!data.weaponsById && state.weapons.some(w => (w.abilities || []).length)) loadWeapons().then(() => render());
+  const fromItems = itemBuffs([...state.magicItems, ...abilityEntries(state, data.weaponsById)], data.itemsById).filter(x => !mine.has(x.id));
   const allBuffs = [...state.buffs.filter(x => x.on !== false), ...fromItems];
   let fx = effectTotals(allBuffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.

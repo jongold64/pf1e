@@ -17,7 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
 import { flawEffects } from './flaws.js';
-import { itemEffects, itemBuffs } from './item-effects.js';
+import { itemEffects, itemBuffs, abilityEntries } from './item-effects.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
@@ -1726,7 +1726,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const textOf = ref => (ref.with ? `${textOne(ref)} ${textOne(ref.with)}` : textOne(ref));
   const textOne = ref => {
     if (ref.spell) return [ref.spell, ...(ref.also || [])].map(n => spellsD.find(x => x.name.toLowerCase() === n.toLowerCase())?.description || '').join(' ') || null;
-    if (ref.item) return itemsD.find(x => x.name.toLowerCase() === ref.item.toLowerCase())?.description;
+    if (ref.item) return itemsD.find(x => (ref.id ? x.id === ref.id : x.name.toLowerCase() === ref.item.toLowerCase()))?.description;
     if (ref.cls) return classes.find(c => c.id === ref.cls)?.features?.find(f => f.name.startsWith(ref.feature))?.text;
     if (ref.talent) return talentsD.find(t => t.name === ref.talent)?.text;
     return null;
@@ -1762,6 +1762,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('an item with no bonuses: no effects', itemEffects(byId.get('bag-of-holding') || { name: 'Bag of Holding', id: 'x' }).length, 0);
   check('item effects named for the item', itemBuffs([{ id: 'bracers-of-falcons-aim', qty: 1 }], byId)[0].label, "Bracers of Falcon's Aim: aspect of the falcon");
   check('effects catalog ids are unique', new Set(BUFFS.map(x => x.id)).size, BUFFS.length);
+  // Special abilities on worn armor and weapons count like items.
+  const st = { armorId: 'chain-shirt', armorAbilities: [{ id: 'shadow', name: 'Shadow' }], shieldId: '', shieldAbilities: [{ id: 'slick', name: 'Slick' }],
+               weapons: [{ id: 'longsword', abilities: [{ id: 'dueling', name: 'Dueling' }] }, { id: 'dagger', abilities: [{ id: 'dueling', name: 'Dueling', on: ['mi-dueling'] }] }] };
+  const ents = abilityEntries(st, new Map([['dagger', { name: 'Dagger' }]]));
+  check('ability entries: armor, and each weapon (no shield worn)', ents.map(x => `${x.ref}=${x.where}`).join(), 'armor:0=armor,weapon:0:0=weapon,weapon:1:0=dagger');
+  check('shadow armor: +5 Stealth; dueling only where switched on', fx(ents), 'mi-shadow:' + (byId.get('shadow').cl || 1) + ',mi-dueling:' + (byId.get('dueling').cl || 1));
+  check('shadow armor named for the armor', itemBuffs(ents, byId)[0].label, 'Shadow (on your armor)');
+  check('brawling armor vs brawling weapon: by id', [itemEffects(byId.get('brawling-armor-and-shield-special-abilities')).length, itemEffects(itemsD.find(x => x.name === 'Brawling' && x.id !== 'brawling-armor-and-shield-special-abilities')).length].join(), '1,0');
 }
 
 // Adjustments: items with amounts, conditions and their flags.

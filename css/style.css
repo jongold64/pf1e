@@ -630,6 +630,11 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 #effects .custom-effect input[type="number"] { width: 70px; }
 #effects .custom-effect input[type="checkbox"] { width: 22px; height: 22px; }
 #effects .effect-totals { margin: 0 0 4px; }
+#effects .on-now { background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
+#effects .on-now h3 { margin: 0 0 4px; }
+#effects .on-now ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+#effects .on-now li { font-size: 0.9rem; }
+#effects .tick { width: 20px; text-align: center; color: var(--muted); }
 #effects h3 { font-size: 1rem; margin: 12px 0 4px; }
 
 /* Animal companion card */
@@ -858,3 +863,5 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 #effects .buff-active li.kept b { color: var(--muted); }
 #effects .mi-when { margin-left: 28px; }
 .item-line input[type=checkbox] { flex: none; width: 20px; height: 20px; margin: 0 4px 0 0; }
+.item-fx { list-style: none; padding: 0; margin: 4px 0; }
+#effects .check-row input[type=checkbox], .item-fx .check-row input[type=checkbox] { flex: none; }

@@ -39,7 +39,7 @@ const ELEMENTS = (size, air, earth, fire, water) => [form(`${size} air elemental
 const poly = (id, name, forms, ref, note = '', also = []) => ({ id, name, forms, ref: { spell: ref || name, also },
   note: note || 'natural attacks, movement and senses of the form (see the spell)' });
 const spell = (id, name, bonuses, extra = {}) => ({ id, name, bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ref: { spell: extra.refName || name }, ...extra });
-const item = (id, name, bonuses, extra = {}) => ({ id, name, group: 'item', bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ref: { item: extra.refName || name }, ...extra });
+const item = (id, name, bonuses, extra = {}) => ({ id, name, group: 'item', bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ref: { item: extra.refName || name, ...(extra.refId ? { id: extra.refId } : {}) }, ...extra });
 const ability = (id, name, bonuses, extra = {}) => ({ id, name, group: 'ability', bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ...extra });
 
 export const MORE_BUFFS = [
@@ -357,6 +357,32 @@ export const MORE_BUFFS = [
     ['Elixir of Forceful Exhalation', [sk('Swim', 'competence', 4)], { when: 'for 1 hour after drinking it', note: 'also Acrobatics to jump' }],
     ['Bottled Yeti Fur', [b('ac', 'natural armor', 2)], { when: 'for 24 hours after opening it', note: 'cold resistance 5; +4 Stealth in ice and snow' }],
     ['Bracers of the Shield Mates', [b('ac', 'shield', 2)], { when: 'while the two wearers are within 100 feet' }],
+    // Armor and shield special abilities (on the armor or shield you wear).
+    ['Amorphous', [sk('Escape Artist', 'competence', 5)], { note: '+5 CMD against grapples' }],
+    ['Harmonizing', [sk('Perform', 'competence', 5), sk('Stealth', 'untyped', -5)], { note: 'vulnerable to sonic damage' }],
+    ['Shadow', [sk('Stealth', 'competence', 5)]],
+    ['Shadow, Improved', [sk('Stealth', 'competence', 10)]],
+    ['Improved Shadow', [sk('Stealth', 'competence', 10)]],
+    ['Shadow, Greater', [sk('Stealth', 'competence', 15)]],
+    ['Slick', [sk('Escape Artist', 'competence', 5)]],
+    ['Slick, Improved', [sk('Escape Artist', 'competence', 10)]],
+    ['Improved Slick', [sk('Escape Artist', 'competence', 10)]],
+    ['Slick, Greater', [sk('Escape Artist', 'competence', 15)]],
+    ['Jousting', [sk('Ride', 'competence', 5)]],
+    ['Trackless', [sk('Stealth', 'competence', 5)], { note: '-5 on Survival checks to track you' }],
+    ['Champion', [b('ac', 'sacred', 2)], { when: 'against the foe you challenge or smite' }],
+    ['Dastard', [b('ac', 'profane', 2)], { when: 'against the foe you challenge or smite' }],
+    ['Spell Dodging', [b('ac', 'dodge', 4)], { when: 'against attacks from spells, spell-like abilities and summoned creatures' }],
+    ['Expeditious', [b('speed', 'enhancement', 10)], { when: 'for 1 round when you summon it' }],
+    ['Poison-Resistant', [b('saves', 'resistance', 3)], { when: 'against poison' }],
+    ['Brawling', [b('attack', 'untyped', 2), b('damage', 'untyped', 2)], { refName: 'Brawling', refId: 'brawling-armor-and-shield-special-abilities', when: 'with unarmed strikes' }],
+    // Weapon special abilities (while you wield the weapon).
+    ['Dueling', [b('init', 'enhancement', 4)], { when: 'with the weapon drawn' }],
+    ['Grounding', [b('saves', 'competence', 2)], { when: 'against air and electricity effects, wielding it' }],
+    ['Neutralizing', [b('saves', 'competence', 2)], { when: 'against acid and earth effects, wielding it' }],
+    ['Quenching', [b('saves', 'competence', 2)], { when: 'against fire effects, wielding it' }],
+    ['Thawing', [b('saves', 'competence', 2)], { when: 'against ice effects, wielding it' }],
+    ['Invigorating', [b('attack', 'morale', 2), b('speed', 'enhancement', 10)], { when: 'after it removes fatigue (see its text)' }],
   ].map(([name, list, extra = {}]) => item(`mi-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '')}`, name, list, extra)),
 
   // ---------------- Circumstances ----------------
