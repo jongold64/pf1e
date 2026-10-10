@@ -38,6 +38,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     .map(([a, enh, mw, abilities]) => [magicPrefix(enh, mw && !a.mw_included, abilities || []), a.name].filter(Boolean).join(' ')
       + (a.material_notes ? ` (${a.material_notes})` : '')).join(', ');
   const activeEffects = [...state.buffs.filter(x => x.on !== false).map(x => buffById.get(x.id)?.name).filter(Boolean),
+    ...(view.fromItems || []).map(x => x.label),
     ...state.customEffects.filter(c => c.on && c.value).map(c => `${c.name || 'custom'} (${c.value > 0 ? '+' : ''}${c.value} ${c.type})`)];
   const defense = facts([
     ['Hit points', stats.hp], ['Armor Class', stats.ac], ['Touch', stats.touch], ['Flat-footed', stats.flatFooted],

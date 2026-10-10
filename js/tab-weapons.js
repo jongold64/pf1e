@@ -176,7 +176,7 @@ function weaponEffects(app, w) {
   const v = app.view;
   const flaw = w.group === 'ranged' ? v.flawFx.ranged : v.flawFx.melee;
   const melee = w.group !== 'ranged';
-  return [...activeBonuses(app.state.buffs, v.customAll).filter(x => x.target === 'attack' || x.target === 'damage'
+  return [...activeBonuses(v.buffs, v.customAll).filter(x => x.target === 'attack' || x.target === 'damage'
             || (melee && (x.target === 'melee-attack' || x.target === 'melee-damage')) || (!melee && x.target === 'ranged-attack'))
           .map(x => ({ ...x, target: x.target.replace(/^(melee|ranged)-/, '') })),
           ...(flaw ? [{ target: 'attack', source: w.group === 'ranged' ? 'Shaky (flaw)' : 'Noncombatant (flaw)', type: 'untyped', value: flaw }] : [])];

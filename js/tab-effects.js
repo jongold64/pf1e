@@ -2,6 +2,7 @@
 // bonus grows with it), custom effects the player types in, and what they add up to by the stacking rules.
 import { $, esc, paragraphs, facts } from './dom.js';
 import { BUFFS, buffById, BONUS_TYPES, TARGETS, TARGET_NAMES, activeBonuses, EFFECT_GROUPS, buffAmount, effectMods } from './effects.js';
+import { itemEffects, rowBuff, itemAmount, rowOn } from './item-effects.js';
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
 
@@ -19,7 +20,7 @@ export function renderEffects(app, view) {
   // Effects in your list: switched on, or kept switched off (unticked) so they're at hand for next time.
   const saved = new Map(state.buffs.map(x => [x.id, x]));
   const on = new Map(state.buffs.filter(x => x.on !== false).map(x => [x.id, x]));
-  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length;
+  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length + (view.fromItems || []).length;
   $('effects-count').textContent = activeCount ? `${activeCount} on` : '';
 
   const buffRow = buff => {
@@ -70,6 +71,7 @@ export function renderEffects(app, view) {
       <p class="hint">Bonuses of the same type don't stack (only the highest counts), except dodge, circumstance and untyped
       ones; penalties all count. Armor and shield bonuses (mage armor, shield) don't add to worn armor's: the higher counts.</p>`
       : '<p class="hint">Nothing active. Switch on a spell, ability, item, circumstance or condition below, or add your own effect.</p>'}
+    ${magicItemsHtml(app)}
     ${active.length ? `<h3>Your effects</h3><p class="hint">Tick to switch one on, untick to switch it off: it stays here for next time
       (favored terrain, flanking, a condition...). <b>remove</b> takes it off the list.</p><ul class="buff-active">${active.map(buffRow).join('')}</ul>` : ''}
     ${EFFECT_GROUPS.map(([g, label, hint]) => {
@@ -82,6 +84,59 @@ export function renderEffects(app, view) {
     <h3>Custom effects</h3>
     ${custom ? `<ul class="custom-effects">${custom}</ul>` : '<p class="hint">For anything not listed: a potion, an item, a class ability, a penalty (enter a negative number).</p>'}
     <p><button type="button" data-fx-add>Add an effect</button>${activeCount ? ' <button type="button" data-fx-clear>Switch all off</button>' : ''}</p>`;
+}
+
+// "From your magic items": every magic item you own, ticked while you wear it (untick to take it off), with what it gives
+// and Details (its description). Effects that apply only sometimes (a terrain, while it's used) have their own tick box,
+// off to start; a belt of physical might has a choice of abilities. They stay listed until the item is removed.
+function magicItemsHtml(app) {
+  const { state, data } = app;
+  if (!state.magicItems.length) return '';
+  if (!data.itemsById) return '<h3>From your magic items</h3><p class="hint">Loading your magic items…</p>';
+  const rows = state.magicItems.map((e, i) => {
+    const item = data.itemsById.get(e.id);
+    if (!item) return '';
+    const name = e.option ? `${item.name} (${e.option})` : item.name;
+    const effects = itemEffects(item, e.option);
+    const always = effects.filter(r => !r.when);
+    const sometimes = effects.filter(r => r.when);
+    const summary = r => { const buff = buffById.get(rowBuff(r, e)); return `${r.choices ? '' : buff.group === 'item' ? '' : `${buff.name}: `}${buffSummary(buff, itemAmount(buff, item, e.option))}`; };
+    const what = always.map(summary).join('; ') || (sometimes.length ? 'only when used (below)' : 'no bonuses to count: see Details');
+    const pick = always.find(r => r.choices);
+    return `<li class="${e.off ? 'kept' : 'on'}"><label class="check-row small"><input type="checkbox" data-mi-worn="${i}"${e.off ? '' : ' checked'}>
+        <span><b>${esc(name)}</b> <small class="muted">${esc(what)}</small></span>
+        <button type="button" class="skill-details" data-mi-pop="${i}" aria-label="${esc(name)}: its description">Details</button></label>
+      ${pick ? `<label class="cl-input">which <select data-mi-pick="${i}">${pick.choices.map(id => `<option value="${esc(id)}"${id === rowBuff(pick, e) ? ' selected' : ''}>${esc(buffById.get(id).name)}</option>`).join('')}</select></label>` : ''}
+      ${sometimes.map(r => { const buff = buffById.get(rowBuff(r, e)); return `<label class="check-row small mi-when"><input type="checkbox" data-mi-on="${i}" data-key="${esc(r.key)}"${rowOn(r, e) ? ' checked' : ''}${e.off ? ' disabled' : ''}>
+        <span>${esc(buff.group === 'item' ? 'Its bonus' : buff.name)} <small class="muted">${esc(r.when)}: ${esc(buffSummary(buff, itemAmount(buff, item, e.option)))}</small></span></label>`; }).join('')}
+      ${!e.off && always.some(r => buffById.get(rowBuff(r, e)).note) ? `<div class="hint">Not counted: ${esc(always.map(r => buffById.get(rowBuff(r, e)).note).filter(Boolean).join('; '))}</div>` : ''}</li>`;
+  }).join('');
+  return `<h3>From your magic items</h3><p class="hint">Ticked while you wear or hold it: its bonuses count by the stacking rules. Untick to
+    take it off. A bonus that only applies sometimes has its own box. Items are added and removed on the Magic Items tab.</p>
+    <ul class="buff-active">${rows}</ul>`;
+}
+
+// A magic item you own in a popup: what it gives (and whether each bonus counts), and its description.
+function popMagicItem(app, i) {
+  const { state, data } = app;
+  const e = state.magicItems[i];
+  const item = e && data.itemsById?.get(e.id);
+  if (!item) return;
+  const name = e.option ? `${item.name} (${e.option})` : item.name;
+  const effects = itemEffects(item, e.option);
+  const counted = new Set((app.view.fromItems || []).map(x => x.id));
+  const rows = effects.map(r => {
+    const buff = buffById.get(rowBuff(r, e));
+    return `<tr><td>${esc(buff.group === 'item' ? 'Bonus' : buff.name)}${r.when ? ` <small class="muted">(${esc(r.when)})</small>` : ''}</td>
+      <td>${esc(buffSummary(buff, itemAmount(buff, item, e.option)))}</td><td>${rowOn(r, e) && counted.has(buff.id) ? 'counted' : e.off ? 'not worn' : rowOn(r, e) ? 'you switched it on yourself' : 'off'}</td></tr>`;
+  }).join('');
+  const set = patch => app.update({ magicItems: state.magicItems.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+  app.openDetail(name, `<p class="hint">${esc(item.category)}${item.slot && item.slot !== 'none' ? ` · ${esc(item.slot)} slot` : ''} · ${e.off ? 'not worn' : 'worn'}</p>
+    ${rows ? `<h3>What it gives</h3><table class="skill-why"><tbody>${rows}</tbody></table>` : '<p class="hint">No bonuses the builder counts: its powers are in the description.</p>'}
+    ${facts([['Aura', item.aura], ['Caster level', item.cl], ['Price', item.price], ['Weight', item.weight]])}
+    ${paragraphs(item.description) || '<p class="hint">The source has no description for this item.</p>'}`,
+    [e.off ? { label: 'Wear it', primary: true, run: () => set({ off: undefined }) } : { label: 'Take it off', run: () => set({ off: true }) },
+     { label: 'Remove from my magic items', run: () => app.update({ magicItems: state.magicItems.filter((_, j) => j !== i) }) }]);
 }
 
 // A buff in a popup: what it gives at your caster level (and how that grows), whether each bonus counts next to the
@@ -164,6 +219,8 @@ function popCustom(app, i) {
 export function initEffects(app) {
   // Details: inside a buff's label, so it doesn't tick the box.
   $('effects').addEventListener('click', e => {
+    const mp = e.target.closest('[data-mi-pop]');
+    if (mp) { e.preventDefault(); popMagicItem(app, Number(mp.dataset.miPop)); return; }
     const cp = e.target.closest('[data-fx-pop]');
     if (cp) { popCustom(app, Number(cp.dataset.fxPop)); return; }
     const b = e.target.closest('[data-buff-pop]');
@@ -175,6 +232,15 @@ export function initEffects(app) {
   const { state } = app;
   box.addEventListener('change', e => {
     const t = e.target;
+    // A magic item: worn or not, an effect that applies sometimes on or off, the chosen effect.
+    const setItem = (i, f) => app.update({ magicItems: state.magicItems.map((x, j) => (j === i ? f(x) : x)) });
+    if (t.dataset.miWorn !== undefined) { setItem(Number(t.dataset.miWorn), x => { const { off, ...rest } = x; return t.checked ? rest : { ...rest, off: true }; }); return; }
+    if (t.dataset.miOn !== undefined) {
+      setItem(Number(t.dataset.miOn), x => { const list = (x.on || []).filter(k => k !== t.dataset.key); const { on, ...rest } = x;
+        return t.checked ? { ...rest, on: [...list, t.dataset.key] } : list.length ? { ...rest, on: list } : rest; });
+      return;
+    }
+    if (t.dataset.miPick !== undefined) { setItem(Number(t.dataset.miPick), x => ({ ...x, pick: t.value })); return; }
     if (t.dataset.buff) {
       const id = t.dataset.buff;
       const fresh = buffById.get(id)?.levels ? buffById.get(id).levels[0] : app.view.level;

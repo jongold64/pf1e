@@ -157,6 +157,7 @@ export function renderMyItems(app) {
     const open = openLines.has(key);
     const slot = item.slot && !['none', 'slotless'].includes(String(item.slot).replace(/[^a-z]/gi, '').toLowerCase()) ? String(item.slot).replace(/[^a-z ]/gi, '') : '';
     return `<div class="line-card"><div class="fit-line item-line">
+        <input type="checkbox" data-item-worn="${i}"${e.off ? '' : ' checked'} aria-label="${esc(name)} worn (its bonuses count in Active effects)" title="Worn: its bonuses count">
         <button type="button" class="link item-link line-name" data-show-item="${esc(item.id)}">${esc(name)}</button>
         ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
@@ -261,6 +262,13 @@ export function initItemsTab(app) {
   });
   initCrafting(app);
   $('my-items-slots').addEventListener('click', () => popSlots(app));
+  // Worn or not: its bonuses count in Active effects while it's ticked.
+  $('my-items-rows').addEventListener('change', e => {
+    const t = e.target.closest('[data-item-worn]');
+    if (!t) return;
+    const i = Number(t.dataset.itemWorn);
+    app.update({ magicItems: app.state.magicItems.map((x, j) => { if (j !== i) return x; const { off, ...rest } = x; return t.checked ? rest : { ...rest, off: true }; }) });
+  });
   $('my-items-rows').addEventListener('click', e => {
     const step = e.target.closest('[data-item-qty]');
     if (step) {

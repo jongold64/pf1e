@@ -28,6 +28,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
+import { itemBuffs } from './item-effects.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
@@ -152,7 +153,9 @@ const state = {
   inventory: [],   // [{ id, variant, qty }] from data/equipment.json; variant is e.g. 'Masterwork'
   spells: [],      // ids of the character's chosen spells (known spells or spellbook) from data/spells.json
   prepared: {},    // today's prepared spells: { class id: { spell level: [{ id ('' for an empty slot), cast }] } }
-  magicItems: [],  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'
+  // [{ id, option, qty }] from data/magic-items.json; option is e.g. '+2'. Its effects in Active effects (item-effects.js):
+  // off: true = unticked (not worn), on: [effect ids] = the ones that apply only sometimes switched on, pick: the chosen effect.
+  magicItems: [],
   weapons: [],     // [{ id, enh, masterwork, focus, greaterFocus, spec, greaterSpec, proficient }] from data/weapons.json
   // Combat options on the Weapons tab: Power Attack / Deadly Aim / Rapid Shot switched on, and the weapons used
   // for two-weapon fighting as indexes into `weapons` ("2", or "2:1" for the other end of double weapon 2).
@@ -364,7 +367,10 @@ function load(saved) {
   state.magicItems = (Array.isArray(state.magicItems) ? state.magicItems : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,
-                 ...(e.crafted === true ? { crafted: true } : {}) }));
+                 ...(e.crafted === true ? { crafted: true } : {}),
+                 ...(e.off === true ? { off: true } : {}),
+                 ...(Array.isArray(e.on) && e.on.some(id => buffById.has(id)) ? { on: [...new Set(e.on.filter(id => buffById.has(id)))] } : {}),
+                 ...(buffById.has(e.pick) ? { pick: e.pick } : {}) }));
   const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
@@ -698,7 +704,7 @@ function buildControls() {
     if (rd) { showResultDetails(rd.dataset.resultDetails); return; }
     if (!e.target.closest('[data-init-details]')) return;
     const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits,
-      activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'init'));
+      activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
     openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
   });
   // Details popup for a saving throw.
@@ -1278,7 +1284,7 @@ function showAbilityDetails(a) {
   const race = data.races.find(r => r.id === state.race);
   const racial = racialAdjustments(race, view.flexibleChoice)[a] || 0;
   const incLevels = INCREASE_LEVELS.filter((lv, i) => state.level >= lv && state.increases[i] === a);
-  const fx = countedBonuses(activeBonuses(state.buffs, view.customAll).filter(x => x.target === a));
+  const fx = countedBonuses(activeBonuses(view.buffs, view.customAll).filter(x => x.target === a));
   const rows = [
     [state.budget === 'custom' ? 'Base (entered by hand)'
       : `Base (point buy, costs ${POINT_COSTS[state.base[a]]} point${Math.abs(POINT_COSTS[state.base[a]]) === 1 ? '' : 's'})`, String(state.base[a])],
@@ -1395,7 +1401,14 @@ function computeView() {
   setStyleFeats(Object.fromEntries(['ranger'].map(cid => [cid, pathOf(cid, 'combat-style')?.style_feats]).filter(([, f]) => f)));
   setBloodlineFeats(Object.fromEntries(Object.keys(PATH_RULES).map(cid => [cid, pathOf(cid, 'bloodline')?.bonus_feats
     && [...pathOf(cid, 'bloodline').bonus_feats, ...(isCrossblooded(cid) ? pathOf(cid, 'bloodline2')?.bonus_feats || [] : [])]]).filter(([, f]) => f)));
-  let fx = effectTotals(state.buffs, customAll);
+  // The effects switched on, and the ones your magic items give (item-effects.js; an effect you also switched on yourself
+  // counts once).
+  // (The magic items data loads on first need; the page is drawn again once it's here.)
+  if (state.magicItems.length && !data.itemsById) loadItems().then(() => render());
+  const mine = new Set(state.buffs.filter(x => x.on !== false).map(x => x.id));
+  const fromItems = itemBuffs(state.magicItems, data.itemsById).filter(x => !mine.has(x.id));
+  const allBuffs = [...state.buffs.filter(x => x.on !== false), ...fromItems];
+  let fx = effectTotals(allBuffs, customAll);
   // A polymorph sets your size; enlarge or reduce person moves it a step.
   const size = shiftSize(fx.setSize || race.size, fx.size);
   const statsWith = (gearNow, effects = fx) => characterStats({
@@ -1434,7 +1447,7 @@ function computeView() {
   }
   if (classFx.length) {
     customAll.push(...classFx);
-    fx = effectTotals(state.buffs, customAll);
+    fx = effectTotals(allBuffs, customAll);
   }
   const stats = statsWith(gear);
   // Feat prerequisites use the scores without temporary effects.
@@ -1505,7 +1518,7 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
-    load, fx, size, flawFx, customAll, fastMove, baseSpeed,
+    load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
     familiar: familiarNow ? { path: familiarNow, master: {
       // Levels in classes that give a familiar stack (wizard with a familiar bond, witch, Arcane bloodline sorcerer).
@@ -2585,7 +2598,7 @@ function detailsTable(lines, total, totalText = signed(total)) {
 function showSaveDetails(name) {
   const save = { Fortitude: 'fort', Reflex: 'ref', Will: 'will' }[name];
   const b = saveBreakdown({ save, counts: view.counts, mod: view.stats.mod, featNames: view.haveFeats, traits: view.traits,
-    effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === save || x.target === 'saves'), effectTotal: view.stats.fx[save],
+    effects: activeBonuses(view.buffs, view.customAll).filter(x => x.target === save || x.target === 'saves'), effectTotal: view.stats.fx[save],
     extra: save === 'will' && crossWill() ? [{ label: 'Crossblooded (archetype)', value: crossWill() }] : [] });
   openDetail(`${name} save ${signed(view.stats[save])}`, detailsTable(b.lines, b.total)
     + (b.total !== view.stats[save] ? `<p class="warning">Something else changes this save: the total shown on the card is ${esc(signed(view.stats[save]))}.</p>` : '')
@@ -2612,7 +2625,7 @@ function showAcDetails(column = null) {
   const shieldName = gear.shield && [gear.shield.name, state.shieldEnh ? `+${state.shieldEnh}` : ''].filter(Boolean).join(' ');
   const monk = view.counts.find(e => MONK_IDS.includes(e.cls.id));
   const b = acBreakdown(stats, { armor: armorName, shield: shieldName, race: view.race.name, monk: monk?.cls.name },
-    activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'ac'));
+    activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'ac'));
   const cell = v => (v === null ? '<td class="num muted">—</td>' : `<td class="num">${esc(signed(v))}</td>`);
   if (column) {
     const name = column === 'touch' ? 'Touch AC' : 'Flat-footed AC';
@@ -2639,7 +2652,7 @@ function showAcDetails(column = null) {
 
 // Details popup for CMB and CMD (Race card).
 function showManeuverDetails() {
-  const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(state.buffs, view.customAll));
+  const b = maneuverBreakdown(view.stats, view.size, view.haveFeats, activeBonuses(view.buffs, view.customAll));
   openDetail(`CMB ${signed(b.cmb)} · CMD ${b.cmd}`, `<h3>Combat Maneuver Bonus</h3>${detailsTable(b.cmbRows, b.cmb)}
     <h3>Combat Maneuver Defense</h3>${detailsTable(b.cmdRows, b.cmd, String(b.cmd))}`);
 }
@@ -2668,7 +2681,7 @@ function showResultDetails(key) {
     if (view.haveFeats.includes('Toughness')) rows.push({ label: 'Feat: Toughness', text: `+${Math.max(3, levels.length)}` });
     // Effects on hit points, each named (a toad familiar, false life...); what the stacking rules leave out as one line.
     if (stats.fx.hp) {
-      const hpFx = activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'hp');
+      const hpFx = activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'hp');
       for (const x of hpFx) rows.push({ label: `Effect: ${x.source}`, text: signed(x.value) });
       const listed = hpFx.reduce((n, x) => n + x.value, 0);
       if (listed !== stats.fx.hp) rows.push({ label: 'Effects of the same type do not stack', text: signed(stats.fx.hp - listed) });
@@ -2829,7 +2842,7 @@ function renderSkills(race, classes, scores, featNames) {
   showSkillDetails = name => {
     const ranks = state.skills[name] || 0;
     const b = skillBreakdown({ name, ranks, scores, isClassSkill: isClassSkill(name), racialBonuses: racial, raceName: race.name,
-      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(state.buffs, view.customAll).filter(x => x.target === 'skills' || x.target === oneSkillKey(name)),
+      featNames, checkPenalty, traits: view.traits, effects: activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'skills' || x.target === oneSkillKey(name)),
       effectTotal: view.stats.fx.skills + oneSkillFx(name), size: view.size });
     if (flawSkill(name)) { b.lines.push({ label: 'Flaw (Feeble or Inattentive)', value: flawSkill(name) }); b.total += flawSkill(name); }
     const info = skillInfo(name);

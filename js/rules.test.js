@@ -17,6 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
 import { flawEffects } from './flaws.js';
+import { itemEffects, itemBuffs } from './item-effects.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
@@ -1742,6 +1743,25 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   }
   check(`effects catalog: every entry's rules text found (${BUFFS.filter(x => x.ref).length} entries)`, missingRef.join(', ') || 'all found', 'all found');
   check('effects catalog: every bonus amount appears in its rules text', missingNumber.join(', ') || 'all found', 'all found');
+}
+
+// Magic items you own give their effects while worn (item-effects.js).
+{
+  const itemsD = await fetch('data/magic-items.json').then(r => r.json());
+  const byId = new Map(itemsD.map(x => [x.id, x]));
+  const fx = entries => itemBuffs(entries, byId).map(x => `${x.id}:${x.cl}`).join();
+  check("bracers of falcon's aim: aspect of the falcon, always", fx([{ id: 'bracers-of-falcons-aim', qty: 1 }]), 'aspect-of-the-falcon:' + (byId.get('bracers-of-falcons-aim').cl || 1));
+  check('bracers taken off: nothing', fx([{ id: 'bracers-of-falcons-aim', qty: 1, off: true }]), '');
+  check('belt of giant strength +4', fx([{ id: 'belt-of-giant-strength', option: '+4', qty: 1 }]), 'belt-str:4');
+  check('boots of speed: haste only when switched on', [fx([{ id: 'boots-of-speed', qty: 1 }]), fx([{ id: 'boots-of-speed', qty: 1, on: ['haste'] }])].join('|'), '|haste:' + byId.get('boots-of-speed').cl);
+  check('ioun stone, pink: the pink rhomboid only', fx([{ id: 'ioun-stones', option: 'Pink', qty: 1 }]), 'ioun-pink:' + byId.get('ioun-stones').cl);
+  check('ioun stone, clear: nothing counted', fx([{ id: 'ioun-stones', option: 'Clear', qty: 1 }]), '');
+  check('belt of physical might: the chosen pair', fx([{ id: 'belt-of-physical-might', option: '+4', qty: 1, pick: 'belt-physical-might-dex-con' }]), 'belt-physical-might-dex-con:4');
+  check('rod of alertness: +1 insight initiative; prayer when used', [fx([{ id: 'rod-of-alertness', qty: 1 }]), itemEffects(byId.get('rod-of-alertness')).map(r => r.when ? `${r.key}?` : r.key).join()].join('|'), `mi-rod-of-alertness:${byId.get('rod-of-alertness').cl}|mi-rod-of-alertness,prayer?`);
+  check('two rings of protection: both listed (the higher counts by stacking)', effectTotals(itemBuffs([{ id: 'ring-of-protection', option: '+1', qty: 1 }, { id: 'ring-of-protection', option: '+3', qty: 1 }], byId)).ac.deflection, 3);
+  check('an item with no bonuses: no effects', itemEffects(byId.get('bag-of-holding') || { name: 'Bag of Holding', id: 'x' }).length, 0);
+  check('item effects named for the item', itemBuffs([{ id: 'bracers-of-falcons-aim', qty: 1 }], byId)[0].label, "Bracers of Falcon's Aim: aspect of the falcon");
+  check('effects catalog ids are unique', new Set(BUFFS.map(x => x.id)).size, BUFFS.length);
 }
 
 // Adjustments: items with amounts, conditions and their flags.

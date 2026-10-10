@@ -217,7 +217,7 @@ function showLineDetails(app, key) {
   if (w.attack) {
     // Effects on attack rolls named one by one (with what the stacking rules take off).
     const fxTotal = w.attack.find(r => r.label === 'Active effects on attack rolls')?.value || 0;
-    const effects = activeBonuses(state.buffs, app.view.customAll).filter(x => x.target === 'attack')
+    const effects = activeBonuses(app.view.buffs, app.view.customAll).filter(x => x.target === 'attack')
       .map(e => ({ label: `Effect: ${e.source}`, value: e.value, note: `${e.type} bonus` }));
     const listed = effects.reduce((n, e) => n + e.value, 0);
     const rows = [...w.attack.filter(r => r.label !== 'Active effects on attack rolls'), ...effects,

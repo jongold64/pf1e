@@ -214,11 +214,11 @@ export const buffById = new Map(BUFFS.map(x => [x.id, x]));
 // A buff kept in the list but switched off ({ on: false }) gives nothing.
 export function activeBonuses(buffs = [], custom = []) {
   const out = [];
-  for (const { id, cl, on } of buffs) {
+  for (const { id, cl, on, label } of buffs) {
     if (on === false) continue;
     const buff = buffById.get(id);
     if (!buff) continue;
-    for (const x of buff.bonuses(buffAmount(buff, Math.max(1, Number(cl) || 1)), MODS)) out.push({ ...x, source: buff.name });
+    for (const x of buff.bonuses(buffAmount(buff, Math.max(1, Number(cl) || 1)), MODS)) out.push({ ...x, source: label || buff.name });
   }
   // A custom effect can give several bonuses: its own { target, type, value } and any more in `more`.
   for (const c of custom) {

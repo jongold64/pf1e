@@ -232,6 +232,14 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   domains; `domainConflict` stops a subdomain going with its own domain; `domainGrants` gives a subdomain its domain's
   powers minus the one it `replaces`, and the domain's spells with its own swapped in. The druid's domain spell slot
   (`extraSlotOn('druid')`) follows the Nature bond; the Spells tab lists domain spells, the sheet prints `domainLines`.
+- Magic items' effects (`js/item-effects.js`): `itemEffects(item, option)` = rows { key, buff } or { key: 'pick', choices }
+  (belt of physical might), from catalog entries with `ref.item` = the item's name (ioun stones by the option's color), the
+  core items' `CORE` map, and `SPELLS` (bracers of falcon's aim -> aspect of the falcon; boots of speed -> haste...). A row with
+  `when` (catalog `when`, or a SPELLS `when`) applies only sometimes and starts off. `state.magicItems` entries carry `off`
+  (unticked), `on` (when-row keys switched on), `pick`. computeView: `itemBuffs` -> buffs with a `label` (activeBonuses uses it
+  as the source), skipping ids you switched on yourself -> `view.buffs` (use it, not `state.buffs`, for any bonus list) and
+  `view.fromItems`. The card's "From your magic items" (tab-effects.js `magicItemsHtml`, `popMagicItem`); the Magic Items tab
+  line has the same worn box. Catalog `mi-*` entries are the later items with plain bonuses (effect-catalog.js).
 - Active effects (`js/effects.js` BUFFS): each has a `group` (EFFECT_GROUPS: spells, conferred abilities, other
   adjustments = worn items, circumstances, combat conditions, conditions), optional `levels` (amounts to pick, e.g. a
   belt's +2/+4/+6, negative levels 1-10; `buffAmount` keeps a saved amount valid) and `flags`: 'noDexAc' (characterStats
