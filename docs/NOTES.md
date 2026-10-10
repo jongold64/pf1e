@@ -209,7 +209,8 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   AC; acBreakdown notes it on the Dex row); `classDamageReduction` -> view.classDr (Armor tab, sheet);
   `weaponTraining(counts, weapon, fighterGroups)` -> weaponAttack `training` (weapons.json `groups` from AoN pages, CRB
   list fallback, firearms = Firearms); `situationalBonuses` -> view.situational, shown by app.js `situationalHtml`.
-  Save Details list 'saves'-target effects too.
+  Save Details list 'saves'-target effects too. tab-weapons `critOf(w, flags, have, entry, end)`: threat doubled by Improved
+  Critical, keen or `flags.swashCrit`; a double weapon's other end takes its own multiplier from "×3/×4".
 - Weapon materials (`js/materials.js` WEAPON_MATERIALS, hand-entered from the same chapters): a carried weapon's
   `material` id. Each has `fits(w)` (name lists for metal, wooden and hafted weapons plus group and damage type, after the
   books' examples), `extra(w, { base, weight, magic })` (price added: cold iron doubles, +2,000 gp once magic; bone,

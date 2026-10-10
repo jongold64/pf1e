@@ -11,6 +11,8 @@ from collections import Counter
 from common import ALL_BOOKS, iter_books, slug, node_text, clean, plain, to_number, price_gp
 
 PREFERRED = 'Ultimate Equipment'
+# Critical ranges the source leaves blank (Ultimate Equipment tables): weapon name (lower case) -> critical.
+CRITICAL_OVERRIDES = {'mancatcher': 'x2'}
 GROUPS = {  # weapon class text -> how the weapon is used
     'unarmed attacks': 'unarmed', 'light melee weapons': 'light', 'one-handed melee weapons': 'one-handed',
     'two-handed melee weapons': 'two-handed', 'ranged weapons': 'ranged',
@@ -122,6 +124,8 @@ def main():
             missing_prof.append(n['name'])
             continue
 
+        if not (merged.get('Critical') or '').strip('-— ') and CRITICAL_OVERRIDES.get(clean(n['name']).lower()):
+            merged['Critical'] = CRITICAL_OVERRIDES[clean(n['name']).lower()]
         threat, mult = critical(merged.get('Critical', ''))
         price_text = clean(price or merged.get('Price') or merged.get('Cost') or '')
         weight_text = clean(weight or merged.get('Weight') or '')

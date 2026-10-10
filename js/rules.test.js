@@ -604,6 +604,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 // Weapons
 {
   const ls = weapon('Longsword');
+  // Every weapon that deals damage has a threat range and multiplier that match its listed critical.
+  const critMismatch = allWeapons.filter(x => x.damage?.m && !/see text|special/i.test(x.damage.m)).filter(x => {
+    const c = String(x.critical || '');
+    const t = c.match(/(\d+)\s*[-–]\s*20/);
+    const m = c.match(/[x×]\s*(\d)/);
+    return !x.threat || !x.multiplier || (t ? Number(t[1]) : 20) !== x.threat || (m ? Number(m[1]) : 2) !== x.multiplier;
+  }).map(x => x.name);
+  // (Not: kobold tail attachments, each with its own stats in the text; the rocket launcher's area damage can't be a critical.)
+  check('every weapon with damage: threat and multiplier match its critical', critMismatch.join(', '), 'Kobold Tail Attachments, Rocket Launcher');
+  check("slaver's crossbow threatens on 19-20", allWeapons.find(x => x.id === 'light-slavers-crossbow')?.threat, 19);
   check('longsword from the data', `${ls.proficiency} ${ls.group} ${ls.damage.m} ${ls.threat}/${ls.multiplier} ${ls.price_gp}`, 'martial one-handed 1d8 19/2 15');
   check('rapier works with Weapon Finesse', weapon('Rapier').finesse, true);
   check('longsword does not', ls.finesse, false);

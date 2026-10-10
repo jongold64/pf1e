@@ -47,8 +47,11 @@ def sized(medium, which):
 
 
 def critical(s):
-    m = re.match(r'(?:(\d+)-20/)?[x×](\d)', (s or '').strip())
-    return (int(m.group(1)) if m and m.group(1) else 20), (int(m.group(2)) if m else 2)
+    """'19-20/x2' -> (19, 2); 'x3' -> (20, 3); '19-20/see "bolas bolts" text' -> (19, 2) (x2 when no multiplier is given)."""
+    s = (s or '').strip()
+    threat = re.match(r'(\d+)\s*[-–]\s*20', s)
+    mult = re.search(r'[x×]\s*(\d)', s)
+    return (int(threat.group(1)) if threat else 20), (int(mult.group(1)) if mult else 2)
 
 
 def number(s):

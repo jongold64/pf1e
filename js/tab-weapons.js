@@ -98,11 +98,13 @@ const attackText = a => a.attacks.map(signed).join('/');
 // Threat range and multiplier for the Roll buttons ("19-20/×2" -> 19, 2), with Improved Critical doubling the range.
 // Threat range and multiplier, plus the extra damage dice the weapon's special abilities add. Keen and Improved
 // Critical each double the threat range; they don't stack.
-function critOf(w, flags, have, entry = {}) {
+// end: which end of a double weapon (1 = the other end, which can have its own multiplier: "×3/×4").
+function critOf(w, flags, have, entry = {}, end = 0) {
   const fx = abilityDamage(entry?.abilities || []);
-  const doubled = (flags.impCrit && have.has('Improved Critical')) || fx.keen;
+  const doubled = (flags.impCrit && have.has('Improved Critical')) || fx.keen || flags.swashCrit;
   const threat = w.threat ? (doubled ? 21 - 2 * (21 - w.threat) : w.threat) : 20;
-  const mult = Number(String(w.multiplier ?? w.critical ?? '').match(/\d+/)?.[0]) || 2;
+  const ends = [...String(w.critical || '').matchAll(/[x×]\s*(\d)/g)].map(m => Number(m[1]));
+  const mult = (end && ends[1]) || w.multiplier || ends[0] || 2;
   return { threat, mult, extra: fx.hit, burst: fx.burst, doubled, fx };
 }
 const critText = (w, crit) => (crit.doubled ? improvedCritical(w) : w.critical) || '—';
@@ -130,8 +132,11 @@ function combatContext(app, view) {
   // it applies to that weapon automatically; the tick boxes stay for feats with no weapon chosen.
   const weaponChoices = view.featChoices.filter(c => c.kind === 'weapon' && c.value);
   const chosenFor = feat => new Set(weaponChoices.filter(c => c.feat === feat).map(c => c.value));
-  const flagsFor = (e, w) => Object.fromEntries(WEAPON_FEATS.map(([key, feat]) =>
-    [key, chosenFor(feat).size ? chosenFor(feat).has(w.id) : !!e[key]]));
+  // A swashbuckler's weapon training (5th) gives the Improved Critical benefit with light or one-handed piercing weapons.
+  const swash = view.counts.find(c => c.cls.id === 'swashbuckler')?.level || 0;
+  const flagsFor = (e, w) => ({ ...Object.fromEntries(WEAPON_FEATS.map(([key, feat]) =>
+    [key, chosenFor(feat).size ? chosenFor(feat).has(w.id) : !!e[key]])),
+    swashCrit: swash >= 5 && ['light', 'one-handed'].includes(w.group) && /P/.test(w.type || '') });
   const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
   return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
@@ -253,7 +258,7 @@ function renderCombat(app, view, ctx) {
   const off = r.off;
   const spec = { title: 'Two-weapon full attack', groups: [
     rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have, mainEntry)),
-    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry)),
+    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry, offEnd || 0)),
   ] };
   // The two hands' attacks in pieces, for their Details popups.
   const effects = weaponEffects(app, mainArgs.weapon);
@@ -384,7 +389,7 @@ export function renderMyWeapons(app, view) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
       extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
         <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}
-        ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, crit)] })}</dd>`);
+        ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, critOf(w, flags, have, e, 1))] })}</dd>`);
     }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
@@ -503,14 +508,15 @@ function showAttackDetails(app, i, part = null) {
   const dice = a.parts.dice || '—';
   if (part === 'critical') {
     const base = w.threat ? `${w.threat === 20 ? '20' : `${w.threat}-20`}` : '20';
-    const hasImp = view.haveFeats.includes('Improved Critical') && ctx.flagsFor(e, w).impCrit;
+    const hasImp = (view.haveFeats.includes('Improved Critical') && ctx.flagsFor(e, w).impCrit) || ctx.flagsFor(e, w).swashCrit;
     const keen = crit.fx.keen;
     const threatText = crit.threat === 20 ? '20' : `${crit.threat}-20`;
     const rows = [
       { label: `${w.name}: threat range`, text: base },
-      ...(hasImp || keen ? [{ label: `${[hasImp ? 'Improved Critical' : '', keen ? 'Keen' : ''].filter(Boolean).join(' and ')}: doubles the threat range${hasImp && keen ? ' (they don’t stack)' : ''}`, text: threatText }] : []),
+      ...(hasImp || keen ? [{ label: `${[hasImp ? (ctx.flagsFor(e, w).swashCrit && !(view.haveFeats.includes('Improved Critical') && ctx.flagsFor(e, w).impCrit) ? 'Improved Critical (swashbuckler weapon training)' : 'Improved Critical') : '', keen ? 'Keen' : ''].filter(Boolean).join(' and ')}: doubles the threat range${hasImp && keen ? ' (they don’t stack)' : ''}`, text: threatText }] : []),
       { label: 'Damage multiplier', text: `×${crit.mult}` },
-      { label: 'Confirmation roll (same bonus as the attack)', text: signed(a.attacks[0]) },
+      { label: app.state.houseRules.autoCrit ? 'Confirmation roll (same bonus as the attack); none on a natural 20 (Auto-Crit house rule)'
+        : 'Confirmation roll (same bonus as the attack)', text: signed(a.attacks[0]) },
       { label: `Critical damage: the weapon dice and bonuses rolled ×${crit.mult}`, text: `${a.damage} ×${crit.mult}` },
       ...crit.fx.hit.map(x => ({ label: `${x.name || 'Special ability'}: not multiplied`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''}` })),
       ...crit.fx.burst.map(x => ({ label: `${x.name || 'Burst'}: extra on a critical, per step above ×1`, text: `+${x.dice}${x.type ? ` ${x.type}` : ''} × ${crit.mult - 1}` })),

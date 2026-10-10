@@ -7483,7 +7483,7 @@
       "l": "2d6"
     },
     "critical": "19-20/see \"bolas bolts\" text",
-    "threat": 20,
+    "threat": 19,
     "multiplier": 2,
     "range_ft": 80,
     "type": "B",
@@ -8142,7 +8142,7 @@
       "l": "1d6"
     },
     "critical": "19-20/see \"bolas bolts\" text",
-    "threat": 20,
+    "threat": 19,
     "multiplier": 2,
     "range_ft": 40,
     "type": "B",
@@ -8304,9 +8304,9 @@
       "m": "1d2",
       "l": "1d3"
     },
-    "critical": null,
-    "threat": null,
-    "multiplier": null,
+    "critical": "x2",
+    "threat": 20,
+    "multiplier": 2,
     "range_ft": null,
     "type": "P",
     "special": [
