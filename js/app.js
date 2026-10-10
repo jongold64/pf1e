@@ -192,6 +192,8 @@ let currentId = null;
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
   knownChange: cid => knownChange(cid),
+  // A Thassilonian specialist's prohibited schools (their spells can't be prepared).
+  prohibitedSchools: cid => (isThassilonian(cid) ? oppositionOf(cid) : []),
   diminished: cid => diminished(cid),
   extraSlotOn: cid => extraSlotOn(cid),
   showAcDetails: column => showAcDetails(column),
@@ -449,7 +451,9 @@ function skillRowNames() {
 }
 
 // Whether the optional extra spell slot is on for a class, falling back to its default.
+// A number (2: a Thassilonian specialist's two school slots) or true/false.
 function extraSlotOn(clsId) {
+  if (isThassilonian(clsId)) return THASSILONIAN[pathOf(clsId, 'school')?.name] ? 2 : false;
   // A druid's domain slot comes with a Nature Bond domain (chosen on the Classes card).
   if (clsId === 'druid') return state.natureBond === 'domain' && !!state.domains.druid?.length;
   const slot = EXTRA_SLOTS[clsId];
@@ -1821,6 +1825,15 @@ const crossPower = value => {
 };
 // A specialist's own classic school (a focused school's is its school's); null for universalists and elemental schools.
 const classicSchool = path => [path?.name, path?.parent].find(n => CLASSIC_SCHOOLS.includes(n)) || null;
+// Thassilonian specialist (wizard archetype, Inner Sea Magic): the seven sin schools, each a classic school with two
+// prohibited schools fixed by it (their spells can't be prepared); two extra spell slots a level for the school's spells.
+const THASSILONIAN = { Abjuration: ['Envy', ['Evocation', 'Necromancy']], Necromancy: ['Gluttony', ['Abjuration', 'Enchantment']],
+  Transmutation: ['Greed', ['Enchantment', 'Illusion']], Enchantment: ['Lust', ['Necromancy', 'Transmutation']],
+  Illusion: ['Pride', ['Conjuration', 'Transmutation']], Conjuration: ['Sloth', ['Evocation', 'Illusion']],
+  Evocation: ['Wrath', ['Abjuration', 'Conjuration']] };
+const isThassilonian = cid => cid === 'wizard' && (state.archetypes.wizard || []).includes('wizard-thassilonian-specialist');
+// A wizard's opposition schools: chosen, or a Thassilonian specialist's prohibited schools.
+const oppositionOf = cid => (isThassilonian(cid) ? THASSILONIAN[pathOf(cid, 'school')?.name]?.[1] || [] : state.paths[`${cid}|opposition`] || []);
 
 // The chosen choices' class skills (bloodlines, orders), as a class record for classSkillTest. "Knowledge (any one)"
 // isn't counted (the player picks it; the Details says so).
@@ -1866,7 +1879,8 @@ function choicesLeft(cls, level) {
   const { slots } = classChoiceSlots(cls.id, level);
   let n = slots.filter(s => !s.replacedBy && !state.talents[s.id]).length;
   for (const { rule, path } of pathsFor(cls.id)) if (!path && !rule.optional && !(rule.fromLevel > level)) n++;
-  if (classicSchool(pathOf(cls.id, 'school')) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
+  if (classicSchool(pathOf(cls.id, 'school')) && !isThassilonian(cls.id) && (state.paths[`${cls.id}|opposition`] || []).length < 2) n++;
+  if (isThassilonian(cls.id) && !THASSILONIAN[pathOf(cls.id, 'school')?.name]) n++;
   if (isCrossblooded(cls.id)) n += crossPowerLevels(cls.id).filter(lv => lv <= level && !crossPower(crossPicks(cls.id)[lv])).length;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
   return n;
@@ -1878,13 +1892,20 @@ function pathPicker(cls, level, openFeatures) {
   const cross = isCrossblooded(cls.id);
   return pathsFor(cls.id).map(({ rule, path }) => {
     const key = `${cls.id}|${slotOf(rule)}`;
+    const thass = rule.kind === 'school' && isThassilonian(cls.id);
     const all = data.paths.filter(x => (rule.kinds || [rule.kind]).includes(x.kind) && x.classes.includes(cls.id)
-      && (!x.improved || view.haveFeats.includes('Improved Familiar') || state.paths[`${cls.id}|${slotOf(rule)}`] === x.id));
-    const label = x => (x.parent ? `${x.name} (${x.parent})` : x.improved ? `${x.name} (improved familiar, caster level ${x.min_level})` : x.name);
+      && (!x.improved || view.haveFeats.includes('Improved Familiar') || state.paths[`${cls.id}|${slotOf(rule)}`] === x.id)
+      && (!thass || (!x.parent && THASSILONIAN[x.name])));
+    const label = x => (thass ? `${THASSILONIAN[x.name][0]} (${x.name})`
+      : x.parent ? `${x.name} (${x.parent})` : x.improved ? `${x.name} (improved familiar, caster level ${x.min_level})` : x.name);
     const browseKey = `pbrowse-${key}`;
     const own = classicSchool(path);
     const opp = state.paths[`${cls.id}|opposition`] || [];
     const oppPick = rule.kind !== 'school' || !path ? ''
+      : thass ? (THASSILONIAN[path.name] && !path.parent
+        ? `<p class="hint"><b>${esc(THASSILONIAN[path.name][0])}</b>: prohibited schools ${esc(THASSILONIAN[path.name][1].join(' and '))} (you can't prepare
+            their spells). Two extra spell slots of each level, both for the same ${esc(path.name.toLowerCase())} spell.</p>`
+        : '<p class="warning">A Thassilonian specialist needs one of the seven sin schools: choose it above.</p>')
       : own ? `<div class="mystery-pick">${[0, 1].map(i => `<label class="row-label">Opposition school ${i + 1}
           <select data-opposition="${esc(cls.id)}" data-index="${i}"><option value="">Choose…</option>${CLASSIC_SCHOOLS.filter(n => n !== own && (n === opp[i] || !opp.includes(n)))
             .map(n => `<option${n === opp[i] ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`).join('')}</div>
@@ -1967,8 +1988,8 @@ function pathLines(cid, level) {
     const ps = cross && rule.kind === 'bloodline' ? [] : path.powers.filter(x => x.level <= level).map(x => `${x.name} ${ordinal(x.level)}`);
     return `${rule.label}: ${path.name}${ps.length ? ` (${ps.join(', ')})` : ''}`;
   });
-  const opp = state.paths[`${cid}|opposition`];
-  if (opp?.length) lines.push(`Opposition schools: ${opp.join(', ')}`);
+  const opp = oppositionOf(cid);
+  if (opp?.length) lines.push(`${isThassilonian(cid) ? 'Prohibited' : 'Opposition'} schools: ${opp.join(', ')}`);
   if (cross) {
     const ps = Object.entries(crossPicks(cid)).map(([lv, v]) => [Number(lv), crossPower(v)]).filter(([lv, p]) => p && lv <= level)
       .sort((a, b) => a[0] - b[0]).map(([lv, p]) => `${p.power.name} ${ordinal(lv)}`);

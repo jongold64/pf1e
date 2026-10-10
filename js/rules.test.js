@@ -1961,6 +1961,12 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('a universal or earth wild talent can be taken', [geo.find(o => o.talent.name === 'Basic Geokinesis')?.why].join(), '');
 }
 
+// Thassilonian specialist: two school slots a level.
+{
+  const t = n => spellsPerDay({ cls: cls('wizard'), level: 3, scores: { str: 10, dex: 10, con: 10, int: 16, wis: 10, cha: 10 }, extraSlot: n }).rows.map(r => r.total).join();
+  check('wizard 3 (Int 16): one school slot a level, or two for a Thassilonian specialist', `${t(true)}|${t(2)}`, '4,4,3|4,5,4');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

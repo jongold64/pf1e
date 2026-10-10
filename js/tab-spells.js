@@ -68,8 +68,9 @@ function renderPanel(app, view) {
 // A spell button in a list; spells the character has are marked with a tick.
 function spellButton(app, s) {
   const mine = app.state.spells.includes(s.id);
+  const banned = (app.prohibitedSchools?.('wizard') || []).some(x => x.toLowerCase() === String(s.school || '').toLowerCase());
   return `<li class="with-details"><button type="button" data-spell="${esc(s.id)}"${mine ? ' class="mine"' : ''}>` +
-    `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}</small></button>` +
+    `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}${banned ? ' · prohibited' : ''}</small></button>` +
     `<button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">Details</button></li>`;
 }
 

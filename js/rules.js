@@ -151,7 +151,8 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false, knownChang
     const canCast = scores[ability] >= 10 + sl;
     const base = perDay[sl] === undefined || perDay[sl] === null ? null : diminished && sl >= 1 ? Math.max(0, perDay[sl] - 1) : perDay[sl];
     const bonus = canCast && base !== null ? bonusSpells(mod, sl) : 0;
-    const extra = canCast && base !== null && hasExtra && sl >= 1 ? 1 : 0;
+    // extraSlot can be a count (a Thassilonian specialist's two school slots).
+    const extra = canCast && base !== null && hasExtra && sl >= 1 ? (typeof extraSlot === 'number' ? extraSlot : 1) : 0;
     return {
       spellLevel: sl,
       base,
