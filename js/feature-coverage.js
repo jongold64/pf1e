@@ -54,7 +54,7 @@ const BY_NAME = new Map([
     'vigilante talent', 'social talent', 'ki powers', 'style strikes', 'spirit', 'versatile performance', 'mercy', 'cruelty',
     'phrenic amplifications', 'focus powers', 'shifter aspect', 'favored enemy', 'favored terrain', 'defensive powers',
     "rogue's edge", 'secret', 'spirit guide', 'spontaneous casting', 'rage power', 'ninja trick', 'slayer talent',
-    'arcanist exploit', 'defensive power', 'elemental focus', 'expanded element', 'bloodline power', 'order ability', 'rage prophet mystery', 'vigilante specialization']),
+    'arcanist exploit', 'defensive power', 'elemental focus', 'expanded element', 'blessings', 'blessing', 'bloodline power', 'order ability', 'rage prophet mystery', 'vigilante specialization']),
   ...list('feat', ['bonus feat', 'bonus feats', 'bonus combat feats', 'combat style feat', 'teamwork feat', 'bloodline feat',
     'tactician', 'eschew materials', 'scribe scroll', 'brew potion', 'throw anything', 'endurance', 'combat reflexes',
     'deflect arrows', 'stunning fist', 'improved leadership', 'bonus combat feat']),

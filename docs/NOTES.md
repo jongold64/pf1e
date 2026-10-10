@@ -586,3 +586,6 @@ check its Section 15 notice is in the license.
   favored weapon). state.deity (id, 'none' or ''); js/deities.js `deityDomainWhy` (domain picker), `favoredWeaponIds`
   (view.deityWeapons -> tab-weapons proficiency). DEITY_CLASSES (cleric, warpriest, inquisitor) count a missing deity in
   choicesLeft, which also counts domains still to choose.
+- Warpriest blessings: `build_aon_blessings.py` -> data/blessings.json ({ name, source, deities, minor, major }).
+  state.blessings (2 ids); deities.js `blessingWhy` (the deity's domains; disaster blessings by their element; Godclaw,
+  Scalykind, Void by the deities named), `blessingUses`. app.js `blessingPicker` in the warpriest's block.

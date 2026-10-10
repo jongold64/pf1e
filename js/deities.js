@@ -17,6 +17,21 @@ export function deityDomainWhy(deity, d) {
   return ok ? '' : `not a subdomain of ${deity.name}`;
 }
 
+// Warpriest blessings (data/blessings.json): two chosen at 1st level from the deity's domains; a blessing of disaster
+// (earthquake, flood, tornado, wildfire) goes with the matching element's domain; others (Godclaw, Scalykind, Void) name
+// their deities. Why one can't be chosen with this deity ('' if it can).
+const DISASTER = { earthquake: 'earth', flood: 'water', tornado: 'air', wildfire: 'fire' };
+export function blessingWhy(blessing, deity) {
+  if (!deity) return '';
+  const domains = deity.domains.map(norm);
+  if (domains.includes(norm(blessing.name))) return '';
+  if (DISASTER[blessing.id] && domains.includes(DISASTER[blessing.id])) return '';
+  if (new RegExp(`\\b${deity.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(blessing.deities || '')) return '';
+  return `not a blessing of ${deity.name}`;
+}
+// Blessings a day: 3 + half the warpriest level.
+export const blessingUses = level => 3 + Math.floor(level / 2);
+
 // The deity's favored weapon(s) as weapon ids ("Longsword", "Heavy mace", "Unarmed strike"; words in any order).
 export function favoredWeaponIds(deity, weapons = []) {
   if (!deity?.weapon) return [];

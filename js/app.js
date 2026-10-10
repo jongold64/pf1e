@@ -30,7 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
-import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds } from './deities.js';
+import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
@@ -145,6 +145,7 @@ const state = {
   companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0, armorMaterial: '', buffs: [] },
   // A summoner's eidolon (tab-eidolon.js): name, evolutions [{ id (data/eidolons.json), choice }], ability score increases.
   eidolon: { name: '', evolutions: [], increases: [] },
+  blessings: [],     // a warpriest's two blessings (data/blessings.json ids)
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (cleric, warpriest, inquisitor)
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
@@ -308,6 +309,7 @@ function load(saved) {
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
   // Animal companion: only known animals, skills and tricks.
+  state.blessings = [...new Set((Array.isArray(state.blessings) ? state.blessings : []).filter(id => data.blessingsById?.has(id)))].slice(0, 2);
   state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
   const eid = state.eidolon && typeof state.eidolon === 'object' && !Array.isArray(state.eidolon) ? state.eidolon : {};
   state.eidolon = {
@@ -987,6 +989,17 @@ function buildControls() {
   // Deity: chosen in a cleric's, warpriest's or inquisitor's block; Details shows its domains and favored weapon.
   $('class-info').addEventListener('change', e => {
     if (e.target.matches('[data-deity]')) update({ deity: e.target.value });
+    // A warpriest's blessings.
+    if (e.target.matches('[data-blessing-add]') && e.target.value) update({ blessings: [...state.blessings, e.target.value].slice(0, 2) });
+  });
+  $('class-info').addEventListener('click', e => {
+    const rm = e.target.closest('[data-blessing-remove]');
+    if (rm) { update({ blessings: state.blessings.filter(id => id !== rm.dataset.blessingRemove) }); return; }
+    const pop = e.target.closest('[data-blessing-pop]');
+    const b = pop && data.blessingsById.get(pop.dataset.blessingPop);
+    if (b) openDetail(`${b.name} blessing`, `<p class="hint">${esc(b.source)} · deities: ${esc(b.deities || '—')}</p>
+      ${b.minor ? `<h3>${esc(b.minor.name)} (minor, 1st level)</h3>${paragraphs(b.minor.text)}` : ''}
+      ${b.major ? `<h3>${esc(b.major.name)} (major, 10th level)</h3>${paragraphs(b.major.text)}` : ''}`);
   });
   $('class-info').addEventListener('click', e => {
     const b = e.target.closest('[data-deity-pop]');
@@ -1906,6 +1919,7 @@ function choicesLeft(cls, level) {
   const dom = DOMAIN_CLASSES[cls.id];
   if (dom && !(dom.natureBond && state.natureBond !== 'domain')) n += Math.max(0, dom.count - (state.domains[cls.id] || []).filter(id => data.domainsById.has(id)).length);
   if (DEITY_CLASSES.includes(cls.id) && !state.deity) n++;
+  if (cls.id === 'warpriest') n += Math.max(0, 2 - state.blessings.length);
   return n;
 }
 
@@ -2211,6 +2225,33 @@ function deityPicker(cls) {
         Your alignment must be within one step of your deity's.</p>`
       : state.deity === NO_DEITY ? '<p class="hint">Serving an ideal: choose any two domains that fit it (no favored weapon).</p>'
       : `<p class="hint">Your deity decides which domains you can choose${cls.id === 'warpriest' ? ' (and its blessings)' : ''} and gives you proficiency with its favored weapon.</p>`}</div>`;
+}
+
+// A warpriest's two blessings: each with its minor power (1st level) and major power (10th), the uses a day, and a list
+// of the others (greyed when they aren't the deity's), each with Details.
+function blessingPicker(cls, level, openFeatures) {
+  if (cls.id !== 'warpriest') return '';
+  const deity = data.deitiesById.get(state.deity) || null;
+  const chosen = state.blessings.map(id => data.blessingsById.get(id)).filter(Boolean);
+  const power = (b, kind, from) => {
+    const p = b[kind];
+    if (!p) return '';
+    const key = `bless-${b.id}-${kind}`;
+    return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}><summary>${esc(p.name)} <small class="muted">(${kind}, ${ordinal(from)} level${level < from ? ', not yet' : ''})</small></summary>${paragraphs(p.text)}</details>`;
+  };
+  const taken = chosen.map(b => `<li class="arch-taken"><div class="arch-head"><b>${esc(b.name)}</b> <small class="muted">${esc(b.source)}</small>
+      <button type="button" class="skill-details" data-blessing-pop="${esc(b.id)}">Details</button>
+      <button type="button" data-blessing-remove="${esc(b.id)}">Remove</button></div>${power(b, 'minor', 1)}${power(b, 'major', 10)}</li>`).join('');
+  const opts = data.blessings.filter(b => !chosen.includes(b)).map(b => {
+    const why = blessingWhy(b, deity);
+    return `<option value="${esc(b.id)}"${why ? ' disabled' : ''}>${esc(b.name)}${why ? ` — ${esc(why)}` : ''}</option>`;
+  }).join('');
+  const left = 2 - chosen.length;
+  return `<div class="domains"><h4>Blessings <span class="count">${chosen.length} of 2 chosen · ${blessingUses(level)} a day</span></h4>
+    ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}
+    ${left > 0 ? `<select data-blessing-add aria-label="Choose a blessing"><option value="">Choose a blessing (${left} left)…</option>${opts}</select>` : ''}
+    <p class="hint">Two blessings from your deity's domains: each gives a minor power (1st level) and a major power (10th). Using one is a
+      standard action, ${blessingUses(level)} times a day in all (3 + half your warpriest level).</p></div>`;
 }
 
 function domainPicker(cls, level, openFeatures) {
@@ -2538,6 +2579,7 @@ function renderClasses(view) {
         <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
       ${reqHtml}
       ${deityPicker(e.cls)}
+      ${blessingPicker(e.cls, e.level, openFeatures)}
       ${domainPicker(e.cls, e.level, openFeatures)}
       ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
@@ -3579,7 +3621,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -3598,6 +3640,7 @@ async function start() {
       fetch('data/kineticist-elements.json').then(r => r.json()),
       fetch('data/eidolons.json').then(r => r.json()),
       fetch('data/deities.json').then(r => r.json()),
+      fetch('data/blessings.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -3625,6 +3668,7 @@ async function start() {
     bonus_feats: b.bonus_feats }))];
   data.pathsById = new Map(data.paths.map(x => [x.id, x]));
   data.deitiesById = new Map(data.deities.map(x => [x.id, x]));
+  data.blessingsById = new Map(data.blessings.map(x => [x.id, x]));
   data.skillTextByName = new Map(data.skillTexts.map(s => [s.name, s]));
   roster = openRoster();
   currentId = roster.current;

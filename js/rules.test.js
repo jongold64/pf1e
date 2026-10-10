@@ -1977,6 +1977,18 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('favored weapon by name, words in any order', favoredWeaponIds({ weapon: 'Heavy mace' }, [{ id: 'mace-heavy', name: 'Mace, Heavy' }, { id: 'longsword', name: 'Longsword' }]).join(), 'mace-heavy');
 }
 
+// Warpriest blessings.
+{
+  const { blessingWhy, blessingUses } = await import('./deities.js');
+  const bl = await fetch('data/blessings.json').then(r => r.json());
+  const b = id => bl.find(x => x.id === id);
+  const iomedae = { name: 'Iomedae', domains: ['Glory', 'Good', 'Law', 'Sun', 'War'] };
+  const gozreh = { name: 'Gozreh', domains: ['Air', 'Animal', 'Plant', 'Water', 'Weather'] };
+  check('Iomedae: War and Godclaw yes, Death no', ['war', 'godclaw', 'death'].map(id => blessingWhy(b(id), iomedae) || 'ok').join(), 'ok,ok,not a blessing of Iomedae');
+  check('Gozreh (Air, Water): Tornado and Flood go with them', ['tornado', 'flood', 'wildfire'].map(id => blessingWhy(b(id), gozreh) || 'ok').join(), 'ok,ok,not a blessing of Gozreh');
+  check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';
