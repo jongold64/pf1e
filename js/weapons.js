@@ -461,8 +461,9 @@ export function flurryBabs(kind, classLevel, classBab, bab) {
 // A weapon made for a Large creature costs twice as much (the masterwork and magic costs don't change). A composite
 // bow's strength rating: 100 gp (longbow) or 75 gp (shortbow) per point. A special material adds its price (cold iron
 // doubles the weapon's, +2,000 gp once magic); one that's always masterwork has the masterwork cost in its price.
+// A weapon marked free (found, a gift, a class feature like the black blade) costs no gold.
 export function weaponCost(weapon, entry = {}) {
-  return weaponCostRows(weapon, entry).reduce((n, r) => n + r.gp, 0);
+  return entry.free ? 0 : weaponCostRows(weapon, entry).reduce((n, r) => n + r.gp, 0);
 }
 
 // The parts of a weapon's price, for its Details: [{ label, gp }] adding up to weaponCost.
@@ -506,6 +507,6 @@ export function weaponLabel(weapon, entry = {}) {
     .filter(Boolean).join(' ').replace(/^[a-z]/, c => c.toUpperCase());
   const rated = isComposite(weapon) && Number.isInteger(entry.strRating) && !(entry.abilities || []).some(a => a.id === 'adaptive')
     ? ` (+${entry.strRating} Str)` : '';
-  const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated;
+  const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated + (entry.blackBlade ? ' (black blade)' : '');
   return prefix ? `${prefix} ${name}` : name;
 }

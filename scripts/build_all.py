@@ -18,6 +18,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Alternate racial traits and favored class options for those races, from cached d20pfsrd pages.
                     *([('build_d20_races.py', 'data/races.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-races')) else []),
+                    # Alternate racial traits and favored class options from later books (Player Companions...), AoN pages.
+                    ('build_aon_race_traits.py', 'data/races.json'),
                     ('build_classes.py', 'data/classes.json'),
                     # Adds post-2015 classes (occult, unchained, shifter, vigilante) after the PSRD ones.
                     ('build_foundry_classes.py', 'data/classes.json'),

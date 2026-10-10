@@ -1844,9 +1844,40 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 }
 
 const failed = results.filter(r => !r.pass);
-document.getElementById('summary').textContent =
-  failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
-document.getElementById('summary').className = failed.length ? 'fail' : 'pass';
 document.getElementById('list').innerHTML = results.map(r =>
   `<li class="${r.pass ? 'pass' : 'fail'}">${r.pass ? '✓' : '✗'} ${r.name}` +
   (r.pass ? '' : ` — expected ${r.expected}, got ${r.actual}`) + '</li>').join('');
+
+// Archetype choices: the kensai's chosen weapon, the black blade, diminished spellcasting.
+{
+  const { blackBlade, archetypeChoiceEffects, kensaiEffects, archetypeChoices } = await import('./archetype-choices.js');
+  check('black blade: none before 3rd, +1 at 3rd, +2 at 5th, +5 at 17th', [blackBlade(2), blackBlade(3)?.enh, blackBlade(5)?.enh, blackBlade(17)?.enh].join(), ',1,2,5');
+  const magus = cls('magus');
+  const fx = archetypeChoiceEffects([{ cls: magus, level: 3 }], { magus: ['magus-kensai'] }, { 'magus-kensai:weapon': 'katana' });
+  check('kensai: Weapon Focus with the chosen weapon, proficient', `${fx.feats.map(f => `${f.name}:${f.weapon}`).join()}|${fx.proficient.join()}`, 'Weapon Focus:katana|katana');
+  check('black blade chosen at 3rd, not before', [archetypeChoices(['magus-bladebound'], 2).length, archetypeChoices(['magus-bladebound'], 3).length].join(), '0,1');
+  const k = lv => kensaiEffects([{ cls: magus, level: lv }], { magus: ['magus-kensai'] }, { mod: { int: 4 } }).map(e => `${e.target}:${e.value}`).join();
+  check('kensai 1: canny defense +1 (Int up to level); 7: iaijutsu +4 and canny +4', [k(1), k(7)].join('|'), 'ac:1|init:4,ac:4');
+  check('kensai in armor: no canny defense', kensaiEffects([{ cls: magus, level: 7 }], { magus: ['magus-kensai'] }, { mod: { int: 4 }, armor: true }).map(e => e.target).join(), 'init');
+  const sp = d => spellsPerDay({ cls: magus, level: 7, scores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, diminished: d }).rows.map(r => r.total).join();
+  check('diminished spellcasting: one fewer spell of each level from 1st', `${sp(false)}|${sp(true)}`, '5,4,3,1|5,3,2,0');
+}
+
+// Alternate racial traits from Archives of Nethys name what they replace in `replaces`.
+{
+  const he = race('half-elf');
+  const blended = (he.alternate_traits || []).find(a => a.name === 'Blended View');
+  check('Blended View (Blood of Shadows) is a half-elf alternate trait', blended?.source, 'Blood of Shadows');
+  check('Blended View replaces multitalented, not keen senses (its text names keen senses for elves)', replacedTraits(he, blended).join(), 'Multitalented');
+  check('Blended View: darkvision 60 ft. and low-light vision', raceWithAlternates(he, ['Blended View']).senses.join(), 'low-light vision,darkvision 60 ft.');
+}
+
+// Free gear, weapons and magic items cost no gold.
+{
+  check('free weapon costs nothing', weaponCost({ name: 'Longsword', price_gp: 15, weight_lbs: 4, group: 'one-handed' }, { enh: 1, free: true }), 0);
+  check('free magic item costs nothing', magicItemTotals([{ id: 'x', qty: 1, free: true }], new Map([['x', { name: 'X', price_gp: 4000 }]])).cost, 0);
+}
+
+document.getElementById('summary').textContent =
+  failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
+document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

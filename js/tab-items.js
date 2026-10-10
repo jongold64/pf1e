@@ -5,6 +5,7 @@ import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from '.
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem } from './tab-crafting.js';
 import { givesHtml, itemRowHtml, itemRowChange, itemRowClick, popSource } from './item-rows.js';
+import { freeBox } from './tab-equipment.js';
 
 let selectedId = null;
 let listed = false;
@@ -132,7 +133,7 @@ export function renderMyItems(app) {
     const item = byId.get(e.id);
     if (!item) return '';
     const s = magicItemStats(item, e.option);
-    const each = e.crafted ? listedCost(item, e.option || null, s.price_gp) : s.price_gp;
+    const each = e.free ? 0 : e.crafted ? listedCost(item, e.option || null, s.price_gp) : s.price_gp;
     const name = entryName(item, e.option);
     const fromConstruction = e.crafted && item.construction?.cost && each !== null && s.price_gp !== null && each !== s.price_gp / 2;
     itemWhy.set(`l-${i}`, { title: name, rows: [
@@ -164,7 +165,8 @@ export function renderMyItems(app) {
             <button type="button" data-item-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
             <span class="value">${e.qty}</span>
             <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
-          <span>Cost ${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</span>
+          <span>Cost ${esc(e.free ? 'free' : each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</span>
+          ${freeBox(`data-item-free="${i}"`, e.free)}
         </div></div></div>`;
   }).join('') + app.state.craftedItems.map((e, i) => {
     const info = SPELL_ITEMS[e.kind];
@@ -256,7 +258,15 @@ export function initItemsTab(app) {
   initCrafting(app);
   $('my-items-slots').addEventListener('click', () => popSlots(app));
   // Worn or not, a bonus that applies sometimes, a belt's choice: the same switches as in Active effects (item-rows.js).
-  $('my-items-rows').addEventListener('change', e => itemRowChange(app, e.target));
+  $('my-items-rows').addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.itemFree !== undefined) {
+      const i = Number(t.dataset.itemFree);
+      app.update({ magicItems: app.state.magicItems.map((x, j) => { if (j !== i) return x; const { free, ...rest } = x; return t.checked ? { ...rest, free: true } : rest; }) });
+      return;
+    }
+    itemRowChange(app, t);
+  });
   $('my-items-rows').addEventListener('click', e => {
     if (itemRowClick(app, e)) return;
     const step = e.target.closest('[data-item-qty]');

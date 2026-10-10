@@ -63,7 +63,7 @@ export function magicItemTotals(owned, itemsById) {
     if (!item) continue;
     const { price_gp, weight_lbs } = magicItemStats(item, entry.option);
     // A crafted item costs its creation cost (its "Cost" line, else half the price).
-    const each = entry.crafted ? listedCost(item, entry.option || null, price_gp) : price_gp;
+    const each = entry.free ? 0 : entry.crafted ? listedCost(item, entry.option || null, price_gp) : price_gp;
     if (each === null || each === undefined) unpriced.push(item.name); else cost += each * entry.qty;
     weight += (weight_lbs || 0) * entry.qty;
   }
@@ -88,7 +88,8 @@ export function equipmentTotals(inventory, itemsById, worn = {}) {
     const item = itemsById.get(entry.id);
     if (!item) continue;
     const { price_gp, weight_lbs } = entryStats(item, entry.variant);
-    if (price_gp === null) unpriced.push(item.name); else cost += price_gp * entry.qty;
+    // Free gear (found, a gift) costs no gold.
+    if (entry.free) { /* no cost */ } else if (price_gp === null) unpriced.push(item.name); else cost += price_gp * entry.qty;
     if (weight_lbs === null) unweighed.push(item.name); else weight += weight_lbs * entry.qty;
   }
   return { cost: Math.round(cost * 100) / 100, weight: Math.round(weight * 100) / 100, unpriced, unweighed };

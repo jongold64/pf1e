@@ -18,7 +18,7 @@ function listClass(app, view) {
   const cls = withList.find(c => c.id === listClassId) || withList[0] || view.cls;
   const cast = view.casting.casting.find(c => c.cls.id === cls.id);
   const level = cast ? cast.effectiveLevel : (view.counts.find(e => e.cls.id === cls.id)?.level || 1);
-  const table = spellsPerDay({ cls, level, scores: view.stats.scores, knownChange: app.knownChange?.(cls.id) || 0 });
+  const table = spellsPerDay({ cls, level, scores: view.stats.scores, knownChange: app.knownChange?.(cls.id) || 0, diminished: !!app.diminished?.(cls.id) });
   const castable = (table?.rows || []).filter(r => r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0));
   return { withList, cls, level, table, maxLevel: castable.length ? Math.max(...castable.map(r => r.spellLevel)) : -1 };
 }

@@ -1,0 +1,65 @@
+// Choices some archetypes ask for, and what they give: the kensai's chosen weapon (proficiency and Weapon Focus with it)
+// and the bladebound magus's black blade (a free intelligent weapon whose enhancement bonus grows with magus level).
+// Saved in state.archChoices as { 'archetype id:key': weapon id }. No page code here, so it can be tested on its own.
+
+// The black blade's progression (Ultimate Magic, Table: Black Blade Progression): from magus level 3, 5, 9, 13, 17, 19.
+const BLADE = [[3, 1, 11, 7, 5], [5, 2, 12, 8, 8], [7, 2, 13, 9, 10], [9, 3, 14, 10, 12], [11, 3, 15, 11, 14],
+  [13, 4, 16, 12, 16], [15, 4, 17, 13, 18], [17, 5, 18, 14, 22], [19, 5, 19, 15, 24]];
+// { enh, int, wisCha, ego } at a magus level (null below 3rd).
+export function blackBlade(level) {
+  const row = [...BLADE].reverse().find(r => level >= r[0]);
+  return row ? { enh: row[1], int: row[2], wisCha: row[3], ego: row[4] } : null;
+}
+
+// Each archetype's choices. `weapons`: which weapons can be chosen. `fromLevel`: the class level it's chosen at.
+export const ARCH_CHOICES = {
+  'magus-kensai': [{ key: 'weapon', label: 'Chosen weapon', fromLevel: 1,
+    hint: 'One martial or exotic melee weapon: you are proficient with it and gain Weapon Focus with it (and canny defense, perfect strike and the rest work with it).',
+    weapons: w => w.group !== 'ranged' && ['martial', 'exotic'].includes(w.proficiency) }],
+  'magus-bladebound': [{ key: 'blade', label: 'Black blade', fromLevel: 3,
+    hint: 'A one-handed slashing weapon, a rapier or a sword cane. It is added to your weapons for free; its enhancement bonus grows with your magus level.',
+    weapons: w => (w.group === 'one-handed' && /S/.test(w.type || '')) || ['rapier', 'sword-cane'].includes(w.id) }],
+};
+
+// The choices to make for a class's archetypes at a class level: [{ archetype, key, label, hint, weapons, id: saved key }].
+export function archetypeChoices(archetypeIds = [], classLevel = 0) {
+  return archetypeIds.flatMap(a => (ARCH_CHOICES[a] || []).filter(c => classLevel >= c.fromLevel)
+    .map(c => ({ ...c, archetype: a, id: `${a}:${c.key}` })));
+}
+
+// What the choices give, for every class: { feats: [{ name, weapon, from }], proficient: [weapon ids],
+// blades: [{ weapon, level }] }. counts: [{ cls, level }]; archetypes: state.archetypes; choices: state.archChoices.
+export function archetypeChoiceEffects(counts, archetypes = {}, choices = {}) {
+  const out = { feats: [], proficient: [], blades: [] };
+  for (const { cls, level } of counts) {
+    for (const c of archetypeChoices(archetypes[cls.id] || [], level)) {
+      const weapon = choices[c.id];
+      if (!weapon) continue;
+      if (c.archetype === 'magus-kensai') {
+        out.proficient.push(weapon);
+        out.feats.push({ name: 'Weapon Focus', weapon, from: 'Kensai' });
+      }
+      if (c.archetype === 'magus-bladebound') {
+        out.blades.push({ weapon, level });
+        // Alertness (Ex): while wielding the black blade, the magus has the Alertness feat.
+        out.feats.push({ name: 'Alertness', from: 'Black blade (while you wield it)' });
+      }
+    }
+  }
+  return out;
+}
+
+// Kensai numbers (class-features.js): iaijutsu (7th: Intelligence modifier on initiative, minimum 0) and canny defense
+// (1st: Intelligence bonus, up to the magus level, as a dodge bonus to AC with no armor or shield, wielding the chosen
+// weapon). Effects in the custom-effect shape.
+export function kensaiEffects(counts, archetypes = {}, { mod = {}, armor = false, shield = false } = {}) {
+  const level = counts.filter(e => (archetypes[e.cls.id] || []).includes('magus-kensai')).reduce((n, e) => n + e.level, 0);
+  const out = [];
+  if (!level) return out;
+  if (level >= 7 && mod.int > 0) out.push({ name: 'Iaijutsu (kensai)', target: 'init', type: 'untyped', value: mod.int, on: true, classFeature: true });
+  if (!armor && !shield && mod.int > 0) out.push({ name: 'Canny defense (kensai, with your chosen weapon)', target: 'ac', type: 'dodge', value: Math.min(mod.int, level), on: true, classFeature: true });
+  return out;
+}
+
+// An archetype that has Diminished Spellcasting (kensai...): one fewer spell per day of each level.
+export const diminishedSpellcasting = archetypeList => archetypeList.some(a => (a.features || []).some(f => /^diminished spellcasting/i.test(f.name)));

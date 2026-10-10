@@ -309,6 +309,10 @@ Curse of the Crimson Throne Player's Guide. Copyright 2008 Paizo Publishing, LLC
 Curse of the Crimson Throne Player's Guide © 2008, Paizo Publishing, LLC; Authors: James Jacobs and Mike McArtor.
 Pathfinder Module: Curse of the Riven Sky. © 2010, Paizo Publishing, LLC; Author: Monte Cook.
 Pathfinder Chronicles: Dark Markets, A Guide to Katapesh. Copyright 2009, Paizo Publishing, LLC; Authors: Stephen S. Greer, Amber Scott, Greg A. Vaughan, and Sean K Reynolds.
+Bat, Mobat from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Clark Peterson, based on original material by Gary Gygax.
+Daemon, The Oinodaemon from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
+Thorny from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
+Pathfinder Campaign Setting: Darklands Revisited © 2016, Paizo Inc.; Author: Thurston Hillman.
 Grippli from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Swarm, Raven from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Module: Daughters of Fury © 2015, Paizo Inc.; Authors: Victoria Jaczko, with Tyler Beck, Robert Brookes, J. R. Casey, Casey Clements, Clay Clouser, Tyler Cowart, Terry Dutton, Kenneth “Tripp” Elliott, Brian J. Fruzen, Emmanuel Greene, Sam Harris, Peter Johansen, Mikko Kallio, Joseph L. Kellogg, Mike Kimmel, Michele La Barbera, Brian Lefebvre, Richard Malena, Andrew Marlowe, Jacob W. Michaels, Mark Nordheim, Kalervo Oikarinen, Michael Patrick, Iain Reid, Calder Rooney, Mikael Sebag, Andrew Shumate, Jesse Southwick, Andrew Umphrey, and Christopher Wasko.
@@ -324,7 +328,6 @@ Pathfinder Player Companion: Disciple’s Doctrine © 2018, Paizo Inc.; Authors:
 Pathfinder Campaign Setting: Distant Realms © 2018, Paizo Inc.; Authors: John Compton, Crystal Frasier, Thurston Hillman, Amanda Hamon Kunz, Lyz Liddell, and David Schwartz.
 Death Worm from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley.
 Pathfinder Campaign Setting: Distant Shores © 2015, Paizo Inc.; Authors: John Compton, Adam Daigle, Crystal Frasier, Amanda Hamon Kunz, Rob McCreary, Mark Moreland, James L. Sutter, and Owen K.C. Stephens.
-Bat, Mobat from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Clark Peterson, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Distant Worlds © 2012, Paizo Publishing, LLC; Author: James L. Sutter.
 Pathfinder Player Companion: Divine Anthology © 2016, Paizo Inc.; Authors: Alexander Augunas, Russ Brown, John Compton, Alex Riggs, and David Ross.
 Pathfinder Player Companion: Weapon Master's Handbook © 2015, Paizo Inc.; Authors: Alexander Augunas and David N. Ross.
@@ -412,7 +415,6 @@ Soul Eater from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., p
 Pathfinder Campaign Setting: Inner Sea Gods © 2014, Paizo Publishing, LLC; Authors: Sean K Reynolds, with Amanda Hamon, James Jacobs, John Ling, Mark Moreland, David N. Ross, F. Wesley Schneider, Amber E. Scott, Tork Shaw, James L. Sutter, Jerome Virnich.
 Pathfinder Campaign Setting: Inner Sea Intrigue © 2016, Paizo Inc.; Authors: David N. Ross, with Ross Byers.
 Pathfinder Campaign Setting: Inner Sea Magic. © 2011, Paizo Publishing, LLC; Authors: Jesse Benner, Jason Nelson, Sean K Reynolds, Owen K.C. Stephens, Russ Taylor.
-Daemon, The Oinodaemon from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Troll, Ice from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Authors: Scott Greene and Erica Balsley, based on original material by Russell Cole.
 Pathfinder Campaign Setting: Inner Sea Monster Codex © 2015, Paizo Inc.; Authors: John Compton, Paris Crenshaw, Mike Myler, Tork Shaw, and Larry Wilhelm.
 Pathfinder Player Companion: Inner Sea Primer. Copyright 2010, Paizo Publishing, LLC; Author: Colin McComb.

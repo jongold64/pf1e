@@ -29,6 +29,7 @@ import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
+import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
@@ -115,6 +116,7 @@ const state = {
   flexible2: 'dex',  // second +2 for Dual Talent (a human alternate trait)
   alternates: [],    // alternate racial traits taken (names from the race's alternate_traits)
   archetypes: {},    // class id -> archetype ids taken for that class
+  archChoices: {},   // 'archetype id:key' -> weapon id: a kensai's chosen weapon, a bladebound magus's black blade (archetype-choices.js)
   domains: {},       // class id -> domain ids chosen (cleric 2, inquisitor 1, druid 1 with a Nature Bond domain)
   natureBond: 'companion',  // druid's Nature Bond: 'companion' (animal companion) or 'domain'
   increases: INCREASE_LEVELS.map(() => ''),  // ability picked at each of levels 4, 8, 12, 16, 20
@@ -147,6 +149,8 @@ const state = {
   armorAbilities: [],   // special abilities on the worn armor ([{ id, name, option?, bonus? | gp? }])
   shieldAbilities: [],
   armorCrafted: false,  // made by the character (its magic costs half)
+  armorFree: false,     // found or a gift: costs no gold
+  shieldFree: false,
   shieldCrafted: false,
   craftedItems: [],     // potions, scrolls and wands: [{ kind, spellId, spellName, spellLevel, cl, qty, bought? }] (made, or bought)
   gold: null,      // gold the character has; null means the class's average starting gold
@@ -184,6 +188,7 @@ let currentId = null;
 const app = {
   state, data, update, loadSpells, loadItems, loadGear, loadWeapons, showTab, openDetail, openResult, skillTotalFor,
   knownChange: cid => knownChange(cid),
+  diminished: cid => diminished(cid),
   extraSlotOn: cid => extraSlotOn(cid),
   showAcDetails: column => showAcDetails(column),
   get view() { return view; },
@@ -221,6 +226,9 @@ function load(saved) {
     .map(([cid, ids]) => [cid, (Array.isArray(ids) ? ids : [])
       .filter(id => [cid, UNCHAINED_FROM[cid]].includes(data.archetypesById.get(id)?.class))])
     .filter(([, ids]) => ids.length));
+  // Archetype choices (a weapon id each).
+  const ac = state.archChoices && typeof state.archChoices === 'object' && !Array.isArray(state.archChoices) ? state.archChoices : {};
+  state.archChoices = Object.fromEntries(Object.entries(ac).filter(([k, v]) => typeof k === 'string' && typeof v === 'string' && v));
   // Domains: only ones the class may choose, at most as many as it gets.
   const dom = state.domains && typeof state.domains === 'object' && !Array.isArray(state.domains) ? state.domains : {};
   state.domains = Object.fromEntries(Object.entries(dom).filter(([cid]) => DOMAIN_CLASSES[cid]).map(([cid, ids]) => {
@@ -358,7 +366,7 @@ function load(saved) {
   state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => (MERGED[e.id] ? { id: MERGED[e.id], variant: 'Masterwork', qty: e.qty }
-      : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty }));
+      : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty, ...(e.free === true ? { free: true } : {}) }));
   state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
   const prep = state.prepared && typeof state.prepared === 'object' && !Array.isArray(state.prepared) ? state.prepared : {};
   state.prepared = Object.fromEntries(Object.entries(prep).filter(([, lv]) => lv && typeof lv === 'object').map(([cid, lv]) =>
@@ -368,10 +376,11 @@ function load(saved) {
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,
                  ...(e.crafted === true ? { crafted: true } : {}),
+                 ...(e.free === true ? { free: true } : {}),
                  ...(e.off === true ? { off: true } : {}),
                  ...(Array.isArray(e.on) && e.on.some(id => buffById.has(id)) ? { on: [...new Set(e.on.filter(id => buffById.has(id)))] } : {}),
                  ...(buffById.has(e.pick) ? { pick: e.pick } : {}) }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace'];
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace', 'free', 'blackBlade'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
@@ -390,6 +399,8 @@ function load(saved) {
   state.armorAbilities = cleanAbilities(state.armorAbilities);
   state.shieldAbilities = cleanAbilities(state.shieldAbilities);
   state.armorCrafted = state.armorCrafted === true;
+  state.armorFree = state.armorFree === true;
+  state.shieldFree = state.shieldFree === true;
   state.shieldCrafted = state.shieldCrafted === true;
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
@@ -407,6 +418,15 @@ function load(saved) {
 function syncDerived() {
   state.level = state.classLevels.length;
   state.cls = state.classLevels[0];
+  // A black blade's enhancement bonus follows the bladebound magus's level (archetype-choices.js); it's masterwork
+  // and free. Without the archetype (or the choice) it's an ordinary weapon again.
+  const bladeLevel = (state.archetypes.magus || []).includes('magus-bladebound') && state.archChoices['magus-bladebound:blade']
+    ? state.classLevels.filter(id => id === 'magus').length : 0;
+  if (Array.isArray(state.weapons)) state.weapons = state.weapons.map(w => {
+    if (!w.blackBlade) return w;
+    if (!bladeLevel) { const { blackBlade: _, free: __, ...rest } = w; return rest; }
+    return { ...w, enh: blackBlade(bladeLevel)?.enh || 0, masterwork: true, free: true };
+  });
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -536,7 +556,7 @@ function fillSheet() {
   const moneyRows = [...$('money-summary').querySelectorAll('dt')].map(dt => [dt.textContent,
     [...(dt.nextElementSibling?.childNodes || [])].filter(n => n.nodeName !== 'BUTTON').map(n => n.textContent).join('').trim()]);
   $('print-sheet').innerHTML = buildSheet({
-    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines, knownChange,
+    app, view, name: characterLabel(state), weapons: weaponSummaries(app, view), skills, moneyRows, extraSlotOn, domainLines, knownChange, diminished,
     // Class choices, one line per kind: "Rage powers: Animal Fury (2), Powerful Blow (4)".
     talentLines: (cid, lv) => [...pathLines(cid, lv), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
       const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
@@ -948,6 +968,15 @@ function buildControls() {
   $('class-info').addEventListener('change', e => {
     const cid = e.target.dataset.archetypeAdd;
     if (cid && e.target.value) update({ archetypes: { ...state.archetypes, [cid]: [...(state.archetypes[cid] || []), e.target.value] } });
+    // An archetype's weapon choice (kensai, black blade). The black blade is added to your weapons, free.
+    const choice = e.target.dataset.archChoice;
+    if (choice) {
+      const archChoices = { ...state.archChoices, [choice]: e.target.value };
+      if (!e.target.value) delete archChoices[choice];
+      const blade = choice.endsWith(':blade');
+      const weapons = blade ? [...state.weapons.filter(w => !w.blackBlade), ...(e.target.value ? [{ id: e.target.value, enh: 0, blackBlade: true, free: true }] : [])] : state.weapons;
+      update({ archChoices, weapons });
+    }
   });
   $('class-info').addEventListener('click', e => {
     const btn = e.target.closest('[data-archetype-remove]');
@@ -1340,6 +1369,8 @@ function flexibleFor(race) {
 
 // A crossblooded sorcerer knows one fewer spell of each level (cantrips too).
 const knownChange = cid => (cid === 'sorcerer' && isCrossblooded(cid) ? -1 : 0);
+// Diminished Spellcasting (kensai...): one fewer spell per day of each level.
+const diminished = cid => diminishedSpellcasting(chosenArchetypes(cid));
 
 // A crossblooded archetype's -2 on Will saves.
 const crossWill = () => (Object.keys(CROSSBLOODED).some(isCrossblooded) ? -2 : 0);
@@ -1377,7 +1408,10 @@ function computeView() {
     const saved = state.featChoices[s.id];
     return { slotId: s.id, feat: f.name, kind: CHOICE_FEATS[f.name], value: saved?.feat === f.id ? saved.value : '' };
   });
-  const granted = grantedFeatsFor(counts, data.feats.map(f => f.name));
+  // Archetype choices: the kensai's Weapon Focus with the chosen weapon, the black blade's Alertness.
+  const archFx = archetypeChoiceEffects(counts, state.archetypes, state.archChoices);
+  const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name)])];
+  featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const armorGear = armorEffects({
     armor: withMaterial(data.armorById.get(state.armorId), state.armorMaterial) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
@@ -1440,6 +1474,8 @@ function computeView() {
   // divine grace), which they don't change themselves.
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
                                                 shield: !!gear.shield, load: load?.load || 'light' });
+  // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
+  classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield }));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
     .find(p => p?.kind === 'familiar');
@@ -1520,7 +1556,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx,
+    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
     familiar: familiarNow ? { path: familiarNow, master: {
@@ -1913,7 +1949,12 @@ function pathLines(cid, level) {
 // its Details, or Choose. An oracle chooses a mystery first, which decides the revelations offered.
 function talentPicker(cls, level, openFeatures) {
   const { slots, notes } = classChoiceSlots(cls.id, level);
-  if (!slots.length) return '';
+  // None yet (an alchemist's first discovery is at 2nd level): say when each kind of choice starts.
+  const firstLater = rule => Math.min(...classChoiceSlots(cls.id, 20).slots.filter(s => s.rule === rule && !s.fromFeat).map(s => s.classLevel));
+  const later = [...new Set(classChoiceSlots(cls.id, 20).slots.filter(s => !s.fromFeat).map(s => s.rule))]
+    .filter(rule => !slots.some(s => s.rule === rule) && Number.isFinite(firstLater(rule)));
+  const laterNote = later.length ? `<p class="hint">${later.map(rule => `${esc(pluralOf(rule))}: the first at ${ordinal(firstLater(rule))} level`).join(' · ')}.</p>` : '';
+  if (!slots.length) return laterNote;
   const groups = [...new Set(slots.map(s => s.rule))];
   // The oracle's mystery: a list, Details for the chosen one, and every mystery with its own Details.
   const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<div class="mystery-pick"><label class="row-label">Mystery <select data-mystery>
@@ -1927,7 +1968,7 @@ function talentPicker(cls, level, openFeatures) {
             <small>${esc(m.source)}</small></button>
           <button type="button" class="skill-details" data-mystery-pop="${esc(m.name)}" aria-label="${esc(m.name)} in a popup">Details</button></li>`;
       }).join('')}</ul></details>` : '';
-  return `<div class="talents">${mysteryPick}${groups.map(rule => {
+  return `<div class="talents">${laterNote}${mysteryPick}${groups.map(rule => {
     const mine = slots.filter(s => s.rule === rule);
     const open = mine.filter(s => !s.replacedBy);
     const chosen = open.filter(s => state.talents[s.id]).length;
@@ -2181,6 +2222,24 @@ function popArchetype(id, clsId) {
     <h3>Features</h3><ul class="plain-list arch-pop-features">${feats}</ul>`, actions);
 }
 
+// A taken archetype's choices (archetype-choices.js): a weapon list for each, once the class is high enough.
+function archChoiceHtml(archetype, level) {
+  const list = archetypeChoices([archetype.id], level);
+  const later = archetypeChoices([archetype.id], 20).filter(c => !list.some(x => x.id === c.id));
+  if (!list.length) return later.map(c => `<p class="hint">${esc(c.label)}: chosen at ${ordinal(c.fromLevel)} level.</p>`).join('');
+  if (!data.weaponsById) { loadWeapons().then(() => render()); return '<p class="hint">Loading weapons…</p>'; }
+  return list.map(c => {
+    const value = state.archChoices[c.id] || '';
+    const weapons = [...data.weaponsById.values()].filter(c.weapons).sort((x, y) => x.name.localeCompare(y.name));
+    const blade = c.key === 'blade' && value && blackBlade(level);
+    return `<div class="arch-choice"><label><b>${esc(c.label)}</b>
+        <select data-arch-choice="${esc(c.id)}"><option value="">Choose…</option>${weapons.map(w =>
+          `<option value="${esc(w.id)}"${w.id === value ? ' selected' : ''}>${esc(w.name)}</option>`).join('')}</select></label>
+      <p class="hint">${esc(c.hint)}${!value ? ' <b>Not chosen yet.</b>' : ''}</p>
+      ${blade ? `<p class="hint">At magus level ${level}: +${blade.enh} enhancement bonus, Int ${blade.int}, Wis and Cha ${blade.wisCha}, Ego ${blade.ego}.</p>` : ''}</div>`;
+  }).join('');
+}
+
 // Archetypes for one class (inside its block on the Classes card): the ones taken, with their features (each one's
 // text in a fold-out), and a list to add another. Archetypes that clash with one already taken, or that belong to
 // another race, can't be picked.
@@ -2207,6 +2266,7 @@ function archetypePicker(cls, level, openFeatures) {
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${esc(from(a))}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
         <button type="button" class="skill-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}">Details</button>
         <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>${traded}
+      ${archChoiceHtml(a, level)}
       ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
       ${feats}</li>`;
   }).join('');
@@ -3099,7 +3159,10 @@ function renderFeats(slots, granted, ctx) {
   $('granted-feats').innerHTML = granted.length ? `<b>Bonus feats from your class${view.classes.length > 1 ? 'es' : ''}</b> (no slot needed; they count for
     prerequisites and numbers): ${granted.map(n => {
     const f = featByName(n);
-    return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>` : esc(n);
+    // From an archetype choice: "Weapon Focus (Katana; Kensai)".
+    const arch = (view.archFx?.feats || []).find(x => x.name === n);
+    const what = arch ? ` (${[arch.weapon && data.weaponsById?.get(arch.weapon)?.name, arch.from].filter(Boolean).join('; ')})` : '';
+    return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>${esc(what)}` : esc(n + what);
   }).join(', ')}.` : '';
 
   // The chosen feats, one line each, above the search.
@@ -3195,7 +3258,7 @@ const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '
 
 function renderSpells(view) {
   const tables = view.casting.casting.map(c => ({
-    c, spells: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores, extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id) }),
+    c, spells: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores, extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id), diminished: diminished(c.cls.id) }),
   }));
   $('spells-card').hidden = !tables.length;
   $('no-spells').hidden = tables.length > 0;

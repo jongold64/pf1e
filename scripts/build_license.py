@@ -41,6 +41,8 @@ for name in sorted(os.listdir(data_dir)):
         used |= {r['source'] for r in records if r.get('origin')}
         # Races whose alternate traits / favored class options came from d20pfsrd pages list those books.
         used |= {b for r in records for b in r.get('d20_sources', [])}
+        # Alternate racial traits and favored class options from Archives of Nethys (build_aon_race_traits.py).
+        used |= {b for r in records for b in r.get('aon_sources', [])}
 notices = load_notices()  # ogl_notices.json + d20_feat_notices.json
 have = {re.sub(r'\W', '', n.lower()) for n in out}
 # A book PSRD's own notices already cover, worded differently ("Advanced Player's Guide. Copyright 2010" vs

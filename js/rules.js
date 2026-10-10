@@ -131,7 +131,9 @@ export function bonusSpells(abilityMod, spellLevel) {
 // Each row: { spellLevel, base, bonus, extra, total, known, canCast }. `base` and `known` are null
 // when the class table has no number for that spell level (e.g. a sorcerer's cantrips per day).
 // knownChange: added to each spells known number (a crossblooded sorcerer: -1, not below 0).
-export function spellsPerDay({ cls, level, scores, extraSlot = false, knownChange = 0 }) {
+// diminished: Diminished Spellcasting (kensai...): one fewer spell per day of each level from 1st; a level left at 0 is
+// cast only with bonus spells.
+export function spellsPerDay({ cls, level, scores, extraSlot = false, knownChange = 0, diminished = false }) {
   const ability = CASTING_ABILITY[cls.id];
   if (!ability) return null;
   const row = cls.progression[level - 1];
@@ -147,7 +149,7 @@ export function spellsPerDay({ cls, level, scores, extraSlot = false, knownChang
     .map(Number).sort((a, b) => a - b);
   const rows = spellLevels.map(sl => {
     const canCast = scores[ability] >= 10 + sl;
-    const base = perDay[sl] ?? null;
+    const base = perDay[sl] === undefined || perDay[sl] === null ? null : diminished && sl >= 1 ? Math.max(0, perDay[sl] - 1) : perDay[sl];
     const bonus = canCast && base !== null ? bonusSpells(mod, sl) : 0;
     const extra = canCast && base !== null && hasExtra && sl >= 1 ? 1 : 0;
     return {

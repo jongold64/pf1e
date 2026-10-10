@@ -9,13 +9,15 @@
 // "Spell-Like Abilities (Sp)" -> "spell-like ability", "+2 Natural Armor" -> "natural armor": lower case, no "(Ex)"
 // tags or leading number, singular words.
 function stem(s) {
-  return (String(s).replace(/\([^)]*\)/g, '').replace(/^\s*[+-]\d+\s+/, '').toLowerCase().match(/[a-z0-9+'-]+/g) || [])
+  return (String(s).replace(/’/g, "'").replace(/\([^)]*\)/g, '').replace(/^\s*[+-]\d+\s+/, '').toLowerCase().match(/[a-z0-9+'-]+/g) || [])
     .map(w => w.replace(/ies$/, 'y').replace(/(?<=[a-z]{3})s$/, '')).join(' ');
 }
 
 // The part of an alternate's text naming what it replaces ("replaces defensive training and hatred", "lose the fast
-// movement racial trait").
+// movement racial trait"). Traits from Archives of Nethys name it in `replaces` ("Keen Senses, Multitalented"), which
+// counts instead: their text may name what it replaces for several races.
 function replaceClause(alt) {
+  if (alt.replaces) return alt.replaces.replace(/,/g, ' and ');
   return [...alt.text.matchAll(/(?:replaces?|in place of|lose|lack)\s+([^.]*)/gi)].map(m => m[1]).join(' ');
 }
 
@@ -27,9 +29,12 @@ export function replacedTraits(race, alt) {
   // A race's type, size and languages aren't replaced ("lashunta magic" doesn't replace the Lashunta type).
   const found = (race.traits || []).filter(t => !['type', 'size', 'languages'].includes(t.kind)
     && clause.includes(` ${stem(t.name)} `)).map(t => t.name);
-  // Human Dual Talent replaces "the +2 bonus to any one ability score".
+  // Human Dual Talent replaces "the +2 bonus to any one ability score"; "Replaces Ability Score Modifiers" the race's
+  // ability score trait.
   const flexible = (race.traits || []).find(t => t.kind === 'ability_scores' && race.flexible_ability_bonus);
   if (flexible && /\+2 bonus to (?:any )?one ability score/i.test(alt.text) && !found.includes(flexible.name)) found.push(flexible.name);
+  const scores = (race.traits || []).find(t => t.kind === 'ability_scores');
+  if (scores && /ability score modifier/i.test(alt.replaces || '') && !found.includes(scores.name)) found.push(scores.name);
   return found;
 }
 
@@ -66,6 +71,17 @@ export function raceWithAlternates(race, names = []) {
   const langAt = traits.findIndex(t => t.kind === 'languages');
   traits.splice(langAt < 0 ? traits.length : langAt, 0, ...alts.map(a => ({ name: a.name, text: a.text, alternate: true })));
   const out = { ...race, traits, alternates: alts.map(a => a.name) };
+  // Senses: a replaced darkvision or low-light vision trait takes its sense away; an alternate that gives darkvision
+  // ("darkvision 60 feet", "gain darkvision to a distance of 60 feet") adds it.
+  const lost = [...gone].map(stem);
+  let senses = (race.senses || []).filter(s => !lost.some(g => stem(s).startsWith(g)));
+  for (const a of alts) {
+    const dark = a.text.match(/darkvision (?:to a (?:distance|range) of |out to |of )?(\d+) (?:feet|ft)/i);
+    if (dark && !/lose[^.]*darkvision|darkvision[^.]*(?:is reduced|replaces)/i.test(a.text)) {
+      senses = [...senses.filter(s => !/^darkvision/i.test(s)), `darkvision ${dark[1]} ft.`];
+    }
+  }
+  out.senses = senses;
   for (const a of alts) {
     const speed = a.text.match(/(?:base|land) speed (?:of|is (?:reduced|increased) to) (\d+) feet/i);
     if (speed) out.base_speed = Number(speed[1]);

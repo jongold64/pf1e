@@ -79,6 +79,9 @@ function renderList(app) {
 }
 
 // Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
+// A "Free" tick box: found, a gift or from a class feature, so it costs no gold.
+export const freeBox = (attr, on) => `<label class="check-row small free-box"><input type="checkbox" ${attr}${on ? ' checked' : ''}> Free (found or a gift: no gold)</label>`;
+
 export async function renderEquipment(app, view) {
   const { state, data } = app;
   if (!data.gear || (state.magicItems.length && !data.itemsById) || (state.weapons.length && !data.weaponsById)) {
@@ -107,7 +110,7 @@ export async function renderEquipment(app, view) {
   // own cost is the total less that).
   const wornItems = [[view.gear.armor, 'armor'], [view.gear.shield, 'shield']].filter(([a]) => a).map(([a, k]) => ({
     name: armorLabel(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`]),
-    cost: armorCost(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]),
+    cost: state[`${k}Free`] ? 0 : armorCost(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]),
     plain: armorCost(a, state[`${k}Enh`], state[`${k}Mw`]),
     weight: (a.weight_lbs || 0) * sizeFactor, crafted: state[`${k}Crafted`],
   }));
@@ -134,7 +137,7 @@ export async function renderEquipment(app, view) {
     const item = data.gearById.get(e.id);
     if (!item) return null;
     const st = entryStats(item, e.variant);
-    return { label: `${entryName(item, e.variant)}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (st.price_gp || 0) * e.qty,
+    return { label: `${entryName(item, e.variant)}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: e.free ? 0 : (st.price_gp || 0) * e.qty, note: e.free ? 'free' : '',
              weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
   }).filter(Boolean);
   const magicRows = [
@@ -142,14 +145,14 @@ export async function renderEquipment(app, view) {
       const item = data.itemsById?.get(e.id);
       if (!item) return null;
       const st = magicItemStats(item, e.option);
-      return { label: `${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (st.price_gp || 0) * e.qty,
+      return { label: `${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: e.free ? 0 : (st.price_gp || 0) * e.qty, note: e.free ? 'free' : '',
                weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
     }).filter(Boolean),
     ...state.craftedItems.map(e => ({ label: `${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
                                        cost: craftedItemCost(e) * e.qty, note: e.bought ? '' : 'crafting cost', weight: null })),
   ];
-  const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), weight: weaponWeight(w, e, view.race.size) }));
-  const armorRows = [...wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.crafted ? 'crafted: magic at half price' : '', weight: x.weight })),
+  const weaponRows = carried.map(([w, e]) => ({ label: weaponLabel(w, e), cost: weaponCost(w, e), note: e.free ? 'free' : '', weight: weaponWeight(w, e, view.race.size) }));
+  const armorRows = [...wornItems.map(x => ({ label: x.name, cost: x.cost, note: x.cost === 0 && x.plain ? 'free' : x.crafted ? 'crafted: magic at half price' : '', weight: x.weight })),
     ...(bardingRow ? [{ label: bardingRow.name, cost: bardingRow.cost, note: 'worn by your companion', weight: null }] : [])];
   const money = rows => rows.map(r => ({ label: r.label, text: formatGp(r.cost), note: r.note }));
   moneyDetails = {
@@ -225,16 +228,19 @@ export async function renderEquipment(app, view) {
   $('inventory-rows').innerHTML = [
     ...worn.map(([a, enh, mw, abilities, crafted]) => {
       const key = a === view.gear.armor ? 'inv-armor' : 'inv-shield';
+      const k = a === view.gear.armor ? 'armor' : 'shield';
       const open = openLines.has(key);
+      const cost = state[`${k}Free`] ? 0 : armorCost(a, enh, mw, abilities, crafted);
       return `<div class="line-card"><div class="fit-line item-line">
           <b class="line-name">${esc(armorLabel(a, enh, mw, abilities))}</b><span class="wl-k">worn</span>
-          <span class="wl-part"><b>${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}</b></span>
+          <span class="wl-part"><b>${esc(state[`${k}Free`] ? 'free' : formatGp(cost))}</b></span>
           <span class="wl-k">${esc(formatLbs(a.weight_lbs * sizeFactor))}</span>
           <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="More about it">Details</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
           <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div>
-          <div class="line-controls"><span>Cost ${esc(formatGp(armorCost(a, enh, mw, abilities, crafted)))}
-            <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></span></div>
+          <div class="line-controls"><span>Cost ${esc(formatGp(cost))}
+            <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></span>
+            ${freeBox(`data-armor-free="${k}"`, state[`${k}Free`])}</div>
         </div></div>`;
     }),
     ...state.inventory.map((e, i) => {
@@ -257,7 +263,7 @@ export async function renderEquipment(app, view) {
       return `<div class="line-card"><div class="fit-line item-line">
           <button type="button" class="link item-link line-name" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button>
           ${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
-          <span class="wl-part"><b>${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
+          <span class="wl-part"><b>${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
           <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
           <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}">Details</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
@@ -268,8 +274,9 @@ export async function renderEquipment(app, view) {
               <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
               <span class="value">${e.qty}</span>
               <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
-            <span>Cost ${esc(s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
+            <span>Cost ${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
               <button type="button" class="skill-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}">Details</button></span>
+            ${freeBox(`data-inv-free="${i}"`, e.free)}
           </div></div></div>`;
     }),
   ].join('') || '<p class="hint">Nothing yet. Choose items below and add them.</p>';
@@ -321,6 +328,15 @@ export function initEquipmentTab(app) {
   $('gear-panel').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-gear]');
     if (btn) addToInventory(app, btn.dataset.addGear, btn.dataset.variant);
+  });
+  // Free: found or a gift, so it costs no gold (gear, and the worn armor or shield).
+  $('inventory-rows').addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.invFree !== undefined) {
+      const i = Number(t.dataset.invFree);
+      app.update({ inventory: app.state.inventory.map((x, j) => { if (j !== i) return x; const { free, ...rest } = x; return t.checked ? { ...rest, free: true } : rest; }) });
+    }
+    if (t.dataset.armorFree) app.update({ [`${t.dataset.armorFree}Free`]: t.checked });
   });
   $('inventory-rows').addEventListener('click', e => {
     const why = e.target.closest('[data-inv-why]');

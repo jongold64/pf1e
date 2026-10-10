@@ -139,7 +139,9 @@ function combatContext(app, view) {
     [key, chosenFor(feat).size ? chosenFor(feat).has(w.id) : !!e[key]])),
     swashCrit: swash >= 5 && ['light', 'one-handed'].includes(w.group) && /P/.test(w.type || '') });
   const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
-  return { proficient: w => proficient(w) || byFeat(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
+  // A kensai's chosen weapon (archetype-choices.js).
+  const byArchetype = w => (view.archFx?.proficient || []).includes(w.id);
+  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
 // Levels in the classes holding the Titan Mauler (barbarian) and Titan Fighter archetypes, for big weapons.
@@ -303,6 +305,7 @@ function popWeaponPart(app, i, part) {
   if (part === 'cost') {
     const rows = weaponCostRows(w, e);
     app.openDetail(`Price: ${name}`, `${table(null, rows.map(r => [r.label, `${r.gp < 0 ? '−' : ''}${formatGp(Math.abs(r.gp))}`]))}
+      ${e.free ? `<p>Worth ${esc(formatGp(rows.reduce((n, r) => n + r.gp, 0)))}, but <b>free</b>${e.blackBlade ? ' (your black blade)' : ' (found, a gift or a class feature)'}: no gold is spent on it.</p>` : ''}
       <p><b>Total: ${esc(formatGp(weaponCost(w, e)))}</b></p>
       <p class="hint">Magic weapons are always masterwork (300 gp). A weapon's magic price is its total bonus (enhancement plus
         special abilities' bonuses) squared × 2,000 gp. This price counts on the Equipment tab.</p>`);
@@ -461,6 +464,9 @@ export function renderMyWeapons(app, view) {
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
         ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
           Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
+        ${e.blackBlade ? '<p class="hint">Your black blade (bladebound): free; its enhancement bonus follows your magus level. Change it on the Classes tab.</p>'
+          : `<label class="check-row small"><input type="checkbox" data-weapon-flag="free" data-index="${i}" ${e.free ? 'checked' : ''}>
+          Free: found, a gift or from a class feature (costs no gold)</label>`}
         ${laceFits(w) ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="lace" data-index="${i}" ${e.lace ? 'checked' : ''}>
           Effortless lace (${formatGp(LACE_PRICE)}): light for Weapon Finesse at your size; a too-big weapon's penalty 2 less</label>` : ''}
         ${featBoxes}
