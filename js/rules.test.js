@@ -1967,6 +1967,16 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('wizard 3 (Int 16): one school slot a level, or two for a Thassilonian specialist', `${t(true)}|${t(2)}`, '4,4,3|4,5,4');
 }
 
+// Deities: domains a cleric of the deity may choose, favored weapon.
+{
+  const { deityDomainWhy, favoredWeaponIds } = await import('./deities.js');
+  const iomedae = { name: 'Iomedae', domains: ['Glory', 'Good', 'Law', 'Sun', 'War'], subdomains: ['Archon (Good)', 'Archon (Law)', 'Day', 'Heroism', 'Hubris (Glory)'], weapon: 'Longsword' };
+  check('Iomedae: Sun yes, Death no', [deityDomainWhy(iomedae, { kind: 'domain', name: 'Sun' }), deityDomainWhy(iomedae, { kind: 'domain', name: 'Death' })].join('|'), '|not a domain of Iomedae');
+  check('Iomedae: Archon and Day subdomains yes, Undead no', ['Archon', 'Day', 'Undead'].map(n => deityDomainWhy(iomedae, { kind: 'subdomain', name: n }) || 'ok').join(), 'ok,ok,not a subdomain of Iomedae');
+  check('no deity: any domain', deityDomainWhy(null, { kind: 'domain', name: 'Death' }), '');
+  check('favored weapon by name, words in any order', favoredWeaponIds({ weapon: 'Heavy mace' }, [{ id: 'mace-heavy', name: 'Mace, Heavy' }, { id: 'longsword', name: 'Longsword' }]).join(), 'mace-heavy');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

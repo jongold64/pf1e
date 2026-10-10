@@ -30,6 +30,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
+import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
@@ -144,6 +145,7 @@ const state = {
   companion: { animal: '', name: '', increases: [], feats: [], featPicks: [], tricks: [], skills: {}, armorId: '', armorEnh: 0, armorMaterial: '', buffs: [] },
   // A summoner's eidolon (tab-eidolon.js): name, evolutions [{ id (data/eidolons.json), choice }], ability score increases.
   eidolon: { name: '', evolutions: [], increases: [] },
+  deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (cleric, warpriest, inquisitor)
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -306,6 +308,7 @@ function load(saved) {
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
   // Animal companion: only known animals, skills and tricks.
+  state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
   const eid = state.eidolon && typeof state.eidolon === 'object' && !Array.isArray(state.eidolon) ? state.eidolon : {};
   state.eidolon = {
     name: typeof eid.name === 'string' ? eid.name.slice(0, 40) : '',
@@ -981,6 +984,18 @@ function buildControls() {
     const cid = btn.dataset.cls;
     update({ domains: { ...state.domains, [cid]: (state.domains[cid] || []).filter(id => id !== btn.dataset.domainRemove) } });
   });
+  // Deity: chosen in a cleric's, warpriest's or inquisitor's block; Details shows its domains and favored weapon.
+  $('class-info').addEventListener('change', e => {
+    if (e.target.matches('[data-deity]')) update({ deity: e.target.value });
+  });
+  $('class-info').addEventListener('click', e => {
+    const b = e.target.closest('[data-deity-pop]');
+    const g = b && data.deitiesById.get(b.dataset.deityPop);
+    if (!g) return;
+    openDetail(`${g.name}${g.title ? `, ${g.title}` : ''}`, `<p class="hint">${esc(g.source)}${g.pantheon ? ` · ${esc(g.pantheon)}` : ''}</p>
+      ${facts([['Alignment', g.alignment], ['Areas of concern', g.concerns], ['Domains', g.domains.join(', ')], ['Subdomains', g.subdomains.join(', ')],
+               ['Favored weapon', g.weapon], ['Symbol', g.symbol]])}`);
+  });
   // Archetypes: add from the list in a class's block, or remove one taken.
   $('class-info').addEventListener('change', e => {
     const cid = e.target.dataset.archetypeAdd;
@@ -1454,6 +1469,8 @@ function computeView() {
     && [...pathOf(cid, 'bloodline').bonus_feats, ...(isCrossblooded(cid) ? pathOf(cid, 'bloodline2')?.bonus_feats || [] : [])]]).filter(([, f]) => f)));
   // The effects switched on, and the ones your magic items give (item-effects.js; an effect you also switched on yourself
   // counts once).
+  // A deity's favored weapon needs the weapons list (loaded on first need, then the page is drawn again).
+  if (state.deity && state.deity !== NO_DEITY && !data.weaponsById && counts.some(c => DEITY_CLASSES.includes(c.cls.id))) loadWeapons().then(() => render());
   // (The magic items data loads on first need; the page is drawn again once it's here.)
   if (state.magicItems.length && !data.itemsById) loadItems().then(() => render());
   const mine = new Set(state.buffs.filter(x => x.on !== false).map(x => x.id));
@@ -1579,6 +1596,8 @@ function computeView() {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
+    // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.
+    deityWeapons: counts.some(c => DEITY_CLASSES.includes(c.cls.id)) && data.weaponsById ? favoredWeaponIds(data.deitiesById.get(state.deity), [...data.weaponsById.values()]) : [],
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).
     // The summoner's eidolon: the summoner level, base form and (unchained) subtype chosen on the Classes tab.
     eidolon: (cid => (cid ? { cls: cid, level: counts.find(c => c.cls.id === cid).level, form: pathOf(cid, 'base-form'),
@@ -1883,6 +1902,10 @@ function choicesLeft(cls, level) {
   if (isThassilonian(cls.id) && !THASSILONIAN[pathOf(cls.id, 'school')?.name]) n++;
   if (isCrossblooded(cls.id)) n += crossPowerLevels(cls.id).filter(lv => lv <= level && !crossPower(crossPicks(cls.id)[lv])).length;
   if (slots.some(s => s.rule.needs === 'mystery') && !state.mystery) n++;
+  // Domains not chosen yet (a druid's only with a domain nature bond), and a deity.
+  const dom = DOMAIN_CLASSES[cls.id];
+  if (dom && !(dom.natureBond && state.natureBond !== 'domain')) n += Math.max(0, dom.count - (state.domains[cls.id] || []).filter(id => data.domainsById.has(id)).length);
+  if (DEITY_CLASSES.includes(cls.id) && !state.deity) n++;
   return n;
 }
 
@@ -2175,6 +2198,21 @@ function popChoice(value, slotId, preview = null) {
 // Domains for a cleric, inquisitor or druid (inside its block on the Classes card): the druid's Nature Bond choice,
 // the chosen domains with their powers (each in a fold-out, with the level it starts at) and domain spells, and a
 // list to choose another. A subdomain shows its domain's powers and spells with its own swapped in.
+// A cleric's, warpriest's or inquisitor's deity: a list of every deity (with alignment and title), or an ideal; Details
+// with its domains, subdomains and favored weapon.
+function deityPicker(cls) {
+  if (!DEITY_CLASSES.includes(cls.id)) return '';
+  const deity = data.deitiesById.get(state.deity);
+  const opts = data.deities.map(x => `<option value="${esc(x.id)}"${x.id === state.deity ? ' selected' : ''}>${esc(x.name)} (${esc(x.alignment)})${x.title ? ` — ${esc(x.title)}` : ''}</option>`).join('');
+  return `<div class="domains"><h4>Deity</h4><div class="mystery-pick"><label class="row-label">Deity <select data-deity>
+      <option value="">Choose your deity…</option><option value="${NO_DEITY}"${state.deity === NO_DEITY ? ' selected' : ''}>No deity: an ideal or philosophy</option>${opts}</select></label>
+      ${deity ? `<button type="button" class="skill-details" data-deity-pop="${esc(deity.id)}">Details</button>` : ''}</div>
+    ${deity ? `<p class="hint">${esc(deity.alignment)} · ${esc(deity.concerns)}. Domains: ${esc(deity.domains.join(', ') || '—')}. Favored weapon: ${esc(deity.weapon || '—')} (you are proficient with it).
+        Your alignment must be within one step of your deity's.</p>`
+      : state.deity === NO_DEITY ? '<p class="hint">Serving an ideal: choose any two domains that fit it (no favored weapon).</p>'
+      : `<p class="hint">Your deity decides which domains you can choose${cls.id === 'warpriest' ? ' (and its blessings)' : ''} and gives you proficiency with its favored weapon.</p>`}</div>`;
+}
+
 function domainPicker(cls, level, openFeatures) {
   const rule = DOMAIN_CLASSES[cls.id];
   if (!rule) return '';
@@ -2202,8 +2240,9 @@ function domainPicker(cls, level, openFeatures) {
   }).join('');
   const left = rule.count - chosen.length;
   const choices = domainChoices(cls.id, data.domains);
+  const deity = data.deitiesById.get(state.deity) || null;
   const group = kind => choices.filter(d => d.kind === kind && !chosen.includes(d)).map(d => {
-    const why = domainConflict(d, chosen);
+    const why = domainConflict(d, chosen) || deityDomainWhy(deity, d);
     return `<option value="${esc(d.id)}"${why ? ' disabled' : ''}>${esc(d.name)}${d.kind === 'subdomain' ? ` (${esc((d.parents || []).map(p => data.domainsById.get(p)?.name || p).join(' or '))})` : ''}${why ? ` — ${esc(why)}` : ''}</option>`;
   }).join('');
   const groups = [['domain', 'Domains'], ['druid', 'Druid domains'], ['subdomain', 'Subdomains'], ['inquisition', 'Inquisitions']]
@@ -2215,7 +2254,7 @@ function domainPicker(cls, level, openFeatures) {
       <summary>Browse all ${choices.length} ${esc(rule.count > 1 || !rule.natureBond ? 'choices' : 'domains')}</summary>
       <ul class="pick-list">${choices.map(d => {
         const mine = chosen.includes(d);
-        const why = mine ? 'taken' : left <= 0 ? 'no choice left' : domainConflict(d, chosen);
+        const why = mine ? 'taken' : left <= 0 ? 'no choice left' : domainConflict(d, chosen) || deityDomainWhy(deity, d);
         return `<li class="with-details"><button type="button" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(d.name)}
             <small>${esc(why || `${kindLabel[d.kind]}${d.kind === 'subdomain' ? ` of ${(d.parents || []).map(p => data.domainsById.get(p)?.name || p).join(' or ')}` : ''}`)}</small></button>
           <button type="button" class="skill-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(d.name)} in a popup">Details</button></li>`;
@@ -2498,6 +2537,7 @@ function renderClasses(view) {
         ${left ? `<span class="tag">${left} choice${left === 1 ? '' : 's'} to make</span>` : ''}
         <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
       ${reqHtml}
+      ${deityPicker(e.cls)}
       ${domainPicker(e.cls, e.level, openFeatures)}
       ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
@@ -3539,7 +3579,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -3557,6 +3597,7 @@ async function start() {
       fetch('data/familiars.json').then(r => r.json()),
       fetch('data/kineticist-elements.json').then(r => r.json()),
       fetch('data/eidolons.json').then(r => r.json()),
+      fetch('data/deities.json').then(r => r.json()),
     ]);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
@@ -3583,6 +3624,7 @@ async function start() {
     class_skills: b.class_skill ? [b.class_skill] : [], spells: b.bonus_spells, spells_by: 'class', powers: b.powers, hexes: [],
     bonus_feats: b.bonus_feats }))];
   data.pathsById = new Map(data.paths.map(x => [x.id, x]));
+  data.deitiesById = new Map(data.deities.map(x => [x.id, x]));
   data.skillTextByName = new Map(data.skillTexts.map(s => [s.name, s]));
   roster = openRoster();
   currentId = roster.current;

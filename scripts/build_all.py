@@ -24,6 +24,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_aon_kineticist.py', 'data/kineticist-elements.json'),
                     # The eidolon's base statistics and evolutions (summoner, unchained summoner), from AoN pages.
                     ('build_aon_eidolon.py', 'data/eidolons.json'),
+                    # Deities (alignment, domains, subdomains, favored weapon) for clerics, warpriests and inquisitors.
+                    ('build_aon_deities.py', 'data/deities.json'),
                     ('build_classes.py', 'data/classes.json'),
                     # Adds post-2015 classes (occult, unchained, shifter, vigilante) after the PSRD ones.
                     ('build_foundry_classes.py', 'data/classes.json'),

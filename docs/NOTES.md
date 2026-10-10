@@ -582,3 +582,7 @@ check its Section 15 notice is in the license.
   read from their "deals XdY points of damage (… if Large, … if Huge)" text); tab-eidolon.js draws #eidolon-card (Classes
   tab). state.eidolon = { name, evolutions: [{ id, choice }], increases }. build_license.py walks nested records with an
   origin (evolutions, blasts) for their books.
+- Deities: `build_aon_deities.py` -> data/deities.json (AoN deity pages: alignment, pantheon, domains, subdomains,
+  favored weapon). state.deity (id, 'none' or ''); js/deities.js `deityDomainWhy` (domain picker), `favoredWeaponIds`
+  (view.deityWeapons -> tab-weapons proficiency). DEITY_CLASSES (cleric, warpriest, inquisitor) count a missing deity in
+  choicesLeft, which also counts domains still to choose.

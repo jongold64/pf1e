@@ -140,7 +140,7 @@ function combatContext(app, view) {
     swashCrit: swash >= 5 && ['light', 'one-handed'].includes(w.group) && /P/.test(w.type || '') });
   const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
   // A kensai's chosen weapon (archetype-choices.js).
-  const byArchetype = w => (view.archFx?.proficient || []).includes(w.id);
+  const byArchetype = w => (view.archFx?.proficient || []).includes(w.id) || (view.deityWeapons || []).includes(w.id);
   return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
