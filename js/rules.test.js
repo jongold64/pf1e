@@ -1436,6 +1436,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const nat20 = rollSpecT(spec, dice([20, 4, 4, 4, 4]), { autoCrit: true }).lines.join(' | ');
   check('Auto-Crit: natural 20 needs no confirmation roll', /Confirm:/.test(nat20), false);
   check('Auto-Crit: natural 20 rolls critical damage', /Critical damage/.test(nat20), true);
+  check('Auto-Crit: the attack line says auto-crit', /auto-crit!/.test(nat20) && !/critical threat/.test(nat20), true);
+  check('Auto-Crit: only the critical damage, no regular damage line', rollSpecT(spec, dice([20, 4, 4, 4, 4]), { autoCrit: true }).lines.some(l => /^\s*Damage /.test(l)), false);
   check('Auto-Crit: a 19 still rolls to confirm', /Confirm:/.test(rollSpecT(spec, dice([19, 4, 4, 4, 4]), { autoCrit: true }).lines.join(' | ')), true);
   check('without Auto-Crit: a natural 20 rolls to confirm', /Confirm:/.test(rollSpecT(spec, dice([20, 4, 4, 4, 4])).lines.join(' | ')), true);
 }

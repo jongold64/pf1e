@@ -114,20 +114,21 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       }
       // The attack on its line; its confirmation roll, damage and critical damage each on a line under it.
       const threat = atk.natural >= (g.threat || 20);
-      lines.push(`${prefix}Attack${n}: ${atk.text}${atk.natural === 20 ? ' (natural 20: hits)' : ''}${threat ? ', critical threat!' : ''}`);
+      // Auto-Crit house rule: a natural 20 is a critical hit outright, so only its critical damage is rolled.
+      const autoCrit = options.autoCrit && atk.natural === 20;
+      lines.push(`${prefix}Attack${n}: ${atk.text}${autoCrit ? ' (natural 20): auto-crit!' : `${atk.natural === 20 ? ' (natural 20: hits)' : ''}${threat ? ', critical threat!' : ''}`}`);
       let times = 1;
       if (threat) {
         times = g.mult || 2;
-        if (options.autoCrit && atk.natural === 20) under(`Natural 20: critical hit, no confirmation roll (Auto-Crit house rule), ×${times} damage`);
-        else {
+        if (!autoCrit) {
           const confirm = rollD20(bonus, rng);
           under(`Confirm: ${confirm.text} (if it hits AC, ×${times} damage)`);
         }
       }
-      const dmg = rollDamage(g.damage, dmgRng);
+      const dmg = autoCrit ? true : rollDamage(g.damage, dmgRng);
       if (dmg) {
-        const more = rollExtras(g, 0, rng);
-        under(`${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
+        const more = autoCrit ? null : rollExtras(g, 0, rng);
+        if (!autoCrit) under(`${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         if (times > 1) {
           const crit = rollDamage(g.damage, rng, times);
           const critMore = rollExtras(g, times - 1, rng);
