@@ -222,6 +222,10 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   firearm ammunition comes from the AoN firearm page's Name/Cost/Weight table (launcher 'firearm'; no material list); a launcher's `entry.ammo` = { id, count, material,
   enh }: weaponAttack takes the higher of launcher and ammo enhancement, the ammo material's damage change; cost rows
   and weight include it. Kept effects: `state.buffs` entries can be `{ on: false }` (activeBonuses/effectTotals skip them).
+- Later magic items: `build_aon_magic_items.py` (after build_magic_items.py) adds the items named in `AON_ITEMS` from their
+  AoN pages (book, aura, CL, slot, price, weight, description, construction; `origin: 'aonprd'`), if the book has a notice.
+  Effortless lace is a weapon flag (`entry.lace`, weapons.js `laceFits` / `LACE_PRICE`): sizedWeapon gives a laced weapon of
+  your size `finesse`, and cuts a too-big one's penalty by 2; item-effects.js `ATTACHED` points the item's Details there.
 - Later weapons: `build_aon_weapons.py` (after build_weapons.py) adds AoN simple/martial/exotic weapons PSRD lacks (name
   matched by sorted words and by letters run together: "Heavy mace"/"Mace, heavy", "Short sword"/"Shortsword"), Paizo
   books with notices only; Tiny/Large dice from Core Rulebook Table 6-5 (3d6 -> 4d6 added). `origin: 'aonprd'`. Not added:

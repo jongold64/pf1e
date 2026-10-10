@@ -371,7 +371,7 @@ function load(saved) {
                  ...(e.off === true ? { off: true } : {}),
                  ...(Array.isArray(e.on) && e.on.some(id => buffById.has(id)) ? { on: [...new Set(e.on.filter(id => buffById.has(id)))] } : {}),
                  ...(buffById.has(e.pick) ? { pick: e.pick } : {}) }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip'];
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,

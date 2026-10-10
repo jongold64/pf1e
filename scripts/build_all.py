@@ -55,7 +55,9 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_armor.py', 'data/armor.json'),
                     # Armor and shields from later Paizo books (and Ultimate Equipment variants) after the PSRD ones.
                     ('build_foundry_armor.py', 'data/armor.json'),
-                    ('build_magic_items.py', 'data/magic-items.json'), ('build_spells.py', 'data/spells.json'),
+                    ('build_magic_items.py', 'data/magic-items.json'),
+                    # Magic items from later Paizo books PSRD lacks (effortless lace...), from AoN pages.
+                    ('build_aon_magic_items.py', 'data/magic-items.json'), ('build_spells.py', 'data/spells.json'),
                     # Adds post-2015 spells to the PSRD ones, so it runs after build_spells.py.
                     ('build_foundry_spells.py', 'data/spells.json'),
                     ('build_equipment.py', 'data/equipment.json'), ('build_weapons.py', 'data/weapons.json'),

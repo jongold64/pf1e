@@ -11,7 +11,7 @@ Clean JSON files for a Pathfinder 1st Edition character builder, converted from
 | `data/armor.json` | 40 armors and shields (bonus, max Dex, check penalty, spell failure, speed, price, weight) |
 | `data/archetypes.json` | 1,271 class archetypes: 393 from PSRD-Data (Advanced Player's Guide, Ultimate Magic, Ultimate Combat, Advanced Class Guide, Advanced Race Guide racial archetypes, Monster Codex, Technology Guide) plus 878 from later Paizo books via the Archives of Nethys (marked `"origin": "aonprd"`; occult, unchained, vigilante and shifter classes included): `{ id, name, class, source, race?, description, features: [{ name, text, level?, replaces, alters, class_skills?, proficiency? }] }`. `replaces`/`alters` are the class features each feature's text names |
 | `data/traits.json` | 1,336 character traits: 225 from the Advanced Player's Guide and Ultimate Campaign (combat, faith, magic, social, race, regional, religion, campaign), plus 1,111 from later Paizo books (Player Companions, Inner Sea Gods, Adventure Path player's guides, ...) taken from d20pfsrd.com (marked `"origin": "d20pfsrd"`; adds equipment, family, mount and exemplar traits). Simple unconditional numeric `effects` (saves, initiative, skill bonuses, class skills) are read from the text |
-| `data/magic-items.json` | 1,649 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items). Items with several prices have `price_options`, read from the price text or from a price table in the description (bag of holding types, with each type's weight) |
+| `data/magic-items.json` | 1,650 magic items in 12 categories (wondrous items, rings, rods, staves, magic armor/shields/weapons, special abilities, cursed items, artifacts, intelligent items). Items with several prices have `price_options`, read from the price text or from a price table in the description (bag of holding types, with each type's weight) |
 | `data/spells.json` | 3,004 spells with school, class spell levels, components, range, duration, saves and text: 1,536 from PSRD-Data (mythic spells left out) plus 1,468 from later Paizo books via the Foundry VTT Pathfinder 1e data (marked `"origin": "Foundry VTT pf1"`) |
 | `data/equipment.json` | 825 pieces of mundane gear in 12 categories (adventuring gear, tools, clothing, alchemical items, animals, vehicles, services, ...), with price, weight and versions such as common/masterwork |
 | `data/weapons.json` | 241 weapons: simple, martial, exotic, firearms and technological, with proficiency, damage by size, critical, range, type, special qualities, price and weight (siege engines left out) |
@@ -134,6 +134,9 @@ choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base
   (half-elf and half-orc subtypes, svirfneblin speed, gathlain and wyrwood creature types).
 - The source has no Benefit text for the feat Talented Magician.
 - Skill descriptions cover the Core Rulebook text only (later books' new skill uses aren't included).
+- Magic items come from the PSRD-Data books (through the Advanced Class Guide and Mythic Adventures); items from Player
+  Companions and later books are added one by one from Archives of Nethys (`AON_ITEMS` in
+  `scripts/build_aon_magic_items.py`: effortless lace so far).
 
 ## Spot checks
 

@@ -25,6 +25,11 @@ const SPELLS = {
   'drinking-horn-of-bottomless-valor': [{ buff: 'enlarge-person', when: 'after drinking 2 or 3 charges' }, { buff: 'heroism', when: 'after drinking 3 charges' }],
 };
 
+// Items that change a weapon or armor instead of you: where they're counted.
+export const ATTACHED = {
+  'effortless-lace': 'It merges with a one-handed piercing or slashing melee weapon: tick Effortless lace on that weapon on the Weapons tab (its price is added there, so don’t also add it here).',
+};
+
 // An ioun stone's color, from its catalog name ("Ioun stone: pink and green sphere" -> "pink and green").
 const iounColor = buff => buff.name.replace(/^.*?:\s*/, '').replace(/\s*\(.*\)$/, '').split(' ').slice(0, -1).join(' ');
 

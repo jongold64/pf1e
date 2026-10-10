@@ -9,7 +9,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { weaponTraining } from './class-features.js';
-import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice } from './weapons.js';
+import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
 // ammunition's enhancement and the launcher's don't stack (the higher counts); its material's effects show under it.
@@ -152,7 +152,7 @@ function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted (with the Titan
   // Mauler's and Titan Fighter's rules for big weapons).
-  const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip);
+  const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip, !!e.lace);
   return {
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
@@ -461,6 +461,8 @@ export function renderMyWeapons(app, view) {
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
         ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
           Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
+        ${laceFits(w) ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="lace" data-index="${i}" ${e.lace ? 'checked' : ''}>
+          Effortless lace (${formatGp(LACE_PRICE)}): light for Weapon Finesse at your size; a too-big weapon's penalty 2 less</label>` : ''}
         ${featBoxes}
         ${byRules ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-flag="proficient" data-index="${i}" ${e.proficient ? 'checked' : ''}>
           Proficient anyway (e.g. from a feat or trait)</label>`}

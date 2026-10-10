@@ -172,7 +172,13 @@ export function bigWeaponRules({ titanMauler = 0, titanFighter = 0 } = {}) {
 // creature), diceSize (the damage column to use), penalty (on attacks: -2 per size step, adjusted by the archetype
 // rules), rows (the penalty's pieces, for Details), steps, unusable (more than two-handed for the wielder), notes }.
 // Ranged weapons keep their handedness. jotungrip: the Titan Mauler's choice to hold a two-handed weapon in one hand.
-export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRules(), jotungrip = false) {
+// Effortless lace (Giant Hunter's Handbook, 2,500 gp): merged with a one-handed piercing or slashing melee weapon.
+export const LACE_PRICE = 2500;
+export const laceFits = weapon => weapon.group === 'one-handed' && /[PS]/.test(weapon.type || '');
+
+// lace: the weapon has an effortless lace (laceFits): a too-big one's size penalty is 2 less (not below 0); one of the
+// wielder's own size counts as light for Weapon Finesse (`finesse` on the weapon returned).
+export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRules(), jotungrip = false, lace = false) {
   const own = !weaponSize || weaponSize === wielderSize;
   const steps = own ? 0 : SIZE_ORDER.indexOf(weaponSize) - SIZE_ORDER.indexOf(wielderSize);
   let group = weapon.group;
@@ -198,12 +204,19 @@ export function sizedWeapon(weapon, weaponSize, wielderSize, rules = bigWeaponRu
     if (cut > rules.massive && rules.heft) rows.push({ label: 'Incredible Heft (Titan Fighter)', value: cut - Math.min(cut, rules.massive) });
     if (rules.momentum) notes.push(`Unstoppable Momentum: +${rules.momentum} on combat maneuvers and CMD while wielding it.`);
   }
+  const laced = lace && laceFits(weapon);
+  if (laced && steps > 0) {
+    const cut = Math.min(2, -rows.reduce((n, r) => n + r.value, 0));
+    if (cut > 0) rows.push({ label: 'Effortless lace', value: cut });
+  }
+  const finesse = laced && !steps && !weapon.finesse;
+  if (finesse) notes.push('Effortless lace: counts as a light weapon for Weapon Finesse (and feats and abilities for light weapons).');
   // Jotungrip: a two-handed weapon of the wielder's own size in one hand.
   if (jotungrip && rules.jotungrip && !steps && weapon.group === 'two-handed') {
     group = 'one-handed';
     rows.push({ label: 'Jotungrip (Titan Mauler): two-handed weapon in one hand', value: -2 });
   }
-  return { weapon: group === weapon.group ? weapon : { ...weapon, group }, diceSize: own ? wielderSize : weaponSize,
+  return { weapon: group === weapon.group && !finesse ? weapon : { ...weapon, group, ...(finesse ? { finesse: true } : {}) }, diceSize: own ? wielderSize : weaponSize,
            penalty: rows.reduce((n, r) => n + r.value, 0), rows, steps, unusable, notes };
 }
 
@@ -474,6 +487,7 @@ export function weaponCostRows(weapon, entry = {}) {
     rows.push({ label: `Magic: total bonus +${bonus} (${parts}), squared × 2,000 gp`, gp: bonus * bonus * 2000 });
   }
   for (const a of abilities.filter(x => x.gp)) rows.push({ label: a.name, gp: a.gp });
+  if (entry.lace && laceFits(weapon)) rows.push({ label: 'Effortless lace', gp: LACE_PRICE });
   const ammo = entry.ammo && AMMO.get(entry.ammo.id);
   if (ammo && entry.ammo.count) {
     const what = [entry.ammo.enh ? `+${entry.ammo.enh}` : '', weaponMaterialById.get(entry.ammo.material)?.name.toLowerCase(), lower(ammo.name)].filter(Boolean).join(' ');

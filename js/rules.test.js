@@ -1604,6 +1604,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Massive Weapons at 3rd: -2 cut to -1', sizedWeapon(w('longsword'), 'Large', 'Medium', bigWeaponRules({ titanMauler: 3 })).penalty, -1);
   const jg = sizedWeapon(w('greatsword'), null, 'Medium', bigWeaponRules({ titanMauler: 2 }), true);
   check('Jotungrip: greatsword one-handed at -2', [jg.weapon.group, jg.penalty].join(), 'one-handed,-2');
+  // Effortless lace: light for Weapon Finesse at your size; a too-big weapon's penalty 2 less.
+  check('effortless lace: a longsword counts for Weapon Finesse', sizedWeapon(w('longsword'), null, 'Medium', bigWeaponRules(), false, true).weapon.finesse, true);
+  check('effortless lace: Large longsword -2 cut to 0', sizedWeapon(w('longsword'), 'Large', 'Medium', bigWeaponRules(), false, true).penalty, 0);
+  check('effortless lace: Huge longsword -4 cut to -2', sizedWeapon(w('longsword'), 'Huge', 'Medium', bigWeaponRules(), false, true).penalty, -2);
+  check('effortless lace: not on a mace (bludgeoning)', sizedWeapon(w('mace-heavy'), null, 'Medium', bigWeaponRules(), false, true).weapon.finesse || false, false);
+  check('effortless lace: Dex to hit with Weapon Finesse', weaponAttackForDetails({ weapon: sizedWeapon(w('longsword'), null, 'Medium', bigWeaponRules(), false, true).weapon, entry: {}, bab: [1], mod: { str: 0, dex: 3 }, haveFeats: ['Weapon Finesse'] }).abilityUsed || 'see', 'dex');
   check('Jotungrip needs 2nd level', sizedWeapon(w('greatsword'), null, 'Medium', bigWeaponRules({ titanMauler: 1 }), true).weapon.group, 'two-handed');
   const tf = sizedWeapon(w('greatsword'), 'Large', 'Medium', bigWeaponRules({ titanFighter: 7 }));
   check('Titan Fighter 7: Large greatsword usable, -4 + 2 = -2', [tf.unusable, tf.weapon.group, tf.penalty].join(), 'false,two-handed,-2');

@@ -3,7 +3,7 @@
 // item gives, and an owned item's popup with its description.
 import { esc, paragraphs, facts } from './dom.js';
 import { buffById, TARGET_NAMES, buffAmount, effectMods } from './effects.js';
-import { itemEffects, rowBuff, itemAmount, rowOn, abilityEntries } from './item-effects.js';
+import { itemEffects, rowBuff, itemAmount, rowOn, abilityEntries, ATTACHED } from './item-effects.js';
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
 
@@ -92,6 +92,7 @@ export function givesHtml(item, entry = null, counted = new Set()) {
   }
   return rows.length ? `<h4>What it gives</h4><table class="skill-why"><tbody>${[...new Set(rows)].join('')}</tbody></table>
       <p class="hint">Counted in Active effects on the Character tab while you wear it${rows.some(r => r.includes('muted">(')) ? '; one marked with when it applies has its own box there, off to start' : ''}.</p>`
+    : ATTACHED[item.id] ? `<p class="hint">${esc(ATTACHED[item.id])}</p>`
     : '<p class="hint">No bonuses the builder counts: its powers are in the description.</p>';
 }
 
