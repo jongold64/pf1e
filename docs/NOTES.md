@@ -222,8 +222,12 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   firearm ammunition comes from the AoN firearm page's Name/Cost/Weight table (launcher 'firearm'; no material list); a launcher's `entry.ammo` = { id, count, material,
   enh }: weaponAttack takes the higher of launcher and ammo enhancement, the ammo material's damage change; cost rows
   and weight include it. Kept effects: `state.buffs` entries can be `{ on: false }` (activeBonuses/effectTotals skip them).
-- Later magic items: `build_aon_magic_items.py` (after build_magic_items.py) adds the items named in `AON_ITEMS` from their
-  AoN pages (book, aura, CL, slot, price, weight, description, construction; `origin: 'aonprd'`), if the book has a notice.
+- Later magic items: `build_aon_magic_items.py` (after build_magic_items.py) reads every AoN magic item list (`LISTS`:
+  armor/shield/weapon qualities, specific armor, shields, weapons, rings, rods, staves, wondrous items by slot, artifacts,
+  cursed, intelligent, potions) and adds each item whose name (`key`: words in any order) isn't in the file, from its page
+  (`parse_page`: the MainContent_DataListTypes_LabelName_0 span; tables -> "a | b" rows; <sup> book marks dropped).
+  Variants listed apart become one item with `price_options` from the list's Cost column. Books without a notice are
+  skipped and counted. Pages are cached in aonprd-classes/lists as MI_*.html (the first run took about 3 hours).
   Effortless lace is a weapon flag (`entry.lace`, weapons.js `laceFits` / `LACE_PRICE`): sizedWeapon gives a laced weapon of
   your size `finesse`, and cuts a too-big one's penalty by 2; item-effects.js `ATTACHED` points the item's Details there.
 - Later weapons: `build_aon_weapons.py` (after build_weapons.py) adds AoN simple/martial/exotic weapons PSRD lacks (name
