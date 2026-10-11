@@ -20,7 +20,7 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const entryName = (item, variant) => (variant ? `${item.name} (${variant.toLowerCase()})` : item.name);
 
 // "+1 fortification (light) Chainmail", "Masterwork Breastplate".
-function armorLabel(armor, enh, mw, abilities = []) {
+export function armorLabel(armor, enh, mw, abilities = []) {
   const prefix = magicPrefix(enh, mw && !armor.mw_included, abilities);
   return prefix ? `${prefix} ${armor.name}` : armor.name;
 }

@@ -6,6 +6,7 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
+import { armorLabel } from './tab-equipment.js';
 import { dailyUses, usesLeft } from './daily.js';
 import { companionStats } from './companion.js';
 import { familiarStats } from './familiar.js';
@@ -104,10 +105,26 @@ export function renderBuild(app, view, parts) {
   // Defense: worn armor and shield, situational notes.
   const gear = view.gear;
   const worn = [gear.armor, gear.shield].filter(Boolean).map(a => a.name).join(', ');
+  // Armor and shield worn: name with its quality and abilities, its bonus to AC, max Dex, check penalty, spell failure.
+  const st = app.state;
+  const wornRow = (item, k) => {
+    const bonus = k === 'armor' ? gear.armorBonus : gear.shieldBonus;
+    const pen = Math.min(0, item.check_penalty + (((st[`${k}Enh`] || 0) > 0 || st[`${k}Mw`]) && !item.mw_included ? 1 : 0) + (k === 'armor' ? gear.training || 0 : 0));
+    return `<tr><td><b>${esc(armorLabel(item, st[`${k}Enh`] || 0, st[`${k}Mw`], st[`${k}Abilities`] || []))}</b>
+        <small class="muted b-range">${k === 'shield' ? 'shield' : `${esc(item.category)} armor`}</small></td>
+      <td class="num"><b>${signed(bonus)}</b> <small class="muted">${k === 'armor' ? 'armor' : 'shield'}</small></td>
+      <td class="num">${item.max_dex === null || item.max_dex === undefined ? '—' : signed(item.max_dex + (k === 'armor' ? gear.training || 0 : 0))}</td>
+      <td class="num">${pen}</td><td class="num">${item.spell_failure ? `${item.spell_failure}%` : '—'}</td>
+      <td>${plus('armor', item.id, item.name)}</td></tr>`;
+  };
+  const wornTable = worn ? `<table class="b-table b-worn"><thead><tr><th>Worn</th><th>AC</th><th>Max Dex</th><th>Check</th><th>Spell fail</th><th></th></tr></thead>
+      <tbody>${gear.armor ? wornRow(gear.armor, 'armor') : ''}${gear.shield ? wornRow(gear.shield, 'shield') : ''}</tbody></table>
+    <p class="hint">Total: check penalty ${gear.checkPenalty || 0}${gear.maxDex !== null && gear.maxDex !== undefined ? ` · max Dex +${gear.maxDex}` : ''}${gear.spellFailure && view.casting.casting.length ? ` · spell failure ${gear.spellFailure}%` : ''}${gear.slows ? ' · slows you' : ''}${gear.dr ? ` · DR ${gear.dr}/—` : ''}</p>`
+    : '<p class="hint">No armor or shield: wear them on the Armor tab and they show here with their bonuses.</p>';
   const sit = view.situational || {};
   const notes = [...(sit.ac || []), ...(sit.fort || []), ...(sit.ref || []), ...(sit.will || [])];
-  const defense = (worn || notes.length) ? `${worn ? `<p><b>Wearing</b> ${esc(worn)} · check penalty ${gear.checkPenalty || 0}${gear.maxDex !== null && gear.maxDex !== undefined ? ` · max Dex +${gear.maxDex}` : ''}${gear.spellFailure && view.casting.casting.length ? ` · spell failure ${gear.spellFailure}%` : ''}</p>` : ''}
-      ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}` : '';
+  const defense = `${wornTable}
+      ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}`;
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
   const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });

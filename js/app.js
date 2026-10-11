@@ -713,6 +713,7 @@ function buildDetail(kind, arg) {
   } else if (kind === 'weapon') popWeaponPart(app, Number(arg), 'attack');
   else if (kind === 'spell') popSpell(app, arg);
   else if (kind === 'item') popSource(app, arg);
+  else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
   else if (kind === 'feat') popGrantedFeat(arg);
   else if (kind === 'feature') {
     const [cid, ...rest] = arg.split('|');
