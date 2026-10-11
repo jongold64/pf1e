@@ -74,10 +74,12 @@ export function renderBuild(app, view, parts) {
 
   // Attacks: weapons with attack, damage and critical rolls; class attacks.
   const weapons = weaponSummaries(app, view);
-  const atk = weapons.map(w => `<tr><td>${esc(w.name)}${w.proficient ? '' : ' <span class="warning" title="Not proficient: −4">⚠</span>'}</td>
-      <td>${esc(w.attack)}${roll(w.rolls.attack, `${w.name} attack`)}</td>
-      <td>${esc(w.damage)}${roll(w.rolls.damage, `${w.name} damage`)}</td>
-      <td>${esc(w.critical)}${w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : ''}</td>
+  // Each number stays on one line with its d20 (b-rc).
+  const rc = (text, rollHtml) => `<span class="b-rc"><span>${esc(text)}</span>${rollHtml}</span>`;
+  const atk = weapons.map(w => `<tr><td>${esc(w.name)}${w.proficient ? '' : ' <span class="warning" title="Not proficient: −4">⚠</span>'}${w.range ? `<small class="muted b-range">${esc(w.range)}</small>` : ''}</td>
+      <td>${rc(w.attack, roll(w.rolls.attack, `${w.name} attack`))}</td>
+      <td>${rc(w.damage, roll(w.rolls.damage, `${w.name} damage`))}</td>
+      <td>${rc(w.critical, w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : '')}</td>
       <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`).join('');
   const combat = app.state.combat || {};
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
@@ -94,9 +96,10 @@ export function renderBuild(app, view, parts) {
         : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td colspan="2" class="muted">${l.uses}/day</td></tr>`),
     ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td colspan="2" class="muted">+${sm.deflection} deflection AC · ${sm.uses}/day · switch it on in Active effects</td></tr>`),
   ].join('');
-  const attacks = (atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">
+  const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
+  const attacks = noWeapons + ((atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">
       ${atk ? `<thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody>` : ''}
-      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '';
+      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '');
 
   // Defense: worn armor and shield, situational notes.
   const gear = view.gear;

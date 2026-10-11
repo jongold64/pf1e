@@ -955,3 +955,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-scroll { max-height: 520px; overflow-y: auto; padding-right: 4px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .b-skills .b-plain span, .b-skills .b-plain b { color: var(--muted); font-weight: 400; }
 .b-skills .b-has > span:first-child { font-weight: 700; }
+/* Build tab attacks: a number and its d20 on one line. */
+.b-rc { display: inline-flex; align-items: center; gap: 3px; }
+.b-rc > span { white-space: nowrap; }
+.b-range { display: block; }
