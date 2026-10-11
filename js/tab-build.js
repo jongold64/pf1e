@@ -7,6 +7,8 @@ import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
 import { armorLabel } from './tab-equipment.js';
+import { defenseSwitchesHtml } from './tab-armor.js';
+import { defenseOn } from './defense.js';
 import { dailyUses, usesLeft } from './daily.js';
 import { companionStats } from './companion.js';
 import { familiarStats } from './familiar.js';
@@ -69,7 +71,8 @@ export function renderBuild(app, view, parts) {
   // On now: effects counting, each with a switch-off.
   const onNow = [...state.buffs.filter(x => x.on !== false).map(x => ({ name: buffById.get(x.id)?.name, off: `buff:${x.id}` })).filter(x => x.name),
     ...(view.fromItems || []).map(x => ({ name: x.label })),
-    ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on)];
+    ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on),
+    ...defenseOn(state.combat, view.defenseOpts).map(x => ({ name: x.label, off: `combat:${x.key}` }))];
   const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
     : '<p class="muted">Nothing on. Switch effects on in Active effects (Build tab).</p>';
 
@@ -109,12 +112,13 @@ export function renderBuild(app, view, parts) {
   const st = app.state;
   const wornRow = (item, k) => {
     const bonus = k === 'armor' ? gear.armorBonus : gear.shieldBonus;
+    const away = k === 'shield' && gear.shieldOff;  // put away (defense switch): it adds nothing
     const pen = Math.min(0, item.check_penalty + (((st[`${k}Enh`] || 0) > 0 || st[`${k}Mw`]) && !item.mw_included ? 1 : 0) + (k === 'armor' ? gear.training || 0 : 0));
     return `<tr><td><b>${esc(armorLabel(item, st[`${k}Enh`] || 0, st[`${k}Mw`], st[`${k}Abilities`] || []))}</b>
-        <small class="muted b-range">${k === 'shield' ? 'shield' : `${esc(item.category)} armor`}</small></td>
+        <small class="muted b-range">${k === 'shield' ? `shield${gear.shieldOff ? ' · put away' : ''}` : `${esc(item.category)} armor`}</small></td>
       <td class="num"><b>${signed(bonus)}</b> <small class="muted">${k === 'armor' ? 'armor' : 'shield'}</small></td>
       <td class="num">${item.max_dex === null || item.max_dex === undefined ? '—' : signed(item.max_dex + (k === 'armor' ? gear.training || 0 : 0))}</td>
-      <td class="num">${pen}</td><td class="num">${item.spell_failure ? `${item.spell_failure}%` : '—'}</td>
+      <td class="num">${away ? '—' : pen}</td><td class="num">${item.spell_failure && !away ? `${item.spell_failure}%` : '—'}</td>
       <td>${plus('armor', item.id, item.name)}</td></tr>`;
   };
   const wornTable = worn ? `<table class="b-table b-worn"><thead><tr><th>Worn</th><th>AC</th><th>Max Dex</th><th>Check</th><th>Spell fail</th><th></th></tr></thead>
@@ -125,7 +129,8 @@ export function renderBuild(app, view, parts) {
   const notes = [...(sit.ac || []), ...(sit.fort || []), ...(sit.ref || []), ...(sit.will || [])];
   const classArmor = parts.classGear.map((g, i) => [g, i]).filter(([g]) => g.kind === 'armor')
     .map(([g, i]) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
-  const defense = `${wornTable}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
+  const defenseSw = `<div class="b-switches b-defense-sw">${defenseSwitchesHtml(view, state.combat, s => plus('defense', s.key, s.label))}</div>`;
+  const defense = `${wornTable}${defenseSw}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
       ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}`;
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.

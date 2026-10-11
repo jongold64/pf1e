@@ -57,7 +57,7 @@ export function spellFailureByClass(effects, counts) {
   return counts.filter(e => ARCANE.has(e.cls.id)).map(e => {
     const free = SPELL_FAILURE_FREE[e.cls.id]?.(e.level) || { armor: [], shield: false };
     const armorPart = effects.armor && !free.armor.includes(effects.armor.move_category || effects.armor.category) ? effects.armor.spell_failure || 0 : 0;
-    const shieldPart = effects.shield && !free.shield ? effects.shield.spell_failure || 0 : 0;
+    const shieldPart = effects.shield && !effects.shieldOff && !free.shield ? effects.shield.spell_failure || 0 : 0;
     return { cls: e.cls, chance: armorPart + shieldPart };
   });
 }

@@ -331,6 +331,10 @@
         <div id="shield-info" class="info"></div>
         </div>
       </section>
+      <section class="card wide" id="defense-card">
+        <h2>Defense options</h2>
+        <div id="defense-switches"></div>
+      </section>
       <section class="card wide">
         <form class="search-row tab-search" id="armor-search-form" role="search">
           <input id="armor-search" type="search" autocomplete="off" placeholder="Search armor and shields by name" aria-label="Search armor">
@@ -556,7 +560,7 @@
           <ul>
             <li>The whole character on one page, for play: hit points (type an amount, negative for damage, then Apply), AC, saves,
               initiative, CMB/CMD and ability scores; attacks (weapons, class attacks, channel energy, smite) with Power Attack and
-              the other switches; armor and the situational notes; what's on now (× switches an effect off); spells (prepared
+              the other switches; armor, the defensive switches and the situational notes; what's on now (× switches an effect off); spells (prepared
               spells with a box to tick when cast, or spells known); class features (with the coloured dots) and choices; feats,
               traits and racial traits; skills (every skill in a box you scroll: those with ranks or a bonus in dark text, the rest grey, and trained-only skills you can't use yet marked untrained); companions; gear and gold, with what your class makes (bonded items, constructed limbs, conjured armor such as Armor of Bones, class weapons) under From your class; and your notes.</li>
             <li>The small d20 rolls, the green <b>?</b> opens the same Details as the other tabs, and tapping a feature, feat,
@@ -758,6 +762,12 @@
             <li><b>Details</b> beside the armor or shield opens it (stats, quality and material, Update, add special abilities, take
               it off). Beside <b>Quality</b>: what masterwork and +1 to +5 do and cost for it, and its price so far. Beside
               <b>Material</b>: what the chosen material changes compared with the usual one, and every material it can be made of.</li>
+            <li><b>Defense options</b>: switches like Power Attack, for the rounds you use them: <b>shield in hand</b> (switch it off
+              when you put the shield away: no shield bonus, check penalty or spell failure), armor your class <b>conjures</b> (Armor of
+              Bones and the other oracle revelations: its armor bonus while on, instead of worn armor if higher), <b>Combat
+              Expertise</b> (if you have the feat), <b>fighting defensively</b> and <b>total defense</b> (3 ranks in Acrobatics add
+              to both). Every number counts them while on; the same switches are on the Character tab's Defense card, and the
+              ones on show in On now (× switches one off).</li>
             <li>Choose armor and a shield, and their <b>Quality</b> (masterwork or +1 to +5). AC, Dex limit, check penalty, spell
               failure and speed update for you, with warnings if you aren't proficient.</li>
             <li><b>Material</b> makes it mithral, adamantine, darkwood, dragonhide and so on (only the ones that item can be made

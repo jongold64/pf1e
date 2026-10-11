@@ -6,6 +6,7 @@ import { MONK_IDS, slowedSpeed } from './rules.js';
 import { materialsFor, withMaterial } from './materials.js';
 import { openMagicArmor } from './tab-crafting.js';
 import { armorCost, formatGp } from './equipment.js';
+import { defenseSwitches } from './defense.js';
 
 // What makes up each number on the tab, by key, for its Details popup (filled when the tab is drawn).
 const armorWhy = new Map();
@@ -186,7 +187,47 @@ function popMaterial(app, k) {
     + '<p class="hint">Choose the material in the list beside this button.</p>');
 }
 
+// Turning a defensive switch on or off (state.combat): "conjured:<id>" chooses that conjured armor; total defense can't
+// be combined with fighting defensively or Combat Expertise, so turning one on turns the other off.
+export function setCombatSwitch(combat, key, on) {
+  const c = { ...combat };
+  if (key.startsWith('conjured:')) {
+    if (on) c.conjured = key.slice(9);
+    else if (c.conjured === key.slice(9)) delete c.conjured;
+    return c;
+  }
+  c[key] = on;
+  if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; }
+  if (on && ['combatExpertise', 'fightingDefensively'].includes(key)) c.totalDefense = false;
+  return c;
+}
+
+// The defensive switches as tick boxes (Armor tab, and the Character tab's Defense card): whether each is on, what it
+// does, and a ? (detail: the attribute the ? uses; the Character tab's are its own Details buttons).
+const switchOn = (combat, s) => (s.key === 'shieldOff' ? !combat.shieldOff : s.key.startsWith('conjured:') ? combat.conjured === s.key.slice(9) : !!combat[s.key]);
+export function defenseSwitchesHtml(view, combat, why) {
+  return defenseSwitches(view.defenseOpts).map(s => `<label class="check-row"><input type="checkbox" data-b-combat="${esc(s.key)}"${s.inverted ? ' data-invert="1"' : ''}${switchOn(combat, s) ? ' checked' : ''}>
+      ${esc(s.label)} <span class="muted">(${esc(s.what)})</span>${why(s)}</label>`).join('');
+}
+
+// What a defensive switch does, in a popup.
+export function showDefenseWhy(app, key) {
+  const s = defenseSwitches(app.view.defenseOpts).find(x => x.key === key);
+  if (!s) return;
+  app.openDetail(s.label, `<table class="skill-why"><tbody>${s.rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${esc(v)}</td></tr>`).join('')}</tbody></table>
+    ${s.note ? `<p class="hint">${esc(s.note)}</p>` : ''}`);
+}
+
 export function initArmorTab(app) {
+  // Defense options: the switches, and their Details.
+  $('defense-switches').addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.bCombat) app.update({ combat: setCombatSwitch(app.state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+  });
+  $('defense-switches').addEventListener('click', e => {
+    const b = e.target.closest('[data-defense-why]');
+    if (b) { e.preventDefault(); showDefenseWhy(app, b.dataset.defenseWhy); }
+  });
   // Details beside the armor / shield, its quality and its material.
   for (const card of ['armor-select', 'shield-select']) {
     $(card).closest('section').addEventListener('click', e => {
@@ -238,6 +279,8 @@ export function initArmorTab(app) {
 export function renderArmorTab(app, view) {
   const { state } = app;
   const { gear, stats } = view;
+  $('defense-switches').innerHTML = `${defenseSwitchesHtml(view, state.combat, s => ` <button type="button" class="skill-details q-details" data-defense-why="${esc(s.key)}" aria-label="What ${esc(s.label)} does" title="Details">?</button>`)}
+    <p class="hint">Like Power Attack on the Weapons tab: switch them on for the rounds you use them, and every number counts them. They show on the Character tab too.</p>`;
   $('armor-select').value = state.armorId;
   $('shield-select').value = state.shieldId;
   $('armor-enh').value = !state.armorEnh && state.armorMw ? 'mw' : state.armorEnh;

@@ -17,7 +17,8 @@ import { setUntrainedOk,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
-import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor } from './tab-armor.js';
+import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, showDefenseWhy } from './tab-armor.js';
+import { defenseEffects, ARMOR_REVELATIONS, revelationArmor } from './defense.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -444,7 +445,9 @@ function load(saved) {
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
-  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank'].filter(k => c[k] === true).map(k => [k, true])),
+  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff']
+    .filter(k => c[k] === true).map(k => [k, true])),
+                   ...(typeof c.conjured === 'string' && c.conjured ? { conjured: c.conjured } : {}),
                    main: hand(c.main), off: hand(c.off) };
   syncClassWeapons();
 }
@@ -673,9 +676,12 @@ const CLASS_ITEMS = {
   'paladin-divine-defender/Divine Bond': ['armor', 'your bonded armor gains enhancement or special abilities'],
   'antipaladin-iron-tyrant/Fiendish Bond (Su)': ['armor', 'your bonded armor gains enhancement or special abilities'],
 };
-// Oracle revelations that conjure armor: +4 armor bonus, +2 at 7th level and every 4 levels after.
-const ARMOR_REVELATIONS = new Set(['air-barrier', 'armor-of-bones', 'ectoplasmic-armor', 'elemental-aegis', 'ice-armor', 'wood-armor']);
-const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 3) / 4));
+// Armor the character's revelations conjure (defense.js): [{ id, name, bonus }] at the oracle level.
+function conjuredArmors(counts) {
+  return counts.flatMap(({ cls, level }) => Object.entries(state.talents)
+    .filter(([slot, id]) => slot.split('|')[0] === cls.id && ARMOR_REVELATIONS.has(id))
+    .map(([, id]) => ({ id, name: data.talentsById.get(id)?.name || id, bonus: revelationArmor(level) })));
+}
 
 // What class features make, for the Build tab's Gear and Defense cards: [{ name, kind ('item' | 'armor' | 'weapon'),
 // note, text }]: the items above, conjured armor, a wizard's (or arcane sorcerer's) bonded object, kinetic blades,
@@ -756,6 +762,7 @@ function initBuild() {
     if (off) {
       const [kind, id] = off.dataset.bOff.split(':');
       if (kind === 'buff') update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, on: false } : x)) });
+      else if (kind === 'combat') update({ combat: setCombatSwitch(state.combat, off.dataset.bOff.slice(7), false) });
       else update({ customEffects: state.customEffects.map((c, i) => (i === Number(id) ? { ...c, on: false } : c)) });
       return;
     }
@@ -765,7 +772,8 @@ function initBuild() {
   });
   box.addEventListener('change', e => {
     const t = e.target;
-    if (t.dataset.bCombat) update({ combat: { ...state.combat, [t.dataset.bCombat]: t.checked } });
+    // (The shield's switch reads "in hand": ticked means not put away.)
+    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
     if (t.dataset.bCast) {
       const [cid, lv, i] = t.dataset.bCast.split('|');
       const prep = structuredClone(state.prepared);
@@ -835,6 +843,7 @@ function buildDetail(kind, arg) {
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
   else if (kind === 'gear') { const it = data.gearById?.get(arg); if (it) openDetail(it.name, gearDetails(it, false)); }
+  else if (kind === 'defense') showDefenseWhy(app, arg);
   else if (kind === 'choice') {
     const [cid, i] = arg.split('|');
     const lv = view.counts.find(e => e.cls.id === cid)?.level || 0;
@@ -1756,12 +1765,16 @@ function computeView() {
   const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name)])];
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
-  const armorGear = armorEffects({
+  const armorArgs = {
     armor: withMaterial(data.armorById.get(state.armorId), state.armorMaterial) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
     shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
     // A fighter's armor training lowers the check penalty, raises the max Dex and lets him move normally in armor.
     training: armorTrainingStage(counts),
-  });
+  };
+  // The shield put away (defense switch): still on the Armor tab, but no shield bonus, check penalty or spell failure.
+  const armorGear = state.combat.shieldOff && armorArgs.shield
+    ? { ...armorEffects({ ...armorArgs, shield: null, shieldEnh: 0, shieldMw: false }), shield: armorArgs.shield, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw, shieldOff: true }
+    : armorEffects(armorArgs);
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules, state.drawback)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
@@ -1824,7 +1837,11 @@ function computeView() {
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
                                                 shield: !!gear.shield, load: load?.load || 'light', element });
   // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
-  classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield }));
+  classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield && !gear.shieldOff }));
+  // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
+  const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
+                        shield: gear.shield?.name || '', conjured: conjuredArmors(counts) };
+  classFx.push(...defenseEffects(state.combat, defenseOpts));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
     .find(p => p?.kind === 'familiar');
@@ -1905,7 +1922,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx,
+    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx, defenseOpts,
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.
     deityWeapons: counts.some(c => DEITY_CLASSES.includes(c.cls.id)) && data.weaponsById ? favoredWeaponIds(data.deitiesById.get(state.deity), [...data.weaponsById.values()]) : [],

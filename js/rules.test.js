@@ -1884,6 +1884,24 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('a revelation weapon needs the revelation chosen', gear([{ cls: cls('oracle'), level: 7 }], {}, { 'talent:ancestral-weapon:weapon': 'longsword' }, {}), '');
 }
 
+// Defensive switches (defense.js).
+{
+  const { defenseEffects, defenseSwitches, expertiseStep, revelationArmor } = await import('./defense.js');
+  const show = list => list.map(e => `${e.target}:${e.type}:${e.value}`).join(', ');
+  check('Combat Expertise step: 1, 2 at BAB +4, 3 at +8', [0, 4, 8].map(expertiseStep).join(), '1,2,3');
+  check('Combat Expertise at BAB +5: −2 melee and CMB, +2 dodge', show(defenseEffects({ combatExpertise: true }, { bab: 5, haveFeats: ['Combat Expertise'] })),
+        'melee-attack:untyped:-2, cmb:untyped:-2, ac:dodge:2');
+  check('...but only with the feat', defenseEffects({ combatExpertise: true }, { bab: 5 }).length, 0);
+  check('fighting defensively: −4 attacks, +2 dodge (+3 with 3 Acrobatics ranks)', [0, 3].map(a => show(defenseEffects({ fightingDefensively: true }, { acrobatics: a }))).join(' | '),
+        'attack:untyped:-4, ac:dodge:2 | attack:untyped:-4, ac:dodge:3');
+  check('total defense: +4 dodge (+6 trained), alone', [0, 3].map(a => show(defenseEffects({ totalDefense: true, fightingDefensively: true, combatExpertise: true },
+    { acrobatics: a, haveFeats: ['Combat Expertise'] }))).join(' | '), 'ac:dodge:4 | ac:dodge:6');
+  check('revelation armor: +4, +6 at 7th, +8 at 11th', [1, 7, 11].map(revelationArmor).join(), '4,6,8');
+  check('conjured armor: an armor bonus', show(defenseEffects({ conjured: 'armor-of-bones' }, { conjured: [{ id: 'armor-of-bones', name: 'Armor of Bones', bonus: 6 }] })), 'ac:armor:6');
+  check('switches: shield only when one is worn', [defenseSwitches({}).map(s => s.key).join(), defenseSwitches({ shield: 'Buckler' })[0].label].join(' | '),
+        'fightingDefensively,totalDefense | Buckler in hand');
+}
+
 // Natural attacks read from class feature texts (natural-attacks.js).
 {
   const { naturalAttacks, naturalAttackRows } = await import('./natural-attacks.js');

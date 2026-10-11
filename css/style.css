@@ -974,3 +974,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Build tab Skills: the scroll bar on the left (the box reads right to left, its rows left to right). */
 .b-skills.b-scroll { direction: rtl; padding-right: 0; padding-left: 6px; }
 .b-skills.b-scroll > * { direction: ltr; }
+/* Character tab Defense card: the defensive switches, one a line. */
+.b-defense-sw { flex-direction: column; align-items: flex-start; margin-top: 6px; }
+.b-defense-sw .check-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.b-defense-sw .check-row { min-height: 0; margin: 0; padding: 1px 0; gap: 4px; }
+.b-defense-sw .check-row input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; margin: 0; }
