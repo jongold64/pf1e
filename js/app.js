@@ -37,7 +37,7 @@ import { popSpell, preparers } from './tab-spells.js';
 import { popBuff } from './tab-effects.js';
 import { popSource } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
-import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
+import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
@@ -45,7 +45,8 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
-import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining } from './class-features.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice } from './class-features.js';
+import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
@@ -410,7 +411,7 @@ function load(saved) {
                  ...(e.off === true ? { off: true } : {}),
                  ...(Array.isArray(e.on) && e.on.some(id => buffById.has(id)) ? { on: [...new Set(e.on.filter(id => buffById.has(id)))] } : {}),
                  ...(buffById.has(e.pick) ? { pick: e.pick } : {}) }));
-  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace', 'free', 'blackBlade'];
+  const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace', 'free'];
   state.weapons = (Array.isArray(state.weapons) ? state.weapons : [])
     .filter(e => e && typeof e.id === 'string')
     .map(e => ({ id: e.id, enh: Number.isInteger(e.enh) && e.enh >= 0 && e.enh <= 5 ? e.enh : 0,
@@ -424,7 +425,9 @@ function load(saved) {
                    ...(AMMO_MATERIALS[e.ammo.material] ? { material: e.ammo.material } : {}),
                    enh: Number.isInteger(e.ammo.enh) && e.ammo.enh >= 0 && e.ammo.enh <= 5 ? e.ammo.enh : 0 } } : {}),
                  // A composite bow's strength rating (0-10); none on older saves (counts as your Strength).
-                 ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}) }));
+                 ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}),
+                 // A weapon a class feature made (its archetype-choices id); older saves marked the black blade blackBlade.
+                 ...(typeof e.classGear === 'string' ? { classGear: e.classGear } : e.blackBlade === true ? { classGear: 'magus-bladebound:blade' } : {}) }));
   // Crafted items (Magic Items tab's Crafting card): abilities on worn armor, and potions, scrolls and wands.
   state.armorAbilities = cleanAbilities(state.armorAbilities);
   state.shieldAbilities = cleanAbilities(state.shieldAbilities);
@@ -443,20 +446,41 @@ function load(saved) {
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
   state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank'].filter(k => c[k] === true).map(k => [k, true])),
                    main: hand(c.main), off: hand(c.off) };
+  syncClassWeapons();
 }
 
 function syncDerived() {
   state.level = state.classLevels.length;
   state.cls = state.classLevels[0];
-  // A black blade's enhancement bonus follows the bladebound magus's level (archetype-choices.js); it's masterwork
-  // and free. Without the archetype (or the choice) it's an ordinary weapon again.
-  const bladeLevel = (state.archetypes.magus || []).includes('magus-bladebound') && state.archChoices['magus-bladebound:blade']
-    ? state.classLevels.filter(id => id === 'magus').length : 0;
-  if (Array.isArray(state.weapons)) state.weapons = state.weapons.map(w => {
+  syncClassWeapons();
+}
+
+// Weapons class features make (black blade, battered gun, phantom weapon, psychic and shadow weapons, oracle revelation
+// weapons: archetype-choices.js `gear`) are in the weapons list, free, with the enhancement bonus, masterwork, material
+// and proficiency their class level gives. One comes when its choice is made and goes when the class feature (or the
+// choice) does. gearTag and gearNote are worked out here, not saved.
+function syncClassWeapons() {
+  if (!Array.isArray(state.weapons)) return;
+  const counts = [...new Set(state.classLevels)].map(id => ({ cls: { id }, level: state.classLevels.filter(x => x === id).length }));
+  const gear = new Map(archetypeChoiceEffects(counts, state.archetypes || {}, state.archChoices || {}, state.talents || {}).gear.map(g => [g.id, g]));
+  const made = g => ({ id: g.weapon, enh: g.enh, free: true, classGear: g.id, gearTag: g.tag, gearNote: g.note,
+                       ...(g.masterwork ? { masterwork: true } : {}), ...(g.proficient ? { proficient: true } : {}), ...(g.material ? { material: g.material } : {}) });
+  // (A save from before classGear marked the black blade blackBlade.)
+  const marked = state.weapons.map(w => {
     if (!w.blackBlade) return w;
-    if (!bladeLevel) { const { blackBlade: _, free: __, ...rest } = w; return rest; }
-    return { ...w, enh: blackBlade(bladeLevel)?.enh || 0, masterwork: true, free: true };
+    const { blackBlade: _, ...rest } = w;
+    return { ...rest, classGear: rest.classGear || 'magus-bladebound:blade' };
   });
+  const weapons = marked.filter(w => !w.classGear || gear.has(w.classGear)).map(w => {
+    if (!w.classGear) return w;
+    const g = gear.get(w.classGear);
+    // Same weapon: keep its own extras (abilities, size, feats ticked); a different one starts afresh.
+    if (w.id !== g.weapon) return made(g);
+    const { masterwork: _m, material: _x, ...rest } = w;
+    return { ...rest, ...made(g) };
+  });
+  for (const g of gear.values()) if (!weapons.some(w => w.classGear === g.id)) weapons.push(made(g));
+  state.weapons = weapons;
 }
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
@@ -589,6 +613,106 @@ async function drawBuild() {
   renderBuild(app, view, buildParts());
 }
 
+// Archetype features that read like natural attacks but aren't the character's own: shapes taken (like wild shape),
+// and attacks given to a phantom, an animal companion or allies.
+const NOT_OWN_NATURAL = new Set(['druid-devolutionist/Devolution (Sp)', 'druid-draconic-druid/Dragon Shape', 'druid-naga-aspirant/Naga Shape (Su)',
+  'druid-naga-aspirant/Augmented Form (Su)', 'druid-supernaturalist/Animal Spirit (Su)', 'hunter-totem-bonded/Shared Strength (Su)',
+  'skald-bekyar-demon-dancer/Fiendish Maw (Su)', 'spiritualist-geist-channeler/Geistform Phantom (Su)', 'spiritualist-grim-apostle/Bloodlust (Su)',
+  'bard-watersinger/Bardic Performance', 'medium-fiend-keeper/Dark Communion (Su)']);
+// Class features (by class) that give natural attacks, from the level they're on the class table.
+const NATURAL_FEATURES = { shifter: ['Shifter Claws'], 'dragon-disciple': ['Dragon Bite'] };
+
+// Natural attacks the character's class features give (natural-attacks.js reads them from the rules text): chosen
+// bloodline and other path powers, talents (rage powers, discoveries, revelations, hexes...), archetype features and a
+// few class features, at the class level. A shifter aspect is a form taken, like wild shape, so it isn't listed.
+function classNaturalAttacks() {
+  const small = view.size === 'Small';
+  const out = [];
+  const add = (text, level, from, opts = {}) => {
+    for (const a of naturalAttacks(text, level, { small })) out.push({ attack: { ...a, ...(opts.when && !a.when ? { when: opts.when } : {}) }, from });
+  };
+  for (const { cls, level } of view.counts) {
+    const bloodrager = cls.id === 'bloodrager';
+    for (const { path } of pathsFor(cls.id)) {
+      if (!path || ['eidolon-subtype', 'base-form'].includes(path.kind)) continue;
+      for (const p of path.powers || []) if ((p.level || 1) <= level) add(p.text, level, `${p.name} (${path.name})`, bloodrager ? { when: 'while bloodraging' } : {});
+    }
+    for (const [slot, id] of Object.entries(state.talents)) {
+      const t = slot.split('|')[0] === cls.id && data.talentsById.get(id);
+      if (t && t.kind !== 'shifter-aspect') add(t.text, level, t.name);
+    }
+    for (const a of chosenArchetypes(cls.id)) {
+      for (const f of a.features || []) {
+        if ((f.level || 1) <= level && !NOT_OWN_NATURAL.has(`${a.id}/${f.name}`)) add(f.text, level, `${f.name.replace(/\s*\((?:Ex|Su|Sp)\)$/, '')} (${a.name})`);
+      }
+      // Feral champion: sacred claws, two primary claws with the warpriest's sacred weapon damage.
+      if (a.id === 'warpriest-feral-champion') {
+        out.push({ attack: { name: 'Claw', count: 2, dice: sacredWeaponDice(level, view.size), strMult: 1, extra: [], when: '', choose: false }, from: 'Sacred claws (Feral champion)' });
+      }
+    }
+    const reached = cls.progression.slice(0, level).flatMap(r => r.special || []).map(n => n.toLowerCase());
+    for (const name of NATURAL_FEATURES[cls.id] || []) {
+      const f = (cls.features || []).find(x => x.name === name);
+      if (f && reached.some(n => n.startsWith(name.toLowerCase()))) add(f.text, level, name);
+    }
+  }
+  return out;
+}
+
+// Items, armor and weapons class features make that aren't one fixed weapon on the weapons list (those are added there:
+// syncClassWeapons): archetype features by "archetype id/feature name" -> [kind, note].
+const CLASS_ITEMS = {
+  'brawler-constructed-pugilist/Constructed Limb (Ex)': ['item', 'a prosthetic limb built for fighting'],
+  'magus-jistkan-artificer/Golem Arm (Ex)': ['weapon', 'a masterwork golem arm, used like an unarmed strike'],
+  'magus-eldritch-archer/Ranged Weapon Bond (Ex)': ['weapon', 'a ranged weapon as your arcane bonded object'],
+  'witch-bonded-witch/Bonded Item (Sp)': ['item', 'a bonded item instead of a familiar'],
+  'wizard-undead-master/Corpse Bond (Su)': ['item', 'a bonded object of bone (or an undead companion)'],
+  'investigator-antiquarian/Relic Magic (Su)': ['item', 'religious trinkets that serve as your formula book'],
+  'spiritualist-ectoplasmatist/Ectoplasmic Lash (Su)': ['weapon', 'one or two ectoplasmic lashes'],
+  'paladin-legate/Celestial Armor (Sp)': ['armor', 'conjured armor, as instant armor'],
+  'paladin-divine-defender/Divine Bond': ['armor', 'your bonded armor gains enhancement or special abilities'],
+  'antipaladin-iron-tyrant/Fiendish Bond (Su)': ['armor', 'your bonded armor gains enhancement or special abilities'],
+};
+// Oracle revelations that conjure armor: +4 armor bonus, +2 at 7th level and every 4 levels after.
+const ARMOR_REVELATIONS = new Set(['air-barrier', 'armor-of-bones', 'ectoplasmic-armor', 'elemental-aegis', 'ice-armor', 'wood-armor']);
+const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 3) / 4));
+
+// What class features make, for the Build tab's Gear and Defense cards: [{ name, kind ('item' | 'armor' | 'weapon'),
+// note, text }]: the items above, conjured armor, a wizard's (or arcane sorcerer's) bonded object, kinetic blades,
+// and the weapons on the weapons list that class features made (named; their numbers are on the Attacks card).
+function classGearNotes() {
+  const out = [];
+  for (const { cls, level } of view.counts) {
+    for (const a of chosenArchetypes(cls.id)) {
+      for (const f of a.features || []) {
+        const item = CLASS_ITEMS[`${a.id}/${f.name}`];
+        if (item && (f.level || 1) <= level) out.push({ name: f.name.replace(/\s*\((?:Ex|Su|Sp)\)$/, ''), kind: item[0], note: `${item[1]} (${a.name})`, text: f.text });
+      }
+    }
+    for (const [slot, id] of Object.entries(state.talents)) {
+      const t = slot.split('|')[0] === cls.id && data.talentsById.get(id);
+      if (!t) continue;
+      if (ARMOR_REVELATIONS.has(t.id)) out.push({ name: t.name, kind: 'armor', note: `+${revelationArmor(level)} armor bonus when you conjure it (revelation; it doesn't stack with worn armor)`, text: t.text });
+      if (['kinetic-blade-infusion', 'kinetic-whip-infusion'].includes(t.id)) out.push({ name: t.name.replace(/ Infusion$/, ''), kind: 'weapon', note: 'a weapon of your element: one kinetic blast as a melee attack (form infusion)', text: t.text });
+    }
+    const bond = pathOf(cls.id, 'arcane-bond');
+    if (bond?.kind === 'arcane-bond' && !/familiar/i.test(bond.name)) out.push({ name: bond.name, kind: 'item', note: `arcane bond (${cls.name}): once a day, cast any spell in your spellbook`, text: bond.text || '' });
+  }
+  for (const w of state.weapons.filter(x => x.classGear)) {
+    const def = data.weaponsById?.get(w.id);
+    if (def) out.push({ name: `${def.name} (${w.gearTag})`, kind: 'weapon', note: 'on your weapons list, free; its numbers are on the Attacks card', text: w.gearNote || '' });
+  }
+  return out;
+}
+
+// Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
+function allClassAttacks(stats) {
+  const melee = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
+  return [...classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
+    blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }),
+    ...naturalAttackRows(classNaturalAttacks(), { melee, str: stats.mod.str })];
+}
+
 // What the Build tab needs from here: the name, skills worth showing, class choice lines, class attacks, spontaneous
 // casters' spells a day, prepared spells, and each class's casting ability.
 function buildParts() {
@@ -601,13 +725,12 @@ function buildParts() {
     .filter(x => x.table && x.cls.id !== 'arcanist' && x.table.rows.some(r => r.known !== null));
   const prepIds = new Set(preparers(app, view).map(p => p.cls.id));
   return {
-    name: characterLabel(state), skills, spontaneous, powers: dailyPowers(),
+    name: characterLabel(state), skills, spontaneous, powers: dailyPowers(), classGear: classGearNotes(),
     bladebound: (state.archetypes.magus || []).includes('magus-bladebound'),
     castingAbility: cid => CASTING_ABILITY[cid],
     prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
       .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
-    classAttacks: classAttacks(view.counts, { bab: view.stats.bab, mod: view.stats.mod, fx: view.stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
-      blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }),
+    classAttacks: allClassAttacks(view.stats),
     choices: (cid, lv) => [...pathLines(cid, lv), ...domainLines(cid), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
       const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
         .map(s => data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]);
@@ -714,6 +837,7 @@ function buildDetail(kind, arg) {
   else if (kind === 'spell') popSpell(app, arg);
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
+  else if (kind === 'classgear') { const g = classGearNotes()[Number(arg)]; if (g) openDetail(g.name, `<p class="hint">${esc(g.note)}</p>${paragraphs(g.text || '')}`); }
   else if (kind === 'feat') popGrantedFeat(arg);
   else if (kind === 'chosenfeat') {
     const f = data.featsById.get(arg);
@@ -1183,14 +1307,13 @@ function buildControls() {
   $('class-info').addEventListener('change', e => {
     const cid = e.target.dataset.archetypeAdd;
     if (cid && e.target.value) update({ archetypes: { ...state.archetypes, [cid]: [...(state.archetypes[cid] || []), e.target.value] } });
-    // An archetype's weapon choice (kensai, black blade). The black blade is added to your weapons, free.
+    // An archetype's weapon choice (kensai, black blade, battered gun...). A weapon a class feature makes is added to
+    // your weapons, free (syncClassWeapons).
     const choice = e.target.dataset.archChoice;
     if (choice) {
       const archChoices = { ...state.archChoices, [choice]: e.target.value };
       if (!e.target.value) delete archChoices[choice];
-      const blade = choice.endsWith(':blade');
-      const weapons = blade ? [...state.weapons.filter(w => !w.blackBlade), ...(e.target.value ? [{ id: e.target.value, enh: 0, blackBlade: true, free: true }] : [])] : state.weapons;
-      update({ archChoices, weapons });
+      update({ archChoices });
     }
   });
   $('class-info').addEventListener('click', e => {
@@ -1624,7 +1747,7 @@ function computeView() {
     return { slotId: s.id, feat: f.name, kind: CHOICE_FEATS[f.name], value: saved?.feat === f.id ? saved.value : '' };
   });
   // Archetype choices: the kensai's Weapon Focus with the chosen weapon, the black blade's Alertness.
-  const archFx = archetypeChoiceEffects(counts, state.archetypes, state.archChoices);
+  const archFx = archetypeChoiceEffects(counts, state.archetypes, state.archChoices, state.talents);
   const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name)])];
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
@@ -2754,6 +2877,7 @@ function renderClasses(view) {
       ${pathPicker(e.cls, e.level, openFeatures)}
       ${talentPicker(e.cls, e.level, openFeatures)}
       ${archChoiceHtml({ id: e.cls.id }, e.level)}
+      ${choiceSources(e.cls.id, {}, state.talents).slice(1).map(id => archChoiceHtml({ id }, e.level)).join('')}
       ${archetypePicker(e.cls, e.level, openFeatures)}
       <ol class="features">${alsoRow}${features}</ol>
       <p class="hint how-legend">${['counted', 'roll', 'effect', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.</p>
@@ -2934,10 +3058,9 @@ function render() {
       return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
         <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
     }).join('')}
-    ${classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
-      blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }).map(c => `<div class="defense-row channel-row">
+    ${allClassAttacks(stats).map(c => `<div class="defense-row channel-row">
       <span>${esc(c.name)}<small>${c.attack !== null ? `${esc(signed(c.attack))} · ` : ''}${esc(c.note)}${c.uses ? ` · ${c.uses}/day` : ''}</small></span>
-      <b>${esc(c.dice)}</b>${rollButton(c.attack !== null ? { title: c.name, check: c.name, groups: [{ attacks: [c.attack], damage: c.dice, threat: 20, mult: 2 }] }
+      <b>${esc(c.dice)}</b>${rollButton(c.attack !== null ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
         : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] })}</div>`).join('')}
     ${smite(stats).map(sm => `<div class="defense-row channel-row"><span>${esc(sm.name)}<small>+${sm.attack} attack, +${sm.damage} damage
       (+${sm.firstHit} on the first hit against ${sm.name === 'Smite evil' ? 'evil outsiders, evil dragons and undead' : 'good outsiders, good dragons, and good clerics and paladins'}),

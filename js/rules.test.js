@@ -1861,6 +1861,50 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('kensai in armor: no canny defense', kensaiEffects([{ cls: magus, level: 7 }], { magus: ['magus-kensai'] }, { mod: { int: 4 }, armor: true }).map(e => e.target).join(), 'init');
   const sp = d => spellsPerDay({ cls: magus, level: 7, scores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, diminished: d }).rows.map(r => r.total).join();
   check('diminished spellcasting: one fewer spell of each level from 1st', `${sp(false)}|${sp(true)}`, '5,4,3,1|5,3,2,0');
+  // Weapons class features make (gear): enhancement by class level, masterwork, proficiency.
+  const gear = (counts, archetypes, choices, talents) => archetypeChoiceEffects(counts, archetypes, choices, talents).gear
+    .map(g => `${g.weapon}+${g.enh}${g.masterwork ? ' mw' : ''}${g.proficient ? ' prof' : ''}${g.material ? ` ${g.material}` : ''}`).join();
+  check('black blade at magus 5: +2, masterwork', gear([{ cls: magus, level: 5 }], { magus: ['magus-bladebound'] }, { 'magus-bladebound:blade': 'longsword' }), 'longsword+2 mw');
+  check('gunslinger 1: battered pistol, not a gun training pick', [gear([{ cls: cls('gunslinger'), level: 1 }], {}, { 'gunslinger:gunsmith': 'pistol' }),
+    archetypeChoiceEffects([{ cls: cls('gunslinger'), level: 1 }], {}, { 'gunslinger:gunsmith': 'pistol' }).picks.gun.length].join('|'), 'pistol+0 prof|0');
+  check('steel hound: battered gun from 2nd level', [1, 2].map(lv => gear([{ cls: cls('investigator'), level: lv }], { investigator: ['investigator-steel-hound'] }, { 'investigator-steel-hound:gun': 'musket' })).join('|'), '|musket+0 prof');
+  const phantom = lv => gear([{ cls: cls('spiritualist'), level: lv }], { spiritualist: ['spiritualist-phantom-blade'] }, { 'spiritualist-phantom-blade:weapon': 'rapier' });
+  check('phantom weapon: +0 (masterwork) at 1st, +1 at 3rd, +3 at 9th, +5 at 17th', [1, 3, 9, 17].map(phantom).join('|'), 'rapier+0 mw|rapier+1 mw|rapier+3 mw|rapier+5 mw');
+  const mind = lv => gear([{ cls: magus, level: lv }], { magus: ['magus-mindblade'] }, { 'magus-mindblade:weapon': 'longsword' });
+  check('psychic weapon: +1 at 1st, +2 at 3rd, +3 at 6th, +5 at 12th', [1, 3, 6, 12].map(mind).join('|'), 'longsword+1 prof|longsword+2 prof|longsword+3 prof|longsword+5 prof');
+  const shadow = lv => gear([{ cls: cls('fighter'), level: lv }], { fighter: ['fighter-gloomblade'] }, { 'fighter-gloomblade:weapon': 'longsword' });
+  check('shadow weapon: none at 2nd, +1 at 3rd, +2 at 6th, +5 at 18th', [2, 3, 6, 18].map(shadow).join('|'), '|longsword+1|longsword+2|longsword+5');
+  const oracle = (id, lv) => gear([{ cls: cls('oracle'), level: lv }], {}, { [`talent:${id}:weapon`]: 'longsword' }, { 'oracle|revelation|1': id });
+  check('ancestral weapon (revelation): +0 at 1st, masterwork at 3rd, +1 at 7th, +3 at 19th', [1, 3, 7, 19].map(lv => oracle('ancestral-weapon', lv)).join('|'),
+    'longsword+0 prof|longsword+0 mw prof|longsword+1 mw prof|longsword+3 mw prof');
+  check('iron weapon: cold iron at 3rd, adamantine at 11th', [3, 11].map(lv => oracle('iron-weapon', lv)).join('|'), 'longsword+0 prof cold-iron|longsword+1 prof adamantine');
+  check('a revelation weapon needs the revelation chosen', gear([{ cls: cls('oracle'), level: 7 }], {}, { 'talent:ancestral-weapon:weapon': 'longsword' }, {}), '');
+}
+
+// Natural attacks read from class feature texts (natural-attacks.js).
+{
+  const { naturalAttacks, naturalAttackRows } = await import('./natural-attacks.js');
+  const data = { bloodlines: await fetch('data/bloodlines.json').then(r => r.json()), talents: await fetch('data/talents.json').then(r => r.json()) };
+  const show = list => list.map(a => `${a.count} ${a.name} ${a.dice}${a.extra.length ? ` ${a.extra.join(' ')}` : ''}${a.when ? ` (${a.when})` : ''}${a.choose ? ' (choose)' : ''}`).join('; ');
+  const bl = id => data.bloodlines.find(b => b.id === id);
+  const power = (id, name) => bl(id).powers.find(p => p.name === name).text;
+  const abyssal = power('sorcerer-abyssal', 'Claws');
+  check('abyssal claws: 2 × 1d4 at 1st, 1d6 at 7th, +1d6 fire at 11th', [1, 7, 11].map(lv => show(naturalAttacks(abyssal, lv))).join(' | '),
+    '2 Claw 1d4 | 2 Claw 1d6 | 2 Claw 1d6 +1d6 fire');
+  check('abyssal claws, Small: 1d3 at 1st', show(naturalAttacks(abyssal, 1, { small: true })), '2 Claw 1d3');
+  check('draconic bloodrager claws at 12th: 1d8, +1d6 energy', show(naturalAttacks(power('bloodrager-draconic', 'Claws'), 12)), '2 Claw 1d8 +1d6 energy');
+  check('naga poison fangs: the poison is not a bite', naturalAttacks(power('bloodrager-naga', 'Poison Fangs'), 12).length, 0);
+  const talent = id => data.talents.find(t => t.id === id).text;
+  check('feral mutagen: a bite and two claws with the mutagen', show(naturalAttacks(talent('feral-mutagen'), 2)), '1 Bite 1d8 (with your mutagen); 2 Claw 1d6 (with your mutagen)');
+  check('feral shifting: a bite or two claws', show(naturalAttacks(talent('feral-shifting'), 1)), '1 Bite 1d6 (choose); 2 Claw 1d4 (choose)');
+  check('animal fury: bite while raging, Small 1d3', show(naturalAttacks(talent('animal-fury'), 1, { small: true })), '1 Bite 1d3 (while raging)');
+  check("beast's gift (allies only): none", naturalAttacks(talent('beasts-gift'), 10).length, 0);
+  const shifter = cls('shifter').features.find(f => f.name === 'Shifter Claws').text;
+  check('shifter claws: 1d4, 1d6 at 7th, 1d8 at 11th, 1d10 at 13th', [1, 7, 11, 13].map(lv => naturalAttacks(shifter, lv)[0].dice).join(), '1d4,1d6,1d8,1d10');
+  const bite = naturalAttacks(cls('dragon-disciple').features.find(f => f.name === 'Dragon Bite').text, 2)[0];
+  check('dragon bite: 1d6 with 1½ × Strength', `${bite.dice} x${bite.strMult}`, '1d6 x1.5');
+  check('rows: dragon bite +4 Str → 1d6+6; claws are two attacks', [naturalAttackRows([{ attack: bite, from: 'Dragon Bite' }], { melee: 7, str: 4 })[0].dice,
+    naturalAttackRows([{ attack: naturalAttacks(abyssal, 1)[0], from: 'Claws' }], { melee: 7, str: 4 })[0].count].join(), '1d6+6,2');
 }
 
 // Alternate racial traits from Archives of Nethys name what they replace in `replaces`.

@@ -87,7 +87,7 @@ export function renderBuild(app, view, parts) {
     .filter(([, f]) => view.haveFeats.includes(f))
     .map(([k, f]) => `<label class="b-switch"><input type="checkbox" data-b-combat="${k}"${combat[k] ? ' checked' : ''}> ${esc(f)}</label>`).join('');
   const classAtk = parts.classAttacks.map(c => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
-      ? { title: c.name, check: c.name, groups: [{ attacks: [c.attack], damage: c.dice, threat: 20, mult: 2 }] }
+      ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
       : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td colspan="2" class="muted">${esc(c.note)}</td></tr>`).join('');
   // Channel energy, lay on hands / touch of corruption (melee touch) and smite (Character tab rows), here too.
   const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
@@ -123,7 +123,9 @@ export function renderBuild(app, view, parts) {
     : '<p class="hint">No armor or shield: wear them on the Armor tab and they show here with their bonuses.</p>';
   const sit = view.situational || {};
   const notes = [...(sit.ac || []), ...(sit.fort || []), ...(sit.ref || []), ...(sit.will || [])];
-  const defense = `${wornTable}
+  const classArmor = parts.classGear.map((g, i) => [g, i]).filter(([g]) => g.kind === 'armor')
+    .map(([g, i]) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
+  const defense = `${wornTable}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
       ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}`;
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
@@ -175,7 +177,10 @@ export function renderBuild(app, view, parts) {
   }).join('');
   const made = state.craftedItems.map(e => `<span class="b-term">${esc(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}`)}${e.qty > 1 ? ` ×${e.qty}` : ''}</span>`).join('');
   const inv = state.inventory.map(e => { const it = data.gearById?.get(e.id); return it ? `${it.name}${e.qty > 1 ? ` ×${e.qty}` : ''}` : null; }).filter(Boolean);
-  const gearHtml = `${magic ? `<div class="b-terms">${magic}</div>` : ''}${made ? `<div class="b-terms">${made}</div>` : ''}
+  // What class features make (bonded items, constructed limbs, conjured armor, class weapons), each with a ?.
+  const fromClass = parts.classGear.map((g, i) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
+  const gearHtml = `${fromClass ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${fromClass}</div>` : ''}
+    ${magic ? `<div class="b-terms">${magic}</div>` : ''}${made ? `<div class="b-terms">${made}</div>` : ''}
     ${inv.length ? `<p class="small"><b>Gear:</b> ${esc(inv.join(', '))}</p>` : ''}
     <p class="small"><b>Gold:</b> ${state.gold === null || state.gold === undefined ? 'starting gold (set it on the Equipment tab)' : `${esc(String(state.gold))} gp`}${view.load ? ` · load ${esc(view.load.load)} (${view.load.weight} lbs.)` : ''}</p>`;
 

@@ -515,6 +515,6 @@ export function weaponLabel(weapon, entry = {}) {
     .filter(Boolean).join(' ').replace(/^[a-z]/, c => c.toUpperCase());
   const rated = isComposite(weapon) && Number.isInteger(entry.strRating) && !(entry.abilities || []).some(a => a.id === 'adaptive')
     ? ` (+${entry.strRating} Str)` : '';
-  const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated + (entry.blackBlade ? ' (black blade)' : '');
+  const name = (entry.size ? `${weapon.name} (${entry.size})` : weapon.name) + rated + (entry.gearTag ? ` (${entry.gearTag})` : '');
   return prefix ? `${prefix} ${name}` : name;
 }

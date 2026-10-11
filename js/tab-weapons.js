@@ -310,7 +310,7 @@ export function popWeaponPart(app, i, part) {
   if (part === 'cost') {
     const rows = weaponCostRows(w, e);
     app.openDetail(`Price: ${name}`, `${table(null, rows.map(r => [r.label, `${r.gp < 0 ? '−' : ''}${formatGp(Math.abs(r.gp))}`]))}
-      ${e.free ? `<p>Worth ${esc(formatGp(rows.reduce((n, r) => n + r.gp, 0)))}, but <b>free</b>${e.blackBlade ? ' (your black blade)' : ' (found, a gift or a class feature)'}: no gold is spent on it.</p>` : ''}
+      ${e.free ? `<p>Worth ${esc(formatGp(rows.reduce((n, r) => n + r.gp, 0)))}, but <b>free</b>${e.gearTag ? ` (your ${esc(e.gearTag)})` : ' (found, a gift or a class feature)'}: no gold is spent on it.</p>` : ''}
       <p><b>Total: ${esc(formatGp(weaponCost(w, e)))}</b></p>
       <p class="hint">Magic weapons are always masterwork (300 gp). A weapon's magic price is its total bonus (enhancement plus
         special abilities' bonuses) squared × 2,000 gp. This price counts on the Equipment tab.</p>`);
@@ -469,7 +469,7 @@ export function renderMyWeapons(app, view) {
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
         ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
           Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
-        ${e.blackBlade ? '<p class="hint">Your black blade (bladebound): free; its enhancement bonus follows your magus level. Change it on the Classes tab.</p>'
+        ${e.classGear ? `<p class="hint">${esc(e.gearNote || `Your ${e.gearTag}.`)} Free, from a class feature: change or remove it with its choice on the Classes tab.</p>`
           : `<label class="check-row small"><input type="checkbox" data-weapon-flag="free" data-index="${i}" ${e.free ? 'checked' : ''}>
           Free: found, a gift or from a class feature (costs no gold)</label>`}
         ${laceFits(w) ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="lace" data-index="${i}" ${e.lace ? 'checked' : ''}>

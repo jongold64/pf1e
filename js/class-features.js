@@ -163,6 +163,8 @@ export function weaponTraining(counts, weapon, fighterGroups = [], { mod = {}, p
 // (1d6 Medium at 1st, 1d8 at 5th, 1d10 at 10th, 2d6 at 15th, 2d8 at 20th; Small one step less) and brawler close weapon
 // mastery (5th: a close weapon deals the unarmed damage of a brawler 4 levels lower). { dice, label } or null.
 const SACRED = { Medium: ['1d6', '1d8', '1d10', '2d6', '2d8'], Small: ['1d4', '1d6', '1d8', '1d10', '2d6'] };
+// A warpriest's sacred weapon damage at a warpriest level (5th, 10th, 15th, 20th step it up).
+export const sacredWeaponDice = (level, size = 'Medium') => SACRED[size === 'Small' ? 'Small' : 'Medium'][level >= 20 ? 4 : level >= 15 ? 3 : level >= 10 ? 2 : level >= 5 ? 1 : 0];
 const BRAWLER_UNARMED = { Medium: ['1d6', '1d8', '1d10', '2d6', '2d8', '2d10'], Small: ['1d4', '1d6', '1d8', '1d10', '2d6', '2d8'] };
 export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' } = {}) {
   const sz = size === 'Small' ? 'Small' : 'Medium';
