@@ -979,3 +979,6 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-defense-sw .check-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .b-defense-sw .check-row { min-height: 0; margin: 0; padding: 1px 0; gap: 4px; }
 .b-defense-sw .check-row input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; margin: 0; }
+/* Character tab: everything on the left, the skills (all of them, no scrolling) on the right. */
+.b-main { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr); gap: 8px; align-items: start; }
+@media (max-width: 760px) { .b-main { grid-template-columns: 1fr; } }

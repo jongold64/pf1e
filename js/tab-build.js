@@ -170,11 +170,11 @@ export function renderBuild(app, view, parts) {
     ${view.traits.length ? `<h4 class="b-sub">Traits</h4><div class="b-feats">${view.traits.map(t => row(t.name, t.category ? `${t.category} trait` : '', 'trait', t.id)).join('')}</div>` : ''}
     ${racial.length ? `<h4 class="b-sub">Racial traits</h4><div class="b-feats">${racial.map(t => row(t.name, '', 'racial', t.name)).join('')}</div>` : ''}`;
 
-  // Skills: every skill in a scrolling box, two columns; ones with ranks or a bonus beyond the ability modifier stand out,
+  // Skills: every skill, in its own column on the right (no scrolling); ones with ranks or a bonus beyond the ability modifier stand out,
   // the rest are greyed; a trained-only skill without ranks says so.
-  const skills = parts.skills.length ? `<div class="b-skills b-scroll">${parts.skills.map(s => `<div class="${s.ranks > 0 || s.bonus !== 0 ? 'b-has' : 'b-plain'}">
+  const skills = parts.skills.length ? `<div class="b-skills">${parts.skills.map(s => `<div class="${s.ranks > 0 || s.bonus !== 0 ? 'b-has' : 'b-plain'}">
       <span>${esc(s.name)}${s.usable ? '' : ' <small class="muted">untrained</small>'}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>
-    <p class="hint">${parts.skills.filter(s => s.ranks > 0).length} with ranks · scroll for every skill.</p>` : '';
+    <p class="hint">${parts.skills.filter(s => s.ranks > 0).length} with ranks.</p>` : '';
 
   // Companions.
   const comps = renderCompanions(app, view);
@@ -201,13 +201,14 @@ export function renderBuild(app, view, parts) {
   const left = [card('Defense and numbers', core), card('Attacks', attacks), card('Defense', defense)];
   const spellCard = card('Spells', spells, ' b-wide');
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
+  // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
   box.innerHTML = `${head}
-    <div class="b-columns">
-      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}${card('Gear', gearHtml)}${notesCard}</div>
-      <div>${card('Daily uses', uses)}${card('Class features and choices', features)}${card('Feats and traits', feats)}${card('Skills', skills)}</div>
-    </div>
-    ${caster ? '' : spellCard}
-    ${comps}`;
+    <div class="b-main">
+      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}${card('Daily uses', uses)}
+        ${card('Class features and choices', features)}${card('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
+        ${card('Gear', gearHtml)}${notesCard}</div>
+      <div>${card('Skills', skills)}</div>
+    </div>`;
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
 }
 
@@ -271,7 +272,7 @@ function renderCompanions(app, view) {
       <ul class="b-notes">${s.attacks.map(x => `<li>${x.count > 1 ? `${x.count} ` : ''}${esc(x.name)} ${esc(signed(x.bonus))} (${esc(x.damage)})
         ${roll({ title: `${name}: ${x.name}`, check: x.name, groups: [{ attacks: Array(x.count).fill(x.bonus), damage: x.damage, threat: 20, mult: 2 }] }, x.name)}</li>`).join('')}</ul>`, ' b-wide'));
   }
-  return out.length ? `<div class="b-columns">${out.join('')}</div>` : '';
+  return out.join('');
 }
 
 // The daily uses popup: each ability with a box per use (or −/+ for long lists), and New day.
