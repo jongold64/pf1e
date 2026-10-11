@@ -684,7 +684,7 @@ function conjuredArmors(counts) {
 }
 
 // What class features make, for the Build tab's Gear and Defense cards: [{ name, kind ('item' | 'armor' | 'weapon'),
-// note, text }]: the items above, conjured armor, a wizard's (or arcane sorcerer's) bonded object, kinetic blades,
+// note, text }]: the items above (conjured armor is a defense switch instead), a wizard's (or arcane sorcerer's) bonded object, kinetic blades,
 // and the weapons on the weapons list that class features made (named; their numbers are on the Attacks card).
 function classGearNotes() {
   const out = [];
@@ -698,7 +698,6 @@ function classGearNotes() {
     for (const [slot, id] of Object.entries(state.talents)) {
       const t = slot.split('|')[0] === cls.id && data.talentsById.get(id);
       if (!t) continue;
-      if (ARMOR_REVELATIONS.has(t.id)) out.push({ name: t.name, kind: 'armor', note: `+${revelationArmor(level)} armor bonus when you conjure it (revelation; it doesn't stack with worn armor)`, text: t.text });
       if (['kinetic-blade-infusion', 'kinetic-whip-infusion'].includes(t.id)) out.push({ name: t.name.replace(/ Infusion$/, ''), kind: 'weapon', note: 'a weapon of your element: one kinetic blast as a melee attack (form infusion)', text: t.text });
     }
     const bond = pathOf(cls.id, 'arcane-bond');
