@@ -284,7 +284,7 @@ export function abilityPicker(app, category, picks, attrs) {
       `<option value="${esc(o.label)}"${o.label === pick.option ? ' selected' : ''}>${esc(o.label)} (${o.bonus ? `+${o.bonus} bonus` : formatGp(o.gp)})</option>`).join('')}</select>` : '';
     const o = opts.find(x => x.label === pick.option) || opts[0];
     return `<li><b>${esc(a.name)}</b> ${which} <small class="muted">${o.bonus ? `+${o.bonus} bonus` : `+${esc(formatGp(o.gp))}`} · caster level ${esc(a.cl ?? '?')}</small>
-      <button type="button" class="skill-details" data-ability-pop="${esc(a.id)}">Details</button>
+      <button type="button" class="skill-details q-details" data-ability-pop="${esc(a.id)}" title="Details" aria-label="Details">?</button>
       <button type="button" ${attrs.remove}="${i}">Remove</button></li>`;
   }).join('');
   // Every special ability that could be added, each with a Details button (its popup can add it).
@@ -294,7 +294,7 @@ export function abilityPicker(app, category, picks, attrs) {
         const o = opts[0];
         return `<li class="with-details"><button type="button" data-ability-pop="${esc(a.id)}">${esc(a.name)}
             <small>${o.bonus ? `+${o.bonus} bonus` : esc(formatGp(o.gp))}${opts.length > 1 ? ', several versions' : ''}</small></button>
-          <button type="button" class="skill-details" data-ability-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-ability-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details>` : '';
   return `<div class="craft-abilities"><b>Special abilities</b>
       ${chosen ? `<ul class="plain-list">${chosen}</ul>` : '<p class="hint">None. Add one below (each adds its bonus to the price).</p>'}
@@ -304,7 +304,7 @@ export function abilityPicker(app, category, picks, attrs) {
 }
 
 // A Details button beside one of the crafting card's choices (its popup is craftInfo).
-const info = (key, label) => ` <button type="button" class="skill-details" data-craft-info="${key}" aria-label="${esc(label)}">Details</button>`;
+const info = (key, label) => ` <button type="button" class="skill-details q-details" data-craft-info="${key}" aria-label="${esc(label)}" title="Details">?</button>`;
 
 // The popups behind those buttons: what each kind of item needs and costs, the enhancement bonuses, the caster level,
 // how requirements work, and the item or spell itself.
@@ -433,7 +433,7 @@ function kindControls(app, list, p, c) {
       <label>Slot <select data-craft="wslot"><option value="">Any slot</option>${slots.map(s => `<option value="${esc(s)}"${s === form.wslot ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select></label>
       <label>Item <select data-craft="witem">${wondrousOptions(app, form)}</select></label>
       ${chosen ? `<p><small class="muted">${esc(slotOf(chosen))} slot · caster level ${esc(chosen.cl ?? '?')} · ${esc(chosen.source || '')}</small>
-        <button type="button" class="skill-details" data-craft-item-pop="${esc(chosen.id)}">Details</button></p>
+        <button type="button" class="skill-details q-details" data-craft-item-pop="${esc(chosen.id)}" title="Details" aria-label="Details">?</button></p>
         ${opts.length ? `<label>Version <select data-craft="option">${opts.map(o => `<option value="${esc(o.label)}"${o.label === (form.option || opts[0].label) ? ' selected' : ''}>${esc(o.label)} (${esc(formatGp(o.price_gp))})</option>`).join('')}</select></label>` : ''}` : ''}`;
   }
   return item ? `<p><b>${esc(item.name)}</b> <small class="muted">${esc(item.category)} · caster level ${esc(item.cl ?? '?')}</small></p>
@@ -455,7 +455,7 @@ function renderCard(app, c) {
   if (c.mode === 'buy') {
     const ok = !p.errors.length && p.cost !== null;
     cardWhy.set(c.mode, { cost: { title: `You pay: ${p.cost === null ? '—' : formatGp(p.cost)}`, rows: p.why?.cost || [], total: p.cost === null ? '—' : formatGp(p.cost) } });
-    const why = key => (p.why ? ` <button type="button" class="skill-details" data-craft-why="${key}" aria-label="How this is worked out">Details</button>` : '');
+    const why = key => (p.why ? ` <button type="button" class="skill-details q-details" data-craft-why="${key}" aria-label="How this is worked out" title="Details">?</button>` : '');
     $(c.body).innerHTML = `${kinds}
       <div class="craft-controls">${kindControls(app, list, p, c)}</div>
       <h3>${esc(p.title)}</h3>
@@ -499,7 +499,7 @@ function renderCard(app, c) {
       ...(form.rushed ? [{ label: 'Rushed', text: '+5' }] : [])],
       note: `Your Spellcraft: ${sc.usable ? signed(sc.total) : 'untrained'}${take10 !== null ? `; taking 10 gives ${take10}` : ''}. Failing wastes the time and gold; failing by 5 or more makes a cursed item.` },
   });
-  const why = key => ` <button type="button" class="skill-details" data-craft-why="${key}" aria-label="How this is worked out">Details</button>`;
+  const why = key => ` <button type="button" class="skill-details q-details" data-craft-why="${key}" aria-label="How this is worked out" title="Details">?</button>`;
   $(c.body).innerHTML = `${kinds}
     <div class="craft-controls">${kindControls(app, list, p, c)}</div>
     <h3>${esc(p.title)}</h3>

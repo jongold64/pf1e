@@ -33,9 +33,9 @@ export function renderTraits(app) {
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
         <div class="slot-buttons"><button type="button" data-trait-choose="${i}">Change</button>
           <button type="button" data-trait-remove="${i}">Remove</button>
-          <button type="button" class="skill-details" data-trait-details="${i}" aria-label="About this trait slot and what the trait does here">Details</button></div>`
+          <button type="button" class="skill-details q-details" data-trait-details="${i}" aria-label="About this trait slot and what the trait does here" title="Details">?</button></div>`
       : `<div class="slot-buttons"><button type="button" class="primary" data-trait-choose="${i}">Choose a trait</button>
-          <button type="button" class="skill-details" data-trait-details="${i}" aria-label="About this trait slot">Details</button></div>`;
+          <button type="button" class="skill-details q-details" data-trait-details="${i}" aria-label="About this trait slot" title="Details">?</button></div>`;
     return `<li class="slot"><div class="slot-label">${label}</div>${body}</li>`;
   }).join('');
   // Traits chosen beyond the slots (the house rule was switched off) are kept but not counted.
@@ -63,7 +63,7 @@ function renderPicker(app) {
   $('trait-picker-count').textContent = `${list.length} trait${list.length === 1 ? '' : 's'}`;
   $('trait-list').innerHTML = list.map(t => `<details class="feat-item${blockedBy(app, t) ? ' unavailable' : ''}">
       <summary><span class="feat-name">${esc(t.name)}</span> <small>${esc(t.category)}${t.requirement ? ` · ${esc(t.requirement)}` : ''}</small>
-        <button type="button" class="skill-details" data-trait-pop="${esc(t.id)}" aria-label="${esc(t.name)} in a popup">Details</button></summary>
+        <button type="button" class="skill-details q-details" data-trait-pop="${esc(t.id)}" aria-label="${esc(t.name)} in a popup" title="Details">?</button></summary>
       <div class="feat-body"><p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
         ${blockedBy(app, t) ? `<p class="warning">${esc(blockedBy(app, t))}</p>`

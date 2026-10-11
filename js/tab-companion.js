@@ -37,12 +37,12 @@ export function renderCompanion(app, view) {
       <select data-comp="animal" aria-label="Animal"><option value="">Choose an animal…</option>${group('animal', 'Animals')}
         ${group('vermin', 'Vermin (needs the Vermin Heart feat)')}</select>
       <input type="text" data-comp="name" value="${esc(c.name)}" placeholder="Name" aria-label="Companion's name">
-      ${c.animal ? `<button type="button" class="skill-details" data-animal-pop="${esc(c.animal)}">Details</button>` : ''}</div>
+      ${c.animal ? `<button type="button" class="skill-details q-details" data-animal-pop="${esc(c.animal)}" title="Details" aria-label="Details">?</button>` : ''}</div>
     <p class="hint">Levels counted: ${esc(where)}.</p>
     <details class="flaw-browse" data-key="animal-browse"${openKeys.has('animal-browse') ? ' open' : ''}><summary>Browse all ${animals.length} companions</summary>
       <ul class="pick-list">${animals.map(a => `<li class="with-details"><button type="button" data-animal-pop="${esc(a.id)}"${a.id === c.animal ? ' class="mine"' : ''}>${a.id === c.animal ? '<span class="status met">✓</span>' : ''}${esc(a.name)}
           <small>${esc(a.size)} · ${esc(a.attacks || '')}${a.kind === 'vermin' ? ' · vermin' : ''}</small></button>
-        <button type="button" class="skill-details" data-animal-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`).join('')}</ul></details>`;
+        <button type="button" class="skill-details q-details" data-animal-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></li>`).join('')}</ul></details>`;
   const animal = animals.find(a => a.id === c.animal);
   if (!animal) {
     box.innerHTML = picker;
@@ -51,7 +51,7 @@ export function renderCompanion(app, view) {
   const s = companionStats(animal, cl.level, data.companions.progression, companionChoices(state, data));
   const title = c.name || animal.name;
   const roll = (label, n) => rollButton({ title: `${title}: ${label}`, check: label, plain: true, groups: [{ attacks: [n] }] });
-  const why = (key, what) => `<button type="button" class="skill-details" data-comp-why="${esc(key)}" aria-label="What adds to ${esc(what)}">Details</button>`;
+  const why = (key, what) => `<button type="button" class="skill-details q-details" data-comp-why="${esc(key)}" aria-label="What adds to ${esc(what)}" title="Details">?</button>`;
   const defense = [
     ['Hit points', `${s.hp} <small class="muted">(${s.hd}d8)</small>${why('hp', 'hit points')}`],
     ['AC', `${s.ac} <small class="muted">touch ${s.touch}, flat-footed ${s.flatFooted}</small>${why('ac', 'AC')}`],
@@ -100,7 +100,7 @@ export function renderCompanion(app, view) {
       ${['medium', 'heavy'].includes(b.item.category) ? '<p class="hint">Medium or heavy barding slows it, and a flying animal can\u2019t fly in it.</p>' : ''}`
       : '<p class="hint">Companions can wear armor (barding); it needs the Armor Proficiency feats to use without penalty on attacks.</p>'}`;
   const tricks = TRICKS.map(t => `<label class="check-row small"><input type="checkbox" data-comp-trick="${esc(t)}"${c.tricks.includes(t) ? ' checked' : ''}> ${esc(t)}
-      <button type="button" class="skill-details" data-trick-pop="${esc(t)}" aria-label="What ${esc(t)} does">Details</button></label>`).join('');
+      <button type="button" class="skill-details q-details" data-trick-pop="${esc(t)}" aria-label="What ${esc(t)} does" title="Details">?</button></label>`).join('');
   const specials = [...new Set(s.specials)].map(name => {
     const text = data.companions.rules[name] || data.companions.rules[name.replace(/^\w/, ch => ch.toUpperCase())] || '';
     const key = `sp-${name}`;

@@ -71,7 +71,7 @@ function spellButton(app, s) {
   const banned = (app.prohibitedSchools?.('wizard') || []).some(x => x.toLowerCase() === String(s.school || '').toLowerCase());
   return `<li class="with-details"><button type="button" data-spell="${esc(s.id)}"${mine ? ' class="mine"' : ''}>` +
     `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}${banned ? ' · prohibited' : ''}</small></button>` +
-    `<button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">Details</button></li>`;
+    `<button type="button" class="skill-details q-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup" title="Details">?</button></li>`;
 }
 
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
@@ -119,7 +119,7 @@ function renderMySpells(app, view) {
       if (l.why?.attack || l.why?.dc) lineDetails.set(key, { spell: s, line: l, cls });
       return `<span class="spell-line">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}` +
         `${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}` +
-        `${l.why?.attack || l.why?.dc ? ` <button type="button" class="skill-details" data-spell-details="${esc(key)}" aria-label="What makes up these numbers">Details</button>` : ''}</span>`;
+        `${l.why?.attack || l.why?.dc ? ` <button type="button" class="skill-details q-details" data-spell-details="${esc(key)}" aria-label="What makes up these numbers" title="Details">?</button>` : ''}</span>`;
     });
     if (sr) numbers.push(`<span class="spell-line">Spell resistance: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
     // One line: the spell, its main numbers (attack or save, damage) with their Roll buttons, and Details for the rest.
@@ -131,7 +131,7 @@ function renderMySpells(app, view) {
         ${main ? `<span class="wl-part">${main.label ? `<span class="wl-k">${esc(main.label)}</span> ` : ''}<b>${esc(main.text)}</b>${main.roll ? ` ${spellRollButtons(main.roll)}` : ''}</span>`
           : `<span class="wl-k">${esc(s.school || '')}${s.duration ? ` · ${esc(s.duration)}` : ''}</span>`}
         ${lines.length > 1 ? `<span class="wl-k">+${lines.length - 1} more</span>` : ''}
-        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${esc(key)}" aria-expanded="${open}" aria-label="Everything about ${esc(s.name)}">Details</button></div>
+        <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${esc(key)}" aria-expanded="${open}" aria-label="Everything about ${esc(s.name)}" title="Details">?</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <span class="spell-row"><button type="button" class="skill-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup">About ${esc(s.name)}</button>
           <button type="button" class="link" data-remove-spell="${esc(s.id)}">remove</button></span>
@@ -148,7 +148,7 @@ function renderMySpells(app, view) {
     const notYet = lv > maxLevel && spells.length ? ' · can\'t cast yet' : '';
     groups.push(`<div class="my-spell-level">
       <h3>${LEVEL_NAMES[lv]} <span class="count${over ? ' over' : ''}">${count}${notYet}</span>
-        <button type="button" class="skill-details" data-spell-level-why="${lv}" aria-label="How many spells of this level">Details</button></h3>
+        <button type="button" class="skill-details q-details" data-spell-level-why="${lv}" aria-label="How many spells of this level" title="Details">?</button></h3>
       ${spells.length ? `<ul class="my-spell-rows">${spells.map(row).join('')}</ul>`
         : '<p class="hint">None chosen yet.</p>'}
     </div>`);

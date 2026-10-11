@@ -117,7 +117,7 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 // How each My magic items row's cost and weight are worked out, by key, for its Details popup.
 const itemWhy = new Map();
-const whyButton = (key, what) => ` <button type="button" class="skill-details" data-item-why="${esc(key)}" aria-label="How the cost of ${esc(what)} is worked out">Details</button>`;
+const whyButton = (key, what) => ` <button type="button" class="skill-details q-details" data-item-why="${esc(key)}" aria-label="How the cost of ${esc(what)} is worked out" title="Details">?</button>`;
 
 // The "My magic items" table: quantity buttons, cost and weight, and totals.
 export function renderMyItems(app) {
@@ -155,7 +155,7 @@ export function renderMyItems(app) {
         ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
         <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
-        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}">Details</button></div>
+        <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}" title="Details">?</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <div class="breakdown">${esc(item.category)}${slot ? ` · ${esc(slot)} slot` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div>
         <ul class="buff-active item-fx">${itemRowHtml({ ref: `m:${i}`, entry: e, item, worn: true }, { compact: true })}</ul>
@@ -187,7 +187,7 @@ export function renderMyItems(app) {
         <span class="line-name">${esc(name)}</span>
         <span class="wl-k">caster level ${e.cl}</span>${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(formatGp(craftedItemCost(e) * e.qty))}</b></span>
-        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}">Details</button></div>
+        <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}" title="Details">?</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <div class="breakdown">${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div>
         <div class="line-controls">
@@ -310,7 +310,7 @@ function renderList(app) {
       <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
       <ul class="pick-list">${list.map(i =>
         `<li class="with-details"><button type="button" data-item="${esc(i.id)}">${esc(i.name)}${i.slot && !['none', 'slotless'].includes(i.slot) ? `<small>${esc(i.slot)}</small>` : ''}</button>
-          <button type="button" class="skill-details" data-item-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup">Details</button></li>`).join('')}</ul>
+          <button type="button" class="skill-details q-details" data-item-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No items match.</p>';
   // Potions, scrolls and wands aren't in this list (any spell can be one): searching for them points to Add magic gear.

@@ -905,7 +905,6 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 /* The small d20 (Roll) and + (Details) buttons. */
 .build .roll-button { padding: 0 3px !important; min-height: 22px !important; border-radius: 6px; line-height: 0; background: transparent; }
 .build .roll-button .d20 { width: 18px; height: 18px; color: var(--accent); }
-.build .b-plus { padding: 0 6px !important; min-height: 22px !important; font-weight: 700; border-radius: 6px; color: var(--muted); }
 .b-table { width: 100%; border-collapse: collapse; }
 .b-table th { text-align: left; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); padding: 2px 4px; }
 .b-table td { padding: 2px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -929,3 +928,15 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .b-daily .b-ticks input { margin: 2px; width: 18px; height: 18px; }
 .b-daily tr.b-focus td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 #tab-build .build { grid-column: 1 / -1; width: 100%; }
+
+/* Every tab: the d20 Roll button (picture only for a plain Roll) and the dark green ? Details button. */
+:root { --details: #1e5e2a; }
+@media (prefers-color-scheme: dark) { :root { --details: #7cc68a; } }
+button.roll-button { display: inline-flex; align-items: center; gap: 4px; }
+button.roll-button .d20 { width: 18px; height: 18px; flex: none; }
+button.roll-button.roll-icon { padding: 2px 5px; border-radius: 8px; }
+button.roll-button:active .d20 { color: #fff; }
+button.skill-details.q-details { min-width: 28px; padding-left: 6px; padding-right: 6px; font-weight: 700; color: var(--details); border-color: var(--details);
+  border-radius: 50%; text-align: center; }
+button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded="true"] { background: var(--details); color: #fff; }
+.build button.skill-details.q-details { min-width: 22px; min-height: 22px !important; padding: 0 4px !important; font-size: 0.8rem; }

@@ -49,7 +49,7 @@ export function renderEidolon(app, view) {
       ? `<select data-eid-choice="${i}" aria-label="Which skill"><option value="">which skill…</option>${SKILLS.map(k => `<option${c.choice === k.name ? ' selected' : ''}>${esc(k.name)}</option>`).join('')}</select>`
       : '';
   const taken = s.taken.map((c, i) => `<li><b>${esc(c.name)}</b> <small class="muted">${c.cost} point${c.cost === 1 ? '' : 's'}</small> ${choiceSelect(c, i)}
-      <button type="button" class="skill-details" data-eid-pop="${esc(c.id)}">Details</button>
+      <button type="button" class="skill-details q-details" data-eid-pop="${esc(c.id)}" title="Details" aria-label="Details">?</button>
       <button type="button" class="link" data-eid-remove="${i}">remove</button></li>`).join('');
   const left = s.pool - s.used;
   const options = [1, 2, 3, 4].map(cost => {

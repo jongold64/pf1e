@@ -60,10 +60,10 @@ export function itemRowHtml(src, { compact = false } = {}) {
   const head = compact ? `<div class="small"><b>Gives:</b> ${esc(what)}</div>` : src.worn
     ? `<label class="check-row small"><input type="checkbox" data-src-worn="${ref}"${e.off ? '' : ' checked'}>
         <span><b>${esc(name)}</b> <small class="muted">${esc(what)}</small></span>
-        <button type="button" class="skill-details" data-src-pop="${ref}" aria-label="${esc(name)}: its description">Details</button></label>`
+        <button type="button" class="skill-details q-details" data-src-pop="${ref}" aria-label="${esc(name)}: its description" title="Details">?</button></label>`
     : `<div class="check-row small"><span class="tick" aria-hidden="true">✓</span>
         <span><b>${esc(name)}</b> <small class="muted">${esc(what)}</small></span>
-        <button type="button" class="skill-details" data-src-pop="${ref}" aria-label="${esc(name)}: its description">Details</button></div>`;
+        <button type="button" class="skill-details q-details" data-src-pop="${ref}" aria-label="${esc(name)}: its description" title="Details">?</button></div>`;
   const notes = always.map(r => buffById.get(rowBuff(r, e)).note).filter(Boolean);
   return `<li class="${e.off ? 'kept' : 'on'}">${head}
     ${pick ? `<label class="cl-input">which <select data-src-pick="${ref}">${pick.choices.map(id => `<option value="${esc(id)}"${id === rowBuff(pick, e) ? ' selected' : ''}>${esc(buffById.get(id).name)}</option>`).join('')}</select></label>` : ''}

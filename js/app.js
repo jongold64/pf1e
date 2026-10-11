@@ -801,7 +801,7 @@ function buildControls() {
       <td id="inc-${a}"></td>
       <td class="score" id="score-${a}"></td>
       <td id="mod-${a}"></td>
-      <td><button type="button" class="skill-details" data-ability-details="${a}" aria-label="${ABILITY_NAMES[a]} in a popup">Details</button></td>
+      <td><button type="button" class="skill-details q-details" data-ability-details="${a}" aria-label="${ABILITY_NAMES[a]} in a popup" title="Details">?</button></td>
     </tr>`).join('');
 
   // A saved id that no longer exists in the data falls back to the first option.
@@ -1828,7 +1828,7 @@ function renderAlternates(baseRace) {
       return `<li class="${taken ? 'taken' : ''}"><label class="check-row"><input type="checkbox" data-alternate="${esc(a.name)}"
           ${taken ? 'checked' : ''}${conflict ? ' disabled' : ''}> <b>${esc(a.name)}</b>
           <small class="muted">${replaces.length ? `replaces ${esc(replaces.join(', '))}` : 'see text for what it replaces'}</small>
-          <button type="button" class="skill-details" data-alt-pop="${esc(a.name)}" aria-label="${esc(a.name)} in a popup">Details</button></label>
+          <button type="button" class="skill-details q-details" data-alt-pop="${esc(a.name)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></label>
         ${conflict ? `<p class="hint">Not available: ${esc(conflict)}.</p>` : ''}
         <p class="alt-text">${esc(a.text)}</p></li>`;
     }).join('')}</ul></details>`;
@@ -2110,7 +2110,7 @@ function pathPicker(cls, level, openFeatures) {
           : 'An elemental school has its opposed element as its opposition school (see Details).'}</p>`;
     return `<div class="talents"><h4>${esc(rule.label)}</h4><div class="mystery-pick"><label class="row-label">${esc(rule.label)} <select data-path="${esc(key)}">
         <option value="">${esc(rule.none || `Choose your ${rule.label.toLowerCase()}…`)}</option>${all.map(x => `<option value="${esc(x.id)}"${path?.id === x.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('')}</select></label>
-        ${path ? `<button type="button" class="skill-details" data-path-pop="${esc(path.id)}" data-path-key="${esc(key)}">Details</button>` : ''}</div>
+        ${path ? `<button type="button" class="skill-details q-details" data-path-pop="${esc(path.id)}" data-path-key="${esc(key)}" title="Details" aria-label="Details">?</button>` : ''}</div>
       ${rule.note ? `<p class="hint">${esc(rule.note)}</p>` : ''}
       ${oppPick}
       ${path?.powers.length && !(cross && rule.kind === 'bloodline') ? `<ul class="talent-slots">${path.powers.map(x => `<li${x.level > level ? ' class="replaced"' : ''}><span class="muted">${esc(ordinal(x.level))}</span>
@@ -2122,7 +2122,7 @@ function pathPicker(cls, level, openFeatures) {
           const mine = x.id === path?.id;
           return `<li class="with-details"><button type="button" data-path-pop="${esc(x.id)}" data-path-key="${esc(key)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(label(x))}
               <small>${esc(x.source)}</small></button>
-            <button type="button" class="skill-details" data-path-pop="${esc(x.id)}" data-path-key="${esc(key)}" aria-label="${esc(x.name)} in a popup">Details</button></li>`;
+            <button type="button" class="skill-details q-details" data-path-pop="${esc(x.id)}" data-path-key="${esc(key)}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`;
         }).join('')}</ul></details></div>`;
   }).join('');
 }
@@ -2209,14 +2209,14 @@ function talentPicker(cls, level, openFeatures) {
   // The oracle's mystery: a list, Details for the chosen one, and every mystery with its own Details.
   const mysteryPick = groups.some(r => r.needs === 'mystery') ? `<div class="mystery-pick"><label class="row-label">Mystery <select data-mystery>
       <option value="">Choose your mystery…</option>${data.mysteries.map(m => `<option${m.name === state.mystery ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
-      ${state.mystery ? `<button type="button" class="skill-details" data-mystery-pop="${esc(state.mystery)}">Details</button>` : ''}</div>
+      ${state.mystery ? `<button type="button" class="skill-details q-details" data-mystery-pop="${esc(state.mystery)}" title="Details" aria-label="Details">?</button>` : ''}</div>
     <details class="arch-feature arch-browse" data-key="mbrowse-${esc(cls.id)}"${openFeatures?.has(`mbrowse-${cls.id}`) ? ' open' : ''}>
       <summary>Browse all ${data.mysteries.length} mysteries</summary>
       <ul class="pick-list">${data.mysteries.map(m => {
         const mine = m.name === state.mystery;
         return `<li class="with-details"><button type="button" data-mystery-pop="${esc(m.name)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(m.name)}
             <small>${esc(m.source)}</small></button>
-          <button type="button" class="skill-details" data-mystery-pop="${esc(m.name)}" aria-label="${esc(m.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-mystery-pop="${esc(m.name)}" aria-label="${esc(m.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details>` : '';
   return `<div class="talents">${laterNote}${mysteryPick}${groups.map(rule => {
     const mine = slots.filter(s => s.rule === rule);
@@ -2234,8 +2234,8 @@ function talentPicker(cls, level, openFeatures) {
         const name = t ? t.name : v || '';
         return `<li><span class="muted">${s.fromFeat ? `${esc(s.fromFeat)} (feat at ${esc(ordinal(s.classLevel))} level)` : esc(ordinal(s.classLevel))}</span> ${name ? `<b>${esc(name)}</b>` : '<span class="hint">not chosen</span>'}
           ${!t && v && rule.choices?.[v] ? `<small class="muted">${esc(rule.choices[v])}</small>` : ''}
-          <span class="talent-buttons">${t ? `<button type="button" class="skill-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}">Details</button>`
-            : v && rule.choices?.[v] ? `<button type="button" class="skill-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}">Details</button>` : ''}
+          <span class="talent-buttons">${t ? `<button type="button" class="skill-details q-details" data-talent-pop="${esc(t.id)}" data-slot="${esc(s.id)}" title="Details" aria-label="Details">?</button>`
+            : v && rule.choices?.[v] ? `<button type="button" class="skill-details q-details" data-choice-pop="${esc(v)}" data-slot="${esc(s.id)}" title="Details" aria-label="Details">?</button>` : ''}
           <button type="button" data-talent-choose="${esc(s.id)}">${name ? 'Change' : 'Choose'}</button></span></li>`;
       }).join('')}</ul>${rule.browse && open.length ? browseTalents(cls, rule, open, openFeatures) : ''}`;
   }).join('')}</div>`;
@@ -2265,7 +2265,7 @@ function browseTalents(cls, rule, slots, openFeatures) {
         const attrs = `data-talent-browse="${esc(t.id)}" data-slot="${esc(slot?.id || '')}" data-why="${esc(why)}"`;
         return `<li class="with-details"><button type="button" ${attrs}${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(t.name)}
             <small>${esc(mine ? `chosen at ${ordinal(slot.classLevel)} level` : why || `${t.source}${t.level ? ` · ${ordinal(t.level)} level` : ''}`)}</small></button>
-          <button type="button" class="skill-details" ${attrs} aria-label="${esc(t.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" ${attrs} aria-label="${esc(t.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details>`;
 }
 
@@ -2283,7 +2283,7 @@ function openTalentPicker(slotId, search = '') {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId && k.startsWith(`${cid}|${key}|`)).map(([, v]) => v);
     list = Object.entries(slot.rule.choices).filter(([p]) => !taken.includes(p)).map(([p, what]) => `<li class="talent-option">
         <div><b>${esc(p)}</b> <small class="muted">${esc(what)}</small></div>
-        <span class="talent-buttons"><button type="button" class="skill-details" data-choice-detail="${esc(p)}">Details</button>
+        <span class="talent-buttons"><button type="button" class="skill-details q-details" data-choice-detail="${esc(p)}" title="Details" aria-label="Details">?</button>
         <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></span></li>`).join('');
   } else {
     const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
@@ -2294,7 +2294,7 @@ function openTalentPicker(slotId, search = '') {
     list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
         <details><summary><b>${esc(t.name)}</b> <small class="muted">${esc(t.source)}${t.level ? ` · ${ordinal(t.level)} level` : ''}${t.repeatable ? ' · can be taken again' : ''}${why ? ` · ${why}` : ''}</small></summary>
           ${paragraphs(t.text)}</details>
-        <span class="talent-buttons"><button type="button" class="skill-details" data-talent-detail="${esc(t.id)}" data-why="${esc(why)}">Details</button>
+        <span class="talent-buttons"><button type="button" class="skill-details q-details" data-talent-detail="${esc(t.id)}" data-why="${esc(why)}" title="Details" aria-label="Details">?</button>
         ${why ? '' : `<button type="button" class="primary" data-talent-take="${esc(t.id)}">Choose</button>`}</span></li>`).join('') || '<li class="hint">Nothing matches.</li>';
   }
   const mysteryNote = slot.rule.needs === 'mystery' && !state.mystery ? '<p class="warning">Choose your mystery first (above the revelations) to see only its revelations.</p>' : '';
@@ -2379,7 +2379,7 @@ function deityPicker(cls) {
   const opts = data.deities.map(x => `<option value="${esc(x.id)}"${x.id === state.deity ? ' selected' : ''}>${esc(x.name)} (${esc(x.alignment)})${x.title ? ` — ${esc(x.title)}` : ''}</option>`).join('');
   return `<div class="domains"><h4>Deity</h4><div class="mystery-pick"><label class="row-label">Deity <select data-deity>
       <option value="">Choose your deity…</option><option value="${NO_DEITY}"${state.deity === NO_DEITY ? ' selected' : ''}>No deity: an ideal or philosophy</option>${opts}</select></label>
-      ${deity ? `<button type="button" class="skill-details" data-deity-pop="${esc(deity.id)}">Details</button>` : ''}</div>
+      ${deity ? `<button type="button" class="skill-details q-details" data-deity-pop="${esc(deity.id)}" title="Details" aria-label="Details">?</button>` : ''}</div>
     ${deity ? `<p class="hint">${esc(deity.alignment)} · ${esc(deity.concerns)}. Domains: ${esc(deity.domains.join(', ') || '—')}. Favored weapon: ${esc(deity.weapon || '—')} (you are proficient with it).
         Your alignment must be within one step of your deity's.</p>`
       : state.deity === NO_DEITY ? '<p class="hint">Serving an ideal: choose any two domains that fit it (no favored weapon).</p>'
@@ -2399,7 +2399,7 @@ function blessingPicker(cls, level, openFeatures) {
     return `<details class="arch-feature" data-key="${esc(key)}"${openFeatures.has(key) ? ' open' : ''}><summary>${esc(p.name)} <small class="muted">(${kind}, ${ordinal(from)} level${level < from ? ', not yet' : ''})</small></summary>${paragraphs(p.text)}</details>`;
   };
   const taken = chosen.map(b => `<li class="arch-taken"><div class="arch-head"><b>${esc(b.name)}</b> <small class="muted">${esc(b.source)}</small>
-      <button type="button" class="skill-details" data-blessing-pop="${esc(b.id)}">Details</button>
+      <button type="button" class="skill-details q-details" data-blessing-pop="${esc(b.id)}" title="Details" aria-label="Details">?</button>
       <button type="button" data-blessing-remove="${esc(b.id)}">Remove</button></div>${power(b, 'minor', 1)}${power(b, 'major', 10)}</li>`).join('');
   const opts = data.blessings.filter(b => !chosen.includes(b)).map(b => {
     const why = blessingWhy(b, deity);
@@ -2433,7 +2433,7 @@ function domainPicker(cls, level, openFeatures) {
     }).join('');
     const spells = Object.entries(g.spells).sort((a, b) => a[0] - b[0]).map(([lv, n]) => `${ordinal(Number(lv))}: ${n}`).join(' · ');
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(d.name)}</b> <small class="muted">${esc(kindName[d.kind])}${g.parent ? ` of ${esc(g.parent.name)}` : ''} · ${esc(d.source)}</small>
-        <button type="button" class="skill-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}">Details</button>
+        <button type="button" class="skill-details q-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}" title="Details" aria-label="Details">?</button>
         <button type="button" data-domain-remove="${esc(d.id)}" data-cls="${esc(cls.id)}">Remove</button></div>
       ${d.description ? `<p class="hint">${esc(d.description)}</p>` : ''}${powers}
       ${spells && cls.id !== 'inquisitor' ? `<p class="small"><b>Domain spells</b> ${esc(spells)}</p>` : ''}</li>`;
@@ -2457,7 +2457,7 @@ function domainPicker(cls, level, openFeatures) {
         const why = mine ? 'taken' : left <= 0 ? 'no choice left' : domainConflict(d, chosen) || deityDomainWhy(deity, d);
         return `<li class="with-details"><button type="button" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(d.name)}
             <small>${esc(why || `${kindLabel[d.kind]}${d.kind === 'subdomain' ? ` of ${(d.parents || []).map(p => data.domainsById.get(p)?.name || p).join(' or ')}` : ''}`)}</small></button>
-          <button type="button" class="skill-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(d.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-domain-pop="${esc(d.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(d.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details>`;
   return `<div class="domains"><h4>${esc(rule.natureBond ? 'Nature bond' : rule.label)}</h4>${bond}
     ${taken ? `<ul class="arch-list">${taken}</ul>` : ''}${add}${browse}</div>`;
@@ -2558,7 +2558,7 @@ function archetypePicker(cls, level, openFeatures) {
         <summary>${esc(f.name)}</summary>${paragraphs(f.text)}</details>`;
     }).join('');
     return `<li class="arch-taken"><div class="arch-head"><b>${esc(a.name)}</b> <small class="muted">${esc(a.source)}${esc(from(a))}${a.race ? ` · ${esc(a.race)} only` : ''}</small>
-        <button type="button" class="skill-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}">Details</button>
+        <button type="button" class="skill-details q-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}" title="Details" aria-label="Details">?</button>
         <button type="button" data-archetype-remove="${esc(a.id)}" data-cls="${esc(cls.id)}">Remove</button></div>${traded}
       ${archChoiceHtml(a, level)}
       ${a.description ? `<details class="arch-feature" data-key="${esc(a.id)}#d"${openFeatures.has(`${a.id}#d`) ? ' open' : ''}><summary>About</summary>${paragraphs(a.description)}</details>` : ''}
@@ -2581,7 +2581,7 @@ function archetypePicker(cls, level, openFeatures) {
         const why = chosen.includes(a) ? 'taken' : a.race && a.race !== raceName ? `${a.race} only` : unfit || archetypeConflict(base, a, chosen);
         return `<li class="with-details"><button type="button" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}"${chosen.includes(a) ? ' class="mine"' : ''}>${chosen.includes(a) ? '<span class="status met">✓</span>' : ''}${esc(a.name)}
             <small>${esc(why || a.source)}</small></button>
-          <button type="button" class="skill-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-arch-pop="${esc(a.id)}" data-cls="${esc(cls.id)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details></div>`;
 }
 
@@ -2639,7 +2639,7 @@ function renderClasses(view) {
     return `<li><details class="class-line" data-class-line="${esc(id)}"${openLines.has(id) ? ' open' : ''}>
       <summary><b>${esc(c.name)}</b> <span class="count">${levels.length} level${levels.length === 1 ? '' : 's'}</span>
         <small class="muted">(level${levels.length === 1 ? '' : 's'} ${ranges(levels.map(i => i + 1))})</small> ${req ? STATUS_ICON[req.status] : ''}
-        <button type="button" class="skill-details" data-class-pop="${esc(id)}" aria-label="${esc(c.name)} in a popup">Details</button></summary>
+        <button type="button" class="skill-details q-details" data-class-pop="${esc(id)}" aria-label="${esc(c.name)} in a popup" title="Details">?</button></summary>
       <div class="class-line-body">
         <div class="slot-buttons">
           <button type="button" data-class-more="${esc(id)}"${classLevels.length >= 20 ? ' disabled' : ''}>+ Add a ${esc(c.name)} level</button>
@@ -2735,7 +2735,7 @@ function renderClasses(view) {
     return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level
         ${left ? `<span class="tag">${left} choice${left === 1 ? '' : 's'} to make</span>` : ''}
-        <button type="button" class="skill-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup">Details</button></summary>
+        <button type="button" class="skill-details q-details" data-class-pop="${esc(e.cls.id)}" aria-label="${esc(e.cls.name)} in a popup" title="Details">?</button></summary>
       ${reqHtml}
       ${deityPicker(e.cls)}
       ${blessingPicker(e.cls, e.level, openFeatures)}
@@ -2761,8 +2761,9 @@ function initGuide() {
     const title = summary.textContent.trim();
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'skill-details';
-    b.textContent = 'Details';
+    b.className = 'skill-details q-details';
+    b.textContent = '?';
+    b.title = 'Details';
     b.setAttribute('aria-label', `${title} in a popup`);
     b.addEventListener('click', e => {
       e.preventDefault();  // in the heading: don't open or close the section
@@ -2872,10 +2873,10 @@ function render() {
   $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
   const cm = combatManeuvers(stats, view.size, view.haveFeats);
-  const why = (key, what) => `<button type="button" class="skill-details" data-result-details="${key}" aria-label="How ${esc(what)} is worked out">Details</button>`;
+  const why = (key, what) => `<button type="button" class="skill-details q-details" data-result-details="${key}" aria-label="How ${esc(what)} is worked out" title="Details">?</button>`;
   const results = [
     ['Maximum hit points', esc(stats.hp) + why('hp', 'maximum hit points')],
-    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}<button type="button" class="skill-details" data-init-details aria-label="What adds to initiative">Details</button>`],
+    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}<button type="button" class="skill-details q-details" data-init-details aria-label="What adds to initiative" title="Details">?</button>`],
     ['Base attack bonus', esc(formatBab(stats.bab)) + why('bab', 'base attack bonus')],
     ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`) + why('speed', 'speed')],
     ['Wearing', esc(worn || 'no armor') + why('worn', 'what you wear')],
@@ -2887,7 +2888,7 @@ function render() {
   const rollRow = (name, value, spec, cls = 'defense-row') => `<div class="${cls}"><span>${esc(name)}</span><b>${esc(signed(value))}</b>
     ${rollButton(spec)}</div>`;
   const saveRow = (name, value) => rollRow(name, value, { title: `${name} save`, check: `${name} save`, groups: [{ attacks: [value] }] })
-    .replace(/<\/div>$/, `<button type="button" class="skill-details" data-save-details="${name}" aria-label="What adds to ${name}">Details</button></div>`);
+    .replace(/<\/div>$/, `<button type="button" class="skill-details q-details" data-save-details="${name}" aria-label="What adds to ${name}" title="Details">?</button></div>`);
   // Ability checks: d20 + modifier, a Roll button beside each modifier.
   for (const a of ABILITIES) {
     // An ability check: the modifier plus active effects' bonus on ability checks (good hope...).
@@ -2898,16 +2899,16 @@ function render() {
   $('race-defense').innerHTML = `
     <div class="defense-ac">
       <div><span>AC</span><b>${stats.ac}</b>
-        <button type="button" class="skill-details" data-ac-details aria-label="What adds to AC, touch and flat-footed">Details</button></div>
+        <button type="button" class="skill-details q-details" data-ac-details aria-label="What adds to AC, touch and flat-footed" title="Details">?</button></div>
       <div><span>Touch</span><b>${stats.touch}</b>
-        <button type="button" class="skill-details" data-ac-details="touch" aria-label="What counts for touch AC">Details</button></div>
+        <button type="button" class="skill-details q-details" data-ac-details="touch" aria-label="What counts for touch AC" title="Details">?</button></div>
       <div><span>Flat-footed</span><b>${stats.flatFooted}</b>
-        <button type="button" class="skill-details" data-ac-details="flat" aria-label="What counts for flat-footed AC">Details</button></div>
+        <button type="button" class="skill-details q-details" data-ac-details="flat" aria-label="What counts for flat-footed AC" title="Details">?</button></div>
       <div class="cmd-box"><span>CMD</span><b>${cm.cmd}</b>
-        <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMD">Details</button></div>
+        <button type="button" class="skill-details q-details" data-cmb-details aria-label="What adds to CMD" title="Details">?</button></div>
       <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
         ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}
-        <button type="button" class="skill-details" data-cmb-details aria-label="What adds to CMB and CMD">Details</button></div>
+        <button type="button" class="skill-details q-details" data-cmb-details aria-label="What adds to CMB and CMD" title="Details">?</button></div>
     </div>
     ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
@@ -3110,7 +3111,7 @@ function showExtraHp() {
         ${s.usesCl ? `<label>Caster level <input type="number" min="1" max="20" value="${view.level}" data-temp-cl></label>` : ''}
         <input type="number" min="0" data-temp-amount placeholder="Amount" aria-label="Temporary hit points from ${esc(s.name)}"
           value="${s.formula && !/d/.test(s.formula(view.level, view.level)) ? s.formula(view.level, view.level) : ''}">
-        ${s.formula ? `<button type="button" data-temp-roll>${/d/.test(s.formula(1, 1)) ? '🎲 Roll' : 'Work out'}</button>` : ''}
+        ${s.formula ? `<button type="button" data-temp-roll>${/d/.test(s.formula(1, 1)) ? 'Roll' : 'Work out'}</button>` : ''}
         <button type="button" class="primary" data-temp-add>Add</button>
       </div></li>`).join('');
   openDetail('Extra hit points', `<div class="xtra-hp">
@@ -3225,7 +3226,7 @@ function renderSkills(race, classes, scores, featNames) {
       ${situationalHtml(view.situational?.skills[splitSkill(name).base] || view.situational?.skills[name])}
       ${skillTextHtml(name)}`);
   };
-  const details = name => `<button type="button" class="skill-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}">Details</button>`;
+  const details = name => `<button type="button" class="skill-details q-details" data-skill-details="${esc(name)}" aria-label="What adds to ${esc(name)}" title="Details">?</button>`;
   $('skill-rows').innerHTML =
     shownNames.map(name => {
     const info = skillInfo(name);
@@ -3377,11 +3378,11 @@ function renderDrawback() {
   const browseOpen = $('drawback-row').querySelector('details.flaw-browse')?.open || false;
   $('drawback-row').innerHTML = `<label>Drawback <select id="drawback-select"><option value="">— none —</option>
       ${data.drawbacks.map(x => `<option value="${esc(x.id)}"${x.id === state.drawback ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
-    ${d ? `<button type="button" class="skill-details" data-drawback-pop="${esc(d.id)}">Details</button>` : ''}
+    ${d ? `<button type="button" class="skill-details q-details" data-drawback-pop="${esc(d.id)}" title="Details" aria-label="Details">?</button>` : ''}
     <details class="flaw-browse"${browseOpen ? ' open' : ''}><summary>Browse all ${data.drawbacks.length} drawbacks</summary>
       <ul class="pick-list">${data.drawbacks.map(x => `<li class="with-details"><button type="button" data-drawback-pop="${esc(x.id)}"${x.id === state.drawback ? ' class="mine"' : ''}>${x.id === state.drawback ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
           <small>${esc(x.source)}</small></button>
-        <button type="button" class="skill-details" data-drawback-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup">Details</button></li>`).join('')}</ul></details>
+        <button type="button" class="skill-details q-details" data-drawback-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`).join('')}</ul></details>
     ${d ? `<div class="flaw-details"><p class="hint">${esc(d.source)}</p>${paragraphs(d.text)}
       <p class="hint">It gives you an extra trait slot (in the Traits card above). Its penalty isn't counted automatically: most
         apply only in some situations, so apply it in play (or add a custom effect on the Character tab).</p></div>` : ''}`;
@@ -3407,14 +3408,14 @@ function renderFlaws() {
         <p class="hint">A typed-in flaw's penalty isn't applied: add it as a custom effect on the Character tab.</p>` : '';
     return `<div class="flaw-row"><label>Flaw ${i + 1} <select data-flaw="${i}" data-flaw-field="id">
         <option value="">— none —</option>${options}<option value="other"${f.id === 'other' ? ' selected' : ''}>Other (type it in)</option></select></label>
-      ${known ? `<button type="button" class="skill-details" data-flaw-pop="${known.id}" data-slot="${i}">Details</button>` : ''}
+      ${known ? `<button type="button" class="skill-details q-details" data-flaw-pop="${known.id}" data-slot="${i}" title="Details" aria-label="Details">?</button>` : ''}
       ${choice}${details}</div>`;
   }).join('') + `<details class="flaw-browse"${$('flaw-rows').querySelector('details.flaw-browse')?.open ? ' open' : ''}><summary>Browse all ${FLAWS.length} flaws</summary>
       <ul class="pick-list">${FLAWS.map(x => {
         const mine = state.flaws.some(f => f?.id === x.id);
         return `<li class="with-details"><button type="button" data-flaw-pop="${x.id}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
             <small>${esc(x.effect.length > 60 ? `${x.effect.slice(0, 57)}…` : x.effect)}</small></button>
-          <button type="button" class="skill-details" data-flaw-pop="${x.id}" aria-label="${esc(x.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-flaw-pop="${x.id}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></details>`;
 }
 
@@ -3445,7 +3446,7 @@ function popFeatSlots() {
       ✓ prerequisites met · ✗ not met · ? can't be checked.</p>
     ${view.granted.length ? `<h3>Free from your class${view.classes.length > 1 ? 'es' : ''}</h3>
       <ul class="plain-list">${view.granted.map(n => { const f = featByName(n);
-        return `<li>${esc(n)}${f ? ` <button type="button" class="skill-details" data-granted-pop="${esc(f.id)}">Details</button>` : ''}</li>`; }).join('')}</ul>` : ''}`);
+        return `<li>${esc(n)}${f ? ` <button type="button" class="skill-details q-details" data-granted-pop="${esc(f.id)}" title="Details" aria-label="Details">?</button>` : ''}</li>`; }).join('')}</ul>` : ''}`);
 }
 
 // A feat the class gives for free, in a popup.
@@ -3479,7 +3480,7 @@ function renderFeats(slots, granted, ctx) {
     const choice = view.featChoices.find(c => c.slotId === slot.id);
     return `<li>${STATUS_ICON[check.status]} <b>${esc(f.name)}</b>${choice?.value ? ` (${esc(choiceLabel(choice))})` : ''}
       <small class="muted">${esc(slot.label)}</small>
-      <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="${esc(f.name)}: about this feat">Details</button></li>`;
+      <button type="button" class="skill-details q-details" data-feat-details="${slot.id}" aria-label="${esc(f.name)}: about this feat" title="Details">?</button></li>`;
   });
   $('feat-chosen').innerHTML = chosenLines.join('');
   $('feat-chosen').hidden = !chosenLines.length;
@@ -3503,11 +3504,11 @@ function renderFeats(slots, granted, ctx) {
         <div class="slot-buttons">
           <button type="button" data-choose="${slot.id}">Change</button>
           <button type="button" data-remove="${slot.id}">Remove</button>
-          <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="About this feat slot and what the feat does here">Details</button>
+          <button type="button" class="skill-details q-details" data-feat-details="${slot.id}" aria-label="About this feat slot and what the feat does here" title="Details">?</button>
         </div>`;
     } else {
       body = `<div class="slot-buttons"><button type="button" class="primary" data-choose="${slot.id}">Choose a feat</button>
-        <button type="button" class="skill-details" data-feat-details="${slot.id}" aria-label="About this feat slot">Details</button></div>`;
+        <button type="button" class="skill-details q-details" data-feat-details="${slot.id}" aria-label="About this feat slot" title="Details">?</button></div>`;
     }
     return `<li class="slot">
       <div class="slot-label">${esc(slot.label)}</div>
@@ -3556,7 +3557,7 @@ function renderPicker() {
     <details class="feat-item" data-feat="${esc(f.id)}">
       <summary>${STATUS_ICON[check.status]} <span class="feat-name">${esc(f.name)}</span>
         <small>${esc((f.types || []).join(', '))}</small>
-        <button type="button" class="skill-details" data-feat-pop="${esc(f.id)}" aria-label="${esc(f.name)} in a popup">Details</button></summary>
+        <button type="button" class="skill-details q-details" data-feat-pop="${esc(f.id)}" aria-label="${esc(f.name)} in a popup" title="Details">?</button></summary>
       <div class="feat-body"></div>
     </details>`).join('') || '<p class="hint">No feats match.</p>';
 }
@@ -3620,7 +3621,7 @@ function spellTable(c, spells) {
   }
   const castLine = spells.rows.length ? `<p class="cast-line">Caster level <b>${sc.cl}</b> · Concentration <b>${signed(sc.cl + sc.castMod)}</b>
       · Save DC <b>${10 + sc.castMod} + spell level</b> · Spell resistance check <b>${signed(sc.cl + sc.penetration)}</b>
-      <button type="button" class="skill-details" data-spellday="${esc(castKey)}" aria-label="How these are worked out">Details</button></p>` : '';
+      <button type="button" class="skill-details q-details" data-spellday="${esc(castKey)}" aria-label="How these are worked out" title="Details">?</button></p>` : '';
   const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
     <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${castLine}${extraBox}${domainLine}${bloodLine}`;
   if (spells.rows.length === 0) {
@@ -3652,7 +3653,7 @@ function spellTable(c, spells) {
       <td>${dash(r.base)}</td>
       <td>${r.bonus ? `+${r.bonus}` : ''}</td>
       ${extraName ? `<td>${r.extra ? `+${r.extra}` : ''}</td>` : ''}
-      <td class="total">${total} <button type="button" class="skill-details" data-spellday="${esc(key)}" aria-label="How this is worked out">Details</button></td>
+      <td class="total">${total} <button type="button" class="skill-details q-details" data-spellday="${esc(key)}" aria-label="How this is worked out" title="Details">?</button></td>
       ${showKnown ? `<td>${dash(r.known)}</td>` : ''}
       ${showPrepared ? `<td>${dash(r.prepared)}</td>` : ''}
     </tr>`;

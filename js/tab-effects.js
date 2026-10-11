@@ -28,7 +28,7 @@ export function renderEffects(app, view) {
         <input type="number" min="1" max="20" value="${cl}" data-buff-cl="${esc(buff.id)}"></label>` : '';
     return `<li class="${cur ? 'on' : kept ? 'kept' : ''}"><label class="check-row small"><input type="checkbox" data-buff="${esc(buff.id)}"${cur ? ' checked' : ''}>
         <span><b>${esc(buff.name)}</b> <small class="muted">${esc(buffSummary(buff, cl))}</small></span>
-        <button type="button" class="skill-details" data-buff-pop="${esc(buff.id)}" aria-label="${esc(buff.name)} in a popup">Details</button></label>${level}
+        <button type="button" class="skill-details q-details" data-buff-pop="${esc(buff.id)}" aria-label="${esc(buff.name)} in a popup" title="Details">?</button></label>${level}
         ${kept ? `<button type="button" class="link" data-buff-remove="${esc(buff.id)}" aria-label="Take ${esc(buff.name)} off your list">remove</button>` : ''}
         ${cur && buff.note ? `<div class="hint">Not counted: ${esc(buff.note)}</div>` : ''}</li>`;
   };
@@ -45,7 +45,7 @@ export function renderEffects(app, view) {
       <div class="fx-head">
         <input type="checkbox" data-fx="${i}" data-field="on"${c.on ? ' checked' : ''} aria-label="On">
         <input type="text" data-fx="${i}" data-field="name" value="${esc(c.name)}" placeholder="Name (e.g. rage, inspire greatness, potion)" aria-label="Name">
-        <button type="button" class="skill-details" data-fx-pop="${i}" aria-label="What this effect does">Details</button>
+        <button type="button" class="skill-details q-details" data-fx-pop="${i}" aria-label="What this effect does" title="Details">?</button>
         <button type="button" data-fx-remove="${i}" aria-label="Remove this effect">Remove</button></div>
       ${[c, ...(c.more || [])].map((p, k) => partRow(i, k, p)).join('')}
       <button type="button" class="link" data-fx-more="${i}">+ another bonus from it</button></li>`).join('');

@@ -16,8 +16,12 @@ export function rollAttr(spec) {
   return esc(JSON.stringify(spec));
 }
 
+// A small 20-sided die: the Roll buttons' picture (alone for a plain Roll, before the words for "Roll damage" and the like).
+export const D20 = `<svg class="d20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 21.6 7v10L12 22.5 2.4 17V7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 1.5 7 9.5h10zM7 9.5 2.4 17M17 9.5l4.6 7.5M7 9.5l5 9 5-9M12 18.5v4" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
+
 export function rollButton(spec, label = 'Roll') {
-  return `<button type="button" class="roll-button" data-roll="${rollAttr(spec)}" aria-label="${esc(`${label}: ${spec.title}`)}">🎲 ${esc(label)}</button>`;
+  const plain = !label || label === 'Roll';
+  return `<button type="button" class="roll-button${plain ? ' roll-icon' : ''}" data-roll="${rollAttr(spec)}" title="${esc(plain ? `Roll: ${spec.title}` : label)}" aria-label="${esc(`${label || 'Roll'}: ${spec.title}`)}">${D20}${plain ? '' : ` ${esc(label)}`}</button>`;
 }
 
 // One rolled line; a line starting with a tab (an attack's damage, confirmation roll) sits indented under the attack.

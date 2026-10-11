@@ -89,7 +89,7 @@ function renderList(app) {
       <h3 class="list-heading">${esc(c)} <span class="count">${byCategory.get(c).length}</span></h3>
       <ul class="pick-list">${byCategory.get(c).map(w =>
         `<li class="with-details"><button type="button" data-weapon="${esc(w.id)}">${esc(w.name)}<small>${esc(w.damage.m || '')}</small></button>
-          <button type="button" class="skill-details" data-weapon-pop="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">Details</button></li>`).join('')}</ul>
+          <button type="button" class="skill-details q-details" data-weapon-pop="${esc(w.id)}" aria-label="${esc(w.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
     </section>`).join('') || '<p class="hint">No weapons match.</p>';
   renderPanel(app);
 }
@@ -229,7 +229,7 @@ function renderCombat(app, view, ctx) {
     { label: 'Every ranged attack this round', text: '−2' }], note: 'Only as part of a full attack with a ranged weapon.' });
   $('combat-switches').innerHTML = switches.map(([key, feat, what]) =>
     `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span>
-      <button type="button" class="skill-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does">Details</button></label>`).join('')
+      <button type="button" class="skill-details q-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does" title="Details">?</button></label>`).join('')
     || '<p class="hint">Power Attack, Deadly Aim, Rapid Shot and Point-Blank Shot switches appear here once you have those feats.</p>';
 
   // Hands: every carried weapon except ranged ones; the off hand can also be the other end of a double weapon.
@@ -283,7 +283,7 @@ function renderCombat(app, view, ctx) {
     { label: `Off-hand weapon is light${r.offLight ? ' (yes)' : ' (no)'}: 2 less each`, text: r.offLight ? '−4 / −8' : '—' },
     { label: `Two-Weapon Fighting feat${hasTwf ? ' (you have it)' : ' (you don\u2019t have it)'}: main hand 2 less, off hand 6 less`, text: hasTwf ? 'applied' : '—' },
   ], total: `${r.penalties.main} / ${r.penalties.off}`, note: 'A double weapon\u2019s other end counts as a light off-hand weapon.' });
-  const whyBtn = (key, what) => ` <button type="button" class="skill-details" data-combat-why="${key}" aria-label="${esc(what)}">Details</button>`;
+  const whyBtn = (key, what) => ` <button type="button" class="skill-details q-details" data-combat-why="${key}" aria-label="${esc(what)}" title="Details">?</button>`;
   $('twf-result').innerHTML = `<dl class="facts attack-line">
       <dt>Main hand</dt><dd><b>${esc(attackText(r.main))}</b>, ${esc(r.main.damage)}${usedText(r.main)}${whyBtn('main', 'What adds to the main-hand attack')}</dd>
       <dt>Off hand</dt><dd><b>${esc(attackText(off))}</b>, ${esc(off.damage)}${usedText(off)}${whyBtn('off', 'What adds to the off-hand attack')}</dd>
@@ -296,7 +296,7 @@ function renderCombat(app, view, ctx) {
 
 // The character's weapons, each with its quality, feats, proficiency, attack bonus and damage.
 // A Details button for one part of a weapon card (its popup is popWeaponPart).
-const wpart = (i, part, label) => ` <button type="button" class="skill-details" data-wpart="${i}|${part}" aria-label="${esc(label)}">Details</button>`;
+const wpart = (i, part, label) => ` <button type="button" class="skill-details q-details" data-wpart="${i}|${part}" aria-label="${esc(label)}" title="Details">?</button>`;
 
 // The popups behind a weapon card's Size, Quality, Strength rating, Range and Cost Details.
 export function popWeaponPart(app, i, part) {
@@ -416,7 +416,7 @@ export function renderMyWeapons(app, view) {
           ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] })}</span>
         <span class="wl-part"><span class="wl-k">Critical</span> <b>${esc(critText(w, crit))}</b>
           ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }) : ''}</span>
-        <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-weapon-more="${i}" aria-expanded="${open}" aria-label="Everything about ${esc(w.name)}">Details</button>
+        <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-weapon-more="${i}" aria-expanded="${open}" aria-label="Everything about ${esc(w.name)}" title="Details">?</button>
       </div>
       <div class="weapon-more"${open ? '' : ' hidden'}>
       <div class="weapon-head">
@@ -426,15 +426,15 @@ export function renderMyWeapons(app, view) {
       <dl class="facts attack-line">
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>
           ${rollButton({ title: weaponName, groups: [rollGroup('', a, crit)] })}
-          <button type="button" class="skill-details" data-attack-details="${i}" aria-label="What adds to this weapon's attack and damage">Details</button></dd>
+          <button type="button" class="skill-details q-details" data-attack-details="${i}" aria-label="What adds to this weapon's attack and damage" title="Details">?</button></dd>
         <dt>Damage</dt><dd><b>${esc(damageWithExtras(a.damage, crit.fx))}</b>
           ${rollButton({ title: `${weaponName} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] }, 'Roll damage')}
-          <button type="button" class="skill-details" data-attack-details="${i}" data-part="damage" aria-label="What adds to this weapon's damage">Details</button>
+          <button type="button" class="skill-details q-details" data-attack-details="${i}" data-part="damage" aria-label="What adds to this weapon's damage" title="Details">?</button>
           ${crit.fx.notes.length ? `<div class="muted small">${esc(crit.fx.notes.join(' '))}</div>` : ''}</dd>
         ${extra.join('')}
         <dt>Critical</dt><dd>${esc(critText(w, crit))}${crit.fx.burst.length ? ` <span class="muted">(plus ${esc(crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', '))} per step above ×1)</span>` : ''}
           ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }, 'Roll crit damage') : ''}
-          <button type="button" class="skill-details" data-attack-details="${i}" data-part="critical" aria-label="How this weapon's criticals work">Details</button></dd>
+          <button type="button" class="skill-details q-details" data-attack-details="${i}" data-part="critical" aria-label="How this weapon's criticals work" title="Details">?</button></dd>
         ${w.range_ft ? `<dt>Range</dt><dd>${w.range_ft} ft.${wpart(i, 'range', 'Range increments')}</dd>` : ''}
         <dt>Cost</dt><dd>${esc(formatGp(weaponCost(w, e)))}${wpart(i, 'cost', 'How the price adds up')}</dd>
       </dl>

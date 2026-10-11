@@ -147,7 +147,7 @@
         <div class="slot-buttons add-level-row">
           <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
           <button type="button" id="add-level">Add</button>
-          <button type="button" id="add-level-details" class="skill-details" aria-label="The chosen class in a popup">Details</button>
+          <button type="button" id="add-level-details" class="skill-details q-details" aria-label="The chosen class in a popup" title="Details">?</button>
           <button type="button" id="remove-level">Remove last level</button>
         </div>
         <!-- Starting over: every level replaced by one level of a new class (the last level can't be removed). -->
@@ -159,7 +159,7 @@
           The favored class only chooses among the classes you have.</p>
         <div class="favored-row">
           <label>Favored class <select id="favored-class"></select></label>
-          <button type="button" id="favored-details" class="skill-details" aria-label="Favored class bonuses in a popup">Details</button>
+          <button type="button" id="favored-details" class="skill-details q-details" aria-label="Favored class bonuses in a popup" title="Details">?</button>
           <div id="favored-summary" class="favored-summary"></div>
         </div>
         <div id="caster-choices"></div>
@@ -182,7 +182,7 @@
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
       <section class="card wide" id="feats-card">
         <h2>Feats <span id="feat-count" class="count"></span>
-          <button type="button" id="feat-count-details" class="skill-details" aria-label="Every feat slot and where it comes from">Details</button></h2>
+          <button type="button" id="feat-count-details" class="skill-details q-details" aria-label="Every feat slot and where it comes from" title="Details">?</button></h2>
         <!-- The feats chosen, one line each. -->
         <ul id="feat-chosen" class="feat-chosen" hidden></ul>
         <form class="search-row tab-search" id="feat-tab-search-form" role="search">
@@ -196,7 +196,7 @@
       </section>
       <section class="card wide" id="traits-card">
         <h2>Traits <span id="trait-count" class="count"></span>
-          <button type="button" id="trait-count-details" class="skill-details" aria-label="Your traits: how many and what they do">Details</button></h2>
+          <button type="button" id="trait-count-details" class="skill-details q-details" aria-label="Your traits: how many and what they do" title="Details">?</button></h2>
         <ul id="trait-slots" class="feat-slots"></ul>
         <p id="trait-note" class="hint"></p>
       </section>
@@ -217,7 +217,7 @@
     <main class="tab-panel" id="tab-skills" role="tabpanel" hidden>
       <section class="card wide" id="skills-card">
         <h2>Skills <span id="skill-count" class="count"></span>
-          <button type="button" id="skill-count-details" class="skill-details" aria-label="Where your skill ranks come from">Details</button></h2>
+          <button type="button" id="skill-count-details" class="skill-details q-details" aria-label="Where your skill ranks come from" title="Details">?</button></h2>
         <p id="skills-hint" class="hint"></p>
         <table class="skills">
           <thead><tr><th>Skill</th><th>Ranks</th><th>Total</th></tr></thead>
@@ -266,7 +266,7 @@
     <main class="tab-panel" id="tab-magic-items" role="tabpanel" hidden>
       <section class="card wide" id="my-items-card">
         <h2>My magic items <span id="my-items-count" class="count"></span>
-          <button type="button" id="my-items-slots" class="skill-details" aria-label="Which body slots your items fill">Details</button></h2>
+          <button type="button" id="my-items-slots" class="skill-details q-details" aria-label="Which body slots your items fill" title="Details">?</button></h2>
         <div id="my-items-rows" class="line-list"></div>
         <p id="my-items-total" class="hint"></p>
       </section>
@@ -310,11 +310,11 @@
         <div id="armor-line" class="fit-line item-line"></div>
         <div id="armor-more" class="line-more">
         <div class="row armor-pick"><select id="armor-select" aria-label="Armor"></select>
-          <button type="button" class="skill-details" data-armor-part="armor|item" aria-label="The armor in a popup">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="armor|item" aria-label="The armor in a popup" title="Details">?</button></div>
         <div class="row enh-row"><label>Quality <select id="armor-enh"></select></label>
-          <button type="button" class="skill-details" data-armor-part="armor|quality" aria-label="What masterwork and magic do">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="armor|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
         <div class="row enh-row"><label>Material <select id="armor-material"></select></label>
-          <button type="button" class="skill-details" data-armor-part="armor|material" aria-label="What the material changes">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="armor|material" aria-label="What the material changes" title="Details">?</button></div>
         <div id="armor-info" class="info"></div>
         </div>
       </section>
@@ -323,11 +323,11 @@
         <div id="shield-line" class="fit-line item-line"></div>
         <div id="shield-more" class="line-more">
         <div class="row armor-pick"><select id="shield-select" aria-label="Shield"></select>
-          <button type="button" class="skill-details" data-armor-part="shield|item" aria-label="The shield in a popup">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="shield|item" aria-label="The shield in a popup" title="Details">?</button></div>
         <div class="row enh-row"><label>Quality <select id="shield-enh"></select></label>
-          <button type="button" class="skill-details" data-armor-part="shield|quality" aria-label="What masterwork and magic do">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="shield|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
         <div class="row enh-row"><label>Material <select id="shield-material"></select></label>
-          <button type="button" class="skill-details" data-armor-part="shield|material" aria-label="What the material changes">Details</button></div>
+          <button type="button" class="skill-details q-details" data-armor-part="shield|material" aria-label="What the material changes" title="Details">?</button></div>
         <div id="shield-info" class="info"></div>
         </div>
       </section>
@@ -457,7 +457,7 @@
         <details>
           <summary>Dice rolls</summary>
           <ul>
-            <li>Any <b>🎲 Roll</b> button rolls for you: saves, skills, ability checks, initiative, attacks, damage, spells, healing.</li>
+            <li>Any <b>d20</b> button (the small 20-sided die) rolls for you: saves, skills, ability checks, initiative, attacks, damage, spells, healing.</li>
             <li>The result appears in a box at the bottom of the screen; the last few rolls are kept there.</li>
             <li>Attack rolls spot natural 20s and 1s and critical threats, roll the confirmation and the extra damage.</li>
           </ul>
@@ -559,7 +559,7 @@
               the other switches; armor and the situational notes; what's on now (× switches an effect off); spells (prepared
               spells with a box to tick when cast, or spells known); class features (with the coloured dots) and choices; feats,
               traits and racial traits; skills; companions; gear and gold; and your notes.</li>
-            <li>The small d20 rolls, the small <b>+</b> opens the same Details as the other tabs, and tapping a feature, feat,
+            <li>The small d20 rolls, the green <b>?</b> opens the same Details as the other tabs, and tapping a feature, feat,
               spell or item reads it.</li>
             <li><b>Daily uses</b>: every limited ability (rage rounds, ki, grit, channel energy, blessings, bombs, wild shape,
               a spontaneous caster's spells of each level, and the powers of your school, domains, bloodline, order or spirit

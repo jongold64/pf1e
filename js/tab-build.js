@@ -15,10 +15,9 @@ import { buffById } from './effects.js';
 
 const NAMES = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
 const ORD = n => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
-// A small 20-sided die in place of the word Roll.
-const D20 = `<svg class="d20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 21.6 7v10L12 22.5 2.4 17V7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 1.5 7 9.5h10zM7 9.5 2.4 17M17 9.5l4.6 7.5M7 9.5l5 9 5-9M12 18.5v4" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
-const roll = (spec, what) => rollButton(spec, '').replace('🎲 ', D20).replace('aria-label="', `title="Roll${what ? ` ${esc(what)}` : ''}" aria-label="`);
-const plus = (kind, arg = '', what = '') => `<button type="button" class="b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">+</button>`;
+// The d20 Roll button and the ? Details button (shared look with the other tabs).
+const roll = spec => rollButton(spec);
+const plus = (kind, arg = '', what = '') => `<button type="button" class="skill-details q-details b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">?</button>`;
 const card = (title, body, cls = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}</h3>${body}</section>` : '');
 const check = (title, n) => ({ title, check: title, plain: true, groups: [{ attacks: [n] }] });
 

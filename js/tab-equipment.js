@@ -72,7 +72,7 @@ function renderList(app) {
       <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
       <ul class="pick-list">${list.map(i =>
         `<li class="with-details"><button type="button" data-gear="${esc(i.id)}">${esc(i.name)}<small>${esc(i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''))}</small></button>
-          <button type="button" class="skill-details" data-gear-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup">Details</button></li>`).join('')}</ul>
+          <button type="button" class="skill-details q-details" data-gear-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No equipment matches.</p>';
   renderPanel(app);
@@ -196,7 +196,7 @@ export async function renderEquipment(app, view) {
       ${state.houseRules.encumbrance ? 'The Encumbrance house rule is on, so its effects count in your numbers.' : 'Switch on the Encumbrance house rule (Character tab) to count its effects.'}</p>
     <p class="hint">Strength here includes active effects. Small characters carry ¾ as much, Large ones twice as much. A load\u2019s
       Dex limit and check penalty don\u2019t add to armor\u2019s: the worse counts.</p>` };
-  const details = key => ` <button type="button" class="skill-details" data-money-details="${key}" aria-label="What makes up this total">Details</button>`;
+  const details = key => ` <button type="button" class="skill-details q-details" data-money-details="${key}" aria-label="What makes up this total" title="Details">?</button>`;
   $('money-summary').innerHTML = [
     ['Gold', esc(formatGp(gold)) + details('gold')],
     ['Armor and shield', esc(formatGp(armorSpend)) + details('armor')],
@@ -235,11 +235,11 @@ export async function renderEquipment(app, view) {
           <b class="line-name">${esc(armorLabel(a, enh, mw, abilities))}</b><span class="wl-k">worn</span>
           <span class="wl-part"><b>${esc(state[`${k}Free`] ? 'free' : formatGp(cost))}</b></span>
           <span class="wl-k">${esc(formatLbs(a.weight_lbs * sizeFactor))}</span>
-          <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="More about it">Details</button></div>
+          <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="More about it" title="Details">?</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
           <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div>
           <div class="line-controls"><span>Cost ${esc(formatGp(cost))}
-            <button type="button" class="skill-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out">Details</button></span>
+            <button type="button" class="skill-details q-details" data-inv-why="${a === view.gear.armor ? 'price-armor' : 'price-shield'}" aria-label="How its price is worked out" title="Details">?</button></span>
             ${freeBox(`data-armor-free="${k}"`, state[`${k}Free`])}</div>
         </div></div>`;
     }),
@@ -265,7 +265,7 @@ export async function renderEquipment(app, view) {
           ${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
           <span class="wl-part"><b>${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
           <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
-          <button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}">Details</button></div>
+          <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}" title="Details">?</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
           ${item.category ? `<div class="breakdown">${esc(item.category)}</div>` : ''}
           <div class="line-controls">
@@ -275,7 +275,7 @@ export async function renderEquipment(app, view) {
               <span class="value">${e.qty}</span>
               <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
             <span>Cost ${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
-              <button type="button" class="skill-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}">Details</button></span>
+              <button type="button" class="skill-details q-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}" title="Details">?</button></span>
             ${freeBox(`data-inv-free="${i}"`, e.free)}
           </div></div></div>`;
     }),

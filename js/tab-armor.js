@@ -9,7 +9,7 @@ import { armorCost, formatGp } from './equipment.js';
 
 // What makes up each number on the tab, by key, for its Details popup (filled when the tab is drawn).
 const armorWhy = new Map();
-const whyButton = (key, what) => ` <button type="button" class="skill-details" data-armor-why="${esc(key)}" aria-label="How ${esc(what)} is worked out">Details</button>`;
+const whyButton = (key, what) => ` <button type="button" class="skill-details q-details" data-armor-why="${esc(key)}" aria-label="How ${esc(what)} is worked out" title="Details">?</button>`;
 
 // Rows for one worn item's price: the item (with its material), masterwork, enhancement and special abilities.
 function priceRows(item, enh, mw, abilities, crafted) {
@@ -124,7 +124,7 @@ function renderArmorList(app) {
         const worn = state.armorId === a.id || state.shieldId === a.id;
         return `<li class="with-details"><button type="button" data-armor-pop="${esc(a.id)}"${worn ? ' class="mine"' : ''}>${worn ? '<span class="status met" title="Wearing">✓</span>' : ''}${esc(a.name)}
           <small>${esc(signed(a.bonus))}${a.max_dex !== null ? ` · max Dex ${esc(signed(a.max_dex))}` : ''}${a.price_gp !== null ? ` · ${esc(formatGp(a.price_gp))}` : ''}</small></button>
-          <button type="button" class="skill-details" data-armor-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup">Details</button></li>`;
+          <button type="button" class="skill-details q-details" data-armor-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></li>`;
       }).join('')}</ul></section>` : '';
   }).join('');
 }
@@ -281,7 +281,7 @@ export function renderArmorTab(app, view) {
         <span class="wl-part"><span class="wl-k">Spell failure</span> <b>${item.spell_failure}%</b></span>
         ${item.dr ? `<span class="wl-part"><span class="wl-k">DR</span> <b>${item.dr}/—</b></span>` : ''}`
       : `<span class="muted">No ${k === 'shield' ? 'shield' : 'armor'}: choose one below</span>`)
-      + `<button type="button" class="skill-details wl-more${open ? ' on' : ''}" data-line-more="${k}" aria-expanded="${open}" aria-label="Choose and see everything about it">Details</button>`;
+      + `<button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${k}" aria-expanded="${open}" aria-label="Choose and see everything about it" title="Details">?</button>`;
     $(`${k}-more`).hidden = !open;
   }
   $('armor-info').innerHTML = gear.armor ? armorDetails(gear.armor) + abilities(state.armorAbilities) + price('armor') : '<p>Unarmored.</p>';
