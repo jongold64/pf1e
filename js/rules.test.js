@@ -348,6 +348,10 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 
   check('Weapon Focus can be taken more than once', repeatable(feat('Weapon Focus')), true);
   check('Power Attack cannot', repeatable(feat('Power Attack')), false);
+  check('repeatable when the Benefit or Normal says so (Sacred Geometry, Knowledgeable Spellcaster, Toxic Secretions)',
+        ['Sacred Geometry', 'Knowledgeable Spellcaster', 'Toxic Secretions'].map(n => repeatable(feat(n))).join(), 'true,true,true');
+  check('...not for "no more than once per round" (Stunning Fist) or Extra Channel (Paizo gives it no Special)',
+        ['Stunning Fist', 'Extra Channel'].map(n => repeatable(feat(n))).join(), 'false,false');
 }
 
 // Feat effects on the numbers

@@ -1549,8 +1549,9 @@ function buildControls() {
       const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
       openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
         <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Build tab).')}</p>
-        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}`,
-        [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
+        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}
+        ${takenElsewhere(slot.id).has(f.id) && !repeatable(f) ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>' : ''}`,
+        takenElsewhere(slot.id).has(f.id) && !repeatable(f) ? [] : [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
           update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
           $('feat-picker').close();
         } }]);
@@ -1568,7 +1569,9 @@ function buildControls() {
     const f = data.featsById.get(item.dataset.feat);
     const slot = view.slots.find(s => s.id === pickerSlotId);
     item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot)) +
-      `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`;
+      (takenElsewhere(slot.id).has(f.id) && !repeatable(f)
+        ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>'
+        : `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`);
   }, true);
   $('feat-search').addEventListener('input', renderPicker);
   $('feat-type').addEventListener('change', renderPicker);
@@ -3835,35 +3838,38 @@ function openPicker(slotId) {
   $('feat-picker').showModal();
 }
 
+// The feats chosen in every slot but this one.
+const takenElsewhere = slotId => new Set(view.slots.filter(s => s.id !== slotId).map(s => state.feats[s.id]));
+
 function renderPicker() {
   const slot = view.slots.find(s => s.id === pickerSlotId);
   if (!slot) return;
   const search = $('feat-search').value.trim().toLowerCase();
   const type = $('feat-type').value;
   const hideUnmet = $('feat-qualify').checked;
-  // Feats already chosen in another slot, unless the feat can be taken more than once.
-  const taken = new Set(view.slots.filter(s => s.id !== slot.id).map(s => state.feats[s.id]));
+  // Feats already chosen in another slot stay listed, marked, unless they can be taken more than once.
+  const taken = takenElsewhere(slot.id);
 
   const matches = [];
   let hidden = 0;  // matching feats left out because you don't qualify yet
   for (const f of data.feats) {
     if (!slotAccepts(slot, f)) continue;
-    if (taken.has(f.id) && !repeatable(f)) continue;
+    const already = taken.has(f.id) && !repeatable(f);
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
     const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
-    if (hideUnmet && check.status === 'unmet') { hidden++; continue; }
-    matches.push({ f, check });
+    if (hideUnmet && check.status === 'unmet' && !already) { hidden++; continue; }
+    matches.push({ f, check, already });
   }
 
   $('picker-count').textContent = matches.length > PICKER_LIMIT
     ? `Showing ${PICKER_LIMIT} of ${matches.length} feats. Search to narrow the list.`
     : `${matches.length} feat${matches.length === 1 ? '' : 's'}`
       + (hidden && search ? ` · ${hidden} more match${hidden === 1 ? 'es' : ''} that you don't qualify for yet: untick "Hide feats I don't qualify for" to see ${hidden === 1 ? 'it' : 'them'}.` : '');
-  $('feat-list').innerHTML = matches.slice(0, PICKER_LIMIT).map(({ f, check }) => `
-    <details class="feat-item" data-feat="${esc(f.id)}">
+  $('feat-list').innerHTML = matches.slice(0, PICKER_LIMIT).map(({ f, check, already }) => `
+    <details class="feat-item${already ? ' feat-taken' : ''}" data-feat="${esc(f.id)}">
       <summary>${STATUS_ICON[check.status]} <span class="feat-name">${esc(f.name)}</span>
-        <small>${esc((f.types || []).join(', '))}</small>
+        <small>${esc((f.types || []).join(', '))}</small>${already ? ' <small class="tag">already taken: only once</small>' : ''}
         <button type="button" class="skill-details q-details" data-feat-pop="${esc(f.id)}" aria-label="${esc(f.name)} in a popup" title="Details">?</button></summary>
       <div class="feat-body"></div>
     </details>`).join('') || `<p class="hint">No feats match${hidden ? ' that you qualify for' : ''}.</p>`;

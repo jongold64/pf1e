@@ -434,8 +434,13 @@ export function checkFeat(feat, ctx, slot = null) {
 }
 
 // A feat can normally be taken once; its Special text says when it can be taken again.
+// Whether a feat can be taken more than once: its Special says so, or its Benefit or Normal does ("You can take this feat
+// multiple times", "This feat can be taken more than once", "...by selecting the same tattoo again"), not just any "more
+// than once" ("no more than once per round").
 export function repeatable(feat) {
-  return /(more than once|multiple times)/i.test(feat.special || '');
+  if (/(more than once|multiple times)/i.test(feat.special || '')) return true;
+  const text = `${feat.benefit || ''} ${feat.normal || ''}`;
+  return /\b(?:take|gain|select|choose) (?:this feat|this|it) (?:more than once|multiple times)|\b(?:this feat )?can be taken (?:more than once|multiple times)|\bselecting the same \w+ again/i.test(text);
 }
 
 // What the app does with a feat (Feats tab Details popup): the numbers it adds and where, or null when the feat isn't
