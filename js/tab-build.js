@@ -200,7 +200,7 @@ export function renderBuild(app, view, parts) {
     <p class="small"><b>Gold:</b> ${state.gold === null || state.gold === undefined ? 'starting gold (set it on the Equipment tab)' : `${esc(String(state.gold))} gp`}${view.load ? ` · load ${esc(view.load.load)} (${view.load.weight} lbs.)` : ''}</p>`;
 
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
-  const left = [card('Defense and numbers', core), card('Attacks', attacks), card('Defense', defense)];
+  const left = [card('Abilities and Saves', core), card('Attacks', attacks), card('Defense', defense)];
   const spellCard = card('Spells', spells, ' b-wide');
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
