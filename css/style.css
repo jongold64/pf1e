@@ -927,8 +927,9 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .b-chips li { border: 1px solid var(--border); border-radius: 12px; padding: 1px 4px 1px 8px; }
 .b-chips .link { padding: 0 4px; }
 .b-notes { margin: 4px 0; padding-left: 16px; }
-.b-uses { list-style: none; padding: 0; margin: 0 0 6px; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 10px; }
-.b-uses li { display: flex; gap: 4px; align-items: baseline; }
+.b-uses { list-style: none; padding: 0; margin: 0 0 6px; display: grid; grid-template-columns: 1fr; }
+.b-uses li { display: flex; gap: 6px; align-items: center; min-height: 28px; border-bottom: 1px solid var(--border); }
+.b-uses li:last-child { border-bottom: 0; }
 .b-uses li .link { flex: 1; text-align: left; }
 .b-terms { display: flex; flex-wrap: wrap; gap: 3px; margin: 3px 0; }
 .b-term { border: 1px solid var(--border); border-radius: 10px; padding: 1px 7px; font-size: 0.78rem; background: var(--card); color: var(--text); min-height: 0; }

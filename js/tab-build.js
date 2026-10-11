@@ -131,8 +131,9 @@ export function renderBuild(app, view, parts) {
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
   const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
   const hero = state.houseRules.actionPoints && !state.antihero ? `<li><span>Hero points</span><b>${state.heroPoints ?? 1}</b></li>` : '';
+  // Each on its own line: its name (tap to tick off uses), what's left, and a ? for how many and its rules text.
   const uses = daily.length || hero ? `<ul class="b-uses">${daily.map(d => `<li><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
-        <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max} ${esc(d.unit)}</span></li>`).join('')}${hero}</ul>
+        <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max} ${esc(d.unit)}</span>${plus('daily', d.key, d.name)}</li>`).join('')}${hero}</ul>
       <button type="button" data-b-uses="">Daily uses…</button> <button type="button" data-b-newday>New day</button>` : '';
 
   // Spellcasting: prepared spells with cast boxes; spontaneous casters' spells known by level.

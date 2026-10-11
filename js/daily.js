@@ -10,51 +10,64 @@ const perDay = s => { const m = String(s).match(/^(.*?)\s*\(?(\d+)\/day\)?\s*$/i
 // Uses the rules work out elsewhere (rules.js), so their "N/day" table entries aren't listed twice.
 const COMPUTED = new Set(['smite evil', 'smite good', 'channel energy', 'lay on hands', 'touch of corruption']);
 
-// [{ key, name, max, unit ('uses' | 'rounds' | 'points' | 'spells'), note }] for the character. view: computeView's
-// result (counts, stats, haveFeats, casting); extra: { spellTables: [{ cls, table }] for spontaneous casters,
-// bladebound: bool }.
-// powers: chosen powers with a daily limit (school, domain, bloodline, order... powers: see powerUses), { name, max, unit }.
+// [{ key, name, max, unit ('uses' | 'rounds' | 'points' | 'spells'), note, how, cls, feature, text }] for the character.
+// how: how the total is worked out; cls + feature: the class feature whose rules text explains it (or text, for a chosen
+// power). view: computeView's result (counts, stats, haveFeats, casting); extra: { spellTables: [{ cls, table }] for
+// spontaneous casters, bladebound: bool }.
+// powers: chosen powers with a daily limit (school, domain, bloodline, order... powers: see powerUses), { name, max, unit, text }.
 export function dailyUses(view, { spellTables = [], bladebound = false, powers = [] } = {}) {
   const { counts, stats } = view;
   const mod = stats.mod;
   const out = [];
-  const add = (name, max, unit = 'uses', note = '') => { if (max > 0) out.push({ key: key(name), name, max, unit, note }); };
+  const add = (name, max, unit = 'uses', note = '', more = {}) => { if (max > 0) out.push({ key: key(name), name, max, unit, note, ...more }); };
+  const sg = n => (n < 0 ? `− ${-n}` : `+ ${n}`);
+  // Where its rules text is: a class (the first of `ids` the character has) and the feature's name.
+  const from = (ids, feature) => ({ cls: counts.find(e => ids.includes(e.cls.id))?.cls.id || '', feature });
   // Rounds a day: rage and bloodrage (4 + Con modifier + 2 a level after 1st), bardic performance and raging song
   // (4 + Cha modifier + 2 a level after 1st).
   const rage = levelOf(counts, ['barbarian', 'barbarian-unchained']);
-  if (rage) add('Rage', 4 + mod.con + 2 * (rage - 1), 'rounds');
+  const rounds = (ab, n, lv) => `4 ${sg(n)} (${ab} modifier) + 2 for each level after 1st (${2 * (lv - 1)})`;
+  if (rage) add('Rage', 4 + mod.con + 2 * (rage - 1), 'rounds', '', { how: rounds('Constitution', mod.con, rage), ...from(['barbarian', 'barbarian-unchained'], 'Rage') });
   const blood = levelOf(counts, ['bloodrager']);
-  if (blood) add('Bloodrage', 4 + mod.con + 2 * (blood - 1), 'rounds');
+  if (blood) add('Bloodrage', 4 + mod.con + 2 * (blood - 1), 'rounds', '', { how: rounds('Constitution', mod.con, blood), ...from(['bloodrager'], 'Bloodrage') });
   const bard = levelOf(counts, ['bard']);
-  if (bard) add('Bardic performance', 4 + mod.cha + 2 * (bard - 1), 'rounds');
+  if (bard) add('Bardic performance', 4 + mod.cha + 2 * (bard - 1), 'rounds', '', { how: rounds('Charisma', mod.cha, bard), ...from(['bard'], 'Bardic Performance') });
   const skald = levelOf(counts, ['skald']);
-  if (skald) add('Raging song', 4 + mod.cha + 2 * (skald - 1), 'rounds');
+  if (skald) add('Raging song', 4 + mod.cha + 2 * (skald - 1), 'rounds', '', { how: rounds('Charisma', mod.cha, skald), ...from(['skald'], 'Raging Song') });
   // Pools.
   const monk = levelOf(counts, ['monk']);
-  if (monk >= 4) add('Ki pool', Math.floor(monk / 2) + mod.wis, 'points');
+  const half = (lv, what, ab, n) => `half your ${what} level (${Math.floor(lv / 2)}) ${sg(n)} (${ab} modifier)`;
+  if (monk >= 4) add('Ki pool', Math.floor(monk / 2) + mod.wis, 'points', '', { how: half(monk, 'monk', 'Wisdom', mod.wis), ...from(['monk'], 'Ki Pool') });
   const umonk = levelOf(counts, ['monk-unchained']);
-  if (umonk >= 3) add('Ki pool', Math.floor(umonk / 2) + mod.wis, 'points');
+  if (umonk >= 3) add('Ki pool', Math.floor(umonk / 2) + mod.wis, 'points', '', { how: half(umonk, 'monk', 'Wisdom', mod.wis), ...from(['monk-unchained'], 'Ki Pool') });
   const ninja = levelOf(counts, ['ninja']);
-  if (ninja >= 2) add('Ki pool (ninja)', Math.floor(ninja / 2) + mod.cha, 'points');
-  if (levelOf(counts, ['gunslinger'])) add('Grit', Math.max(1, mod.wis), 'points', 'regained by confirming a critical or a killing blow with a firearm');
-  if (levelOf(counts, ['swashbuckler'])) add('Panache', Math.max(1, mod.cha), 'points', 'regained by a critical or a killing blow with a light or one-handed piercing weapon');
+  if (ninja >= 2) add('Ki pool (ninja)', Math.floor(ninja / 2) + mod.cha, 'points', '', { how: half(ninja, 'ninja', 'Charisma', mod.cha), ...from(['ninja'], 'Ki Pool') });
+  if (levelOf(counts, ['gunslinger'])) add('Grit', Math.max(1, mod.wis), 'points', 'regained by confirming a critical or a killing blow with a firearm',
+    { how: 'your Wisdom modifier (at least 1)', ...from(['gunslinger'], 'Grit') });
+  if (levelOf(counts, ['swashbuckler'])) add('Panache', Math.max(1, mod.cha), 'points', 'regained by a critical or a killing blow with a light or one-handed piercing weapon',
+    { how: 'your Charisma modifier (at least 1)', ...from(['swashbuckler'], 'Panache') });
   const magus = levelOf(counts, ['magus']);
-  if (magus) add('Arcane pool', Math.max(1, Math.floor(magus / (bladebound ? 3 : 2)) + mod.int), 'points');
+  if (magus) add('Arcane pool', Math.max(1, Math.floor(magus / (bladebound ? 3 : 2)) + mod.int), 'points', '',
+    { how: `${bladebound ? 'a third' : 'half'} of your magus level (${Math.floor(magus / (bladebound ? 3 : 2))}) ${sg(mod.int)} (Intelligence modifier), at least 1${bladebound ? ' (bladebound)' : ''}`, ...from(['magus'], 'Arcane Pool') });
   const arcanist = levelOf(counts, ['arcanist']);
-  if (arcanist) add('Arcane reservoir', 3 + arcanist, 'points', 'holds at most 3 + your arcanist level; starts the day at 3 + half your level');
+  if (arcanist) add('Arcane reservoir', 3 + arcanist, 'points', 'holds at most 3 + your arcanist level; starts the day at 3 + half your level',
+    { how: `3 + your arcanist level (${arcanist})`, ...from(['arcanist'], 'Arcane Reservoir') });
   const inv = levelOf(counts, ['investigator']);
-  if (inv) add('Inspiration', Math.max(1, Math.floor(inv / 2) + mod.int), 'uses');
+  if (inv) add('Inspiration', Math.max(1, Math.floor(inv / 2) + mod.int), 'uses', '', { how: `${half(inv, 'investigator', 'Intelligence', mod.int)}, at least 1`, ...from(['investigator'], 'Inspiration') });
   const alch = levelOf(counts, ['alchemist']);
-  if (alch) add('Bombs', alch + mod.int, 'uses');
+  if (alch) add('Bombs', alch + mod.int, 'uses', '', { how: `your alchemist level (${alch}) ${sg(mod.int)} (Intelligence modifier)`, ...from(['alchemist'], 'Bomb') });
   const wp = levelOf(counts, ['warpriest']);
-  if (wp) add('Blessings', 3 + Math.floor(wp / 2), 'uses');
-  if (wp >= 2) add('Fervor', Math.floor(wp / 2) + mod.wis, 'uses');
+  if (wp) add('Blessings', 3 + Math.floor(wp / 2), 'uses', '', { how: `3 + half your warpriest level (${Math.floor(wp / 2)})`, ...from(['warpriest'], 'Blessings') });
+  if (wp >= 2) add('Fervor', Math.floor(wp / 2) + mod.wis, 'uses', '', { how: half(wp, 'warpriest', 'Wisdom', mod.wis), ...from(['warpriest'], 'Fervor') });
   const psy = levelOf(counts, ['psychic']);
-  if (psy) add('Phrenic pool', Math.floor(psy / 2) + Math.max(mod.wis, mod.cha), 'points', 'Wisdom or Charisma, by your discipline');
+  if (psy) add('Phrenic pool', Math.floor(psy / 2) + Math.max(mod.wis, mod.cha), 'points', 'Wisdom or Charisma, by your discipline',
+    { how: half(psy, 'psychic', 'Wisdom or Charisma', Math.max(mod.wis, mod.cha)), ...from(['psychic'], 'Phrenic Pool') });
   // Worked out by the rules elsewhere: channel energy, lay on hands / touch of corruption, smite.
-  for (const c of channelEnergy(stats, view.haveFeats)) add(`Channel ${c.energy} energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`, c.uses);
-  for (const l of layOnHands(stats)) add(l.name, l.uses);
-  for (const s of smite(stats)) add(s.name, s.uses);
+  const classOf = name => counts.find(e => e.cls.name === name)?.cls.id || '';
+  for (const c of channelEnergy(stats, view.haveFeats)) add(`Channel ${c.energy} energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`, c.uses, 'uses', '',
+    { how: `3 ${sg(mod.cha)} (Charisma modifier), and more from feats such as Extra Channel`, cls: classOf(c.source) || from(['cleric', 'oracle', 'warpriest', 'paladin'], '').cls, feature: 'Channel Energy' });
+  for (const l of layOnHands(stats)) add(l.name, l.uses, 'uses', '', { how: `half your level ${sg(mod.cha)} (Charisma modifier)`, ...from(['paladin', 'antipaladin'], l.name) });
+  for (const s of smite(stats)) add(s.name, s.uses, 'uses', '', { how: 'once a day, and one more at 4th level and every 3 levels after', ...from(['paladin', 'antipaladin'], s.name) });
   // Every other "N/day" entry on a class table (challenge, judgment, wild shape, knockout...): the latest one reached.
   for (const e of counts) {
     const latest = new Map();
@@ -64,13 +77,14 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
         if (p && !COMPUTED.has(lower(p[0]))) latest.set(lower(p[0]), [p[0][0].toUpperCase() + p[0].slice(1), p[1]]);
       }
     }
-    for (const [name, n] of latest.values()) add(`${name}${counts.length > 1 ? ` (${e.cls.name})` : ''}`, n);
+    for (const [name, n] of latest.values()) add(`${name}${counts.length > 1 ? ` (${e.cls.name})` : ''}`, n, 'uses', '', { how: `${n}/day at ${e.cls.name} level ${e.level} (the class table)`, cls: e.cls.id, feature: name });
   }
   // Chosen powers (school, domain, bloodline...).
-  for (const p of powers) add(p.name, p.max, p.unit || 'uses', p.note || '');
+  for (const p of powers) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
   // Spontaneous casters: spells a day of each level.
   for (const { cls, table } of spellTables) {
-    for (const r of table.rows) if (r.spellLevel >= 1 && r.canCast && r.total) add(`${cls.name} ${ordinal(r.spellLevel)}-level spells`, r.total, 'spells');
+    for (const r of table.rows) if (r.spellLevel >= 1 && r.canCast && r.total) add(`${cls.name} ${ordinal(r.spellLevel)}-level spells`, r.total, 'spells', '',
+      { how: `spells per day from the ${cls.name.toLowerCase()} table, plus bonus spells for a high casting ability`, cls: cls.id, feature: 'Spells' });
   }
   // One entry per key (two classes giving the same pool).
   return [...new Map(out.map(x => [x.key, x])).values()];

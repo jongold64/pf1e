@@ -31,7 +31,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
-import { dailyUses, powerUses } from './daily.js';
+import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
 import { popBuff } from './tab-effects.js';
@@ -808,7 +808,7 @@ function dailyPowers() {
     const add = (p, from) => {
       if ((p.level || 1) > level) return;
       const u = powerUses(p.text, level, view.stats.mod);
-      if (u?.max > 0) out.push({ name: `${p.name} (${from})`, max: u.max, unit: u.unit });
+      if (u?.max > 0) out.push({ name: `${p.name} (${from})`, max: u.max, unit: u.unit, text: p.text, how: `from its rules text at ${cls.name} level ${level}` });
     };
     // (An eidolon's subtype and base form are its own abilities, not the summoner's.)
     for (const { path } of pathsFor(cls.id)) if (!['eidolon-subtype', 'base-form'].includes(path?.kind)) for (const p of path?.powers || []) add(p, path.name);
@@ -817,7 +817,8 @@ function dailyPowers() {
       if (d) for (const p of domainGrants(d, data.domainsById).powers || []) add(p, `${d.name} domain`);
     }
     const bond = pathOf(cls.id, 'arcane-bond');
-    if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses' });
+    if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses',
+      text: bond.text || '', how: 'once a day' });
   }
   return out;
 }
@@ -837,7 +838,17 @@ function buildDetail(kind, arg) {
   else if (kind === 'spell') popSpell(app, arg);
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
-  else if (kind === 'classgear') { const g = classGearNotes()[Number(arg)]; if (g) openDetail(g.name, `<p class="hint">${esc(g.note)}</p>${paragraphs(g.text || '')}`); }
+  else if (kind === 'daily') {
+    // A daily use: how many are left, how the total is worked out, and the rules text.
+    const d = dailyUsesFor().find(x => x.key === arg);
+    if (!d) return;
+    const cls = view.classes.find(c => c.id === d.cls);
+    const text = d.text || (cls && d.feature ? featureDescription(cls, d.feature) : '');
+    openDetail(d.name, `<p><b>${usesLeft(d, state.daily)}</b> of ${d.max} ${esc(d.unit)} left today${d.note ? ` · ${esc(d.note)}` : ''}</p>
+      ${d.how ? `<p class="hint">${esc(d.max)} ${esc(d.unit)} a day: ${esc(d.how)}.</p>` : ''}
+      ${text ? paragraphs(text) : '<p class="hint">The class data has no description for this.</p>'}`,
+      [{ label: 'Tick off uses', run: () => popDailyUses(app, view, buildParts(), d.key) }]);
+  } else if (kind === 'classgear') { const g = classGearNotes()[Number(arg)]; if (g) openDetail(g.name, `<p class="hint">${esc(g.note)}</p>${paragraphs(g.text || '')}`); }
   else if (kind === 'feat') popGrantedFeat(arg);
   else if (kind === 'chosenfeat') {
     const f = data.featsById.get(arg);
