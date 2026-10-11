@@ -48,15 +48,13 @@ export function renderBuild(app, view, parts) {
   const stat = (label, value, rollHtml = '', plusHtml = '', note = '') => `<div class="b-stat"><span>${label}</span><b>${value}</b>${rollHtml || '<span></span>'}${plusHtml || '<span></span>'}${note ? `<span class="muted">${note}</span>` : ''}</div>`;
   const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`)];
-  // AC and HP on their own lines at the top, large; below, the ability scores in a column on the left and the saves, BAB,
-  // CMB, initiative and speed on the right.
-  const core = `<div class="b-top">
-        <div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
+  // AC and HP: in the highlighted row at the top, beside who the character is.
+  const acHp = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
         <div class="b-hp"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
           <input type="number" id="b-hp-amount" inputmode="numeric" placeholder="±" aria-label="Damage (negative) or healing">
-          <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
-      </div>
-      <div class="b-split">
+          <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
+  // The numbers card: the ability scores in a column on the left; the saves, BAB, CMB, initiative and speed on the right.
+  const core = `<div class="b-split">
         <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
         <div class="b-grid">
           ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
@@ -202,9 +200,9 @@ export function renderBuild(app, view, parts) {
   const spellCard = card('Spells', spells, ' b-wide');
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
-  box.innerHTML = `${head}
+  box.innerHTML = `<div class="b-banner">${head}${acHp}</div>
     <div class="b-main">
-      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}${card('Daily uses', uses)}
+      <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('Daily uses', uses)}
         ${card('Class features and choices', features)}${card('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
         ${card('Gear', gearHtml)}${notesCard}</div>
       <div>${card('Skills', skills)}</div>

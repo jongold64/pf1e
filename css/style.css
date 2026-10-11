@@ -982,3 +982,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Character tab: everything on the left, the skills (all of them, no scrolling) on the right. */
 .b-main { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr); gap: 8px; align-items: start; }
 @media (max-width: 760px) { .b-main { grid-template-columns: 1fr; } }
+/* Character tab: the row under the tabs (who the character is, AC and HP), bold and highlighted. */
+.b-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 28px; margin: 0 0 8px; padding: 8px 12px; border-radius: 8px;
+  background: color-mix(in srgb, var(--warn) 22%, var(--card)); border: 1px solid var(--warn); border-left-width: 5px; font-weight: 700; }
+.b-banner .b-head { margin: 0; }
+.b-banner .b-head span, .b-banner .muted, .b-banner input, .b-banner button { font-weight: 700; }
+.b-banner .muted { color: var(--text); opacity: 0.8; }
