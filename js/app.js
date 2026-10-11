@@ -3925,7 +3925,9 @@ function spellTable(c, spells) {
       <p class="hint">Ability scores here include active effects (an owl's wisdom, for example). Each spell's own DC and numbers are in My spells.</p>` });
   }
   const castLine = spells.rows.length ? `<p class="cast-line">Caster level <b>${sc.cl}</b> · Concentration <b>${signed(sc.cl + sc.castMod)}</b>
+      ${rollButton({ title: `${cls.name} concentration`, check: 'Concentration', plain: true, groups: [{ attacks: [sc.cl + sc.castMod] }] })}
       · Save DC <b>${10 + sc.castMod} + spell level</b> · Spell resistance check <b>${signed(sc.cl + sc.penetration)}</b>
+      ${rollButton({ title: `${cls.name} caster level check (spell resistance)`, check: 'Caster level check', plain: true, groups: [{ attacks: [sc.cl + sc.penetration] }] })}
       <button type="button" class="skill-details q-details" data-spellday="${esc(castKey)}" aria-label="How these are worked out" title="Details">?</button></p>` : '';
   const head = `<h3 class="spell-class">${esc(cls.name)}</h3>
     <p class="hint">Casts with ${esc(abilityName)} (${spells.score}).${esc(raised)}</p>${castLine}${extraBox}${domainLine}${bloodLine}`;

@@ -215,7 +215,7 @@ export function renderBuild(app, view, parts) {
       <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span></span>`).join('');
   const dcs = view.casting.casting.filter(c => c.effectiveLevel >= 1).map(c => {
     const mod = view.stats.mod[parts.castingAbility(c.cls.id)] ?? 0;
-    return `<span class="b-pool"><span>${esc(c.cls.name)}</span> <b>DC ${10 + mod}</b><span class="muted">+ spell level · concentration ${esc(signed(c.effectiveLevel + mod))}</span></span>`;
+    return `<span class="b-pool"><span>${esc(c.cls.name)}</span> <b>DC ${10 + mod}</b><span class="muted">+ spell level · concentration ${esc(signed(c.effectiveLevel + mod))}</span>${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')}</span>`;
   }).join('');
   const heroPts = state.houseRules.actionPoints && !state.antihero
     ? `<span class="b-pool"><span>Hero points</span> <b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</span>` : '';
@@ -243,7 +243,7 @@ function renderSpells(app, view, parts) {
     const cid = c.cls.id;
     const ability = parts.castingAbility(cid);
     const mod = view.stats.mod[ability] ?? 0;
-    const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)} · save DC 10 + spell level ${signed(mod)}</p>`;
+    const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)}${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')} · save DC 10 + spell level ${signed(mod)}</p>`;
     const prep = parts.prepared(cid);
     if (prep) {
       // Each prepared spell on its own line: a box to tick when cast, its name, and a ? for its details.
