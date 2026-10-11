@@ -43,19 +43,25 @@ export function renderBuild(app, view, parts) {
   // Core numbers.
   const save = (label, key) => `<div class="b-stat"><span>${label}</span><b>${signed(stats[key])}</b>${roll(check(label, stats[key]), label)}${plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label)}</div>`;
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`)];
-  const core = `<div class="b-hp"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
-        <input type="number" id="b-hp-amount" inputmode="numeric" placeholder="±" aria-label="Damage (negative) or healing">
-        <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
-      <div class="b-grid">
-        <div class="b-stat"><span>AC</span><b>${stats.ac}</b><span class="muted">T ${stats.touch} · FF ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
-        <div class="b-stat"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>
-        <div class="b-stat"><span>BAB</span><b>${esc(formatBab(stats.bab))}</b></div>
-        <div class="b-stat"><span>CMB</span><b>${signed(cmb)}</b>${roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB')}<span class="muted">CMD ${cmd}</span>${plus('cmb', '', 'CMB and CMD')}</div>
-        ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
-        <div class="b-stat"><span>Speed</span><b>${view.speed ? `${view.speed} ft.` : '—'}</b>${plus('result', 'speed', 'speed')}</div>
-        ${dr.length ? `<div class="b-stat"><span>DR</span><b>${esc(dr.join(', '))}</b></div>` : ''}
+  // AC and HP side by side on top; below, the ability scores in a column on the left and the saves, BAB, CMB, initiative
+  // and speed on the right.
+  const core = `<div class="b-top">
+        <div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted" title="touch · flat-footed">T ${stats.touch} · FF ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
+        <div class="b-hp"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
+          <input type="number" id="b-hp-amount" inputmode="numeric" placeholder="±" aria-label="Damage (negative) or healing">
+          <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
       </div>
-      <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>`;
+      <div class="b-split">
+        <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
+        <div class="b-grid">
+          ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
+          <div class="b-stat"><span>BAB</span><b>${esc(formatBab(stats.bab))}</b></div>
+          <div class="b-stat"><span>CMB</span><b>${signed(cmb)}</b>${roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB')}<span class="muted">CMD ${cmd}</span>${plus('cmb', '', 'CMB and CMD')}</div>
+          <div class="b-stat"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>
+          <div class="b-stat"><span>Speed</span><b>${view.speed ? `${view.speed} ft.` : '—'}</b>${plus('result', 'speed', 'speed')}</div>
+          ${dr.length ? `<div class="b-stat"><span>DR</span><b>${esc(dr.join(', '))}</b></div>` : ''}
+        </div>
+      </div>`;
 
   // On now: effects counting, each with a switch-off.
   const onNow = [...state.buffs.filter(x => x.on !== false).map(x => ({ name: buffById.get(x.id)?.name, off: `buff:${x.id}` })).filter(x => x.name),
