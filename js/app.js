@@ -21,7 +21,7 @@ import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor } fr
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
-import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear } from './tab-equipment.js';
+import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails } from './tab-equipment.js';
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { initSearch } from './search-ui.js';
@@ -831,9 +831,10 @@ function buildDetail(kind, arg) {
     const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits, activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
     openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
   } else if (kind === 'weapon') popWeaponPart(app, Number(arg), 'attack');
-  else if (kind === 'spell') popSpell(app, arg);
+  else if (kind === 'spell') { if (data.spells) popSpell(app, arg); else loadSpells().then(() => popSpell(app, arg)); }
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
+  else if (kind === 'gear') { const it = data.gearById?.get(arg); if (it) openDetail(it.name, gearDetails(it, false)); }
   else if (kind === 'choice') {
     const [cid, i] = arg.split('|');
     const lv = view.counts.find(e => e.cls.id === cid)?.level || 0;

@@ -174,18 +174,22 @@ export function renderBuild(app, view, parts) {
   // Companions.
   const comps = renderCompanions(app, view);
 
-  // Gear: magic items (worn), spell items, money and load.
+  // Gear: what class features make, magic items, potions, scrolls and wands made, the rest of the inventory (each on its
+  // own line with a ?), then money and load.
+  const gearRow = (name, note, kind, arg) => `<div class="b-feat"><span>${esc(name)}${note ? ` <small class="muted">${esc(note)}</small>` : ''}</span>${kind ? plus(kind, arg, name) : ''}</div>`;
+  const list = (title, rows) => (rows.length ? `<h4 class="b-sub">${title}</h4><div class="b-feats">${rows.join('')}</div>` : '');
+  const fromClass = parts.classGear.map((g, i) => gearRow(g.name, g.note, 'classgear', String(i)));
   const magic = state.magicItems.map((e, i) => {
     const item = data.itemsById?.get(e.id);
-    return item ? `<button type="button" class="b-term" data-b-detail="item" data-arg="m:${i}">${esc(item.name)}${e.option ? ` (${esc(e.option)})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}${e.off ? ' <span class="muted">(off)</span>' : ''}</button>` : '';
-  }).join('');
-  const made = state.craftedItems.map(e => `<span class="b-term">${esc(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}`)}${e.qty > 1 ? ` ×${e.qty}` : ''}</span>`).join('');
-  const inv = state.inventory.map(e => { const it = data.gearById?.get(e.id); return it ? `${it.name}${e.qty > 1 ? ` ×${e.qty}` : ''}` : null; }).filter(Boolean);
-  // What class features make (bonded items, constructed limbs, conjured armor, class weapons), each with a ?.
-  const fromClass = parts.classGear.map((g, i) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
-  const gearHtml = `${fromClass ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${fromClass}</div>` : ''}
-    ${magic ? `<div class="b-terms">${magic}</div>` : ''}${made ? `<div class="b-terms">${made}</div>` : ''}
-    ${inv.length ? `<p class="small"><b>Gear:</b> ${esc(inv.join(', '))}</p>` : ''}
+    return item ? gearRow(`${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, e.off ? '(off)' : '', 'item', `m:${i}`) : '';
+  }).filter(Boolean);
+  const made = state.craftedItems.map(e => gearRow(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
+    `caster level ${e.cl}`, 'spell', e.spellId));
+  const inv = state.inventory.map(e => {
+    const it = data.gearById?.get(e.id);
+    return it ? gearRow(`${it.name}${e.variant ? ` (${e.variant.toLowerCase()})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, '', 'gear', it.id) : '';
+  }).filter(Boolean);
+  const gearHtml = `${list('From your class', fromClass)}${list('Magic items', magic)}${list('Potions, scrolls and wands', made)}${list('Gear', inv)}
     <p class="small"><b>Gold:</b> ${state.gold === null || state.gold === undefined ? 'starting gold (set it on the Equipment tab)' : `${esc(String(state.gold))} gp`}${view.load ? ` · load ${esc(view.load.load)} (${view.load.weight} lbs.)` : ''}</p>`;
 
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);

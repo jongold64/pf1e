@@ -25,7 +25,7 @@ export function armorLabel(armor, enh, mw, abilities = []) {
   return prefix ? `${prefix} ${armor.name}` : armor.name;
 }
 
-function gearDetails(item, withButtons = true) {
+export function gearDetails(item, withButtons = true) {
   const versions = item.variants || [];
   const addButtons = versions.length
     ? versions.map(v => `<button type="button" class="primary" data-add-gear="${esc(item.id)}" data-variant="${esc(v.name)}">
