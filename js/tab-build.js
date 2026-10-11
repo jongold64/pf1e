@@ -125,8 +125,11 @@ export function renderBuild(app, view, parts) {
     ${view.traits.length ? `<p class="small"><b>Traits:</b> ${esc(view.traits.map(t => t.name).join(', '))}</p>` : ''}
     <p class="small"><b>Racial:</b> ${esc((race.traits || []).filter(t => !t.kind).map(t => t.name).join(', ') || '—')}</p>`;
 
-  // Skills: those with ranks or a bonus beyond the ability modifier, two columns.
-  const skills = parts.skills.length ? `<div class="b-skills">${parts.skills.map(s => `<div><span>${esc(s.name)}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>` : '';
+  // Skills: every skill in a scrolling box, two columns; ones with ranks or a bonus beyond the ability modifier stand out,
+  // the rest are greyed; a trained-only skill without ranks says so.
+  const skills = parts.skills.length ? `<div class="b-skills b-scroll">${parts.skills.map(s => `<div class="${s.ranks > 0 || s.bonus !== 0 ? 'b-has' : 'b-plain'}">
+      <span>${esc(s.name)}${s.usable ? '' : ' <small class="muted">untrained</small>'}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>
+    <p class="hint">${parts.skills.filter(s => s.ranks > 0).length} with ranks · scroll for every skill.</p>` : '';
 
   // Companions.
   const comps = renderCompanions(app, view);

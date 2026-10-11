@@ -594,8 +594,8 @@ async function drawBuild() {
 function buildParts() {
   const skills = skillRowNames().map(name => {
     const t = skillTotalFor(name);
-    return { name, ranks: state.skills[name] || 0, total: t.total, bonus: t.total - t.abilityMod - (t.armor || 0) };
-  }).filter(s => (s.ranks > 0 || s.bonus !== 0) && skillInfo(s.name));
+    return { name, ranks: state.skills[name] || 0, total: t.total, bonus: t.total - t.abilityMod - (t.armor || 0), usable: t.usable };
+  }).filter(s => skillInfo(s.name));
   const spontaneous = view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
     extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id), diminished: diminished(c.cls.id) }) }))
     .filter(x => x.table && x.cls.id !== 'arcanist' && x.table.rows.some(r => r.known !== null));
