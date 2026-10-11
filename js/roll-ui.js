@@ -25,9 +25,14 @@ export function rollButton(spec, label = 'Roll') {
 }
 
 // One rolled line; a line starting with a tab (an attack's damage, confirmation roll) sits indented under the attack,
-// and a tab then "!" is a natural 20's critical damage, highlighted.
-const line = l => (l.startsWith('	!') ? `<li class="roll-under roll-crit">${esc(l.slice(2))}</li>`
-  : l.startsWith('	') ? `<li class="roll-under">${esc(l.slice(1))}</li>` : `<li>${esc(l)}</li>`);
+// and one starting with "!" (after the tab, if any) is critical damage, highlighted.
+const line = l => {
+  const under = l.startsWith('	');
+  const t = under ? l.slice(1) : l;
+  const crit = t.startsWith('!');
+  const cls = [under ? 'roll-under' : '', crit ? 'roll-crit' : ''].filter(Boolean).join(' ');
+  return `<li${cls ? ` class="${cls}"` : ''}>${esc(crit ? t.slice(1) : t)}</li>`;
+};
 
 function render(panel) {
   const [latest, ...older] = history;

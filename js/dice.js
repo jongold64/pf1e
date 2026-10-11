@@ -88,7 +88,7 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       if (g.critMult && g.damage) {
         const dmg = rollDamage(g.damage, rng, g.critMult);
         const more = rollExtras(g, g.critMult - 1, rng);
-        if (dmg) lines.push(`${prefix}critical damage (×${g.critMult}) ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
+        if (dmg) lines.push(`!${prefix}critical damage (×${g.critMult}) ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         continue;
       }
       for (let i = 0; i < (g.times || 1); i++) {
@@ -132,8 +132,8 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
         if (times > 1) {
           const crit = rollDamage(g.damage, rng, times);
           const critMore = rollExtras(g, times - 1, rng);
-          // A natural 20's critical damage is highlighted (a "!" after the tab).
-          under(`${atk.natural === 20 ? '!' : ''}Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`);
+          // Critical damage is highlighted (a "!" after the tab).
+          under(`!Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`);
         }
       }
     });

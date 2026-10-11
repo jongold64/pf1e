@@ -1031,13 +1031,13 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
         'Fortitude save: d20 (14) + 5 = 19');
   const crit = rollSpec({ title: 'Longsword', groups: [{ attacks: [6], damage: '1d8+4', threat: 19, mult: 2 }] }, dice(19, 10, 3, 4, 5)).lines;
   check('critical threat: the attack, then confirm, damage and critical damage each on a line under it', crit.join(' | '),
-        'Attack: d20 (19) + 6 = 25, critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	Damage 1d8 (3) + 4 = 7 | 	Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
+        'Attack: d20 (19) + 6 = 25, critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	Damage 1d8 (3) + 4 = 7 | 	!Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
   const nat20 = rollSpec({ title: 'Longsword', groups: [{ attacks: [6], damage: '1d8+4', threat: 19, mult: 2 }] }, dice(20, 10, 3, 4, 5)).lines;
   check('natural 20: damage, then the critical damage highlighted', nat20.join(' | '),
         'Attack: d20 (20) + 6 = 26 (natural 20: hits), critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	Damage 1d8 (3) + 4 = 7 | 	!Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
   check('damage only', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4' }] }, dice(6)).lines[0], 'damage 1d8 (6) + 4 = 10');
   check('critical damage ×3', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4', critMult: 3 }] }, dice(1, 2, 3)).lines[0],
-        'critical damage (×3) 1d8 (1) + 4 + 1d8 (2) + 4 + 1d8 (3) + 4 = 18');
+        '!critical damage (×3) 1d8 (1) + 4 + 1d8 (2) + 4 + 1d8 (3) + 4 = 18');
   check('Max Healing house rule: healing gives its maximum', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '2d8+5', heal: true }] },
         dice(1, 1), { maxHealing: true }).lines[0], 'healing 2d8 (8, 8) + 5 = 21 (Max Healing)');
   check('...but not damage', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d6' }] }, dice(2), { maxHealing: true }).lines[0], 'damage 1d6 (2) = 2');
