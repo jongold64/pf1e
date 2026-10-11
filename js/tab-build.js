@@ -52,11 +52,11 @@ export function renderBuild(app, view, parts) {
   // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.
   const hpState = hp <= 0 ? ' b-hp-down' : hp * 2 <= stats.hp ? ' b-hp-low' : '';
-  const acHp = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
+  const hpBox = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
           <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
-          <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
-        <div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
+          <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
+  const acBox = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
   // The numbers card: the ability scores in a column on the left; the saves, BAB, CMB, initiative and speed on the right.
   const core = `<div class="b-split">
         <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
@@ -219,10 +219,11 @@ export function renderBuild(app, view, parts) {
   }).join('');
   const heroPts = state.houseRules.actionPoints && !state.antihero
     ? `<span class="b-pool"><span>Hero points</span> <b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</span>` : '';
-  const extras = `<span class="b-pool"><span>Init</span> <b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</span>
-    ${heroPts}${pools}${dcs}
+  // Initiative in a box like HP's, beside it (the two things every fight starts with).
+  const initBox = `<div class="b-hp-big b-init-big"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>`;
+  const extras = `${heroPts}${pools}${dcs}
     ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
-  box.innerHTML = `<div class="b-banner">${head}${acHp}${extras}</div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
       <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('Daily uses', uses)}
         ${card('Class features and choices', features)}${card('Feats and traits', feats)}${caster ? '' : spellCard}${comps}

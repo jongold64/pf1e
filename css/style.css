@@ -1010,3 +1010,14 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner .b-hp-big .b-hp-heal { background: #1e5e2a; color: #fff; border-color: #1e5e2a; }
 .b-banner .b-hp-low > b { color: #b06a00; }
 .b-banner .b-hp-down > b { color: #b3261e; }
+/* HP and initiative side by side in matching boxes (a little smaller so both fit on one line). */
+.b-banner .b-vitals { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; flex-basis: 100%; }
+.b-banner .b-hp-big { gap: 6px; padding: 4px 8px; }
+.b-banner .b-hp-big > span:first-child { font-size: 1.2rem; }
+.b-banner .b-hp-big > b { font-size: 2rem; }
+.b-banner .b-hp-big > .muted { font-size: 1.05rem; }
+.b-banner .b-hp-big input { width: 3.4em; height: 40px; font-size: 1.15rem; }
+.b-banner .b-hp-big button:not(.q-details):not(.roll-button) { height: 40px; min-height: 40px; padding: 0 12px; font-size: 1rem; }
+.b-banner .b-init-big { display: flex; align-items: center; }
+.b-banner .b-init-big .roll-button { padding: 2px 6px !important; min-height: 40px !important; }
+.b-banner .b-init-big .roll-button .d20 { width: 28px; height: 28px; }
