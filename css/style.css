@@ -1024,3 +1024,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Feats tab: a chosen feat's line, with Change and Remove at its end. */
 .feat-chosen-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .feat-chosen-buttons { margin-left: auto; display: inline-flex; gap: 6px; }
+/* Character tab fold-out cards (class features, feats): the heading is the switch. */
+.b-fold > summary { cursor: pointer; list-style: none; }
+.b-fold > summary::-webkit-details-marker { display: none; }
+.b-fold > summary h3 { display: inline; }
+.b-fold > summary::before { content: '▸ '; color: var(--accent); }
+.b-fold[open] > summary::before { content: '▾ '; }
+.b-fold[open] > summary { margin-bottom: 6px; }

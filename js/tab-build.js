@@ -6,7 +6,6 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
-import { armorLabel } from './tab-equipment.js';
 import { defenseSwitchesHtml } from './tab-armor.js';
 import { defenseOn } from './defense.js';
 import { dailyUses, usesLeft } from './daily.js';
@@ -22,6 +21,10 @@ const ORD = n => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10
 const roll = spec => rollButton(spec);
 const plus = (kind, arg = '', what = '') => `<button type="button" class="skill-details q-details b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">?</button>`;
 const card = (title, body, cls = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}</h3>${body}</section>` : '');
+// A card that folds shut (build-time details kept for reference): closed until opened, and kept open across redraws.
+const openFolds = new Set();
+const foldCard = (title, body) => (body ? `<details class="b-card b-fold" data-fold="${esc(title)}"${openFolds.has(title) ? ' open' : ''}>
+    <summary><h3>${esc(title)}</h3></summary>${body}</details>` : '');
 const check = (title, n) => ({ title, check: title, plain: true, groups: [{ attacks: [n] }] });
 
 // parts (from app.js): { name, skills: [{ name, ranks, total }], choices: (cid, level) => [lines],
@@ -30,6 +33,8 @@ export function renderBuild(app, view, parts) {
   const { state, data } = app;
   const { stats, race } = view;
   const box = $('build');
+  // Which fold-out cards are open, so a redraw keeps them that way.
+  for (const d of box.querySelectorAll('details[data-fold]')) { if (d.open) openFolds.add(d.dataset.fold); else openFolds.delete(d.dataset.fold); }
   const notesFocused = document.activeElement?.id === 'b-notes';
   const { cmb, cmd } = combatManeuvers(stats, view.size, view.haveFeats);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
@@ -40,7 +45,7 @@ export function renderBuild(app, view, parts) {
   const deity = data.deitiesById?.get(state.deity);
   const head = `<div class="b-head">${state.name ? `<b class="b-name">${esc(state.name)}</b>` : ''}
       <span>${esc(race.name)} ${esc(view.counts.map(e => `${e.cls.name}${e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : ''} ${e.level}`).join(' / '))}</span>
-      <span class="muted">${esc([race.size, view.speed ? `${view.speed} ft.` : '', deity ? `${deity.name} (${deity.alignment})` : '',
+      <span class="muted">${esc([race.size, deity ? `${deity.name} (${deity.alignment})` : '',
         (race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
 
   // Core numbers.
@@ -64,7 +69,6 @@ export function renderBuild(app, view, parts) {
           ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
           ${stat('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
           ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD ${cmd}`)}
-          ${stat('Init', signed(init), roll(check('Initiative', init), 'initiative'), plus('init', '', 'initiative'))}
           ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'))}
           ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
         </div>
@@ -107,32 +111,14 @@ export function renderBuild(app, view, parts) {
       ${atk ? `<thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody>` : ''}
       ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '');
 
-  // Defense: worn armor and shield, situational notes.
-  const gear = view.gear;
-  const worn = [gear.armor, gear.shield].filter(Boolean).map(a => a.name).join(', ');
-  // Armor and shield worn: name with its quality and abilities, its bonus to AC, max Dex, check penalty, spell failure.
-  const st = app.state;
-  const wornRow = (item, k) => {
-    const bonus = k === 'armor' ? gear.armorBonus : gear.shieldBonus;
-    const away = k === 'shield' && gear.shieldOff;  // put away (defense switch): it adds nothing
-    const pen = Math.min(0, item.check_penalty + (((st[`${k}Enh`] || 0) > 0 || st[`${k}Mw`]) && !item.mw_included ? 1 : 0) + (k === 'armor' ? gear.training || 0 : 0));
-    return `<tr><td><b>${esc(armorLabel(item, st[`${k}Enh`] || 0, st[`${k}Mw`], st[`${k}Abilities`] || []))}</b>
-        <small class="muted b-range">${k === 'shield' ? `shield${gear.shieldOff ? ' · put away' : ''}` : `${esc(item.category)} armor`}</small></td>
-      <td class="num"><b>${signed(bonus)}</b> <small class="muted">${k === 'armor' ? 'armor' : 'shield'}</small></td>
-      <td class="num">${item.max_dex === null || item.max_dex === undefined ? '—' : signed(item.max_dex + (k === 'armor' ? gear.training || 0 : 0))}</td>
-      <td class="num">${away ? '—' : pen}</td><td class="num">${item.spell_failure && !away ? `${item.spell_failure}%` : '—'}</td>
-      <td>${plus('armor', item.id, item.name)}</td></tr>`;
-  };
-  const wornTable = worn ? `<table class="b-table b-worn"><thead><tr><th>Worn</th><th>AC</th><th>Max Dex</th><th>Check</th><th>Spell fail</th><th></th></tr></thead>
-      <tbody>${gear.armor ? wornRow(gear.armor, 'armor') : ''}${gear.shield ? wornRow(gear.shield, 'shield') : ''}</tbody></table>
-    <p class="hint">Total: check penalty ${gear.checkPenalty || 0}${gear.maxDex !== null && gear.maxDex !== undefined ? ` · max Dex +${gear.maxDex}` : ''}${gear.spellFailure && view.casting.casting.length ? ` · spell failure ${gear.spellFailure}%` : ''}${gear.slows ? ' · slows you' : ''}${gear.dr ? ` · DR ${gear.dr}/—` : ''}</p>`
-    : '<p class="hint">No armor or shield: wear them on the Armor tab and they show here with their bonuses.</p>';
+  // Defense: the defensive switches, armor a class feature gives, and situational notes (the worn armor's numbers are
+  // on the Armor tab; AC is in the highlighted row).
   const sit = view.situational || {};
   const notes = [...(sit.ac || []), ...(sit.fort || []), ...(sit.ref || []), ...(sit.will || [])];
   const classArmor = parts.classGear.map((g, i) => [g, i]).filter(([g]) => g.kind === 'armor')
     .map(([g, i]) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
   const defenseSw = `<div class="b-switches b-defense-sw">${defenseSwitchesHtml(view, state.combat, s => plus('defense', s.key, s.label))}</div>`;
-  const defense = `${wornTable}${defenseSw}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
+  const defense = `${defenseSw}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
       ${notes.length ? `<h4 class="b-sub">Situational</h4><div class="b-feats">${[...new Set(notes)].map(n => {
         // "Trap sense: +1 on Reflex saves against traps." -> a ? with the Trap sense class feature.
         const name = n.split(':')[0].replace(/\s*\(.*\)$/, '').trim();
@@ -141,11 +127,6 @@ export function renderBuild(app, view, parts) {
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
   const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
-  const hero = state.houseRules.actionPoints && !state.antihero ? `<li><span>Hero points</span><b>${state.heroPoints ?? 1}</b></li>` : '';
-  // Each on its own line: its name (tap to tick off uses), what's left, and a ? for how many and its rules text.
-  const uses = daily.length || hero ? `<ul class="b-uses">${daily.map(d => `<li><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
-        <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max} ${esc(d.unit)}</span>${plus('daily', d.key, d.name)}</li>`).join('')}${hero}</ul>
-      <button type="button" data-b-uses="">Daily uses…</button> <button type="button" data-b-newday>New day</button>` : '';
 
   // Spellcasting: prepared spells with cast boxes; spontaneous casters' spells known by level.
   const spells = renderSpells(app, view, parts);
@@ -196,12 +177,7 @@ export function renderBuild(app, view, parts) {
   }).filter(Boolean);
   const made = state.craftedItems.map(e => gearRow(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
     `caster level ${e.cl}`, 'spell', e.spellId));
-  const inv = state.inventory.map(e => {
-    const it = data.gearById?.get(e.id);
-    return it ? gearRow(`${it.name}${e.variant ? ` (${e.variant.toLowerCase()})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, '', 'gear', it.id) : '';
-  }).filter(Boolean);
-  const gearHtml = `${list('From your class', fromClass)}${list('Magic items', magic)}${list('Potions, scrolls and wands', made)}${list('Gear', inv)}
-    <p class="small"><b>Gold:</b> ${state.gold === null || state.gold === undefined ? 'starting gold (set it on the Equipment tab)' : `${esc(String(state.gold))} gp`}${view.load ? ` · load ${esc(view.load.load)} (${view.load.weight} lbs.)` : ''}</p>`;
+  const gearHtml = `${list('From your class', fromClass)}${list('Magic items', magic)}${list('Potions, scrolls and wands', made)}`;
 
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
   const left = [card('Abilities and Saves', core), card('Attacks', attacks), card('Defense', defense)];
@@ -212,21 +188,17 @@ export function renderBuild(app, view, parts) {
   // each caster's spell DC and concentration, and the Daily uses popup / New day.
   const MAIN_POOL = /^(Rage|Bloodrage|Bardic performance|Raging song|Ki pool|Grit|Panache|Arcane pool|Arcane reservoir|Phrenic pool|Inspiration|Bombs|Blessings|Fervor|Channel|Lay on hands|Touch of corruption|Smite|Judgment|Challenge|Wild shape)/i;
   const pools = daily.filter(d => MAIN_POOL.test(d.name)).map(d => `<span class="b-pool"><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
-      <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span></span>`).join('');
-  const dcs = view.casting.casting.filter(c => c.effectiveLevel >= 1).map(c => {
-    const mod = view.stats.mod[parts.castingAbility(c.cls.id)] ?? 0;
-    return `<span class="b-pool"><span>${esc(c.cls.name)}</span> <b>DC ${10 + mod}</b><span class="muted">+ spell level · concentration ${esc(signed(c.effectiveLevel + mod))}</span>${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')}</span>`;
-  }).join('');
+      <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span>${plus('daily', d.key, d.name)}</span>`).join('');
   const heroPts = state.houseRules.actionPoints && !state.antihero
     ? `<span class="b-pool"><span>Hero points</span> <b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</span>` : '';
   // Initiative in a box like HP's, beside it (the two things every fight starts with).
   const initBox = `<div class="b-hp-big b-init-big"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>`;
-  const extras = `${heroPts}${pools}${dcs}
+  const extras = `${heroPts}${pools}
     ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
-      <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('Daily uses', uses)}
-        ${card('Class features and choices', features)}${card('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
+      <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
+        ${foldCard('Class features and choices', features)}${foldCard('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
         ${card('Gear', gearHtml)}${notesCard}</div>
       <div>${card('Skills', skills)}</div>
     </div>`;
