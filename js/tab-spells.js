@@ -185,7 +185,7 @@ function popSpellLevel(app, lv) {
 }
 
 // The spell in a popup (the list's Details button): everything the side panel shows, with Add or Remove as a button.
-function popSpell(app, id) {
+export function popSpell(app, id) {
   const spell = app.data.spells?.find(s => s.id === id);
   if (!spell) return;
   const { cls } = listClass(app, app.view);
@@ -269,7 +269,7 @@ export function initSpellList(app) {
 // Prepared casters' spells for today. Spellbook classes prepare from their spellbook (My spells); the others (clerics,
 // druids...) from their whole class list, their own My spells first.
 const SPELLBOOK = new Set(['wizard', 'witch', 'magus', 'arcanist', 'alchemist', 'investigator']);
-function preparers(app, view) {
+export function preparers(app, view) {
   return view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
                                                                             extraSlot: app.extraSlotOn?.(c.cls.id), knownChange: app.knownChange?.(c.cls.id) || 0 }) }))
     .filter(x => x.table && (x.cls.id === 'arcanist' || x.table.rows.every(r => r.known === null)));

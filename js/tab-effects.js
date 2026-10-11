@@ -102,7 +102,7 @@ function magicItemsHtml(app) {
 
 // A buff in a popup: what it gives at your caster level (and how that grows), whether each bonus counts next to the
 // other effects that are on (same-type bonuses don't stack), what isn't counted, and the spell's own text.
-async function popBuff(app, id) {
+export async function popBuff(app, id) {
   const buff = buffById.get(id);
   if (!buff) return;
   const { state } = app;

@@ -589,3 +589,9 @@ check its Section 15 notice is in the license.
 - Warpriest blessings: `build_aon_blessings.py` -> data/blessings.json ({ name, source, deities, minor, major }).
   state.blessings (2 ids); deities.js `blessingWhy` (the deity's domains; disaster blessings by their element; Godclaw,
   Scalykind, Void by the deities named), `blessingUses`. app.js `blessingPicker` in the warpriest's block.
+- Build tab (js/tab-build.js `renderBuild(app, view, parts)`; app.js `drawBuild`, `buildParts`, `buildDetail`, `initBuild`):
+  the whole character on one page, drawn when shown and on every render while shown. Small d20 roll buttons (rollButton with
+  its text swapped for an SVG) and + Details buttons dispatched to the existing popups. Daily uses: js/daily.js
+  `dailyUses(view, { spellTables, bladebound })` (rounds, pools, rules.js channel / lay on hands / smite, every "N/day" class
+  table entry, spontaneous casters' spells a day), state.daily { key: spent }; `popDailyUses` ticks them; New day also clears
+  prepared spells' cast boxes. state.notes. weaponSummaries carries `index` and `rolls`. The Guide tab's button is in the header.

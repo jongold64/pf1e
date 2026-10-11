@@ -299,7 +299,7 @@ function renderCombat(app, view, ctx) {
 const wpart = (i, part, label) => ` <button type="button" class="skill-details" data-wpart="${i}|${part}" aria-label="${esc(label)}">Details</button>`;
 
 // The popups behind a weapon card's Size, Quality, Strength rating, Range and Cost Details.
-function popWeaponPart(app, i, part) {
+export function popWeaponPart(app, i, part) {
   const view = app.view;
   const e = app.state.weapons[i];
   const w = e && app.data.weaponsById.get(e.id);
@@ -565,7 +565,7 @@ export function weaponSummaries(app, view) {
   if (!app.data.weaponsById) return [];
   const ctx = combatContext(app, view);
   const have = new Set(view.haveFeats);
-  return app.state.weapons.map(e => {
+  return app.state.weapons.map((e, index) => {
     const w = app.data.weaponsById.get(e.id);
     if (!w) return null;
     const args = attackArgs(app, view, ctx, e);
@@ -589,6 +589,11 @@ export function weaponSummaries(app, view) {
       range: w.range_ft ? `${w.range_ft} ft.` : '',
       extra,
       proficient: args.proficient,
+      // For the Build tab: its place in the list and the Roll setups the Weapons tab uses.
+      index,
+      rolls: { attack: { title: weaponLabel(w, e), groups: [rollGroup('', a, crit)] },
+               damage: { title: `${weaponLabel(w, e)} damage`, groups: [{ attacks: [], damage: a.damage, extra: crit.extra }] },
+               crit: w.critical ? { title: `${weaponLabel(w, e)} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] } : null },
     };
   }).filter(Boolean);
 }

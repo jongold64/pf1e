@@ -1989,6 +1989,18 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Daily uses (Build tab).
+{
+  const { dailyUses, usesLeft } = await import('./daily.js');
+  const v = (id, level, mod = {}) => ({ counts: [{ cls: cls(id), level }], haveFeats: [], stats: { mod: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0, ...mod }, bab: [level] } });
+  const names = (id, level, mod) => dailyUses(v(id, level, mod)).map(d => `${d.name}:${d.max}`).join();
+  check('barbarian 5, Con +3: rage 15 rounds', names('barbarian', 5, { con: 3 }), 'Rage:15');
+  check('monk 6, Wis +3: ki pool 6', dailyUses(v('monk', 6, { wis: 3 })).find(d => d.name === 'Ki pool')?.max, 6);
+  check('cavalier 7: challenge 3/day (the latest table entry)', dailyUses(v('cavalier', 7)).find(d => /challenge/i.test(d.name))?.max, 3);
+  check('druid 6: wild shape 2/day', dailyUses(v('druid', 6)).find(d => /wild shape/i.test(d.name))?.max, 2);
+  check('uses left: max less what was spent', usesLeft({ key: 'rage', max: 15 }, { rage: 4 }), 11);
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

@@ -26,6 +26,7 @@
       <button type="button" id="char-import">Import</button>
       <button type="button" id="char-print">Print</button>
       <button type="button" id="char-search">🔍 Search</button>
+      <button type="button" id="char-guide">Guide</button>
       <input type="file" id="char-file" accept=".json,application/json" hidden>
     </div>
   </header>
@@ -51,7 +52,7 @@
       <button type="button" role="tab" data-tab="magic-items">Magic Items</button>
       <button type="button" role="tab" data-tab="craft">Craft</button>
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
-      <button type="button" role="tab" data-tab="guide">Guide</button>
+      <button type="button" role="tab" data-tab="build">Build</button>
     </nav>
 
     <!-- Character -->
@@ -411,6 +412,11 @@
     </main>
 
     <!-- Guide: a quick how-to for features that aren't obvious -->
+    <!-- Build: the whole character on one page for play (tab-build.js). -->
+    <main class="tab-panel" id="tab-build" role="tabpanel" hidden>
+      <div id="build" class="build"></div>
+    </main>
+
     <main class="tab-panel" id="tab-guide" role="tabpanel" hidden>
       <section class="card wide guide">
         <h2>Quick guide</h2>
@@ -545,6 +551,23 @@
           </ul>
         </details>
 
+        <details>
+          <summary>Build tab</summary>
+          <ul>
+            <li>The whole character on one page, for play: hit points (type an amount, negative for damage, then Apply), AC, saves,
+              initiative, CMB/CMD and ability scores; attacks (weapons, class attacks, channel energy, smite) with Power Attack and
+              the other switches; armor and the situational notes; what's on now (× switches an effect off); spells (prepared
+              spells with a box to tick when cast, or spells known); class features (with the coloured dots) and choices; feats,
+              traits and racial traits; skills; companions; gear and gold; and your notes.</li>
+            <li>The small d20 rolls, the small <b>+</b> opens the same Details as the other tabs, and tapping a feature, feat,
+              spell or item reads it.</li>
+            <li><b>Daily uses</b>: every limited ability (rage rounds, ki, grit, channel energy, blessings, bombs, wild shape,
+              a spontaneous caster's spells of each level...) with how many are left. Tap one (or Daily uses…) to tick off uses;
+              <b>New day</b> clears them and the cast boxes of prepared spells.</li>
+            <li>A caster's spells come right after the numbers; everything else fills in only when the character has it. The
+              other tabs build the character; this one shows it. The <b>Guide</b> button is at the top beside New and Print.</li>
+          </ul>
+        </details>
         <details>
           <summary>Classes tab</summary>
           <ul>

@@ -878,3 +878,54 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .how-spells { background: #5d4037; }
 .how-card { background: #757575; }
 .how-legend .how { margin: 0 2px 0 0; }
+
+/* ---------------- Build tab: the whole character on one page (tab-build.js) ---------------- */
+.build { font-size: 0.82rem; line-height: 1.35; }
+.build h3 { font-size: 0.9rem; margin: 0 0 6px; color: var(--accent); }
+.build p { margin: 4px 0; }
+.build .small { font-size: 0.78rem; }
+.b-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0 0 8px; }
+.b-name { font-size: 1.1rem; }
+.b-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+@media (max-width: 760px) { .b-columns { grid-template-columns: 1fr; } }
+.b-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+.b-wide { grid-column: 1 / -1; }
+.b-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 2px 10px; margin: 6px 0; }
+.b-stat, .b-ab, .b-skills > div { display: flex; align-items: center; gap: 4px; min-height: 26px; }
+.b-stat > span:first-child, .b-skills > div > span:first-child { min-width: 42px; color: var(--muted); }
+.b-skills > div > span:first-child { flex: 1; color: var(--text); }
+.b-hp { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.b-hp b { font-size: 1.1rem; }
+.b-hp input { width: 4.5em; padding: 2px 4px; font-size: 0.85rem; }
+.build button:not(.link):not(.b-term) { padding: 2px 8px; font-size: 0.8rem; min-height: 26px; }
+.b-abilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 10px; }
+.b-ab span:first-child { min-width: 28px; color: var(--muted); }
+.b-skills { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 520px) { .b-skills, .b-abilities { grid-template-columns: 1fr 1fr; } }
+/* The small d20 (Roll) and + (Details) buttons. */
+.build .roll-button { padding: 0 3px !important; min-height: 22px !important; border-radius: 6px; line-height: 0; background: transparent; }
+.build .roll-button .d20 { width: 18px; height: 18px; color: var(--accent); }
+.build .b-plus { padding: 0 6px !important; min-height: 22px !important; font-weight: 700; border-radius: 6px; color: var(--muted); }
+.b-table { width: 100%; border-collapse: collapse; }
+.b-table th { text-align: left; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); padding: 2px 4px; }
+.b-table td { padding: 2px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.b-class-attacks td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.b-switches { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 4px; }
+.b-switch { display: inline-flex; align-items: center; gap: 4px; }
+.b-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.b-chips li { border: 1px solid var(--border); border-radius: 12px; padding: 1px 4px 1px 8px; }
+.b-chips .link { padding: 0 4px; }
+.b-notes { margin: 4px 0; padding-left: 16px; }
+.b-uses { list-style: none; padding: 0; margin: 0 0 6px; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 10px; }
+.b-uses li { display: flex; gap: 4px; align-items: baseline; }
+.b-uses li .link { flex: 1; text-align: left; }
+.b-terms { display: flex; flex-wrap: wrap; gap: 3px; margin: 3px 0; }
+.b-term { border: 1px solid var(--border); border-radius: 10px; padding: 1px 7px; font-size: 0.78rem; background: var(--card); color: var(--text); min-height: 0; }
+.b-class { margin-bottom: 6px; }
+.b-spell-level { margin: 3px 0; }
+.b-cast { display: inline-flex; align-items: center; gap: 2px; margin-right: 6px; }
+.b-mini { display: flex; flex-wrap: wrap; gap: 2px 12px; }
+#b-notes { width: 100%; font: inherit; }
+.b-daily .b-ticks input { margin: 2px; width: 18px; height: 18px; }
+.b-daily tr.b-focus td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+#tab-build .build { grid-column: 1 / -1; width: 100%; }

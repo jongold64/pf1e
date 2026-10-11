@@ -2,7 +2,7 @@
 import { levelIncreases, abilityModifier, finalScores,
   ABILITIES, ABILITY_NAMES, BUDGETS, POINT_COSTS, INCREASE_LEVELS, scoreRange,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers,
+  pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers, CASTING_ABILITY,
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed, fastMovement,
 } from './rules.js';
 import {
@@ -30,6 +30,12 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
+import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
+import { dailyUses } from './daily.js';
+import { popWeaponPart } from './tab-weapons.js';
+import { popSpell, preparers } from './tab-spells.js';
+import { popBuff } from './tab-effects.js';
+import { popSource } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
@@ -57,7 +63,7 @@ import { weaponSummaries } from './tab-weapons.js';
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
                       ['alternate', 'Alternate'], ['prestige', 'Prestige']];
-const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'guide'];
+const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'build', 'guide'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
 const data = {
@@ -146,6 +152,8 @@ const state = {
   // A summoner's eidolon (tab-eidolon.js): name, evolutions [{ id (data/eidolons.json), choice }], ability score increases.
   eidolon: { name: '', evolutions: [], increases: [] },
   blessings: [],     // a warpriest's two blessings (data/blessings.json ids)
+  daily: {},         // Build tab: uses spent today, by daily.js key
+  notes: '',         // Build tab: the player's notes
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (cleric, warpriest, inquisitor)
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
@@ -309,6 +317,9 @@ function load(saved) {
   state.armorMw = state.armorMw === true;
   state.shieldMw = state.shieldMw === true;
   // Animal companion: only known animals, skills and tricks.
+  state.daily = Object.fromEntries(Object.entries(state.daily && typeof state.daily === 'object' && !Array.isArray(state.daily) ? state.daily : {})
+    .filter(([k, v]) => typeof k === 'string' && Number.isInteger(v) && v > 0).map(([k, v]) => [k, Math.min(999, v)]));
+  state.notes = typeof state.notes === 'string' ? state.notes.slice(0, 5000) : '';
   state.blessings = [...new Set((Array.isArray(state.blessings) ? state.blessings : []).filter(id => data.blessingsById?.has(id)))].slice(0, 2);
   state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
   const eid = state.eidolon && typeof state.eidolon === 'object' && !Array.isArray(state.eidolon) ? state.eidolon : {};
@@ -547,6 +558,7 @@ function initCharacterBar() {
     addCharacter(character);
   });
   $('char-print').addEventListener('click', printSheet);
+  $('char-guide').addEventListener('click', () => showTab('guide'));
   // Printing from the browser menu (Ctrl+P) gets the sheet too, with whatever data is loaded.
   window.addEventListener('beforeprint', fillSheet);
 }
@@ -563,6 +575,129 @@ async function printSheet() {
     window.print();
   } finally {
     $('char-print').disabled = false;
+  }
+}
+
+// The Build tab: drawn when it's shown and whenever the character changes while it's shown (weapons and spells load first).
+async function drawBuild() {
+  if (tab !== 'build') return;
+  const need = [];
+  if (state.weapons.length && !data.weaponsById) need.push(loadWeapons());
+  if (state.magicItems.length && !data.itemsById) need.push(loadItems());
+  if ((state.inventory.length && !data.gearById)) need.push(loadGear());
+  if (need.length) { await Promise.all(need); view = computeView(); }
+  renderBuild(app, view, buildParts());
+}
+
+// What the Build tab needs from here: the name, skills worth showing, class choice lines, class attacks, spontaneous
+// casters' spells a day, prepared spells, and each class's casting ability.
+function buildParts() {
+  const skills = skillRowNames().map(name => {
+    const t = skillTotalFor(name);
+    return { name, ranks: state.skills[name] || 0, total: t.total, bonus: t.total - t.abilityMod - (t.armor || 0) };
+  }).filter(s => (s.ranks > 0 || s.bonus !== 0) && skillInfo(s.name));
+  const spontaneous = view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
+    extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id), diminished: diminished(c.cls.id) }) }))
+    .filter(x => x.table && x.cls.id !== 'arcanist' && x.table.rows.some(r => r.known !== null));
+  const prepIds = new Set(preparers(app, view).map(p => p.cls.id));
+  return {
+    name: characterLabel(state), skills, spontaneous,
+    bladebound: (state.archetypes.magus || []).includes('magus-bladebound'),
+    castingAbility: cid => CASTING_ABILITY[cid],
+    prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
+      .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
+    classAttacks: classAttacks(view.counts, { bab: view.stats.bab, mod: view.stats.mod, fx: view.stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
+      blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }),
+    choices: (cid, lv) => [...pathLines(cid, lv), ...domainLines(cid), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
+      const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
+        .map(s => data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]);
+      return picks.length ? `${pluralOf(rule)}: ${picks.join(', ')}` : '';
+    }).filter(Boolean), ...(cid === 'warpriest' && state.blessings.length ? [`Blessings: ${state.blessings.map(id => data.blessingsById.get(id)?.name).join(', ')}`] : [])],
+  };
+}
+
+// The Build tab's controls: Details (+), hit points, switching an effect off, combat switches, cast boxes, daily uses
+// (the popup: a box per use, or −/+), new day, and notes (saved as they're typed, without redrawing).
+function initBuild() {
+  const box = $('build');
+  const dailyPop = key => popDailyUses(app, view, buildParts(), key);
+  box.addEventListener('click', e => {
+    const d = e.target.closest('[data-b-detail]');
+    if (d) { buildDetail(d.dataset.bDetail, d.dataset.arg); return; }
+    const hp = e.target.closest('[data-b-hp]');
+    if (hp) {
+      if (hp.dataset.bHp === 'full') { update({ hpCurrent: null }); return; }
+      const amount = Math.trunc(Number($('b-hp-amount').value)) || 0;
+      if (!amount) return;
+      const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount, spiritBoost: state.spiritBoost });
+      update({ hpCurrent: r.current, tempHp: r.temps });
+      return;
+    }
+    const off = e.target.closest('[data-b-off]');
+    if (off) {
+      const [kind, id] = off.dataset.bOff.split(':');
+      if (kind === 'buff') update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, on: false } : x)) });
+      else update({ customEffects: state.customEffects.map((c, i) => (i === Number(id) ? { ...c, on: false } : c)) });
+      return;
+    }
+    const u = e.target.closest('[data-b-uses]');
+    if (u) { dailyPop(u.dataset.bUses); return; }
+    if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
+  });
+  box.addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.bCombat) update({ combat: { ...state.combat, [t.dataset.bCombat]: t.checked } });
+    if (t.dataset.bCast) {
+      const [cid, lv, i] = t.dataset.bCast.split('|');
+      const prep = structuredClone(state.prepared);
+      if (prep[cid]?.[lv]?.[Number(i)]) prep[cid][lv][Number(i)].cast = t.checked;
+      update({ prepared: prep });
+    }
+  });
+  box.addEventListener('input', e => {
+    if (e.target.id === 'b-notes') { state.notes = e.target.value.slice(0, 5000); save(); }
+  });
+  // The daily uses popup (in the shared details window): a box ticks that many uses; −/+ for long lists.
+  $('detail-body').addEventListener('change', e => {
+    const t = e.target.closest('[data-b-tick]');
+    if (!t) return;
+    const n = Number(t.dataset.n);
+    const used = t.checked ? n : n - 1;
+    update({ daily: { ...state.daily, [t.dataset.bTick]: used } });
+    dailyPop(t.dataset.bTick);
+  });
+  $('detail-body').addEventListener('click', e => {
+    const b = e.target.closest('[data-b-step]');
+    if (!b) return;
+    const k = b.dataset.bStep;
+    const max = (dailyUsesFor().find(x => x.key === k) || {}).max ?? 999;
+    update({ daily: { ...state.daily, [k]: Math.max(0, Math.min(max, (state.daily[k] || 0) + Number(b.dataset.n))) } });
+    dailyPop(k);
+  });
+}
+const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneous, bladebound: (state.archetypes.magus || []).includes('magus-bladebound') });
+
+// Details from the Build tab: the same popups the other tabs open.
+function buildDetail(kind, arg) {
+  if (kind === 'save') showSaveDetails(arg);
+  else if (kind === 'ac') showAcDetails(null);
+  else if (kind === 'cmb') showManeuverDetails();
+  else if (kind === 'result') showResultDetails(arg);
+  else if (kind === 'ability') showAbilityDetails(arg);
+  else if (kind === 'skill') showSkillDetails(arg);
+  else if (kind === 'init') {
+    const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits, activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
+    openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
+  } else if (kind === 'weapon') popWeaponPart(app, Number(arg), 'attack');
+  else if (kind === 'spell') popSpell(app, arg);
+  else if (kind === 'item') popSource(app, arg);
+  else if (kind === 'feat') popGrantedFeat(arg);
+  else if (kind === 'feature') {
+    const [cid, ...rest] = arg.split('|');
+    const name = rest.join('|');
+    const cls = view.classes.find(c => c.id === cid);
+    const how = featureHandling(cid, name);
+    openDetail(name, `<p class="hint">${esc(cls?.name || '')} · how the builder uses it: ${esc(HANDLING[how])}</p>${paragraphs(featureDescription(cls, name) || 'The class data has no description for this entry.')}`);
   }
 }
 
@@ -613,6 +748,7 @@ function showTab(name) {
   if (name === 'craft') renderCrafting(app, 'craft');
   if (name === 'equipment') renderEquipmentTab(app);
   if (name === 'weapons') renderWeaponsTab(app);
+  if (name === 'build') drawBuild();
   requestAnimationFrame(() => fitLines());
 }
 
@@ -784,6 +920,7 @@ function buildControls() {
   initEffects(app);
   initCompanion(app);
   initEidolon(app);
+  initBuild();
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
   // Details on a drawback: its text, what it gives (an extra trait slot, and the trait in it), and Take / Remove.
   $('drawback-row').addEventListener('click', e => {
@@ -2782,6 +2919,7 @@ function render() {
   renderCompanion(app, view);
   renderFamiliar(app, view);
   renderEidolon(app, view);
+  drawBuild();
   renderFlaws();
   renderDrawback();
   renderHeroPoints();

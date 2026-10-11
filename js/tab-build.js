@@ -1,0 +1,241 @@
+// Build tab: the whole character on one page, for play. Everything comes from the other tabs' numbers (computeView);
+// here it's laid out compactly, with a small d20 to roll and a small + for Details (the same popups as the other tabs),
+// daily uses to tick off (a running total beside each; the popup marks them and starts a new day), and the player's
+// notes. Sections show only when the character has something for them; a caster's spells come right after the basics.
+import { $, esc, signed } from './dom.js';
+import { rollButton } from './roll-ui.js';
+import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
+import { weaponSummaries } from './tab-weapons.js';
+import { dailyUses, usesLeft } from './daily.js';
+import { companionStats } from './companion.js';
+import { familiarStats } from './familiar.js';
+import { eidolonStats } from './eidolon.js';
+import { featureHandling, HANDLING } from './feature-coverage.js';
+import { buffById } from './effects.js';
+
+const NAMES = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
+const ORD = n => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
+// A small 20-sided die in place of the word Roll.
+const D20 = `<svg class="d20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 21.6 7v10L12 22.5 2.4 17V7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 1.5 7 9.5h10zM7 9.5 2.4 17M17 9.5l4.6 7.5M7 9.5l5 9 5-9M12 18.5v4" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
+const roll = (spec, what) => rollButton(spec, '').replace('🎲 ', D20).replace('aria-label="', `title="Roll${what ? ` ${esc(what)}` : ''}" aria-label="`);
+const plus = (kind, arg = '', what = '') => `<button type="button" class="b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">+</button>`;
+const card = (title, body, cls = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}</h3>${body}</section>` : '');
+const check = (title, n) => ({ title, check: title, plain: true, groups: [{ attacks: [n] }] });
+
+// parts (from app.js): { name, skills: [{ name, ranks, total }], choices: (cid, level) => [lines],
+//   classAttacks: [{ name, note, attack, dice }], spontaneous: [{ cls, table }], bladebound }
+export function renderBuild(app, view, parts) {
+  const { state, data } = app;
+  const { stats, race } = view;
+  const box = $('build');
+  const notesFocused = document.activeElement?.id === 'b-notes';
+  const { cmb, cmd } = combatManeuvers(stats, view.size, view.haveFeats);
+  const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
+  const hp = currentHp(state.hpCurrent, stats.hp);
+  const temp = (state.tempHp || []).reduce((n, t) => n + t.amount, 0);
+
+  // Header.
+  const deity = data.deitiesById?.get(state.deity);
+  const head = `<div class="b-head">${state.name ? `<b class="b-name">${esc(state.name)}</b>` : ''}
+      <span>${esc(race.name)} ${esc(view.counts.map(e => `${e.cls.name}${e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : ''} ${e.level}`).join(' / '))}</span>
+      <span class="muted">${esc([race.size, view.speed ? `${view.speed} ft.` : '', deity ? `${deity.name} (${deity.alignment})` : '',
+        (race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
+
+  // Core numbers.
+  const save = (label, key) => `<div class="b-stat"><span>${label}</span><b>${signed(stats[key])}</b>${roll(check(label, stats[key]), label)}${plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label)}</div>`;
+  const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`)];
+  const core = `<div class="b-hp"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
+        <input type="number" id="b-hp-amount" inputmode="numeric" placeholder="±" aria-label="Damage (negative) or healing">
+        <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
+      <div class="b-grid">
+        <div class="b-stat"><span>AC</span><b>${stats.ac}</b><span class="muted">T ${stats.touch} · FF ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
+        <div class="b-stat"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>
+        <div class="b-stat"><span>BAB</span><b>${esc(formatBab(stats.bab))}</b></div>
+        <div class="b-stat"><span>CMB</span><b>${signed(cmb)}</b>${roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB')}<span class="muted">CMD ${cmd}</span>${plus('cmb', '', 'CMB and CMD')}</div>
+        ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
+        <div class="b-stat"><span>Speed</span><b>${view.speed ? `${view.speed} ft.` : '—'}</b>${plus('result', 'speed', 'speed')}</div>
+        ${dr.length ? `<div class="b-stat"><span>DR</span><b>${esc(dr.join(', '))}</b></div>` : ''}
+      </div>
+      <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>`;
+
+  // On now: effects counting, each with a switch-off.
+  const onNow = [...state.buffs.filter(x => x.on !== false).map(x => ({ name: buffById.get(x.id)?.name, off: `buff:${x.id}` })).filter(x => x.name),
+    ...(view.fromItems || []).map(x => ({ name: x.label })),
+    ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on)];
+  const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
+    : '<p class="muted">Nothing on. Switch effects on in Active effects (Character tab).</p>';
+
+  // Attacks: weapons with attack, damage and critical rolls; class attacks.
+  const weapons = weaponSummaries(app, view);
+  const atk = weapons.map(w => `<tr><td>${esc(w.name)}${w.proficient ? '' : ' <span class="warning" title="Not proficient: −4">⚠</span>'}</td>
+      <td>${esc(w.attack)}${roll(w.rolls.attack, `${w.name} attack`)}</td>
+      <td>${esc(w.damage)}${roll(w.rolls.damage, `${w.name} damage`)}</td>
+      <td>${esc(w.critical)}${w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : ''}</td>
+      <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`).join('');
+  const combat = app.state.combat || {};
+  const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
+    .filter(([, f]) => view.haveFeats.includes(f))
+    .map(([k, f]) => `<label class="b-switch"><input type="checkbox" data-b-combat="${k}"${combat[k] ? ' checked' : ''}> ${esc(f)}</label>`).join('');
+  const classAtk = parts.classAttacks.map(c => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
+      ? { title: c.name, check: c.name, groups: [{ attacks: [c.attack], damage: c.dice, threat: 20, mult: 2 }] }
+      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td colspan="2" class="muted">${esc(c.note)}</td></tr>`).join('');
+  // Channel energy, lay on hands / touch of corruption (melee touch) and smite (Character tab rows), here too.
+  const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
+  const powers = [
+    ...channelEnergy(stats, view.haveFeats).map(c => `<tr><td>Channel ${esc(c.energy)}</td><td></td><td>${esc(c.dice)}${roll({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] }, 'channel')}</td><td colspan="2" class="muted">DC ${c.dc} Will half · ${c.uses}/day</td></tr>`),
+    ...layOnHands(stats).map(l => `<tr><td>${esc(l.name)}</td><td>${l.heals ? '' : esc(signed(touch))}</td><td>${esc(l.dice)}${roll(l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
+        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td colspan="2" class="muted">${l.uses}/day</td></tr>`),
+    ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td colspan="2" class="muted">+${sm.deflection} deflection AC · ${sm.uses}/day · switch it on in Active effects</td></tr>`),
+  ].join('');
+  const attacks = (atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">
+      ${atk ? `<thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody>` : ''}
+      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '';
+
+  // Defense: worn armor and shield, situational notes.
+  const gear = view.gear;
+  const worn = [gear.armor, gear.shield].filter(Boolean).map(a => a.name).join(', ');
+  const sit = view.situational || {};
+  const notes = [...(sit.ac || []), ...(sit.fort || []), ...(sit.ref || []), ...(sit.will || [])];
+  const defense = (worn || notes.length) ? `${worn ? `<p><b>Wearing</b> ${esc(worn)} · check penalty ${gear.checkPenalty || 0}${gear.maxDex !== null && gear.maxDex !== undefined ? ` · max Dex +${gear.maxDex}` : ''}${gear.spellFailure && view.casting.casting.length ? ` · spell failure ${gear.spellFailure}%` : ''}</p>` : ''}
+      ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}` : '';
+
+  // Daily uses: a running total beside each; tapping opens the popup to tick them off.
+  const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound });
+  const hero = state.houseRules.actionPoints && !state.antihero ? `<li><span>Hero points</span><b>${state.heroPoints ?? 1}</b></li>` : '';
+  const uses = daily.length || hero ? `<ul class="b-uses">${daily.map(d => `<li><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
+        <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max} ${esc(d.unit)}</span></li>`).join('')}${hero}</ul>
+      <button type="button" data-b-uses="">Daily uses…</button> <button type="button" data-b-newday>New day</button>` : '';
+
+  // Spellcasting: prepared spells with cast boxes; spontaneous casters' spells known by level.
+  const spells = renderSpells(app, view, parts);
+
+  // Class choices and features.
+  const features = view.counts.map(e => {
+    const specials = [...new Set(e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]))];
+    const tagged = specials.map(s => {
+      const how = featureHandling(e.cls.id, s);
+      return `<button type="button" class="b-term" data-b-detail="feature" data-arg="${esc(`${e.cls.id}|${s}`)}">${esc(s)}${how !== 'text' ? `<span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</button>`;
+    }).join('');
+    const choices = parts.choices(e.cls.id, e.level).map(l => `<p class="small">${esc(l)}</p>`).join('');
+    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-terms">${tagged}</div>${choices}</div>`;
+  }).join('');
+
+  // Feats and traits.
+  const featItems = [...view.chosen.map(f => [f.id, f.name]), ...view.granted.map(n => [data.feats.find(f => f.name === n)?.id, `${n} (class)`])];
+  const feats = `<div class="b-terms">${featItems.map(([id, n]) => (id ? `<button type="button" class="b-term" data-b-detail="feat" data-arg="${esc(id)}">${esc(n)}</button>` : `<span class="b-term">${esc(n)}</span>`)).join('') || '<span class="muted">None</span>'}</div>
+    ${view.traits.length ? `<p class="small"><b>Traits:</b> ${esc(view.traits.map(t => t.name).join(', '))}</p>` : ''}
+    <p class="small"><b>Racial:</b> ${esc((race.traits || []).filter(t => !t.kind).map(t => t.name).join(', ') || '—')}</p>`;
+
+  // Skills: those with ranks or a bonus beyond the ability modifier, two columns.
+  const skills = parts.skills.length ? `<div class="b-skills">${parts.skills.map(s => `<div><span>${esc(s.name)}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>` : '';
+
+  // Companions.
+  const comps = renderCompanions(app, view);
+
+  // Gear: magic items (worn), spell items, money and load.
+  const magic = state.magicItems.map((e, i) => {
+    const item = data.itemsById?.get(e.id);
+    return item ? `<button type="button" class="b-term" data-b-detail="item" data-arg="m:${i}">${esc(item.name)}${e.option ? ` (${esc(e.option)})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}${e.off ? ' <span class="muted">(off)</span>' : ''}</button>` : '';
+  }).join('');
+  const made = state.craftedItems.map(e => `<span class="b-term">${esc(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}`)}${e.qty > 1 ? ` ×${e.qty}` : ''}</span>`).join('');
+  const inv = state.inventory.map(e => { const it = data.gearById?.get(e.id); return it ? `${it.name}${e.qty > 1 ? ` ×${e.qty}` : ''}` : null; }).filter(Boolean);
+  const gearHtml = `${magic ? `<div class="b-terms">${magic}</div>` : ''}${made ? `<div class="b-terms">${made}</div>` : ''}
+    ${inv.length ? `<p class="small"><b>Gear:</b> ${esc(inv.join(', '))}</p>` : ''}
+    <p class="small"><b>Gold:</b> ${state.gold === null || state.gold === undefined ? 'starting gold (set it on the Equipment tab)' : `${esc(String(state.gold))} gp`}${view.load ? ` · load ${esc(view.load.load)} (${view.load.weight} lbs.)` : ''}</p>`;
+
+  const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
+  const left = [card('Defense and numbers', core), card('Attacks', attacks), card('Defense', defense)];
+  const spellCard = card('Spells', spells, ' b-wide');
+  box.innerHTML = `${head}
+    <div class="b-columns">
+      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}</div>
+      <div>${card('Daily uses', uses)}${card('Class features and choices', features)}${card('Feats and traits', feats)}${card('Skills', skills)}</div>
+    </div>
+    ${caster ? '' : spellCard}
+    ${comps}
+    <div class="b-columns">${card('Gear', gearHtml)}${card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`)}</div>`;
+  if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+}
+
+// Spells: for each casting class, its caster level, concentration and DCs, then each spell level: a preparer's slots
+// with a cast box, or a spontaneous caster's spells known (spells a day are in Daily uses).
+function renderSpells(app, view, parts) {
+  const { state, data } = app;
+  if (!view.casting.casting.length) return '';
+  if (!data.spells) { app.loadSpells().then(() => app.update({})); return '<p class="muted">Loading spells…</p>'; }
+  const byId = new Map(data.spells.map(s => [s.id, s]));
+  return view.casting.casting.map(c => {
+    const cid = c.cls.id;
+    const ability = parts.castingAbility(cid);
+    const mod = view.stats.mod[ability] ?? 0;
+    const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)} · save DC 10 + spell level ${signed(mod)}</p>`;
+    const prep = parts.prepared(cid);
+    if (prep) {
+      const levels = prep.map(({ lv, slots }) => `<div class="b-spell-level"><b>${lv === 0 ? 'Cantrips' : ORD(lv)}</b>
+        ${slots.map((x, i) => (x.id ? `<label class="b-cast"><input type="checkbox" data-b-cast="${esc(`${cid}|${lv}|${i}`)}"${x.cast ? ' checked' : ''}${lv === 0 ? ' disabled' : ''}>
+          <button type="button" class="link" data-b-detail="spell" data-arg="${esc(x.id)}">${esc(byId.get(x.id)?.name || x.id)}</button></label>` : '<span class="muted">(empty)</span>')).join(' ')}</div>`).join('');
+      return head + (levels || '<p class="muted">Nothing prepared yet: prepare today\'s spells on the Spells tab.</p>');
+    }
+    const known = state.spells.map(id => byId.get(id)).filter(s => s && s.levels[cid] !== undefined);
+    const lvls = [...new Set(known.map(s => s.levels[cid]))].sort((a, b) => a - b);
+    return head + (lvls.map(lv => `<div class="b-spell-level"><b>${lv === 0 ? 'Cantrips' : ORD(lv)}</b> ${known.filter(s => s.levels[cid] === lv)
+      .sort((a, b) => a.name.localeCompare(b.name)).map(s => `<button type="button" class="link" data-b-detail="spell" data-arg="${esc(s.id)}">${esc(s.name)}</button>`).join(', ')}</div>`).join('')
+      || '<p class="muted">No spells chosen yet (Spells tab).</p>');
+  }).join('');
+}
+
+// Animal companion, familiar and eidolon: a compact block each.
+function renderCompanions(app, view) {
+  const { state, data } = app;
+  const out = [];
+  const line = (k, v) => (v ? `<span><b>${esc(k)}</b> ${esc(String(v))}</span>` : '');
+  const animal = view.companion?.level && data.companions?.animals.find(a => a.id === state.companion.animal);
+  if (animal) {
+    const c = companionStats(animal, view.companion.level, data.companions.progression, state.companion);
+    out.push(card(`${state.companion.name || animal.name} (animal companion)`, `<div class="b-mini">${[line('HP', c.hp), line('AC', `${c.ac} (T ${c.touch}, FF ${c.flatFooted})`),
+      line('Saves', `F ${signed(c.fort)} R ${signed(c.ref)} W ${signed(c.will)}`), line('Init', signed(c.init)), line('Speed', c.speed), line('CMB/CMD', `${signed(c.cmb)}/${c.cmd}`)].join('')}</div>
+      <ul class="b-notes">${c.attacks.map(x => `<li>${x.count > 1 ? `${x.count} ` : ''}${esc(x.name)} ${esc(signed(x.bonus))}${x.damage ? ` (${esc(x.damage)})` : ''}
+        ${roll({ title: `${state.companion.name || animal.name}: ${x.name}`, check: x.name, groups: [{ attacks: Array(x.count || 1).fill(x.bonus), damage: x.damage, threat: 20, mult: 2 }] }, x.name)}</li>`).join('')}</ul>`, ' b-wide'));
+  }
+  const f = view.familiar;
+  if (f?.path?.stats) {
+    const s = familiarStats(f.path.stats, f.master);
+    out.push(card(`${f.path.name} (familiar)`, `<div class="b-mini">${[line('HP', s.hp), line('AC', `${s.ac} (T ${s.touch}, FF ${s.flat})`),
+      line('Saves', `F ${signed(s.saves.fort)} R ${signed(s.saves.ref)} W ${signed(s.saves.will)}`), line('Speed', f.path.stats.speed),
+      line('Melee', s.melee), line('Abilities', s.abilities.join(', '))].join('')}</div>`, ' b-wide'));
+  }
+  const e = view.eidolon;
+  if (e?.form && data.eidolons) {
+    const s = eidolonStats({ level: e.level, form: e.form, chosen: state.eidolon.evolutions, increases: state.eidolon.increases,
+                             table: data.eidolons.tables[e.cls], evolutions: data.eidolons.evolutions[e.cls] });
+    const name = state.eidolon.name || 'Eidolon';
+    out.push(card(`${name} (eidolon)`, `<div class="b-mini">${[line('HP', s.hp), line('AC', `${s.ac} (T ${s.touch}, FF ${s.flat})`),
+      line('Saves', `F ${signed(s.saves.fort)} R ${signed(s.saves.ref)} W ${signed(s.saves.will)}`), line('Speed', s.speed), line('CMB/CMD', `${signed(s.cmb)}/${s.cmd}`),
+      line('Evolutions', s.taken.map(x => x.name).join(', '))].join('')}</div>
+      <ul class="b-notes">${s.attacks.map(x => `<li>${x.count > 1 ? `${x.count} ` : ''}${esc(x.name)} ${esc(signed(x.bonus))} (${esc(x.damage)})
+        ${roll({ title: `${name}: ${x.name}`, check: x.name, groups: [{ attacks: Array(x.count).fill(x.bonus), damage: x.damage, threat: 20, mult: 2 }] }, x.name)}</li>`).join('')}</ul>`, ' b-wide'));
+  }
+  return out.length ? `<div class="b-columns">${out.join('')}</div>` : '';
+}
+
+// The daily uses popup: each ability with a box per use (or −/+ for long lists), and New day.
+export function popDailyUses(app, view, parts, focus = '') {
+  const { state } = app;
+  const list = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound });
+  const rows = list.map(d => {
+    const used = Math.min(d.max, state.daily[d.key] || 0);
+    const control = d.max <= 12
+      ? Array.from({ length: d.max }, (_, i) => `<input type="checkbox" data-b-tick="${esc(d.key)}" data-n="${i + 1}"${i < used ? ' checked' : ''} aria-label="${esc(d.name)} use ${i + 1}">`).join('')
+      : `<button type="button" data-b-step="${esc(d.key)}" data-n="-1" aria-label="One less used">−</button> <b>${used}</b> used <button type="button" data-b-step="${esc(d.key)}" data-n="1" aria-label="One more used">+</button>`;
+    return `<tr${d.key === focus ? ' class="b-focus"' : ''}><td><b>${esc(d.name)}</b>${d.note ? `<br><small class="muted">${esc(d.note)}</small>` : ''}</td>
+      <td class="b-ticks">${control}</td><td class="num"><b>${d.max - used}</b> of ${d.max} ${esc(d.unit)} left</td></tr>`;
+  }).join('');
+  app.openDetail('Daily uses', `<div class="b-daily"><table class="skill-why"><tbody>${rows || '<tr><td>No limited abilities.</td></tr>'}</tbody></table>
+    <p class="hint">Tick a box for each use (rounds of rage or performance, points from a pool, spells cast). New day clears them all,
+      and the cast boxes of prepared spells.</p></div>`,
+    [{ label: 'New day', run: () => app.update({ daily: {}, prepared: newDayPrepared(state.prepared) }) }]);
+}
+
+// Prepared spells with every cast box cleared.
+export const newDayPrepared = prepared => Object.fromEntries(Object.entries(prepared || {}).map(([cid, lv]) =>
+  [cid, Object.fromEntries(Object.entries(lv).map(([l, slots]) => [l, slots.map(x => ({ ...x, cast: false }))]))]));
