@@ -138,13 +138,15 @@ export function renderBuild(app, view, parts) {
 
   // Class choices and features.
   const features = view.counts.map(e => {
-    const specials = [...new Set(e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]))];
-    const tagged = specials.map(s => {
-      const how = featureHandling(e.cls.id, s);
-      return `<button type="button" class="b-term" data-b-detail="feature" data-arg="${esc(`${e.cls.id}|${s}`)}">${esc(s)}${how !== 'text' ? `<span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</button>`;
+    const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
+    // One line a feature: a feature that grows ("sneak attack +1d6", "+2d6"; "trap sense +1") shows only its latest step.
+    const latest = new Map(all.map(n => [n.replace(/\s*\(?[+-]?\d+(?:d\d+)?(?:\/day)?\)?\s*$/i, '').toLowerCase(), n]));
+    const tagged = [...latest.values()].map(n => {
+      const how = featureHandling(e.cls.id, n);
+      return `<div class="b-feat"><span>${esc(n[0].toUpperCase() + n.slice(1))}${how !== 'text' ? ` <span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</span>${plus('feature', `${e.cls.id}|${n}`, n)}</div>`;
     }).join('');
     const choices = parts.choices(e.cls.id, e.level).map(l => `<p class="small">${esc(l)}</p>`).join('');
-    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-terms">${tagged}</div>${choices}</div>`;
+    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-feats">${tagged}</div>${choices}</div>`;
   }).join('');
 
   // Feats and traits.
