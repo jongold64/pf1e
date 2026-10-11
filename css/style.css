@@ -995,3 +995,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .level-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .level-row .level-num { min-width: 64px; color: var(--muted); }
 .level-row > button:last-child { margin-left: auto; }
+/* The highlighted row: every word at the size of the AC / HP labels, every number (and the name) at the size of AC and HP. */
+.b-banner, .b-banner .b-head span, .b-banner .muted, .b-banner .b-pool span, .b-banner .b-pool .link { font-size: 1.05rem; }
+.b-banner .b-name, .b-banner .b-pool > b { font-size: 1.6rem; line-height: 1.1; }
+.b-banner .b-pool > span:first-child { min-width: 0; }
