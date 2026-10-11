@@ -216,7 +216,7 @@ export function featContext({ race, cls, level, counts = null, casting = null, s
   }
   return {
     race, scores, bab, counts: classes,
-    cls: classes[0].cls,
+    cls: classes[0]?.cls || null,
     level: classes.reduce((n, e) => n + e.level, 0),
     casterLevel: Math.max(0, ...casters.map(c => casterLevel(c.cls, c.effectiveLevel))),
     maxSpellLevel,

@@ -115,12 +115,12 @@ const state = {
   antihero: false,           // Action Points house rule: no hero points, a bonus feat at 1st level instead
   houseRules: {},            // house rules switched on: encumbrance, maxHealing, actionPoints, flaws, extraTrait
   race: 'human',
-  classLevels: ['fighter'],  // class id at each character level, 1st level first
+  classLevels: [],           // class id at each character level, 1st level first (a new character has none yet)
   favoredClass: '',          // favored class id; '' means the first class
   casterChoices: {},         // prestige spellcasting advance slot -> class id it raises (see multiclass.js)
   // Kept in step with classLevels by syncDerived(), for code that wants the total level or first class.
-  cls: 'fighter',
-  level: 1,
+  cls: '',
+  level: 0,
   budget: 15,
   base: Object.fromEntries(ABILITIES.map(a => [a, 10])),
   flexible: 'str',
@@ -259,13 +259,14 @@ function load(saved) {
   const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
   state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
   // Saves from before multiclassing have one class and a level instead of a class for each level.
-  if (saved && !Array.isArray(saved.classLevels)) state.classLevels = [];
+  const legacyClass = !!saved && !Array.isArray(saved.classLevels);
+  if (legacyClass) state.classLevels = [];
   for (const a of ABILITIES) {
     // Point buy: 7-18; scores entered by hand (Custom): 3-25.
     const [lo, hi] = scoreRange(state.budget);
     if (!(Number.isInteger(state.base[a]) && state.base[a] >= lo && state.base[a] <= hi)) state.base[a] = 10;
   }
-  if (!(Number.isInteger(state.level) && state.level >= 1 && state.level <= 20)) state.level = 1;
+  if (!(Number.isInteger(state.level) && state.level >= 0 && state.level <= 20)) state.level = legacyClass ? 1 : 0;
   state.increases = INCREASE_LEVELS.map((_, i) =>
     ABILITIES.includes(state.increases?.[i]) ? state.increases[i] : '');
   if (typeof state.extraSlots !== 'object' || state.extraSlots === null) state.extraSlots = {};
@@ -377,8 +378,9 @@ function load(saved) {
   const byId = new Map(data.classes.map(c => [c.id, c]));
   const firstBase = id => (byId.has(id) && byId.get(id).category !== 'prestige' ? id : data.classes[0].id);
   let levels = Array.isArray(state.classLevels) ? state.classLevels.filter(id => byId.has(id)).slice(0, 20) : [];
-  if (!levels.length) levels = Array.from({ length: state.level }, () => firstBase(state.cls));
-  levels[0] = firstBase(levels[0]);
+  // (A character with no classes yet keeps none; only an old save's single class is turned into levels.)
+  if (!levels.length && legacyClass) levels = Array.from({ length: Math.max(1, state.level) }, () => firstBase(state.cls));
+  if (levels.length) levels[0] = firstBase(levels[0]);
   state.classLevels = levels;
   // Bonus feats saved under the old single-class slot ids ("class-L4") belong to the first class.
   for (const [slotId, featId] of Object.entries(state.feats)) {
@@ -1229,7 +1231,7 @@ function buildControls() {
     const more = e.target.closest('[data-class-more]');
     if (more && state.classLevels.length < 20) update({ classLevels: [...state.classLevels, more.dataset.classMore] });
     const less = e.target.closest('[data-class-less]');
-    if (less && state.classLevels.length > 1) {
+    if (less && state.classLevels.length > 0) {
       // That class's highest level goes (with its favored class choice); later levels move down one.
       const i = state.classLevels.lastIndexOf(less.dataset.classLess);
       if (i === 0 && state.classLevels[1] && data.classes.find(c => c.id === state.classLevels[1])?.category === 'prestige') return;
@@ -1237,19 +1239,25 @@ function buildControls() {
     }
   });
   $('add-level').addEventListener('click', () => {
-    const id = $('add-level-class').value || state.classLevels.at(-1);
-    if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, id] });
+    const id = $('add-level-class').value;
+    if (id && state.classLevels.length < 20) update({ classLevels: [...state.classLevels, id] });
   });
-  // Start over: all the character's levels become one level of the chosen class (its favored class too). Choices tied to
-  // the old classes (archetypes, class choices) stay saved but don't count unless that class is taken again.
-  $('restart').addEventListener('click', () => {
-    const id = $('restart-class').value;
-    const cls = data.classes.find(c => c.id === id);
-    if (!cls || !confirm(`Remove all ${state.classLevels.length} level${state.classLevels.length === 1 ? '' : 's'} and start again as a 1st-level ${cls.name}?`)) return;
-    update({ classLevels: [id], favoredPicks: state.favoredPicks.slice(0, 1), favoredClass: id });
+  // Your levels: Remove takes out that level (later ones move down one); a prestige class can't become the 1st level.
+  $('level-rows').addEventListener('click', e => {
+    const pop = e.target.closest('[data-level-pop]');
+    if (pop) { popClass(pop.dataset.levelPop); return; }
+    const rm = e.target.closest('[data-level-remove]');
+    if (!rm) return;
+    const i = Number(rm.dataset.levelRemove);
+    if (i === 0 && data.classes.find(c => c.id === state.classLevels[1])?.category === 'prestige') return;
+    update({ classLevels: state.classLevels.filter((_, j) => j !== i), favoredPicks: state.favoredPicks.filter((_, j) => j !== i) });
   });
-  $('remove-level').addEventListener('click', () => {
-    if (state.classLevels.length > 1) update({ classLevels: state.classLevels.slice(0, -1) });
+  // Remove all: no classes at all. Choices tied to the old classes (archetypes, class choices) stay saved but don't count
+  // unless that class is taken again.
+  $('remove-all-levels').addEventListener('click', () => {
+    const n = state.classLevels.length;
+    if (!n || !confirm(`Remove all ${n} level${n === 1 ? '' : 's'}?`)) return;
+    update({ classLevels: [], favoredPicks: [], favoredClass: '' });
   });
   $('favored-class').addEventListener('change', e => update({ favoredClass: e.target.value }));
   // Domains and the druid's Nature Bond (in a class's block).
@@ -1779,7 +1787,7 @@ function computeView() {
   const classes = counts.map(e => e.cls);
   const cls = classLevels[0];
   // The favored class must be one the character has (and not a prestige class); otherwise the first class.
-  const favoredClassId = classes.some(c => c.id === state.favoredClass && c.category !== 'prestige') ? state.favoredClass : cls.id;
+  const favoredClassId = classes.some(c => c.id === state.favoredClass && c.category !== 'prestige') ? state.favoredClass : cls?.id || '';
   const favoredPicks = favoredChoices(race, classLevels, favoredClassId, state.favoredPicks);
   const flexibleChoice = flexibleFor(race);
   const casting = castingClasses(counts, state.casterChoices);
@@ -2030,6 +2038,7 @@ function renderAlternates(baseRace) {
 function renderFavoredSummary(view) {
   const picks = view.favoredPicks.filter(Boolean);
   const fav = view.classes.find(c => c.id === view.favoredClassId);
+  if (!fav) { $('favored-summary').innerHTML = '<p class="hint">Your favored class is chosen once you have a class.</p>'; return; }
   const option = favoredOption(view.race, fav);
   const n = k => picks.filter(p => p === k).length;
   const parts = [n('hp') && `+${n('hp')} hit point${n('hp') === 1 ? '' : 's'}`,
@@ -2837,7 +2846,7 @@ function archetypePicker(cls, level, openFeatures) {
 // class's features (and requirements, for prestige classes).
 function renderClasses(view) {
   const { counts, classLevels } = view;
-  $('class-summary').textContent = `${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')} (level ${classLevels.length})`;
+  $('class-summary').textContent = classLevels.length ? `${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')} (level ${classLevels.length})` : 'no class yet';
   const baseOptions = groupedOptions(data.classes.filter(c => c.category !== 'prestige'), CLASS_GROUPS);
   const allOptions = groupedOptions(data.classes, CLASS_GROUPS);
   // One line per class (in the order first taken): how many levels and which character levels; opened, the choices
@@ -2891,7 +2900,7 @@ function renderClasses(view) {
       <div class="class-line-body">
         <div class="slot-buttons">
           <button type="button" data-class-more="${esc(id)}"${classLevels.length >= 20 ? ' disabled' : ''}>+ Add a ${esc(c.name)} level</button>
-          <button type="button" data-class-less="${esc(id)}"${classLevels.length <= 1 ? ' disabled' : ''}>− Remove a ${esc(c.name)} level</button>
+          <button type="button" data-class-less="${esc(id)}">− Remove a ${esc(c.name)} level</button>
           <label>Change to <select data-class-change="${esc(id)}">${levels.includes(0) ? baseOptions : allOptions}</select></label>
         </div>
         <ol class="level-choices">${rows}</ol>
@@ -2901,19 +2910,25 @@ function renderClasses(view) {
   $('class-levels').querySelectorAll('select[data-favored-index]').forEach(sel => {
     sel.value = view.favoredPicks[Number(sel.dataset.favoredIndex)];
   });
+  // Your levels: one row a level, in order, with its class and Remove (not for a 1st level a prestige class would replace).
+  $('level-rows').innerHTML = classLevels.map((c, i) => {
+    const k = classLevels.slice(0, i + 1).filter(x => x.id === c.id).length;
+    const stuck = i === 0 && classLevels[1]?.category === 'prestige';
+    return `<li class="level-row"><span class="level-num">Level ${i + 1}</span><b>${esc(c.name)}</b>
+      <span class="muted">${esc(c.name)} level ${k}</span>
+      <button type="button" class="skill-details q-details" data-level-pop="${esc(c.id)}" aria-label="${esc(c.name)} in a popup" title="Details">?</button>
+      <button type="button" data-level-remove="${i}"${stuck ? ` disabled title="Level 2 is a prestige class, which can't be your 1st level"` : ''}>Remove</button></li>`;
+  }).join('') || '<li class="hint">No class yet: choose one below and press Add.</li>';
+  $('remove-all-levels').disabled = !classLevels.length;
+  // Add a level of: any class, or only ones that can be taken at 1st level when there are none yet.
   const addSel = $('add-level-class');
-  const keep = addSel.value || classLevels.at(-1).id;
-  addSel.innerHTML = allOptions;
-  addSel.value = keep;
-  // Start over: classes that can be taken at 1st level (not prestige classes).
-  const restartSel = $('restart-class');
-  const restartKeep = restartSel.value;
-  restartSel.innerHTML = baseOptions;
-  restartSel.value = [...restartSel.options].some(o => o.value === restartKeep) ? restartKeep : restartSel.options[0]?.value || '';
+  const keep = addSel.value || classLevels.at(-1)?.id || '';
+  addSel.innerHTML = (classLevels.length ? '' : '<option value="">Choose a class…</option>') + (classLevels.length ? allOptions : baseOptions);
+  addSel.value = [...addSel.options].some(o => o.value === keep) ? keep : addSel.options[0]?.value || '';
   $('add-level').disabled = classLevels.length >= 20;
-  $('remove-level').disabled = classLevels.length <= 1;
 
   const favoredChoices = view.classes.filter(c => c.category !== 'prestige');
+  $('favored-row').hidden = !favoredChoices.length;
   $('favored-class').innerHTML = favoredChoices.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   $('favored-class').value = view.favoredClassId;
   renderFavoredSummary(view);
@@ -3286,6 +3301,7 @@ function showResultDetails(key) {
   if (key === 'hp') {
     // 1st level: the full hit die; later levels: the die's average (half + 1); Con at every level (at least 1 a level).
     const levels = view.classLevels;
+    if (!levels.length) { openDetail('Hit points', '<p>No class yet: hit points come from your class levels (Classes tab).</p>'); return; }
     const con = stats.mod.con;
     const rows = [{ label: `${levels[0].name} at 1st level: full hit die (${levels[0].hit_die})`, text: String(hitDieSize(levels[0])) }];
     for (const e of classCounts(levels.slice(1))) {
@@ -3822,7 +3838,7 @@ function renderSpells(view) {
   $('spells-card').hidden = !tables.length;
   $('no-spells').hidden = tables.length > 0;
   $('no-spells-text').textContent = tables.length ? ''
-    : view.classes.length > 1 ? 'None of your classes cast spells.' : `${view.cls.name}s don't cast spells.`;
+    : !view.classes.length ? 'No class yet: add one on the Classes tab.' : view.classes.length > 1 ? 'None of your classes cast spells.' : `${view.cls.name}s don't cast spells.`;
   spellDayWhy.clear();
   $('spells-tables').innerHTML = tables.map(({ c, spells }) => spellTable(c, spells)).join('');
 }

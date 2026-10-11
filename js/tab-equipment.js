@@ -161,7 +161,7 @@ export async function renderEquipment(app, view) {
     weapons: { title: `Weapons: ${formatGp(weaponSpend)}`, rows: money(weaponRows), total: formatGp(weaponSpend) },
     magic: { title: `Magic items: ${formatGp(magic.cost)}`, rows: money(magicRows), total: formatGp(magic.cost) },
     left: { title: `Left: ${formatGp(left)}`, total: formatGp(left), rows: [
-      { label: state.gold === null ? `Gold (${view.cls.name.toLowerCase()} starting gold)` : 'Gold', text: formatGp(gold) },
+      { label: state.gold === null ? `Gold (${view.cls ? `${view.cls.name.toLowerCase()} starting gold` : 'no class yet'})` : 'Gold', text: formatGp(gold) },
       { label: 'Armor and shield', text: `− ${formatGp(armorSpend)}` }, { label: 'Equipment', text: `− ${formatGp(gearSpend)}` },
       { label: 'Weapons', text: `− ${formatGp(weaponSpend)}` }, { label: 'Magic items', text: `− ${formatGp(magic.cost)}` }] },
     weight: { title: `Weight carried: ${formatLbs(carriedWeight)}`, total: formatLbs(carriedWeight),
@@ -170,9 +170,9 @@ export async function renderEquipment(app, view) {
       note: 'Coins are not counted.' },
   };
   // Gold: the class's starting gold and the wealth-by-level table (your level marked).
-  const sw = view.cls.starting_wealth;
+  const sw = view.cls?.starting_wealth;
   moneyDetails.gold = { title: `Gold: ${formatGp(gold)}`, html: `
-    <p>${state.gold === null ? `You haven't entered an amount, so your ${esc(view.cls.name.toLowerCase())} starting gold is used.` : 'The amount you entered.'}
+    <p>${state.gold === null ? `You haven't entered an amount, so your ${esc((view.cls?.name || 'class').toLowerCase())} starting gold is used.` : 'The amount you entered.'}
       Everything bought (armor, weapons, equipment, magic items) is taken from it in <b>Left</b>.</p>
     <h3>Starting gold (1st level)</h3>
     <p>${start ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}${maxGold ? `maximum ${esc(formatGp(start))} (Max Starting Gold house rule; the average is ${esc(formatGp(startingGold(view.cls, data.classes)))})` : `average ${esc(formatGp(start))}`}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>

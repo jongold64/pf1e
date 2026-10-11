@@ -228,7 +228,7 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   // Full hit die at 1st level, the average after that. A Con penalty can't make a level give less than 1 HP.
   let hp = 0;
   levels.forEach((c, i) => { hp += Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + mod.con); });
-  const favored = favoredClassId || levels[0].id;
+  const favored = favoredClassId || levels[0]?.id;
   if (favoredPicks) hp += favoredPicks.filter(p => p === 'hp').length;
   else if (favoredHp) hp += levels.filter(c => c.id === favored).length;
   hp += fb.hp + fx.hp;

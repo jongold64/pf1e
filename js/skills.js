@@ -104,7 +104,7 @@ export function skillRanksAvailable(args) {
 export function skillRanksByLevel({ race, cls, level, classLevels = null, favoredClassId = null, baseScores,
                                     flexibleChoice, increases = [], favoredSkill = false, favoredPicks = null }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
-  const favored = favoredClassId || levels[0].id;
+  const favored = favoredClassId || levels[0]?.id;
   const racial = finalScores(baseScores, race, flexibleChoice);
   const skilled = (race?.traits || []).some(t => t.name === 'Skilled' && /additional skill rank/i.test(t.text)) ? 1 : 0;
   return levels.map((c, i) => {

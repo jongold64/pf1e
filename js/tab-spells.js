@@ -15,10 +15,11 @@ let listClassId = null;  // which class's spell list is shown, for characters wi
 // raise it) and the highest spell level it can cast.
 function listClass(app, view) {
   const withList = view.classes.filter(c => app.data.spells.some(s => s.levels[c.id] !== undefined));
-  const cls = withList.find(c => c.id === listClassId) || withList[0] || view.cls;
+  // (No class yet: a stand-in with no spell list, so every spell can still be searched.)
+  const cls = withList.find(c => c.id === listClassId) || withList[0] || view.cls || { id: '', name: 'No class yet' };
   const cast = view.casting.casting.find(c => c.cls.id === cls.id);
   const level = cast ? cast.effectiveLevel : (view.counts.find(e => e.cls.id === cls.id)?.level || 1);
-  const table = spellsPerDay({ cls, level, scores: view.stats.scores, knownChange: app.knownChange?.(cls.id) || 0, diminished: !!app.diminished?.(cls.id) });
+  const table = cls.progression && spellsPerDay({ cls, level, scores: view.stats.scores, knownChange: app.knownChange?.(cls.id) || 0, diminished: !!app.diminished?.(cls.id) });
   const castable = (table?.rows || []).filter(r => r.canCast && ((r.total ?? 0) > 0 || (r.known ?? 0) > 0));
   return { withList, cls, level, table, maxLevel: castable.length ? Math.max(...castable.map(r => r.spellLevel)) : -1 };
 }

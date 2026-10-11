@@ -988,3 +988,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner .b-head { margin: 0; }
 .b-banner .b-head span, .b-banner .muted, .b-banner input, .b-banner button { font-weight: 700; }
 .b-banner .muted { color: var(--text); opacity: 0.8; }
+/* Classes tab: your levels, one row each, with Remove. */
+.level-rows-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.level-rows-head h3 { margin: 0; }
+.level-rows { list-style: none; padding: 0; margin: 6px 0 10px; }
+.level-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.level-row .level-num { min-width: 64px; color: var(--muted); }
+.level-row > button:last-child { margin-left: auto; }

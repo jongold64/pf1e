@@ -13,6 +13,7 @@ export const WEALTH_BY_LEVEL = {
 // figure use the class they're based on (antipaladin -> paladin).
 // max (Max Starting Gold house rule): the most the class's dice can roll ("3d6 x 10 gp" -> 180) instead of the average.
 export function startingGold(cls, classes = [], max = false) {
+  if (!cls) return null;
   const wealth = cls.starting_wealth?.average_gp ? cls.starting_wealth
     : classes.find(c => c.name === cls.alternate_of)?.starting_wealth;
   if (!wealth?.average_gp) return null;

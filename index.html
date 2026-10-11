@@ -139,25 +139,21 @@
     <main class="tab-panel" id="tab-classes" role="tabpanel" hidden>
       <section class="card wide">
         <h2>Classes <span id="class-summary" class="count"></span></h2>
-        <!-- Each class's section (features, archetypes, domains, class choices) first; then the class lines and levels. -->
-        <div id="class-info" class="info class-info-top"></div>
-        <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add or remove a
-          level of it, or change it. Prestige classes can't be taken at 1st level.</p>
-        <ul id="class-levels" class="class-lines"></ul>
+        <!-- Every level in order, each with Remove; Remove all; then adding a level. -->
+        <div class="level-rows-head"><h3>Your levels</h3><button type="button" id="remove-all-levels">Remove all</button></div>
+        <ol id="level-rows" class="level-rows"></ol>
         <div class="slot-buttons add-level-row">
           <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
-          <button type="button" id="add-level">Add</button>
+          <button type="button" id="add-level" class="primary">Add</button>
           <button type="button" id="add-level-details" class="skill-details q-details" aria-label="The chosen class in a popup" title="Details">?</button>
-          <button type="button" id="remove-level">Remove last level</button>
         </div>
-        <!-- Starting over: every level replaced by one level of a new class (the last level can't be removed). -->
-        <div class="slot-buttons add-level-row">
-          <label>Start over as <select id="restart-class" aria-label="Class to start over as"></select></label>
-          <button type="button" id="restart">Start over</button>
-        </div>
-        <p class="hint">To change one class into another and keep its levels, open its line above and use <b>Change to</b>.
-          The favored class only chooses among the classes you have.</p>
-        <div class="favored-row">
+        <!-- Each class's section (features, archetypes, domains, class choices); then the class lines with each level's choices. -->
+        <div id="class-info" class="info class-info-top"></div>
+        <p class="hint">One line per class. Tap a class to see the choices made at each of its levels, add a level of it, or
+          change it (<b>Change to</b> keeps its levels). Prestige classes can't be taken at 1st level. The favored class only
+          chooses among the classes you have.</p>
+        <ul id="class-levels" class="class-lines"></ul>
+        <div class="favored-row" id="favored-row">
           <label>Favored class <select id="favored-class"></select></label>
           <button type="button" id="favored-details" class="skill-details q-details" aria-label="Favored class bonuses in a popup" title="Details">?</button>
           <div id="favored-summary" class="favored-summary"></div>
@@ -609,13 +605,14 @@
               read from their rules text at your level.</li>
             <li>Before a class's first choice of a kind (an alchemist's discoveries start at 2nd level), its block says when it
               comes. The choice lists have a search box.</li>
-            <li><b>Classes</b>: one line per class, showing how many levels you have in it. Use <b>Add a level of</b> to add one
-              (a class you already have joins its line; multiclassing works). Tap a class line to see each of its levels with the
-              choices made there (favored class bonus, feats, traits, ability increases), add or remove a level of it, or change it
-              to another class. In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level.</li>
-            <li><b>Start over as</b> a class, then <b>Start over</b>: every level is removed and the character becomes a 1st-level
-              character of that class (its favored class too). Race, ability scores, feats, traits and gear stay. (The last level
-              can't be removed on its own: a character always has at least one.)</li>
+            <li><b>Your levels</b> at the top: every level in order (Level 1 Fighter, Level 2 Rogue…), each with its <b>?</b> and
+              <b>Remove</b> (the levels after it move down one; a prestige class can't become your 1st level). <b>Remove all</b>
+              takes away every level. A new character, or anyone opening the link for the first time, starts with no class.
+              Use <b>Add a level of</b> under the list to add one (multiclassing works; the first level can't be a prestige class).</li>
+            <li><b>Classes</b> below: one line per class. Tap one to see each of its levels with the choices made there (favored
+              class bonus, feats, traits, ability increases), add or remove a level of it, or change it to another class (its levels
+              stay). In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level. Race, ability
+              scores, feats, traits and gear stay when classes are removed.</li>
             <li><b>Details</b> on a class line, on a class's section, or beside <b>Add a level of</b> (for the class chosen there)
               shows the class: book, hit die, skill ranks, alignment, class skills, requirements for a prestige class, and its
               level table (base attack, saves and features) with your levels marked, with Add a level and Remove a level.
