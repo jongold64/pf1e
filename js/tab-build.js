@@ -49,10 +49,14 @@ export function renderBuild(app, view, parts) {
   const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`)];
   // AC and HP: in the highlighted row at the top, beside who the character is.
-  const acHp = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>
-        <div class="b-hp"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
-          <input type="number" id="b-hp-amount" inputmode="numeric" placeholder="±" aria-label="Damage (negative) or healing">
-          <button type="button" data-b-hp="apply">Apply</button><button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
+  // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
+  // Its colour warns when it's low (half or less) and when it's 0 or below.
+  const hpState = hp <= 0 ? ' b-hp-down' : hp * 2 <= stats.hp ? ' b-hp-low' : '';
+  const acHp = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
+          <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
+          <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
+          <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>
+        <div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
   // The numbers card: the ability scores in a column on the left; the saves, BAB, CMB, initiative and speed on the right.
   const core = `<div class="b-split">
         <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>

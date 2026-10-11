@@ -808,7 +808,9 @@ function initBuild() {
     const hp = e.target.closest('[data-b-hp]');
     if (hp) {
       if (hp.dataset.bHp === 'full') { update({ hpCurrent: null }); return; }
-      const amount = Math.trunc(Number($('b-hp-amount').value)) || 0;
+      // Damage takes the amount off, Heal adds it (Apply, from older pages: a negative amount is damage).
+      const typed = Math.trunc(Number($('b-hp-amount').value)) || 0;
+      const amount = hp.dataset.bHp === 'damage' ? -Math.abs(typed) : hp.dataset.bHp === 'heal' ? Math.abs(typed) : typed;
       if (!amount) return;
       const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount, spiritBoost: state.spiritBoost });
       update({ hpCurrent: r.current, tempHp: r.temps });

@@ -999,3 +999,14 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner, .b-banner .b-head span, .b-banner .muted, .b-banner .b-pool span, .b-banner .b-pool .link { font-size: 1.05rem; }
 .b-banner .b-name, .b-banner .b-pool > b { font-size: 1.6rem; line-height: 1.1; }
 .b-banner .b-pool > span:first-child { min-width: 0; }
+/* HP in the highlighted row: first, biggest, in its own box, with big Damage / Heal / Full buttons for a finger. */
+.b-banner .b-hp-big { background: var(--card); border: 2px solid var(--accent); border-radius: 10px; padding: 6px 10px; gap: 8px; flex-wrap: wrap; white-space: normal; }
+.b-banner .b-hp-big > span:first-child { font-size: 1.4rem; }
+.b-banner .b-hp-big > b { font-size: 2.4rem; line-height: 1; }
+.b-banner .b-hp-big > .muted { font-size: 1.2rem; }
+.b-banner .b-hp-big input { width: 4.2em; height: 44px; font-size: 1.3rem; text-align: center; }
+.b-banner .b-hp-big button:not(.q-details) { height: 44px; min-height: 44px; padding: 0 16px; font-size: 1.1rem; }
+.b-banner .b-hp-big .b-hp-damage { background: var(--accent); color: #fff; border-color: var(--accent); }
+.b-banner .b-hp-big .b-hp-heal { background: #1e5e2a; color: #fff; border-color: #1e5e2a; }
+.b-banner .b-hp-low > b { color: #b06a00; }
+.b-banner .b-hp-down > b { color: #b3261e; }
