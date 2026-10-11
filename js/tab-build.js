@@ -87,16 +87,16 @@ export function renderBuild(app, view, parts) {
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
     .filter(([, f]) => view.haveFeats.includes(f))
     .map(([k, f]) => `<label class="b-switch"><input type="checkbox" data-b-combat="${k}"${combat[k] ? ' checked' : ''}> ${esc(f)}</label>`).join('');
-  const classAtk = parts.classAttacks.map(c => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
+  const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
       ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
-      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td colspan="2" class="muted">${esc(c.note)}</td></tr>`).join('');
+      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
   // Channel energy, lay on hands / touch of corruption (melee touch) and smite (Character tab rows), here too.
   const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
   const powers = [
-    ...channelEnergy(stats, view.haveFeats).map(c => `<tr><td>Channel ${esc(c.energy)}</td><td></td><td>${esc(c.dice)}${roll({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] }, 'channel')}</td><td colspan="2" class="muted">DC ${c.dc} Will half · ${c.uses}/day</td></tr>`),
+    ...channelEnergy(stats, view.haveFeats).map(c => `<tr><td>Channel ${esc(c.energy)}</td><td></td><td>${esc(c.dice)}${roll({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] }, 'channel')}</td><td class="muted">DC ${c.dc} Will half · ${c.uses}/day</td><td>${plus('classfeat', `Channel ${c.energy} energy`, 'channel energy')}</td></tr>`),
     ...layOnHands(stats).map(l => `<tr><td>${esc(l.name)}</td><td>${l.heals ? '' : esc(signed(touch))}</td><td>${esc(l.dice)}${roll(l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
-        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td colspan="2" class="muted">${l.uses}/day</td></tr>`),
-    ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td colspan="2" class="muted">+${sm.deflection} deflection AC · ${sm.uses}/day · switch it on in Active effects</td></tr>`),
+        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td class="muted">${l.uses}/day</td><td>${plus('classfeat', l.name, l.name)}</td></tr>`),
+    ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td class="muted">+${sm.deflection} deflection AC · ${sm.uses}/day · switch it on in Active effects</td><td>${plus('classfeat', sm.name, sm.name)}</td></tr>`),
   ].join('');
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
   const attacks = noWeapons + ((atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">

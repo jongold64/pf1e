@@ -33,7 +33,7 @@ import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
-import { popWeaponPart } from './tab-weapons.js';
+import { popWeaponPart, showAttackDetails } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
 import { popBuff } from './tab-effects.js';
 import { popSource } from './item-rows.js';
@@ -641,7 +641,7 @@ function classNaturalAttacks() {
   const small = view.size === 'Small';
   const out = [];
   const add = (text, level, from, opts = {}) => {
-    for (const a of naturalAttacks(text, level, { small })) out.push({ attack: { ...a, ...(opts.when && !a.when ? { when: opts.when } : {}) }, from });
+    for (const a of naturalAttacks(text, level, { small })) out.push({ attack: { ...a, ...(opts.when && !a.when ? { when: opts.when } : {}) }, from, text });
   };
   for (const { cls, level } of view.counts) {
     const bloodrager = cls.id === 'bloodrager';
@@ -717,6 +717,18 @@ function classGearNotes() {
     if (def) out.push({ name: `${def.name} (${w.gearTag})`, kind: 'weapon', note: 'on your weapons list, free; its numbers are on the Attacks card', text: w.gearNote || '' });
   }
   return out;
+}
+
+// A class feature's rules text by name ("Sneak attack", "Channel positive energy", "Smite evil"), from the character's
+// classes; "" when none of them has it.
+function classFeatureText(name) {
+  const tries = [name, name.replace(/\s*\(.*\)$/, ''), name.replace(/^Channel (positive|negative|positive or negative) energy$/i, 'Channel Energy'),
+    name.replace(/^(Kinetic blast).*/i, '$1'), name.replace(/^Bomb$/i, 'Bomb')];
+  for (const cls of view.classes) for (const n of tries) {
+    const t = featureDescription(cls, n);
+    if (t) return t;
+  }
+  return '';
 }
 
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
@@ -846,12 +858,24 @@ function buildDetail(kind, arg) {
   else if (kind === 'init') {
     const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits, activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
     openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
-  } else if (kind === 'weapon') popWeaponPart(app, Number(arg), 'attack');
+  } else if (kind === 'weapon') showAttackDetails(app, Number(arg));
   else if (kind === 'spell') { if (data.spells) popSpell(app, arg); else loadSpells().then(() => popSpell(app, arg)); }
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
   else if (kind === 'gear') { const it = data.gearById?.get(arg); if (it) openDetail(it.name, gearDetails(it, false)); }
   else if (kind === 'defense') showDefenseWhy(app, arg);
+  else if (kind === 'classattack') {
+    // An attack from a class feature (sneak attack, bomb, kinetic blast, claws...): its numbers and rules text.
+    const c = allClassAttacks(view.stats)[Number(arg)];
+    if (!c) return;
+    const text = c.text || classFeatureText(c.name);
+    openDetail(c.name, `<p>${c.attack !== null ? `<b>${esc(signed(c.attack))}</b> to hit${c.count > 1 ? ` (${c.count} attacks)` : ''} · ` : ''}<b>${esc(c.dice)}</b>${c.attack === null ? ' extra damage' : ' damage'}</p>
+      ${c.note ? `<p class="hint">${esc(c.note)}</p>` : ''}${text ? paragraphs(text) : ''}`);
+  } else if (kind === 'classfeat') {
+    // Channel energy, lay on hands, smite...: the class feature's rules text.
+    const text = classFeatureText(arg);
+    openDetail(arg, text ? paragraphs(text) : '<p class="hint">The class data has no description for this.</p>');
+  }
   else if (kind === 'choice') {
     const [cid, i] = arg.split('|');
     const lv = view.counts.find(e => e.cls.id === cid)?.level || 0;

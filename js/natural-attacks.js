@@ -62,14 +62,15 @@ export function naturalAttacks(text, level, { small = false } = {}) {
 }
 
 // Attack rows for natural attacks (Attacks card, Character tab): [{ name, note, attack, dice, count }].
-// list: [{ attack: one of naturalAttacks(...), from }]; melee: the melee attack bonus; str: the Strength modifier.
+// list: [{ attack: one of naturalAttacks(...), from, text }]; melee: the melee attack bonus; str: the Strength modifier.
+// text (the feature's rules text) is passed on for the row's Details.
 export function naturalAttackRows(list, { melee = 0, str = 0 } = {}) {
-  return list.map(({ attack: a, from }) => {
+  return list.map(({ attack: a, from, text }) => {
     const bonus = Math.floor(str * a.strMult);
     return {
       name: a.count > 1 ? `${a.count} ${a.name.toLowerCase()}s` : a.name,
       note: [from, 'natural attack', a.when, a.choose ? 'or the other attack (choose one)' : '', ...a.extra].filter(Boolean).join(' · '),
-      attack: melee, count: a.count,
+      attack: melee, count: a.count, text: text || '',
       dice: `${a.dice}${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}`,
     };
   });

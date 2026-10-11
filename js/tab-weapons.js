@@ -504,7 +504,7 @@ export function fitWeaponLines() {
 
 // Details popup for one carried weapon: everything that adds to its attack roll and to its damage.
 // part: 'damage' shows only the damage (with special abilities' extra dice and critical damage); otherwise attack and damage.
-function showAttackDetails(app, i, part = null) {
+export function showAttackDetails(app, i, part = null) {
   const { state, data, view } = app;
   const e = state.weapons[i];
   const w = e && data.weaponsById.get(e.id);
