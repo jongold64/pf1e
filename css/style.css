@@ -971,3 +971,6 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-spell-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); column-gap: 18px; }
 .b-spell-list .b-cast { display: flex; align-items: center; gap: 6px; }
 .b-spent .b-cast { color: var(--muted); text-decoration: line-through; }
+/* Build tab Skills: the scroll bar on the left (the box reads right to left, its rows left to right). */
+.b-skills.b-scroll { direction: rtl; padding-right: 0; padding-left: 6px; }
+.b-skills.b-scroll > * { direction: ltr; }
