@@ -4106,6 +4106,13 @@ async function start() {
   initCharacterBar();
   initRolls();
   closePopupsOnOutsideClick();
+  // Guide buttons: Export / Import (the same as the header's), and Copy for a browser settings address.
+  document.addEventListener('click', e => {
+    const g = e.target.closest('[data-guide-click]');
+    if (g) { $(g.dataset.guideClick)?.click(); return; }
+    const c = e.target.closest('[data-copy]');
+    if (c) navigator.clipboard?.writeText(c.dataset.copy).then(() => { c.textContent = 'Copied'; setTimeout(() => { c.textContent = 'Copy'; }, 1500); }, () => {});
+  });
   $('loading').hidden = true;
   $('app').hidden = false;
   $('char-buttons').hidden = false;
