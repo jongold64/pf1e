@@ -148,10 +148,14 @@ export function renderBuild(app, view, parts) {
   }).join('');
 
   // Feats and traits.
-  const featItems = [...view.chosen.map(f => [f.id, f.name]), ...view.granted.map(n => [data.feats.find(f => f.name === n)?.id, `${n} (class)`])];
-  const feats = `<div class="b-terms">${featItems.map(([id, n]) => (id ? `<button type="button" class="b-term" data-b-detail="feat" data-arg="${esc(id)}">${esc(n)}</button>` : `<span class="b-term">${esc(n)}</span>`)).join('') || '<span class="muted">None</span>'}</div>
-    ${view.traits.length ? `<p class="small"><b>Traits:</b> ${esc(view.traits.map(t => t.name).join(', '))}</p>` : ''}
-    <p class="small"><b>Racial:</b> ${esc((race.traits || []).filter(t => !t.kind).map(t => t.name).join(', ') || '—')}</p>`;
+  // Each feat, trait and racial trait on its own line with a ? for its rules text.
+  const row = (name, tag, kind, arg) => `<div class="b-feat"><span>${esc(name)}${tag ? ` <small class="muted">${esc(tag)}</small>` : ''}</span>${arg ? plus(kind, arg, name) : ''}</div>`;
+  const featRows = [...view.chosen.map(f => row(f.name, '', 'chosenfeat', f.id)),
+    ...view.granted.map(n => row(n, 'from your class', 'feat', data.feats.find(f => f.name === n)?.id))];
+  const racial = (race.traits || []).filter(t => !t.kind);
+  const feats = `<h4 class="b-sub">Feats</h4><div class="b-feats">${featRows.join('') || '<span class="muted">None</span>'}</div>
+    ${view.traits.length ? `<h4 class="b-sub">Traits</h4><div class="b-feats">${view.traits.map(t => row(t.name, t.category ? `${t.category} trait` : '', 'trait', t.id)).join('')}</div>` : ''}
+    ${racial.length ? `<h4 class="b-sub">Racial traits</h4><div class="b-feats">${racial.map(t => row(t.name, '', 'racial', t.name)).join('')}</div>` : ''}`;
 
   // Skills: every skill in a scrolling box, two columns; ones with ranks or a bonus beyond the ability modifier stand out,
   // the rest are greyed; a trained-only skill without ranks says so.

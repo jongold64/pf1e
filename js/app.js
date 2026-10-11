@@ -715,6 +715,16 @@ function buildDetail(kind, arg) {
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
   else if (kind === 'feat') popGrantedFeat(arg);
+  else if (kind === 'chosenfeat') {
+    const f = data.featsById.get(arg);
+    if (f) openDetail(f.name, `${featDetails(f, checkFeat(f, view.ctx))}<h4>In the app</h4><p>${esc(featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS }) || 'Not counted in the numbers automatically: apply it in play.')}</p>`);
+  } else if (kind === 'trait') {
+    const t = data.traitsById?.get(arg);
+    if (t) openDetail(t.name, `<p class="hint">${esc([t.category ? `${t.category} trait` : '', t.source].filter(Boolean).join(' · '))}</p>${paragraphs(t.text)}`);
+  } else if (kind === 'racial') {
+    const t = (view.race?.traits || data.races.find(r => r.id === state.race)?.traits || []).find(x => x.name === arg);
+    if (t) openDetail(t.name, paragraphs(t.text || ''));
+  }
   else if (kind === 'feature') {
     const [cid, ...rest] = arg.split('|');
     const name = rest.join('|');

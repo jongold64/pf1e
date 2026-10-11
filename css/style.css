@@ -959,3 +959,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-rc { display: inline-flex; align-items: center; gap: 3px; }
 .b-rc > span { white-space: nowrap; }
 .b-range { display: block; }
+/* Build tab feats and traits: one a line, with a ?. */
+.b-sub { margin: 6px 0 2px; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.b-feats { display: flex; flex-direction: column; }
+.b-feat { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 28px; font-size: 0.95rem; border-bottom: 1px solid var(--border); }
+.b-feat:last-child { border-bottom: 0; }
