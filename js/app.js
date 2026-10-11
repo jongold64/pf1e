@@ -871,6 +871,9 @@ function buildDetail(kind, arg) {
     const text = c.text || classFeatureText(c.name);
     openDetail(c.name, `<p>${c.attack !== null ? `<b>${esc(signed(c.attack))}</b> to hit${c.count > 1 ? ` (${c.count} attacks)` : ''} · ` : ''}<b>${esc(c.dice)}</b>${c.attack === null ? ' extra damage' : ' damage'}</p>
       ${c.note ? `<p class="hint">${esc(c.note)}</p>` : ''}${text ? paragraphs(text) : ''}`);
+  } else if (kind === 'hero') {
+    openDetail('Hero points', `<p><b>${state.heroPoints ?? 1}</b> of ${heroPointMax(view.haveFeats)} at most. Spend them, or add ones the GM awards, on the Build tab.</p>
+      <ul>${HERO_POINT_USES.map(u => `<li><b>${esc(u.label)}${u.cost > 1 ? ` (${u.cost} points)` : ''}:</b> ${esc(u.text)}</li>`).join('')}</ul>`);
   } else if (kind === 'classfeat') {
     // Channel energy, lay on hands, smite...: the class feature's rules text.
     const text = classFeatureText(arg);

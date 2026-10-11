@@ -204,7 +204,21 @@ export function renderBuild(app, view, parts) {
   const spellCard = card('Spells', spells, ' b-wide');
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
-  box.innerHTML = `<div class="b-banner">${head}${acHp}</div>
+  // The highlighted row's extras: initiative, hero points, the class's main pools (what's left; tap to tick them off),
+  // each caster's spell DC and concentration, and the Daily uses popup / New day.
+  const MAIN_POOL = /^(Rage|Bloodrage|Bardic performance|Raging song|Ki pool|Grit|Panache|Arcane pool|Arcane reservoir|Phrenic pool|Inspiration|Bombs|Blessings|Fervor|Channel|Lay on hands|Touch of corruption|Smite|Judgment|Challenge|Wild shape)/i;
+  const pools = daily.filter(d => MAIN_POOL.test(d.name)).map(d => `<span class="b-pool"><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
+      <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span></span>`).join('');
+  const dcs = view.casting.casting.filter(c => c.effectiveLevel >= 1).map(c => {
+    const mod = view.stats.mod[parts.castingAbility(c.cls.id)] ?? 0;
+    return `<span class="b-pool"><span>${esc(c.cls.name)}</span> <b>DC ${10 + mod}</b><span class="muted">+ spell level · concentration ${esc(signed(c.effectiveLevel + mod))}</span></span>`;
+  }).join('');
+  const heroPts = state.houseRules.actionPoints && !state.antihero
+    ? `<span class="b-pool"><span>Hero points</span> <b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</span>` : '';
+  const extras = `<span class="b-pool"><span>Init</span> <b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</span>
+    ${heroPts}${pools}${dcs}
+    ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
+  box.innerHTML = `<div class="b-banner">${head}${acHp}${extras}</div>
     <div class="b-main">
       <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('Daily uses', uses)}
         ${card('Class features and choices', features)}${card('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
