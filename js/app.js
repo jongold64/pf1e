@@ -193,6 +193,8 @@ const HOUSE_RULES = [
   ['flaws', 'Flaws', 'Flaws: up to two flaws, each giving a bonus feat (Feats tab).'],
   ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
   ['drawbacks', 'Drawbacks', "Drawbacks (Ultimate Campaign): take one drawback and gain an extra trait (Feats tab)."],
+  // A placeholder: no third-party content is in the app yet (only Paizo books), so this switch does nothing so far.
+  ['thirdParty', '3rd Party', '3rd Party: a placeholder for now. Third-party (non-Paizo) content isn’t in the app yet, so this changes nothing.'],
 ];
 
 // A fresh character, for "New" and for resetting before a saved one is loaded.
