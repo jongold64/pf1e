@@ -18,7 +18,7 @@ export const HANDLING = {
   feat: 'a free feat or feat slot (Feats tab)',
   spells: 'on the Spells tab',
   card: 'has its own card',
-  roll: 'rolled on the Character tab',
+  roll: 'rolled on the Build tab',
   text: 'rules text, used in play',
 };
 

@@ -101,7 +101,7 @@ function showTraitDetails(app, i) {
     html += `<h3>${esc(t.name)}</h3><p class="hint">${esc(traitLabel(t))}</p>
       <h3>In the app</h3>${rows.length ? `<table class="skill-why"><tbody>${rows.join('')}</tbody></table>` : ''}
       ${classSkills.length ? `<p>Class skill: ${esc(classSkills.join(', '))} (counted on the Skills tab).</p>` : ''}
-      ${!rows.length && !classSkills.length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Character tab).</p>' : ''}`;
+      ${!rows.length && !classSkills.length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';
   }
@@ -185,7 +185,7 @@ export function initTraits(app) {
       const blocked = blockedBy(app, t);
       app.openDetail(t.name, `<p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
         <h3>In the app</h3>${lines.length ? `<ul class="plain-list">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`
-          : '<p>Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).</p>'}
+          : '<p>Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Build tab).</p>'}
         ${blocked ? `<p class="warning">${esc(blocked)}</p>` : ''}`,
         blocked ? [] : [{ label: `Choose ${t.name}`, primary: true, run: () => choose(t.id) }]);
       return;

@@ -72,7 +72,7 @@ function popSlots(app) {
   app.openDetail('Body slots', `<table class="skill-why"><tbody>${rows}</tbody></table>
     ${other.length ? `<h3>No body slot (slotless, or used as armor or a shield)</h3><p>${esc(other.join(', '))}</p>` : ''}
     <p class="hint">Only one item works in each body slot (two rings). Bonuses of the same type from different items don\u2019t stack:
-      add the ones you wear as active effects on the Character tab.</p>`);
+      add the ones you wear as active effects on the Build tab.</p>`);
 }
 
 function popItem(app, id) {

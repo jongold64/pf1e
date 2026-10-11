@@ -71,7 +71,7 @@ export function renderBuild(app, view, parts) {
     ...(view.fromItems || []).map(x => ({ name: x.label })),
     ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on)];
   const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
-    : '<p class="muted">Nothing on. Switch effects on in Active effects (Character tab).</p>';
+    : '<p class="muted">Nothing on. Switch effects on in Active effects (Build tab).</p>';
 
   // Attacks: weapons with attack, damage and critical rolls; class attacks.
   const weapons = weaponSummaries(app, view);

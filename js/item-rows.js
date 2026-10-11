@@ -91,7 +91,7 @@ export function givesHtml(item, entry = null, counted = new Set()) {
     }
   }
   return rows.length ? `<h4>What it gives</h4><table class="skill-why"><tbody>${[...new Set(rows)].join('')}</tbody></table>
-      <p class="hint">Counted in Active effects on the Character tab while you wear it${rows.some(r => r.includes('muted">(')) ? '; one marked with when it applies has its own box there, off to start' : ''}.</p>`
+      <p class="hint">Counted in Active effects on the Build tab while you wear it${rows.some(r => r.includes('muted">(')) ? '; one marked with when it applies has its own box there, off to start' : ''}.</p>`
     : ATTACHED[item.id] ? `<p class="hint">${esc(ATTACHED[item.id])}</p>`
     : '<p class="hint">No bonuses the builder counts: its powers are in the description.</p>';
 }

@@ -1103,7 +1103,7 @@ function buildControls() {
     openDetail(d.name, `<p class="hint">Drawback · ${esc(d.source)}</p>${paragraphs(d.text)}
       <h3>In the app</h3><p>It gives you an extra trait slot${mine ? `: ${trait ? `you chose ${esc(trait.name)}` : 'not filled yet (Traits card above)'}` : ''}.
         Its penalty isn't counted automatically, since most apply only in some situations: apply it in play, or add a custom
-        effect on the Character tab when it applies.</p>
+        effect on the Build tab when it applies.</p>
       ${!mine && state.drawback ? `<p class="hint">Taking it replaces ${esc(data.drawbacksById.get(state.drawback)?.name || 'your drawback')} (only one drawback).</p>` : ''}`,
       mine ? [{ label: 'Remove it', run: () => update({ drawback: '' }) }] : [{ label: `Take ${d.name}`, primary: true, run: () => update({ drawback: d.id }) }]);
   });
@@ -1458,7 +1458,7 @@ function buildControls() {
       const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
       const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
       openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
-        <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Character tab).')}</p>
+        <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Build tab).')}</p>
         ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}`,
         [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
           update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
@@ -1676,7 +1676,7 @@ function showAbilityDetails(a) {
     <h3>What it's used for</h3>
     <p>${esc(ABILITY_USES[a])}</p>
     ${skills.length ? `<p><b>Skills:</b> ${esc(skills.join(', '))}.</p>` : ''}
-    <p class="hint">Change the base with − / + in its row; spells and items that raise it go in Active effects on the Character tab.</p>`);
+    <p class="hint">Change the base with − / + in its row; spells and items that raise it go in Active effects on the Build tab.</p>`);
 }
 
 // Effects on one skill ("skill:Stealth"; Craft, Perform and Profession count for every specialty): what they add on top of
@@ -2538,7 +2538,7 @@ function popTalent(id, slotId, preview = null) {
     ${preview?.why ? `<p class="warning">You can't take it here: ${esc(preview.why)}.</p>` : ''}
     ${paragraphs(t.text)}
     ${classNames.length ? `<p class="hint">Listed for: ${esc(classNames.join(', '))}.</p>` : ''}
-    <p class="hint">Not counted in the numbers automatically: apply it in play, or add a custom effect on the Character tab when it applies.</p>`,
+    <p class="hint">Not counted in the numbers automatically: apply it in play, or add a custom effect on the Build tab when it applies.</p>`,
     preview ? talentPreviewActions(id, preview)
       : slotId ? [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
                   { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
@@ -2950,7 +2950,8 @@ function renderClasses(view) {
 // The Guide: a Details button on each section's heading opens the section in a popup, with a button to go to the tab it's
 // about (the heading names it: "Weapons tab", "Magic Items tab", "Search ...").
 function initGuide() {
-  const toTab = { character: 'character', abilities: 'abilities', classes: 'classes', skills: 'skills', feats: 'feats', armor: 'armor',
+  // (The first tab, id "character", is called Build; the last, id "build", Character.)
+  const toTab = { build: 'character', character: 'build', abilities: 'abilities', classes: 'classes', skills: 'skills', feats: 'feats', armor: 'armor',
                   weapons: 'weapons', spells: 'spells', 'magic items': 'magic-items', craft: 'craft', equipment: 'equipment' };
   for (const d of document.querySelectorAll('#tab-guide details')) {
     const summary = d.querySelector('summary');
@@ -2964,7 +2965,7 @@ function initGuide() {
     b.setAttribute('aria-label', `${title} in a popup`);
     b.addEventListener('click', e => {
       e.preventDefault();  // in the heading: don't open or close the section
-      const m = title.toLowerCase().match(/^(character|abilities|classes|skills|feats|armor|weapons|spells|magic items|craft|equipment) tab/);
+      const m = title.toLowerCase().match(/^(build|character|abilities|classes|skills|feats|armor|weapons|spells|magic items|craft|equipment) tab/);
       const body = [...d.children].filter(x => x !== summary).map(x => x.outerHTML).join('');
       openDetail(title, `<div class="guide-pop">${body}</div>`,
         m ? [{ label: `Go to the ${m[1].replace(/\b\w/g, c => c.toUpperCase())} tab`, primary: true, run: () => showTab(toTab[m[1]]) }]
@@ -3489,7 +3490,7 @@ function showFeatSlotDetails(slotId) {
       : check.parts.length ? `<ul class="prereqs">${check.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>`
       : '<p class="hint">None.</p>'}
       ${check.parts.some(x => x.status === 'unknown') ? '<p class="hint">? = the app can\'t check this one; check it yourself.</p>' : ''}
-      <h3>In the app</h3><p>${esc(applied || 'Not counted in the numbers automatically: read its Benefit and apply it in play (or add it as a custom effect on the Character tab).')}</p>`;
+      <h3>In the app</h3><p>${esc(applied || 'Not counted in the numbers automatically: read its Benefit and apply it in play (or add it as a custom effect on the Build tab).')}</p>`;
   } else {
     html += '<p class="hint">No feat chosen yet: press Choose a feat.</p>';
   }
@@ -3581,7 +3582,7 @@ function renderDrawback() {
         <button type="button" class="skill-details q-details" data-drawback-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`).join('')}</ul></details>
     ${d ? `<div class="flaw-details"><p class="hint">${esc(d.source)}</p>${paragraphs(d.text)}
       <p class="hint">It gives you an extra trait slot (in the Traits card above). Its penalty isn't counted automatically: most
-        apply only in some situations, so apply it in play (or add a custom effect on the Character tab).</p></div>` : ''}`;
+        apply only in some situations, so apply it in play (or add a custom effect on the Build tab).</p></div>` : ''}`;
 }
 
 function renderFlaws() {
@@ -3601,7 +3602,7 @@ function renderFlaws() {
         <p class="hint">${known.id === 'murky-eyed' ? 'Not counted automatically: roll the miss chance twice in play.' : 'Applied to your numbers and rolls.'}</p></div>`
       : f.id === 'other' ? `<label>Name <input type="text" data-flaw="${i}" data-flaw-field="name" maxlength="60" value="${esc(f.name)}" placeholder="Flaw name"></label>
         <label>Penalty <input type="text" data-flaw="${i}" data-flaw-field="effect" maxlength="200" value="${esc(f.effect)}" placeholder="e.g. -2 on Strength-based checks"></label>
-        <p class="hint">A typed-in flaw's penalty isn't applied: add it as a custom effect on the Character tab.</p>` : '';
+        <p class="hint">A typed-in flaw's penalty isn't applied: add it as a custom effect on the Build tab.</p>` : '';
     return `<div class="flaw-row"><label>Flaw ${i + 1} <select data-flaw="${i}" data-flaw-field="id">
         <option value="">— none —</option>${options}<option value="other"${f.id === 'other' ? ' selected' : ''}>Other (type it in)</option></select></label>
       ${known ? `<button type="button" class="skill-details q-details" data-flaw-pop="${known.id}" data-slot="${i}" title="Details" aria-label="Details">?</button>` : ''}

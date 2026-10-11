@@ -193,7 +193,7 @@ export async function renderEquipment(app, view) {
       <tr><td>Lift off the ground</td><td class="num">${cap.heavy * 2} lbs.</td><td>you can only stagger around</td></tr>
       <tr><td>Push or drag</td><td class="num">${cap.heavy * 5} lbs.</td><td></td></tr></tbody></table>
     <p>You carry <b>${esc(formatLbs(carriedWeight))}</b>: a <b>${esc(loadNow.load)}</b> load.
-      ${state.houseRules.encumbrance ? 'The Encumbrance house rule is on, so its effects count in your numbers.' : 'Switch on the Encumbrance house rule (Character tab) to count its effects.'}</p>
+      ${state.houseRules.encumbrance ? 'The Encumbrance house rule is on, so its effects count in your numbers.' : 'Switch on the Encumbrance house rule (Build tab) to count its effects.'}</p>
     <p class="hint">Strength here includes active effects. Small characters carry ¾ as much, Large ones twice as much. A load\u2019s
       Dex limit and check penalty don\u2019t add to armor\u2019s: the worse counts.</p>` };
   const details = key => ` <button type="button" class="skill-details q-details" data-money-details="${key}" aria-label="What makes up this total" title="Details">?</button>`;

@@ -91,7 +91,7 @@ export const BUFFS = [
     note: 'the extra Con hit points are counted; while raging you can\u2019t use Cha, Dex or Int skills except Acrobatics, Fly, Intimidate and Ride, or concentrate' },
   { id: 'unchained-rage', name: 'Rage (unchained barbarian)', scales: true, levelName: 'barbarian level',
     bonuses: l => { const t = l >= 20 ? 4 : l >= 11 ? 3 : 2; return [b('melee-attack', 'morale', t), b('melee-damage', 'morale', t), b('will', 'morale', t), b('ac', 'untyped', -2)]; },
-    note: 'also on thrown weapon damage; 2 temporary hit points per Hit Die (3 from 11th, 4 at 20th): add them with Xtra-HP on the Character tab' },
+    note: 'also on thrown weapon damage; 2 temporary hit points per Hit Die (3 from 11th, 4 at 20th): add them with Xtra-HP on the Build tab' },
   { id: 'inspired-rage', name: 'Inspired rage (skald)', scales: true, levelName: 'skald level',
     bonuses: l => { const t = l >= 16 ? 6 : l >= 8 ? 4 : 2; return [b('str', 'morale', t), b('con', 'morale', t), b('will', 'morale', t / 2), b('ac', 'untyped', -1)]; },
     note: 'the skald\u2019s allies who accept it get it too; raging allies can\u2019t use Cha, Dex or Int skills except Acrobatics, Fly, Intimidate and Ride' },
