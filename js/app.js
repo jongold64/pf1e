@@ -571,29 +571,63 @@ function initCharacterBar() {
     if (roster.characters.length) switchCharacter(roster.characters[0].id);
     else addCharacter(null);
   });
-  $('char-export').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(exportData(state), null, 2)], { type: 'application/json' });
+  // Export: save the open character to a file, in a place you choose. Edge and Chrome on a laptop show a Save as window
+  // (it starts in the folder used last time); a tablet's Share sheet offers Save to Files; otherwise it downloads.
+  const FILE_TYPES = [{ description: 'Pathfinder character', accept: { 'application/json': ['.json'] } }];
+  $('char-export').addEventListener('click', async () => {
+    const text = JSON.stringify(exportData(state), null, 2);
+    const name = `${characterLabel(state).replace(/[^\w\- ]+/g, '').trim() || 'character'}.json`;
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({ id: 'pf1e-characters', suggestedName: name, types: FILE_TYPES });
+        const out = await handle.createWritable();
+        await out.write(text);
+        await out.close();
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;  // the window was closed without saving
+      }
+    }
+    const file = new File([text], name, { type: 'application/json' });
+    // (A tablet or phone: a touch screen that can share files.)
+    if (navigator.maxTouchPoints > 0 && navigator.canShare?.({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: name }); return; } catch (err) { if (err?.name === 'AbortError') return; }
+    }
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${characterLabel(state).replace(/[^\w\- ]+/g, '').trim() || 'character'}.json`;
+    a.href = URL.createObjectURL(file);
+    a.download = name;
     document.body.append(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
-  $('char-import').addEventListener('click', () => $('char-file').click());
-  $('char-file').addEventListener('change', async e => {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
+  // Import: a character file; Edge and Chrome open in the folder Export used.
+  const importText = async text => {
     let character = null;
-    try { character = importData(JSON.parse(await file.text())); } catch { character = null; }
+    try { character = importData(JSON.parse(text)); } catch { character = null; }
     if (!character) {
       alert('That file isn\'t a character exported from this app.');
       return;
     }
     save();
     addCharacter(character);
+  };
+  $('char-import').addEventListener('click', async () => {
+    if (window.showOpenFilePicker) {
+      try {
+        const [handle] = await window.showOpenFilePicker({ id: 'pf1e-characters', types: FILE_TYPES });
+        await importText(await (await handle.getFile()).text());
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    $('char-file').click();
+  });
+  $('char-file').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (file) await importText(await file.text());
   });
   $('char-print').addEventListener('click', printSheet);
   $('char-guide').addEventListener('click', () => showTab('guide'));
