@@ -79,3 +79,22 @@ export function facts(pairs) {
 export function sourceText(x) {
   return x.also_in?.length ? `${x.source} (also in ${x.also_in.join(', ')})` : x.source;
 }
+
+// Every popup closes when you tap or click outside it. A modal <dialog> (details, search, the pickers) gets the click
+// itself when it lands on the dimmed backdrop around it; the press must start outside too, so selecting text inside and
+// letting go outside doesn't close it.
+export function closePopupsOnOutsideClick() {
+  const outside = (dialog, e) => {
+    const r = dialog.getBoundingClientRect();
+    return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+  };
+  let pressedOutside = null;
+  document.addEventListener('pointerdown', e => {
+    pressedOutside = e.target instanceof HTMLDialogElement && e.target.open && outside(e.target, e) ? e.target : null;
+  });
+  document.addEventListener('click', e => {
+    const d = e.target;
+    if (d instanceof HTMLDialogElement && d.open && d === pressedOutside && outside(d, e)) d.close();
+    pressedOutside = null;
+  });
+}

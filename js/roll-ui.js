@@ -57,6 +57,7 @@ export function initRolls() {
       render(panel);
       return;
     }
-    if (e.target.closest?.('[data-roll-close]')) panel.hidden = true;
+    // Close, or a tap anywhere outside the panel.
+    if (e.target.closest?.('[data-roll-close]') || !panel.contains(e.target)) panel.hidden = true;
   });
 }

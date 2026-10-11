@@ -16,7 +16,7 @@ import { setUntrainedOk,
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
 import { armorEffects, speedInArmor } from './armor.js';
-import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText } from './dom.js';
+import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor } from './tab-armor.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
@@ -3972,6 +3972,7 @@ async function start() {
   buildControls();
   initCharacterBar();
   initRolls();
+  closePopupsOnOutsideClick();
   $('loading').hidden = true;
   $('app').hidden = false;
   $('char-buttons').hidden = false;
