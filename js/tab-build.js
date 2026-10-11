@@ -129,7 +129,11 @@ export function renderBuild(app, view, parts) {
     .map(([g, i]) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
   const defenseSw = `<div class="b-switches b-defense-sw">${defenseSwitchesHtml(view, state.combat, s => plus('defense', s.key, s.label))}</div>`;
   const defense = `${wornTable}${defenseSw}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
-      ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}`;
+      ${notes.length ? `<h4 class="b-sub">Situational</h4><div class="b-feats">${[...new Set(notes)].map(n => {
+        // "Trap sense: +1 on Reflex saves against traps." -> a ? with the Trap sense class feature.
+        const name = n.split(':')[0].replace(/\s*\(.*\)$/, '').trim();
+        return `<div class="b-feat"><span>${esc(n)}</span>${plus('classfeat', name, name)}</div>`;
+      }).join('')}</div>` : ''}`;
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
   const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
