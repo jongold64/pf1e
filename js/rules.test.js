@@ -1884,6 +1884,18 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('a revelation weapon needs the revelation chosen', gear([{ cls: cls('oracle'), level: 7 }], {}, { 'talent:ancestral-weapon:weapon': 'longsword' }, {}), '');
 }
 
+// Slashing Grace and Fencing Grace: Dexterity instead of Strength on damage.
+{
+  const { graceRow, weaponAttack } = await import('./weapons.js');
+  const scimitar = weapon('Scimitar'), rapier = weapon('Rapier'), longsword = weapon('Longsword');
+  const mod = { str: 1, dex: 4 };
+  check('Slashing Grace with the chosen scimitar: Dex to damage', !!graceRow(scimitar, ['Slashing Grace'], ['scimitar'], mod)?.swapStr, true);
+  check('...not another weapon, nor with Str the higher', [graceRow(longsword, ['Slashing Grace'], ['scimitar'], mod), graceRow(scimitar, ['Slashing Grace'], ['scimitar'], { str: 4, dex: 2 })].join(), ',');
+  check('Fencing Grace: rapier', !!graceRow(rapier, ['Fencing Grace'], [], mod), true);
+  const a = weaponAttack({ weapon: scimitar, bab: [3], mod, haveFeats: ['Slashing Grace'], training: [graceRow(scimitar, ['Slashing Grace'], ['scimitar'], mod)] });
+  check('scimitar damage with Slashing Grace: 1d6+4 (attack still Str)', `${a.damage} ${a.attacks[0]}`, '1d6+4 4');
+}
+
 // Defensive switches (defense.js).
 {
   const { defenseEffects, defenseSwitches, expertiseStep, revelationArmor } = await import('./defense.js');

@@ -364,6 +364,19 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   };
 }
 
+// Dexterity instead of Strength on damage with one weapon, from a feat: Slashing Grace (Advanced Class Guide: the
+// chosen one-handed slashing weapon, wielded one-handed) and Fencing Grace (Ultimate Intrigue: a rapier). graceWeapons:
+// the weapon ids chosen for Slashing Grace. Returns a training row ({ label, value: 0, swapStr }) or null; only when
+// Dexterity is the higher modifier (the feat lets you add it "instead").
+export function graceRow(weapon, haveFeats = [], graceWeapons = [], mod = {}) {
+  if (!(mod.dex > mod.str) || weapon.group !== 'one-handed') return null;
+  if (haveFeats.includes('Slashing Grace') && graceWeapons.includes(weapon.id) && /S/.test(weapon.type || '')) {
+    return { label: 'Dexterity instead of Strength (Slashing Grace)', value: 0, swapStr: true };
+  }
+  if (haveFeats.includes('Fencing Grace') && weapon.id === 'rapier') return { label: 'Dexterity instead of Strength (Fencing Grace)', value: 0, swapStr: true };
+  return null;
+}
+
 // Everything that adds to a weapon's attack and damage, named (Weapons tab Details popup). a: weaponAttack's result;
 // effects: active effect bonuses ({ source, type, value, target: 'attack' | 'damage' }). Returns
 // { attackRows, damageRows, attackTotal (first attack), damageTotal (bonus added to the dice) }.
@@ -395,7 +408,8 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
     : sm > 0 && p.strDamage === Math.floor(sm * 1.5) ? 'Strength × 1½ (held in two hands)'
     : sm > 0 && p.strDamage === Math.floor(sm / 2) ? 'Strength × ½ (off hand)'
     : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
-  const strLabelNow = (p.training || []).some(t => t.swapStr) ? `Dexterity instead of Strength (finesse training)` : strLabel;
+  const swap = (p.training || []).find(t => t.swapStr);
+  const strLabelNow = swap ? (/^Dexterity instead/.test(swap.label) ? swap.label : 'Dexterity instead of Strength (finesse training)') : strLabel;
   if (p.rating !== null && p.rating !== undefined) damageRows.push({ label: strLabel, value: p.strDamage });
   else add(damageRows, strLabelNow, p.strDamage);
   add(damageRows, p.enhDamage > p.enh ? 'Ammunition\u2019s enhancement bonus' : 'Enhancement bonus', p.enhDamage ?? p.enh);

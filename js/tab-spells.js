@@ -298,6 +298,12 @@ function renderPrepared(app, view) {
         .filter(s => s && s.levels[cls.id] !== undefined && s.levels[cls.id] <= lv)
         .sort((a, b) => (mine.has(b.id) - mine.has(a.id)) || (b.levels[cls.id] - a.levels[cls.id]) || a.name.localeCompare(b.name));
       const extraName = r.extra && EXTRA_SLOTS[cls.id]?.name;
+      // A domain slot holds one of your domains' spells of this level (or a lower one), not any spell.
+      const letters = x => String(x).toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, '');
+      const byName = new Map(app.data.spells.map(x => [letters(x.name), x]));
+      const domainPool = (app.domainSpells?.(cls.id) || []).filter(d => d.level <= lv && d.level > 0)
+        .map(d => ({ spell: byName.get(letters(d.name)), d })).filter(x => x.spell)
+        .sort((a, b) => b.d.level - a.d.level || a.spell.name.localeCompare(b.spell.name));
       const rows = Array.from({ length: n }, (_, i) => {
         const slot = saved[i] || { id: '', cast: false };
         const s = byId.get(slot.id);
@@ -305,7 +311,10 @@ function renderPrepared(app, view) {
         if (s) filled++;
         const key = `${cls.id}|${lv}|${i}`;
         const label = x => `${x.name}${x.levels[cls.id] < lv ? ` (${x.levels[cls.id] === 0 ? 'cantrip' : LEVEL_NAMES[x.levels[cls.id]].replace(' spells', '')}, in a higher slot)` : ''}`;
-        const opts = pool.map(x => `<option value="${esc(x.id)}"${x.id === slot.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('');
+        const domainSlot = extraName && i === n - 1 && domainPool.length;
+        const opts = domainSlot
+          ? domainPool.map(({ spell: x, d }) => `<option value="${esc(x.id)}"${x.id === slot.id ? ' selected' : ''}>${esc(`${x.name} (${d.domain}${d.level < lv ? `, ${LEVEL_NAMES[d.level].replace(' spells', '')}` : ''})`)}</option>`).join('')
+          : pool.map(x => `<option value="${esc(x.id)}"${x.id === slot.id ? ' selected' : ''}>${esc(label(x))}</option>`).join('');
         return `<li class="prep-slot${slot.cast ? ' cast' : ''}">
           ${extraName && i === n - 1 ? `<span class="tag">${esc(extraName)} slot</span>` : ''}
           <select data-prep="${esc(key)}" aria-label="${esc(LEVEL_NAMES[lv])} slot ${i + 1}"><option value="">— empty —</option>${opts}</select>

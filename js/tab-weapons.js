@@ -9,7 +9,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice } from './class-features.js';
-import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE } from './weapons.js';
+import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
 // ammunition's enhancement and the launcher's don't stack (the higher counts); its material's effects show under it.
@@ -163,8 +163,10 @@ function attackArgs(app, view, ctx, e) {
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
     // Weapon training: the fighter's groups (picked at 5th, 9th, 13th, 17th, in that order) and the swashbuckler's.
-    training: weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || ''),
+    // Slashing Grace / Fencing Grace: Dexterity instead of Strength on damage with that weapon.
+    training: [...weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || ''),
       { mod: view.stats.mod, picks: view.archFx?.picks }),
+      ...[graceRow(sized.weapon, view.haveFeats, view.featChoices.filter(c => c.feat === 'Slashing Grace').map(c => c.value), view.stats.mod)].filter(Boolean)],
     // Warpriest sacred weapon / brawler close weapon mastery dice.
     minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice || null,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
@@ -421,7 +423,8 @@ export function renderMyWeapons(app, view) {
       <div class="weapon-more"${open ? '' : ' hidden'}>
       <div class="weapon-head">
         <span class="weapon-title"><button type="button" class="skill-details" data-show-weapon="${esc(w.id)}" aria-label="${esc(w.name)} in a popup">About the ${esc(w.name.toLowerCase())}</button></span>
-        <button type="button" class="link" data-remove-weapon="${i}">remove</button>
+        ${e.classGear ? `<span class="muted small">your ${esc(e.gearTag || 'class weapon')}: change or remove it with its choice on the Classes tab</span>`
+          : `<button type="button" class="link" data-remove-weapon="${i}">remove</button>`}
       </div>
       <dl class="facts attack-line">
         <dt>Attack</dt><dd><b>${esc(attackText(a))}</b> <span class="muted">(${a.abilityUsed === 'dex' ? 'Dex' : 'Str'}${a.used.length ? `, ${esc(a.used.join(', '))}` : ''})</span>

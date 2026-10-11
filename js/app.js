@@ -209,6 +209,7 @@ const app = {
   prohibitedSchools: cid => (isThassilonian(cid) ? oppositionOf(cid) : []),
   diminished: cid => diminished(cid),
   extraSlotOn: cid => extraSlotOn(cid),
+  domainSpells: cid => domainSpellsFor(cid),
   showAcDetails: column => showAcDetails(column),
   get view() { return view; },
 };
@@ -502,6 +503,14 @@ function extraSlotOn(clsId) {
   const slot = EXTRA_SLOTS[clsId];
   if (!slot?.optional) return false;
   return typeof state.extraSlots[clsId] === 'boolean' ? state.extraSlots[clsId] : slot.default;
+}
+
+// A cleric's (or Nature Bond druid's) domain spells, for the domain slot: [{ level, name, domain }] (the spell's name as
+// the domain lists it, "summon monster IX (good spell only)").
+function domainSpellsFor(clsId) {
+  if (!['cleric', 'druid'].includes(clsId)) return [];
+  return (state.domains[clsId] || []).map(id => data.domainsById.get(id)).filter(Boolean)
+    .flatMap(d => Object.entries(domainGrants(d, data.domainsById).spells).map(([lv, name]) => ({ level: Number(lv), name, domain: d.name })));
 }
 
 function save() {
@@ -3753,26 +3762,28 @@ function renderPicker() {
   const taken = new Set(view.slots.filter(s => s.id !== slot.id).map(s => state.feats[s.id]));
 
   const matches = [];
+  let hidden = 0;  // matching feats left out because you don't qualify yet
   for (const f of data.feats) {
     if (!slotAccepts(slot, f)) continue;
     if (taken.has(f.id) && !repeatable(f)) continue;
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
     const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
-    if (hideUnmet && check.status === 'unmet') continue;
+    if (hideUnmet && check.status === 'unmet') { hidden++; continue; }
     matches.push({ f, check });
   }
 
   $('picker-count').textContent = matches.length > PICKER_LIMIT
     ? `Showing ${PICKER_LIMIT} of ${matches.length} feats. Search to narrow the list.`
-    : `${matches.length} feat${matches.length === 1 ? '' : 's'}`;
+    : `${matches.length} feat${matches.length === 1 ? '' : 's'}`
+      + (hidden && search ? ` · ${hidden} more match${hidden === 1 ? 'es' : ''} that you don't qualify for yet: untick "Hide feats I don't qualify for" to see ${hidden === 1 ? 'it' : 'them'}.` : '');
   $('feat-list').innerHTML = matches.slice(0, PICKER_LIMIT).map(({ f, check }) => `
     <details class="feat-item" data-feat="${esc(f.id)}">
       <summary>${STATUS_ICON[check.status]} <span class="feat-name">${esc(f.name)}</span>
         <small>${esc((f.types || []).join(', '))}</small>
         <button type="button" class="skill-details q-details" data-feat-pop="${esc(f.id)}" aria-label="${esc(f.name)} in a popup" title="Details">?</button></summary>
       <div class="feat-body"></div>
-    </details>`).join('') || '<p class="hint">No feats match.</p>';
+    </details>`).join('') || `<p class="hint">No feats match${hidden ? ' that you qualify for' : ''}.</p>`;
 }
 
 const ORDINALS = ['0', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];

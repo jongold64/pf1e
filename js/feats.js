@@ -108,7 +108,7 @@ export function featSlots({ race, cls, level, classLevels = null, flaws = [], an
 export const CHOICE_FEATS = {
   'Weapon Focus': 'weapon', 'Greater Weapon Focus': 'weapon', 'Weapon Specialization': 'weapon',
   'Greater Weapon Specialization': 'weapon', 'Improved Critical': 'weapon', 'Exotic Weapon Proficiency': 'weapon',
-  'Martial Weapon Proficiency': 'weapon', 'Skill Focus': 'skill', 'Spell Focus': 'school', 'Greater Spell Focus': 'school',
+  'Martial Weapon Proficiency': 'weapon', 'Slashing Grace': 'weapon', 'Skill Focus': 'skill', 'Spell Focus': 'school', 'Greater Spell Focus': 'school',
 };
 export const SPELL_SCHOOLS = ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion',
   'necromancy', 'transmutation'];
