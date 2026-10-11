@@ -1509,26 +1509,25 @@ function buildControls() {
   const types = [...new Set(data.feats.flatMap(f => f.types || []))].sort();
   $('feat-type').innerHTML = '<option value="">All types</option>' +
     types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  $('feat-chosen').addEventListener('click', e => {
-    const fd = e.target.closest('[data-feat-details]');
-    if (fd) showFeatSlotDetails(fd.dataset.featDetails);
-  });
-  $('feat-slots').addEventListener('click', e => {
-    const fd = e.target.closest('[data-feat-details]');
-    if (fd) { showFeatSlotDetails(fd.dataset.featDetails); return; }
-    const choose = e.target.closest('[data-choose]');
-    if (choose) openPicker(choose.dataset.choose);
-    const remove = e.target.closest('[data-remove]');
-    if (remove) {
-      const { [remove.dataset.remove]: _, ...rest } = state.feats;
-      update({ feats: rest });
-    }
-  });
-  $('feat-slots').addEventListener('change', e => {
-    const slotId = e.target.dataset.featChoice;
-    if (!slotId) return;
-    update({ featChoices: { ...state.featChoices, [slotId]: { feat: state.feats[slotId], value: e.target.value } } });
-  });
+  // The chosen feats (Details, Change, Remove, the weapon or skill it's for) and the empty slots (Choose).
+  for (const box of ['feat-chosen', 'feat-slots']) {
+    $(box).addEventListener('click', e => {
+      const fd = e.target.closest('[data-feat-details]');
+      if (fd) { showFeatSlotDetails(fd.dataset.featDetails); return; }
+      const choose = e.target.closest('[data-choose]');
+      if (choose) openPicker(choose.dataset.choose);
+      const remove = e.target.closest('[data-remove]');
+      if (remove) {
+        const { [remove.dataset.remove]: _, ...rest } = state.feats;
+        update({ feats: rest });
+      }
+    });
+    $(box).addEventListener('change', e => {
+      const slotId = e.target.dataset.featChoice;
+      if (!slotId) return;
+      update({ featChoices: { ...state.featChoices, [slotId]: { feat: state.feats[slotId], value: e.target.value } } });
+    });
+  }
   $('feat-count-details').addEventListener('click', () => popFeatSlots());
   // A free class feat's name (in the Feats card, or in the slots popup).
   for (const box of ['granted-feats', 'detail-body']) {
@@ -3786,14 +3785,22 @@ function renderFeats(slots, granted, ctx) {
     const f = data.featsById.get(state.feats[slot.id]);
     const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
     const choice = view.featChoices.find(c => c.slotId === slot.id);
-    return `<li>${STATUS_ICON[check.status]} <b>${esc(f.name)}</b>${choice?.value ? ` (${esc(choiceLabel(choice))})` : ''}
+    // Each chosen feat on one line with its slot, Details, Change and Remove; under it the weapon (skill, school) it's
+    // for and any warning. (Its slot isn't listed again below.)
+    return `<li><div class="feat-chosen-line">${STATUS_ICON[check.status]} <b>${esc(f.name)}</b>${choice?.value ? ` (${esc(choiceLabel(choice))})` : ''}
       <small class="muted">${esc(slot.label)}</small>
-      <button type="button" class="skill-details q-details" data-feat-details="${slot.id}" aria-label="${esc(f.name)}: about this feat" title="Details">?</button></li>`;
+      <button type="button" class="skill-details q-details" data-feat-details="${slot.id}" aria-label="${esc(f.name)}: about this feat" title="Details">?</button>
+      <span class="feat-chosen-buttons"><button type="button" data-choose="${slot.id}">Change</button>
+      <button type="button" data-remove="${slot.id}">Remove</button></span></div>
+      ${choice ? choiceSelect(choice) : ''}
+      ${!slotAccepts(slot, f) ? '<p class="warning">This feat isn’t allowed in this slot.</p>' : ''}
+      ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}</li>`;
   });
   $('feat-chosen').innerHTML = chosenLines.join('');
   $('feat-chosen').hidden = !chosenLines.length;
 
-  $('feat-slots').innerHTML = slots.map(slot => {
+  // The slots still to fill (the chosen ones are listed above).
+  $('feat-slots').innerHTML = slots.filter(slot => !data.featsById.has(state.feats[slot.id])).map(slot => {
     const f = data.featsById.get(state.feats[slot.id]);
     const rule = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
     let body;

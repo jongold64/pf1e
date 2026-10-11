@@ -1021,3 +1021,6 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner .b-init-big { display: flex; align-items: center; }
 .b-banner .b-init-big .roll-button { padding: 2px 6px !important; min-height: 40px !important; }
 .b-banner .b-init-big .roll-button .d20 { width: 28px; height: 28px; }
+/* Feats tab: a chosen feat's line, with Change and Remove at its end. */
+.feat-chosen-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.feat-chosen-buttons { margin-left: auto; display: inline-flex; gap: 6px; }
