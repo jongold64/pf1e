@@ -59,6 +59,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Paizo traits PSRD lacks, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py (d20pfsrd-traits).
                     *([('build_d20_traits.py', 'data/traits.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-traits')) else []),
+                    # Paizo traits neither has (Wayang Spellhunter...), from Archives of Nethys pages.
+                    ('build_aon_traits.py', 'data/traits.json'),
                     # Paizo drawbacks (Drawbacks house rule), from d20pfsrd pages cached in ../../d20pfsrd-drawbacks.
                     *([('build_d20_drawbacks.py', 'data/drawbacks.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-drawbacks')) else []),

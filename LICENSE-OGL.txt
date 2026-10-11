@@ -378,6 +378,7 @@ Pathfinder Campaign Setting: Giants Revisited © 2012, Paizo Publishing, LLC; Au
 Troll, Two-Headed from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Oliver Charles MacDonald.
 Pathfinder Adventure Path #93: Forge of the Giant God © 2015, Paizo Inc.; Authors: Tim Hitchcock, with Benjamin Bruck, Mark Moreland, Sean K Reynolds, and Greg A. Vaughan.
 Pathfinder Adventure Path #95: Anvil of Fire © 2015, Paizo Inc.; Authors: Sean K Reynolds, with Benjamin Bruck, Mikko Kallio, David Schwartz, Russ Taylor, Jerome Virnych, and Wendy N. Wagner.
+Giantslayer Player’s Guide © 2015, Paizo Inc.; Authors: Adam Daigle and Rob McCreary.
 Pathfinder Companion: Gnomes of Golarion. Copyright 2010, Paizo Publishing, LLC; Authors: Hal Maclean, Colin McComb, Mark Moreland, Jeff Quick, Sean K Reynolds, Steven Schend, and Owen K. C. Stephens.
 Pathfinder Player Companion: Goblins of Golarion. © 2011, Paizo Publishing, LLC; Author: James Jacobs, Hal Maclean, and Richard Pett.
 Pathfinder Chronicles: Gods and Magic. Copyright 2008, Paizo Publishing, LLC; Author: Sean K Reynolds.
@@ -390,6 +391,7 @@ Quickwood from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pu
 Yellow Musk Zombie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Albie Fiore.
 Pathfinder Campaign Setting: Hell Unleashed © 2015, Paizo Inc.; Authors: F. Wesley Schneider and Jerome Virnich.
 Pathfinder Adventure Path #102: Breaking the Bones of Hell © 2016, Paizo Inc.; Authors: Amber E. Scott, with Adam Daigle, James Jacobs, Jenny Jarzabski, Mikko Kallio, Stephanie Lorée, F. Wesley Schneider, and David Schwartz.
+Hell’s Rebels Player’s Guide © 2015, Paizo Inc.; Author: James Jacobs.
 Pathfinder Adventure Path #107: Scourge of the Godclaw © 2016, Paizo Inc.; Authors: Larry Wilhelm, with Benjamin Bruck, Paris Crenshaw, Alex Greenshields, Jason Keeley, F. Wesley Schneider, Owen K.C. Stephens, Greg A. Vaughan, and Josh Vogt.
 Hell’s Vengeance Player’s Guide © 2016, Paizo Inc.; Authors: Adam Daigle and Rob McCreary.
 Leprechaun from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -434,6 +436,7 @@ Pathfinder Campaign Setting: Inner Sea Temples © 2016, Paizo Inc.; Authors: Rob
 Pathfinder Module: Ire of the Storm © 2016, Paizo Inc.; Author: Thurston Hillman.
 Pathfinder Adventure Path #86: Lords of Rust © 2014, Paizo Inc.; Authors: Nicolas Logue, with Adam Daigle, Jim Groves, James Jacobs, Sean K Reynolds, and Amber E. Scott.
 Pathfinder Adventure Path #89: Palace of Fallen Stars © 2014, Paizo Inc.; Authors: Tim Hitchcock, with Benjamin Bruck, Sean K Reynolds, Amber E. Scott, and Larry Wilhelm.
+Iron Gods Player’s Guide © 2014, Paizo Inc.; Authors: Adam Daigle and James Jacobs.
 Pathfinder Adventure Path #115: Trail of the Hunted © 2017, Paizo Inc.; Authors: Amber E. Scott, with Crystal Frasier, Luis Loza, Ron Lundeen, Tonya Woldridge, and Linda Zayas-Palmer.
 Basidirond from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Beetle, Slicer from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -441,6 +444,7 @@ Rot Grub from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pub
 Spriggan from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene and Erica Balsley, based on original material by Roger Moore and Gary Gygax.
 Pathfinder Adventure Path #117: Assault on Longshadow © 2017, Paizo Inc.; Authors: Benjamin Bruck and Thurston Hillman, with Liz Courts, Paris Crenshaw, and Jason Keeley.
 Pathfinder Adventure Path #119: Prisoner of the Blight © 2017, Paizo Inc.; Authors: Amanda Hamon Kunz, with Paris Crenshaw, Crystal Frasier, Jason Keeley, Isabelle Lee, and Larry Wilhelm.
+Ironfang Invasion Player’s Guide © 2017, Paizo Inc.; Author: Crystal Frasier.
 Juju Zombie from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Isles of the Shackles © 2012, Paizo Publishing, LLC; Author: Mike Shel.
 Jade Regent Player’s Guide © 2011, Paizo Publishing, LLC; Authors: James Jacobs and Patrick Renie.
@@ -486,6 +490,7 @@ Pathfinder Adventure Path #82: Secrets of the Sphinx © 2014, Paizo Inc.; Author
 Midgard Bestiary for Pathfinder RPG © 2012 Open Design LLC; Authors: Adam Daigle with Chris Harris, Michael Kortes, James Mackenzie, Rob Manning, Ben McFarland, Carlos Ovalle, Jan Rodewald, Adam Roy, Christina Stiles, James Thomas, and Mike Welham.
 Phantasm from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Adventure Path #84: Pyramid of the Sky Pharaoh © 2014, Paizo Inc.; Authors: Mike Shel, with Tyler Beck, Adam Daigle, F. Wesley Schneider, and Amber E. Scott.
+Mummy’s Mask Player’s Guide © 2014, Paizo Inc.; Authors: Adam Daigle and Rob McCreary.
 Pathfinder Module: Murder’s Mark © 2012, Paizo Publishing, LLC; Author: Jim Groves.
 Dust Digger from the Tome of Horrors Complete © 2011 Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Tracy and Laura Hickman.
 Gryph from the Tome of Horrors Complete © 2011 Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Peter Brown.
@@ -696,6 +701,7 @@ Pathfinder Player Companion: Ranged Tactics Toolbox © 2014, Paizo Inc.; Authors
 Pathfinder Module: Realm of the Fellknight Queen. © 2010, Paizo Publishing, LLC; Author: Neil Spicer.
 Reign of Winter Player’s Guide © 2013, Paizo Publishing, LLC; Author: Adam Daigle et al.
 Reign of Winter Player's Guide ©, Paizo Publishing, LLC; Author: Adam Daigle.
+Return of the Runelords Player’s Guide © 2018, Paizo Inc.; Author: James Jacobs.
 Plot & Poison © 2002, Green Ronin Publishing, LLC; Author: Matthew Sernett.
 Jelly, Mustard from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Jubilex from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -703,6 +709,7 @@ Orcus from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., publis
 Pazuzu from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Undead Lord from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Pathfinder Adventure Path: Rise of the Runelords Anniversary Edition © 2012, Paizo Publishing, LLC; Authors: Wolfgang Baur, Stephen S. Greer, James Jacobs, Nicolas Logue, Richard Pett, and Greg A. Vaughan.
+Rise of the Runelords Anniversary Edition Player’s Guide © 2012, Paizo Publishing, LLC; Authors: Adam Daigle and James L. Sutter.
 Rise of the Runelords Player's Guide. Copyright 2007 Paizo Publishing LLC. Author F. Wesley Schneider.
 Pathfinder Campaign Setting: Rival Guide. © 2011, Paizo Publishing, LLC. Authors: Brian Cortijo, Adam Daigle, Tim Hitchcock, Brandon Hodge, Colin McComb, Jason Nelson, Amber Scott, Neil Spicer, and Todd Stewart.
 Ruins of Azlant Player’s Guide © 2017, Paizo Inc.; Author: Adam Daigle.
@@ -715,6 +722,7 @@ Pathfinder Adventure Path: Shattered Star Player’s Guide © 2012, Paizo Publis
 Pathfinder Campaign Setting: Ships of the Inner Sea © 2014, Paizo Inc.; Authors: Benjamin Bruck, Paris Crenshaw, Chris A. Jackson, Amanda Hamon Kunz, Philip A. Lee, and John Mangrum.
 Skull & Shackles Player's Guide ©, Paizo Publishing, LLC; Author: Rob McCreary.
 Pathfinder Player Companion: Spymaster’s Handbook © 2016, Paizo Inc.; Authors: Alexander Augunas, David N. Ross, and Owen K.C. Stephens.
+Strange Aeons Player’s Guide © 2016, Paizo Inc.; Author: Adam Daigle.
 Pathfinder Companion: Taldor, Echoes of Glory. Copyright 2009, Paizo Publishing, LLC; Author: Joshua J. Frost.
 Pathfinder Module: The Dragon’s Demand © 2013, Paizo Publishing, LLC; Author: Mike Shel.
 Pathfinder Module: The Emerald Spire Superdungeon © 2014, Paizo Inc.; Authors: Keith Baker, Richard Baker, Wolfgang Baur, Jason Bulmahn, Ed Greenwood, Tim Hitchcock, James Jacobs, Nicolas Logue, Frank Mentzer, Erik Mona, Chris Pramas, Sean K Reynolds, F. Wesley Schneider, Michael A. Stackpole, Lisa Stevens, and James L. Sutter.
@@ -727,6 +735,7 @@ Pathfinder Module: The Moonscar © 2012, Paizo Publishing, LLC; Author: Richard 
 The Pathfinder Chronicles Campaign Setting Copyright 2008, Paizo Publishing; Author: Stan!, Keith Baker, Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, Sean K Reynolds, David Schwartz, Leandra Christine Schneider, F. Wesley Schneider, Amber E. Scott, Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, JD Wiker.
 Pathfinder Roleplaying Game: The World of Vampire Hunter D © 2016, Paizo Inc.; Author: F. Wesley Schneider.
 Pathfinder Campaign Setting: Tombs of Golarion © 2015, Paizo Inc.; Authors: Scott Fernandez, Ron Lundeen, and Larry Wilhelm.
+Tyrant’s Grasp Player’s Guide © 2018, Paizo Inc.; Author: Crystal Frasier.
 Pathfinder Roleplaying Game Core Rulebook. © 2010, Paizo Publishing, LLC; Author: Jason Bulmahn, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
 Muckdweller from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Roleplaying Game Ultimate Intrigue © 2016, Paizo Inc.; Authors: Jesse Benner, John Bennett, Logan Bonner, Robert Brookes, Jason Bulmahn, Ross Byers, Robert N. Emerson, Amanda Hamon Kunz, Steven Helt, Thurston Hillman, Tim Hitchcock, Mikko Kallio, Rob McCreary, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Alexander Riggs, David N. Ross, David Schwartz, Mark Seifter, Linda Zayas-Palmer.
@@ -736,6 +745,7 @@ Pathfinder Player Companion: Undead Slayer’s Handbook © 2014, Paizo Publishin
 Pathfinder Campaign Setting: Undead Unleashed © 2014, Paizo Inc.; Authors: Adam Daigle, Dave Gross, Mark Moreland, David N. Ross, Todd Stewart, and Jerome Virnich.
 Pathfinder Player Companion: Varisia, Birthplace of Legends © 2012, Paizo Publishing, LLC; Authors: F. Wesley Schneider, Amber E. Scott, Tork Shaw, James L. Sutter, and Jerome Virnich.
 Pathfinder Roleplaying Game Villain Codex © 2016, Paizo Inc.; Authors: Alexander Augunas, Logan Bonner, Paris Crenshaw, Dan Dillon, Crystal Frasier, Amanda Hamon Kunz, Eric Hindley, Mikko Kallio, Dale C. McCoy, Jr., Stephen Radney-MacFarland, Thomas M. Reid, Alistair Rigg, Alex Riggs, Mark Seifter, and Linda Zayas-Palmer.
+War for the Crown Player’s Guide © 2018, Paizo Inc.; Author: Crystal Frasier.
 Pathfinder Module: Wardens of the Reborn Forge © 2013, Paizo Publishing, LLC; Author: Patrick Renie.
 Pathfinder Module: We Be Goblins Too! © 2013, Paizo Publishing, LLC; Author: Richard Pett.
 Pathfinder Player Companion: Wilderness Origins © 2019, Paizo Inc.; Authors: Kim Frandsen, Sasha Hall, Violet Hargrave, Andrew Mullen, Jessica Redekop, Mikhail Rekun, Sean K. Reynolds, and Rodney Sloan.
