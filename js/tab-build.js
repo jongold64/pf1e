@@ -212,15 +212,17 @@ function renderSpells(app, view, parts) {
     const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)} · save DC 10 + spell level ${signed(mod)}</p>`;
     const prep = parts.prepared(cid);
     if (prep) {
-      const levels = prep.map(({ lv, slots }) => `<div class="b-spell-level"><b>${lv === 0 ? 'Cantrips' : ORD(lv)}</b>
-        ${slots.map((x, i) => (x.id ? `<label class="b-cast"><input type="checkbox" data-b-cast="${esc(`${cid}|${lv}|${i}`)}"${x.cast ? ' checked' : ''}${lv === 0 ? ' disabled' : ''}>
-          <button type="button" class="link" data-b-detail="spell" data-arg="${esc(x.id)}">${esc(byId.get(x.id)?.name || x.id)}</button></label>` : '<span class="muted">(empty)</span>')).join(' ')}</div>`).join('');
+      // Each prepared spell on its own line: a box to tick when cast, its name, and a ? for its details.
+      const levels = prep.map(({ lv, slots }) => `<div class="b-spell-level"><h4 class="b-sub">${lv === 0 ? 'Cantrips' : `${ORD(lv)} level`}</h4>
+        <div class="b-spell-list">${slots.map((x, i) => (x.id ? `<div class="b-feat${x.cast ? ' b-spent' : ''}"><label class="b-cast"><input type="checkbox" data-b-cast="${esc(`${cid}|${lv}|${i}`)}"${x.cast ? ' checked' : ''}${lv === 0 ? ' disabled' : ''}>
+          ${esc(byId.get(x.id)?.name || x.id)}</label>${plus('spell', x.id, byId.get(x.id)?.name || 'spell')}</div>` : '<div class="b-feat"><span class="muted">(empty)</span></div>')).join('')}</div></div>`).join('');
       return head + (levels || '<p class="muted">Nothing prepared yet: prepare today\'s spells on the Spells tab.</p>');
     }
     const known = state.spells.map(id => byId.get(id)).filter(s => s && s.levels[cid] !== undefined);
     const lvls = [...new Set(known.map(s => s.levels[cid]))].sort((a, b) => a - b);
-    return head + (lvls.map(lv => `<div class="b-spell-level"><b>${lv === 0 ? 'Cantrips' : ORD(lv)}</b> ${known.filter(s => s.levels[cid] === lv)
-      .sort((a, b) => a.name.localeCompare(b.name)).map(s => `<button type="button" class="link" data-b-detail="spell" data-arg="${esc(s.id)}">${esc(s.name)}</button>`).join(', ')}</div>`).join('')
+    // Spells known: each on its own line with a ?.
+    return head + (lvls.map(lv => `<div class="b-spell-level"><h4 class="b-sub">${lv === 0 ? 'Cantrips' : `${ORD(lv)} level`}</h4><div class="b-spell-list">${known.filter(s => s.levels[cid] === lv)
+      .sort((a, b) => a.name.localeCompare(b.name)).map(s => `<div class="b-feat"><span>${esc(s.name)}</span>${plus('spell', s.id, s.name)}</div>`).join('')}</div></div>`).join('')
       || '<p class="muted">No spells chosen yet (Spells tab).</p>');
   }).join('');
 }

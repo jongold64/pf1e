@@ -964,3 +964,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-feats { display: flex; flex-direction: column; }
 .b-feat { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 28px; font-size: 0.95rem; border-bottom: 1px solid var(--border); }
 .b-feat:last-child { border-bottom: 0; }
+/* Build tab spells: one a line, in columns when there's room. */
+.b-spell-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); column-gap: 18px; }
+.b-spell-list .b-cast { display: flex; align-items: center; gap: 6px; }
+.b-spent .b-cast { color: var(--muted); text-decoration: line-through; }
