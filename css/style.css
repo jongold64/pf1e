@@ -942,5 +942,5 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .build button.skill-details.q-details { min-width: 22px; min-height: 22px !important; padding: 0 4px !important; font-size: 0.8rem; }
 
 /* Build tab: every skill in a scrolling box. */
-.b-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.b-scroll { max-height: 520px; overflow-y: auto; padding-right: 4px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .b-skills .b-plain span, .b-skills .b-plain b { color: var(--muted); font-weight: 400; }
