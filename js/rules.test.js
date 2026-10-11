@@ -1033,8 +1033,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('critical threat: the attack, then confirm, damage and critical damage each on a line under it', crit.join(' | '),
         'Attack: d20 (19) + 6 = 25, critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	Damage 1d8 (3) + 4 = 7 | 	Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
   const nat20 = rollSpec({ title: 'Longsword', groups: [{ attacks: [6], damage: '1d8+4', threat: 19, mult: 2 }] }, dice(20, 10, 3, 4, 5)).lines;
-  check('natural 20: only the critical damage, highlighted, with the ordinary damage in brackets', nat20.join(' | '),
-        'Attack: d20 (20) + 6 = 26 (natural 20: hits), critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	!Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17 (not confirmed: 1d8 (3) + 4 = 7)');
+  check('natural 20: damage, then the critical damage highlighted', nat20.join(' | '),
+        'Attack: d20 (20) + 6 = 26 (natural 20: hits), critical threat! | 	Confirm: d20 (10) + 6 = 16 (if it hits AC, ×2 damage) | 	Damage 1d8 (3) + 4 = 7 | 	!Critical damage 1d8 (4) + 4 + 1d8 (5) + 4 = 17');
   check('damage only', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4' }] }, dice(6)).lines[0], 'damage 1d8 (6) + 4 = 10');
   check('critical damage ×3', rollSpec({ title: 'x', groups: [{ attacks: [], damage: '1d8+4', critMult: 3 }] }, dice(1, 2, 3)).lines[0],
         'critical damage (×3) 1d8 (1) + 4 + 1d8 (2) + 4 + 1d8 (3) + 4 = 18');
