@@ -731,11 +731,7 @@ function buildParts() {
     prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
       .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
     classAttacks: allClassAttacks(view.stats),
-    choices: (cid, lv) => [...pathLines(cid, lv), ...domainLines(cid), ...[...new Set(talentSlots(cid, lv).map(s => s.rule))].map(rule => {
-      const picks = classChoiceSlots(cid, lv).slots.filter(s => s.rule === rule && !s.replacedBy && state.talents[s.id])
-        .map(s => data.talentsById.get(state.talents[s.id])?.name || state.talents[s.id]);
-      return picks.length ? `${pluralOf(rule)}: ${picks.join(', ')}` : '';
-    }).filter(Boolean), ...(cid === 'warpriest' && state.blessings.length ? [`Blessings: ${state.blessings.map(id => data.blessingsById.get(id)?.name).join(', ')}`] : [])],
+    choices: (cid, lv) => choiceItems(cid, lv),
   };
 }
 
@@ -838,7 +834,11 @@ function buildDetail(kind, arg) {
   else if (kind === 'spell') popSpell(app, arg);
   else if (kind === 'item') popSource(app, arg);
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
-  else if (kind === 'daily') {
+  else if (kind === 'choice') {
+    const [cid, i] = arg.split('|');
+    const lv = view.counts.find(e => e.cls.id === cid)?.level || 0;
+    choiceItems(cid, lv)[Number(i)]?.pop?.();
+  } else if (kind === 'daily') {
     // A daily use: how many are left, how the total is worked out, and the rules text.
     const d = dailyUsesFor().find(x => x.key === arg);
     if (!d) return;
@@ -1301,18 +1301,11 @@ function buildControls() {
     const rm = e.target.closest('[data-blessing-remove]');
     if (rm) { update({ blessings: state.blessings.filter(id => id !== rm.dataset.blessingRemove) }); return; }
     const pop = e.target.closest('[data-blessing-pop]');
-    const b = pop && data.blessingsById.get(pop.dataset.blessingPop);
-    if (b) openDetail(`${b.name} blessing`, `<p class="hint">${esc(b.source)} · deities: ${esc(b.deities || '—')}</p>
-      ${b.minor ? `<h3>${esc(b.minor.name)} (minor, 1st level)</h3>${paragraphs(b.minor.text)}` : ''}
-      ${b.major ? `<h3>${esc(b.major.name)} (major, 10th level)</h3>${paragraphs(b.major.text)}` : ''}`);
+    if (pop) popBlessing(pop.dataset.blessingPop);
   });
   $('class-info').addEventListener('click', e => {
     const b = e.target.closest('[data-deity-pop]');
-    const g = b && data.deitiesById.get(b.dataset.deityPop);
-    if (!g) return;
-    openDetail(`${g.name}${g.title ? `, ${g.title}` : ''}`, `<p class="hint">${esc(g.source)}${g.pantheon ? ` · ${esc(g.pantheon)}` : ''}</p>
-      ${facts([['Alignment', g.alignment], ['Areas of concern', g.concerns], ['Domains', g.domains.join(', ')], ['Subdomains', g.subdomains.join(', ')],
-               ['Favored weapon', g.weapon], ['Symbol', g.symbol]])}`);
+    if (b) popDeity(b.dataset.deityPop);
   });
   // Archetypes: add from the list in a class's block, or remove one taken.
   $('class-info').addEventListener('change', e => {
@@ -2320,6 +2313,63 @@ function popPath(id, key) {
       ${paragraphs(x.text)}</details></li>`).join('')}</ul>` : ''}`,
     mine ? [{ label: 'Remove it', run: remove }]
          : [{ label: `Choose ${b.name}`, primary: true, run: () => update({ paths: { ...state.paths, [key]: b.id } }) }]);
+}
+
+function popBlessing(id) {
+  const b = data.blessingsById.get(id);
+  if (b) openDetail(`${b.name} blessing`, `<p class="hint">${esc(b.source)} · deities: ${esc(b.deities || '—')}</p>
+    ${b.minor ? `<h3>${esc(b.minor.name)} (minor, 1st level)</h3>${paragraphs(b.minor.text)}` : ''}
+    ${b.major ? `<h3>${esc(b.major.name)} (major, 10th level)</h3>${paragraphs(b.major.text)}` : ''}`);
+}
+
+function popDeity(id) {
+  const g = data.deitiesById.get(id);
+  if (g) openDetail(`${g.name}${g.title ? `, ${g.title}` : ''}`, `<p class="hint">${esc(g.source)}${g.pantheon ? ` · ${esc(g.pantheon)}` : ''}</p>
+    ${facts([['Alignment', g.alignment], ['Areas of concern', g.concerns], ['Domains', g.domains.join(', ')], ['Subdomains', g.subdomains.join(', ')],
+             ['Favored weapon', g.weapon], ['Symbol', g.symbol]])}`);
+}
+
+// A class's choices for the Build tab, one row each with what its ? opens: [{ label, name, note, pop }] (pop: null for
+// no popup). Archetypes, deity, mystery, bloodline / school / order... (with the powers reached), opposition schools,
+// crossblooded powers, domains, blessings, each rage power, discovery, revelation... and archetype weapon choices.
+function choiceItems(cid, level) {
+  const out = [];
+  const add = (label, name, pop = null, note = '') => out.push({ label, name, pop, note });
+  for (const a of chosenArchetypes(cid)) add('Archetype', a.name, () => popArchetype(a.id, cid));
+  if (DEITY_CLASSES.includes(cid) && state.deity) {
+    const g = data.deitiesById.get(state.deity);
+    add('Deity', g ? g.name : state.deity === NO_DEITY ? 'none (an ideal)' : state.deity, g ? () => popDeity(g.id) : null);
+  }
+  if (talentSlots(cid, level).some(s => s.rule.needs === 'mystery') && state.mystery) add('Mystery', state.mystery, () => popMystery(state.mystery));
+  const cross = isCrossblooded(cid);
+  for (const { rule, path } of pathsFor(cid)) {
+    if (!path) continue;
+    const ps = cross && rule.kind === 'bloodline' ? [] : (path.powers || []).filter(x => x.level <= level).map(x => x.name);
+    add(rule.label, path.name, () => popPath(path.id, `${cid}|${slotOf(rule)}`), ps.join(', '));
+  }
+  const opp = oppositionOf(cid);
+  if (opp?.length) add(`${isThassilonian(cid) ? 'Prohibited' : 'Opposition'} schools`, opp.join(', '));
+  if (cross) {
+    for (const [lv, v] of Object.entries(crossPicks(cid)).map(([lv, v]) => [Number(lv), crossPower(v)]).filter(([lv, p]) => p && lv <= level).sort((a, b) => a[0] - b[0])) {
+      add(`Bloodline power (${ordinal(lv)})`, v.power.name, () => openDetail(v.power.name, paragraphs(v.power.text || '')));
+    }
+  }
+  if (cid === 'druid' && state.natureBond !== 'domain') add('Nature bond', 'animal companion');
+  else for (const d of (state.domains[cid] || []).map(id => data.domainsById.get(id)).filter(Boolean)) {
+    add(d.kind === 'inquisition' ? 'Inquisition' : d.kind === 'subdomain' ? 'Subdomain' : 'Domain', d.name, () => popDomain(d.id, cid),
+      domainGrants(d, data.domainsById).powers.filter(p => !p.level || p.level <= level).map(p => p.name).join(', '));
+  }
+  if (cid === 'warpriest') for (const id of state.blessings) add('Blessing', data.blessingsById.get(id)?.name || id, () => popBlessing(id));
+  for (const s of classChoiceSlots(cid, level).slots.filter(x => !x.replacedBy && state.talents[x.id])) {
+    const v = state.talents[s.id];
+    const t = data.talentsById.get(v);
+    add(s.rule.label, t?.name || v, () => (s.rule.choices ? popChoice(v, s.id) : popTalent(v, s.id)));
+  }
+  for (const c of choiceSources(cid, state.archetypes, state.talents).flatMap(src => archetypeChoices([src], level))) {
+    const w = state.archChoices[c.id] && data.weaponsById?.get(state.archChoices[c.id]);
+    if (w) add(c.label, w.name, () => openDetail(`${c.label}: ${w.name}`, `<p>${esc(c.hint)}</p>`));
+  }
+  return out;
 }
 
 // A class's one-time choices, one line each for the printed sheet: "Bloodline: Aberrant (Acidic Ray 1st, Long Limbs 3rd)".

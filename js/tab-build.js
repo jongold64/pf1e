@@ -148,8 +148,11 @@ export function renderBuild(app, view, parts) {
       const how = featureHandling(e.cls.id, n);
       return `<div class="b-feat"><span>${esc(n[0].toUpperCase() + n.slice(1))}${how !== 'text' ? ` <span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</span>${plus('feature', `${e.cls.id}|${n}`, n)}</div>`;
     }).join('');
-    const choices = parts.choices(e.cls.id, e.level).map(l => `<p class="small">${esc(l)}</p>`).join('');
-    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-feats">${tagged}</div>${choices}</div>`;
+    // Each choice (archetype, bloodline, domain, rage power...) on its own line with a ?.
+    const choices = parts.choices(e.cls.id, e.level).map((c, i) => `<div class="b-feat"><span><small class="muted">${esc(c.label)}:</small> ${esc(c.name)}${c.note ? ` <small class="muted">(${esc(c.note)})</small>` : ''}</span>
+      ${c.pop ? plus('choice', `${e.cls.id}|${i}`, c.name) : ''}</div>`).join('');
+    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-feats">${tagged}</div>
+      ${choices ? `<h4 class="b-sub">Choices</h4><div class="b-feats">${choices}</div>` : ''}</div>`;
   }).join('');
 
   // Feats and traits.
