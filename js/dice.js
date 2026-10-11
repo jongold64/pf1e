@@ -128,11 +128,16 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       const dmg = autoCrit ? true : rollDamage(g.damage, dmgRng);
       if (dmg) {
         const more = autoCrit ? null : rollExtras(g, 0, rng);
-        if (!autoCrit) under(`${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
+        const plain = autoCrit ? '' : `${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`;
+        // A natural 20: only its critical damage, highlighted (a "!" after the tab), with the ordinary damage in
+        // brackets for when the confirmation roll misses. Other threats show both lines.
+        const nat20 = atk.natural === 20 && times > 1;
+        if (!autoCrit && !nat20) under(`${g.heal ? 'Healing' : 'Damage'} ${plain}`);
         if (times > 1) {
           const crit = rollDamage(g.damage, rng, times);
           const critMore = rollExtras(g, times - 1, rng);
-          under(`Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`);
+          const text = `Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`;
+          under(nat20 ? `!${text}${plain ? ` (not confirmed: ${plain})` : ''}` : text);
         }
       }
     });

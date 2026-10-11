@@ -24,8 +24,10 @@ export function rollButton(spec, label = 'Roll') {
   return `<button type="button" class="roll-button${plain ? ' roll-icon' : ''}" data-roll="${rollAttr(spec)}" title="${esc(plain ? `Roll: ${spec.title}` : label)}" aria-label="${esc(`${label || 'Roll'}: ${spec.title}`)}">${D20}${plain ? '' : ` ${esc(label)}`}</button>`;
 }
 
-// One rolled line; a line starting with a tab (an attack's damage, confirmation roll) sits indented under the attack.
-const line = l => (l.startsWith('	') ? `<li class="roll-under">${esc(l.slice(1))}</li>` : `<li>${esc(l)}</li>`);
+// One rolled line; a line starting with a tab (an attack's damage, confirmation roll) sits indented under the attack,
+// and a tab then "!" is a natural 20's critical damage, highlighted.
+const line = l => (l.startsWith('	!') ? `<li class="roll-under roll-crit">${esc(l.slice(2))}</li>`
+  : l.startsWith('	') ? `<li class="roll-under">${esc(l.slice(1))}</li>` : `<li>${esc(l)}</li>`);
 
 function render(panel) {
   const [latest, ...older] = history;

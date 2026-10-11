@@ -475,6 +475,8 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 /* An attack's confirmation roll and damage, indented under the attack. */
 .roll-lines li.roll-under { list-style: none; margin-left: 14px; }
 .roll-lines li.roll-under::before { content: '↳ '; color: var(--muted); }
+/* A natural 20's critical damage: highlighted. */
+.roll-lines li.roll-crit { background: color-mix(in srgb, var(--warn) 22%, transparent); border-left: 3px solid var(--warn); padding: 3px 6px; border-radius: 4px; font-weight: 700; }
 .roll-earlier { margin: 6px 0; }
 .roll-earlier .roll-lines { margin-top: 2px; }
 
