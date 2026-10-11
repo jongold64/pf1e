@@ -148,14 +148,14 @@ export function renderBuild(app, view, parts) {
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
   const left = [card('Defense and numbers', core), card('Attacks', attacks), card('Defense', defense)];
   const spellCard = card('Spells', spells, ' b-wide');
+  const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
   box.innerHTML = `${head}
     <div class="b-columns">
-      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}</div>
+      <div>${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}${card('On now', effects)}${card('Gear', gearHtml)}${notesCard}</div>
       <div>${card('Daily uses', uses)}${card('Class features and choices', features)}${card('Feats and traits', feats)}${card('Skills', skills)}</div>
     </div>
     ${caster ? '' : spellCard}
-    ${comps}
-    <div class="b-columns">${card('Gear', gearHtml)}${card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`)}</div>`;
+    ${comps}`;
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
 }
 
