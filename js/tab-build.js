@@ -100,7 +100,7 @@ export function renderBuild(app, view, parts) {
       ${notes.length ? `<ul class="b-notes">${[...new Set(notes)].map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}` : '';
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
-  const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound });
+  const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
   const hero = state.houseRules.actionPoints && !state.antihero ? `<li><span>Hero points</span><b>${state.heroPoints ?? 1}</b></li>` : '';
   const uses = daily.length || hero ? `<ul class="b-uses">${daily.map(d => `<li><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
         <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max} ${esc(d.unit)}</span></li>`).join('')}${hero}</ul>
@@ -221,7 +221,7 @@ function renderCompanions(app, view) {
 // The daily uses popup: each ability with a box per use (or −/+ for long lists), and New day.
 export function popDailyUses(app, view, parts, focus = '') {
   const { state } = app;
-  const list = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound });
+  const list = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
   const rows = list.map(d => {
     const used = Math.min(d.max, state.daily[d.key] || 0);
     const control = d.max <= 12

@@ -13,7 +13,8 @@ const COMPUTED = new Set(['smite evil', 'smite good', 'channel energy', 'lay on 
 // [{ key, name, max, unit ('uses' | 'rounds' | 'points' | 'spells'), note }] for the character. view: computeView's
 // result (counts, stats, haveFeats, casting); extra: { spellTables: [{ cls, table }] for spontaneous casters,
 // bladebound: bool }.
-export function dailyUses(view, { spellTables = [], bladebound = false } = {}) {
+// powers: chosen powers with a daily limit (school, domain, bloodline, order... powers: see powerUses), { name, max, unit }.
+export function dailyUses(view, { spellTables = [], bladebound = false, powers = [] } = {}) {
   const { counts, stats } = view;
   const mod = stats.mod;
   const out = [];
@@ -65,6 +66,8 @@ export function dailyUses(view, { spellTables = [], bladebound = false } = {}) {
     }
     for (const [name, n] of latest.values()) add(`${name}${counts.length > 1 ? ` (${e.cls.name})` : ''}`, n);
   }
+  // Chosen powers (school, domain, bloodline...).
+  for (const p of powers) add(p.name, p.max, p.unit || 'uses', p.note || '');
   // Spontaneous casters: spells a day of each level.
   for (const { cls, table } of spellTables) {
     for (const r of table.rows) if (r.spellLevel >= 1 && r.canCast && r.total) add(`${cls.name} ${ordinal(r.spellLevel)}-level spells`, r.total, 'spells');
@@ -73,6 +76,63 @@ export function dailyUses(view, { spellTables = [], bladebound = false } = {}) {
   return [...new Map(out.map(x => [x.key, x])).values()];
 }
 const ordinal = n => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
+
+// A power's uses a day from its rules text, at a class level with the ability modifiers: { max, unit } or null when the
+// text gives no daily limit. The wordings: "a number of times per day equal to 3 + your Wisdom modifier", "rounds per day
+// equal to (1/2) your cleric level", "once per day at 8th level, and an additional time per day for every four levels
+// beyond 8th", "At 17th level, you can use this ability twice per day", "once per day at 9th level, twice per day at 17th,
+// and three times per day at 20th", "once per day, plus one additional time per day at 12th level and every 4 levels
+// thereafter", "three times per day", "once per day".
+const ABILITY_WORD = { strength: 'str', dexterity: 'dex', constitution: 'con', intelligence: 'int', wisdom: 'wis', charisma: 'cha' };
+const COUNT_WORD = { once: 1, twice: 2, 'three times': 3, 'four times': 4, 'five times': 5 };
+const NUM_WORD = { two: 2, three: 3, four: 4, five: 5, six: 6 };
+export function powerUses(text, level, mod = {}) {
+  const t = String(text || '').replace(/\s+/g, ' ');
+  // "a number of <unit> per day equal to <amount>": the amount is added up from its parts (3 +, a class level or half
+  // of it, an ability modifier or bonus, "3 times your level", "plus 1 round for every inquisitor level above 4th").
+  const eq = t.match(/(?:number|total number) of (times|rounds|minutes|bolts[a-z ]*?|uses)(?: of this effect)? per day (?:is )?equal to ([^.;]*)/i)
+    || t.match(/(times|rounds|minutes) per day equal to ([^.;]*)/i);
+  if (eq) {
+    const expr = eq[2];
+    let n = 0;
+    if (/^(?:your |her |his )?3 \+|^3 \+/i.test(expr)) n += 3;
+    const times = expr.match(/(\d+) times (?:your|her|his) [a-z]+ level/i);
+    const lvl = expr.match(/(1\/2 )?(?:your|her|his) (?:[a-z]+ )?level/i);
+    if (times) n += Number(times[1]) * level;
+    else if (lvl && !/level above/.test(expr.slice(0, lvl.index + lvl[0].length + 6))) n += lvl[1] ? Math.floor(level / 2) : level;
+    const ab = expr.match(/(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma) (?:modifier|bonus)/i);
+    if (ab) n += mod[ABILITY_WORD[ab[1].toLowerCase()]] || 0;
+    const above = expr.match(/plus 1 \w+ for every [a-z]+ level above (\d+)/i);
+    if (above) n += Math.max(0, level - Number(above[1]));
+    const unit = /rounds/i.test(eq[1]) ? 'rounds' : /minutes/i.test(eq[1]) ? 'minutes' : /bolt/i.test(eq[1]) ? 'bolts' : 'uses';
+    return { max: Math.max(/minimum 1/i.test(t) ? 1 : 0, n), unit };
+  }
+  // "1 minute per day per cleric level", "10 feet per cleric level per day", "3 times your wizard level per day" (points).
+  const perLevel = t.match(/(\d+) (minute|foot|feet) per day per [a-z]+ level/i) || t.match(/(\d+) (feet) per [a-z]+ level per day/i);
+  if (perLevel) return { max: Number(perLevel[1]) * level, unit: /min/i.test(perLevel[2]) ? 'minutes' : 'feet' };
+  const timesLevel = t.match(/equal to (\d+) times your [a-z]+ level per day/i);
+  if (timesLevel) return { max: Number(timesLevel[1]) * level, unit: 'points' };
+  const every = t.match(/once per day at (\d+)(?:st|nd|rd|th) level,? (?:and|plus) (?:an|one) additional time per day for every (\w+) (?:[a-z]+ )?levels?/i);
+  if (every) {
+    const from = Number(every[1]);
+    const step = NUM_WORD[every[2].toLowerCase()] || Number(every[2]) || 4;
+    return level >= from ? { max: 1 + Math.floor((level - from) / step), unit: 'uses' } : { max: 0 };
+  }
+  const plusAt = t.match(/once per day, plus one additional time per day at (\d+)(?:st|nd|rd|th) level and every (\d+) levels/i);
+  if (plusAt) {
+    const from = Number(plusAt[1]);
+    return { max: 1 + (level >= from ? 1 + Math.floor((level - from) / Number(plusAt[2])) : 0), unit: 'uses' };
+  }
+  // Steps by level: "once per day at 9th level, twice per day at 17th..." and "At 17th level, you can use this ability twice per day".
+  const steps = [...[...t.matchAll(/(once|twice|three times|four times) per day at (\d+)(?:st|nd|rd|th)/gi)].map(m => [m[1], m[2]]),
+    ...[...t.matchAll(/At (\d+)(?:st|nd|rd|th) level,[^.]*?(once|twice|three times|four times) per day/gi)].map(m => [m[2], m[1]])]
+    .map(([w, lv]) => [COUNT_WORD[w.toLowerCase()], Number(lv)]);
+  const flat = t.match(/\b(once|twice|three times|four times|five times) per day(?! at)/i);
+  const plain = flat ? COUNT_WORD[flat[1].toLowerCase()] : 0;
+  if (steps.length) return { max: Math.max(plain, ...steps.filter(([, lv]) => level >= lv).map(([n]) => n), 0), unit: 'uses' };
+  if (plain) return { max: plain, unit: 'uses' };
+  return null;
+}
 
 // Uses left of an entry: its max less what's spent today (never below 0).
 export const usesLeft = (entry, daily = {}) => Math.max(0, entry.max - Math.min(entry.max, daily[entry.key] || 0));

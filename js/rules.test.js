@@ -2001,6 +2001,22 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('uses left: max less what was spent', usesLeft({ key: 'rage', max: 15 }, { rage: 4 }), 11);
 }
 
+// Powers' uses a day read from their text (school, domain, bloodline powers).
+{
+  const { powerUses } = await import('./daily.js');
+  const u = (t, lv, mod = {}) => { const r = powerUses(t, lv, mod); return r ? `${r.max} ${r.unit}` : 'none'; };
+  check('3 + Wisdom modifier', u('You can use this ability a number of times per day equal to 3 + your Wisdom modifier.', 1, { wis: 4 }), '7 uses');
+  check('rounds equal to your cleric level', u('You can use this ability for a number of rounds per day equal to your cleric level.', 6), '6 rounds');
+  check('once at 8th, +1 every four levels', [u('You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.', 8), u('You can use this ability once per day at 8th level, and an additional time per day for every four levels beyond 8th.', 16)].join('|'), '1 uses|3 uses');
+  check('once at 9th, twice at 17th, three times at 20th', [9, 17, 20].map(lv => u('You can use this ability once per day at 9th level, twice per day at 17th, and three times per day at 20th.', lv)).join('|'), '1 uses|2 uses|3 uses');
+  check('no daily limit', u('You gain a +2 bonus on saves.', 5), 'none');
+  // Every chosen-power text that says "per day" is read (a few name something else that's limited, like a spell's uses).
+  const [dom, paths] = await Promise.all(['domains', 'class-paths'].map(n => fetch(`data/${n}.json`).then(r => r.json())));
+  const texts = [...dom, ...paths].flatMap(x => (x.powers || []).map(p => p.text || '')).filter(t => /per day/i.test(t));
+  const missed = texts.filter(t => !powerUses(t, 20, { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 }));
+  check(`powers with "per day" read (${texts.length - missed.length} of ${texts.length})`, missed.length <= texts.length * 0.05, true);
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

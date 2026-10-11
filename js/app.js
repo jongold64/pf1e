@@ -31,7 +31,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
-import { dailyUses } from './daily.js';
+import { dailyUses, powerUses } from './daily.js';
 import { popWeaponPart } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
 import { popBuff } from './tab-effects.js';
@@ -601,7 +601,7 @@ function buildParts() {
     .filter(x => x.table && x.cls.id !== 'arcanist' && x.table.rows.some(r => r.known !== null));
   const prepIds = new Set(preparers(app, view).map(p => p.cls.id));
   return {
-    name: characterLabel(state), skills, spontaneous,
+    name: characterLabel(state), skills, spontaneous, powers: dailyPowers(),
     bladebound: (state.archetypes.magus || []).includes('magus-bladebound'),
     castingAbility: cid => CASTING_ABILITY[cid],
     prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
@@ -675,7 +675,29 @@ function initBuild() {
     dailyPop(k);
   });
 }
-const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneous, bladebound: (state.archetypes.magus || []).includes('magus-bladebound') });
+const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneous, bladebound: (state.archetypes.magus || []).includes('magus-bladebound'), powers: dailyPowers() });
+
+// Chosen powers with a daily limit, for Daily uses: the powers of each class's school, bloodline, order, spirit... and
+// domains that its level has reached, their uses read from their text (daily.js powerUses); a wizard's bonded object.
+function dailyPowers() {
+  const out = [];
+  for (const { cls, level } of view.counts) {
+    const add = (p, from) => {
+      if ((p.level || 1) > level) return;
+      const u = powerUses(p.text, level, view.stats.mod);
+      if (u?.max > 0) out.push({ name: `${p.name} (${from})`, max: u.max, unit: u.unit });
+    };
+    // (An eidolon's subtype and base form are its own abilities, not the summoner's.)
+    for (const { path } of pathsFor(cls.id)) if (!['eidolon-subtype', 'base-form'].includes(path?.kind)) for (const p of path?.powers || []) add(p, path.name);
+    for (const id of state.domains[cls.id] || []) {
+      const d = data.domainsById.get(id);
+      if (d) for (const p of domainGrants(d, data.domainsById).powers || []) add(p, `${d.name} domain`);
+    }
+    const bond = pathOf(cls.id, 'arcane-bond');
+    if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses' });
+  }
+  return out;
+}
 
 // Details from the Build tab: the same popups the other tabs open.
 function buildDetail(kind, arg) {

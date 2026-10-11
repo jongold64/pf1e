@@ -595,3 +595,7 @@ check its Section 15 notice is in the license.
   `dailyUses(view, { spellTables, bladebound })` (rounds, pools, rules.js channel / lay on hands / smite, every "N/day" class
   table entry, spontaneous casters' spells a day), state.daily { key: spent }; `popDailyUses` ticks them; New day also clears
   prepared spells' cast boxes. state.notes. weaponSummaries carries `index` and `rolls`. The Guide tab's button is in the header.
+  Chosen powers in Daily uses: app.js `dailyPowers()` (paths' and domains' powers reached, not an eidolon's subtype or base
+  form; a wizard's bonded object) with daily.js `powerUses(text, level, mod)` reading the limit from the text ("equal to 3 +
+  your Wisdom modifier", "rounds per day equal to your cleric level", "once per day at 8th level and an additional time
+  every four levels", steps by level, minutes/feet per level...; 306 of 311 such texts read).
