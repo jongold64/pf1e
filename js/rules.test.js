@@ -1490,6 +1490,15 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('mithral chain shirt barding: masterwork not paid twice', bardingCost({ price_gp: 1100, mw_included: true }, 'Medium', 1), 2200 + 1000);
 }
 
+// Abilities that count as another class feature: an oracle's Channel revelation (and a shaman's Life spirit Channel)
+// count as channel energy; a bloodrager's bloodrage counts as rage.
+{
+  const ctx = (id, talentNames = []) => ({ counts: [{ cls: classes.find(c => c.id === id), level: 1 }], haveFeats: new Set(), featureWords: null, talentNames });
+  check('oracle without the Channel revelation: channel energy not met', classFeatureStatus('channel energy', ctx('oracle')), 'unmet');
+  check('oracle with the Channel revelation: channel energy met', classFeatureStatus('channel energy', ctx('oracle', ['Channel'])), 'met');
+  check('bloodrager: rage met (bloodrage)', classFeatureStatus('rage', ctx('bloodrager')), 'met');
+}
+
 // "Animal companion" prerequisites (Boon Companion) met by any class feature that gives one (a ranger's hunter's bond).
 {
   const ranger = classes.find(c => c.id === 'ranger');

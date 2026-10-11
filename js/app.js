@@ -1942,7 +1942,9 @@ function computeView() {
               ...Object.entries(state.paths).filter(([k]) => !k.endsWith('|opposition'))
                 .filter(([k]) => !k.endsWith('|crosspower'))
                 .map(([k, id]) => ({ label: rulesFor(k.split('|')[0]).find(r => slotOf(r) === k.split('|')[1])?.label || '', value: data.pathsById.get(id)?.name || '' }))],
-    talentNames: Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
+    // Chosen talents (rage powers, revelations...) and the powers of chosen bloodlines, spirits, schools... reached so far.
+    talentNames: [...Object.values(state.talents).map(v => data.talentsById.get(v)?.name).filter(Boolean),
+      ...counts.flatMap(({ cls, level }) => pathsFor(cls.id).flatMap(({ path }) => (path?.powers || []).filter(p => (p.level || 1) <= level).map(p => p.name)))],
     featureWords: data.featureWords ??= featureIndex(data.classes, data.archetypes, data.talents),
     classNames: data.classNames ??= new Set(data.classes.flatMap(c => [c.id, c.name.toLowerCase()])),
   };

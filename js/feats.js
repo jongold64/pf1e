@@ -286,6 +286,10 @@ const FILLER = new Set(['the', 'a', 'an', 'with', 'spellcaster', 'class', 'featu
 const CHOICE_RULES = [['favored enemy', 'favored enemy'], ['favored terrain', 'favored terrain'], ['weapon training', 'weapon training group']];
 const QUALIFIER_ALIASES = { 'any plane': 'planes' };
 const hasWords = (want, text) => { const have = words(text).map(singular); return want.every(w => have.includes(w)); };
+// Abilities that count as another class feature for prerequisites, by name: an oracle's Channel revelation and a
+// shaman's Life spirit Channel (channel positive energy like a cleric), a bloodrager's bloodrage (counts as rage).
+const COUNTS_AS = { channel: ['channel energy'], bloodrage: ['rage'] };
+const withCountsAs = names => names.flatMap(n => [n, ...(COUNTS_AS[lower(n)] || [])]);
 
 // Whether one class (at its level in the context) has a feature: its level table (when the table names it, the level
 // there decides), else its feature list (an entry with no level counts from 1st: spellbooks, a witch's familiar), and the
@@ -313,7 +317,8 @@ function oneFeatureStatus(text, ctx) {
   if (/^animal companion( class feature)?$/i.test(text.trim()) && ctx.companion > 0) return 'met';
   const q = text.match(/^(.*?)\s*\((.+)\)$/);
   const want = words(q ? q[1] : text).map(singular).filter(w => !FILLER.has(w));
-  let has = ctx.counts.some(e => classHas(e, want, ctx)) || (ctx.talentNames || []).some(n => hasWords(want, n));
+  let has = ctx.counts.some(e => classHas(e, want, ctx)) || withCountsAs(ctx.talentNames || []).some(n => hasWords(want, n))
+    || ctx.counts.some(e => withCountsAs((e.cls.progression || []).slice(0, e.level).flatMap(r => r.special || [])).some(n => hasWords(want, n)));
   if (!has) {
     // "wizard school", "detect undead paladin": the class named, with the rest of the words.
     has = ctx.counts.some(e => {
