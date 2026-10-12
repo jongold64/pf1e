@@ -20,7 +20,8 @@ const ORD = n => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10
 // The d20 Roll button and the ? Details button (shared look with the other tabs).
 const roll = spec => rollButton(spec);
 const plus = (kind, arg = '', what = '') => `<button type="button" class="skill-details q-details b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">?</button>`;
-const card = (title, body, cls = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}</h3>${body}</section>` : '');
+// extra: put after the heading (a ? that opens the card larger).
+const card = (title, body, cls = '', extra = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}${extra}</h3>${body}</section>` : '');
 // A card that folds shut (build-time details kept for reference): closed until opened, and kept open across redraws.
 const openFolds = new Set();
 const foldCard = (title, body) => (body ? `<details class="b-card b-fold" data-fold="${esc(title)}"${openFolds.has(title) ? ' open' : ''}>
@@ -197,7 +198,7 @@ export function renderBuild(app, view, parts) {
     ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
-      <div>${card('On now', effects)}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
+      <div>${card('On now', effects, '', plus('onnow', '', 'On now in a larger window, to switch effects on and off'))}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
         ${foldCard('Class features and choices', features)}${foldCard('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
         ${card('Gear', gearHtml)}${notesCard}</div>
       <div>${card('Skills', skills)}</div>

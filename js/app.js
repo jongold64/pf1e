@@ -35,7 +35,7 @@ import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
-import { popBuff } from './tab-effects.js';
+import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
@@ -905,6 +905,7 @@ function buildDetail(kind, arg) {
   else if (kind === 'gear') { const it = data.gearById?.get(arg); if (it) openDetail(it.name, gearDetails(it, false)); }
   else if (kind === 'defense') showDefenseWhy(app, arg);
   else if (kind === 'combatswitch') showCombatSwitch(app, arg);
+  else if (kind === 'onnow') popOnNow(app);
   else if (kind === 'classattack') {
     // An attack from a class feature (sneak attack, bomb, kinetic blast, claws...): its numbers and rules text.
     const c = allClassAttacks(view.stats)[Number(arg)];

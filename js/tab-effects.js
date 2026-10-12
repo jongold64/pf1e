@@ -3,6 +3,52 @@
 import { $, esc, paragraphs, facts } from './dom.js';
 import { BUFFS, buffById, BONUS_TYPES, TARGETS, TARGET_NAMES, activeBonuses, EFFECT_GROUPS, buffAmount, effectMods } from './effects.js';
 import { ownedSources, itemRowHtml, itemRowChange, itemRowClick, buffSummary } from './item-rows.js';
+import { defenseSwitchesHtml, setCombatSwitch } from './tab-armor.js';
+
+// What's counting now, after stacking ("Strength +4", "AC +2 deflection"...).
+function countingNow(view) {
+  const fx = view.stats.fx;
+  return [
+    ...['str', 'dex', 'con', 'int', 'wis', 'cha'].filter(a => fx[a]).map(a => `${TARGET_NAMES[a]} ${signedN(fx[a])}`),
+    ...Object.entries(fx.ac).filter(([, v]) => v).map(([t, v]) => `AC ${signedN(v)} ${t}`),
+    ...['attack', 'damage', 'melee-attack', 'melee-damage', 'ranged-attack', 'fort', 'ref', 'will', 'init', 'skills', 'checks', 'cmb', 'cmd', 'hp'].filter(k => fx[k]).map(k => `${TARGET_NAMES[k]} ${signedN(fx[k])}`),
+    ...(fx.speed ? [`Speed ${signedN(fx.speed)} ft.`] : []),
+    ...((fx.flags || []).includes('noDexAc') ? ['no Dex bonus to AC'] : []), ...((fx.flags || []).includes('halfSpeed') ? ['half speed'] : []),
+    ...(view.size !== view.race.size ? [`Size ${view.size}`] : []),
+  ];
+}
+
+// The Character tab's On now card, larger, to work with: what's counting now; your effects, custom effects and the
+// attack and defense switches, each ticked on or off here (the popup redraws itself); magic items' effects (switched on
+// the Magic Items tab); and a way to the full Active effects list to add more.
+const ATTACK_SWITCHES = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']];
+export function popOnNow(app) {
+  const { state } = app;
+  const view = app.view;
+  const totals = countingNow(view);
+  const yours = state.buffs.map(x => [x, buffById.get(x.id)]).filter(([, b]) => b);
+  const box = (attr, on, label, note, pop = '') => `<label class="check-row small"><input type="checkbox" ${attr}${on ? ' checked' : ''}>
+      <span><b>${esc(label)}</b>${note ? ` <small class="muted">${esc(note)}</small>` : ''}</span>${pop}</label>`;
+  const attackSw = ATTACK_SWITCHES.filter(([, f]) => view.haveFeats.includes(f))
+    .map(([k, f]) => box(`data-b-combat="${k}"`, !!state.combat[k], f, ''));
+  app.openDetail('On now', `<div class="onnow-pop">
+    ${totals.length ? `<p class="effect-totals"><b>Counting now:</b> ${esc(totals.join(' · '))}</p>` : '<p class="hint">Nothing counting now.</p>'}
+    <h3>Your effects</h3>
+    ${yours.length ? yours.map(([x, b]) => box(`data-onnow-buff="${esc(b.id)}"`, x.on !== false, b.name, buffSummary(b, x.cl ?? 1),
+      `<button type="button" class="skill-details q-details" data-onnow-buff-pop="${esc(b.id)}" aria-label="${esc(b.name)} in a popup" title="Details">?</button>`)).join('')
+      : '<p class="hint">None yet: add spells, abilities and conditions with the button below.</p>'}
+    ${state.customEffects.length ? `<h3>Custom effects</h3>${state.customEffects.map((c, i) => box(`data-onnow-custom="${i}"`, !!c.on, c.name || 'Custom effect', '')).join('')}` : ''}
+    ${(view.fromItems || []).length ? `<h3>From your magic items</h3><ul>${view.fromItems.map(x => `<li>✓ ${esc(x.label)}</li>`).join('')}</ul>
+      <p class="hint">Switch an item on or off on the Magic Items tab (or in Active effects).</p>` : ''}
+    <h3>Combat switches</h3>
+    ${attackSw.join('')}${defenseSwitchesHtml(view, state.combat, () => '')}
+  </div>`, [
+    { label: 'Add more effects', primary: true, run: () => { app.showTab('character'); setTimeout(() => $('effects')?.scrollIntoView({ block: 'start' }), 50); } },
+    { label: 'Switch all off', run: () => app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })),
+      customEffects: state.customEffects.map(c => ({ ...c, on: false })),
+      combat: { ...state.combat, powerAttack: false, deadlyAim: false, rapidShot: false, pointBlank: false, combatExpertise: false, fightingDefensively: false, totalDefense: false, conjured: undefined } }) },
+  ]);
+}
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
 
@@ -178,6 +224,27 @@ function popCustom(app, i) {
 }
 
 export function initEffects(app) {
+  // The On now popup: ticking a box changes it at once, and the popup redraws with the new numbers.
+  const pop = $('detail-body');
+  pop.addEventListener('change', e => {
+    if (!e.target.closest('.onnow-pop')) return;
+    const t = e.target;
+    const { state } = app;
+    if (t.dataset.onnowBuff) {
+      const id = t.dataset.onnowBuff;
+      app.update({ buffs: state.buffs.map(x => (x.id === id ? (t.checked ? { id: x.id, cl: x.cl } : { ...x, on: false }) : x)) });
+    } else if (t.dataset.onnowCustom !== undefined) {
+      const i = Number(t.dataset.onnowCustom);
+      app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, on: t.checked } : c)) });
+    } else if (t.dataset.bCombat) {
+      app.update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    } else return;
+    popOnNow(app);
+  });
+  pop.addEventListener('click', e => {
+    const b = e.target.closest('.onnow-pop [data-onnow-buff-pop]');
+    if (b) { e.preventDefault(); popBuff(app, b.dataset.onnowBuffPop); }
+  });
   // Details: inside a buff's label, so it doesn't tick the box.
   $('effects').addEventListener('click', e => {
     if (itemRowClick(app, e)) return;
