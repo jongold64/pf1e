@@ -901,6 +901,9 @@ function dailyPowers() {
 }
 
 // Details from the Build tab: the same popups the other tabs open.
+// Whether an element has text of its own (not only inside its children): a tap there is on text, not empty space.
+const directText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+
 // A Character tab card, larger, in a popup (bigCard: its contents as last drawn).
 function openBigCard(key) {
   const c = bigCard(key);
@@ -4196,6 +4199,14 @@ async function start() {
   initCharacterBar();
   initRolls();
   closePopupsOnOutsideClick();
+  // A Character tab card opened larger (or On now): a tap on empty space in the window, not on text, a button or a box,
+  // closes it.
+  $('detail-dialog').addEventListener('click', e => {
+    const t = e.target;
+    if (!$('detail-body').querySelector('.b-big, .onnow-pop')) return;
+    if (t.closest('button, a, input, select, textarea, label, [data-roll], summary')) return;
+    if (t === $('detail-dialog') || t.matches('#detail-body, .b-big, .onnow-pop, div, ul, ol, li, section') && !directText(t)) $('detail-dialog').close();
+  });
   // Inside a Character tab card opened larger: a ? opens its Details; a switch (Power Attack...) changes at once and
   // the card is drawn again with the new numbers.
   $('detail-body').addEventListener('click', e => {

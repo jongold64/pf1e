@@ -1088,3 +1088,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-defense-sw .check-row input[type="checkbox"] { width: 26px; height: 26px; }
 .b-big .b-sub { font-size: 1rem; margin-top: 12px; }
 .b-big .b-feats .b-feat { font-size: 1.1rem; min-height: 48px; }
+/* Skills in the larger window: two columns of big, easy-to-tap rows. */
+.b-big .b-skills { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; font-size: 1.25rem; }
+.b-big .b-skills > div { min-height: 52px; gap: 8px; }
+.b-big .b-skills > div > b { font-size: 1.35rem; min-width: 2.6ch; text-align: right; }
+.b-big .b-skills .roll-button { padding: 4px 6px !important; }
+.b-big .b-skills .roll-button .d20 { width: 26px; height: 26px; }
+@media (max-width: 700px) { .b-big .b-skills { grid-template-columns: 1fr; } }
