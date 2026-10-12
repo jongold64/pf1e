@@ -1095,3 +1095,11 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-skills .roll-button { padding: 4px 6px !important; }
 .b-big .b-skills .roll-button .d20 { width: 26px; height: 26px; }
 @media (max-width: 700px) { .b-big .b-skills { grid-template-columns: 1fr; } }
+/* Roll results: larger everywhere, easy to read at the table. */
+.roll-panel { width: min(560px, calc(100vw - 24px)); font-size: 1.2rem; padding: 14px 18px; }
+.roll-head b { font-size: 1.3rem; }
+.roll-head [data-roll-close] { font-size: 1.1rem; padding: 6px 10px; }
+.roll-lines { padding-left: 22px; }
+.roll-lines li { margin: 6px 0; line-height: 1.35; }
+.roll-lines li.roll-crit { padding: 5px 8px; }
+.roll-older { font-size: 1rem; }
