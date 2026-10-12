@@ -1082,3 +1082,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-use button:not(.q-details) { min-height: 40px; padding: 0 16px; font-size: 1rem; }
 .b-big > p { font-size: 1.05rem; }
 .b-big button.skill-details.q-details { width: 34px; height: 34px; min-width: 34px; min-height: 34px; font-size: 1.05rem; }
+/* Defense in the larger window: bigger switches, notes and headings. */
+.b-big .b-defense-sw { gap: 6px; }
+.b-big .b-defense-sw .check-row { font-size: 1.15rem; min-height: 48px; gap: 10px; }
+.b-big .b-defense-sw .check-row input[type="checkbox"] { width: 26px; height: 26px; }
+.b-big .b-sub { font-size: 1rem; margin-top: 12px; }
+.b-big .b-feats .b-feat { font-size: 1.1rem; min-height: 48px; }
