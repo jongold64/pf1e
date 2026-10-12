@@ -1048,7 +1048,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('natural 1 misses', rollSpec({ title: 'x', groups: [{ attacks: [20], damage: '1d6' }] }, dice(1)).lines[0], 'Attack: d20 (1) + 20 = 21, natural 1: miss');
   check('iterative attacks: each attack on its own line with its damage under it', rollSpec({ title: 'x', groups: [{ attacks: [6, 1], damage: '1d6' }] }, dice(10, 2, 11, 3)).lines.join(' | '),
         'Attack 1: d20 (10) + 6 = 16 | 	Damage 1d6 (2) = 2 | Attack 2: d20 (11) + 1 = 12 | 	Damage 1d6 (3) = 3');
-  check('magic missile: 3 missiles, no attack roll', rollSpec({ title: 'Magic Missile', groups: [{ attacks: [], damage: '1d4+1', times: 3 }] }, dice(1, 2, 3)).lines.length, 3);
+  check('magic missile: the total first, then each of the 3 missiles under it', rollSpec({ title: 'Magic Missile', groups: [{ attacks: [], damage: '1d4+1', times: 3 }] }, dice(1, 2, 3)).lines.join(' | '),
+        'Total damage: 9 (3 × 1d4+1) | 	#1 damage 1d4 (1) + 1 = 2 | 	#2 damage 1d4 (2) + 1 = 3 | 	#3 damage 1d4 (3) + 1 = 4');
   const wizard = characterStats({ race: race('human'), cls: cls('wizard'), level: 5, baseScores: scores(10, 14, 10, 16, 10, 10), flexibleChoice: 'int' });
   const spells2 = await fetch('data/spells.json').then(r => r.json());
   const fireball = spells2.find(s => s.name === 'Fireball');

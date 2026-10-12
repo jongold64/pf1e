@@ -1120,3 +1120,4 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-feat:has(> .b-spell-nums) { flex-wrap: wrap; }
 .b-spell-num { flex-wrap: wrap; }
 .b-spell-num .roll-button { flex-shrink: 0; white-space: nowrap; }
+.roll-lines li.roll-total { font-weight: 700; }

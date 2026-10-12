@@ -91,12 +91,23 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
         if (dmg) lines.push(`!${prefix}critical damage (×${g.critMult}) ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         continue;
       }
-      for (let i = 0; i < (g.times || 1); i++) {
+      // Several at once (magic missile's missiles, scorching ray's rays): the total first, then each one under it, for
+      // splitting them between targets.
+      const times = g.times || 1;
+      const each = [];
+      let sum = 0;
+      for (let i = 0; i < times; i++) {
         const dmg = g.damage ? rollDamage(g.damage, dmgRng) : null;
         const more = dmg ? rollExtras(g, 0, rng) : null;
-        if (dmg) lines.push(`${prefix}${(g.times || 1) > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}${tag}`
+        if (!dmg) continue;
+        sum += dmg.total + (more?.total || 0);
+        each.push(`${times > 1 ? `#${i + 1} ` : ''}${g.word || (g.heal ? 'healing' : 'damage')} ${dmg.text}${tag}`
           + (more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''));
       }
+      if (times > 1 && each.length) {
+        lines.push(`${prefix}Total ${g.word || (g.heal ? 'healing' : 'damage')}: ${sum} (${times} × ${g.damage})${tag}`);
+        for (const e of each) under(e);
+      } else if (each.length) lines.push(`${prefix}${each[0]}`);
       continue;
     }
     g.attacks.forEach((bonus, i) => {

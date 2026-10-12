@@ -30,7 +30,9 @@ const line = l => {
   const under = l.startsWith('	');
   const t = under ? l.slice(1) : l;
   const crit = t.startsWith('!');
-  const cls = [under ? 'roll-under' : '', crit ? 'roll-crit' : ''].filter(Boolean).join(' ');
+  // A total over several rolls (magic missile) is bold.
+  const total = /^(?:[^:]*: )?Total /.test(crit ? t.slice(1) : t);
+  const cls = [under ? 'roll-under' : '', crit ? 'roll-crit' : '', total ? 'roll-total' : ''].filter(Boolean).join(' ');
   return `<li${cls ? ` class="${cls}"` : ''}>${esc(crit ? t.slice(1) : t)}</li>`;
 };
 
