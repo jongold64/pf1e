@@ -203,19 +203,10 @@ function showCombatWhy(app, key) {
   app.openDetail(d.title, body + (d.note ? `<p class="hint">${esc(d.note)}</p>` : ''));
 }
 
-// The Combat options card: Power Attack, Deadly Aim and Rapid Shot switches (only for feats the character has)
-// and two-weapon fighting with the weapons chosen for each hand.
-function renderCombat(app, view, ctx) {
-  const { state, data } = app;
-  const have = new Set(view.haveFeats);
+// What each combat switch (Power Attack, Deadly Aim, Point-Blank Shot, Rapid Shot) does at the character's base attack
+// bonus, for its Details popup.
+function fillCombatWhy(view) {
   const step = powerAttackStep(view.stats.bab[0]);
-  const switches = [
-    ['powerAttack', 'Power Attack', `−${step} melee attack, +${2 * step} damage (+${3 * step} two-handed, +${step} off-hand)`],
-    ['deadlyAim', 'Deadly Aim', `−${step} ranged attack, +${2 * step} damage`],
-    ['rapidShot', 'Rapid Shot', 'one more ranged attack, −2 on all of them'],
-    ['pointBlank', 'Point-Blank Shot', 'target within 30 ft.: +1 ranged attack and damage'],
-  ].filter(([, feat]) => have.has(feat));
-  // What each switch does, for its Details popup.
   const bab = view.stats.bab[0];
   const stepRow = { label: `Your base attack bonus +${bab}: 1 step, +1 more at +4 and every 4 after`, text: `${step} step${step === 1 ? '' : 's'}` };
   combatWhy.set('powerAttack', { title: 'Power Attack', rows: [stepRow,
@@ -229,6 +220,27 @@ function renderCombat(app, view, ctx) {
     note: 'Only against a target within 30 feet: switch it on for those shots.' });
   combatWhy.set('rapidShot', { title: 'Rapid Shot', rows: [{ label: 'One more ranged attack at your highest bonus', text: '+1 attack' },
     { label: 'Every ranged attack this round', text: '−2' }], note: 'Only as part of a full attack with a ranged weapon.' });
+}
+
+// A combat switch's Details from another tab (the Character tab's Attacks card).
+export function showCombatSwitch(app, key) {
+  fillCombatWhy(app.view);
+  showCombatWhy(app, key);
+}
+
+// The Combat options card: Power Attack, Deadly Aim and Rapid Shot switches (only for feats the character has)
+// and two-weapon fighting with the weapons chosen for each hand.
+function renderCombat(app, view, ctx) {
+  const { state, data } = app;
+  const have = new Set(view.haveFeats);
+  const step = powerAttackStep(view.stats.bab[0]);
+  const switches = [
+    ['powerAttack', 'Power Attack', `−${step} melee attack, +${2 * step} damage (+${3 * step} two-handed, +${step} off-hand)`],
+    ['deadlyAim', 'Deadly Aim', `−${step} ranged attack, +${2 * step} damage`],
+    ['rapidShot', 'Rapid Shot', 'one more ranged attack, −2 on all of them'],
+    ['pointBlank', 'Point-Blank Shot', 'target within 30 ft.: +1 ranged attack and damage'],
+  ].filter(([, feat]) => have.has(feat));
+  fillCombatWhy(view);
   $('combat-switches').innerHTML = switches.map(([key, feat, what]) =>
     `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span>
       <button type="button" class="skill-details q-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does" title="Details">?</button></label>`).join('')

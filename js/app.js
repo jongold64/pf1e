@@ -33,7 +33,7 @@ import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
-import { popWeaponPart, showAttackDetails } from './tab-weapons.js';
+import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
 import { popBuff } from './tab-effects.js';
 import { popSource } from './item-rows.js';
@@ -904,6 +904,7 @@ function buildDetail(kind, arg) {
   else if (kind === 'armor') { const a = data.armorById?.get(arg); if (a) openDetail(a.name, armorDetails(a)); }
   else if (kind === 'gear') { const it = data.gearById?.get(arg); if (it) openDetail(it.name, gearDetails(it, false)); }
   else if (kind === 'defense') showDefenseWhy(app, arg);
+  else if (kind === 'combatswitch') showCombatSwitch(app, arg);
   else if (kind === 'classattack') {
     // An attack from a class feature (sneak attack, bomb, kinetic blast, claws...): its numbers and rules text.
     const c = allClassAttacks(view.stats)[Number(arg)];
