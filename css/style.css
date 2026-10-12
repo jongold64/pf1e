@@ -1103,3 +1103,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .roll-lines li { margin: 6px 0; line-height: 1.35; }
 .roll-lines li.roll-crit { padding: 5px 8px; }
 .roll-older { font-size: 1rem; }
+/* Class features and choices (and Feats and traits) in the larger window: bigger rows, headings, dots and ?s. */
+.b-big .b-class { margin-bottom: 14px; }
+.b-big .b-class > b { font-size: 1.35rem; display: block; margin-bottom: 4px; }
+.b-big .b-feats .b-feat { font-size: 1.2rem; min-height: 52px; padding: 2px 0; }
+.b-big .b-feat small { font-size: 1rem; }
+.b-big .b-feat .how { width: 12px; height: 12px; }
+.b-big .b-sub { font-size: 1.05rem; }
