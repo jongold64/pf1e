@@ -26,10 +26,6 @@ const roll = spec => rollButton(spec);
 const plus = (kind, arg = '', what = '') => `<button type="button" class="skill-details q-details b-plus" data-b-detail="${esc(kind)}" data-arg="${esc(arg)}" aria-label="Details${what ? `: ${esc(what)}` : ''}" title="Details">?</button>`;
 // extra: put after the heading (a ? that opens the card larger).
 const card = (title, body, cls = '', extra = '') => (body ? `<section class="b-card${cls}"><h3>${esc(title)}${extra}</h3>${body}</section>` : '');
-// A card that folds shut (build-time details kept for reference): closed until opened, and kept open across redraws.
-const openFolds = new Set();
-const foldCard = (title, body) => (body ? `<details class="b-card b-fold" data-fold="${esc(title)}"${openFolds.has(title) ? ' open' : ''}>
-    <summary><h3>${esc(title)}</h3></summary>${body}</details>` : '');
 const check = (title, n) => ({ title, check: title, plain: true, groups: [{ attacks: [n] }] });
 
 // parts (from app.js): { name, skills: [{ name, ranks, total }], choices: (cid, level) => [lines],
@@ -38,8 +34,6 @@ export function renderBuild(app, view, parts) {
   const { state, data } = app;
   const { stats, race } = view;
   const box = $('build');
-  // Which fold-out cards are open, so a redraw keeps them that way.
-  for (const d of box.querySelectorAll('details[data-fold]')) { if (d.open) openFolds.add(d.dataset.fold); else openFolds.delete(d.dataset.fold); }
   const notesFocused = document.activeElement?.id === 'b-notes';
   const { cmb, cmd } = combatManeuvers(stats, view.size, view.haveFeats);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
@@ -137,6 +131,14 @@ export function renderBuild(app, view, parts) {
   const spells = renderSpells(app, view, parts);
 
   // Class choices and features.
+  // On the card, a short line per class (its features and choices by name); the full list with each ? opens larger.
+  const featureSummary = view.counts.map(e => {
+    const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
+    const names = [...new Map(all.map(n => [n.replace(/\s*\(?[+-]?\d+(?:d\d+)?(?:\/day)?\)?\s*$/i, '').toLowerCase(), n])).values()]
+      .map(n => n[0].toUpperCase() + n.slice(1));
+    const picks = parts.choices(e.cls.id, e.level).map(c => c.name);
+    return `<p class="b-summary"><b>${esc(e.cls.name)} ${e.level}:</b> ${esc([...names, ...picks].join(' · ') || '—')}</p>`;
+  }).join('');
   const features = view.counts.map(e => {
     const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
     // One line a feature: a feature that grows ("sneak attack +1d6", "+2d6"; "trap sense +1") shows only its latest step.
@@ -158,6 +160,9 @@ export function renderBuild(app, view, parts) {
   const featRows = [...view.chosen.map(f => row(f.name, '', 'chosenfeat', f.id)),
     ...view.granted.map(n => row(n, 'from your class', 'feat', data.feats.find(f => f.name === n)?.id))];
   const racial = (race.traits || []).filter(t => !t.kind);
+  const featSummary = [['Feats', [...view.chosen.map(f => f.name), ...view.granted]], ['Traits', view.traits.map(t => t.name)],
+    ['Racial', (race.traits || []).filter(t => !t.kind).map(t => t.name)]].filter(([, l]) => l.length)
+    .map(([k, l]) => `<p class="b-summary"><b>${k}:</b> ${esc(l.join(' · '))}</p>`).join('') || '<p class="muted">None yet.</p>';
   const feats = `<h4 class="b-sub">Feats</h4><div class="b-feats">${featRows.join('') || '<span class="muted">None</span>'}</div>
     ${view.traits.length ? `<h4 class="b-sub">Traits</h4><div class="b-feats">${view.traits.map(t => row(t.name, t.category ? `${t.category} trait` : '', 'trait', t.id)).join('')}</div>` : ''}
     ${racial.length ? `<h4 class="b-sub">Racial traits</h4><div class="b-feats">${racial.map(t => row(t.name, '', 'racial', t.name)).join('')}</div>` : ''}`;
@@ -191,6 +196,9 @@ export function renderBuild(app, view, parts) {
   bigCards.defense = { title: 'Defense', html: defense };
   bigCards.gear = { title: 'Gear', html: gearHtml };
   bigCards.spells = { title: 'Spells', html: spells };
+  bigCards.features = { title: 'Class features and choices', html: features };
+  bigCards.feats = { title: 'Feats and traits', html: feats };
+  bigCards.skills = { title: 'Skills', html: skills };
   // Notes: a bigger box to write in (it saves as you type, like the card's).
   bigCards.notes = { title: 'Notes', html: `<textarea class="b-notes-big" data-big-notes rows="16" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>` };
   const tap = key => ` b-tapcard" data-big="${key}`;
@@ -212,9 +220,9 @@ export function renderBuild(app, view, parts) {
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
       <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
-        ${foldCard('Class features and choices', features)}${foldCard('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
+        ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${caster ? '' : spellCard}${comps}
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
-      <div>${card('Skills', skills)}</div>
+      <div>${card('Skills', skills, tap('skills'))}</div>
     </div>`;
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
 }

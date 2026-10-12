@@ -1051,3 +1051,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Notes, larger, in its popup. */
 .b-big .b-notes-big { width: 100%; min-height: 50vh; font-size: 1.1rem; padding: 10px; }
 .b-big .b-feat { min-height: 40px; font-size: 1.05rem; }
+/* Character tab: a card's short summary (the full list opens larger when the card is tapped). */
+.b-summary { margin: 2px 0; font-size: 0.9rem; line-height: 1.4; }
+.b-big .b-skills { font-size: 1.15rem; }
+.b-big .b-skills > div { min-height: 40px; }
