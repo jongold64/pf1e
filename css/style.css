@@ -1044,3 +1044,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-stat > b, .b-big .b-ab > b { font-size: 1.5rem; }
 .b-big .roll-button .d20 { width: 26px; height: 26px; }
 @media (max-width: 600px) { .b-big .b-split { grid-template-columns: 1fr; } }
+/* Attacks, larger, in its popup. */
+.b-big .b-table { font-size: 1.05rem; }
+.b-big .b-table td, .b-big .b-table th { padding: 6px 8px; }
+.b-big .b-switch { font-size: 1.05rem; }

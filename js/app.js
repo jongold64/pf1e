@@ -31,7 +31,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
-import { renderBuild, popDailyUses, newDayPrepared, abilitiesPopupHtml } from './tab-build.js';
+import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
@@ -828,11 +828,9 @@ function initBuild() {
     }
     // A tap anywhere else in the On now card opens it larger (popOnNow).
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
-    // Abilities and Saves: a tap that isn't on a roll or a ? opens it larger, with the same rolls and ?s.
-    if (e.target.closest('.b-abilities-card') && !e.target.closest('button, [data-roll], input, select, a')) {
-      openDetail('Abilities and Saves', `<div class="build b-big">${abilitiesPopupHtml()}</div>`);
-      return;
-    }
+    // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
+    const big = e.target.closest('[data-big]');
+    if (big && !e.target.closest('button, [data-roll], input, select, a, label')) { openBigCard(big.dataset.big); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
@@ -895,6 +893,12 @@ function dailyPowers() {
 }
 
 // Details from the Build tab: the same popups the other tabs open.
+// A Character tab card, larger, in a popup (bigCard: its contents as last drawn).
+function openBigCard(key) {
+  const c = bigCard(key);
+  if (c) openDetail(c.title, `<div class="build b-big" data-big-pop="${esc(key)}">${c.html}</div>`);
+}
+
 function buildDetail(kind, arg) {
   if (kind === 'save') showSaveDetails(arg);
   else if (kind === 'ac') showAcDetails(null);
@@ -4170,10 +4174,17 @@ async function start() {
   initCharacterBar();
   initRolls();
   closePopupsOnOutsideClick();
-  // A ? inside a popup copied from the Character tab (Abilities and Saves, larger) opens its Details.
+  // Inside a Character tab card opened larger: a ? opens its Details; a switch (Power Attack...) changes at once and
+  // the card is drawn again with the new numbers.
   $('detail-body').addEventListener('click', e => {
     const d = e.target.closest('.b-big [data-b-detail]');
     if (d) buildDetail(d.dataset.bDetail, d.dataset.arg);
+  });
+  $('detail-body').addEventListener('change', e => {
+    const t = e.target.closest('.b-big [data-b-combat]');
+    if (!t) return;
+    update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    openBigCard(t.closest('[data-big-pop]').dataset.bigPop);
   });
   // Guide buttons: Export / Import (the same as the header's), and Copy for a browser settings address.
   document.addEventListener('click', e => {
