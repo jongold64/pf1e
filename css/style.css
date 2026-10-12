@@ -1071,3 +1071,14 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-item-list > li { border-bottom: 1px solid var(--border); padding: 2px 0; }
 .b-item-list .check-row { min-height: 0; margin: 0; gap: 6px; }
 .b-item-list .check-row input { width: 18px; height: 18px; }
+/* Spells (and Gear's potions, scrolls and wands) in the larger window: bigger lines, numbers, roll buttons and cast boxes. */
+.b-big .b-spell-list { grid-template-columns: 1fr; }
+.b-big .b-spell-list .b-feat, .b-big .b-spell-level h4 { font-size: 1.15rem; }
+.b-big .b-spell-list .b-feat { min-height: 48px; padding: 4px 0; }
+.b-big .b-cast input[type="checkbox"] { width: 24px; height: 24px; }
+.b-big .b-spell-nums { font-size: 1.05rem; gap: 6px 18px; padding-left: 32px; }
+.b-big .b-spell-num .roll-button:not(.roll-icon) { padding: 4px 12px !important; font-size: 0.95rem; min-height: 38px !important; }
+.b-big .b-spell-num .roll-button .d20 { width: 22px; height: 22px; }
+.b-big .b-use button:not(.q-details) { min-height: 40px; padding: 0 16px; font-size: 1rem; }
+.b-big > p { font-size: 1.05rem; }
+.b-big button.skill-details.q-details { width: 34px; height: 34px; min-width: 34px; min-height: 34px; font-size: 1.05rem; }
