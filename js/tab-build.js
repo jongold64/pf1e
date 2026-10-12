@@ -198,7 +198,7 @@ export function renderBuild(app, view, parts) {
     ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
-      <div>${card('On now', effects, '', plus('onnow', '', 'On now in a larger window, to switch effects on and off'))}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
+      <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
         ${foldCard('Class features and choices', features)}${foldCard('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
         ${card('Gear', gearHtml)}${notesCard}</div>
       <div>${card('Skills', skills)}</div>

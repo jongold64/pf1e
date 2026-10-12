@@ -1031,3 +1031,6 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-fold > summary::before { content: '▸ '; color: var(--accent); }
 .b-fold[open] > summary::before { content: '▾ '; }
 .b-fold[open] > summary { margin-bottom: 6px; }
+/* Character tab On now: the whole card opens it larger. */
+.b-onnow { cursor: pointer; }
+.b-onnow:hover { border-color: var(--accent); }

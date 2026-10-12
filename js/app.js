@@ -826,6 +826,8 @@ function initBuild() {
       else update({ customEffects: state.customEffects.map((c, i) => (i === Number(id) ? { ...c, on: false } : c)) });
       return;
     }
+    // A tap anywhere else in the On now card opens it larger (popOnNow).
+    if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
