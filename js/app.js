@@ -830,7 +830,7 @@ function initBuild() {
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
     // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
     const big = e.target.closest('[data-big]');
-    if (big && !e.target.closest('button, [data-roll], input, select, a, label')) { openBigCard(big.dataset.big); return; }
+    if (big && !e.target.closest('button, [data-roll], input, select, a, label, textarea')) { openBigCard(big.dataset.big); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
@@ -4181,10 +4181,24 @@ async function start() {
     if (d) buildDetail(d.dataset.bDetail, d.dataset.arg);
   });
   $('detail-body').addEventListener('change', e => {
-    const t = e.target.closest('.b-big [data-b-combat]');
+    const t = e.target.closest('.b-big [data-b-combat], .b-big [data-b-cast]');
     if (!t) return;
-    update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    else {
+      // A prepared spell's cast box.
+      const [cid, lv, i] = t.dataset.bCast.split('|');
+      const prep = structuredClone(state.prepared);
+      if (prep[cid]?.[lv]?.[Number(i)]) prep[cid][lv][Number(i)].cast = t.checked;
+      update({ prepared: prep });
+    }
     openBigCard(t.closest('[data-big-pop]').dataset.bigPop);
+  });
+  // Notes, larger: saved as you type, and the card's box keeps up.
+  $('detail-body').addEventListener('input', e => {
+    if (e.target.dataset.bigNotes === undefined) return;
+    state.notes = e.target.value.slice(0, 5000);
+    save();
+    if ($('b-notes')) $('b-notes').value = state.notes;
   });
   // Guide buttons: Export / Import (the same as the header's), and Copy for a browser settings address.
   document.addEventListener('click', e => {

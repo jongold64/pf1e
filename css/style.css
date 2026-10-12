@@ -1048,3 +1048,6 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-table { font-size: 1.05rem; }
 .b-big .b-table td, .b-big .b-table th { padding: 6px 8px; }
 .b-big .b-switch { font-size: 1.05rem; }
+/* Notes, larger, in its popup. */
+.b-big .b-notes-big { width: 100%; min-height: 50vh; font-size: 1.1rem; padding: 10px; }
+.b-big .b-feat { min-height: 40px; font-size: 1.05rem; }

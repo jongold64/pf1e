@@ -188,9 +188,15 @@ export function renderBuild(app, view, parts) {
   // Tap anywhere on Abilities and Saves or Attacks (not on a roll, ? or switch) to open it larger.
   bigCards.abilities = { title: 'Abilities and Saves', html: core };
   bigCards.attacks = { title: 'Attacks', html: attacks };
-  const left = [card('Abilities and Saves', core, ' b-tapcard" data-big="abilities'), card('Attacks', attacks, ' b-tapcard" data-big="attacks'), card('Defense', defense)];
-  const spellCard = card('Spells', spells, ' b-wide');
-  const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
+  bigCards.defense = { title: 'Defense', html: defense };
+  bigCards.gear = { title: 'Gear', html: gearHtml };
+  bigCards.spells = { title: 'Spells', html: spells };
+  // Notes: a bigger box to write in (it saves as you type, like the card's).
+  bigCards.notes = { title: 'Notes', html: `<textarea class="b-notes-big" data-big-notes rows="16" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>` };
+  const tap = key => ` b-tapcard" data-big="${key}`;
+  const left = [card('Abilities and Saves', core, tap('abilities')), card('Attacks', attacks, tap('attacks')), card('Defense', defense, tap('defense'))];
+  const spellCard = card('Spells', spells, ` b-wide${tap('spells')}`);
+  const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`, tap('notes'));
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
   // The highlighted row's extras: initiative, hero points, the class's main pools (what's left; tap to tick them off),
   // each caster's spell DC and concentration, and the Daily uses popup / New day.
@@ -207,7 +213,7 @@ export function renderBuild(app, view, parts) {
     <div class="b-main">
       <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
         ${foldCard('Class features and choices', features)}${foldCard('Feats and traits', feats)}${caster ? '' : spellCard}${comps}
-        ${card('Gear', gearHtml)}${notesCard}</div>
+        ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
       <div>${card('Skills', skills)}</div>
     </div>`;
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
