@@ -31,7 +31,7 @@ import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
-import { renderBuild, popDailyUses, newDayPrepared } from './tab-build.js';
+import { renderBuild, popDailyUses, newDayPrepared, abilitiesPopupHtml } from './tab-build.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
@@ -828,6 +828,11 @@ function initBuild() {
     }
     // A tap anywhere else in the On now card opens it larger (popOnNow).
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
+    // Abilities and Saves: a tap that isn't on a roll or a ? opens it larger, with the same rolls and ?s.
+    if (e.target.closest('.b-abilities-card') && !e.target.closest('button, [data-roll], input, select, a')) {
+      openDetail('Abilities and Saves', `<div class="build b-big">${abilitiesPopupHtml()}</div>`);
+      return;
+    }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
@@ -4165,6 +4170,11 @@ async function start() {
   initCharacterBar();
   initRolls();
   closePopupsOnOutsideClick();
+  // A ? inside a popup copied from the Character tab (Abilities and Saves, larger) opens its Details.
+  $('detail-body').addEventListener('click', e => {
+    const d = e.target.closest('.b-big [data-b-detail]');
+    if (d) buildDetail(d.dataset.bDetail, d.dataset.arg);
+  });
   // Guide buttons: Export / Import (the same as the header's), and Copy for a browser settings address.
   document.addEventListener('click', e => {
     const g = e.target.closest('[data-guide-click]');

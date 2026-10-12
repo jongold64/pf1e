@@ -15,6 +15,10 @@ import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { buffById } from './effects.js';
 
+// The Abilities and Saves card as last drawn, for its larger popup (abilitiesPopupHtml).
+let lastCore = '';
+export const abilitiesPopupHtml = () => lastCore;
+
 const NAMES = { str: 'Str', dex: 'Dex', con: 'Con', int: 'Int', wis: 'Wis', cha: 'Cha' };
 const ORD = n => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
 // The d20 Roll button and the ? Details button (shared look with the other tabs).
@@ -181,7 +185,9 @@ export function renderBuild(app, view, parts) {
   const gearHtml = `${list('From your class', fromClass)}${list('Magic items', magic)}${list('Potions, scrolls and wands', made)}`;
 
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
-  const left = [card('Abilities and Saves', core), card('Attacks', attacks), card('Defense', defense)];
+  lastCore = core;
+  // Tap anywhere on Abilities and Saves (not on a roll or ?) to open it larger.
+  const left = [card('Abilities and Saves', core, ' b-tapcard b-abilities-card'), card('Attacks', attacks), card('Defense', defense)];
   const spellCard = card('Spells', spells, ' b-wide');
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`);
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).

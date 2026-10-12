@@ -38,6 +38,9 @@ function render(panel) {
   const [latest, ...older] = history;
   panel.hidden = !latest;
   if (!latest) return;
+  // Rolled from inside a popup window: show the result in that window (on top), not behind it; otherwise on the page.
+  const host = [...document.querySelectorAll('dialog[open]')].at(-1) || document.body;
+  if (panel.parentElement !== host) host.append(panel);
   panel.innerHTML = `<div class="roll-head"><b>${esc(latest.title)}</b>
       <button type="button" class="link" data-roll-close aria-label="Close">close</button></div>
     <ul class="roll-lines">${latest.lines.map(line).join('') || '<li>Nothing to roll.</li>'}</ul>

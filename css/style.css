@@ -1034,3 +1034,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Character tab On now: the whole card opens it larger. */
 .b-onnow { cursor: pointer; }
 .b-onnow:hover { border-color: var(--accent); }
+/* Character tab cards that open larger when tapped. */
+.b-tapcard { cursor: pointer; }
+.b-tapcard:hover { border-color: var(--accent); }
+/* Abilities and Saves, larger, in its popup. */
+.b-big { font-size: 1.15rem; }
+.b-big .b-split { grid-template-columns: 1fr 1fr; gap: 0 28px; }
+.b-big .b-stat, .b-big .b-ab { grid-template-columns: 52px 40px 48px 40px 40px auto; min-height: 44px; }
+.b-big .b-stat > b, .b-big .b-ab > b { font-size: 1.5rem; }
+.b-big .roll-button .d20 { width: 26px; height: 26px; }
+@media (max-width: 600px) { .b-big .b-split { grid-template-columns: 1fr; } }
