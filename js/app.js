@@ -3026,7 +3026,8 @@ function renderClasses(view) {
         `<option value="${esc(t.id)}"${t.id === slot.target.id ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>`;
   }).join('');
 
-  const open = new Set([...$('class-info').querySelectorAll('details.class-block[open]')].map(d => d.dataset.cls));
+  // Each class's section stays open (its deity, domains, archetypes and other choices in view) unless you fold it shut.
+  const closed = new Set([...$('class-info').querySelectorAll('details.class-block:not([open])')].map(d => d.dataset.cls));
   classItems = [];
   const openFeatures = new Set([...$('class-info').querySelectorAll('details.arch-feature[open]')].map(d => d.dataset.key));
   $('class-info').innerHTML = counts.map(e => {
@@ -3073,7 +3074,7 @@ function renderClasses(view) {
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
     // Choices still to make (bloodline, school, order, mystery, rage powers...) keep the section open and are counted on its line.
     const left = choicesLeft(e.cls, e.level);
-    const isOpen = open.has(e.cls.id) || (req && req.status !== 'met') || left > 0;
+    const isOpen = !closed.has(e.cls.id) || (req && req.status !== 'met') || left > 0;
     const names = e.cls.archetypes?.length ? ` · ${esc(e.cls.archetypes.join(', '))}` : '';
     return `<details class="class-block" data-cls="${esc(e.cls.id)}"${isOpen ? ' open' : ''}>
       <summary>${esc(e.cls.name)} ${e.level}${names} · hit die ${esc(e.cls.hit_die)} · ${e.cls.skill_ranks_per_level} + Int skill ranks per level

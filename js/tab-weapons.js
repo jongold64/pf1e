@@ -431,6 +431,7 @@ export function renderMyWeapons(app, view) {
         <span class="wl-part"><span class="wl-k">Critical</span> <b>${esc(critText(w, crit))}</b>
           ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }) : ''}</span>
         <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-weapon-more="${i}" aria-expanded="${open}" aria-label="Everything about ${esc(w.name)}" title="Details">?</button>
+        ${e.classGear ? '' : `<button type="button" class="wl-remove" data-remove-weapon="${i}" aria-label="Remove ${esc(w.name)}">Remove</button>`}
       </div>
       <div class="weapon-more"${open ? '' : ' hidden'}>
       <div class="weapon-head">

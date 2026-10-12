@@ -1121,3 +1121,5 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-spell-num { flex-wrap: wrap; }
 .b-spell-num .roll-button { flex-shrink: 0; white-space: nowrap; }
 .roll-lines li.roll-total { font-weight: 700; }
+/* Weapons tab: Remove at the end of each weapon's line. */
+.wl-remove { padding: 2px 10px; min-height: 30px; font-size: 0.9rem; margin-left: 4px; }
