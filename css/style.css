@@ -1110,3 +1110,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-big .b-feat small { font-size: 1rem; }
 .b-big .b-feat .how { width: 12px; height: 12px; }
 .b-big .b-sub { font-size: 1.05rem; }
+/* Gear in the larger window: magic items' rows, worn boxes and what they give, bigger. */
+.b-big .b-item-list > li { padding: 6px 0; }
+.b-big .b-item-list .check-row { font-size: 1.2rem; min-height: 48px; gap: 10px; }
+.b-big .b-item-list .check-row small { font-size: 1rem; }
+.b-big .b-item-list .check-row input[type="checkbox"] { width: 26px; height: 26px; }
+.b-big .b-item-list .hint { font-size: 1rem; }
+/* A potion's, scroll's or wand's numbers sit on their own line under it (as on the Spells card); roll buttons never squash. */
+.b-feat:has(> .b-spell-nums) { flex-wrap: wrap; }
+.b-spell-num { flex-wrap: wrap; }
+.b-spell-num .roll-button { flex-shrink: 0; white-space: nowrap; }
