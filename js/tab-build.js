@@ -6,7 +6,8 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
-import { spellNumbersHtml } from './tab-spells.js';
+import { spellNumbersHtml, itemSpellNumbersHtml } from './tab-spells.js';
+import { ownedSources, itemRowHtml } from './item-rows.js';
 import { defenseSwitchesHtml } from './tab-armor.js';
 import { defenseOn } from './defense.js';
 import { dailyUses, usesLeft } from './daily.js';
@@ -182,13 +183,23 @@ export function renderBuild(app, view, parts) {
   const gearRow = (name, note, kind, arg) => `<div class="b-feat"><span>${esc(name)}${note ? ` <small class="muted">${esc(note)}</small>` : ''}</span>${kind ? plus(kind, arg, name) : ''}</div>`;
   const list = (title, rows) => (rows.length ? `<h4 class="b-sub">${title}</h4><div class="b-feats">${rows.join('')}</div>` : '');
   const fromClass = parts.classGear.map((g, i) => gearRow(g.name, g.note, 'classgear', String(i)));
-  const magic = state.magicItems.map((e, i) => {
-    const item = data.itemsById?.get(e.id);
-    return item ? gearRow(`${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, e.off ? '(off)' : '', 'item', `m:${i}`) : '';
-  }).filter(Boolean);
-  const made = state.craftedItems.map(e => gearRow(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
-    `caster level ${e.cl}`, 'spell', e.spellId));
-  const gearHtml = `${list('From your class', fromClass)}${list('Magic items', magic)}${list('Potions, scrolls and wands', made)}`;
+  // Magic items: worn or not (tick), what each gives, its sometimes-bonuses and Details, as in Active effects.
+  const magic = ownedSources(state, data).filter(src => src.ref.startsWith('m:'))
+    .map(src => itemRowHtml(src));
+  // Potions, scrolls and wands: the spell's numbers and rolls at the item's caster level, and Use (one used up, or a
+  // wand charge: 50 to a wand).
+  const spellsById = data.spells ? new Map(data.spells.map(s => [s.id, s])) : null;
+  if (!spellsById && state.craftedItems.length) app.loadSpells().then(() => app.update({}));
+  const made = state.craftedItems.map((e, i) => {
+    const spell = spellsById?.get(e.spellId);
+    const nums = spell ? itemSpellNumbersHtml(view, data.classes, spell, e.cl) : '';
+    const left = e.kind === 'wand' ? ` · ${e.charges ?? 50} charges left` : '';
+    return `<div class="b-feat"><span>${esc(`${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`)}
+        <small class="muted">caster level ${e.cl}${left}</small></span>
+      <span class="b-use"><button type="button" data-b-use-item="${i}">Use</button>${plus('spell', e.spellId, e.spellName)}</span>
+      ${nums ? `<div class="b-spell-nums">${nums}</div>` : ''}</div>`;
+  });
+  const gearHtml = `${list('From your class', fromClass)}${magic.length ? `<h4 class="b-sub">Magic items</h4><ul class="b-item-list">${magic.join('')}</ul>` : ''}${list('Potions, scrolls and wands', made)}`;
 
   const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
   // Tap anywhere on Abilities and Saves or Attacks (not on a roll, ? or switch) to open it larger.

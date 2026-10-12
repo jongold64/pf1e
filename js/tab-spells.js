@@ -4,6 +4,7 @@ import { openLines, fitLines, $, esc, signed, paragraphs, facts, sourceText } fr
 import { activeBonuses } from './effects.js';
 import { spellsPerDay, EXTRA_SLOTS } from './rules.js';
 import { spellContext, spellLines, srCheck } from './spell-math.js';
+import { CASTING_ABILITY } from './rules.js';
 import { rollButton } from './roll-ui.js';
 
 let selectedId = null;
@@ -101,6 +102,19 @@ export function spellNumbersHtml(view, cls, level, spell) {
   const sr = srCheck(spell, ctx);
   if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
   return parts.join('');
+}
+
+// A potion's, scroll's or wand's spell numbers (Character tab Gear): cast at the item's caster level, with the item's
+// save DC (Core Rulebook: 10 + spell level + the lowest modifier able to cast it, half the spell level rounded down);
+// attack rolls use the user's own. classes: the class data (the spell is worked out for a full caster on its list).
+const FULL_CASTERS = ['wizard', 'sorcerer', 'cleric', 'oracle', 'druid', 'witch', 'shaman', 'psychic', 'arcanist', 'bard', 'inquisitor', 'alchemist'];
+export function itemSpellNumbersHtml(view, classes, spell, cl) {
+  const id = FULL_CASTERS.find(c => spell.levels[c] !== undefined && CASTING_ABILITY[c]) || Object.keys(spell.levels).find(c => CASTING_ABILITY[c]);
+  const cls = id && classes.find(c => c.id === id);
+  if (!cls) return '';
+  const minMod = Math.floor(spell.levels[id] / 2);
+  const stats = { ...view.stats, mod: { ...view.stats.mod, [CASTING_ABILITY[id]]: minMod } };
+  return spellNumbersHtml({ ...view, stats, featChoices: [], haveFeats: [] }, cls, cl, spell);
 }
 
 function renderMySpells(app, view) {

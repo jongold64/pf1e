@@ -36,7 +36,7 @@ import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
 import { popBuff, popOnNow } from './tab-effects.js';
-import { popSource } from './item-rows.js';
+import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
@@ -444,8 +444,10 @@ function load(saved) {
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
       && Number.isInteger(e.spellLevel) && Number.isInteger(e.cl) && e.cl > 0 && Number.isInteger(e.qty) && e.qty > 0)
-    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
-                                                                          ...(bought === true ? { bought: true } : {}) }));
+    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought, charges }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
+                                                                          ...(bought === true ? { bought: true } : {}),
+                                                                          // A wand's charges left (50 when new).
+                                                                          ...(kind === 'wand' && Number.isInteger(charges) && charges >= 0 && charges <= 50 ? { charges } : {}) }));
   state.featChoices = Object.fromEntries(Object.entries(state.featChoices && typeof state.featChoices === 'object' ? state.featChoices : {})
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
@@ -831,6 +833,10 @@ function initBuild() {
     // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
     const big = e.target.closest('[data-big]');
     if (big && !e.target.closest('button, [data-roll], input, select, a, label, textarea')) { openBigCard(big.dataset.big); return; }
+    // Gear: Use a potion, scroll or wand charge; a magic item's Details.
+    const use = e.target.closest('[data-b-use-item]');
+    if (use) { useCraftedItem(Number(use.dataset.bUseItem)); return; }
+    if (itemRowClick(app, e)) return;
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
@@ -839,6 +845,8 @@ function initBuild() {
     const t = e.target;
     // (The shield's switch reads "in hand": ticked means not put away.)
     if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    // A magic item worn or not, or one of its sometimes-bonuses (item-rows.js).
+    if (itemRowChange(app, t)) return;
     if (t.dataset.bCast) {
       const [cid, lv, i] = t.dataset.bCast.split('|');
       const prep = structuredClone(state.prepared);
@@ -897,6 +905,20 @@ function dailyPowers() {
 function openBigCard(key) {
   const c = bigCard(key);
   if (c) openDetail(c.title, `<div class="build b-big" data-big-pop="${esc(key)}">${c.html}</div>`);
+}
+
+// Using a potion or scroll (one fewer; gone at none) or a wand (a charge: a wand has 50; a used-up wand is gone).
+function useCraftedItem(i) {
+  const items = state.craftedItems.map((e, j) => {
+    if (j !== i) return e;
+    if (e.kind === 'wand') {
+      const charges = (e.charges ?? 50) - 1;
+      if (charges > 0) return { ...e, charges };
+      return e.qty > 1 ? { ...e, qty: e.qty - 1, charges: 50 } : null;
+    }
+    return e.qty > 1 ? { ...e, qty: e.qty - 1 } : null;
+  }).filter(Boolean);
+  update({ craftedItems: items });
 }
 
 function buildDetail(kind, arg) {
@@ -4178,9 +4200,14 @@ async function start() {
   // the card is drawn again with the new numbers.
   $('detail-body').addEventListener('click', e => {
     const d = e.target.closest('.b-big [data-b-detail]');
-    if (d) buildDetail(d.dataset.bDetail, d.dataset.arg);
+    if (d) { buildDetail(d.dataset.bDetail, d.dataset.arg); return; }
+    const use = e.target.closest('.b-big [data-b-use-item]');
+    if (use) { useCraftedItem(Number(use.dataset.bUseItem)); openBigCard(use.closest('[data-big-pop]').dataset.bigPop); return; }
+    if (e.target.closest('.b-big')) itemRowClick(app, e);
   });
   $('detail-body').addEventListener('change', e => {
+    const pop = e.target.closest('[data-big-pop]');
+    if (pop && itemRowChange(app, e.target)) { openBigCard(pop.dataset.bigPop); return; }
     const t = e.target.closest('.b-big [data-b-combat], .b-big [data-b-cast]');
     if (!t) return;
     if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
