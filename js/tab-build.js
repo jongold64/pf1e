@@ -6,6 +6,7 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
+import { spellNumbersHtml } from './tab-spells.js';
 import { defenseSwitchesHtml } from './tab-armor.js';
 import { defenseOn } from './defense.js';
 import { dailyUses, usesLeft } from './daily.js';
@@ -238,20 +239,25 @@ function renderSpells(app, view, parts) {
     const cid = c.cls.id;
     const ability = parts.castingAbility(cid);
     const mod = view.stats.mod[ability] ?? 0;
+    // Each spell's numbers with their rolls (attack, save DC, damage or healing, SR check), as on the Spells tab.
+    const nums = spell => {
+      const h = spell ? spellNumbersHtml(view, c.cls, c.effectiveLevel, spell) : '';
+      return h ? `<div class="b-spell-nums">${h}</div>` : '';
+    };
     const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)}${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')} · save DC 10 + spell level ${signed(mod)}</p>`;
     const prep = parts.prepared(cid);
     if (prep) {
       // Each prepared spell on its own line: a box to tick when cast, its name, and a ? for its details.
       const levels = prep.map(({ lv, slots }) => `<div class="b-spell-level"><h4 class="b-sub">${lv === 0 ? 'Cantrips' : `${ORD(lv)} level`}</h4>
         <div class="b-spell-list">${slots.map((x, i) => (x.id ? `<div class="b-feat${x.cast ? ' b-spent' : ''}"><label class="b-cast"><input type="checkbox" data-b-cast="${esc(`${cid}|${lv}|${i}`)}"${x.cast ? ' checked' : ''}${lv === 0 ? ' disabled' : ''}>
-          ${esc(byId.get(x.id)?.name || x.id)}</label>${plus('spell', x.id, byId.get(x.id)?.name || 'spell')}</div>` : '<div class="b-feat"><span class="muted">(empty)</span></div>')).join('')}</div></div>`).join('');
+          ${esc(byId.get(x.id)?.name || x.id)}</label>${plus('spell', x.id, byId.get(x.id)?.name || 'spell')}${nums(byId.get(x.id))}</div>` : '<div class="b-feat"><span class="muted">(empty)</span></div>')).join('')}</div></div>`).join('');
       return head + (levels || '<p class="muted">Nothing prepared yet: prepare today\'s spells on the Spells tab.</p>');
     }
     const known = state.spells.map(id => byId.get(id)).filter(s => s && s.levels[cid] !== undefined);
     const lvls = [...new Set(known.map(s => s.levels[cid]))].sort((a, b) => a - b);
     // Spells known: each on its own line with a ?.
     return head + (lvls.map(lv => `<div class="b-spell-level"><h4 class="b-sub">${lv === 0 ? 'Cantrips' : `${ORD(lv)} level`}</h4><div class="b-spell-list">${known.filter(s => s.levels[cid] === lv)
-      .sort((a, b) => a.name.localeCompare(b.name)).map(s => `<div class="b-feat"><span>${esc(s.name)}</span>${plus('spell', s.id, s.name)}</div>`).join('')}</div></div>`).join('')
+      .sort((a, b) => a.name.localeCompare(b.name)).map(s => `<div class="b-feat"><span>${esc(s.name)}</span>${plus('spell', s.id, s.name)}${nums(s)}</div>`).join('')}</div></div>`).join('')
       || '<p class="muted">No spells chosen yet (Spells tab).</p>');
   }).join('');
 }

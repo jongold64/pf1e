@@ -1055,3 +1055,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-summary { margin: 2px 0; font-size: 0.9rem; line-height: 1.4; }
 .b-big .b-skills { font-size: 1.15rem; }
 .b-big .b-skills > div { min-height: 40px; }
+/* Character tab spells: each spell's numbers and rolls under its name. */
+.b-spell-list .b-feat { flex-wrap: wrap; }
+.b-spell-nums { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 0 0 4px 24px; font-size: 0.82rem; }
+.b-spell-num { display: inline-flex; align-items: center; gap: 4px; }
+.b-spell-num .roll-button:not(.roll-icon) { padding: 1px 6px !important; font-size: 0.75rem; min-height: 0 !important; }
+.b-spell-num .roll-button .d20 { width: 16px; height: 16px; }
+.b-spell-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
