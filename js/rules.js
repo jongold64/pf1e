@@ -469,9 +469,12 @@ export function channelEnergy(stats, haveFeats = []) {
   const lv = id => counts.find(e => e.cls.id === id)?.level || 0;
   const cha = stats.mod.cha;
   const out = [];
+  // Extra Channel: two more channels a day (a paladin's or warpriest's four more lay on hands or fervor, used only to
+  // channel, come to the same), for each time it's taken (more than once only with the house rule).
+  const extra = 2 * haveFeats.filter(f => f === 'Extra Channel').length;
   const add = (source, energy, level, uses) => {
     if (level < 1) return;
-    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, uses: Math.max(0, uses),
+    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, uses: Math.max(0, uses) + extra,
                dc: 10 + Math.floor(level / 2) + cha + (haveFeats.includes('Improved Channel') ? 2 : 0) });
   };
   if (lv('cleric')) add('Cleric', 'positive or negative', lv('cleric') + lv('holy-vindicator'), 3 + cha);

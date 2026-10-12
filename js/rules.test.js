@@ -937,6 +937,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   // Cleric 5, Cha 14 (+2): 3d6, DC 10 + 2 + 2 = 14, 3 + 2 = 5/day
   check('cleric 5 channel energy', JSON.stringify(channelEnergy(cl5).map(c => [c.dice, c.dc, c.uses])), '[["3d6",14,5]]');
   check('Improved Channel adds 2 to the DC', channelEnergy(cl5, ['Improved Channel'])[0].dc, 16);
+  check('Extra Channel: 2 more channels a day, each time taken (twice with the house rule)',
+        [channelEnergy(cl5, ['Extra Channel'])[0].uses, channelEnergy(cl5, ['Extra Channel', 'Extra Channel'])[0].uses].join(), '7,9');
   const pal4 = characterStats({ race: race('human'), cls: cls('paladin'), level: 4, baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' });
   // Paladin 4, Cha 16 (+3): 2d6, DC 10 + 2 + 3 = 15, lay on hands 2 + 3 = 5 uses -> 2 channels
   check('paladin 4 channel energy', JSON.stringify(channelEnergy(pal4).map(c => [c.source, c.dice, c.dc, c.uses])), '[["Paladin","2d6",15,2]]');

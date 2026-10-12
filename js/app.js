@@ -194,6 +194,7 @@ const HOUSE_RULES = [
   ['extraTrait', 'Extra Campaign Trait', 'Extra Campaign Trait: a third trait slot (Feats tab).'],
   ['drawbacks', 'Drawbacks', "Drawbacks (Ultimate Campaign): take one drawback and gain an extra trait (Feats tab)."],
   // A placeholder: no third-party content is in the app yet (only Paizo books), so this switch does nothing so far.
+  ['extraChannel', 'Extra Channel (multiple)', 'Extra Channel (multiple): Extra Channel can be taken more than once, each time for two more channels a day (by the official rules it can be taken only once).'],
   ['thirdParty', '3rd Party', '3rd Party: a placeholder for now. Third-party (non-Paizo) content isn’t in the app yet, so this changes nothing.'],
 ];
 
@@ -1587,8 +1588,8 @@ function buildControls() {
       openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
         <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Build tab).')}</p>
         ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}
-        ${takenElsewhere(slot.id).has(f.id) && !repeatable(f) ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>' : ''}`,
-        takenElsewhere(slot.id).has(f.id) && !repeatable(f) ? [] : [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
+        ${takenElsewhere(slot.id).has(f.id) && !canRepeat(f) ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>' : ''}`,
+        takenElsewhere(slot.id).has(f.id) && !canRepeat(f) ? [] : [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
           update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
           $('feat-picker').close();
         } }]);
@@ -1606,7 +1607,7 @@ function buildControls() {
     const f = data.featsById.get(item.dataset.feat);
     const slot = view.slots.find(s => s.id === pickerSlotId);
     item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot)) +
-      (takenElsewhere(slot.id).has(f.id) && !repeatable(f)
+      (takenElsewhere(slot.id).has(f.id) && !canRepeat(f)
         ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>'
         : `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`);
   }, true);
@@ -1676,7 +1677,7 @@ function renderFeatTabSearch() {
 // A feat's details with a button for each open slot it can go in.
 function openFeatForSlots(id) {
   const f = data.featsById.get(id);
-  const alreadyHave = view.slots.some(s => state.feats[s.id] === id) && !repeatable(f);
+  const alreadyHave = view.slots.some(s => state.feats[s.id] === id) && !canRepeat(f);
   const open = view.slots.filter(s => !data.featsById.has(state.feats[s.id]) && slotAccepts(s, f));
   const actions = alreadyHave ? [] : open.map(s => ({
     label: `Choose for ${s.label}`, primary: true,
@@ -3884,6 +3885,9 @@ function openPicker(slotId) {
   $('feat-picker').showModal();
 }
 
+// Whether a feat can be taken more than once: its rules say so, or Extra Channel with that house rule.
+const canRepeat = f => repeatable(f) || (!!state.houseRules.extraChannel && f.name === 'Extra Channel');
+
 // The feats chosen in every slot but this one.
 const takenElsewhere = slotId => new Set(view.slots.filter(s => s.id !== slotId).map(s => state.feats[s.id]));
 
@@ -3900,7 +3904,7 @@ function renderPicker() {
   let hidden = 0;  // matching feats left out because you don't qualify yet
   for (const f of data.feats) {
     if (!slotAccepts(slot, f)) continue;
-    const already = taken.has(f.id) && !repeatable(f);
+    const already = taken.has(f.id) && !canRepeat(f);
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
     const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
