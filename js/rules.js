@@ -464,6 +464,7 @@ export function hpStatus(hp, conScore) {
 // levels add to the cleric's). Returns [{ source, energy, level, dice, dc, uses }]: dice = (effective cleric level + 1) / 2
 // d6, DC 10 + half the effective level + Cha (+2 Improved Channel), uses per day 3 + Cha for a cleric, or half the lay
 // on hands / touch of corruption / fervor uses for the others (2 of those per channel).
+const CHANNEL_ITEMS = { 'phylactery-of-positive-channeling': 'positive', 'phylactery-of-negative-channeling': 'negative' };
 export function channelEnergy(stats, haveFeats = []) {
   const counts = stats.classCounts || [];
   const lv = id => counts.find(e => e.cls.id === id)?.level || 0;
@@ -474,7 +475,7 @@ export function channelEnergy(stats, haveFeats = []) {
   const extra = 2 * haveFeats.filter(f => f === 'Extra Channel').length;
   const add = (source, energy, level, uses) => {
     if (level < 1) return;
-    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, uses: Math.max(0, uses) + extra,
+    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, items: [], uses: Math.max(0, uses) + extra,
                dc: 10 + Math.floor(level / 2) + cha + (haveFeats.includes('Improved Channel') ? 2 : 0) });
   };
   if (lv('cleric')) add('Cleric', 'positive or negative', lv('cleric') + lv('holy-vindicator'), 3 + cha);
@@ -485,6 +486,15 @@ export function channelEnergy(stats, haveFeats = []) {
   // Channel like a cleric from a chosen ability (an oracle's Life mystery Channel revelation, a shaman's Life spirit):
   // positive energy at that class level, 1 + Cha times a day. stats.channelFrom: [{ source, level }] (app.js).
   for (const c of stats.channelFrom || []) add(c.source, 'positive', c.level, 1 + cha);
+  // A worn phylactery of positive (or negative) channeling: +2d6 when channeling that energy (Core Rulebook).
+  // stats.channelItems: the ids of the magic items worn (app.js).
+  for (const c of out) {
+    for (const [id, energy] of Object.entries(CHANNEL_ITEMS)) {
+      if (!(stats.channelItems || []).includes(id) || !c.energy.includes(energy)) continue;
+      c.dice = `${Math.ceil(c.level / 2) + 2}d6`;
+      c.items = [...(c.items || []), `+2d6 from a phylactery of ${energy} channeling${c.energy === energy ? '' : ` (when channeling ${energy} energy)`}`];
+    }
+  }
   return out;
 }
 

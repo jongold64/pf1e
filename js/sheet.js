@@ -57,7 +57,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
     ['Base attack', formatBab(stats.bab)], ['CMB', signed(cmb)],
     ...maneuvers.map(m => [m.name, `CMB ${signed(m.cmb)}, CMD ${m.cmd}`]),
     ...channelEnergy(stats, view.haveFeats).map(c => [`Channel energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`,
-      `${c.dice} ${c.energy}, DC ${c.dc}, ${c.uses}/day`]),
+      `${c.dice} ${c.energy}, DC ${c.dc}, ${c.uses}/day${c.items.length ? ` (${c.items.join('; ')})` : ''}`]),
     ...layOnHands(stats).map(l => [l.name, `${l.dice}, ${l.uses}/day`]),
     ...smite(stats).map(sm => [sm.name, `+${sm.attack} attack, +${sm.damage} damage, +${sm.deflection} deflection AC, ${sm.uses}/day`]),
   ]) + table(['Weapon', 'Attack', 'Damage', 'Critical', 'Range'],

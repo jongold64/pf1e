@@ -2062,6 +2062,8 @@ function computeView() {
   }
   const stats = statsWith(gear);
   stats.channelFrom = channelGrants(counts);
+  // The magic items worn (not unticked), for the ones that change channel energy (rules.js channelEnergy).
+  stats.channelItems = state.magicItems.filter(e => !e.off).map(e => e.id);
   // Feat prerequisites use the scores without temporary effects.
   const plainScores = statsWith(gear, null).scores;
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
@@ -3346,7 +3348,7 @@ function render() {
     ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
     ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
     ${channelEnergy(stats, view.haveFeats).map(c => `<div class="defense-row channel-row">
-      <span>Channel energy${c.source !== 'Cleric' ? ` (${esc(c.source)})` : ''}<small>${esc(c.energy)} · DC ${c.dc} Will half · ${c.uses}/day</small></span>
+      <span>Channel energy${c.source !== 'Cleric' ? ` (${esc(c.source)})` : ''}<small>${esc(c.energy)} · DC ${c.dc} Will half · ${c.uses}/day${c.items.length ? ` · ${esc(c.items.join('; '))}` : ''}</small></span>
       <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] })}</div>`).join('')}
     ${layOnHands(stats).map(l => {
       // Touch of corruption needs a melee touch attack: BAB + Str + size.

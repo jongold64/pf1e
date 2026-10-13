@@ -960,6 +960,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const or5c = { ...or5, channelFrom: [{ source: 'Oracle', level: 5 }] };
   check('oracle 5 Channel revelation', JSON.stringify(channelEnergy(or5c, ['Extra Channel']).map(c => [c.source, c.energy, c.dice, c.dc, c.uses])),
         '[["Oracle","positive","3d6",15,6]]');
+  // A phylactery of positive channeling worn: +2d6 (3d6 -> 5d6); a negative one does nothing for positive energy.
+  check('phylactery of positive channeling: +2d6', channelEnergy({ ...or5c, channelItems: ['phylactery-of-positive-channeling'] })[0].dice, '5d6');
+  check('phylactery of negative channeling: no change to positive', channelEnergy({ ...or5c, channelItems: ['phylactery-of-negative-channeling'] })[0].dice, '3d6');
+  check('cleric with a phylactery: +2d6 when channeling positive', channelEnergy({ ...cl5, channelItems: ['phylactery-of-positive-channeling'] }).map(c => `${c.dice} ${c.items}`).join(),
+        '5d6 +2d6 from a phylactery of positive channeling (when channeling positive energy)');
   check('carrying capacity Str 10, 18, 30', ['10', '18', '30'].map(s => JSON.stringify(carryingCapacity(Number(s)))).join(' '),
         '{"light":33,"medium":66,"heavy":100} {"light":100,"medium":200,"heavy":300} {"light":533,"medium":1066,"heavy":1600}');
   check('Small carries three quarters', carryingCapacity(10, 'Small').heavy, 75);
