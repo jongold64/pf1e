@@ -109,6 +109,41 @@ export function srCheck(spell, ctx) {
 
 const signed = n => (n >= 0 ? `+${n}` : `${n}`);
 
+// A spell's combat maneuver bonus, from how its text says to work it out: { total, rows } (rows for the Details popup).
+// Barbed chains: base attack bonus + casting modifier. Hydraulic push, ice spears: caster level + the best of Int, Wis,
+// Cha (tsunami +8 for the wave's size). Incorporeal chains: caster level + Int. Telekinesis: caster level + casting
+// modifier. Thunderstomp: caster level or base attack bonus, and casting or Strength modifier (the better of each).
+// Forceful and clenched fist: caster level + the hand's Strength and size bonuses. Otherwise (a ghost whip) your own CMB.
+export function maneuverBonus(spell, ctx) {
+  const d = String(spell.description || '').replace(/\s+/g, ' ');
+  const best = Math.max(ctx.mod.int, ctx.mod.wis, ctx.mod.cha);
+  const cl = { label: 'Caster level', value: ctx.cl };
+  const castRow = { label: `${ctx.abilityName || 'Casting ability'} modifier`, value: ctx.castMod };
+  const bestRow = { label: 'Best of Intelligence, Wisdom and Charisma modifiers', value: best };
+  let rows;
+  let m;
+  if (/base attack bonus plus your key spellcasting ability score modifier as its attack bonus and combat maneuver bonus/i.test(d)) {
+    rows = [{ label: 'Base attack bonus', value: ctx.bab }, castRow];
+  } else if ((m = d.match(/caster level in place of its base attack bonus, with a \+(\d+) bonus for its Strength score(?: \(\d+\))?,? and a \+(\d+) bonus for being (\w+)/i))) {
+    rows = [cl, { label: 'The hand’s Strength', value: Number(m[1]) }, { label: `Size (${m[3]})`, value: Number(m[2]) }];
+  } else if ((m = d.match(/caster level \+ your relevant spellcasting ability score modifier \(whichever is highest\) \+ (\d+)/i))) {
+    rows = [cl, bestRow, { label: 'The wave’s size', value: Number(m[1]) }];
+  } else if (/caster level plus your Intelligence, Wisdom, or Charisma modifier/i.test(d)) {
+    rows = [cl, bestRow];
+  } else if (/caster level \+ your Intelligence modifier/i.test(d)) {
+    rows = [cl, { label: 'Intelligence modifier', value: ctx.mod.int }];
+  } else if (/caster level in place of your Combat Maneuver Bonus/i.test(d)) {
+    rows = [cl, castRow];
+  } else if (/thunderstomp/i.test(`${spell.name} ${d}`)) {
+    rows = [ctx.cl >= ctx.bab ? cl : { label: 'Base attack bonus', value: ctx.bab },
+            ctx.castMod >= ctx.mod.str ? castRow : { label: 'Strength modifier', value: ctx.mod.str }];
+  } else {
+    rows = [{ label: 'Base attack bonus', value: ctx.bab }, { label: 'Strength modifier', value: ctx.mod.str },
+            ...(ctx.sizeAttack ? [{ label: 'Size', value: -ctx.sizeAttack }] : [])];
+  }
+  return { total: rows.reduce((n, r) => n + r.value, 0), rows };
+}
+
 // The spell's lines, each { label, text }: "Ranged touch +6, 2 rays of 4d6 fire", "DC 16 Reflex half, 5d6 fire".
 export function spellLines(spell, ctx) {
   const level = spell.levels?.[ctx.cls.id];
@@ -128,6 +163,7 @@ export function spellLines(spell, ctx) {
     const parts = [];
     const why = { attack: null, dc: null, damage: [] };
     let attack = null;
+    let maneuver = null;
     if (a.kind === 'ranged touch' || a.kind === 'ranged') {
       attack = a.auto_hit ? null : ctx.bab + ctx.mod.dex + ctx.sizeAttack + fx + (ctx.fxRanged || 0) + (ctx.flawRanged || 0);
       if (attack !== null) why.attack = [...attackRows('dex'), ...(ctx.flawRanged ? [{ label: 'Flaw: Shaky', value: ctx.flawRanged }] : [])];
@@ -137,7 +173,10 @@ export function spellLines(spell, ctx) {
       why.attack = [...attackRows('str'), ...(ctx.flawMelee ? [{ label: 'Flaw: Noncombatant', value: ctx.flawMelee }] : [])];
       parts.push(`${a.kind === 'melee' ? 'melee attack' : 'melee touch'} ${signed(attack)}`);
     } else if (a.kind === 'maneuver') {
-      parts.push('combat maneuver');
+      const mb = maneuverBonus(spell, ctx);
+      maneuver = mb.total;
+      why.attack = mb.rows;
+      parts.push(`combat maneuver ${signed(maneuver)}`);
     }
     if (a.save && dc !== null) {
       // Foundry marks a whole spell harmless; the attack half of a cure/inflict spell isn't.
@@ -174,7 +213,9 @@ export function spellLines(spell, ctx) {
       roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, groups: [{ attacks: [], damage: rollDamage, times: count, heal: a.kind === 'heal',
                                                                    ...(bonus && count > 1 ? { bonusOnce: bonus, bonusName: sb.name } : {}) }] };
     }
-    if (parts.length) lines.push({ label, text: parts.join(', '), roll, why: { ...why, attackTotal: attack, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
+    // A combat maneuver: its check (no critical hits).
+    if (maneuver !== null && !roll) roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, check: 'Combat maneuver', plain: true, groups: [{ attacks: [maneuver] }] };
+    if (parts.length) lines.push({ label, text: parts.join(', '), roll, why: { ...why, maneuver: maneuver !== null, attackTotal: attack ?? maneuver, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
   }
   // A save with no action data: the spell's own saving throw line.
   if (!lines.length && dc !== null && spell.saving_throw && !/^none/i.test(spell.saving_throw)) {

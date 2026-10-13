@@ -1804,6 +1804,15 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('two rings of protection: both listed (the higher counts by stacking)', effectTotals(itemBuffs([{ id: 'ring-of-protection', option: '+1', qty: 1 }, { id: 'ring-of-protection', option: '+3', qty: 1 }], byId)).ac.deflection, 3);
   check('an item with no bonuses: no effects', itemEffects(byId.get('bag-of-holding') || { name: 'Bag of Holding', id: 'x' }).length, 0);
   check('item effects named for the item', itemBuffs([{ id: 'bracers-of-falcons-aim', qty: 1 }], byId)[0].label, "Bracers of Falcon's Aim: aspect of the falcon");
+  // Barbed chains: base attack bonus + casting modifier; hydraulic push: caster level + the best mental modifier.
+  {
+    const { maneuverBonus } = await import('./spell-math.js');
+    const ctx = { cl: 5, bab: 3, castMod: 3, mod: { str: 1, int: 0, wis: 3, cha: 4 }, sizeAttack: 0, abilityName: 'Wisdom' };
+    const spellList = await fetch('data/spells.json').then(r => r.json());
+    const sp = name => spellList.find(x => x.name === name);
+    check('maneuver spells: barbed chains, hydraulic push, forceful hand, tsunami, ghost whip',
+      ['Barbed Chains', 'Hydraulic Push', 'Forceful Hand', 'Tsunami', 'Ghost Whip'].map(n => maneuverBonus(sp(n), ctx).total).join(), '6,9,14,17,4');
+  }
   check('effects catalog ids are unique', new Set(BUFFS.map(x => x.id)).size, BUFFS.length);
   // Special abilities on worn armor and weapons count like items.
   const st = { armorId: 'chain-shirt', armorAbilities: [{ id: 'shadow', name: 'Shadow' }], shieldId: '', shieldAbilities: [{ id: 'slick', name: 'Slick' }],

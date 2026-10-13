@@ -93,14 +93,15 @@ function spellRollButtons(roll) {
   ].join(' ');
 }
 
-// A spell's numbers cast by one class (Character tab): each attack, save DC, damage or healing with its Roll buttons,
-// and the spell resistance check; '' when it has nothing to roll or work out.
+// A spell's numbers cast by one class (Character tab): each attack, save DC, damage or healing with one d20 (it rolls
+// the attack, the damage and, on a threat, the confirmation and critical damage, like a weapon's), and the spell
+// resistance check; '' when it has nothing to roll or work out.
 export function spellNumbersHtml(view, cls, level, spell) {
   const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
                              flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
-  const parts = spellLines(spell, ctx).map(l => `<span class="b-spell-num">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}</span>`);
+  const parts = spellLines(spell, ctx).map(l => `<span class="b-spell-num">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}${l.roll ? ` ${rollButton(l.roll)}` : ''}</span>`);
   const sr = srCheck(spell, ctx);
-  if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
+  if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr)}</span>`);
   return parts.join('');
 }
 
@@ -249,7 +250,7 @@ function showLineDetails(app, key) {
     const listed = effects.reduce((n, e) => n + e.value, 0);
     const rows = [...w.attack.filter(r => r.label !== 'Active effects on attack rolls'), ...effects,
       ...(listed !== fxTotal ? [{ label: 'Effects of the same type do not stack', value: fxTotal - listed }] : [])];
-    html += `<h3>Attack roll${w.count > 1 ? ` (each of ${w.count})` : ''}</h3>${table(rows, signed(w.attackTotal))}`;
+    html += `<h3>${w.maneuver ? 'Combat maneuver check' : 'Attack roll'}${w.count > 1 ? ` (each of ${w.count})` : ''}</h3>${table(rows, signed(w.attackTotal))}`;
   }
   if (w.dc) html += `<h3>Saving throw DC</h3>${table(w.dc, String(w.dcTotal))}`;
   if (w.damage.length) {

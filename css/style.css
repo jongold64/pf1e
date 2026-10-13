@@ -964,6 +964,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* A weapon's range beside its name; on the Actions card every number, roll and button stays on one line. */
 .b-range { margin-left: 6px; white-space: nowrap; }
 .b-table td:not(:first-child) { white-space: nowrap; }
+@media (min-width: 1000px) { .b-table td:first-child { white-space: nowrap; } }
+/* A Character tab card opened larger: a wider window, every row of its tables on one line. */
+#detail-dialog:has(.b-big) { width: min(1100px, calc(100vw - 32px)); }
+.b-big .b-table td { white-space: nowrap; }
 /* On a narrower screen a class ability's note (DC, uses left, Use) may wrap rather than run past the card. */
 @media (max-width: 1000px) { .b-class-attacks td:nth-child(4) { white-space: normal; } }
 /* The Character tab may use more of a wide screen than the other tabs, so its cards' rows fit on one line. */
@@ -1068,6 +1072,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-spell-num .roll-button:not(.roll-icon) { padding: 1px 6px !important; font-size: 0.75rem; min-height: 0 !important; }
 .b-spell-num .roll-button .d20 { width: 16px; height: 16px; }
 .b-spell-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+/* Spells with numbers and rolls: one to a row, so each of their lines fits on one line. */
+.b-spell-list:has(.b-spell-nums) { grid-template-columns: 1fr; }
+.b-spell-num { white-space: nowrap; }
+@media (max-width: 1000px) { .b-spell-num { white-space: normal; } }
 /* Character tab Gear: magic item rows (worn box, what it gives) and potions/scrolls/wands with Use. */
 .b-item-row { border-bottom: 1px solid var(--border); padding: 3px 0; font-size: 0.9rem; }
 .b-item-row:last-child { border-bottom: 0; }
