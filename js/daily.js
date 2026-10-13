@@ -65,7 +65,9 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   // Worked out by the rules elsewhere: channel energy, lay on hands / touch of corruption, smite.
   const classOf = name => counts.find(e => e.cls.name === name)?.cls.id || '';
   for (const c of channelEnergy(stats, view.haveFeats)) add(`Channel ${c.energy} energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`, c.uses, 'uses', '',
-    { how: `3 ${sg(mod.cha)} (Charisma modifier), and more from feats such as Extra Channel`, cls: classOf(c.source) || from(['cleric', 'oracle', 'warpriest', 'paladin'], '').cls, feature: 'Channel Energy' });
+    { how: `${(stats.channelFrom || []).some(f => f.source === c.source) ? 1 : 3} ${sg(mod.cha)} (Charisma modifier), and more from feats such as Extra Channel`,
+      cls: classOf(c.source) || from(['cleric', 'oracle', 'warpriest', 'paladin'], '').cls, feature: 'Channel Energy',
+      text: (stats.channelFrom || []).find(f => f.source === c.source)?.text || '' });
   for (const l of layOnHands(stats)) add(l.name, l.uses, 'uses', '', { how: `half your level ${sg(mod.cha)} (Charisma modifier)`, ...from(['paladin', 'antipaladin'], l.name) });
   for (const s of smite(stats)) add(s.name, s.uses, 'uses', '', { how: 'once a day, and one more at 4th level and every 3 levels after', ...from(['paladin', 'antipaladin'], s.name) });
   // Every other "N/day" entry on a class table (challenge, judgment, wild shape, knockout...): the latest one reached.

@@ -482,6 +482,9 @@ export function channelEnergy(stats, haveFeats = []) {
   if (lv('antipaladin') >= 4) add('Antipaladin', 'negative', lv('antipaladin'), Math.floor((Math.floor(lv('antipaladin') / 2) + cha) / 2));
   if (lv('warpriest') >= 4) add('Warpriest', 'positive or negative', lv('warpriest') - 3,
                                Math.floor((Math.floor(lv('warpriest') / 2) + stats.mod.wis) / 2));
+  // Channel like a cleric from a chosen ability (an oracle's Life mystery Channel revelation, a shaman's Life spirit):
+  // positive energy at that class level, 1 + Cha times a day. stats.channelFrom: [{ source, level }] (app.js).
+  for (const c of stats.channelFrom || []) add(c.source, 'positive', c.level, 1 + cha);
   return out;
 }
 

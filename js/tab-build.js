@@ -1,7 +1,7 @@
 // Build tab: the whole character on one page, for play. Everything comes from the other tabs' numbers (computeView);
 // here it's laid out compactly, with a small d20 to roll and a small + for Details (the same popups as the other tabs),
 // daily uses to tick off (a running total beside each; the popup marks them and starts a new day), and the player's
-// notes. Sections show only when the character has something for them; a caster's spells come right after the basics.
+// notes. Sections show only when the character has something for them; Actions holds the attacks, class abilities and spells.
 import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
@@ -83,7 +83,20 @@ export function renderBuild(app, view, parts) {
   const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
     : '<p class="muted">Nothing on. Switch effects on in Active effects (Build tab).</p>';
 
-  // Attacks: weapons with attack, damage and critical rolls; class attacks.
+  // Daily uses: a running total beside each; tapping opens the popup to tick them off.
+  const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
+  // An ability's uses left and a Use button (one use, round or point spent); the count opens Daily uses to change it.
+  const useDaily = name => {
+    const d = daily.find(x => x.name === name);
+    if (!d) return '';
+    const left = usesLeft(d, state.daily);
+    return `<span class="b-use-left"><button type="button" class="link" data-b-uses="${esc(d.key)}"><b>${left}</b> / ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`} left</button>
+      <button type="button" data-b-use-daily="${esc(d.key)}"${left ? '' : ' disabled'}>Use</button></span>`;
+  };
+  const channelName = c => `Channel ${c.energy} energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`;
+
+  // Actions: weapons with attack, damage and critical rolls; class attacks; channel energy, lay on hands, smite and
+  // the other abilities with daily uses (each with a Use button); then the spells.
   const weapons = weaponSummaries(app, view);
   // Each number stays on one line with its d20 (b-rc).
   const rc = (text, rollHtml) => `<span class="b-rc"><span>${esc(text)}</span>${rollHtml}</span>`;
@@ -102,15 +115,20 @@ export function renderBuild(app, view, parts) {
   // Channel energy, lay on hands / touch of corruption (melee touch) and smite (Character tab rows), here too.
   const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
   const powers = [
-    ...channelEnergy(stats, view.haveFeats).map(c => `<tr><td>Channel ${esc(c.energy)}</td><td></td><td>${esc(c.dice)}${roll({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] }, 'channel')}</td><td class="muted">DC ${c.dc} Will half · ${c.uses}/day</td><td>${plus('classfeat', `Channel ${c.energy} energy`, 'channel energy')}</td></tr>`),
+    ...channelEnergy(stats, view.haveFeats).map(c => `<tr><td>Channel ${esc(c.energy)}${c.source !== 'Cleric' ? ` <small class="muted">(${esc(c.source)})</small>` : ''}</td><td></td><td>${esc(c.dice)}${roll({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] }, 'channel')}</td><td class="muted">DC ${c.dc} Will half${useDaily(channelName(c))}</td><td>${plus('classfeat', `Channel ${c.energy} energy`, 'channel energy')}</td></tr>`),
     ...layOnHands(stats).map(l => `<tr><td>${esc(l.name)}</td><td>${l.heals ? '' : esc(signed(touch))}</td><td>${esc(l.dice)}${roll(l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
-        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td class="muted">${l.uses}/day</td><td>${plus('classfeat', l.name, l.name)}</td></tr>`),
-    ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td class="muted">+${sm.deflection} deflection AC · ${sm.uses}/day · switch it on in Active effects</td><td>${plus('classfeat', sm.name, sm.name)}</td></tr>`),
+        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] }, l.name)}</td><td class="muted">${useDaily(l.name)}</td><td>${plus('classfeat', l.name, l.name)}</td></tr>`),
+    ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td class="muted">+${sm.deflection} deflection AC · switch it on in Active effects${useDaily(sm.name)}</td><td>${plus('classfeat', sm.name, sm.name)}</td></tr>`),
   ].join('');
+  // Every other ability with daily uses (rage, bardic performance, ki, domain and school powers...): uses left and Use.
+  const shown = new Set([...channelEnergy(stats, view.haveFeats).map(channelName), ...layOnHands(stats).map(l => l.name), ...smite(stats).map(s => s.name)]);
+  const abilities = daily.filter(d => d.unit !== 'spells' && !shown.has(d.name))
+    .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('');
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
   const attacks = noWeapons + ((atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">
       ${atk ? `<thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody>` : ''}
-      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '');
+      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '')
+    + (abilities ? `<h4 class="b-sub">Class abilities</h4><div class="b-feats">${abilities}</div>` : '');
 
   // Defense: the defensive switches, armor a class feature gives, and situational notes (the worn armor's numbers are
   // on the Armor tab; AC is in the highlighted row).
@@ -125,9 +143,6 @@ export function renderBuild(app, view, parts) {
         const name = n.split(':')[0].replace(/\s*\(.*\)$/, '').trim();
         return `<div class="b-feat"><span>${esc(n)}</span>${plus('classfeat', name, name)}</div>`;
       }).join('')}</div>` : ''}`;
-
-  // Daily uses: a running total beside each; tapping opens the popup to tick them off.
-  const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
 
   // Spellcasting: prepared spells with cast boxes; spontaneous casters' spells known by level.
   const spells = renderSpells(app, view, parts);
@@ -201,21 +216,20 @@ export function renderBuild(app, view, parts) {
   });
   const gearHtml = `${list('From your class', fromClass)}${magic.length ? `<h4 class="b-sub">Magic items</h4><ul class="b-item-list">${magic.join('')}</ul>` : ''}${list('Potions, scrolls and wands', made)}`;
 
-  const caster = view.casting.casting.some(c => c.effectiveLevel >= 1 && view.counts.find(x => x.cls.id === c.cls.id)?.level * 2 > view.level);
-  // Tap anywhere on Abilities and Saves or Attacks (not on a roll, ? or switch) to open it larger.
+  // Actions: the attacks and class abilities, then the spells.
+  const actions = attacks + (spells ? `<h4 class="b-sub">Spells</h4>${spells}` : '');
+  // Tap anywhere on a card (not on a roll, ? or switch) to open it larger.
   bigCards.abilities = { title: 'Abilities and Saves', html: core };
-  bigCards.attacks = { title: 'Attacks', html: attacks };
+  bigCards.actions = { title: 'Actions', html: actions };
   bigCards.defense = { title: 'Defense', html: defense };
   bigCards.gear = { title: 'Gear', html: gearHtml };
-  bigCards.spells = { title: 'Spells', html: spells };
   bigCards.features = { title: 'Class features and choices', html: features };
   bigCards.feats = { title: 'Feats and traits', html: feats };
   bigCards.skills = { title: 'Skills', html: skills };
   // Notes: a bigger box to write in (it saves as you type, like the card's).
   bigCards.notes = { title: 'Notes', html: `<textarea class="b-notes-big" data-big-notes rows="16" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>` };
   const tap = key => ` b-tapcard" data-big="${key}`;
-  const left = [card('Abilities and Saves', core, tap('abilities')), card('Attacks', attacks, tap('attacks')), card('Defense', defense, tap('defense'))];
-  const spellCard = card('Spells', spells, ` b-wide${tap('spells')}`);
+  const left = [card('Abilities and Saves', core, tap('abilities')), card('Actions', actions, ` b-wide${tap('actions')}`), card('Defense', defense, tap('defense'))];
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`, tap('notes'));
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
   // The highlighted row's extras: initiative, hero points, the class's main pools (what's left; tap to tick them off),
@@ -239,8 +253,8 @@ export function renderBuild(app, view, parts) {
       <span>${esc(initials)}</span></button>`;
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div><div class="b-ac-row">${acBox}${heroPts}</div><div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
-      <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
-        ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${caster ? '' : spellCard}${comps}
+      <div>${card('On now', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
+        ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
       <div>${card('Skills', skills, tap('skills'))}</div>
     </div>`;

@@ -954,6 +954,12 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
         baseScores: scores(14, 10, 10, 10, 10, 14), flexibleChoice: 'cha' })).length, 0);
   const wp7 = characterStats({ race: race('human'), cls: cls('warpriest'), level: 7, baseScores: scores(14, 10, 10, 10, 14, 10), flexibleChoice: 'wis' });
   check('warpriest 7 channels as cleric 4: 2d6', channelEnergy(wp7)[0].dice, '2d6');
+  const or5 = characterStats({ race: race('human'), cls: cls('oracle'), level: 5, baseScores: scores(10, 10, 10, 10, 10, 14), flexibleChoice: 'cha' });
+  check('oracle without the Channel revelation does not channel', channelEnergy(or5).length, 0);
+  // Oracle 5 with the Channel revelation, Cha 16 (+3): positive energy, 3d6, DC 10 + 2 + 3 = 15, 1 + 3 = 4/day (+2 Extra Channel)
+  const or5c = { ...or5, channelFrom: [{ source: 'Oracle', level: 5 }] };
+  check('oracle 5 Channel revelation', JSON.stringify(channelEnergy(or5c, ['Extra Channel']).map(c => [c.source, c.energy, c.dice, c.dc, c.uses])),
+        '[["Oracle","positive","3d6",15,6]]');
   check('carrying capacity Str 10, 18, 30', ['10', '18', '30'].map(s => JSON.stringify(carryingCapacity(Number(s)))).join(' '),
         '{"light":33,"medium":66,"heavy":100} {"light":100,"medium":200,"heavy":300} {"light":533,"medium":1066,"heavy":1600}');
   check('Small carries three quarters', carryingCapacity(10, 'Small').heavy, 75);

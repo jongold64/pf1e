@@ -1066,6 +1066,11 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-item-row { border-bottom: 1px solid var(--border); padding: 3px 0; font-size: 0.9rem; }
 .b-item-row:last-child { border-bottom: 0; }
 .b-use { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+/* Actions: an ability's uses left and its Use button. */
+.b-use-left { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; white-space: nowrap; color: var(--text); }
+.b-use-left button:not(.link) { padding: 1px 10px; min-height: 26px; }
+.b-feat.b-action .b-use-left { margin-left: auto; }
+.b-big .b-use-left button:not(.link) { min-height: 40px; padding: 0 16px; font-size: 1rem; }
 .b-use button:not(.q-details) { padding: 1px 10px; min-height: 26px; }
 .b-item-list { list-style: none; padding: 0; margin: 0; }
 .b-item-list > li { border-bottom: 1px solid var(--border); padding: 2px 0; }

@@ -737,6 +737,18 @@ function intenseSpells(counts) {
   return power ? { school: 'evocation', amount: Math.max(1, Math.floor(wiz.level / 2)), name: 'Intense Spells' } : null;
 }
 
+// Channeling like a cleric from a chosen ability (rules.js channelEnergy): an oracle's Channel revelation (Life mystery),
+// a shaman's Life spirit. [{ source, level, text }].
+function channelGrants(counts) {
+  const out = [];
+  const level = id => counts.find(e => e.cls.id === id)?.level || 0;
+  if (level('oracle') && Object.entries(state.talents).some(([slot, id]) => slot.split('|')[0] === 'oracle' && id === 'channel'))
+    out.push({ source: 'Oracle', level: level('oracle'), text: data.talentsById.get('channel')?.text || '' });
+  const spiritChannel = level('shaman') && (pathOf('shaman', 'spirit')?.powers || []).find(p => /^channel$/i.test(p.name));
+  if (spiritChannel) out.push({ source: 'Shaman', level: level('shaman'), text: spiritChannel.text });
+  return out;
+}
+
 // Armor the character's revelations conjure (defense.js): [{ id, name, bonus }] at the oracle level.
 function conjuredArmors(counts) {
   return counts.flatMap(({ cls, level }) => Object.entries(state.talents)
@@ -780,6 +792,8 @@ function classFeatureText(name) {
     const t = featureDescription(cls, n);
     if (t) return t;
   }
+  // Channeling from an oracle's revelation or a shaman's spirit: that ability's text.
+  if (/^channel/i.test(name)) return view.stats.channelFrom?.[0]?.text || '';
   return '';
 }
 
@@ -851,6 +865,8 @@ function initBuild() {
     const use = e.target.closest('[data-b-use-item]');
     if (use) { useCraftedItem(Number(use.dataset.bUseItem)); return; }
     if (itemRowClick(app, e)) return;
+    const ud = e.target.closest('[data-b-use-daily]');
+    if (ud) { spendDaily(ud.dataset.bUseDaily); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
@@ -891,13 +907,20 @@ function initBuild() {
 }
 const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneous, bladebound: (state.archetypes.magus || []).includes('magus-bladebound'), powers: dailyPowers() });
 
+// One use (round, point) of a daily ability spent, up to its total.
+function spendDaily(key) {
+  const d = dailyUsesFor().find(x => x.key === key);
+  if (d) update({ daily: { ...state.daily, [key]: Math.min(d.max, (state.daily[key] || 0) + 1) } });
+}
+
 // Chosen powers with a daily limit, for Daily uses: the powers of each class's school, bloodline, order, spirit... and
 // domains that its level has reached, their uses read from their text (daily.js powerUses); a wizard's bonded object.
 function dailyPowers() {
   const out = [];
   for (const { cls, level } of view.counts) {
     const add = (p, from) => {
-      if ((p.level || 1) > level) return;
+      // (A Life spirit's Channel is channel energy, counted with the rest: rules.js channelEnergy.)
+      if ((p.level || 1) > level || /^channel$/i.test(p.name)) return;
       const u = powerUses(p.text, level, view.stats.mod);
       if (u?.max > 0) out.push({ name: `${p.name} (${from})`, max: u.max, unit: u.unit, text: p.text, how: `from its rules text at ${cls.name} level ${level}` });
     };
@@ -2038,6 +2061,7 @@ function computeView() {
     fx = effectTotals(allBuffs, customAll);
   }
   const stats = statsWith(gear);
+  stats.channelFrom = channelGrants(counts);
   // Feat prerequisites use the scores without temporary effects.
   const plainScores = statsWith(gear, null).scores;
   const skillRanks = Object.fromEntries(skillRowNames().filter(n => state.skills[n]).map(n => [n, state.skills[n]]));
@@ -4279,6 +4303,10 @@ async function start() {
   $('detail-body').addEventListener('click', e => {
     const d = e.target.closest('.b-big [data-b-detail]');
     if (d) { buildDetail(d.dataset.bDetail, d.dataset.arg); return; }
+    const ud = e.target.closest('.b-big [data-b-use-daily]');
+    if (ud) { spendDaily(ud.dataset.bUseDaily); openBigCard(ud.closest('[data-big-pop]').dataset.bigPop); return; }
+    const uo = e.target.closest('.b-big [data-b-uses]');
+    if (uo) { popDailyUses(app, view, buildParts(), uo.dataset.bUses); return; }
     const use = e.target.closest('.b-big [data-b-use-item]');
     if (use) { useCraftedItem(Number(use.dataset.bUseItem)); openBigCard(use.closest('[data-big-pop]').dataset.bigPop); return; }
     if (e.target.closest('.b-big')) itemRowClick(app, e);
