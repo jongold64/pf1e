@@ -1132,3 +1132,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner .b-portrait { border-radius: 14px; }
 .b-portrait svg { inset: 10px 10px 0; width: calc(100% - 20px); height: calc(100% - 10px); }
 .b-banner .b-vitals { align-items: center; }
+/* The portrait on the left; beside it HP and Init (level with its top), then AC under them. */
+.b-banner .b-vitals { align-items: flex-start; flex-wrap: nowrap; }
+.b-banner .b-portrait { align-self: flex-start; }
+.b-vitals-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.b-vitals-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }

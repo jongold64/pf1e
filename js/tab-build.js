@@ -234,7 +234,7 @@ export function renderBuild(app, view, parts) {
   const portrait = `<button type="button" class="b-portrait" data-b-portrait aria-label="Character portrait (coming later)" title="Portrait: coming later">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
       <span>${esc(initials)}</span></button>`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}${hpBox}${initBox}</div>${acBox}${extras}</div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div>${acBox}</div></div>${extras}</div>
     <div class="b-main">
       <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${caster ? '' : spellCard}${comps}
