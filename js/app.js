@@ -156,6 +156,7 @@ const state = {
   blessings: [],     // a warpriest's two blessings (data/blessings.json ids)
   daily: {},         // Build tab: uses spent today, by daily.js key
   notes: '',         // Build tab: the player's notes
+  portrait: '',      // Character tab: the character's picture, a small square JPEG (data URL); '' for the silhouette
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (cleric, warpriest, inquisitor)
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
@@ -224,6 +225,8 @@ function load(saved) {
   Object.assign(state, structuredClone(DEFAULTS));
   if (saved && typeof saved === 'object') Object.assign(state, structuredClone(saved), { base: { ...state.base, ...saved.base } });
   state.name = typeof state.name === 'string' ? state.name.slice(0, 60) : '';
+  // A portrait: only a picture's data URL of a sensible size.
+  state.portrait = typeof state.portrait === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(state.portrait) && state.portrait.length < 400000 ? state.portrait : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
@@ -838,10 +841,7 @@ function initBuild() {
       return;
     }
     // The portrait (a placeholder for now).
-    if (e.target.closest('[data-b-portrait]')) {
-      openDetail('Character portrait', '<p>A picture of your character will go here: coming in a later update. For now it shows a silhouette with the character’s initials.</p>');
-      return;
-    }
+    if (e.target.closest('[data-b-portrait]')) { popPortrait(); return; }
     // A tap anywhere else in the On now card opens it larger (popOnNow).
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
     // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
@@ -922,6 +922,51 @@ const directText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.text
 function openBigCard(key) {
   const c = bigCard(key);
   if (c) openDetail(c.title, `<div class="build b-big" data-big-pop="${esc(key)}">${c.html}</div>`);
+}
+
+// The portrait: choose a picture (the tablet's photos or camera, or a file), shown cropped to a square; or remove it.
+function popPortrait() {
+  const pic = state.portrait;
+  openDetail('Character portrait', `<div class="portrait-pop">
+      ${pic ? `<img src="${pic}" alt="Your character's portrait">` : '<p>No picture yet: the silhouette with your character’s initials shows instead.</p>'}
+      <p class="hint">Any picture works: it's cropped to a square from the middle and made small, then saved with this character
+        (and goes along when you Export it).</p></div>`,
+    [{ label: pic ? 'Choose another picture' : 'Choose a picture', primary: true, run: choosePortrait },
+     ...(pic ? [{ label: 'Remove the picture', run: () => update({ portrait: '' }) }] : [])]);
+}
+
+function choosePortrait() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+      update({ portrait: await squarePicture(file, 256) });
+    } catch {
+      alert('That picture couldn’t be read. Try a JPEG or PNG.');
+    }
+  });
+  input.click();
+}
+
+// A picture file as a size × size JPEG data URL: the middle square of it, scaled down.
+function squarePicture(file, size) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      canvas.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+    img.src = url;
+  });
 }
 
 // Using a potion or scroll (one fewer; gone at none) or a wand (a charge: a wand has 50; a used-up wand is gone).
