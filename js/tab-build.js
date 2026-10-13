@@ -125,9 +125,10 @@ export function renderBuild(app, view, parts) {
   const abilities = daily.filter(d => d.unit !== 'spells' && !shown.has(d.name))
     .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('');
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
-  const attacks = noWeapons + ((atk || classAtk || powers) ? `${switches ? `<div class="b-switches">${switches}</div>` : ''}<table class="b-table">
-      ${atk ? `<thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody>` : ''}
-      ${classAtk || powers ? `<tbody class="b-class-attacks">${classAtk}${powers}</tbody>` : ''}</table>` : '')
+  // Weapons and class abilities in two tables, so a class ability's long note doesn't widen the weapons' columns.
+  const attacks = noWeapons + (switches && (atk || classAtk || powers) ? `<div class="b-switches">${switches}</div>` : '')
+    + (atk ? `<table class="b-table"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody></table>` : '')
+    + (classAtk || powers ? `<table class="b-table b-class-table"><tbody class="b-class-attacks">${classAtk}${powers}</tbody></table>` : '')
     + (abilities ? `<h4 class="b-sub">Class abilities</h4><div class="b-feats">${abilities}</div>` : '');
 
   // Defense: the defensive switches, armor a class feature gives, and situational notes (the worn armor's numbers are
@@ -258,7 +259,42 @@ export function renderBuild(app, view, parts) {
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
       <div>${card('Skills', skills, tap('skills'))}</div>
     </div>`;
+  fitTables(box);
+  // Fit them again when the screen turns or the window changes size.
+  if (!box.dataset.fitWatch) {
+    box.dataset.fitWatch = '1';
+    new ResizeObserver(() => fitTables(box)).observe(box);
+  }
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+}
+
+// The cards' tables (the Actions card's weapons and class abilities) use the room they have: the largest text, from
+// 11.5 to 17 px, at which every row of the weapons still fits on one line (when even the smallest doesn't, rows wrap
+// as before). The class abilities take the same size; their note may wrap.
+function fitTables(box) {
+  for (const c of box.querySelectorAll('.b-card')) {
+    const tables = [...c.querySelectorAll('.b-table')];
+    if (!tables.length) continue;
+    const main = tables.filter(t => !t.classList.contains('b-class-table'));
+    const sizes = (main.length ? main : tables).map(fitTable).filter(Boolean);
+    if (sizes.length) for (const t of tables) t.style.fontSize = `${Math.min(...sizes)}px`;
+  }
+}
+
+// The largest text size (px) at which a table's rows fit its card on one line, 11.5 at the least; 0 when hidden.
+function fitTable(t) {
+  const pad = getComputedStyle(t.parentElement);
+  const room = t.parentElement.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+  if (room <= 0) return 0;
+  t.style.width = 'max-content';
+  let size = 17;
+  t.style.fontSize = `${size}px`;
+  while (size > 11.5 && t.getBoundingClientRect().width > room) {
+    size -= 0.5;
+    t.style.fontSize = `${size}px`;
+  }
+  t.style.width = '';
+  return size;
 }
 
 // Spells: for each casting class, its caster level, concentration and DCs, then each spell level: a preparer's slots

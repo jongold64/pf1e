@@ -921,6 +921,7 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .b-table th { text-align: left; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); padding: 2px 4px; }
 .b-table td { padding: 2px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 .b-class-attacks td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.b-class-table { margin-top: 4px; }
 .b-switches { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 4px; }
 .b-switch { display: inline-flex; align-items: center; gap: 4px; }
 .b-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
