@@ -259,42 +259,42 @@ export function renderBuild(app, view, parts) {
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
       <div>${card('Skills', skills, tap('skills'))}</div>
     </div>`;
-  fitTables(box);
-  // Fit them again when the screen turns or the window changes size.
+  fitCards(box, true);
+  // Fit them again when the screen turns or the window changes width.
   if (!box.dataset.fitWatch) {
     box.dataset.fitWatch = '1';
-    new ResizeObserver(() => fitTables(box)).observe(box);
+    new ResizeObserver(() => fitCards(box)).observe(box);
   }
   if (notesFocused) { const n = $('b-notes'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
 }
 
-// The cards' tables (the Actions card's weapons and class abilities) use the room they have: the largest text, from
-// 11.5 to 17 px, at which every row of the weapons still fits on one line (when even the smallest doesn't, rows wrap
-// as before). The class abilities take the same size; their note may wrap.
-function fitTables(box) {
-  for (const c of box.querySelectorAll('.b-card')) {
-    const tables = [...c.querySelectorAll('.b-table')];
-    if (!tables.length) continue;
-    const main = tables.filter(t => !t.classList.contains('b-class-table'));
-    const sizes = (main.length ? main : tables).map(fitTable).filter(Boolean);
-    if (sizes.length) for (const t of tables) t.style.fontSize = `${Math.min(...sizes)}px`;
+// Every card uses the room it has: it's scaled up (CSS zoom, 1 to 1.45) as far as its rows still fit on one line:
+// the Actions card's weapons, ability scores and saves, skills, switches, gear, feats and features (while measuring,
+// .b-fitting keeps those rows from wrapping). Notes in small type, summaries, hints, class abilities' notes and spell
+// lines may wrap, so they don't hold a card back; a card with nothing that must stay on one line (Notes, On now, the
+// summaries) takes the smallest size of the other cards in its column. When even 1 doesn't fit, rows wrap as before.
+const ZOOMS = [1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1];
+const ONE_LINE = '.b-table, .b-ab, .b-stat, .b-skills > div, .b-feat, .b-switch';
+let fittedWidth = 0;
+function fitCards(box, force = false) {
+  const width = box.clientWidth;
+  // (Drawn while the tab is hidden: fit when it's shown.)
+  if (!width) { fittedWidth = 0; return; }
+  if (!force && width === fittedWidth) return;
+  fittedWidth = width;
+  for (const col of box.querySelectorAll('.b-main > div')) {
+    const cards = [...col.querySelectorAll(':scope > .b-card')];
+    const fits = cards.map(c => {
+      c.style.zoom = '';
+      if (!c.querySelector(ONE_LINE)) return null;
+      c.classList.add('b-fitting');
+      const z = ZOOMS.find(n => { c.style.zoom = n; return c.scrollWidth <= c.clientWidth + 1; }) || 1;
+      c.classList.remove('b-fitting');
+      return z;
+    });
+    const least = Math.min(...fits.filter(Boolean), ZOOMS[0]);
+    cards.forEach((c, i) => { c.style.zoom = fits[i] ?? least; });
   }
-}
-
-// The largest text size (px) at which a table's rows fit its card on one line, 11.5 at the least; 0 when hidden.
-function fitTable(t) {
-  const pad = getComputedStyle(t.parentElement);
-  const room = t.parentElement.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
-  if (room <= 0) return 0;
-  t.style.width = 'max-content';
-  let size = 17;
-  t.style.fontSize = `${size}px`;
-  while (size > 11.5 && t.getBoundingClientRect().width > room) {
-    size -= 0.5;
-    t.style.fontSize = `${size}px`;
-  }
-  t.style.width = '';
-  return size;
 }
 
 // Spells: for each casting class, its caster level, concentration and DCs, then each spell level: a preparer's slots

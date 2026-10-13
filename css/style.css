@@ -922,6 +922,10 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .b-table td { padding: 2px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 .b-class-attacks td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
 .b-class-table { margin-top: 4px; }
+/* While a card is being fitted (fitCards in tab-build.js): its rows on one line, except what may wrap. */
+.b-fitting :is(.b-table, .b-ab, .b-stat, .b-skills > div, .b-feat, .b-switch),
+.b-fitting :is(.b-table, .b-ab, .b-stat, .b-skills > div, .b-feat, .b-switch) * { white-space: nowrap; }
+.b-fitting :is(small, .muted, .b-class-table *, .b-spell-nums, .b-spell-nums *, .b-summary, .hint) { white-space: normal; }
 .b-switches { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 4px; }
 .b-switch { display: inline-flex; align-items: center; gap: 4px; }
 .b-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
@@ -975,7 +979,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 #detail-dialog:has(.b-big) { width: min(1100px, calc(100vw - 32px)); }
 .b-big .b-table td { white-space: nowrap; }
 /* On a narrower screen a class ability's note (DC, uses left, Use) may wrap rather than run past the card. */
-@media (max-width: 1000px) { .b-class-attacks td:nth-child(4) { white-space: normal; } .b-class-attacks .b-use-left { flex-wrap: wrap; gap: 2px 6px; margin-left: 0; } }
+/* A class ability's note (DC, uses left, Use) may wrap rather than run past the card (one line when there's room). */
+.b-table .b-class-attacks td:nth-child(4) { white-space: normal; }
+.b-class-attacks .b-use-left { flex-wrap: wrap; gap: 2px 6px; }
 /* The Character tab may use more of a wide screen than the other tabs, so its cards' rows fit on one line. */
 #tab-build.tab-panel { max-width: 1100px; }
 /* Build tab feats and traits: one a line, with a ?. */
