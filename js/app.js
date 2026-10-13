@@ -938,7 +938,10 @@ function popPortrait() {
 function choosePortrait() {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'image/*';
+  // On a tablet an image-only filter opens just the photo gallery; leave it off there so the full chooser (Files, a
+  // cloud drive, the photos or the camera) opens and any picture file can be picked. A file that isn't a picture is
+  // turned down when it can't be read.
+  if (!(navigator.maxTouchPoints > 0)) input.accept = 'image/*';
   input.addEventListener('change', async () => {
     const file = input.files[0];
     if (!file) return;
