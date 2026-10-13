@@ -475,7 +475,7 @@ export function channelEnergy(stats, haveFeats = []) {
   const extra = 2 * haveFeats.filter(f => f === 'Extra Channel').length;
   const add = (source, energy, level, uses) => {
     if (level < 1) return;
-    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, items: [], uses: Math.max(0, uses) + extra,
+    out.push({ source, energy, level, dice: `${Math.ceil(level / 2)}d6`, items: [], itemTags: [], uses: Math.max(0, uses) + extra,
                dc: 10 + Math.floor(level / 2) + cha + (haveFeats.includes('Improved Channel') ? 2 : 0) });
   };
   if (lv('cleric')) add('Cleric', 'positive or negative', lv('cleric') + lv('holy-vindicator'), 3 + cha);
@@ -493,6 +493,7 @@ export function channelEnergy(stats, haveFeats = []) {
       if (!(stats.channelItems || []).includes(id) || !c.energy.includes(energy)) continue;
       c.dice = `${Math.ceil(c.level / 2) + 2}d6`;
       c.items = [...(c.items || []), `+2d6 from a phylactery of ${energy} channeling${c.energy === energy ? '' : ` (when channeling ${energy} energy)`}`];
+      c.itemTags = [...(c.itemTags || []), `+2d6 phylactery${c.energy === energy ? '' : ` (${energy})`}`];
     }
   }
   return out;

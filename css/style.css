@@ -961,7 +961,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Build tab attacks: a number and its d20 on one line. */
 .b-rc { display: inline-flex; align-items: center; gap: 3px; }
 .b-rc > span { white-space: nowrap; }
-.b-range { display: block; }
+/* A weapon's range beside its name; on the Actions card every number, roll and button stays on one line. */
+.b-range { margin-left: 6px; white-space: nowrap; }
+.b-table td:not(:first-child) { white-space: nowrap; }
+/* On a narrower screen a class ability's note (DC, uses left, Use) may wrap rather than run past the card. */
+@media (max-width: 1000px) { .b-class-attacks td:nth-child(4) { white-space: normal; } }
+/* The Character tab may use more of a wide screen than the other tabs, so its cards' rows fit on one line. */
+#tab-build.tab-panel { max-width: 1100px; }
 /* Build tab feats and traits: one a line, with a ?. */
 .b-sub { margin: 6px 0 2px; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .b-feats { display: flex; flex-direction: column; }
