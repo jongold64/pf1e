@@ -100,10 +100,10 @@ export function renderBuild(app, view, parts) {
   const weapons = weaponSummaries(app, view);
   // Each number stays on one line with its d20 (b-rc).
   const rc = (text, rollHtml) => `<span class="b-rc"><span>${esc(text)}</span>${rollHtml}</span>`;
-  const atk = weapons.map(w => `<tr><td>${esc(w.name)}${w.proficient ? '' : ' <span class="warning" title="Not proficient: −4">⚠</span>'}${w.range ? `<small class="muted b-range">${esc(w.range)}</small>` : ''}</td>
+  const atk = weapons.map(w => `<tr><td><span class="b-wname">${esc(w.name)}${w.proficient ? '' : ' <span class="warning" title="Not proficient: −4">⚠</span>'}</span>${w.range ? `<small class="muted b-range">${esc(w.range)}</small>` : ''}</td>
       <td>${rc(w.attack, roll(w.rolls.attack, `${w.name} attack`))}</td>
       <td>${rc(w.damage, roll(w.rolls.damage, `${w.name} damage`))}</td>
-      <td>${rc(w.critical, w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : '')}</td>
+      <td class="b-crit">${rc(w.critical, w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : '')}</td>
       <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`).join('');
   const combat = app.state.combat || {};
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]

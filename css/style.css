@@ -964,12 +964,17 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* A weapon's range beside its name; on the Actions card every number, roll and button stays on one line. */
 .b-range { margin-left: 6px; white-space: nowrap; }
 .b-table td:not(:first-child) { white-space: nowrap; }
-@media (min-width: 1000px) { .b-table td:first-child { white-space: nowrap; } }
+/* The weapon's name stays on one line (with its ⚠); on a narrower screen only its range may drop under it, and the
+   columns sit a little closer. */
+.b-wname { white-space: nowrap; }
+/* Narrower: no separate critical damage d20 on the card (the attack d20 rolls a threat's confirmation and damage). */
+@media (max-width: 1000px) { .build:not(.b-big) .b-crit .roll-button { display: none; } }
+@media (max-width: 1000px) { .b-table td, .b-table th { padding: 2px 2px; } .b-rc { gap: 1px; } }
 /* A Character tab card opened larger: a wider window, every row of its tables on one line. */
 #detail-dialog:has(.b-big) { width: min(1100px, calc(100vw - 32px)); }
 .b-big .b-table td { white-space: nowrap; }
 /* On a narrower screen a class ability's note (DC, uses left, Use) may wrap rather than run past the card. */
-@media (max-width: 1000px) { .b-class-attacks td:nth-child(4) { white-space: normal; } }
+@media (max-width: 1000px) { .b-class-attacks td:nth-child(4) { white-space: normal; } .b-class-attacks .b-use-left { flex-wrap: wrap; gap: 2px 6px; margin-left: 0; } }
 /* The Character tab may use more of a wide screen than the other tabs, so its cards' rows fit on one line. */
 #tab-build.tab-panel { max-width: 1100px; }
 /* Build tab feats and traits: one a line, with a ?. */
