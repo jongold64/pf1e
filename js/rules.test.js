@@ -1015,6 +1015,13 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('wizard 5 fireball: DC 10 + 3 + 4 Int', line('Fireball'), 'DC 17 Reflex half, 5d6 fire');
   check('wizard 5 magic missile: 3 missiles', line('Magic Missile'), 'hits automatically, 3 missiles of 1d4+1 force');
   check('wizard 5 scorching ray: ranged touch BAB 2 + Dex 2, one ray', line('Scorching Ray'), 'ranged touch +4, 4d6 fire');
+  // Intense Spells (evocation wizard 5): +2 on an evocation spell's damage, once a spell.
+  const ictx = spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wiz, size: 'Medium', schoolBonus: { school: 'evocation', amount: 2, name: 'Intense Spells' } });
+  const iline = name => spellLines(sp(name), ictx).map(l => l.text).join(' | ');
+  check('Intense Spells: fireball 5d6+2', iline('Fireball'), 'DC 17 Reflex half, 5d6+2 fire, (+2 Intense Spells)');
+  check('Intense Spells: magic missile once on the total, not each missile', iline('Magic Missile'), 'hits automatically, 3 missiles of 1d4+1 force, +2 Intense Spells once on the total');
+  check('...and the roll adds it once to the total', rollSpec(spellLines(sp('Magic Missile'), ictx)[0].roll, (seq => () => seq.shift())([1, 2, 3])).lines[0], 'Total damage: 11 (3 × 1d4+1, +2 Intense Spells)');
+  check('Intense Spells: not on a non-evocation spell (mage armor)', iline('Mage Armor'), line('Mage Armor'));
   const focused = spellContext({ cls: cls('wizard'), effectiveLevel: 5, stats: wiz, size: 'Medium',
                                  featChoices: [{ feat: 'Spell Focus', value: 'evocation' }] });
   check('Spell Focus (evocation) adds 1 to the DC', spellLines(sp('Fireball'), focused)[0].text.slice(0, 5), 'DC 18');

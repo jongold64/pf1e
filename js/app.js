@@ -726,6 +726,14 @@ const CLASS_ITEMS = {
   'paladin-divine-defender/Divine Bond': ['armor', 'your bonded armor gains enhancement or special abilities'],
   'antipaladin-iron-tyrant/Fiendish Bond (Su)': ['armor', 'your bonded armor gains enhancement or special abilities'],
 };
+// An evocation wizard's Intense Spells (Core Rulebook): + half the wizard level (at least 1) to an evocation spell's
+// damage, once a spell, from the level the school's power comes at. Its school (or a focused school that keeps it).
+function intenseSpells(counts) {
+  const wiz = counts.find(e => e.cls.id === 'wizard');
+  const power = wiz && (pathOf('wizard', 'school')?.powers || []).find(p => /^intense spells$/i.test(p.name) && (p.level || 1) <= wiz.level);
+  return power ? { school: 'evocation', amount: Math.max(1, Math.floor(wiz.level / 2)), name: 'Intense Spells' } : null;
+}
+
 // Armor the character's revelations conjure (defense.js): [{ id, name, bonus }] at the oracle level.
 function conjuredArmors(counts) {
   return counts.flatMap(({ cls, level }) => Object.entries(state.talents)
@@ -2047,6 +2055,7 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx, defenseOpts,
+    schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.
     deityWeapons: counts.some(c => DEITY_CLASSES.includes(c.cls.id)) && data.weaponsById ? favoredWeaponIds(data.deitiesById.get(state.deity), [...data.weaponsById.values()]) : [],
@@ -3962,7 +3971,7 @@ function spellTable(c, spells) {
     `<p class="hint"><b>${esc(PATH_SPELLS[rule.kind](path, cls)[0])}</b> (${esc(PATH_SPELLS[rule.kind](path, cls)[1])}):
       ${esc(path.spells.map(x => `${ordinal(x.level)} ${x.name}`).join(', '))}</p>`).join('');
   // Caster level, concentration, save DC and spell resistance check, with a Details popup of how each is worked out.
-  const sc = spellContext({ cls, effectiveLevel: c.effectiveLevel, stats: view.stats, size: view.size, featChoices: view.featChoices, haveFeats: view.haveFeats });
+  const sc = spellContext({ cls, effectiveLevel: c.effectiveLevel, stats: view.stats, size: view.size, featChoices: view.featChoices, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
   const castKey = `${cls.id}|cast`;
   if (spells.rows.length) {
     const lateCaster = sc.cl !== c.effectiveLevel;

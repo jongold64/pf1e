@@ -82,7 +82,9 @@ export function evalFormula(formula, vars = {}) {
 
 // What the character needs to know about casting a spell as a given class: caster level, casting ability
 // modifier, BAB and attack modifiers, and school focus bonuses.
-export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [], flawMelee = 0, flawRanged = 0 }) {
+// schoolBonus: extra damage on one school's spells, once a spell (an evocation wizard's Intense Spells):
+// { school, amount, name } or null.
+export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [], flawMelee = 0, flawRanged = 0, schoolBonus = null }) {
   const ability = CASTING_ABILITY[cls.id];
   const focus = {};
   for (const c of featChoices) {
@@ -94,7 +96,7 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
     cls, cl: casterLevel(cls, effectiveLevel), castMod: stats.mod[ability] ?? 0, bab: stats.bab[0], mod: stats.mod,
     // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
     sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, fxMelee: stats.fx?.['melee-attack'] || 0, fxRanged: stats.fx?.['ranged-attack'] || 0, focus, penetration, flawMelee, flawRanged,
-    abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability,
+    abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability, schoolBonus,
   };
 }
 
@@ -145,13 +147,19 @@ export function spellLines(spell, ctx) {
     }
     const amounts = (a.damage || []).map(d => ({ amount: evalFormula(d.formula, vars), types: d.types || [] }))
       .filter(d => d.amount !== null);
+    const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
+    // Intense Spells (evocation wizard): + half the wizard level to the damage, once a spell; on one damage roll it's
+    // added to it, for missiles or rays once to the total (never to each one).
+    const sb = ctx.schoolBonus;
+    const bonus = sb && a.kind !== 'heal' && amounts.length && String(spell.school || '').toLowerCase() === sb.school ? sb.amount : 0;
+    if (bonus && count === 1) amounts[0] = { ...amounts[0], amount: `${amounts[0].amount}+${bonus}` };
     const damage = amounts.map(d => `${d.amount}${d.types.length ? ` ${d.types.join('/')}` : ''}`);
     why.damage = (a.damage || []).map(d => ({ formula: d.formula, amount: evalFormula(d.formula, vars) })).filter(d => d.amount !== null);
-    const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
     if (damage.length) {
       const what = a.kind === 'heal' ? 'heals ' : '';
       const unit = /missile/i.test(spell.name) ? 'missile' : /ray/i.test(spell.name) ? 'ray' : 'attack';
       parts.push(count > 1 ? `${count} ${unit}s of ${damage.join(' + ')}` : what + damage.join(' + '));
+      if (bonus) parts.push(count > 1 ? `+${bonus} ${sb.name} once on the total` : `(+${bonus} ${sb.name})`);
     }
     const label = a.name && a.name !== 'Use' && a.name !== 'Cast' ? a.name : '';
     // What the Roll button rolls: an attack roll for each ray (natural 20 threatens a ×2 critical) and the damage,
@@ -160,9 +168,11 @@ export function spellLines(spell, ctx) {
     let roll = null;
     if (attack !== null && (rollDamage || a.kind !== 'maneuver')) {
       roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, check: 'Attack',
-               groups: [{ attacks: Array(count).fill(attack), damage: rollDamage, threat: 20, mult: 2, heal: a.kind === 'heal' }] };
+               groups: [{ attacks: Array(count).fill(attack), damage: rollDamage, threat: 20, mult: 2, heal: a.kind === 'heal',
+                          ...(bonus && count > 1 ? { bonusOnce: bonus, bonusName: sb.name } : {}) }] };
     } else if (rollDamage) {
-      roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, groups: [{ attacks: [], damage: rollDamage, times: count, heal: a.kind === 'heal' }] };
+      roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, groups: [{ attacks: [], damage: rollDamage, times: count, heal: a.kind === 'heal',
+                                                                   ...(bonus && count > 1 ? { bonusOnce: bonus, bonusName: sb.name } : {}) }] };
     }
     if (parts.length) lines.push({ label, text: parts.join(', '), roll, why: { ...why, attackTotal: attack, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
   }

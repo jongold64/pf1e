@@ -105,7 +105,9 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
           + (more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''));
       }
       if (times > 1 && each.length) {
-        lines.push(`${prefix}Total ${g.word || (g.heal ? 'healing' : 'damage')}: ${sum} (${times} × ${g.damage})${tag}`);
+        // A bonus that counts once on the total (Intense Spells on magic missile), not on each missile.
+        const once = g.bonusOnce || 0;
+        lines.push(`${prefix}Total ${g.word || (g.heal ? 'healing' : 'damage')}: ${sum + once} (${times} × ${g.damage}${once ? `, +${once} ${g.bonusName || 'bonus'}` : ''})${tag}`);
         for (const e of each) under(e);
       } else if (each.length) lines.push(`${prefix}${each[0]}`);
       continue;

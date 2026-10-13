@@ -97,7 +97,7 @@ function spellRollButtons(roll) {
 // and the spell resistance check; '' when it has nothing to roll or work out.
 export function spellNumbersHtml(view, cls, level, spell) {
   const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
-                             flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats });
+                             flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
   const parts = spellLines(spell, ctx).map(l => `<span class="b-spell-num">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}${l.roll ? ` ${spellRollButtons(l.roll)}` : ''}</span>`);
   const sr = srCheck(spell, ctx);
   if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr, 'SR check')}</span>`);
@@ -114,7 +114,7 @@ export function itemSpellNumbersHtml(view, classes, spell, cl) {
   if (!cls) return '';
   const minMod = Math.floor(spell.levels[id] / 2);
   const stats = { ...view.stats, mod: { ...view.stats.mod, [CASTING_ABILITY[id]]: minMod } };
-  return spellNumbersHtml({ ...view, stats, featChoices: [], haveFeats: [] }, cls, cl, spell);
+  return spellNumbersHtml({ ...view, stats, featChoices: [], haveFeats: [], schoolBonus: null }, cls, cl, spell);
 }
 
 function renderMySpells(app, view) {
@@ -136,7 +136,7 @@ function renderMySpells(app, view) {
   // Attack, damage and save DC for each spell, cast as this class.
   const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
                              flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged,
-                             haveFeats: view.haveFeats });
+                             haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
   const row = s => {
     const lines = spellLines(s, ctx);
     const sr = srCheck(s, ctx);
