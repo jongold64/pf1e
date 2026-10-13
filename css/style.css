@@ -1139,3 +1139,4 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-vitals-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
 /* Pools, hero points and Daily uses under AC, beside the portrait (nothing under the portrait). */
 .b-extras { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; }
+.b-ac-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; }
