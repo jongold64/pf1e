@@ -9,6 +9,12 @@ const CORE = {
   'headband-of-vast-intelligence': 'headband-int', 'headband-of-inspired-wisdom': 'headband-wis', 'headband-of-alluring-charisma': 'headband-cha',
   'ring-of-protection': 'ring-of-protection', 'amulet-of-natural-armor': 'amulet-of-natural-armor', 'cloak-of-resistance': 'cloak-of-resistance',
   'bracers-of-armor': 'bracers-of-armor', 'boots-of-striding-and-springing': 'boots-of-striding',
+  // Ioun stones listed one by one (Adventurer's Guide): the core stones' effects.
+  'dusty-rose-prism-normal-ioun-stone': 'ioun-dusty-rose', 'deep-red-sphere-normal-ioun-stone': 'ioun-deep-red',
+  'incandescent-blue-sphere-normal-ioun-stone': 'ioun-incandescent-blue', 'pale-blue-rhomboid-normal-ioun-stone': 'ioun-pale-blue',
+  'pink-rhomboid-normal-ioun-stone': 'ioun-pink', 'pink-and-green-sphere-normal-ioun-stone': 'ioun-pink-and-green',
+  'scarlet-and-blue-sphere-normal-ioun-stone': 'ioun-scarlet-and-blue', 'pale-green-prism-normal-ioun-stone': 'ioun-pale-green',
+  'dark-blue-rhomboid-normal-ioun-stone': 'ioun-dark-blue',
 };
 
 // Items that give a spell's benefits: always (bracers of falcon's aim), or `when` used (offered switched off).
