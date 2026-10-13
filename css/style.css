@@ -1123,3 +1123,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .roll-lines li.roll-total { font-weight: 700; }
 /* Weapons tab: Remove at the end of each weapon's line. */
 .wl-remove { padding: 2px 10px; min-height: 30px; font-size: 0.9rem; margin-left: 4px; }
+/* Character tab: the portrait beside HP and Init (a placeholder: silhouette and initials). */
+.b-banner .b-portrait { position: relative; width: 64px; height: 64px; min-height: 64px; padding: 0; flex: 0 0 auto; align-self: center;
+  border: 2px solid var(--accent); border-radius: 10px; overflow: hidden; background: color-mix(in srgb, var(--warn) 30%, var(--card)); cursor: pointer; }
+.b-portrait svg { position: absolute; inset: 6px 6px 0; width: calc(100% - 12px); height: calc(100% - 6px); fill: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+.b-portrait span { position: absolute; right: 3px; bottom: 1px; font-size: 0.85rem; font-weight: 700; color: var(--accent);
+  background: var(--card); border-radius: 4px; padding: 0 3px; line-height: 1.2; }

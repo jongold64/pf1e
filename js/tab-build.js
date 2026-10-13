@@ -229,7 +229,12 @@ export function renderBuild(app, view, parts) {
   const initBox = `<div class="b-hp-big b-init-big"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>`;
   const extras = `${heroPts}${pools}
     ${daily.length ? '<span class="b-pool"><button type="button" data-b-uses="">Daily uses…</button><button type="button" data-b-newday>New day</button></span>' : ''}`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${hpBox}${initBox}</div>${acBox}${extras}</div>
+  // A small portrait beside HP and Init (a placeholder for now: a silhouette with the character's initials).
+  const initials = (state.name || `${race.name} ${view.counts[0]?.cls.name || ''}`).split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  const portrait = `<button type="button" class="b-portrait" data-b-portrait aria-label="Character portrait (coming later)" title="Portrait: coming later">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
+      <span>${esc(initials)}</span></button>`;
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}${hpBox}${initBox}</div>${acBox}${extras}</div>
     <div class="b-main">
       <div>${card('On now', effects, ' b-onnow')}${left[0]}${caster ? spellCard : ''}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${caster ? '' : spellCard}${comps}

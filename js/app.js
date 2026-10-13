@@ -837,6 +837,11 @@ function initBuild() {
       else update({ customEffects: state.customEffects.map((c, i) => (i === Number(id) ? { ...c, on: false } : c)) });
       return;
     }
+    // The portrait (a placeholder for now).
+    if (e.target.closest('[data-b-portrait]')) {
+      openDetail('Character portrait', '<p>A picture of your character will go here: coming in a later update. For now it shows a silhouette with the character’s initials.</p>');
+      return;
+    }
     // A tap anywhere else in the On now card opens it larger (popOnNow).
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
     // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
