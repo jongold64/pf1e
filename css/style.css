@@ -1054,6 +1054,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-fold[open] > summary::before { content: '▾ '; }
 .b-fold[open] > summary { margin-bottom: 6px; }
 /* Character tab On now: the whole card opens it larger. */
+/* Alignment and deity (Build tab, under the race). */
+.faith { margin-top: 10px; }
+.faith-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.faith-row .row-label { display: flex; align-items: center; gap: 8px; margin: 0; min-width: 0; }
+.faith-row select { width: auto; max-width: min(340px, 60vw); }
+.faith .warning { margin: 8px 0 0; }
+.faith .warning button { margin-left: 6px; }
 .b-onnow { cursor: pointer; }
 /* Active effects popup: an effect's level beside it; Add effects: search, the list with Add, a custom effect. */
 .onnow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }

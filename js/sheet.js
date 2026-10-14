@@ -28,7 +28,7 @@ export function buildSheet({ app, view, name, weapons, skills, moneyRows, featLa
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
 
   const header = `<header class="sheet-header"><h1>${esc(name)}</h1>
-    <p>${esc(race.name)} ${esc(classes)} · level ${view.level} · ${esc(race.size)} ${esc(race.type || '')}</p></header>`;
+    <p>${esc(race.name)} ${esc(classes)} · level ${view.level} · ${esc(race.size)} ${esc(race.type || '')}${state.alignment ? ` · ${esc(state.alignment)}` : ''}${data.deitiesById?.get(state.deity) ? ` · ${esc(data.deitiesById.get(state.deity).name)}` : ''}</p></header>`;
 
   const abilities = table(['Ability', 'Score', 'Modifier'],
     ABILITIES.map(a => [ABILITY_NAMES[a], stats.scores[a], signed(stats.mod[a])]));

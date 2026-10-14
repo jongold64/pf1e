@@ -61,6 +61,7 @@ import { spellContext } from './spell-math.js';
 import { HERO_POINT_USES, heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
 import { randomDie, rollDamage } from './dice.js';
 import { weaponSummaries } from './tab-weapons.js';
+import { ALIGNMENTS, ALIGNMENT_NAMES, alignmentProblems } from './alignment.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
@@ -157,7 +158,8 @@ const state = {
   daily: {},         // Build tab: uses spent today, by daily.js key
   notes: '',         // Build tab: the player's notes
   portrait: '',      // Character tab: the character's picture, a small square JPEG (data URL); '' for the silhouette
-  deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (cleric, warpriest, inquisitor)
+  deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (any class; a cleric, warpriest or inquisitor needs one)
+  alignment: '',     // 'LG', 'NG'... 'CE' (alignment.js), '' not chosen
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
@@ -332,6 +334,7 @@ function load(saved) {
   state.notes = typeof state.notes === 'string' ? state.notes.slice(0, 5000) : '';
   state.blessings = [...new Set((Array.isArray(state.blessings) ? state.blessings : []).filter(id => data.blessingsById?.has(id)))].slice(0, 2);
   state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
+  state.alignment = Object.hasOwn(ALIGNMENT_NAMES, state.alignment) ? state.alignment : '';
   const eid = state.eidolon && typeof state.eidolon === 'object' && !Array.isArray(state.eidolon) ? state.eidolon : {};
   state.eidolon = {
     name: typeof eid.name === 'string' ? eid.name.slice(0, 40) : '',
@@ -1168,6 +1171,18 @@ function buildControls() {
 
   // A new race drops the old one's alternate traits (favored class options that don't exist fall back to +1 HP).
   $('race').addEventListener('change', e => update({ race: e.target.value, alternates: [] }));
+  // Alignment and deity (renderFaith).
+  $('faith').addEventListener('change', e => {
+    const k = e.target.dataset.faith;
+    if (k === 'alignment') update({ alignment: e.target.value });
+    else if (k === 'deity') update({ deity: e.target.value });
+  });
+  $('faith').addEventListener('click', e => {
+    const fix = e.target.closest('[data-faith-fix]');
+    if (fix) { update({ alignment: fix.dataset.faithFix }); return; }
+    const b = e.target.closest('[data-deity-pop]');
+    if (b) popDeity(b.dataset.deityPop);
+  });
   // Alternate racial traits: a tick box each.
   // Details on an alternate racial trait: what it gives and what it takes away, with Take / Remove.
   $('race-alternates').addEventListener('click', e => {
@@ -2553,6 +2568,25 @@ function popBlessing(id) {
     ${b.major ? `<h3>${esc(b.major.name)} (major, 10th level)</h3>${paragraphs(b.major.text)}` : ''}`);
 }
 
+// Alignment and deity (Build tab, under the race): for every character; the classes' alignment rules (a paladin is
+// lawful good, a monk lawful, a cleric within one step of her deity) with a button to fix it when only one will do.
+// The deity is the same one the Classes tab's picker sets for a cleric, warpriest or inquisitor.
+function renderFaith() {
+  const deity = data.deitiesById.get(state.deity) || null;
+  const problems = alignmentProblems(state.alignment, view.counts.map(e => ({ id: e.cls.id, name: e.cls.name, alignment: e.cls.alignment })), deity);
+  const deityOpts = data.deities.map(x => `<option value="${esc(x.id)}"${x.id === state.deity ? ' selected' : ''}>${esc(x.name)} (${esc(x.alignment)})${x.title ? ` — ${esc(x.title)}` : ''}</option>`).join('');
+  const focused = document.activeElement?.closest?.('#faith') ? document.activeElement.dataset.faith : null;
+  $('faith').innerHTML = `<div class="faith-row">
+      <label class="row-label">Alignment <select data-faith="alignment"><option value="">Choose…</option>
+        ${ALIGNMENTS.map(([a, n]) => `<option value="${a}"${a === state.alignment ? ' selected' : ''}>${esc(n)} (${a})</option>`).join('')}</select></label>
+      <label class="row-label">Deity <select data-faith="deity"><option value="">None chosen</option>
+        <option value="${NO_DEITY}"${state.deity === NO_DEITY ? ' selected' : ''}>No deity: an ideal or philosophy</option>${deityOpts}</select></label>
+      ${deity ? `<button type="button" class="skill-details q-details" data-deity-pop="${esc(deity.id)}" title="Details" aria-label="Details: ${esc(deity.name)}">?</button>` : ''}</div>
+    ${problems.map(p => `<p class="warning">⚠ ${esc(p.text)}${p.fix ? ` <button type="button" data-faith-fix="${p.fix}">Make it ${esc(ALIGNMENT_NAMES[p.fix].toLowerCase())}</button>` : ''}</p>`).join('')}
+    ${deity ? `<p class="hint">${esc(deity.name)}: ${esc(deity.alignment)}${deity.concerns ? ` · ${esc(deity.concerns)}` : ''}.</p>` : ''}`;
+  if (focused) $('faith').querySelector(`[data-faith="${focused}"]`)?.focus();
+}
+
 function popDeity(id) {
   const g = data.deitiesById.get(id);
   if (g) openDetail(`${g.name}${g.title ? `, ${g.title}` : ''}`, `<p class="hint">${esc(g.source)}${g.pantheon ? ` · ${esc(g.pantheon)}` : ''}</p>
@@ -3249,6 +3283,7 @@ function render() {
   }
 
   renderAlternates(data.races.find(r => r.id === state.race));
+  renderFaith();
   renderClasses(view);
   renderCharacterBar();
 

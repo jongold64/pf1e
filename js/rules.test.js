@@ -1804,6 +1804,23 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('two rings of protection: both listed (the higher counts by stacking)', effectTotals(itemBuffs([{ id: 'ring-of-protection', option: '+1', qty: 1 }, { id: 'ring-of-protection', option: '+3', qty: 1 }], byId)).ac.deflection, 3);
   check('an item with no bonuses: no effects', itemEffects(byId.get('bag-of-holding') || { name: 'Bag of Holding', id: 'x' }).length, 0);
   check('item effects named for the item', itemBuffs([{ id: 'bracers-of-falcons-aim', qty: 1 }], byId)[0].label, "Bracers of Falcon's Aim: aspect of the falcon");
+  // Alignment rules (alignment.js): a paladin is lawful good, a monk lawful, a barbarian not lawful, a druid neutral on
+  // one axis, a cleric within one step of her deity (not diagonally).
+  {
+    const { alignmentRule, alignmentProblems, oneStep } = await import('./alignment.js');
+    check('paladin: lawful good only', alignmentRule('Lawful good.').allowed.join(), 'LG');
+    check('druid: any neutral', alignmentRule('Any neutral.').allowed.join(), 'NG,LN,N,CN,NE');
+    check('barbarian: any nonlawful', alignmentRule('Any nonlawful.').allowed.join(), 'NG,CG,N,CN,NE,CE');
+    check('one step: LG-NG yes, LG-N no, N-NE yes', [oneStep('LG', 'NG'), oneStep('LG', 'N'), oneStep('N', 'NE')].join(), 'true,false,true');
+    const pal = [{ id: 'paladin', name: 'Paladin', alignment: 'Lawful good.' }];
+    check('paladin with no alignment: offered lawful good', alignmentProblems('', pal).map(p => p.fix).join(), 'LG');
+    check('paladin who is neutral good: a problem', alignmentProblems('NG', pal).length, 1);
+    check('paladin who is lawful good: fine', alignmentProblems('LG', pal).length, 0);
+    const cleric = [{ id: 'cleric', name: 'Cleric', alignment: "A cleric's alignment must be within one step of her deity's" }];
+    check('cleric of a LG deity: LN fine, N not', [alignmentProblems('LN', cleric, { name: 'Iomedae', alignment: 'LG' }).length,
+      alignmentProblems('N', cleric, { name: 'Iomedae', alignment: 'LG' }).length].join(), '0,1');
+    check('fighter: any alignment', alignmentProblems('CE', [{ id: 'fighter', name: 'Fighter', alignment: 'Any.' }]).length, 0);
+  }
   // Barbed chains: base attack bonus + casting modifier; hydraulic push: caster level + the best mental modifier.
   {
     const { maneuverBonus } = await import('./spell-math.js');

@@ -46,7 +46,7 @@ export function renderBuild(app, view, parts) {
   const deity = data.deitiesById?.get(state.deity);
   const head = `<div class="b-head">${state.name ? `<b class="b-name">${esc(state.name)}</b>` : ''}
       <span>${esc(race.name)} ${esc(view.counts.map(e => `${e.cls.name}${e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : ''} ${e.level}`).join(' / '))}</span>
-      <span class="muted">${esc([race.size, deity ? `${deity.name} (${deity.alignment})` : '',
+      <span class="muted">${esc([race.size, state.alignment, deity ? `${deity.name} (${deity.alignment})` : '',
         (race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
 
   // Core numbers.
