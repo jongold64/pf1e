@@ -18,9 +18,10 @@ function countingNow(view) {
   ];
 }
 
-// The Character tab's On now card, larger, to work with: what's counting now; your effects, custom effects and the
-// attack and defense switches, each ticked on or off here (the popup redraws itself); magic items' effects (switched on
-// the Magic Items tab); and a way to the full Active effects list to add more.
+// The Character tab's Active effects card, larger, to work with: what's counting now; your effects (with their caster
+// level, amount or form), custom effects and the attack and defense switches, each ticked on or off here (the popup
+// redraws itself); magic items' effects (switched on the Magic Items tab); and Add effects (popAddEffects) to add more
+// without leaving the Character tab.
 const ATTACK_SWITCHES = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']];
 export function popOnNow(app) {
   const { state } = app;
@@ -29,21 +30,25 @@ export function popOnNow(app) {
   const yours = state.buffs.map(x => [x, buffById.get(x.id)]).filter(([, b]) => b);
   const box = (attr, on, label, note, pop = '') => `<label class="check-row small"><input type="checkbox" ${attr}${on ? ' checked' : ''}>
       <span><b>${esc(label)}</b>${note ? ` <small class="muted">${esc(note)}</small>` : ''}</span>${pop}</label>`;
+  // A caster or class level, an amount (a belt's +4) or a form (a polymorph's animal), as on the Build tab.
+  const levelOf = (b, x) => (b.levels ? `<label class="cl-input">${esc(b.levelName || 'amount')} <select data-onnow-cl="${esc(b.id)}">${b.levels.map(n =>
+      `<option value="${n}"${n === buffAmount(b, x.cl ?? 1) ? ' selected' : ''}>${b.forms ? esc(b.forms[n - 1].label) : b.levelName === 'bonus' ? `+${n}` : n}</option>`).join('')}</select></label>`
+    : b.scales ? `<label class="cl-input">${esc(b.levelName || 'caster level')} <input type="number" min="1" max="20" value="${x.cl ?? 1}" data-onnow-cl="${esc(b.id)}"></label>` : '');
   const attackSw = ATTACK_SWITCHES.filter(([, f]) => view.haveFeats.includes(f))
     .map(([k, f]) => box(`data-b-combat="${k}"`, !!state.combat[k], f, ''));
-  app.openDetail('On now', `<div class="onnow-pop">
+  app.openDetail('Active effects', `<div class="onnow-pop">
     ${totals.length ? `<p class="effect-totals"><b>Counting now:</b> ${esc(totals.join(' · '))}</p>` : '<p class="hint">Nothing counting now.</p>'}
     <h3>Your effects</h3>
-    ${yours.length ? yours.map(([x, b]) => box(`data-onnow-buff="${esc(b.id)}"`, x.on !== false, b.name, buffSummary(b, x.cl ?? 1),
-      `<button type="button" class="skill-details q-details" data-onnow-buff-pop="${esc(b.id)}" aria-label="${esc(b.name)} in a popup" title="Details">?</button>`)).join('')
-      : '<p class="hint">None yet: add spells, abilities and conditions with the button below.</p>'}
+    ${yours.length ? yours.map(([x, b]) => `<div class="onnow-row">${box(`data-onnow-buff="${esc(b.id)}"`, x.on !== false, b.name, buffSummary(b, x.cl ?? 1),
+      `<button type="button" class="skill-details q-details" data-onnow-buff-pop="${esc(b.id)}" aria-label="${esc(b.name)} in a popup" title="Details">?</button>`)}${levelOf(b, x)}</div>`).join('')
+      : '<p class="hint">None yet: add spells, abilities and conditions with <b>Add effects</b> below.</p>'}
     ${state.customEffects.length ? `<h3>Custom effects</h3>${state.customEffects.map((c, i) => box(`data-onnow-custom="${i}"`, !!c.on, c.name || 'Custom effect', '')).join('')}` : ''}
     ${(view.fromItems || []).length ? `<h3>From your magic items</h3><ul>${view.fromItems.map(x => `<li>✓ ${esc(x.label)}</li>`).join('')}</ul>
       <p class="hint">Switch an item on or off on the Magic Items tab (or in Active effects).</p>` : ''}
     <h3>Combat switches</h3>
     ${attackSw.join('')}${defenseSwitchesHtml(view, state.combat, () => '')}
   </div>`, [
-    { label: 'Add more effects', primary: true, run: () => { app.showTab('character'); setTimeout(() => $('effects')?.scrollIntoView({ block: 'start' }), 50); } },
+    { label: 'Add effects', primary: true, run: () => popAddEffects(app) },
     { label: 'Switch all off', run: () => app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })),
       customEffects: state.customEffects.map(c => ({ ...c, on: false })),
       combat: { ...state.combat, powerAttack: false, deadlyAim: false, rapidShot: false, pointBlank: false, combatExpertise: false, fightingDefensively: false, totalDefense: false, conjured: undefined } }) },
@@ -51,6 +56,40 @@ export function popOnNow(app) {
 }
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
+
+// Add effects (from the Character tab's Active effects): every spell, ability, item, circumstance and condition in the
+// catalog, searched by name and narrowed by group, each with Add (it goes on your list, switched on, at your level) and
+// Details; and a custom effect (one bonus with a name). Back returns to Active effects.
+export function popAddEffects(app, q = '', group = '') {
+  const groups = EFFECT_GROUPS.map(([g, label]) => `<option value="${g}"${g === group ? ' selected' : ''}>${esc(label)}</option>`).join('');
+  const opts = (list, value) => list.map(([v, label]) => `<option value="${esc(v)}"${v === value ? ' selected' : ''}>${esc(label)}</option>`).join('');
+  app.openDetail('Add effects', `<div class="addfx-pop">
+    <div class="addfx-find"><input type="search" data-addfx-q value="${esc(q)}" placeholder="Search: bless, haste, flanking, shaken…" aria-label="Search effects">
+      <select data-addfx-group aria-label="Which kind"><option value="">Every kind</option>${groups}</select></div>
+    <ul class="addfx-list">${addList(app, q, group)}</ul>
+    <h3>Custom effect</h3>
+    <p class="hint">For anything not listed (a potion, a class ability, a penalty: enter a negative number). More bonuses for it can be added on the Build tab.</p>
+    <div class="addfx-custom"><input type="text" data-addfx-c="name" placeholder="Name" aria-label="Name">
+      <input type="number" data-addfx-c="value" value="1" aria-label="Bonus (negative for a penalty)">
+      <select data-addfx-c="type" aria-label="Bonus type">${opts(BONUS_TYPES.map(t => [t, t]), 'untyped')}</select>
+      <select data-addfx-c="target" aria-label="Applies to">${opts(TARGETS, 'attack')}</select>
+      <button type="button" data-addfx-custom>Add it</button></div>
+  </div>`, [{ label: 'Back to Active effects', primary: true, run: () => popOnNow(app) }]);
+  setTimeout(() => $('detail-body').querySelector('[data-addfx-q]')?.focus(), 0);
+}
+
+// The catalog's effects matching a search and group: on your list ones say so (and are switched on or off there).
+function addList(app, q, group) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const mine = new Map(app.state.buffs.map(x => [x.id, x]));
+  const list = BUFFS.filter(b => (!group || (b.group || 'spell') === group) && words.every(w => b.name.toLowerCase().includes(w)));
+  const shown = list.slice(0, 120);
+  return shown.map(b => `<li><span><b>${esc(b.name)}</b> <small class="muted">${esc(buffSummary(b, b.levels ? b.levels[0] : app.view.level))}</small></span>
+      ${mine.has(b.id) ? `<span class="muted">${mine.get(b.id).on === false ? 'on your list (off)' : 'on ✓'}</span>` : `<button type="button" data-addfx="${esc(b.id)}">Add</button>`}
+      <button type="button" class="skill-details q-details" data-onnow-buff-pop="${esc(b.id)}" aria-label="${esc(b.name)}: details" title="Details">?</button></li>`).join('')
+    + (list.length > shown.length ? `<li class="hint">${list.length - shown.length} more: type to narrow the list.</li>` : '')
+    + (list.length ? '' : '<li class="hint">Nothing matches: try another word, or add a custom effect below.</li>');
+}
 
 
 export function renderEffects(app, view) {
@@ -223,6 +262,12 @@ function popCustom(app, i) {
      { label: 'Remove it', run: () => app.update({ customEffects: state.customEffects.filter((_, j) => j !== i) }) }]);
 }
 
+function refreshAddList(app) {
+  const body = $('detail-body');
+  const list = body.querySelector('.addfx-list');
+  if (list) list.innerHTML = addList(app, body.querySelector('[data-addfx-q]').value, body.querySelector('[data-addfx-group]').value);
+}
+
 export function initEffects(app) {
   // The On now popup: ticking a box changes it at once, and the popup redraws with the new numbers.
   const pop = $('detail-body');
@@ -238,13 +283,35 @@ export function initEffects(app) {
       app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, on: t.checked } : c)) });
     } else if (t.dataset.bCombat) {
       app.update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    } else if (t.dataset.onnowCl) {
+      const id = t.dataset.onnowCl;
+      const cl = Math.min(20, Math.max(1, Math.floor(Number(t.value)) || 1));
+      app.update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, cl } : x)) });
     } else return;
     popOnNow(app);
   });
   pop.addEventListener('click', e => {
-    const b = e.target.closest('.onnow-pop [data-onnow-buff-pop]');
-    if (b) { e.preventDefault(); popBuff(app, b.dataset.onnowBuffPop); }
+    const b = e.target.closest(':is(.onnow-pop, .addfx-pop) [data-onnow-buff-pop]');
+    if (b) { e.preventDefault(); popBuff(app, b.dataset.onnowBuffPop); return; }
+    // Add effects: an effect onto your list (switched on, at your level or its first amount), or a custom effect.
+    const { state } = app;
+    const add = e.target.closest('.addfx-pop [data-addfx]');
+    if (add) {
+      const buff = buffById.get(add.dataset.addfx);
+      if (buff && !state.buffs.some(x => x.id === buff.id)) app.update({ buffs: [...state.buffs, { id: buff.id, cl: buff.levels ? buff.levels[0] : app.view.level }] });
+      refreshAddList(app);
+      return;
+    }
+    if (e.target.closest('.addfx-pop [data-addfx-custom]')) {
+      const f = k => $('detail-body').querySelector(`[data-addfx-c="${k}"]`).value;
+      const value = Math.trunc(Number(f('value'))) || 0;
+      app.update({ customEffects: [...state.customEffects, { name: f('name').trim().slice(0, 60) || 'Custom effect', value, type: f('type'), target: f('target'), on: true }] });
+      popOnNow(app);
+    }
   });
+  // Add effects: the list follows the search box and the group as you type or choose.
+  pop.addEventListener('input', e => { if (e.target.closest('.addfx-pop [data-addfx-q]')) refreshAddList(app); });
+  pop.addEventListener('change', e => { if (e.target.closest('.addfx-pop [data-addfx-group]')) refreshAddList(app); });
   // Details: inside a buff's label, so it doesn't tick the box.
   $('effects').addEventListener('click', e => {
     if (itemRowClick(app, e)) return;

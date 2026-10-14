@@ -1055,6 +1055,19 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-fold[open] > summary { margin-bottom: 6px; }
 /* Character tab On now: the whole card opens it larger. */
 .b-onnow { cursor: pointer; }
+/* Active effects popup: an effect's level beside it; Add effects: search, the list with Add, a custom effect. */
+.onnow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.onnow-row .cl-input { margin-left: 30px; }
+.addfx-find { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.addfx-find input { flex: 1 1 220px; }
+.addfx-list { list-style: none; padding: 0; margin: 0; max-height: 50vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+.addfx-list li { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.addfx-list li > span:first-child { flex: 1; min-width: 0; }
+.addfx-custom { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.addfx-custom input[type=text] { flex: 1 1 160px; }
+.addfx-custom input[type=number] { width: 5em; }
+.addfx-pop input[type=search], .addfx-pop input[type=text], .addfx-pop input[type=number] { min-height: 40px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+.addfx-pop select { width: auto; flex: 1 1 150px; }
 .b-onnow:hover { border-color: var(--accent); }
 /* Character tab cards that open larger when tapped. */
 .b-tapcard { cursor: pointer; }

@@ -81,7 +81,7 @@ export function renderBuild(app, view, parts) {
     ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on),
     ...defenseOn(state.combat, view.defenseOpts).map(x => ({ name: x.label, off: `combat:${x.key}` }))];
   const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
-    : '<p class="muted">Nothing on. Switch effects on in Active effects (Build tab).</p>';
+    : '<p class="muted">Nothing on. Tap here to add spells, abilities, conditions and your own effects.</p>';
 
   // Daily uses: a running total beside each; tapping opens the popup to tick them off.
   const daily = dailyUses(view, { spellTables: parts.spontaneous, bladebound: parts.bladebound, powers: parts.powers });
@@ -254,7 +254,7 @@ export function renderBuild(app, view, parts) {
       <span>${esc(initials)}</span></button>`;
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div><div class="b-ac-row">${acBox}${heroPts}</div><div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
-      <div>${card('On now', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
+      <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
       <div>${card('Skills', skills, tap('skills'))}</div>
