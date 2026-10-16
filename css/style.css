@@ -1062,6 +1062,15 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .faith .warning { margin: 8px 0 0; }
 .faith .warning button { margin-left: 6px; }
 .b-onnow { cursor: pointer; }
+/* The Build tab's cards open in a window when tapped (popCard in app.js): the card itself, wider, its heading as the
+   window's title; a placeholder keeps its place on the tab. */
+#tab-character section.card { cursor: pointer; }
+#tab-character section.card :is(input, select, textarea) { cursor: auto; }
+.card-holder { min-height: 60px; border: 2px dashed var(--border); border-radius: 12px; }
+#detail-dialog:has(.popped-card) { width: min(1000px, calc(100vw - 32px)); }
+.popped-card { cursor: default; border: 0; box-shadow: none; padding: 0; margin: 0; background: transparent; font-size: 1.05rem; }
+.popped-card > h2:first-child { display: none; }
+.popped-card.results dl { grid-template-columns: 1fr auto; }
 /* Active effects popup: an effect's level beside it; Add effects: search, the list with Add, a custom effect. */
 .onnow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .onnow-row .cl-input { margin-left: 30px; }

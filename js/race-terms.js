@@ -91,6 +91,9 @@ export function initTermPopover(container, getItems) {
     current = btn;
     btn.setAttribute('aria-expanded', 'true');
     pop.innerHTML = `<h3>${esc(item.title)}</h3>${item.text.map(p => `<p>${esc(p)}</p>`).join('')}`;
+    // Inside a popup window (a Build tab card opened in one) it goes in that window, so it shows on top.
+    const home = btn.closest('dialog') || document.body;
+    if (pop.parentElement !== home) home.append(pop);
     pop.hidden = false;
     // Below the button, or above it when there isn't room; kept inside the window.
     const r = btn.getBoundingClientRect();

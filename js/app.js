@@ -944,6 +944,29 @@ function dailyPowers() {
 // Whether an element has text of its own (not only inside its children): a tap there is on text, not empty space.
 const directText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
 
+// A Build tab card in a popup: the card itself is moved into the window (so every box, list and button in it works as
+// on the tab, and the app keeps drawing it), with a placeholder where it was; it goes back when the window closes.
+// A popup opened from inside it (a Details ?) puts it back first and reopens it when that one closes.
+let poppedCard = null;
+let resumeCard = null;
+function popCard(card) {
+  if (poppedCard) restoreCard();
+  openDetail(card.querySelector('h2')?.firstChild?.textContent.trim() || 'Build', '', []);
+  const holder = document.createElement('div');
+  holder.className = 'card-holder';
+  card.before(holder);
+  card.classList.add('popped-card');
+  $('detail-body').append(card);
+  poppedCard = card;
+}
+function restoreCard() {
+  const card = poppedCard;
+  poppedCard = null;
+  const holder = document.querySelector('.card-holder');
+  card.classList.remove('popped-card');
+  if (holder) { holder.replaceWith(card); }
+}
+
 // A Character tab card, larger, in a popup (bigCard: its contents as last drawn).
 function openBigCard(key) {
   const c = bigCard(key);
@@ -1715,6 +1738,22 @@ function buildControls() {
   $('feat-qualify').addEventListener('change', renderPicker);
   $('picker-close').addEventListener('click', () => $('feat-picker').close());
   $('detail-close').addEventListener('click', () => $('detail-dialog').close());
+  // The Build tab's cards: a tap on the card, not on a box, list, button or link, opens it in a window (popCard).
+  $('tab-character').addEventListener('click', e => {
+    const card = e.target.closest('#tab-character section.card');
+    if (!card || e.target.closest('button, a, input, select, textarea, label, summary, [data-roll], .term, [contenteditable]')) return;
+    popCard(card);
+  });
+  // When the window closes (however it's closed): the card goes back to the tab; one put back for a Details popup opens
+  // again. (Watched on the window's open attribute, which changes at once, rather than its close event.)
+  new MutationObserver(() => {
+    if ($('detail-dialog').open) return;
+    if (poppedCard) restoreCard();
+    const again = resumeCard;
+    resumeCard = null;
+    // (Not when the close was a button that opened another window.)
+    if (again && !$('detail-dialog').open) popCard(again);
+  }).observe($('detail-dialog'), { attributes: true, attributeFilter: ['open'] });
   // Any popup window closes when you click or tap outside it (on the dimmed background), as well as with its Close button.
   for (const dlg of document.querySelectorAll('dialog')) {
     dlg.addEventListener('click', e => {
@@ -4159,6 +4198,8 @@ function spellTable(c, spells) {
 
 // A details window with action buttons: actions are [{ label, primary, run }].
 function openDetail(title, bodyHtml, actions = []) {
+  // A Build tab card in the window goes back to its place first (and comes back when this popup closes).
+  if (poppedCard) { resumeCard = poppedCard; restoreCard(); }
   $('detail-title').textContent = title;
   $('detail-body').innerHTML = bodyHtml;
   $('detail-actions').innerHTML = actions.map((a, i) =>
@@ -4331,9 +4372,9 @@ async function start() {
   // closes it.
   $('detail-dialog').addEventListener('click', e => {
     const t = e.target;
-    if (!$('detail-body').querySelector('.b-big, .onnow-pop')) return;
+    if (!$('detail-body').querySelector('.b-big, .onnow-pop, .popped-card')) return;
     if (t.closest('button, a, input, select, textarea, label, [data-roll], summary')) return;
-    if (t === $('detail-dialog') || t.matches('#detail-body, .b-big, .onnow-pop, div, ul, ol, li, section') && !directText(t)) $('detail-dialog').close();
+    if (t === $('detail-dialog') || t.matches('#detail-body, .b-big, .onnow-pop, .popped-card, div, ul, ol, li, section') && !directText(t)) $('detail-dialog').close();
   });
   // Inside a Character tab card opened larger: a ? opens its Details; a switch (Power Attack...) changes at once and
   // the card is drawn again with the new numbers.
