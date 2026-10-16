@@ -1738,6 +1738,29 @@ function buildControls() {
   $('feat-qualify').addEventListener('change', renderPicker);
   $('picker-close').addEventListener('click', () => $('feat-picker').close());
   $('detail-close').addEventListener('click', () => $('detail-dialog').close());
+  // The deity search (popDeityPicker): opened from a Deity button on the Build or Classes tab.
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-deity-choose]')) { popDeityPicker(); return; }
+    const det = e.target.closest('.deity-pop [data-deity-pop]');
+    if (det) {
+      const b = $('detail-body');
+      e.stopPropagation();
+      popDeity(det.dataset.deityPop, { q: b.querySelector('[data-deity-q]').value, align: b.querySelector('[data-deity-align]').value });
+      return;
+    }
+    const set = e.target.closest('.deity-pop [data-deity-set]');
+    if (set) { update({ deity: set.dataset.deitySet }); $('detail-dialog').close(); }
+  });
+  $('detail-body').addEventListener('input', e => {
+    if (!e.target.closest('.deity-pop [data-deity-q]')) return;
+    const b = $('detail-body');
+    b.querySelector('.addfx-list').innerHTML = deityList(e.target.value, b.querySelector('[data-deity-align]').value);
+  });
+  $('detail-body').addEventListener('change', e => {
+    if (!e.target.closest('.deity-pop [data-deity-align]')) return;
+    const b = $('detail-body');
+    b.querySelector('.addfx-list').innerHTML = deityList(b.querySelector('[data-deity-q]').value, e.target.value);
+  });
   // The Build tab's cards: a tap on the card, not on a box, list, button or link, opens it in a window (popCard).
   $('tab-character').addEventListener('click', e => {
     const card = e.target.closest('#tab-character section.card');
@@ -2607,30 +2630,62 @@ function popBlessing(id) {
     ${b.major ? `<h3>${esc(b.major.name)} (major, 10th level)</h3>${paragraphs(b.major.text)}` : ''}`);
 }
 
+// The deity, as a button that opens the deity search (popDeityPicker): "Deity: Iomedae (LG)" or "Choose a deity".
+function deityButton() {
+  const g = data.deitiesById.get(state.deity);
+  const now = g ? `${g.name} (${g.alignment})` : state.deity === NO_DEITY ? 'No deity: an ideal' : '';
+  return `<span class="row-label">Deity <button type="button" class="deity-choose" data-deity-choose>${now ? esc(now) : 'Choose a deity…'}</button></span>`;
+}
+
+// Search the deities: by name, title, areas of concern, domains, favored weapon or pantheon, and by alignment; each with
+// Choose and Details. Also "No deity" (an ideal or philosophy) and, when one is chosen, None.
+function popDeityPicker(q = '', align = '') {
+  openDetail('Choose a deity', `<div class="addfx-pop deity-pop">
+    <div class="addfx-find"><input type="search" data-deity-q value="${esc(q)}" placeholder="Search: Iomedae, sun, healing, longsword…" aria-label="Search deities">
+      <select data-deity-align aria-label="Alignment"><option value="">Any alignment</option>
+        ${[...ALIGNMENTS.map(([a, n]) => [a, n]), ['Unaligned', 'Unaligned']].map(([a, n]) => `<option value="${a}"${a === align ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+    <ul class="addfx-list">${deityList(q, align)}</ul>
+    <p><button type="button" data-deity-set="${NO_DEITY}">No deity: an ideal or philosophy</button>
+      ${state.deity ? ' <button type="button" data-deity-set="">No deity chosen</button>' : ''}</p></div>`, []);
+  setTimeout(() => $('detail-body').querySelector('[data-deity-q]')?.focus(), 0);
+}
+function deityList(q, align) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const list = data.deities.filter(g => (!align || g.alignment === align) && words.every(w =>
+    [g.name, g.title, g.concerns, g.pantheon, g.weapon, ...(g.domains || []), ...(g.subdomains || [])].join(' ').toLowerCase().includes(w)));
+  const shown = list.slice(0, 150);
+  return shown.map(g => `<li><span><b>${esc(g.name)}</b> <small class="muted">${esc([g.alignment, g.title, g.concerns].filter(Boolean).join(' · '))}</small></span>
+      ${g.id === state.deity ? '<span class="muted">chosen ✓</span>' : `<button type="button" data-deity-set="${esc(g.id)}">Choose</button>`}
+      <button type="button" class="skill-details q-details" data-deity-pop="${esc(g.id)}" aria-label="${esc(g.name)}: details" title="Details">?</button></li>`).join('')
+    + (list.length > shown.length ? `<li class="hint">${list.length - shown.length} more: type to narrow the list.</li>` : '')
+    + (list.length ? '' : '<li class="hint">No deity matches: try another word.</li>');
+}
+
 // Alignment and deity (Build tab, under the race): for every character; the classes' alignment rules (a paladin is
 // lawful good, a monk lawful, a cleric within one step of her deity) with a button to fix it when only one will do.
 // The deity is the same one the Classes tab's picker sets for a cleric, warpriest or inquisitor.
 function renderFaith() {
   const deity = data.deitiesById.get(state.deity) || null;
   const problems = alignmentProblems(state.alignment, view.counts.map(e => ({ id: e.cls.id, name: e.cls.name, alignment: e.cls.alignment })), deity);
-  const deityOpts = data.deities.map(x => `<option value="${esc(x.id)}"${x.id === state.deity ? ' selected' : ''}>${esc(x.name)} (${esc(x.alignment)})${x.title ? ` — ${esc(x.title)}` : ''}</option>`).join('');
   const focused = document.activeElement?.closest?.('#faith') ? document.activeElement.dataset.faith : null;
   $('faith').innerHTML = `<div class="faith-row">
       <label class="row-label">Alignment <select data-faith="alignment"><option value="">Choose…</option>
         ${ALIGNMENTS.map(([a, n]) => `<option value="${a}"${a === state.alignment ? ' selected' : ''}>${esc(n)} (${a})</option>`).join('')}</select></label>
-      <label class="row-label">Deity <select data-faith="deity"><option value="">None chosen</option>
-        <option value="${NO_DEITY}"${state.deity === NO_DEITY ? ' selected' : ''}>No deity: an ideal or philosophy</option>${deityOpts}</select></label>
+      ${deityButton()}
       ${deity ? `<button type="button" class="skill-details q-details" data-deity-pop="${esc(deity.id)}" title="Details" aria-label="Details: ${esc(deity.name)}">?</button>` : ''}</div>
     ${problems.map(p => `<p class="warning">⚠ ${esc(p.text)}${p.fix ? ` <button type="button" data-faith-fix="${p.fix}">Make it ${esc(ALIGNMENT_NAMES[p.fix].toLowerCase())}</button>` : ''}</p>`).join('')}
     ${deity ? `<p class="hint">${esc(deity.name)}: ${esc(deity.alignment)}${deity.concerns ? ` · ${esc(deity.concerns)}` : ''}.</p>` : ''}`;
   if (focused) $('faith').querySelector(`[data-faith="${focused}"]`)?.focus();
 }
 
-function popDeity(id) {
+// A deity's Details; from the deity search (back: the search to return to), with Choose and Back to the list.
+function popDeity(id, back = null) {
   const g = data.deitiesById.get(id);
   if (g) openDetail(`${g.name}${g.title ? `, ${g.title}` : ''}`, `<p class="hint">${esc(g.source)}${g.pantheon ? ` · ${esc(g.pantheon)}` : ''}</p>
     ${facts([['Alignment', g.alignment], ['Areas of concern', g.concerns], ['Domains', g.domains.join(', ')], ['Subdomains', g.subdomains.join(', ')],
-             ['Favored weapon', g.weapon], ['Symbol', g.symbol]])}`);
+             ['Favored weapon', g.weapon], ['Symbol', g.symbol]])}`,
+    back ? [...(g.id === state.deity ? [] : [{ label: `Choose ${g.name}`, primary: true, run: () => update({ deity: g.id }) }]),
+            { label: 'Back to the list', run: () => popDeityPicker(back.q, back.align) }] : []);
 }
 
 // A class's choices for the Build tab, one row each with what its ? opens: [{ label, name, note, pop }] (pop: null for
@@ -2875,9 +2930,7 @@ function popChoice(value, slotId, preview = null) {
 function deityPicker(cls) {
   if (!DEITY_CLASSES.includes(cls.id)) return '';
   const deity = data.deitiesById.get(state.deity);
-  const opts = data.deities.map(x => `<option value="${esc(x.id)}"${x.id === state.deity ? ' selected' : ''}>${esc(x.name)} (${esc(x.alignment)})${x.title ? ` — ${esc(x.title)}` : ''}</option>`).join('');
-  return `<div class="domains"><h4>Deity</h4><div class="mystery-pick"><label class="row-label">Deity <select data-deity>
-      <option value="">Choose your deity…</option><option value="${NO_DEITY}"${state.deity === NO_DEITY ? ' selected' : ''}>No deity: an ideal or philosophy</option>${opts}</select></label>
+  return `<div class="domains"><h4>Deity</h4><div class="mystery-pick">${deityButton()}
       ${deity ? `<button type="button" class="skill-details q-details" data-deity-pop="${esc(deity.id)}" title="Details" aria-label="Details">?</button>` : ''}</div>
     ${deity ? `<p class="hint">${esc(deity.alignment)} · ${esc(deity.concerns)}. Domains: ${esc(deity.domains.join(', ') || '—')}. Favored weapon: ${esc(deity.weapon || '—')} (you are proficient with it).
         Your alignment must be within one step of your deity's.</p>`

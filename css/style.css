@@ -1061,6 +1061,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .faith-row select { width: auto; max-width: min(340px, 60vw); }
 .faith .warning { margin: 8px 0 0; }
 .faith .warning button { margin-left: 6px; }
+.deity-choose { font-weight: 600; }
 .b-onnow { cursor: pointer; }
 /* The Build tab's cards open in a window when tapped (popCard in app.js): the card itself, wider, its heading as the
    window's title; a placeholder keeps its place on the tab. */
