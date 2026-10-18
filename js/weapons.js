@@ -335,9 +335,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
 
   // misfit: -2 per size step for a weapon made for a different size of creature.
   // Weapon training (fighter's weapon groups, swashbuckler's): [{ label, value }] on attack and damage rolls.
-  // Training rows count on attack and damage, or only on damage (`on: 'damage'`: gun training).
+  // Training rows count on attack and damage, or only on damage (`on: 'damage'`: gun training) or attack (a trait's).
   const trained = training.filter(t => t.on !== 'damage').reduce((n, t) => n + t.value, 0);
-  const trainedDamage = training.reduce((n, t) => n + t.value, 0);
+  const trainedDamage = training.filter(t => t.on !== 'attack').reduce((n, t) => n + t.value, 0);
   const toHit = abilityMod + sizeAttack + itemBonus + focus + (proficient ? 0 : -4) + armorPenalty + penalty + powerHit + rapid + effectAttack + misfit + tooWeak + trained + pointBlank;
   const sizeKey = { Fine: 't', Diminutive: 't', Tiny: 't', Small: 's', Medium: 'm', Large: 'l' }[size] || 'm';
   const allDice = unarmedDamage || weapon.damage?.[sizeKey] || weapon.damage?.m || null;
@@ -414,7 +414,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
   else add(damageRows, strLabelNow, p.strDamage);
   add(damageRows, p.enhDamage > p.enh ? 'Ammunition\u2019s enhancement bonus' : 'Enhancement bonus', p.enhDamage ?? p.enh);
   add(damageRows, 'Weapon Specialization', p.spec);
-  for (const t of p.training || []) add(damageRows, t.label, t.value);
+  for (const t of (p.training || []).filter(x => x.on !== 'attack')) add(damageRows, t.label, t.value);
   add(damageRows, a.used.includes('Deadly Aim') ? 'Deadly Aim' : 'Power Attack', p.powerDamage);
   add(damageRows, 'Extra damage (smite)', p.bonusDamage);
   add(damageRows, 'Point-Blank Shot (within 30 ft.)', p.pointBlank);

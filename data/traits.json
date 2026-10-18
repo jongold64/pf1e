@@ -535,7 +535,13 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on attack rolls with weapons made of the selected material."
+          "text": "You gain a +1 trait bonus on attack rolls with weapons made of the selected material.",
+          "weapon": {
+            "materials": [
+              "cold-iron",
+              "silver"
+            ]
+          }
         }
       ]
     }
@@ -2266,8 +2272,8 @@
     ],
     "effects": {
       "skills": {
-        "Knowledge (religion)": 1,
-        "Knowledge (nobility)": 1
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
       }
     }
   },
@@ -3666,7 +3672,12 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls with brass knuckles and improvised weapons."
+          "text": "You gain a +1 trait bonus on damage rolls with brass knuckles and improvised weapons.",
+          "weapon": {
+            "ids": [
+              "brass-knuckles"
+            ]
+          }
         }
       ]
     }
@@ -3963,7 +3974,10 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word \"dwarven\" in its name."
+          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word \"dwarven\" in its name.",
+          "weapon": {
+            "name": "dwarven"
+          }
         }
       ]
     }
@@ -6027,7 +6041,12 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks."
+          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks.",
+          "weapon": {
+            "ids": [
+              "unarmed-strike"
+            ]
+          }
         }
       ]
     }
@@ -9937,7 +9956,12 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls with a dagger and a +1 trait bonus on Swim checks."
+          "text": "You gain a +1 trait bonus on damage rolls with a dagger and a +1 trait bonus on Swim checks.",
+          "weapon": {
+            "ids": [
+              "dagger"
+            ]
+          }
         }
       ],
       "skills": {
@@ -11305,8 +11329,8 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
-        "Knowledge (nature)": 1,
-        "Knowledge (planes)": 1
+        "Knowledge (planes)": 1,
+        "Knowledge (nature)": 1
       }
     }
   },
@@ -11432,8 +11456,8 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
-        "Knowledge (nature)": 1,
-        "Knowledge (arcana)": 1
+        "Knowledge (arcana)": 1,
+        "Knowledge (nature)": 1
       }
     }
   },
@@ -11863,7 +11887,10 @@
               "value": 1
             }
           ],
-          "text": "Benefit You gain a +1 trait bonus on damage rolls when using weapons intended for creatures of a larger size."
+          "text": "Benefit You gain a +1 trait bonus on damage rolls when using weapons intended for creatures of a larger size.",
+          "weapon": {
+            "oversized": true
+          }
         }
       ]
     }
@@ -14248,7 +14275,10 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word “dwarven” in its name."
+          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word “dwarven” in its name.",
+          "weapon": {
+            "name": "dwarven"
+          }
         }
       ]
     }
@@ -16860,8 +16890,8 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
-        "Knowledge (nobility)": 1,
-        "Knowledge (religion)": 1
+        "Knowledge (religion)": 1,
+        "Knowledge (nobility)": 1
       }
     }
   },
@@ -18382,7 +18412,25 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, longbow, longsword, shortbow, short sword, throwing axe, and warhammer."
+          "text": "You gain a +1 trait bonus on damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, longbow, longsword, shortbow, short sword, throwing axe, and warhammer.",
+          "weapon": {
+            "ids": [
+              "bastard-sword",
+              "battleaxe",
+              "greataxe",
+              "greatsword",
+              "handaxe",
+              "light-hammer",
+              "longbow",
+              "composite-longbow",
+              "longsword",
+              "shortbow",
+              "composite-shortbow",
+              "shortsword",
+              "throwing-axe",
+              "warhammer"
+            ]
+          }
         }
       ]
     }
@@ -19780,7 +19828,12 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks."
+          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks.",
+          "weapon": {
+            "ids": [
+              "unarmed-strike"
+            ]
+          }
         }
       ]
     }
@@ -20116,7 +20169,12 @@
               "value": 1
             }
           ],
-          "text": "You gain a +1 trait bonus on damage rolls when using unarmed strikes."
+          "text": "You gain a +1 trait bonus on damage rolls when using unarmed strikes.",
+          "weapon": {
+            "ids": [
+              "unarmed-strike"
+            ]
+          }
         }
       ]
     }

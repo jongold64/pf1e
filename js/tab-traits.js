@@ -14,7 +14,9 @@ function effectText(t) {
   for (const [skill, n] of Object.entries(e.skills || {})) parts.push(`+${n} ${skill}`);
   if ((e.class_skills || []).length) parts.push(`class skill: ${e.class_skills.join(', ')}`);
   if (e.gold) parts.push(goldText(e.gold));
-  if ((e.combat || []).length) parts.push(`${combatText(e.combat)} (a switch in Active effects)`);
+  const sw = (e.combat || []).filter(c => !c.weapon), wpn = (e.combat || []).filter(c => c.weapon);
+  if (sw.length) parts.push(`${combatText(sw)} (a switch in Active effects)`);
+  if (wpn.length) parts.push(`${combatText(wpn)} (with its weapons)`);
   return parts.join(', ');
 }
 
@@ -116,8 +118,10 @@ function showTraitDetails(app, i) {
       <h3>In the app</h3>${rows.length ? `<table class="skill-why"><tbody>${rows.join('')}</tbody></table>` : ''}
       ${classSkills.length ? `<p>Class skill: ${esc(classSkills.join(', '))} (counted on the Skills tab).</p>` : ''}
       ${e.gold ? `<p>${esc(goldText(e.gold)[0].toUpperCase() + goldText(e.gold).slice(1))}: counted in the starting gold on the Equipment tab.</p>` : ''}
-      ${(e.combat || []).length ? `<p>${esc(combatText(e.combat))}: only in the situation the trait names, so it's a switch in
+      ${(e.combat || []).some(c => !c.weapon) ? `<p>${esc(combatText(e.combat.filter(c => !c.weapon)))}: only in the situation the trait names, so it's a switch in
         Active effects (Build tab or the Character tab's Active effects): tick it when it applies and it counts.</p>` : ''}
+      ${(e.combat || []).some(c => c.weapon) ? `<p>${esc(combatText(e.combat.filter(c => c.weapon)))}: counted with the weapons it names, on the
+        Weapons tab and the Character tab's Actions (Details on a weapon shows it).</p>` : ''}
       ${!rows.length && !classSkills.length && !e.gold && !(e.combat || []).length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';

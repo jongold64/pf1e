@@ -60,14 +60,32 @@ def has_name(name, phrase):
 
 # Combat bonuses ("+1 trait bonus on attack rolls and weapon damage rolls against giants", "+1 trait bonus to AC when
 # wearing medium or heavy armor"): nearly all apply only sometimes, so each sentence with them is kept with its text,
-# for a switch in the app's Active effects; `always` when nothing limits it. Left out: a choice ("choose one"), and
-# bonuses to confirm critical hits, to spells, save DCs and sneak attack damage, which the targets can't say, and an
-# ally's bonus.
+# for a switch in the app's Active effects; `always` when nothing limits it; `weapon` when only the weapon does
+# (WEAPON_RULES). Left out: a choice ("choose one"), and bonuses to confirm critical hits, to spells, save DCs and
+# sneak attack damage, which the targets can't say, and an ally's bonus.
 COMBAT_BONUS = re.compile(r'\+(\d+) trait bonus (?:on|to) ((?:(?:all |your |weapon |melee |ranged )*'
                           r'(?:attack rolls|damage rolls|armor class|AC\b|combat maneuver checks|combat maneuver defense|CMB|CMD)'
                           r'(?:,? (?:and|&) (?:on |to )?)?)+)', re.I)
 COMBAT_SKIP = re.compile(r'choose one|confirm(?:ing)?(?: an?)? critical|\bspells?\b|save DCs?|sneak attack|attacks? of opportunity'
                          r'|\ball(?:y|ies)\b[^.]{0,60}\bgains?\b', re.I)
+
+
+# Combat bonuses that depend only on the weapon used, counted on that weapon's row in the app instead of a switch:
+# (the trait's words, which weapons). ids: data/weapons.json ids; name: a word in the weapon's name; materials: the
+# weapon's special material (materials.js ids; Ancestral Weapon's chosen one is cold iron or silver); oversized: a
+# weapon made for a larger creature. Improvised weapons and bombs have no weapon row, so they stay switches.
+WEAPON_RULES = [
+    (r'damage rolls with a dagger', {'ids': ['dagger']}),
+    (r'damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, '
+     r'longbow, longsword, shortbow, short sword, throwing axe, and warhammer',
+     {'ids': ['bastard-sword', 'battleaxe', 'greataxe', 'greatsword', 'handaxe', 'light-hammer', 'longbow', 'composite-longbow',
+              'longsword', 'shortbow', 'composite-shortbow', 'shortsword', 'throwing-axe', 'warhammer']}),
+    (r'damage rolls (?:made with unarmed attacks|when using unarmed strikes)\.', {'ids': ['unarmed-strike']}),
+    (r'damage rolls with brass knuckles and improvised weapons', {'ids': ['brass-knuckles']}),
+    (r'damage rolls when using any weapon with the word .dwarven. in its name', {'name': 'dwarven'}),
+    (r'damage rolls when using weapons intended for creatures of a larger size', {'oversized': True}),
+    (r'attack rolls with weapons made of the selected material', {'materials': ['cold-iron', 'silver']}),
+]
 
 
 def combat_targets(phrase):
@@ -96,7 +114,9 @@ def combat_of(body):
                 bonuses.append({'target': t, 'value': int(m.group(1))})
             always = always and bool(unconditional(sentence, m))
         if bonuses:
-            out.append({'bonuses': bonuses, 'text': sentence.strip(), **({'always': True} if always else {})})
+            weapon = next((w for pat, w in WEAPON_RULES if re.search(pat, sentence, re.I)), None)
+            out.append({'bonuses': bonuses, 'text': sentence.strip(), **({'weapon': weapon} if weapon else {}),
+                        **({'always': True} if always and not weapon else {})})
     return out
 
 

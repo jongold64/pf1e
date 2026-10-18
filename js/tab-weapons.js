@@ -9,6 +9,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice } from './class-features.js';
+import { traitWeaponRows } from './traits.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
@@ -150,6 +151,15 @@ function titanLevels(app, view) {
   return bigWeaponRules({ titanMauler: levelWith('barbarian-titan-mauler'), titanFighter: levelWith('fighter-titan-fighter') });
 }
 
+// The highest trait bonus on attack and on damage already counted with this weapon from Active effects' trait switches
+// (Giant Slayer switched on): a weapon trait's bonus doesn't stack with it.
+function switchedTraitBonus(view, w) {
+  const melee = w.group !== 'ranged';
+  const best = targets => Math.max(0, ...(view.traitSwitches || []).filter(s => s.on)
+    .flatMap(s => [s.effect, ...s.effect.more]).filter(p => targets.includes(p.target)).map(p => p.value));
+  return { attack: best(['attack', melee ? 'melee-attack' : 'ranged-attack']), damage: best(['damage', ...(melee ? ['melee-damage'] : [])]) };
+}
+
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted (with the Titan
@@ -166,7 +176,9 @@ function attackArgs(app, view, ctx, e) {
     // Slashing Grace / Fencing Grace: Dexterity instead of Strength on damage with that weapon.
     training: [...weaponTraining(view.counts, w, [5, 9, 13, 17].map(lv => app.state.talents[`fighter|weapon-training|${lv}`] || ''),
       { mod: view.stats.mod, picks: view.archFx?.picks }),
-      ...[graceRow(sized.weapon, view.haveFeats, view.featChoices.filter(c => c.feat === 'Slashing Grace').map(c => c.value), view.stats.mod)].filter(Boolean)],
+      ...[graceRow(sized.weapon, view.haveFeats, view.featChoices.filter(c => c.feat === 'Slashing Grace').map(c => c.value), view.stats.mod)].filter(Boolean),
+      // Traits' bonuses with this weapon (River Rat: +1 damage with a dagger), less a trait bonus already switched on.
+      ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w))],
     // Warpriest sacred weapon / brawler close weapon mastery dice.
     minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice || null,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).

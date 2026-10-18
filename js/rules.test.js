@@ -1113,6 +1113,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Giant Slayer and Crusader on: attack +1 (trait bonuses don\'t stack), damage +1', `${tfx.attack} ${tfx.damage}`, '1 1');
   check('Stable: +1 CMB, not AC (Acrobatics isn\'t AC)', trait('Stable').effects.combat[0].bonuses.map(x => x.target).join(), 'cmb');
   check('Defender of the Society: +1 AC when in medium or heavy armor', trait('Defender of the Society').effects.combat[0].bonuses[0].target, 'ac');
+  // Weapon traits (traitWeaponRows): counted on that weapon's row, not a switch.
+  const { traitWeaponRows } = await import('./traits.js');
+  const { weaponAttack: wa } = await import('./weapons.js');
+  const rr = [trait('River Rat')];
+  check('River Rat: no switch; +1 damage with a dagger, nothing with a longsword',
+        `${traitCombat(rr).length} ${JSON.stringify(traitWeaponRows(rr, { id: 'dagger', name: 'Dagger' }))} ${traitWeaponRows(rr, { id: 'longsword', name: 'Longsword' }).length}`,
+        '0 [{"label":"Trait: River Rat","value":1,"on":"damage"}] 0');
+  check('Dwarven Weapon Trained: a dwarven waraxe', traitWeaponRows([trait('Dwarven Weapon Trained')], { id: 'dwarven-waraxe', name: 'Dwarven waraxe' }).length, 1);
+  check('Superior Clutch: only a weapon made for a larger creature', [traitWeaponRows([trait('Superior Clutch')], { id: 'longsword' }, { size: 'Large' }, 'Medium').length,
+        traitWeaponRows([trait('Superior Clutch')], { id: 'longsword' }, {}, 'Medium').length].join(), '1,0');
+  check('Ancestral Weapon: +1 attack, not damage, with a cold iron weapon', JSON.stringify(traitWeaponRows([trait('Ancestral Weapon')], { id: 'longsword' }, { material: 'cold-iron' }).map(r => [r.on, r.value])), '[["attack",1]]');
+  check('a trait switch already on: the weapon trait adds only what is more', traitWeaponRows(rr, { id: 'dagger' }, {}, 'Medium', { damage: 1 }).length, 0);
+  const dag = wa({ weapon: { id: 'dagger', name: 'Dagger', group: 'light', damage: { m: '1d4' } }, bab: [1], mod: { str: 2, dex: 0 },
+                   training: [{ label: 'Trait: Ancestral Weapon', value: 1, on: 'attack' }] });
+  check('an attack-only row: +1 to hit, nothing on damage', `${dag.attacks[0]} ${dag.damage}`, '4 1d4+2');
 }
 
 {
