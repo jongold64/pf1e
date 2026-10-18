@@ -1,6 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { WEALTH_BY_LEVEL, startingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
+import { WEALTH_BY_LEVEL, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
@@ -91,9 +91,12 @@ export async function renderEquipment(app, view) {
     view = app.view;
   }
   const maxGold = !!state.houseRules.maxGold;
-  const start = startingGold(view.cls, data.classes, maxGold);
+  // The class's starting gold, changed by traits like Rich Parents (traitStartingGold).
+  const classStart = startingGold(view.cls, data.classes, maxGold);
+  const traitGold = traitStartingGold(classStart, view.traits);
+  const start = traitGold.gp;
   const wealth = WEALTH_BY_LEVEL[state.level];
-  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} ${maxGold ? 'maximum ' : ''}starting gold (${formatGp(start)})` : 'No starting gold listed';
+  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} ${maxGold ? 'maximum ' : ''}starting gold${traitGold.lines.length ? ' with traits' : ''} (${formatGp(start)})` : 'No starting gold listed';
   $('gold-start').disabled = !start;
   $('gold-wealth').hidden = !wealth;
   if (wealth) $('gold-wealth').textContent = `Use wealth for level ${state.level} (${formatGp(wealth)})`;
@@ -175,7 +178,10 @@ export async function renderEquipment(app, view) {
     <p>${state.gold === null ? `You haven't entered an amount, so your ${esc((view.cls?.name || 'class').toLowerCase())} starting gold is used.` : 'The amount you entered.'}
       Everything bought (armor, weapons, equipment, magic items) is taken from it in <b>Left</b>.</p>
     <h3>Starting gold (1st level)</h3>
-    <p>${start ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}${maxGold ? `maximum ${esc(formatGp(start))} (Max Starting Gold house rule; the average is ${esc(formatGp(startingGold(view.cls, data.classes)))})` : `average ${esc(formatGp(start))}`}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>
+    <p>${classStart ? `${esc(view.cls.name)}: ${sw?.dice ? `${esc(sw.dice)}, ` : ''}${maxGold ? `maximum ${esc(formatGp(classStart))} (Max Starting Gold house rule; the average is ${esc(formatGp(startingGold(view.cls, data.classes)))})` : `average ${esc(formatGp(classStart))}`}${!sw?.average_gp ? ' (from the class it\u2019s based on)' : ''}.` : 'No starting gold is listed for this class.'}</p>
+    ${traitGold.lines.length ? `<table class="skill-why"><tbody><tr><td>${esc(view.cls.name)}</td><td class="num">${esc(formatGp(classStart))}</td></tr>
+      ${traitGold.lines.map(l => `<tr><td>Trait: ${esc(l.name)}</td><td class="num">${esc(l.text)}</td></tr>`).join('')}
+      <tr><td><b>Starting gold</b></td><td class="num"><b>${esc(formatGp(start))}</b></td></tr></tbody></table>` : ''}
     <h3>Wealth by level (characters made above 1st level)</h3>
     <table class="skill-why"><tbody>${Object.entries(WEALTH_BY_LEVEL).map(([lv, gp]) => `<tr${Number(lv) === state.level ? ' class="mine"' : ''}>
       <td>Level ${lv}${Number(lv) === state.level ? ' (you)' : ''}</td><td class="num">${esc(formatGp(gp))}</td></tr>`).join('')}</tbody></table>
@@ -361,7 +367,7 @@ export function initEquipmentTab(app) {
     const n = Number(e.target.value);
     app.update({ gold: Number.isFinite(n) && n >= 0 ? n : null });
   });
-  $('gold-start').addEventListener('click', () => app.update({ gold: startingGold(app.view.cls, app.data.classes, !!app.state.houseRules.maxGold) }));
+  $('gold-start').addEventListener('click', () => app.update({ gold: traitStartingGold(startingGold(app.view.cls, app.data.classes, !!app.state.houseRules.maxGold), app.view.traits).gp }));
   $('gold-wealth').addEventListener('click', () => app.update({ gold: WEALTH_BY_LEVEL[app.state.level] }));
 }
 

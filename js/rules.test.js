@@ -1094,6 +1094,15 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const withTrait = skillTotal({ name: 'Sense Motive', ranks: 1, scores: scores(10, 10, 10, 10, 10, 10), isClassSkill: true,
                                  traitBonuses: fx.skills });
   check('Sense Motive: 1 rank + 3 class + 1 trait', withTrait.total, 5);
+  // Traits that change starting gold (traitStartingGold): Rich Parents raises it to 900 gp, Lesser Noble adds 100 gp,
+  // Dusk Agent doubles it; and a Knowledge skill's bracket doesn't stop its bonus being read (Lesser Noble).
+  const { traitStartingGold } = await import('./equipment.js');
+  check('Rich Parents: a fighter starts with 900 gp', traitStartingGold(175, [trait('Rich Parents')]).gp, 900);
+  check('Lesser Noble: +100 gp; +1 Diplomacy and Knowledge (nobility)', `${traitStartingGold(175, [trait('Lesser Noble')]).gp} ${trait('Lesser Noble').effects.skills['Knowledge (nobility)']}`, '275 1');
+  check('Dusk Agent and Lesser Noble: double, then +100', traitStartingGold(70, [trait('Lesser Noble'), trait('Dusk Agent')]).gp, 240);
+  check('Rich Parents and Lesser Noble: 900 gp, then +100', traitStartingGold(175, [trait('Lesser Noble'), trait('Rich Parents')]).gp, 1000);
+  check('no gold trait: unchanged', traitStartingGold(175, [trait('Reactionary')]).gp, 175);
+  check('gear worth 150 gp is not gold (Employee)', trait('Employee').effects?.gold, undefined);
 }
 
 {

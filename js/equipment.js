@@ -22,6 +22,29 @@ export function startingGold(cls, classes = [], max = false) {
   return m ? Number(m[1]) * Number(m[2]) * Number(m[3]) : wealth.average_gp;
 }
 
+// Starting gold with the traits that change it (each trait's effects.gold, read from its text by the data build):
+// "increases to" an amount first, in place of the class's (Rich Parents: 900 gp, if that's more), then twice as much
+// (Dusk Agent), then more gold (Lesser Noble: +100 gp). { gp, lines: [{ name, text }] }; gp null when the class has none.
+export function traitStartingGold(gp, traits = []) {
+  const lines = [];
+  if (gp === null || gp === undefined) return { gp, lines };
+  const fx = traits.filter(t => t?.effects?.gold);
+  for (const t of fx.filter(t => t.effects.gold.to)) {
+    const to = t.effects.gold.to;
+    lines.push({ name: t.name, text: to > gp ? `raised to ${formatGp(to)}` : `${formatGp(to)}: no more than you have already` });
+    gp = Math.max(gp, to);
+  }
+  for (const t of fx.filter(t => t.effects.gold.times)) {
+    gp *= t.effects.gold.times;
+    lines.push({ name: t.name, text: `× ${t.effects.gold.times}` });
+  }
+  for (const t of fx.filter(t => t.effects.gold.add)) {
+    gp += t.effects.gold.add;
+    lines.push({ name: t.name, text: `+${formatGp(t.effects.gold.add)}` });
+  }
+  return { gp, lines };
+}
+
 // Price of worn armor or a shield: base price, plus masterwork (150 gp; magic armor is always masterwork) and the
 // enhancement bonus squared × 1,000 gp for magic armor (Core Rulebook, Magic Armor).
 // Special abilities add their bonus equivalent (or flat price); a crafted armor's magic part costs half (Core

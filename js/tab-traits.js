@@ -13,7 +13,13 @@ function effectText(t) {
   if (e.initiative) parts.push(`+${e.initiative} initiative`);
   for (const [skill, n] of Object.entries(e.skills || {})) parts.push(`+${n} ${skill}`);
   if ((e.class_skills || []).length) parts.push(`class skill: ${e.class_skills.join(', ')}`);
+  if (e.gold) parts.push(goldText(e.gold));
   return parts.join(', ');
+}
+
+// A trait's starting gold change, in words: "starting gold 900 gp", "+100 gp starting gold", "double starting gold".
+function goldText(g) {
+  return g.to ? `starting gold ${g.to.toLocaleString()} gp` : g.add ? `+${g.add.toLocaleString()} gp starting gold` : 'double starting gold';
 }
 
 function traitLabel(t) {
@@ -101,7 +107,8 @@ function showTraitDetails(app, i) {
     html += `<h3>${esc(t.name)}</h3><p class="hint">${esc(traitLabel(t))}</p>
       <h3>In the app</h3>${rows.length ? `<table class="skill-why"><tbody>${rows.join('')}</tbody></table>` : ''}
       ${classSkills.length ? `<p>Class skill: ${esc(classSkills.join(', '))} (counted on the Skills tab).</p>` : ''}
-      ${!rows.length && !classSkills.length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
+      ${e.gold ? `<p>${esc(goldText(e.gold)[0].toUpperCase() + goldText(e.gold).slice(1))}: counted in the starting gold on the Equipment tab.</p>` : ''}
+      ${!rows.length && !classSkills.length && !e.gold ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';
   }

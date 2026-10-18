@@ -4,7 +4,9 @@ Each trait is a section of type 'trait' under a heading naming its category ("Co
 "Regional Traits"). A trait in both books keeps the Ultimate Campaign wording (the later reprint) and lists the other
 book in also_in. Simple numeric benefits are read into `effects` for the app:
   saves {fort/ref/will: n}, initiative n, skills {name: n} ("+1 trait bonus on Perception checks"),
-  class_skills [name] ("... and Perception is always a class skill for you").
+  class_skills [name] ("... and Perception is always a class skill for you"),
+  gold {to: n} / {add: n} / {times: n}: starting gold ("your starting wealth increases to 900 gp", "you begin play with
+  an additional 300 gp", "twice the normal amount of starting gold"); gear worth so much ("200 gp of equipment") isn't.
 
 Usage: python build_traits.py path/to/traits.json   (set PSRD to the PSRD-Data folder)
 """
@@ -32,10 +34,36 @@ def unconditional(sentence, m):
     return not CONDITION_BEFORE.search(before) and CLAUSE_END.match(sentence, m.end())
 
 
+# Starting gold: "...starting wealth increases to 900 gp", "...starting money is increased by 100 gp", "an additional
+# 300 gp in starting wealth", "an extra 100 gp in ill-gotten gains" (not "an additional 150 gp of equipment").
+GOLD_TO = re.compile(r'starting (?:wealth|money|cash|gold|funds) (?:increases|is increased) to (\d[\d,]*) gp', re.I)
+GOLD_ADD = re.compile(r'starting (?:wealth|money|cash|gold|funds) (?:increases|is increased) by (\d[\d,]*) gp'
+                      r'|(?:begin|start)(?: play| the campaign| the game)? with an? (?:additional|extra) (\d[\d,]*) gp(?! (?:of|worth))', re.I)
+GOLD_TIMES = re.compile(r'twice the normal amount of starting (?:gold|wealth|money)', re.I)
+
+
+def gold_of(body):
+    t = re.sub(r'\s+', ' ', body)
+    if m := GOLD_TO.search(t):
+        return {'to': int(m.group(1).replace(',', ''))}
+    if m := GOLD_ADD.search(t):
+        return {'add': int((m.group(1) or m.group(2)).replace(',', ''))}
+    if GOLD_TIMES.search(t):
+        return {'times': 2}
+    return None
+
+
+# A skill's name in a phrase: "Knowledge (nobility)" ends in a bracket, so \b won't do after it.
+def has_name(name, phrase):
+    return re.search(rf'(?<!\w){re.escape(name)}(?!\w)', phrase)
+
+
 def effects_of(body, skills):
     out = {}
     if re.search(r'one of the following', body, re.I):
         return out
+    if gold := gold_of(body):
+        out['gold'] = gold
     for sentence in re.split(r'(?<=[.!?])\s+', re.sub(r'\s+', ' ', body)):
         for m in re.finditer(r'\+(\d+) trait bonus on (?:all )?(Fortitude|Reflex|Will) sav(?:es|ing throws)\b', sentence, re.I):
             if unconditional(sentence, m):
@@ -47,14 +75,14 @@ def effects_of(body, skills):
         for m in re.finditer(r'\+(\d+) trait bonus on ([A-Z][A-Za-z ,()]+?) checks', sentence):
             if not unconditional(sentence, m):
                 continue
-            names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(2))]
+            names = [n for n in skills if has_name(n, m.group(2))]
             # Craft / Perform / Profession bonuses are for one specialty (Craft (alchemy)); left out rather than misapplied.
             for n in names:
                 if n not in ('Craft', 'Perform', 'Profession'):
                     out.setdefault('skills', {})[n] = int(m.group(1))
         # "... and Perception is always a class skill for you"; "one of these (your choice)" is left to the player.
         for m in re.finditer(r'(?:and|,|^)\s*([A-Z][A-Za-z ()]+?) (?:is|are) (?:always )?(?:a )?class skills? for you', sentence):
-            names = [n for n in skills if re.search(rf'\b{re.escape(n)}\b', m.group(1))]
+            names = [n for n in skills if has_name(n, m.group(1))]
             if not names and re.search(r'\b(?:it|that skill|this skill)\b', m.group(1), re.I):
                 names = list(out.get('skills', {}))
             for n in [x for x in names if x not in ('Craft', 'Perform', 'Profession')]:

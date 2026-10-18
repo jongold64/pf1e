@@ -102,6 +102,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (arcana)": 1,
         "Use Magic Device": 1
       },
       "class_skills": [
@@ -118,6 +119,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (local)": 1,
         "Sense Motive": 1,
         "Bluff": 1
       }
@@ -215,6 +217,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "class_skills": [
+        "Knowledge (local)",
         "Diplomacy"
       ]
     }
@@ -515,7 +518,13 @@
     "category": "Campaign",
     "requirement": "Skull Shackles",
     "text": "You are a student of ancient history, and you've come to explore the crumbling and vine-choked ruins of the cyclops empire, which have lain abandoned among the isles for thousands of years.\n\nYou went to a tavern last night to meet a contact who supposedly had an old map of lost cyclops ruins to sell, but the drink was stronger than you had expected and you passed out before making the deal.\n\nBenefit You gain a +1 trait bonus on Knowledge (history) and Knowledge (local) checks, and one of these skills is a class skill for you. In addition, you gain Cyclops or Polyglot as a bonus language.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1,
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "animal-friend",
@@ -569,7 +578,12 @@
     "source": "Distant Shores",
     "category": "Regional",
     "text": "Your family helped to rebuild a ruined city and that tradition runs in your blood.\n\nBenefit You gain a +2 bonus on Perception checks to notice unusual stonework, traps, and hidden doors in worked stone and artificial constructions. Knowledge (engineering) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (engineering)"
+      ]
+    }
   },
   {
     "id": "apprentice",
@@ -670,6 +684,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (arcana)": 1,
         "Spellcraft": 1
       }
     }
@@ -722,7 +737,13 @@
     "source": "Inner Sea Primer",
     "category": "Regional",
     "text": "You know the legends and the places where great treasures were rumored to have fallen.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) and Knowledge (history) checks, and one of them is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "artisan",
@@ -1175,7 +1196,15 @@
     "name": "Black Sheep",
     "source": "Advanced Player's Guide",
     "category": "Campaign",
-    "text": "You were born and raised in town. You know many of the region's secrets and the locals already know who you are. You aren't quite hated in town, but folk seem to think you're a troublemaker and a bastard and not to be trusted. The town's tougher folk respect you, but the law-abiding citizens don't. You gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is a class skill for you. In addition, you can choose any one notorious citizen from below as an ally; depending on the person you pick, you'll get different benefits."
+    "text": "You were born and raised in town. You know many of the region's secrets and the locals already know who you are. You aren't quite hated in town, but folk seem to think you're a troublemaker and a bastard and not to be trusted. The town's tougher folk respect you, but the law-abiding citizens don't. You gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is a class skill for you. In addition, you can choose any one notorious citizen from below as an ally; depending on the person you pick, you'll get different benefits.",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      },
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "blade-bravado",
@@ -1520,7 +1549,12 @@
     "category": "Campaign",
     "requirement": "Kingmaker",
     "text": "You know how to ambush travelers, bully traders, avoid the law, and camp where no one might find you. Recently, you've run into some trouble, either with the law or with other bandits, and you're looking to get away to somewhere no one would ever think to look for you. An expedition into the rugged wilderness seems like a perfect way to lie low until the trouble blows over.\n\nBenefit You begin with an extra 100 gp in ill-gotten gains. You also gain a +1 trait bonus on Bluff, Diplomacy, Intimidate, and Sense Motive checks when dealing with brigands, thieves, bandits, and their ilk.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "add": 100
+      }
+    }
   },
   {
     "id": "broken-mind",
@@ -1589,7 +1623,12 @@
     "source": "Cheliax, Empire of Devils",
     "category": "Regional",
     "text": "You gain a +3 trait bonus on Knowledge (engineering) checks and a +2 trait bonus on Perception checks to find secret doors or traps in buildings built in the style of your guild.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 3
+      }
+    }
   },
   {
     "id": "bullied",
@@ -1647,6 +1686,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (local)": 1,
         "Appraise": 1
       }
     }
@@ -1990,7 +2030,12 @@
     "category": "Campaign",
     "requirement": "Council Of Thieves",
     "text": "You gain a +1 trait bonus on Perform (act) skill checks, and the skill is always considered a class skill for you. Furthermore, you begin play with an additional 300 gp.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "add": 300
+      }
+    }
   },
   {
     "id": "child-of-nature",
@@ -2000,7 +2045,12 @@
     "text": "You have been blessed by Gozreh to be as comfortable in the wilderness as you are at home. You gain a +2 trait bonus on Survival checks to find food and water, and a +1 trait bonus on Knowledge (nature) checks. One of these skills (your choice) is always a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (nature)": 1
+      }
+    }
   },
   {
     "id": "child-of-platinum",
@@ -2070,7 +2120,13 @@
     "text": "You have long served at a temple in a city, where you picked up on many of the nobility's customs in addition to spending much time in the temple libraries studying your faith. You gain a +1 trait bonus on Knowledge (nobility) and Knowledge (religion) checks, and one of these skills (your choice) is always a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
+      }
+    }
   },
   {
     "id": "childhood-crush",
@@ -2103,6 +2159,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (history)": 1,
         "Diplomacy": 1
       }
     }
@@ -2113,7 +2170,12 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "The oracles smiled upon you when your parents claimed you were of divine right, and you were raised with privileges few can fathom.\n\nBenefit: Your starting money increases by 900 gp.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "add": 900
+      }
+    }
   },
   {
     "id": "chosen-one",
@@ -2136,7 +2198,15 @@
     "name": "Civilized",
     "source": "Ultimate Campaign",
     "category": "Social",
-    "text": "You are well versed in the local laws, customs, and politics. You gain a +1 trait bonus on Knowledge (nobility) checks and Knowledge (local) checks. Knowledge (local) is always a class skill for you."
+    "text": "You are well versed in the local laws, customs, and politics. You gain a +1 trait bonus on Knowledge (nobility) checks and Knowledge (local) checks. Knowledge (local) is always a class skill for you.",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1
+      },
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "clan-artisan",
@@ -2633,7 +2703,13 @@
     "source": "Inner Sea Primer",
     "category": "Regional",
     "text": "You are skilled in both heraldry and siege tactics.\n\nBenefit: You gain a +1 trait bonus on Knowledge (engineering) and Knowledge (nobility) checks, and one of these skills is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 1,
+        "Knowledge (nobility)": 1
+      }
+    }
   },
   {
     "id": "curator-of-mystic-secrets",
@@ -3127,7 +3203,13 @@
     "text": "Your faith in the natural world or one of the gods of nature makes it easy for you to pick up on related concepts. You gain a +1 trait bonus on Knowledge (geography) and Knowledge (nature) checks, and one of these skills (your choice) is always a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1,
+        "Knowledge (nature)": 1
+      }
+    }
   },
   {
     "id": "devotee-of-the-holy-prophecies",
@@ -3519,7 +3601,13 @@
     "source": "Demon Hunter's Handbook",
     "category": "Regional",
     "text": "Your observations give you a keen insight into the blasphemies of the idle rich.\n\nBenefit You gain a +1 trait bonus on Knowledge (nobility) and Knowledge (planes) checks.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1,
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "drug-addict",
@@ -3571,7 +3659,12 @@
     "source": "Legacy of Fire Player's Guide",
     "category": "Regional",
     "text": "You spent a portion of your childhood working for the Duskers.\n\nBenefit: You have quite a bit more spending cash than most others of your age as a result, and start with twice the normal amount of starting gold.\n\nIn addition, your reputation remains strong and any transactions you make in your home city are always beneficial to you; items you sell net you an additional 10% profit, and items you purchase there are 10% cheaper than normal. This discount also applies to your starting gear.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "times": 2
+      }
+    }
   },
   {
     "id": "dusk-dancer",
@@ -3763,7 +3856,15 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Your knowledge of the gods has given you a broad perspective.\n\nBenefit(s) You gain a +1 trait bonus on Knowledge (religion) skill checks, and Knowledge (religion) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1
+      },
+      "class_skills": [
+        "Knowledge (religion)"
+      ]
+    }
   },
   {
     "id": "elven-reflexes",
@@ -3933,6 +4034,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (geography)": 1,
         "Sleight of Hand": 1
       }
     }
@@ -4008,7 +4110,12 @@
     "source": "Undead Slayer's Handbook",
     "category": "Regional",
     "text": "Since you were young, you've always been interested in the process of lichdom and what drives people to desire such a fate. Officials marked you as a traitor and exiled you when they discovered your morbid fascination with the consummate undead, but you still benefit from your forbidden studies.\n\nBenefit(s): You gain a +1 trait bonus on Knowledge (arcana) and (religion) checks. In addition, choose one Knowledge skill; you can attempt untrained checks with this skill as long as the DC is lower than 15.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (arcana)": 1
+      }
+    }
   },
   {
     "id": "expert-distractor",
@@ -4306,7 +4413,15 @@
     "name": "Favored Son/Daughter",
     "source": "Advanced Player's Guide",
     "category": "Campaign",
-    "text": "You were born and raised in the town of Sandpoint or its surrounding farms. You know many of the region's secrets, and the locals already know who you are. You are well liked in town, and you'll have lots of friends in the region, but the town's tougher side sees you as a snitch or a pansy. You gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is always a class skill for you. In addition, you can choose any one law-abiding citizen of Sandpoint from below as an ally; depending on the person you pick, you'll get different benefits."
+    "text": "You were born and raised in the town of Sandpoint or its surrounding farms. You know many of the region's secrets, and the locals already know who you are. You are well liked in town, and you'll have lots of friends in the region, but the town's tougher side sees you as a snitch or a pansy. You gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is always a class skill for you. In addition, you can choose any one law-abiding citizen of Sandpoint from below as an ally; depending on the person you pick, you'll get different benefits.",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      },
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "fearless-defiance",
@@ -4772,8 +4887,12 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Diplomacy": 1
-      }
+      },
+      "class_skills": [
+        "Knowledge (nobility)"
+      ]
     }
   },
   {
@@ -4951,7 +5070,13 @@
     "source": "Knights of the Inner Sea",
     "category": "Regional",
     "text": "You gain a +1 trait bonus on Knowledge (nobility) and Knowledge (religion) checks. In addition, you gain a +2 trait bonus on both Disguise and Bluff checks while attempting to impersonate a knight.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
+      }
+    }
   },
   {
     "id": "garbage-picker",
@@ -5002,7 +5127,12 @@
     "category": "Campaign",
     "requirement": "Serpent S Skull",
     "text": "Sea trade is never safe. Ever-present hurricanes blow many ships each year off course, into jagged rocks, or directly to the sea floor. Pirates wait on the other side to take cargo from ships lucky enough to traverse or bypass the storm. Your job is to ensure a precious cargo arrives safely-what form this cargo takes and the nature of your relationship to it are up to you and your GM.\n\nBenefit: Your character's history as a merchant or mercenary has earned her a respectable living, and you begin the campaign with an additional 300 gp in starting wealth.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "add": 300
+      }
+    }
   },
   {
     "id": "ghost-survivor",
@@ -5112,7 +5242,12 @@
     "source": "Path of the Hellknight",
     "category": "Faith",
     "text": "You worship the amalgamation of lawful deities known as the Godclaw. You gain a +2 trait bonus on Knowledge (religion) checks related to lawful deities, their clergy, their mythology, and their tenets. Additionally, Knowledge (religion) is a class skill for you. You must be of a lawful alignment to take this trait.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (religion)"
+      ]
+    }
   },
   {
     "id": "golden-scales",
@@ -5261,7 +5396,13 @@
     "text": "Torag's sacred duties are to protect the faithful, take lessons from the great craftsmen and strategists of the past, and prepare against dark times. You receive a +1 trait bonus on Knowledge (engineering) and Knowledge (history) checks. One of these skills (your choice) is a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "guerilla",
@@ -5551,7 +5692,15 @@
     "category": "Race",
     "requirement": "Human",
     "text": "Your parents were scholars of history, whether genealogists of your own family tree, sages on the subject of ancient empires, or simply hobbyists with a deep and abiding love for the past.\n\nBenefit You gain a +1 trait bonus on Knowledge (history) checks and bardic knowledge checks, and Knowledge (history) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1
+      },
+      "class_skills": [
+        "Knowledge (history)"
+      ]
+    }
   },
   {
     "id": "history-of-heresy",
@@ -6201,7 +6350,13 @@
     "source": "Humans of Golarion",
     "category": "Race",
     "text": "You take pride in recording the genealogy of your family, tracing your heritage on large scrolls dating back hundreds, if not thousands of years.\n\nBenefit You gain a +1 trait bonus on Knowledge (history), and Knowledge (nobility) checks, and one of these skills (your choice) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "keeper-of-the-veil",
@@ -6252,6 +6407,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (nature)": 1,
         "Survival": 1
       }
     }
@@ -6297,6 +6453,9 @@
     "text": "You spent your formative years bowing and scraping in the presence of a dragon, witnessing the glory of the vast hoard… and squirreling away a few bits of coin for yourself.\n\nBenefit(s): You gain a +1 trait bonus on Appraise checks, and your starting wealth increases by 200 gp.",
     "origin": "d20pfsrd",
     "effects": {
+      "gold": {
+        "add": 200
+      },
       "skills": {
         "Appraise": 1
       }
@@ -6383,7 +6542,11 @@
     "text": "You come from an aristocratic family, though your family has long since lost any power or prestige it once had.\n\nBenefit: You gain a +1 trait bonus on Diplomacy and Knowledge (nobility) checks. In addition, your starting money is increased by 100 gp- your \"birthright,\" such as it is.",
     "origin": "d20pfsrd",
     "effects": {
+      "gold": {
+        "add": 100
+      },
       "skills": {
+        "Knowledge (nobility)": 1,
         "Diplomacy": 1
       }
     }
@@ -6637,7 +6800,12 @@
     "source": "Faction Guide",
     "category": "Magic",
     "text": "Your dreams are a special place of power that only you get to enjoy; driving away threats to your subconscious is as easy as slamming a door.\n\nBenefit: You receive a +1 trait bonus on Knowledge (planes) checks and a +2 trait bonus on Will saves against effects on your dreaming mind or subconscious, such as a night hag's dream haunting ability, the nightmare spell, and illusions of the phantasm subschool.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "lucky-hound",
@@ -6823,7 +6991,12 @@
     "category": "Race",
     "requirement": "Skinwalker",
     "text": "You hail from a community in the midst of wild and untamed lands that encouraged you to interact with fey.\n\nPrerequisite(s) Skinwalker\n\nBenefit(s) You gain a +1 trait bonus on Knowledge (nature) checks involving fey and on Diplomacy checks to influence fey. Knowledge (nature) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (nature)"
+      ]
+    }
   },
   {
     "id": "marked-by-unknown-forces",
@@ -6842,6 +7015,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (local)": 1,
         "Appraise": 1
       }
     }
@@ -7197,7 +7371,12 @@
     "source": "Inner Sea Primer",
     "category": "Regional",
     "text": "You are skilled at getting along in the mountains, enabling you to find hidden trails and secret entrances into the caverns beneath mountains.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) and Survival checks when in mountainous areas, and Knowledge (geography) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (geography)"
+      ]
+    }
   },
   {
     "id": "muscle-of-the-society",
@@ -7338,7 +7517,12 @@
     "name": "Nature's Mimic",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "Your knowledge of nature informs your fighting style, and that style gives you insight into related aspects of the natural world. You gain a +1 trait bonus on all Knowledge (nature) checks, and Knowledge (nature) is always a class skill for you. You can make Knowledge (nature) checks pertaining to animals that correspond to your style feats untrained."
+    "text": "Your knowledge of nature informs your fighting style, and that style gives you insight into related aspects of the natural world. You gain a +1 trait bonus on all Knowledge (nature) checks, and Knowledge (nature) is always a class skill for you. You can make Knowledge (nature) checks pertaining to animals that correspond to your style feats untrained.",
+    "effects": {
+      "class_skills": [
+        "Knowledge (nature)"
+      ]
+    }
   },
   {
     "id": "navigator",
@@ -7346,7 +7530,12 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You've sailed the treacherous waters of the sea and you can navigate their dangers adroitly.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) checks, and a +1 trait bonus on Profession (sailor) checks. One of these skills becomes a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "necrotic-aura",
@@ -7423,6 +7612,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Sense Motive": 1
       }
     }
@@ -7461,6 +7651,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (geography)": 1,
         "Survival": 1
       }
     }
@@ -7578,7 +7769,12 @@
     "category": "Campaign",
     "requirement": "Carrion Crown",
     "text": "You begin play with an additional 150 gp in starting wealth.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "gold": {
+        "add": 150
+      }
+    }
   },
   {
     "id": "one-on-one-duelist",
@@ -7606,6 +7802,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (religion)": 1,
         "Acrobatics": 1
       }
     }
@@ -7811,7 +8008,12 @@
     "source": "Faiths of Purity",
     "category": "Religion",
     "text": "You gain a +1 trait bonus on all Knowledge (religion) skill checks, and Knowledge (religion) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (religion)"
+      ]
+    }
   },
   {
     "id": "paragon-of-speed",
@@ -8073,7 +8275,12 @@
     "category": "Regional",
     "requirement": "Plane of Air",
     "text": "During your time on the Plane of Air, you visited the libraries frequently and voraciously read the tomes therein.\n\nBenefit(s): You gain a +1 trait bonus on Knowledge (planes) checks and checks made with one other Knowledge skill of your choice. This bonus increases to +3 when used to identify a creature with the air subtype. Knowledge (planes) becomes a class skill for you, and your bonus language options at 1st level include Auran. This choice is in addition to the bonus languages available to the character because of her race.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "planar-wayfarer",
@@ -8225,7 +8432,12 @@
     "category": "Race",
     "requirement": "Human",
     "text": "You pray to whatever local deity will answer your prayers-and if they won't, to hell with them.\n\nBenefit(s) You gain a +1 trait bonus on Knowledge (religion) checks and can make Knowledge (religion) checks as if trained. Once per day, you can cast resistance on yourself as a spell-like ability cast at your highest caster level (CL 1st if you have no caster level).",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1
+      }
+    }
   },
   {
     "id": "prankster",
@@ -8361,6 +8573,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (dungeoneering)": 1,
         "Appraise": 1
       }
     }
@@ -8481,7 +8694,15 @@
     "source": "Path of the Hellknight",
     "category": "Social",
     "text": "You are a quick study when it comes to local laws. Once per day, you can attempt a Knowledge (local) check untrained to recall information about local laws, rulers, and popular locations. Additionally, you gain a +1 trait bonus on Knowledge (local) checks, and Knowledge (local) is a class skill for you. You must be of a lawful alignment to take this trait.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      },
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "quick-improvisation",
@@ -8633,7 +8854,13 @@
     "source": "Inner Sea Primer",
     "category": "Regional",
     "text": "You are an adherent of a faith, or once were but have since renounced it.\n\nBenefit: You gain a +1 trait bonus on Knowledge (local) and Knowledge (religion) checks, and one of these skills is always a class skill for you.\n\nThis bonus increases to +2 when dealing with specifics of a specific faith.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1,
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "regal-presence",
@@ -8712,7 +8939,12 @@
     "name": "Reluctant Apprentice",
     "source": "Ultimate Campaign",
     "category": "Magic",
-    "text": "Your early training grants you knowledge of the arcane. You gain a +1 trait bonus on Knowledge (arcana) checks, and are considered trained in that skill even if you have no ranks in it."
+    "text": "Your early training grants you knowledge of the arcane. You gain a +1 trait bonus on Knowledge (arcana) checks, and are considered trained in that skill even if you have no ranks in it.",
+    "effects": {
+      "skills": {
+        "Knowledge (arcana)": 1
+      }
+    }
   },
   {
     "id": "repel-sin",
@@ -8864,7 +9096,12 @@
     "text": "You were born into a rich family, perhaps even the nobility, and even though you turned to a life of adventure, you enjoy a one-time benefit to your initial finances-your starting wealth increases to 900 gp.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "gold": {
+        "to": 900
+      }
+    }
   },
   {
     "id": "rivalry",
@@ -9088,7 +9325,15 @@
     "name": "Savage",
     "source": "Ultimate Campaign",
     "category": "Social",
-    "text": "You were born and raised in untamed lands far from civilization. You learned to survive in the elements among brutal humanoids and beasts. You gain a +1 trait bonus on Knowledge (nature) checks and a +1 trait bonus on Survival checks to get along in the wild. Knowledge (nature) is always a class skill for you."
+    "text": "You were born and raised in untamed lands far from civilization. You learned to survive in the elements among brutal humanoids and beasts. You gain a +1 trait bonus on Knowledge (nature) checks and a +1 trait bonus on Survival checks to get along in the wild. Knowledge (nature) is always a class skill for you.",
+    "effects": {
+      "skills": {
+        "Knowledge (nature)": 1
+      },
+      "class_skills": [
+        "Knowledge (nature)"
+      ]
+    }
   },
   {
     "id": "savage-breaker",
@@ -9174,7 +9419,13 @@
     "text": "From the moment you could walk and talk, the ruins of ancient civilizations have fascinated you. Because of this, you have special insight into geography as well as expertise in exploring lost places. You gain a +1 trait bonus on Knowledge (geography) and Knowledge (dungeoneering) checks. One of these skills (your choice) is always a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (dungeoneering)": 1,
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "scholar-of-the-great-beyond",
@@ -9184,7 +9435,13 @@
     "text": "Your greatest interests as a child did not lie with current events or the mundane-you have always felt out of place, as if you were born in the wrong era. You take to philosophical discussions of the Great Beyond and of historical events with ease. You gain a +1 trait bonus on Knowledge (history) and Knowledge (planes) checks, and one of these skills (your choice) is always a class skill for you.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1,
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "schooled-inquisitor",
@@ -9369,7 +9626,12 @@
     "source": "People of the River",
     "category": "Regional",
     "text": "Benefit(s) You gain a +1 trait bonus on Knowledge (history) checks and Perception checks to notice secret doors, and Knowledge (history) becomes a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "seeking-adventure",
@@ -9520,7 +9782,12 @@
     "name": "Shadow Whispers",
     "source": "Ultimate Campaign",
     "category": "Religion",
-    "text": "You have a penchant for just knowing others' secrets. You gain a +1 trait bonus on Knowledge (local) checks and a +2 trait bonus on Intimidate checks made to demoralize opponents."
+    "text": "You have a penchant for just knowing others' secrets. You gain a +1 trait bonus on Knowledge (local) checks and a +2 trait bonus on Intimidate checks made to demoralize opponents.",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "shadowcaster",
@@ -9694,6 +9961,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Diplomacy": 1
       }
     }
@@ -9875,7 +10143,15 @@
     "category": "Race",
     "requirement": "Aasimar",
     "text": "You've always loathed serpents and other slithering monsters, ever since you can remember, and have studied them extensively.\n\nBenefit: You gain a +2 trait bonus on Knowledge (dungeoneering) checks and Knowledge (dungeoneering) is always a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (dungeoneering)": 2
+      },
+      "class_skills": [
+        "Knowledge (dungeoneering)"
+      ]
+    }
   },
   {
     "id": "snap-ignition",
@@ -10077,7 +10353,15 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "As someone who has performed or observed funeral rites for a wide variety of people, you have a basic understanding of many different religions.\n\nBenefit(s) You gain a +2 trait bonus on Knowledge (religion) checks, and Knowledge (religion) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 2
+      },
+      "class_skills": [
+        "Knowledge (religion)"
+      ]
+    }
   },
   {
     "id": "spirit-sense",
@@ -10117,7 +10401,13 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You grew up in a small settlement and have learned much about the woods as well as about their supernatural inhabitants.\n\nBenefit: You gain a +1 trait bonus on Knowledge (nature) and Knowledge (planes) checks, and one of these skills becomes a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (nature)": 1,
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "split-second-defense",
@@ -10200,7 +10490,12 @@
     "category": "Campaign",
     "requirement": "Shattered Star",
     "text": "Benefit(s) You gain a +2 trait bonus on Knowledge checks to identify alien monsters' abilities and weaknesses. In addition, you gain a +1 trait bonus on Knowledge (geography) checks, and this skill is a class skill for you. You are treated as if you possessed the Technologist feat for the purposes of resolving checks to identify an alien creature using a Knowledge skill and for all Knowledge (geography) checks. If you already possess the Technologist feat, then your trait bonus on Knowledge (geography) checks increases to +3.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "stargazer-humans-of-golarion",
@@ -10211,6 +10506,7 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
+        "Knowledge (geography)": 1,
         "Survival": 1
       }
     }
@@ -10221,7 +10517,13 @@
     "source": "Blood of the Ancients",
     "category": "Regional",
     "text": "Having spent your youth staring at the night sky, you gain a +1 trait bonus on Knowledge (arcana) and Knowledge (nature) checks. One of these skills becomes a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (arcana)": 1,
+        "Knowledge (nature)": 1
+      }
+    }
   },
   {
     "id": "startling-report",
@@ -10479,7 +10781,15 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "You are blessed with an insight into architecture and artifice.\n\nBenefit(s) You gain a +1 trait bonus on Knowledge (engineering) checks, and Knowledge (engineering) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 1
+      },
+      "class_skills": [
+        "Knowledge (engineering)"
+      ]
+    }
   },
   {
     "id": "student-of-history",
@@ -10487,7 +10797,15 @@
     "source": "Divine Anthology",
     "category": "Faith",
     "text": "Benefit(s): You gain a +1 trait bonus on Knowledge (history) checks, and Knowledge (history) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1
+      },
+      "class_skills": [
+        "Knowledge (history)"
+      ]
+    }
   },
   {
     "id": "student-of-philosophy",
@@ -11209,7 +11527,15 @@
     "source": "Divine Anthology",
     "category": "Faith",
     "text": "Benefit(s): You gain a +1 trait bonus on Knowledge (nobility) checks, and Knowledge (nobility) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1
+      },
+      "class_skills": [
+        "Knowledge (nobility)"
+      ]
+    }
   },
   {
     "id": "trailblazer",
@@ -11377,7 +11703,12 @@
     "name": "Truth's Agent",
     "source": "Ultimate Campaign",
     "category": "Social",
-    "text": "You are skilled at weeding out information. You gain a +1 trait bonus on all Diplomacy checks made to gather information and all Knowledge (local) checks. Knowledge (local) is always a class skill for you."
+    "text": "You are skilled at weeding out information. You gain a +1 trait bonus on all Diplomacy checks made to gather information and all Knowledge (local) checks. Knowledge (local) is always a class skill for you.",
+    "effects": {
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "tundra-child",
@@ -11548,7 +11879,12 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You are familiar with the byways and passages of the underworld.\n\nBenefit: You gain a +1 trait bonus on Knowledge (dungeoneering) checks, and a +1 trait bonus on Survival checks made in a specific area. One of these skills becomes class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (dungeoneering)": 1
+      }
+    }
   },
   {
     "id": "undine-loyalty",
@@ -12010,7 +12346,12 @@
     "category": "Race",
     "requirement": "Dwarf",
     "text": "You gain a +1 trait bonus to damage rolls against creatures and objects made primarily of clay, crystal, earth, metal, or stone. Knowledge (engineering) is a class skill for you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "class_skills": [
+        "Knowledge (engineering)"
+      ]
+    }
   },
   {
     "id": "warthog",
@@ -12074,7 +12415,12 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You belong to one of the nomadic tribes that wander the desert wastes and you are adept at navigating the seemingly endless desert.\n\nBenefit: You gain a +1 trait bonus on Knowledge (geography) checks and Survival checks made in the desert.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "water-touched",
@@ -12426,7 +12772,12 @@
     "category": "Faith",
     "requirement": "Gnome",
     "text": "Prerequisite: You must match the alignment of your chosen deity exactly.\n\nBenefit: You gain a +1 trait bonus on Knowledge (religion) checks, and that skill is a class skill for you. As long as you remain completely faithful to the tenets of your faith (as determined by the GM), you never suffer from the Bleaching.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1
+      }
+    }
   },
   {
     "id": "zealous-striker",
@@ -13003,7 +13354,15 @@
     "source": "Divine Anthology",
     "category": "Faith",
     "text": "You attempt to maintain older traditions despite changing social norms, and find great value in the trappings and codes of the aristocracy. You gain a +1 trait bonus on Knowledge (nobility) checks, and Knowledge (nobility) is a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1
+      },
+      "class_skills": [
+        "Knowledge (nobility)"
+      ]
+    }
   },
   {
     "id": "urban-acolyte",
@@ -13264,7 +13623,12 @@
     "source": "Antihero's Handbook",
     "category": "Social",
     "text": "Whether you are a commoner who has come to despise the haughty upper crust or a holier-than-thou noble who can’t stand being around the unwashed masses, your contempt drives you to study carefully, making sure you always have the upper hand in social exchanges with them. You gain a +1 trait bonus on Knowledge (local) checks and Knowledge (nobility) checks, and one of these skills becomes a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "criminal-roots",
@@ -13682,7 +14046,15 @@
     "source": "Hell's Rebels Player's Guide",
     "category": "Campaign",
     "text": "You had the fortune (or perhaps the misfortune, depending on your viewpoint) to be born into one of Kintargo’s noble families. Your experience growing up among the city’s well-to-do has given you an upper hand when it comes to knowledge of high society, and you start the game with a modest inheritance. With the new situation in Kintargo brewing, there is much concern about an eventual restructuring of the city’s nobility. Already, one noble estate has burned to the ground under what can best be described as suspicious circumstances, but whether the government or rebels were responsible depends on whom you ask. With this trait, the assumption is that you belong to a minor noble family (and can make up your family name). In this case, your family keeps a small manor in the Greens. If you want to be a member of one of Kintargo’s major noble families, you must take the Noble Scion feat at 1st level.\n\nYou gain a +1 trait bonus on Knowledge (nobility) checks, and Knowledge (nobility) is always a class skill for you. The Noble Scion feat (see the sidebar on page 11) does not have a Charisma prerequisite for you. In addition, you start play with a noble’s outfit, a signet ring, and a single additional nonmagical item worth no more than 200 gp. If you take the Noble Scion feat, your last name is probably Aulamaxa, Aulorian, Delronge, Jarvis, Jhaltero, Sarini, Tanessen, or Vashnarstill; if you’re not human, you were adopted into the family. If you don’t take this feat, you can make up your last name.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1
+      },
+      "class_skills": [
+        "Knowledge (nobility)"
+      ]
+    }
   },
   {
     "id": "diva-in-training",
@@ -13807,6 +14179,8 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (religion)": 1,
+        "Knowledge (planes)": 1,
         "Diplomacy": 1
       }
     }
@@ -13817,7 +14191,15 @@
     "source": "Hell's Vengeance Player's Guide",
     "category": "Campaign",
     "text": "You had the fortune to be born into one of Cheliax’s noble families, and even more importantly, your family is one of those loyal to House Thrune. Perhaps your family has been allied with Thrune since the Chelish Civil War, or maybe Thrune granted your family its title in exchange for its support during that conflict. In any case, your experience growing up among the nation’s well-to-do has given you an upper hand when it comes to knowledge of high society, and you start the game with a modest inheritance. With the nascent uprising of the Glorious Reclamation in Cheliax, there is much concern among the aristocracy, and House Thrune needs the support of loyal nobles now more then ever.\n\nThis trait assumes you belong to a minor noble human family with a small manor or estate in some backwater of the empire. If you’re not human, either you were adopted into a noble human family, or your family was recently granted a nonhereditary noble title (see the Chelish Nobility sidebar on page 15).\n\nYou gain a +1 trait bonus on Knowledge (nobility) checks, and Knowledge (nobility) is a class skill for you. In addition, you gain a +1 trait bonus on Charismabased checks against other members of the Chelish aristocracy. The Noble Scion feat does not have a Charisma prerequisite for you. Lastly, you start play with a noble’s outfit, a signet ring, and a single additional nonmagical item worth no more than 200 gp.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (nobility)": 1
+      },
+      "class_skills": [
+        "Knowledge (nobility)"
+      ]
+    }
   },
   {
     "id": "erratic-malefactor",
@@ -13884,7 +14266,15 @@
     "source": "Hell's Vengeance Player's Guide",
     "category": "Campaign",
     "text": "While the worship of Asmodeus is widespread throughout Cheliax, you follow a different path: that of the philosophy of diabolism. Asmodeus and the other archdevils are worthy of respect and emulation, certainly, but rather than worship one Lord of Hell above all others, your faith is instead based on the veneration of the order and laws of Hell itself as a model for a perfect society. Free will must be suppressed to prevent rebellion, slavery is required to keep the unworthy in their place, and evil and cruelty are necessary for good and kindness to exist.\n\nYou gain a +1 trait bonus on Knowledge (planes) checks, and Knowledge (planes) is a class skill for you. You also know the Infernal tongue (this does not count toward your number of languages). In addition, your studies of Hell’s underlying structure give strength to your determination. You gain a +2 trait bonus on Will saves against the mind-affecting effects of outsiders with the good subtype.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (planes)": 1
+      },
+      "class_skills": [
+        "Knowledge (planes)"
+      ]
+    }
   },
   {
     "id": "thrune-informant",
@@ -13924,7 +14314,12 @@
     "source": "Iron Gods Player's Guide",
     "category": "Campaign",
     "text": "They say the strange technological ruins scattered throughout Numeria came from the skies several thousand years ago. The concept of life on other planets far beyond Golarion has always fascinated you, and you’ve long hoped to learn more about what life on those other planets may have been like. You’ve heard stories about the strange alien creatures found in Numerian dungeons and hope to learn all you can about them—perhaps some of these aliens can be found in the caverns below Torch! You gain a +2 trait bonus on Knowledge checks to identify alien monsters’ abilities and weaknesses. In addition, you gain a +1 trait bonus on Knowledge (geography) checks, and this skill is a class skill for you. You are treated as if you possessed the Technologist feat for the purposes of resolving checks to identify an alien creature using a Knowledge skill and for all Knowledge (geography) checks. If you already possess the Technologist feat, then your trait bonus on Knowledge (geography) checks increases to +3.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "animal-whisperer",
@@ -14037,6 +14432,9 @@
     "effects": {
       "saves": {
         "will": 1
+      },
+      "skills": {
+        "Knowledge (nobility)": 1
       }
     }
   },
@@ -14046,7 +14444,13 @@
     "source": "Mummy's Mask Player's Guide",
     "category": "Campaign",
     "text": "Osirion has a history stretching back over 8,000 years, and the deities worshiped today in modern Osirion are not the same ones revered in Ancient Osirion’s heyday—deities with names like Anubis, Osiris, Ra, and Set, among others. Your family never lost the faith of your ancestors, however, and your devotion to one of the deities of Ancient Osirion has helped keep the memory of Osirion’s past alive—a past that still lingers on in the untouched necropolis of Wati. You gain a +1 trait bonus on Knowledge (history) and Knowledge (religion) checks, and one of those skills is always a class skill for you. In addition, your faith in the old gods of Osirion grants you a +1 trait bonus on saving throws against divine magic. For more information on the deities of Ancient Osirion, see Pathfinder Adventure Path #80: Empty Graves.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "foreign-opportunist",
@@ -14067,7 +14471,12 @@
     "source": "Mummy's Mask Player's Guide",
     "category": "Campaign",
     "text": "You have studied the architectural styles of nations throughout the Inner Sea region, but none have fascinated you like the architecture of Ancient Osirion. Hearing that the famed necropolis of Wati has finally been opened for exploration, you’ve come to that city to get firsthand experience with the lost secrets of Ancient Osirion’s master builders. You gain a +2 trait bonus on Knowledge (engineering) checks, and that skill is always a class skill for you. In addition, you gain a +2 trait bonus on Perception checks to find concealed or secret doors in structures built in the style of Ancient Osirion.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 2
+      }
+    }
   },
   {
     "id": "mummy-cursed",
@@ -14112,7 +14521,12 @@
     "source": "Mummy's Mask Player's Guide",
     "category": "Campaign",
     "text": "You have dedicated your life to eradicating the scourge of the undead from Golarion. You have spent countless hours studying the different types of undead and have trained endlessly to learn the best ways to defeat them. If any undead creatures come out of the tombs of Wati’s necropolis, you’ll be ready for them! You gain a +1 trait bonus on damage rolls against undead creatures. In addition, you gain a +1 trait bonus on Knowledge (religion) checks, and that skill is always a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1
+      }
+    }
   },
   {
     "id": "wati-native",
@@ -14120,7 +14534,12 @@
     "source": "Mummy's Mask Player's Guide",
     "category": "Campaign",
     "text": "You were born and raised in the city of Wati, and you know its streets and secrets well. Although it’s frowned upon by the city’s authorities, you have sneaked into the necropolis on multiple occasions to wander its dusty, abandoned streets. Out of respect for the deceased, you’ve never actually entered one of the necropolis’s silent tombs, but you have no fear of what might lie inside. You gain a +2 trait bonus on saves against fear effects. In addition, your knowledge of the city grants you a +1 trait bonus on Knowledge (local) checks, and that skill is always a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "blood-of-giants",
@@ -14157,7 +14576,13 @@
     "source": "Reign of Winter Player's Guide",
     "category": "Campaign",
     "text": "You have long led a nomadic life—perhaps because your parents were travelers (whether roaming Varisian caravaneers or traveling merchants who traded far and wide), you belonged to a nomadic tribe, or you ran away from home to discover the world at a young age. Some call it wanderlust, but to you the thought of new places and experiences is truly what makes life worth living, and no region catches your imagination like the windswept wilderness of the North. You are used to getting along in unfamiliar lands and interacting with interesting new people. You gain a +1 trait bonus on Knowledge (geography) and Knowledge (local) checks, and one of these skills (your choice) is a class skill for you. You can also speak one additional language (this does not count toward your number of languages).",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1,
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "vigilante-witch-hunter",
@@ -14259,7 +14684,15 @@
     "source": "Rise of the Runelords Anniversary Edition Player's Guide",
     "category": "Campaign",
     "text": "While not ethnically a Varisian, you have been raised among Varisians and they consider you one of their own. Furthermore, you managed to get in good with a group of Sczarni and consider them your new family. After being run out of the last place your Sczarni family camped, you tracked down a friend of the family in Sandpoint—a ruthless thug named Jubrayl Vhiski at the Fatman’s Feedbag. During your time with the Sczarni, you learned a few tricks of the trade. You gain a +1 trait bonus on Knowledge (local) checks and Knowledge (local) is always a class skill for you. In addition, you begin play able to speak and read Varisian.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 1
+      },
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "friends-and-enemies",
@@ -14328,7 +14761,13 @@
     "source": "Rise of the Runelords Anniversary Edition Player's Guide",
     "category": "Campaign",
     "text": "Growing up with your nose in books, you’ve had a great interest in past cultures and ancient history. Furthermore, having grown up in Varisia, you know the monuments dotting the landscape belong to an ancient civilization known as Thassilon. From your life of study and dogged research, you’ve pieced together the language and partial history of this once-great empire. You gain a +1 trait bonus on Knowledge (arcana) and Knowledge (history) checks, and begin play able to speak and read Thassilonian.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1,
+        "Knowledge (arcana)": 1
+      }
+    }
   },
   {
     "id": "student-of-faith",
@@ -14710,7 +15149,13 @@
     "source": "Tyrant's Grasp Player's Guide",
     "category": "Campaign",
     "text": "You know a little bit about most everything and everyone in Roslar’s Coffer. It may be your profession, as you could be an archivist, crier, or librarian—or you simply make a hobby of gossip. Either way, you have a gift for recall and reading others. You gain a +1 trait bonus on Knowledge (history) and Knowledge (local) checks, and these both become class skills for you. Once each day you can reroll a single Bluff or Sense Motive check against a creature you have known for at least 24 hours, using the better result.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1,
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "the-word",
@@ -14742,6 +15187,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Appraise": 1
       }
     }
@@ -14793,6 +15239,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (local)": 1,
         "Disable Device": 1
       }
     }
@@ -15045,7 +15492,13 @@
     "category": "Race",
     "requirement": "Dhampir",
     "text": "You grew up in Nidal, Geb, or another place where your undead lineage was considered a mark of power. You gain a +1 trait bonus on Knowledge (nobility) and Knowledge (religion) checks. One of these skills (your choice) is a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1,
+        "Knowledge (nobility)": 1
+      }
+    }
   },
   {
     "id": "adrenaline-rush",
@@ -15086,7 +15539,12 @@
     "category": "Race",
     "requirement": "Dwarf",
     "text": "You recall the dangers the dwarves faced during the Quest for Sky. You gain a +1 trait bonus on Knowledge (dungeoneering) checks and a +2 trait bonus on Knowledge (history) checks pertaining to the Quest for Sky. Select one of these skills to be a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (dungeoneering)": 1
+      }
+    }
   },
   {
     "id": "animal-rustler",
@@ -15113,7 +15571,12 @@
     "category": "Race",
     "requirement": "Human—Azlanti",
     "text": "You were trained in the style of Azlanti architecture and craft. You gain a +1 trait bonus on Knowledge (engineering) checks. In addition, any masterwork item you craft has its hardness and break DC increased by 1. This increase is an enhancement bonus.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 1
+      }
+    }
   },
   {
     "id": "azlanti-inheritor",
@@ -15929,6 +16392,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (religion)": 1,
         "Acrobatics": 1
       }
     }
@@ -15940,7 +16404,12 @@
     "category": "Race",
     "requirement": "Human—Shoanti",
     "text": "You learned numerous mnemonic devices to more easily recall information imparted by your quah’s master storyteller. You gain a +1 trait bonus on Knowledge (history) and Perform (oratory) checks, and one of those skills (your choice) is always a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "persecuted-expatriate",
@@ -16122,7 +16591,13 @@
     "category": "Race",
     "requirement": "Dwarf",
     "text": "You grew up hearing stories of the lost Sky Citadels, and have sworn to find and reclaim one. You gain a +1 trait bonus on Knowledge (geography) and Knowledge (history) checks. One of these skills (your choice) is always a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "snowblooded",
@@ -16175,6 +16650,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (geography)": 1,
         "Survival": 1
       }
     }
@@ -16207,6 +16683,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (arcana)": 1,
         "Spellcraft": 1
       }
     }
@@ -16512,7 +16989,13 @@
     "category": "Regional",
     "requirement": "Razmiran",
     "text": "You are an adherent of the Razmiri faith, or once were and have since renounced it. You gain a +1 trait bonus on Knowledge (local) and Knowledge (religion) checks, and one of these skills is always a class skill for you. This bonus increases to +2 when dealing with specifics of the Razmiri faith.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (religion)": 1,
+        "Knowledge (local)": 1
+      }
+    }
   },
   {
     "id": "akitonian-ferocity",
@@ -16574,7 +17057,12 @@
     "category": "Regional",
     "requirement": "Plane of Air",
     "text": "During your time on the Plane of Air, you visited the libraries of Armun Kelisk frequently and voraciously read the tomes therein. You gain a +1 trait bonus on Knowledge (planes) checks and checks made with one other Knowledge skill of your choice. This bonus increases to +3 when used to identify a creature with the air subtype. Knowledge (planes) becomes a class skill for you, and your bonus language options at 1st level include Auran. This choice is in addition to the bonus languages available to the character because of her race.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (planes)": 1
+      }
+    }
   },
   {
     "id": "belem-pirate",
@@ -16583,7 +17071,12 @@
     "category": "Regional",
     "requirement": "Minata",
     "text": "The hidden coves and bays of the island of Belem have been your home throughout most of your career as a pirate, and the winding waterways of Minata have trained you well in the art of sailing. You gain a +1 trait bonus on Knowledge (geography) checks and Profession (sailor) checks, and one of these skills becomes a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "bellflower-tiller",
@@ -16754,7 +17247,12 @@
     "category": "Regional",
     "requirement": "Mindspin Mountains",
     "text": "Everything has a price—and it’s your job to know it. Your starting cash increases to 500 gp.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "gold": {
+        "to": 500
+      }
+    }
   },
   {
     "id": "cruel-master",
@@ -16827,7 +17325,12 @@
     "category": "Regional",
     "requirement": "Tian Xia Darklands",
     "text": "You are familiar with the byways and passages of Tian Xia’s underworld. You gain a +1 trait bonus on Knowledge (dungeoneering) checks, and a +1 trait bonus on Survival checks made in the Darklands. One of these skills becomes class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (dungeoneering)": 1
+      }
+    }
   },
   {
     "id": "debt-to-a-witch",
@@ -16913,7 +17416,12 @@
     "category": "Regional",
     "requirement": "Katapesh",
     "text": "You spent a portion of your childhood working for the Duskwalkers, the guild responsible for policing and watching over all trade that takes place in Katapesh’s notorious Nightstalls. You have quite a bit more spending cash than most others of your age as a result, and start with twice the normal amount of starting gold. In addition, your reputation remains strong in the Nightstalls, and any transactions you make there are always beneficial to you; items you sell net you an additional 10% profit, and items you purchase there are 10% cheaper than normal. This discount also applies to your starting gear.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "gold": {
+        "times": 2
+      }
+    }
   },
   {
     "id": "eager-combatant",
@@ -17394,6 +17902,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Sense Motive": 1
       }
     }
@@ -17559,7 +18068,12 @@
     "category": "Regional",
     "requirement": "Any City",
     "text": "You are disconnected from your heritage and do what you can to learn more about where your family is or where your people came from. Knowledge (local) is always a class skill for you, and you can always take 10 on Knowledge (local) checks, even when stress or distractions would normally prevent you from doing so.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "class_skills": [
+        "Knowledge (local)"
+      ]
+    }
   },
   {
     "id": "mana-wastes-medic",
@@ -17641,7 +18155,12 @@
     "category": "Regional",
     "requirement": "Shanguang",
     "text": "You belong to one of the nomadic Mutabi-qi tribes that wander the wastes of Shaguang, and you are adept at navigating the seemingly endless desert wastes. You gain a +1 trait bonus on Knowledge (geography) checks and Survival checks made in the desert.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "mwangi-herbal-tradition",
@@ -17784,7 +18303,13 @@
     "category": "Regional",
     "requirement": "Osirion",
     "text": "You have studied the history of ancient Osirion, and may have even ventured inside one of the great pyramids. You gain a +1 trait bonus on Knowledge (engineering) and Knowledge (history) checks, and one of them is always a class skill for you. In addition, you may choose Ancient Osiriani as one of your bonus languages.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 1,
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "outsea-native",
@@ -17838,6 +18363,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (local)": 1,
         "Sense Motive": 1,
         "Bluff": 1
       }
@@ -18070,7 +18596,12 @@
     "category": "Regional",
     "requirement": "Sevenarches",
     "text": "You’ve long heard rumors about the mysterious archways of Sevenarches and have spent much of your life trying to unravel the mysteries behind the portals. You gain a +1 trait bonus on Knowledge (history) checks and Perception checks to notice secret doors, and Knowledge (history) becomes a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (history)": 1
+      }
+    }
   },
   {
     "id": "shackles-seafarer",
@@ -18135,6 +18666,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (dungeoneering)": 1,
         "Appraise": 1
       }
     }
@@ -18194,6 +18726,7 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
+        "Knowledge (nobility)": 1,
         "Diplomacy": 1
       }
     }
@@ -18259,7 +18792,13 @@
     "category": "Regional",
     "requirement": "Lirgen",
     "text": "Having spent your youth staring at the night sky, you gain a +1 trait bonus on Knowledge (arcana) and Knowledge (nature) checks. One of these skills becomes a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (arcana)": 1,
+        "Knowledge (nature)": 1
+      }
+    }
   },
   {
     "id": "street-wary",
@@ -18404,7 +18943,12 @@
     "category": "Regional",
     "requirement": "Xidao",
     "text": "You’ve sailed the treacherous waters of the Xidao Gulf in your past, and you can navigate their dangers adroitly. You gain a +1 trait bonus on Knowledge (geography) checks, and a +1 trait bonus on Profession (sailor) checks. One of these skills becomes a class skill for you.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (geography)": 1
+      }
+    }
   },
   {
     "id": "triaxian-tradition",
@@ -18474,7 +19018,11 @@
     "text": "You come from an aristocratic family, though your family has long since lost any power or prestige it once had. You gain a +1 trait bonus on Diplomacy and Knowledge (nobility) checks. In addition, your starting money is increased by 100 gp— your “birthright,” such as it is.",
     "origin": "Archives of Nethys",
     "effects": {
+      "gold": {
+        "add": 100
+      },
       "skills": {
+        "Knowledge (nobility)": 1,
         "Diplomacy": 1
       }
     }
