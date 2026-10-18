@@ -1103,6 +1103,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Rich Parents and Lesser Noble: 900 gp, then +100', traitStartingGold(175, [trait('Lesser Noble'), trait('Rich Parents')]).gp, 1000);
   check('no gold trait: unchanged', traitStartingGold(175, [trait('Reactionary')]).gp, 175);
   check('gear worth 150 gp is not gold (Employee)', trait('Employee').effects?.gold, undefined);
+  // Trait combat bonuses (traitCombat): switches, counted while on; two trait bonuses to one thing don't stack.
+  const { traitCombat } = await import('./traits.js');
+  const { effectTotals } = await import('./effects.js');
+  const gs = traitCombat([trait('Giant Slayer')]);
+  check('Giant Slayer: +1 attack and damage, off until switched on', `${gs.length} ${gs[0].effect.target} ${gs[0].effect.more[0].target} ${gs[0].on}`, '1 attack damage false');
+  const on = traitCombat([trait('Giant Slayer'), trait('Crusader')], ['giant-slayer:0', 'crusader:0']);
+  const tfx = effectTotals([], on.filter(s => s.on).map(s => s.effect));
+  check('Giant Slayer and Crusader on: attack +1 (trait bonuses don\'t stack), damage +1', `${tfx.attack} ${tfx.damage}`, '1 1');
+  check('Stable: +1 CMB, not AC (Acrobatics isn\'t AC)', trait('Stable').effects.combat[0].bonuses.map(x => x.target).join(), 'cmb');
+  check('Defender of the Society: +1 AC when in medium or heavy armor', trait('Defender of the Society').effects.combat[0].bonuses[0].target, 'ac');
 }
 
 {

@@ -58,12 +58,56 @@ def has_name(name, phrase):
     return re.search(rf'(?<!\w){re.escape(name)}(?!\w)', phrase)
 
 
+# Combat bonuses ("+1 trait bonus on attack rolls and weapon damage rolls against giants", "+1 trait bonus to AC when
+# wearing medium or heavy armor"): nearly all apply only sometimes, so each sentence with them is kept with its text,
+# for a switch in the app's Active effects; `always` when nothing limits it. Left out: a choice ("choose one"), and
+# bonuses to confirm critical hits, to spells, save DCs and sneak attack damage, which the targets can't say, and an
+# ally's bonus.
+COMBAT_BONUS = re.compile(r'\+(\d+) trait bonus (?:on|to) ((?:(?:all |your |weapon |melee |ranged )*'
+                          r'(?:attack rolls|damage rolls|armor class|AC\b|combat maneuver checks|combat maneuver defense|CMB|CMD)'
+                          r'(?:,? (?:and|&) (?:on |to )?)?)+)', re.I)
+COMBAT_SKIP = re.compile(r'choose one|confirm(?:ing)?(?: an?)? critical|\bspells?\b|save DCs?|sneak attack|attacks? of opportunity'
+                         r'|\ball(?:y|ies)\b[^.]{0,60}\bgains?\b', re.I)
+
+
+def combat_targets(phrase):
+    out = []
+    for m in re.finditer(r'((?:melee |ranged )?)(attack rolls|damage rolls|armor class|\bAC\b|combat maneuver checks|combat maneuver defense|CMB|CMD)', phrase, re.I):
+        kind, what = m.group(1).strip().lower(), m.group(2).lower()
+        t = {'attack rolls': 'attack', 'damage rolls': 'damage', 'armor class': 'ac', 'ac': 'ac', 'combat maneuver checks': 'cmb',
+             'combat maneuver defense': 'cmd', 'cmb': 'cmb', 'cmd': 'cmd'}[what]
+        if kind and t in ('attack', 'damage'):
+            t = f'{kind}-{t}'
+        if t == 'ranged-damage':
+            t = 'damage'
+        if t not in out:
+            out.append(t)
+    return out
+
+
+def combat_of(body):
+    out = []
+    for sentence in re.split(r'(?<=[.!?])\s+', re.sub(r'\s+', ' ', body)):
+        if COMBAT_SKIP.search(sentence):
+            continue
+        bonuses, always = [], True
+        for m in COMBAT_BONUS.finditer(sentence):
+            for t in combat_targets(m.group(2)):
+                bonuses.append({'target': t, 'value': int(m.group(1))})
+            always = always and bool(unconditional(sentence, m))
+        if bonuses:
+            out.append({'bonuses': bonuses, 'text': sentence.strip(), **({'always': True} if always else {})})
+    return out
+
+
 def effects_of(body, skills):
     out = {}
     if re.search(r'one of the following', body, re.I):
         return out
     if gold := gold_of(body):
         out['gold'] = gold
+    if combat := combat_of(body):
+        out['combat'] = combat
     for sentence in re.split(r'(?<=[.!?])\s+', re.sub(r'\s+', ' ', body)):
         for m in re.finditer(r'\+(\d+) trait bonus on (?:all )?(Fortitude|Reflex|Will) sav(?:es|ing throws)\b', sentence, re.I):
             if unconditional(sentence, m):

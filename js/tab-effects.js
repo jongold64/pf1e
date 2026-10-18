@@ -43,6 +43,7 @@ export function popOnNow(app) {
       `<button type="button" class="skill-details q-details" data-onnow-buff-pop="${esc(b.id)}" aria-label="${esc(b.name)} in a popup" title="Details">?</button>`)}${levelOf(b, x)}</div>`).join('')
       : '<p class="hint">None yet: add spells, abilities and conditions with <b>Add effects</b> below.</p>'}
     ${state.customEffects.length ? `<h3>Custom effects</h3>${state.customEffects.map((c, i) => box(`data-onnow-custom="${i}"`, !!c.on, c.name || 'Custom effect', '')).join('')}` : ''}
+    ${traitSwitchesHtml(view, 'data-onnow-trait')}
     ${(view.fromItems || []).length ? `<h3>From your magic items</h3><ul>${view.fromItems.map(x => `<li>✓ ${esc(x.label)}</li>`).join('')}</ul>
       <p class="hint">Switch an item on or off on the Magic Items tab (or in Active effects).</p>` : ''}
     <h3>Combat switches</h3>
@@ -50,12 +51,23 @@ export function popOnNow(app) {
   </div>`, [
     { label: 'Add effects', primary: true, run: () => popAddEffects(app) },
     { label: 'Switch all off', run: () => app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })),
-      customEffects: state.customEffects.map(c => ({ ...c, on: false })),
+      customEffects: state.customEffects.map(c => ({ ...c, on: false })), traitOn: [],
       combat: { ...state.combat, powerAttack: false, deadlyAim: false, rapidShot: false, pointBlank: false, combatExpertise: false, fightingDefensively: false, totalDefense: false, conjured: undefined } }) },
   ]);
 }
 
 const signedN = n => (n > 0 ? `+${n}` : String(n));
+
+// "From your traits": each chosen trait's attack, damage, AC, CMB or CMD bonus (traitCombat), ticked on when it applies
+// (against giants, in a surprise round...), with the trait's sentence saying when; one that always applies is just listed.
+function traitSwitchesHtml(view, attr) {
+  const list = view.traitSwitches || [];
+  if (!list.length) return '';
+  const what = s => [s.effect, ...s.effect.more].map(p => `${TARGET_NAMES[p.target]} ${signedN(p.value)}`).join(', ');
+  return `<h3>From your traits</h3><p class="hint">Tick one when it applies: these bonuses count only in the situation the trait names.</p>
+    ${list.map(s => `<label class="check-row small"><input type="checkbox" ${attr}="${esc(s.key)}"${s.on ? ' checked' : ''}${s.always ? ' disabled' : ''}>
+      <span><b>${esc(s.name)}</b> <small class="muted">${esc(what(s))}${s.always ? ' (always)' : ''}</small><br><small>${esc(s.text)}</small></span></label>`).join('')}`;
+}
 
 // Add effects (from the Character tab's Active effects): every spell, ability, item, circumstance and condition in the
 // catalog, searched by name and narrowed by group, each with Add (it goes on your list, switched on, at your level) and
@@ -99,7 +111,8 @@ export function renderEffects(app, view) {
   // Effects in your list: switched on, or kept switched off (unticked) so they're at hand for next time.
   const saved = new Map(state.buffs.map(x => [x.id, x]));
   const on = new Map(state.buffs.filter(x => x.on !== false).map(x => [x.id, x]));
-  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length + (view.fromItems || []).length;
+  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length + (view.fromItems || []).length
+    + (view.traitSwitches || []).filter(s => s.on).length;
   $('effects-count').textContent = activeCount ? `${activeCount} on` : '';
 
   const buffRow = buff => {
@@ -159,6 +172,7 @@ export function renderEffects(app, view) {
     ${active.length ? `<h3>Your effects</h3><p class="hint">Tick to switch one on, untick to switch it off: it stays here for next time
       (favored terrain, flanking, a condition...). <b>remove</b> takes it off the list.</p><ul class="buff-active">${active.map(buffRow).join('')}</ul>` : ''}
     ${magicItemsHtml(app)}
+    ${traitSwitchesHtml(view, 'data-fx-trait')}
     ${EFFECT_GROUPS.map(([g, label, hint]) => {
       const list = BUFFS.filter(b => (b.group || 'spell') === g);
       const n = list.filter(b => on.has(b.id)).length;
@@ -278,6 +292,9 @@ export function initEffects(app) {
     if (t.dataset.onnowBuff) {
       const id = t.dataset.onnowBuff;
       app.update({ buffs: state.buffs.map(x => (x.id === id ? (t.checked ? { id: x.id, cl: x.cl } : { ...x, on: false }) : x)) });
+    } else if (t.dataset.onnowTrait) {
+      const k = t.dataset.onnowTrait;
+      app.update({ traitOn: t.checked ? [...new Set([...state.traitOn, k])] : state.traitOn.filter(x => x !== k) });
     } else if (t.dataset.onnowCustom !== undefined) {
       const i = Number(t.dataset.onnowCustom);
       app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, on: t.checked } : c)) });
@@ -335,6 +352,9 @@ export function initEffects(app) {
       const kept = state.buffs.find(x => x.id === id);
       app.update({ buffs: kept ? state.buffs.map(x => (x.id === id ? (t.checked ? { id: x.id, cl: x.cl } : { ...x, on: false }) : x))
         : t.checked ? [...state.buffs, { id, cl: fresh }] : state.buffs });
+    } else if (t.dataset.fxTrait) {
+      const k = t.dataset.fxTrait;
+      app.update({ traitOn: t.checked ? [...new Set([...state.traitOn, k])] : state.traitOn.filter(x => x !== k) });
     } else if (t.dataset.buffCl) {
       const cl = Math.min(20, Math.max(1, Math.floor(Number(t.value)) || 1));
       app.update({ buffs: state.buffs.map(x => (x.id === t.dataset.buffCl ? { ...x, cl } : x)) });
@@ -370,7 +390,7 @@ export function initEffects(app) {
       const i = Number(e.target.closest('[data-fx-remove]').dataset.fxRemove);
       app.update({ customEffects: state.customEffects.filter((_, j) => j !== i) });
     } else if (e.target.closest('[data-fx-clear]')) {
-      app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })), customEffects: state.customEffects.map(c => ({ ...c, on: false })) });
+      app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })), customEffects: state.customEffects.map(c => ({ ...c, on: false })), traitOn: [] });
     }
   });
 }

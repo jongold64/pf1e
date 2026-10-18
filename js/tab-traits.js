@@ -14,7 +14,15 @@ function effectText(t) {
   for (const [skill, n] of Object.entries(e.skills || {})) parts.push(`+${n} ${skill}`);
   if ((e.class_skills || []).length) parts.push(`class skill: ${e.class_skills.join(', ')}`);
   if (e.gold) parts.push(goldText(e.gold));
+  if ((e.combat || []).length) parts.push(`${combatText(e.combat)} (a switch in Active effects)`);
   return parts.join(', ');
+}
+
+// A trait's combat bonuses, in short: "+1 attack, +1 damage".
+const COMBAT_NAMES = { attack: 'attack', 'melee-attack': 'melee attack', 'ranged-attack': 'ranged attack', damage: 'damage',
+  'melee-damage': 'melee damage', ac: 'AC', cmb: 'CMB', cmd: 'CMD' };
+function combatText(combat) {
+  return [...new Set(combat.flatMap(c => c.bonuses.map(x => `+${x.value} ${COMBAT_NAMES[x.target] || x.target}`)))].join(', ');
 }
 
 // A trait's starting gold change, in words: "starting gold 900 gp", "+100 gp starting gold", "double starting gold".
@@ -108,7 +116,9 @@ function showTraitDetails(app, i) {
       <h3>In the app</h3>${rows.length ? `<table class="skill-why"><tbody>${rows.join('')}</tbody></table>` : ''}
       ${classSkills.length ? `<p>Class skill: ${esc(classSkills.join(', '))} (counted on the Skills tab).</p>` : ''}
       ${e.gold ? `<p>${esc(goldText(e.gold)[0].toUpperCase() + goldText(e.gold).slice(1))}: counted in the starting gold on the Equipment tab.</p>` : ''}
-      ${!rows.length && !classSkills.length && !e.gold ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
+      ${(e.combat || []).length ? `<p>${esc(combatText(e.combat))}: only in the situation the trait names, so it's a switch in
+        Active effects (Build tab or the Character tab's Active effects): tick it when it applies and it counts.</p>` : ''}
+      ${!rows.length && !classSkills.length && !e.gold && !(e.combat || []).length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';
   }

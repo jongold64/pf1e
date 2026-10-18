@@ -52,7 +52,7 @@ import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
-import { traitEffects, traitSlotCount } from './traits.js';
+import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
 import { buildSheet } from './sheet.js';
@@ -162,6 +162,7 @@ const state = {
   alignment: '',     // 'LG', 'NG'... 'CE' (alignment.js), '' not chosen
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
+  traitOn: [],        // trait combat bonuses switched on (traits.js traitCombat): ['giant-slayer:0', ...]
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
   shieldMaterial: '',
   shieldId: '',
@@ -366,6 +367,7 @@ function load(saved) {
   const seenBuffs = new Set();
   state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
     .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)), ...(x.on === false ? { on: false } : {}) }));
+  state.traitOn = (Array.isArray(state.traitOn) ? state.traitOn : []).filter(k => typeof k === 'string');
   state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
     .map(x => {
       const part = p => ({ target: TARGETS.some(([t]) => t === p?.target) ? p.target : 'attack',
@@ -854,6 +856,7 @@ function initBuild() {
       const [kind, id] = off.dataset.bOff.split(':');
       if (kind === 'buff') update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, on: false } : x)) });
       else if (kind === 'combat') update({ combat: setCombatSwitch(state.combat, off.dataset.bOff.slice(7), false) });
+      else if (kind === 'trait') update({ traitOn: state.traitOn.filter(k => k !== off.dataset.bOff.slice(6)) });
       else update({ customEffects: state.customEffects.map((c, i) => (i === Number(id) ? { ...c, on: false } : c)) });
       return;
     }
@@ -2061,10 +2064,12 @@ function computeView() {
   // Chosen traits (only as many as there are slots) and what they add.
   const chosenTraits = state.traits.slice(0, traitSlotCount(state.houseRules, state.drawback)).map(id => data.traitsById.get(id)).filter(Boolean);
   const traitFx = traitEffects(chosenTraits);
+  // Their attack, damage, AC, CMB and CMD bonuses: switches in Active effects, counted like custom effects while on.
+  const traitSwitches = traitCombat(chosenTraits, state.traitOn);
   // Active effects (spells and custom bonuses) and the size they leave the character at (enlarge person...).
   // Flaws (house rule) count like effects: their penalties are untyped, so they add up with everything else.
   const flawFx = flawEffects(state.houseRules.flaws ? state.flaws : []);
-  const customAll = [...state.customEffects, ...flawFx.effects,
+  const customAll = [...state.customEffects, ...flawFx.effects, ...traitSwitches.filter(s => s.on).map(s => s.effect),
     ...(flawFx.hpPerLevel ? [{ name: 'Frail (flaw)', target: 'hp', type: 'untyped', value: flawFx.hpPerLevel * classLevels.length, on: true }] : [])];
   // Effects that use an ability modifier (smite evil's Charisma) use the scores without effects.
   const plainMods = Object.fromEntries(Object.entries(finalScores(state.base, race, flexibleChoice))
@@ -2210,7 +2215,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, archFx, defenseOpts,
+    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.

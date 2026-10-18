@@ -79,6 +79,7 @@ export function renderBuild(app, view, parts) {
   const onNow = [...state.buffs.filter(x => x.on !== false).map(x => ({ name: buffById.get(x.id)?.name, off: `buff:${x.id}` })).filter(x => x.name),
     ...(view.fromItems || []).map(x => ({ name: x.label })),
     ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on),
+    ...(view.traitSwitches || []).filter(s => s.on).map(s => ({ name: s.name, off: s.always ? '' : `trait:${s.key}` })),
     ...defenseOn(state.combat, view.defenseOpts).map(x => ({ name: x.label, off: `combat:${x.key}` }))];
   const effects = onNow.length ? `<ul class="b-chips">${onNow.map(x => `<li>${esc(x.name)}${x.off ? `<button type="button" class="link" data-b-off="${esc(x.off)}" aria-label="Switch off ${esc(x.name)}">×</button>` : ''}</li>`).join('')}</ul>`
     : '<p class="muted">Nothing on. Tap here to add spells, abilities, conditions and your own effects.</p>';

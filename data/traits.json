@@ -237,7 +237,20 @@
     "category": "Campaign",
     "requirement": "Shattered Star",
     "text": "For whatever reason, you have a grudge against the League.\n\nBenefit(s) Choose either weapons or spells. If you choose weapons, you gain a +2 trait bonus on all damage rolls made against targets you know are associated with the League. If you choose spells, increase the save DC of your spells by 1 when you target such a foe.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "If you choose weapons, you gain a +2 trait bonus on all damage rolls made against targets you know are associated with the League."
+        }
+      ]
+    }
   },
   {
     "id": "agent-of-chance",
@@ -444,6 +457,17 @@
     "text": "You've learned that taking an enemy by surprise can end a combat before it begins.\n\nBenefit: You gain a +1 trait bonus on initiative checks and a +1 trait bonus on weapon damage rolls during any surprise round in which you act.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain a +1 trait bonus on initiative checks and a +1 trait bonus on weapon damage rolls during any surprise round in which you act."
+        }
+      ],
       "initiative": 1
     }
   },
@@ -501,7 +525,20 @@
     "source": "People of the River",
     "category": "Regional",
     "text": "You have inherited a sacred tribal weapon wielded by your forebears, and you were trained in its use from a young age.\n\nBenefit(s) Select either cold iron or silver. You begin play with a masterwork melee weapon made of the material of your choice. You must be proficient with this weapon, and its combined cost cannot exceed 500 gp.\n\nYou gain a +1 trait bonus on attack rolls with weapons made of the selected material.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls with weapons made of the selected material."
+        }
+      ]
+    }
   },
   {
     "id": "ancient-adherent",
@@ -788,7 +825,20 @@
     "category": "Regional",
     "requirement": "Regional, Wastelands",
     "text": "You have built up a resistance to the diseases that ash giants and their vermin guardians carry.\n\nBenefit(s): You gain a +2 trait bonus on Fortitude saving throws to resist the disease abilities of ash giants and creatures with the vermin type. In addition, you gain a +1 trait bonus on melee attack rolls against vermin.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "melee-attack",
+              "value": 1
+            }
+          ],
+          "text": "In addition, you gain a +1 trait bonus on melee attack rolls against vermin."
+        }
+      ]
+    }
   },
   {
     "id": "asmodean-demon-hunter",
@@ -974,7 +1024,20 @@
     "source": "Dwarves of Golarion",
     "category": "Religion",
     "text": "You receive a +1 trait bonus on concentration checks to cast defensively and a +1 trait bonus to AC against attacks provoked by or readied against spellcasting.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "You receive a +1 trait bonus on concentration checks to cast defensively and a +1 trait bonus to AC against attacks provoked by or readied against spellcasting."
+        }
+      ]
+    }
   },
   {
     "id": "battlefield-disciple",
@@ -1074,7 +1137,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "While nothing is actually reversed, your bones and limbs are slightly out of alignment.\n\nBenefit You gain a +2 trait bonus to CMD when resisting grapple attempts.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "Benefit You gain a +2 trait bonus to CMD when resisting grapple attempts."
+        }
+      ]
+    }
   },
   {
     "id": "berserker-of-the-society",
@@ -1132,7 +1208,24 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Your ancestors' great size has gifted you with an exceptionally sturdy frame.\n\nBenefit You gain a +1 trait bonus on combat maneuver checks made to overrun opponents, as well as a +1 trait bonus to your CMD against trip attempts.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            },
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on combat maneuver checks made to overrun opponents, as well as a +1 trait bonus to your CMD against trip attempts."
+        }
+      ]
+    }
   },
   {
     "id": "big-ears",
@@ -1354,7 +1447,20 @@
     "category": "Regional",
     "requirement": "Dwarf",
     "text": "You receive a +1 trait bonus on weapon damage rolls against giants, goblins, and orcs.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You receive a +1 trait bonus on weapon damage rolls against giants, goblins, and orcs."
+        }
+      ]
+    }
   },
   {
     "id": "bloodthirsty",
@@ -1520,6 +1626,17 @@
     "text": "You tower above most other humans and possess a physique of hard, corded muscle.\n\nBenefit You gain a +1 trait bonus on Intimidate checks and a +1 trait bonus on your CMB because of your great size. You must be at least 6 feet tall.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on Intimidate checks and a +1 trait bonus on your CMB because of your great size."
+        }
+      ],
       "skills": {
         "Intimidate": 1
       }
@@ -1931,7 +2048,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Your fiendish ancestry has granted you unnatural skill with the chain, and your enemies know to stay away when you wield it as a weapon.\n\nBenefit You gain a +2 trait bonus on combat maneuver checks made to trip opponents with a spiked chain or whip.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            }
+          ],
+          "text": "Benefit You gain a +2 trait bonus on combat maneuver checks made to trip opponents with a spiked chain or whip."
+        }
+      ]
+    }
   },
   {
     "id": "chance-encounter",
@@ -1969,7 +2099,20 @@
     "source": "Demon Hunter's Handbook",
     "category": "Regional",
     "text": "As a native of the jungle, you've had frequent encounters with the charau-ka and learned how to fight against these coldly calculating demon worshipers.\n\nBenefit You gain a +1 trait bonus to AC against attacks made with thrown weapons.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus to AC against attacks made with thrown weapons."
+        }
+      ]
+    }
   },
   {
     "id": "charger",
@@ -2123,8 +2266,8 @@
     ],
     "effects": {
       "skills": {
-        "Knowledge (nobility)": 1,
-        "Knowledge (religion)": 1
+        "Knowledge (religion)": 1,
+        "Knowledge (nobility)": 1
       }
     }
   },
@@ -2135,7 +2278,20 @@
     "category": "Campaign",
     "requirement": "Jade Regent",
     "text": "You've never had the guts to act on it, but for as long as you can remember, you've had a crush on one of the NPCs. Someday, maybe you'll be able to earn the NPC's love, but for now, you're content to spend time in the NPC's proximity, or even to do things for the NPC that might earn you a word of thanks or a smile.\n\nBenefit: You gain a +1 trait bonus on all attack rolls against foes that threaten your crush. Once per day, you may attempt to earn a kind word or a smile from the NPC whom you have a crush on by making a DC 15 Charisma check. If you're successful, the elation and joy at the attention gives you a +1 trait bonus on all saving throws for the remainder of the day. If you're ever lucky enough to win the NPC's love, this +1 trait bonus on saving throws applies at all times, as long as your relationship remains active.\n\nNote that gender isn't an issue in the case of these three NPCs. Unless your GM says otherwise, all three of these NPCs are considered to be bisexual as far as this trait's implications are concerned. Note that if you take this trait, you'll likely want to coordinate NPC choices with any other player who chooses this trait as well, since choosing the same NPC could cause unwanted party strife. Of course… if that's what you and the other player are looking for, go for it!",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain a +1 trait bonus on all attack rolls against foes that threaten your crush."
+        }
+      ]
+    }
   },
   {
     "id": "chip-on-the-shoulder",
@@ -2322,7 +2478,20 @@
     "category": "Combat",
     "requirement": "Combat",
     "text": "You have experience with the ancient clockwork constructs that roam certain wastelands, and this has granted you an understanding of these guardians.\n\nBenefit(s): You gain a +2 trait bonus on damage rolls against creatures with the clockwork subtype.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "Benefit(s): You gain a +2 trait bonus on damage rolls against creatures with the clockwork subtype."
+        }
+      ]
+    }
   },
   {
     "id": "clockwork-surgeon",
@@ -2361,7 +2530,20 @@
     "name": "Cold and Calculating",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "You are adept at tricking favored enemies of your race or those related to your race. You gain a +1 trait bonus on all Bluff checks against favored enemies that share one of your subtypes. You also gain a +1 trait bonus on attack rolls made against such favored enemies during the surprise round."
+    "text": "You are adept at tricking favored enemies of your race or those related to your race. You gain a +1 trait bonus on all Bluff checks against favored enemies that share one of your subtypes. You also gain a +1 trait bonus on attack rolls made against such favored enemies during the surprise round.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You also gain a +1 trait bonus on attack rolls made against such favored enemies during the surprise round."
+        }
+      ]
+    }
   },
   {
     "id": "cold-fortitude",
@@ -2542,7 +2724,20 @@
     "source": "People of the Stars",
     "category": "Combat",
     "text": "You have a knack for cooperation in the heat of battle.\n\nBenefit(s) You gain a +2 trait bonus on attack rolls to perform the aid another action.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 2
+            }
+          ],
+          "text": "Benefit(s) You gain a +2 trait bonus on attack rolls to perform the aid another action."
+        }
+      ]
+    }
   },
   {
     "id": "corpse-cannibal",
@@ -2687,7 +2882,20 @@
     "source": "Divine Anthology",
     "category": "Faith",
     "text": "Benefit(s): You gain a +1 trait bonus on attack rolls against outsiders with the chaotic subtype.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on attack rolls against outsiders with the chaotic subtype."
+        }
+      ]
+    }
   },
   {
     "id": "crusader-road-acolyte",
@@ -2959,7 +3167,20 @@
     "category": "Combat",
     "requirement": "Fighter, Society",
     "text": "Your time spent fighting and studying the greatest warriors of the society has taught you new defensive skills while wearing armor.\n\nBenefit: You gain a +1 trait bonus to Armor Class when wearing medium or heavy armor.\n\nSomething Missing?\n\nThis previously had a requirement or prerequisite of citizenship of a specific nation or membership in a specific faction. We are not legally allowed to reference these nations or factions. GMs should consider whether such requirements suit their campaign or not. If you wish to see the original wording it is probably available on our sister site pathfindercommunity.net.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain a +1 trait bonus to Armor Class when wearing medium or heavy armor."
+        }
+      ]
+    }
   },
   {
     "id": "defensive-strategist",
@@ -3435,7 +3656,20 @@
     "category": "Campaign",
     "requirement": "Skull Shackles",
     "text": "You grew up on the dangerous docks and quickly learned that fists often make a better point than fancy words, especially when used the right way. You've always preferred action to talk, anyway.\n\nWhile drinking at a tavern last night, you got into a brawl with some of the other patrons. You handled yourself well, but a group of rough-looking characters ganged up on you and overwhelmed you, knocking you unconscious.\n\nBenefit Fortunately, you were able to conceal your brass knuckles when you were press-ganged, and you begin the campaign with them, regardless of your starting circumstances. You gain a +1 trait bonus on damage rolls with brass knuckles and improvised weapons.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls with brass knuckles and improvised weapons."
+        }
+      ]
+    }
   },
   {
     "id": "dog-sniff-hate",
@@ -3444,7 +3678,20 @@
     "category": "Race",
     "requirement": "Goblin",
     "text": "You gain the scent special quality but only against canine creatures, like dogs or wolves, including monstrous hounds such as hell hounds, yeth hounds, and even werewolves. You gain a +2 trait bonus on attack rolls against dogs you can smell.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on attack rolls against dogs you can smell."
+        }
+      ]
+    }
   },
   {
     "id": "dogged",
@@ -3572,7 +3819,20 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "You're greatly skilled in hunting and slaying those who resemble your lord's favored prey.\n\nBenefit(s) You gain a +1 trait bonus on attack rolls against creatures of the dragon type.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on attack rolls against creatures of the dragon type."
+        }
+      ]
+    }
   },
   {
     "id": "drake-anatomist",
@@ -3580,7 +3840,20 @@
     "source": "Legacy of Dragons",
     "category": "Social",
     "text": "Benefit(s): You gain a +1 trait bonus on damage rolls against creatures with the dragon creature type, and a +2 trait bonus on Knowledge (arcana) checks to identify dragons and their special powers and vulnerabilities.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on damage rolls against creatures with the dragon creature type, and a +2 trait bonus on Knowledge (arcana) checks to identify dragons and their special powers and vulnerabilities."
+        }
+      ]
+    }
   },
   {
     "id": "drake-trained",
@@ -3680,7 +3953,20 @@
     "source": "Blood of the Ancients",
     "category": "Combat",
     "text": "You know dwarven fighting techniques.\n\nYou gain a +1 trait bonus on damage rolls when using any weapon with the word \"dwarven\" in its name.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word \"dwarven\" in its name."
+        }
+      ]
+    }
   },
   {
     "id": "ear-for-music",
@@ -3985,7 +4271,24 @@
     "source": "Halflings of Golarion",
     "category": "Regional",
     "text": "Even when facing foes much larger than yourself, you still embody the ethos of liberty.\n\nBenefit: You gain a +2 trait bonus to your CMB and your CMD when facing opponents who are at least two sizes larger than you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            },
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "Benefit: You gain a +2 trait bonus to your CMB and your CMD when facing opponents who are at least two sizes larger than you."
+        }
+      ]
+    }
   },
   {
     "id": "eternal-understanding",
@@ -4406,7 +4709,20 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Those you track feel the sting of your arrows.\n\nBenefit(s) You gain a +1 trait bonus on damage rolls when making bow attacks against a creature whose tracks you have successfully followed in the last hour.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on damage rolls when making bow attacks against a creature whose tracks you have successfully followed in the last hour."
+        }
+      ]
+    }
   },
   {
     "id": "favored-son-daughter",
@@ -4428,7 +4744,20 @@
     "name": "Fearless Defiance",
     "source": "Ultimate Campaign",
     "category": "Faith",
-    "text": "Upon overcoming your fear, you become a scourge to your enemies. You gain a +1 trait bonus on all saving throws against fear effects. In addition, if you successfully save against such an effect, you receive a +1 trait bonus on attack rolls against your favored enemies for 1 round."
+    "text": "Upon overcoming your fear, you become a scourge to your enemies. You gain a +1 trait bonus on all saving throws against fear effects. In addition, if you successfully save against such an effect, you receive a +1 trait bonus on attack rolls against your favored enemies for 1 round.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "In addition, if you successfully save against such an effect, you receive a +1 trait bonus on attack rolls against your favored enemies for 1 round."
+        }
+      ]
+    }
   },
   {
     "id": "feline-instinct",
@@ -4463,7 +4792,20 @@
     "source": "Quests & Campaigns",
     "category": "Magic",
     "text": "Your birth brought an unexpected guest to your parents' home: a helpful fey who prophesied about your future and gave you a magical gift in exchange for your parents' hospitality, a cup of milk, and a drop of your blood.\n\nBenefit(s): You gain a +1 trait bonus to AC against attacks of opportunities made by fey and a +1 trait bonus on saving throws against the effects of fey creatures.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus to AC against attacks of opportunities made by fey and a +1 trait bonus on saving throws against the effects of fey creatures."
+        }
+      ]
+    }
   },
   {
     "id": "fey-wise",
@@ -4566,7 +4908,20 @@
     "category": "Race",
     "requirement": "Half-Orc raised by Orcs",
     "text": "You're at the bottom of the pecking order, so when you challenge that order, your victory must be absolute.\n\nBenefit(s): You gain a +1 trait bonus on attack rolls against opponents you already injured in the past 24 hours.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on attack rolls against opponents you already injured in the past 24 hours."
+        }
+      ]
+    }
   },
   {
     "id": "fire-tongued",
@@ -4586,6 +4941,17 @@
     "text": "You gain a +1 trait bonus on Initiative checks, and if you act in a surprise round, you gain a +1 trait bonus on all attack rolls.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Initiative checks, and if you act in a surprise round, you gain a +1 trait bonus on all attack rolls."
+        }
+      ],
       "initiative": 1
     }
   },
@@ -4595,7 +4961,20 @@
     "source": "Quests & Campaigns",
     "category": "Combat",
     "text": "You were the child of a gunsmith or alchemist and always enjoyed experimenting with fiery alchemical items and minor explosives.\n\nBenefit(s): You gain a +1 trait bonus on attack rolls made with thrown splash weapons and alchemist bombs.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on attack rolls made with thrown splash weapons and alchemist bombs."
+        }
+      ]
+    }
   },
   {
     "id": "firebug-kobolds-of-golarion",
@@ -4630,7 +5009,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "You have a talent for striking objects at their weakest points.\n\nBenefit You gain a +1 trait bonus on weapon damage rolls made against objects and constructs.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on weapon damage rolls made against objects and constructs."
+        }
+      ]
+    }
   },
   {
     "id": "flame-of-the-dawn",
@@ -4835,7 +5227,20 @@
     "category": "Campaign",
     "requirement": "Jade Regent",
     "text": "You have an adoptive mother.\n\nBenefit: Choose any Knowledge skill-you gain a +2 bonus on skill checks with that Knowledge skill, and it becomes a class skill for you. In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your adoptive mother.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your adoptive mother."
+        }
+      ]
+    }
   },
   {
     "id": "foul-belch",
@@ -4959,7 +5364,20 @@
     "category": "Campaign",
     "requirement": "Jade Regent",
     "text": "You have a close family friend.\n\nBenefit: As long as your family friend remains alive, you gain a +1 trait bonus on Perception checks, and Perception becomes a class skill for you. In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your family friend.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your family friend."
+        }
+      ]
+    }
   },
   {
     "id": "friend-of-the-fey",
@@ -5073,8 +5491,8 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
-        "Knowledge (nobility)": 1,
-        "Knowledge (religion)": 1
+        "Knowledge (religion)": 1,
+        "Knowledge (nobility)": 1
       }
     }
   },
@@ -5182,7 +5600,20 @@
     "source": "People of the River",
     "category": "Regional",
     "text": "You trained at an exclusive gladiatorial college.\n\nSelect one combat maneuver when you take this trait.\n\nBenefit(s) You gain a +1 trait bonus on performance combat checks and a +1 trait bonus on combat maneuver checks to perform the selected maneuver.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on performance combat checks and a +1 trait bonus on combat maneuver checks to perform the selected maneuver."
+        }
+      ]
+    }
   },
   {
     "id": "glib-barrister",
@@ -5208,7 +5639,24 @@
     "category": "Campaign",
     "requirement": "Legacy Of Fire",
     "text": "Benefit You gain a +1 trait bonus on attack rolls and weapon damage rolls made against gnolls. If you are a barbarian and you're fighting gnolls, your rage lasts 1 round longer than normal. If you're a ranger and you select humanoid (gnoll) as a favored enemy, your trait bonus on attack rolls and weapon damage rolls against gnolls increases to +2. If you're a spellcaster, you gain a +1 trait bonus to spell save DCs for damaging spells against gnolls.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            },
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on attack rolls and weapon damage rolls made against gnolls."
+        }
+      ]
+    }
   },
   {
     "id": "gnomish-alchemist",
@@ -5225,7 +5673,20 @@
     "category": "Race",
     "requirement": "Goblin",
     "text": "You have a tendency toward gross overconfidence in combat.\n\nBenefit: When facing an enemy that's larger than you are, if you have no allies in any adjacent squares, your posturing, bravado, and cussing grant you a +1 trait bonus on attack rolls with non-reach melee weapons.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: When facing an enemy that's larger than you are, if you have no allies in any adjacent squares, your posturing, bravado, and cussing grant you a +1 trait bonus on attack rolls with non-reach melee weapons."
+        }
+      ]
+    }
   },
   {
     "id": "god-scorn",
@@ -5556,7 +6017,20 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks."
+        }
+      ]
+    }
   },
   {
     "id": "hedge-magician",
@@ -5644,7 +6118,20 @@
     "name": "Hidden Hand",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "Your concealed weapons strike fast and true. You gain a +1 trait bonus on Sleight of Hand checks made to conceal light weapons and a +1 trait bonus on attack rolls when making an attack with a light weapon during a surprise round."
+    "text": "Your concealed weapons strike fast and true. You gain a +1 trait bonus on Sleight of Hand checks made to conceal light weapons and a +1 trait bonus on attack rolls when making an attack with a light weapon during a surprise round.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Sleight of Hand checks made to conceal light weapons and a +1 trait bonus on attack rolls when making an attack with a light weapon during a surprise round."
+        }
+      ]
+    }
   },
   {
     "id": "high-mountain-goat",
@@ -5718,7 +6205,20 @@
     "source": "Goblins of Golarion",
     "category": "Regional",
     "text": "The hatred of hobgoblins courses through your veins.\n\nBenefit: Whenever you're within 60 feet of an enemy hobgoblin, you gain a +1 trait bonus on all weapon damage rolls.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: Whenever you're within 60 feet of an enemy hobgoblin, you gain a +1 trait bonus on all weapon damage rolls."
+        }
+      ]
+    }
   },
   {
     "id": "holdout",
@@ -5726,7 +6226,20 @@
     "source": "Quests & Campaigns",
     "category": "Combat",
     "text": "You were robbed at a young age by bullies, an experience that impressed upon you the importance of being able to hold on to whatever you cared to keep.\n\nBenefit(s): You gain a +1 trait bonus to CMD against disarm and steal combat maneuvers.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus to CMD against disarm and steal combat maneuvers."
+        }
+      ]
+    }
   },
   {
     "id": "holy-schemer",
@@ -5882,7 +6395,20 @@
     "name": "Hunter's Knack",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "When you watch and wait before attacking, your strike is true. You gain a +1 trait bonus on attack rolls against your favored enemies when you make such attacks as part of a readied action."
+    "text": "When you watch and wait before attacking, your strike is true. You gain a +1 trait bonus on attack rolls against your favored enemies when you make such attacks as part of a readied action.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls against your favored enemies when you make such attacks as part of a readied action."
+        }
+      ]
+    }
   },
   {
     "id": "ice-walker",
@@ -5984,7 +6510,20 @@
     "name": "Indelible Ire",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "When you are gravely wounded, you're stirred to greater combat focus. Each time a critical hit is confirmed against you, you gain a +1 trait bonus on attack rolls for 1 round."
+    "text": "When you are gravely wounded, you're stirred to greater combat focus. Each time a critical hit is confirmed against you, you gain a +1 trait bonus on attack rolls for 1 round.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Each time a critical hit is confirmed against you, you gain a +1 trait bonus on attack rolls for 1 round."
+        }
+      ]
+    }
   },
   {
     "id": "indomitable-faith",
@@ -6235,7 +6774,20 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "You and your weapon are practically one.\n\nBenefit(s) You gain a +2 trait bonus to your CMD against disarm attempts.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "Benefit(s) You gain a +2 trait bonus to your CMD against disarm attempts."
+        }
+      ]
+    }
   },
   {
     "id": "iron-lungs",
@@ -6715,6 +7267,17 @@
       "Advanced Player's Guide"
     ],
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks."
+        }
+      ],
       "skills": {
         "Acrobatics": 1
       }
@@ -7041,7 +7604,20 @@
     "category": "Race",
     "requirement": "Aasimar",
     "text": "You carry the blood of a self-sacrificing celestial, and strive to live up to your potential for heroism.\n\nBenefit(s): As long as your current hit point total is less than half of your maximum hit points possible, you gain a +1 trait bonus on attack rolls against evil foes.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): As long as your current hit point total is less than half of your maximum hit points possible, you gain a +1 trait bonus on attack rolls against evil foes."
+        }
+      ]
+    }
   },
   {
     "id": "masked",
@@ -7081,7 +7657,20 @@
     "source": "Humans of Golarion",
     "category": "Race",
     "text": "You have mastered the deadly fighting arts of your people.\n\nBenefit When you wield a masterwork version of any sword if you act before your opponent during the surprise round, you gain a +2 trait bonus on weapon damage rolls for the surprise round only. This additional damage is precision damage.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "Benefit When you wield a masterwork version of any sword if you act before your opponent during the surprise round, you gain a +2 trait bonus on weapon damage rolls for the surprise round only."
+        }
+      ]
+    }
   },
   {
     "id": "masterful-demeanor",
@@ -7311,7 +7900,20 @@
     "source": "Weapon Master's Handbook",
     "category": "Combat",
     "text": "Your attacks with monk weapons are even more deadly.\n\nSelect one monk weapon with which you are proficient (unarmed attacks do not qualify for this purpose).\n\nBenefit(s): You gain a +1 trait bonus on damage rolls with this weapon.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on damage rolls with this weapon."
+        }
+      ]
+    }
   },
   {
     "id": "monument-scholar",
@@ -7601,7 +8203,20 @@
     "source": "Champions of Balance",
     "category": "Combat",
     "text": "Struggle as they might, ne'er-do-wells and vagrants are hard pressed to evade the law once in your clutches.\n\nBenefit(s): You gain a +1 trait bonus on combat maneuver checks to lawfully and nonlethally restrain a creature you've witnessed commit a crime.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on combat maneuver checks to lawfully and nonlethally restrain a creature you've witnessed commit a crime."
+        }
+      ]
+    }
   },
   {
     "id": "noble",
@@ -7671,7 +8286,20 @@
     "category": "Campaign",
     "requirement": "Shattered Star",
     "text": "You left your people to learn more about the mysteries of your strange homeland. Your travels have recently brought you to a Pathfinder lodge. Although none of your family members are present, you carry them and your family traditions with you.\n\nBenefit: You gain either:\n\nA +1 trait bonus on Knowledge (geography) checks made relating to your homeland and a +1 trait bonus on damage rolls made during the surprise round when you're wielding a bladed scarf or starknife.\n\nA +1 trait bonus on Survival checks made while in your homeland and gain a +1 trait bonus on rolls to confirm critical hits made using an earth breaker or a klar.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain either: A +1 trait bonus on Knowledge (geography) checks made relating to your homeland and a +1 trait bonus on damage rolls made during the surprise round when you're wielding a bladed scarf or starknife."
+        }
+      ]
+    }
   },
   {
     "id": "numerological-gift",
@@ -7712,7 +8340,20 @@
     "category": "Regional",
     "requirement": "Aquatic origin",
     "text": "Benefit(s): You gain a +1 trait bonus on ranged attack rolls when your target is at least 10 feet above or below you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ranged-attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on ranged attack rolls when your target is at least 10 feet above or below you."
+        }
+      ]
+    }
   },
   {
     "id": "offspring-of-the-ascension",
@@ -7728,7 +8369,20 @@
     "source": "People of the Wastes",
     "category": "Combat",
     "text": "You have practiced defensive maneuvers to avoid being caught by ogres, whose grasps you know are tight and unforgiving.\n\nBenefit(s): You gain a +2 trait bonus to CMD against bull rush and grapple combat maneuvers.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "Benefit(s): You gain a +2 trait bonus to CMD against bull rush and grapple combat maneuvers."
+        }
+      ]
+    }
   },
   {
     "id": "old-before-your-time",
@@ -7782,7 +8436,20 @@
     "source": "People of the River",
     "category": "Regional",
     "text": "Your training in personal combat has taught you how to inflict great punishment in one-on-one fights.\n\nBenefit(s) You gain a +1 trait bonus on damage rolls when you are the only one threatening your opponent.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on damage rolls when you are the only one threatening your opponent."
+        }
+      ]
+    }
   },
   {
     "id": "ooze-defense",
@@ -8120,6 +8787,17 @@
     "text": "One of your legs was bitten off below the knee by a shark when you were just a child, and was replaced with a wooden peg leg. You've long since gotten used to your prosthesis, however, and take none of the normal penalties from having a peg leg.\n\nYour balance always gets a bit shaky after a few drinks, and last night at the tavern was no exception. That must be why you fell to the floor as soon as you tried to stand up. What happened next is hazy, but you're pretty sure you were dragged out of the bar and onto a ship at the docks. At least they didn't throw you to the sharks…\n\nBenefit You've had to learn to deal with the pain of your injury as well, and you gain a +1 trait bonus on Fortitude saves. Ever since your accident you've hated sharks, and you also gain a +1 trait bonus on damage rolls against sharks and other animals with the aquatic subtype.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Ever since your accident you've hated sharks, and you also gain a +1 trait bonus on damage rolls against sharks and other animals with the aquatic subtype."
+        }
+      ],
       "saves": {
         "fort": 1
       }
@@ -8147,7 +8825,20 @@
     "source": "Weapon Master's Handbook",
     "category": "Combat",
     "text": "You are practiced at surprising combat tricks.\n\nBenefit(s): Against foes denied their Dexterity bonus to AC, you gain a +1 trait bonus on damage rolls with improvised weapons, exotic weapons, and thrown weapons.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): Against foes denied their Dexterity bonus to AC, you gain a +1 trait bonus on damage rolls with improvised weapons, exotic weapons, and thrown weapons."
+        }
+      ]
+    }
   },
   {
     "id": "perpetual-companion",
@@ -8184,7 +8875,20 @@
     "source": "Quests & Campaigns",
     "category": "Combat",
     "text": "Growing up in a place where authorities, if there were any, rarely enforced property laws, you learned quickly that you have only what you can hold-but you gain whatever you can take.\n\nBenefit(s): You gain a +1 trait bonus on combat maneuver checks to perform disarm and steal combat maneuvers.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on combat maneuver checks to perform disarm and steal combat maneuvers."
+        }
+      ]
+    }
   },
   {
     "id": "pioneer",
@@ -8323,7 +9027,20 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "You know the secret of plunging a poisoned weapon in just the right spot.\n\nBenefit(s) You gain a +1 trait bonus on attack rolls when you are wielding a weapon treated with poison.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on attack rolls when you are wielding a weapon treated with poison."
+        }
+      ]
+    }
   },
   {
     "id": "poisonous-upbringing",
@@ -8446,7 +9163,20 @@
     "category": "Race",
     "requirement": "Gnome",
     "text": "You always have a great idea for a prank.\n\nBenefit(s): You gain a +1 trait bonus on dirty trick combat maneuver checks. You also gain a +1 trait bonus to your CMD when an opponent attempts a dirty trick combat maneuver check against you. If you succeed at a dirty trick combat maneuver check against a flat-footed opponent, increase the duration of the condition caused by 1 round.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "You also gain a +1 trait bonus to your CMD when an opponent attempts a dirty trick combat maneuver check against you."
+        }
+      ]
+    }
   },
   {
     "id": "prayer-breaker",
@@ -8505,7 +9235,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Memories of the cruel abuse and taunts you suffered as a child cause you to strike back with great fury at anyone who slanders you.\n\nBenefit You gain a +1 trait bonus on attack rolls made against creatures that have insulted you until you actually succeed in dealing damage.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on attack rolls made against creatures that have insulted you until you actually succeed in dealing damage."
+        }
+      ]
+    }
   },
   {
     "id": "prince-princess",
@@ -8829,7 +9572,20 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Like your deity, you charge in when others fall back.\n\nBenefit(s) When you make a charge attack in the surprise round or first round of combat, you gain a +2 trait bonus to your AC for 1 round.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 2
+            }
+          ],
+          "text": "Benefit(s) When you make a charge attack in the surprise round or first round of combat, you gain a +2 trait bonus to your AC for 1 round."
+        }
+      ]
+    }
   },
   {
     "id": "reclaiming-your-roots",
@@ -8962,7 +9718,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Your repulsiveness causes people to almost instinctively shy away from making physical contact with you.\n\nBenefit You gain a +1 trait bonus on combat maneuver checks made to overrun and reposition opponents.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on combat maneuver checks made to overrun and reposition opponents."
+        }
+      ]
+    }
   },
   {
     "id": "rescued",
@@ -9160,6 +9929,17 @@
       "Advanced Player's Guide"
     ],
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls with a dagger and a +1 trait bonus on Swim checks."
+        }
+      ],
       "skills": {
         "Swim": 1
       },
@@ -9183,7 +9963,20 @@
     "category": "Campaign",
     "requirement": "Shattered Star",
     "text": "Benefit(s) You gain a +1 trait bonus on attack rolls against robots and a +1 dodge bonus to AC against attacks made by robots.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on attack rolls against robots and a +1 dodge bonus to AC against attacks made by robots."
+        }
+      ]
+    }
   },
   {
     "id": "rough-and-ready",
@@ -9341,7 +10134,20 @@
     "source": "Varisia, Birthplace of Legends",
     "category": "Regional",
     "text": "You gain a +2 trait bonus on combat maneuver checks made to sunder simple or primitive armor and weapons, or any other equipment the GM deems \"barbarian-made.\"",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on combat maneuver checks made to sunder simple or primitive armor and weapons, or any other equipment the GM deems \"barbarian-made.\""
+        }
+      ]
+    }
   },
   {
     "id": "savanna-child",
@@ -9401,7 +10207,20 @@
     "source": "People of the Stars",
     "category": "Combat",
     "text": "You were attacked by space pirates in your youth, inspiring you to find ways to deal with the alien interlopers should they return.\n\nBenefit(s) You gain a +1 trait bonus on attack rolls against humanoids.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on attack rolls against humanoids."
+        }
+      ]
+    }
   },
   {
     "id": "scarred-descendant",
@@ -9465,7 +10284,20 @@
     "category": "Campaign",
     "requirement": "Second Darkness",
     "text": "Benefit Your near-obsessive hatred of all things fiendish grants you a +1 trait bonus on all attack rolls made against foes you know to be evil outsiders.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit Your near-obsessive hatred of all things fiendish grants you a +1 trait bonus on all attack rolls made against foes you know to be evil outsiders."
+        }
+      ]
+    }
   },
   {
     "id": "scrapper",
@@ -9740,7 +10572,24 @@
     "source": "Inner Sea Gods",
     "category": "Religion",
     "text": "Benefit(s) You gain a +1 trait bonus on combat maneuver checks to grapple a foe, as well as a +1 trait bonus to your CMD whenever an opponent tries to grapple you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            },
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s) You gain a +1 trait bonus on combat maneuver checks to grapple a foe, as well as a +1 trait bonus to your CMD whenever an opponent tries to grapple you."
+        }
+      ]
+    }
   },
   {
     "id": "shadow-caster",
@@ -9766,7 +10615,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "An instinct for dishonorable conduct serves you well when fighting opponents who are blind, oblivious, or blundering around in the dark.\n\nBenefit You gain a +2 trait bonus on melee weapon damage rolls made against foes that cannot see you.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "Benefit You gain a +2 trait bonus on melee weapon damage rolls made against foes that cannot see you."
+        }
+      ]
+    }
   },
   {
     "id": "shadow-stalker",
@@ -9911,7 +10773,20 @@
     "category": "Race",
     "requirement": "Wereshark-kin",
     "text": "You were raised without many toys or possessions, but you made do exploring every detail of the nearby seashore, and know how to spot potential tools or obstacles.\n\nPrerequisite(s) Wereshark-kin\n\nBenefit(s) You gain a +2 trait bonus on combat maneuver checks as long as you or your opponent is on sand or in water at least 6 inches deep.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            }
+          ],
+          "text": "Prerequisite(s) Wereshark-kin Benefit(s) You gain a +2 trait bonus on combat maneuver checks as long as you or your opponent is on sand or in water at least 6 inches deep."
+        }
+      ]
+    }
   },
   {
     "id": "shrouded-casting",
@@ -10049,7 +10924,20 @@
     "source": "Dragon Empires Primer",
     "category": "Regional",
     "text": "You have hunted monsters and know how to take advantage of their weaknesses.\n\nBenefit: You gain a +1 trait bonus on damage rolls made against creatures of the aberration type.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain a +1 trait bonus on damage rolls made against creatures of the aberration type."
+        }
+      ]
+    }
   },
   {
     "id": "slippery",
@@ -10309,7 +11197,20 @@
     "category": "Race",
     "requirement": "Race, Dwarf",
     "text": "You see arcane magic as untrustworthy and its use as a calamity waiting to happen.\n\nBenefit(s): You gain a +1 trait bonus on attack rolls against arcane spellcasters.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on attack rolls against arcane spellcasters."
+        }
+      ]
+    }
   },
   {
     "id": "spellpiercer",
@@ -10442,6 +11343,17 @@
     "text": "You are especially adept at not losing your footing.\n\nBenefit: You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "Benefit: You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks."
+        }
+      ],
       "skills": {
         "Acrobatics": 1
       }
@@ -10520,8 +11432,8 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
-        "Knowledge (arcana)": 1,
-        "Knowledge (nature)": 1
+        "Knowledge (nature)": 1,
+        "Knowledge (arcana)": 1
       }
     }
   },
@@ -10589,7 +11501,20 @@
     "category": "Campaign",
     "requirement": "Wotr Campaign",
     "text": "Warning! Mythic traits are a bit more powerful than most traits-this is intentional, as these traits help to set up a character's mythic background! Mythic traits are intended for use with Mythic characters.\n\nYou were forced to take part in a demonic ritual as a youth after being captured by cultists. Whatever the ritual's purpose might have been, it didn't work out the way your captors envisioned- rather than losing your soul, you absorbed the ritual's energy and made it your own before you escaped to safety.\n\nBenefit When you face demons in combat, those energies bolster your fury, granting you a +2 trait bonus on all combat maneuver checks against demons.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            }
+          ],
+          "text": "Benefit When you face demons in combat, those energies bolster your fury, granting you a +2 trait bonus on all combat maneuver checks against demons."
+        }
+      ]
+    }
   },
   {
     "id": "storm-hunter",
@@ -10824,6 +11749,17 @@
     "text": "You have a helpful mentor NPC.\n\nBenefit: You gain a +2 trait bonus on all Survival checks, and Survival is a class skill for you. In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your mentor.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "In addition, you gain a +1 trait bonus on all attack rolls against foes that threaten your mentor."
+        }
+      ],
       "class_skills": [
         "Survival"
       ]
@@ -10917,7 +11853,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "Your hands not only are bigger than normal, but also have a strong grip useful for wielding large weapons.\n\nBenefit You gain a +1 trait bonus on damage rolls when using weapons intended for creatures of a larger size.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +1 trait bonus on damage rolls when using weapons intended for creatures of a larger size."
+        }
+      ]
+    }
   },
   {
     "id": "superstitious-humans-of-golarion",
@@ -10978,7 +11927,20 @@
     "name": "Surprise Weapon",
     "source": "Ultimate Campaign",
     "category": "Combat",
-    "text": "You are skilled at fighting with objects not traditionally considered weapons. You gain a +2 trait bonus on attack rolls with improvised weapons."
+    "text": "You are skilled at fighting with objects not traditionally considered weapons. You gain a +2 trait bonus on attack rolls with improvised weapons.",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on attack rolls with improvised weapons."
+        }
+      ]
+    }
   },
   {
     "id": "survivalist",
@@ -11726,7 +12688,20 @@
     "text": "Caves and tunnels are a second home to you. While underground, you receive a +2 trait bonus on initiative checks and a +1 trait bonus on weapon damage rolls for critical hits (this damage is multiplied on a critical hit).",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "While underground, you receive a +2 trait bonus on initiative checks and a +1 trait bonus on weapon damage rolls for critical hits (this damage is multiplied on a critical hit)."
+        }
+      ]
+    }
   },
   {
     "id": "tusked",
@@ -11824,7 +12799,20 @@
     "text": "Instructed at a young age in the tenets of the faith of Pharasma, you view the undead as abominations that must be destroyed so their souls can journey beyond to be judged. You gain a +1 trait bonus on weapon damage rolls against undead.",
     "also_in": [
       "Advanced Player's Guide"
-    ]
+    ],
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on weapon damage rolls against undead."
+        }
+      ]
+    }
   },
   {
     "id": "under-siege",
@@ -12001,7 +12989,20 @@
     "source": "Champions of Balance",
     "category": "Combat",
     "text": "Your reactions to combat beginning aren't what people expect.\n\nBenefit(s): You gain a +1 trait bonus on attack rolls made during the surprise round of combat.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): You gain a +1 trait bonus on attack rolls made during the surprise round of combat."
+        }
+      ]
+    }
   },
   {
     "id": "unscathed",
@@ -12092,7 +13093,20 @@
     "source": "Legacy of Fire Player's Guide",
     "category": "Regional",
     "text": "You grew up an orphan on the streets. The strange and often horrific sights you saw forced you to grow up fast-there's little that can shock or unsettle you.\n\nBenefit You gain a +2 trait bonus on saves against fear effects, and when you do make a successful save against a fear effect, the resulting rush of bravado grants you a +1 trait bonus on attack rolls and all skill checks for the next minute.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "Benefit You gain a +2 trait bonus on saves against fear effects, and when you do make a successful save against a fear effect, the resulting rush of bravado grants you a +1 trait bonus on attack rolls and all skill checks for the next minute."
+        }
+      ]
+    }
   },
   {
     "id": "vagabond-child",
@@ -12133,7 +13147,20 @@
     "source": "Quests & Campaigns",
     "category": "Combat",
     "text": "During your childhood, you suffered occasional or frequent abuse from those too powerful for you to resist. Now you thrill at the chance to get back at those who wronged you.\n\nBenefit(s): Whenever you strike the last creature that damaged you in the past 24 hours, you gain a +1 trait bonus on damage rolls against that creature.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Benefit(s): Whenever you strike the last creature that damaged you in the past 24 hours, you gain a +1 trait bonus on damage rolls against that creature."
+        }
+      ]
+    }
   },
   {
     "id": "venom-resistance",
@@ -12193,7 +13220,20 @@
     "source": "Merchant's Manifest",
     "category": "Combat",
     "text": "Benefit(s): You gain +1 bonus on Profession (sailor) checks, and Profession (sailor) is a class skill for you. You also gain a +1 trait bonus on weapon damage rolls against creatures with the aquatic subtype.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You also gain a +1 trait bonus on weapon damage rolls against creatures with the aquatic subtype."
+        }
+      ]
+    }
   },
   {
     "id": "vigilant-battler",
@@ -12233,7 +13273,20 @@
     "category": "Race",
     "requirement": "Tiefling",
     "text": "You have learned how to exploit the natural disgust you provoke when in close proximity to others.\n\nBenefit You gain a +2 trait bonus on combat maneuver checks to perform a dirty trick combat maneuver for the purpose of making your opponent sickened.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 2
+            }
+          ],
+          "text": "Benefit You gain a +2 trait bonus on combat maneuver checks to perform a dirty trick combat maneuver for the purpose of making your opponent sickened."
+        }
+      ]
+    }
   },
   {
     "id": "vindictive-strike",
@@ -12348,6 +13401,17 @@
     "text": "You gain a +1 trait bonus to damage rolls against creatures and objects made primarily of clay, crystal, earth, metal, or stone. Knowledge (engineering) is a class skill for you.",
     "origin": "d20pfsrd",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus to damage rolls against creatures and objects made primarily of clay, crystal, earth, metal, or stone."
+        }
+      ],
       "class_skills": [
         "Knowledge (engineering)"
       ]
@@ -12793,7 +13857,20 @@
     "category": "Race",
     "requirement": "Dwarf",
     "text": "Whenever you have a morale bonus to weapon attack rolls, you also receive a +1 trait bonus on weapon damage rolls.",
-    "origin": "d20pfsrd"
+    "origin": "d20pfsrd",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Whenever you have a morale bonus to weapon attack rolls, you also receive a +1 trait bonus on weapon damage rolls."
+        }
+      ]
+    }
   },
   {
     "id": "absalom-bouncer",
@@ -12865,7 +13942,20 @@
     "source": "People of the Stars",
     "category": "Combat",
     "text": "Your birth sign aligned significantly with Bretheda on the day you were born, granting you a knack for cooperation in the heat of battle. You gain a +2 trait bonus on attack rolls to perform the aid another action.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on attack rolls to perform the aid another action."
+        }
+      ]
+    }
   },
   {
     "id": "born-under-the-dreamer",
@@ -12897,7 +13987,20 @@
     "source": "Armor Master's Handbook",
     "category": "Combat",
     "text": "Learning how devils think helps you resist their trickery. You gain a +1 trait bonus to your AC against attacks made by lawful outsiders.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus to your AC against attacks made by lawful outsiders."
+        }
+      ]
+    }
   },
   {
     "id": "dirty-trickster",
@@ -12905,7 +14008,20 @@
     "source": "Antihero's Handbook",
     "category": "Combat",
     "text": "You learned early that there’s no point in fighting fair when you’re fighting for your life. Others may look down their noses at your tactics, but you know you wouldn’t have survived this long without breaking a few conventions of fair play. You can take the Improved Dirty TrickAPG feat without meeting its prerequisites, and you gain a +1 trait bonus on combat maneuver checks to attempt a dirty trickAPG.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "You can take the Improved Dirty TrickAPG feat without meeting its prerequisites, and you gain a +1 trait bonus on combat maneuver checks to attempt a dirty trickAPG."
+        }
+      ]
+    }
   },
   {
     "id": "dragon-armor",
@@ -12993,7 +14109,20 @@
     "source": "Merchant's Manifest",
     "category": "Combat",
     "text": "You’ve spent years aboard ships traveling the lucrative Obari Crossing, transporting Garundi and Vudrani goods. You gain +1 bonus on Profession (sailor) checks, and Profession (sailor) is a class skill for you. You also gain a +1 trait bonus on weapon damage rolls against creatures with the aquatic subtype.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You also gain a +1 trait bonus on weapon damage rolls against creatures with the aquatic subtype."
+        }
+      ]
+    }
   },
   {
     "id": "ozem-inspired",
@@ -13017,7 +14146,20 @@
     "source": "Armor Master's Handbook",
     "category": "Combat",
     "text": "Your superiors have identified you as an Eagle Knight candidate, and their praise encourages you to strive to meet their expectations. Each day after getting a full night’s sleep, you gain a +1 trait bonus to your AC when wearing armor or carrying a shield. This bonus lasts until you are first hit by an attack within the next 24 hours.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "Each day after getting a full night’s sleep, you gain a +1 trait bonus to your AC when wearing armor or carrying a shield."
+        }
+      ]
+    }
   },
   {
     "id": "red-mantis-bleeding",
@@ -13051,7 +14193,20 @@
     "source": "Arcane Anthology",
     "category": "Combat",
     "text": "Aroden taught the people of Absalom to survive any siege with proper preparation and cooperation, and those teachings were passed on to you. You gain a +1 trait bonus on melee damage rolls when you attack a target from higher ground.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "melee-damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on melee damage rolls when you attack a target from higher ground."
+        }
+      ]
+    }
   },
   {
     "id": "solitary",
@@ -13083,7 +14238,20 @@
     "source": "Blood of the Ancients",
     "category": "Combat",
     "text": "You know the ancient fighting techniques of the Tar Taargadth Empire. You gain a +1 trait bonus on damage rolls when using any weapon with the word “dwarven” in its name.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls when using any weapon with the word “dwarven” in its name."
+        }
+      ]
+    }
   },
   {
     "id": "tarnished-halls-runner",
@@ -13091,7 +14259,20 @@
     "source": "Black Markets",
     "category": "Combat",
     "text": "You evaded Technic League patrols with the Blood Gar pirates. When you move at least 10 feet, you gain a +1 trait bonus on attack rolls with firearms and technological weapons and a +1 dodge bonus to your AC against such weapons until the start of your next turn.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "When you move at least 10 feet, you gain a +1 trait bonus on attack rolls with firearms and technological weapons and a +1 dodge bonus to your AC against such weapons until the start of your next turn."
+        }
+      ]
+    }
   },
   {
     "id": "to-the-last",
@@ -13107,7 +14288,20 @@
     "source": "Quests & Campaigns",
     "category": "Combat",
     "text": "During your childhood, you suffered occasional or frequent abuse from those too powerful for you to resist. Now you thrill at the chance to get back at those who wronged you. Whenever you strike the last creature that damaged you in the past 24 hours, you gain a +1 trait bonus on damage rolls against that creature.\n\nSuggested Characters: Calistrians, Galtan refugees,\nGyronna worshipers.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Whenever you strike the last creature that damaged you in the past 24 hours, you gain a +1 trait bonus on damage rolls against that creature."
+        }
+      ]
+    }
   },
   {
     "id": "wary-eye",
@@ -13123,7 +14317,20 @@
     "source": "Spymaster's Handbook",
     "category": "Combat",
     "text": "You were trained from a young age to ambush the enemies of your order or organization, which makes you hard to trust for most outside your organization if they learn your affiliation. You gain a +1 trait bonus on attack rolls against flat-footed foes, as long as they have not seen you make an attack with this bonus before.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls against flat-footed foes, as long as they have not seen you make an attack with this bonus before."
+        }
+      ]
+    }
   },
   {
     "id": "abject-belief",
@@ -13256,7 +14463,20 @@
     "source": "Faiths and Philosophies",
     "category": "Faith",
     "text": "Either your parents sent you to be raised in a monastery, or you traveled there yourself later in life in order to escape the conflict and distractions of the greater world. There you learned to eschew the material concerns that plague so many and cloud their minds, instead embracing an ascetic lifestyle. You readily let go and step away from trouble, free from any tie or baggage that might slow your path to enlightenment—figuratively or literally. Once per day as a swift action, you gain a +1 trait bonus to Armor Class as long as you are wearing no armor, not using a shield, carrying a light load, and have nothing in your hands. This bonus lasts for 1 minute.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "Once per day as a swift action, you gain a +1 trait bonus to Armor Class as long as you are wearing no armor, not using a shield, carrying a light load, and have nothing in your hands."
+        }
+      ]
+    }
   },
   {
     "id": "nature-worshiper",
@@ -13715,6 +14935,17 @@
     "text": "Whether you were on your way to becoming a drow slave or slated for the ghoul chattel pits, you very narrowly avoided a life of miserable captivity. You make a habit of avoiding restraints or tight spaces, gaining a +1 trait bonus on Escape Artist checks and a +2 trait bonus to CMD to avoid being pinned.",
     "origin": "Archives of Nethys",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "You make a habit of avoiding restraints or tight spaces, gaining a +1 trait bonus on Escape Artist checks and a +2 trait bonus to CMD to avoid being pinned."
+        }
+      ],
       "skills": {
         "Escape Artist": 1
       }
@@ -13937,6 +15168,17 @@
     "text": "There’s something very wrong with the world. Spouses were not meant to huddle at their windows hoping and fearing day after day that their loved ones returned from work safely. Parents were not meant to hush their children when questioned about what happened to their neighbors. Citizens were not meant to avert their eyes and hurry by as guardsmen beat old friends in the street. The people of Westcrown have suffered long enough! It’s time for a change. But how? You’ve heard rumors of bands of free-thinking individuals meeting after the citywide curfew. Perhaps they might share your ideals? You are quick to react to opportunity, both physically and mentally, and know that it is with sudden and swift action that many conflicts are best resolved. You gain a +1 trait bonus on Initiative checks, and if you act in a surprise round, you gain a +1 trait bonus on all attack rolls.",
     "origin": "Archives of Nethys",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Initiative checks, and if you act in a surprise round, you gain a +1 trait bonus on all attack rolls."
+        }
+      ],
       "initiative": 1
     }
   },
@@ -13967,7 +15209,20 @@
     "source": "Giantslayer Player's Guide",
     "category": "Campaign",
     "text": "Dwarves are well acquainted with the threats posed by giants and orcs, and they have spent centuries honing their techniques for fighting these foes. You have trained with the dwarves and have learned some of the tactics they use against their hated enemies. You gain a +2 dodge bonus to AC against creatures with the giant subtype (this does not stack with the bonus granted by the defensive training racial trait of dwarves and gnomes) and a +1 trait bonus on attack rolls against creatures with the orc subtype (this does not stack with the bonus granted by the dwarf hatred racial trait). Dwarves and gnomes can’t choose this trait.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +2 dodge bonus to AC against creatures with the giant subtype (this does not stack with the bonus granted by the defensive training racial trait of dwarves and gnomes) and a +1 trait bonus on attack rolls against creatures with the orc subtype (this does not stack with the bonus granted by the dwarf hatred racial trait)."
+        }
+      ]
+    }
   },
   {
     "id": "giant-blooded",
@@ -13975,7 +15230,20 @@
     "source": "Giantslayer Player's Guide",
     "category": "Campaign",
     "text": "Your family has always been dogged by rumors that a bit of giant blood got into the family’s veins at some point. Whether this was through alchemical or magical experimentation, or because your great-great-grandfather married a giant, it has made you big for your race, and may have given you other minor cosmetic features of giants, such as flaming red hair, a bluish tinge to your skin, or oversized hands. When you wield a weapon that is larger than your size, the penalty on attack rolls for using inappropriately sized weapons is reduced by half. In addition, you gain a +2 trait bonus to your CMD against awesome blow combat maneuvers. If you’re a dwarf, your stability racial trait applies to awesome blow combat maneuvers as well.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 2
+            }
+          ],
+          "text": "In addition, you gain a +2 trait bonus to your CMD against awesome blow combat maneuvers."
+        }
+      ]
+    }
   },
   {
     "id": "giantslayer-scion",
@@ -14252,6 +15520,17 @@
     "text": "You were born and raised in the town of Longacre on the southwestern fringes of the Whisperwood, or at least have lived there long enough that you’re considered a native. You’ve never been one for the quiet life, and have been considered a miscreant and reprobate since you were a child. As an adult, you’ve made something of a name for yourself as a thug, enforcer, and petty thief in town, hiring yourself out to anybody who needs muscle in exchange for a few coins. In the course of such employment, you’ve worked with another local troublemaker named Cimri Staelish and have become friends. Cimri has recently gotten involved with some shadowy, though powerful, characters, and as Hell’s Vengeance begins, you and a group of other ne’erdo- wells have agreed to help Cimri burgle a tannery just outside town. With luck, this could be the start of bigger and better things than just working as hired muscle. You gain a +1 trait bonus on Intimidate checks, and Intimidate is a class skill for you. In addition, you gain a +1 trait bonus on weapon damage rolls when you are flanking a foe with an ally.",
     "origin": "Archives of Nethys",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "In addition, you gain a +1 trait bonus on weapon damage rolls when you are flanking a foe with an ally."
+        }
+      ],
       "skills": {
         "Intimidate": 1
       },
@@ -14298,7 +15577,20 @@
     "source": "Iron Gods Player's Guide",
     "category": "Campaign",
     "text": "Although the Black Sovereign rules Numeria in name, it’s the spellcasters of the Technic League who hold the real power. While their influence is certainly strongest in the capital of Starfall, their touch can be felt even here in Torch—the League takes a significant cut of the town’s income as tithes every month. For some reason, you have a grudge against the Technic League. Perhaps your parents lost their jobs as the result of an act they took that displeased the League—you might even suspect the League was responsible for their deaths. Alternatively, you could just rankle at the League’s open acceptance of slavery, their reputation for sadism and cruelty, or their penchant for hoarding and controlling technological wonders. Talk to your GM to refine the reasons why you hate the Technic League, but you’re convinced that they are somehow responsible for putting out the town’s torch and that evidence of their tampering can be found in the caverns below—if you can find evidence of the Technic League working against Torch’s better interests, that could well be a step toward the town’s independence from the League. Choose either weapons or spells. If you choose weapons, you gain a +2 trait bonus on all damage rolls made against targets you know are associated with the Technic League. If you choose spells, increase the save DC of your spells by 1 when you target such a foe.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "If you choose weapons, you gain a +2 trait bonus on all damage rolls made against targets you know are associated with the Technic League."
+        }
+      ]
+    }
   },
   {
     "id": "numerian-archaeologist",
@@ -14523,6 +15815,17 @@
     "text": "You have dedicated your life to eradicating the scourge of the undead from Golarion. You have spent countless hours studying the different types of undead and have trained endlessly to learn the best ways to defeat them. If any undead creatures come out of the tombs of Wati’s necropolis, you’ll be ready for them! You gain a +1 trait bonus on damage rolls against undead creatures. In addition, you gain a +1 trait bonus on Knowledge (religion) checks, and that skill is always a class skill for you.",
     "origin": "Archives of Nethys",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls against undead creatures."
+        }
+      ],
       "skills": {
         "Knowledge (religion)": 1
       }
@@ -14547,7 +15850,24 @@
     "source": "Reign of Winter Player's Guide",
     "category": "Campaign",
     "text": "You’re a big person, and people have always said you’ve got some giant blood in you. Even as a child, you towered over your friends, and as you grew older, you grew even taller and stronger. Maybe your hair has a tint of blue as well, or your skin is as pale as snow. Perhaps someday you’ll get the opportunity to travel to the North and meet some real giants, and see whether the rumors about you are true. You gain a +1 trait bonus on combat maneuver checks to sunder, and a +1 trait bonus to your CMD against bull rush and overrun combat maneuvers.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            },
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on combat maneuver checks to sunder, and a +1 trait bonus to your CMD against bull rush and overrun combat maneuvers."
+        }
+      ]
+    }
   },
   {
     "id": "failed-winter-witch-apprentice",
@@ -14710,6 +16030,21 @@
     "text": "Your family’s village was plundered by giants in the wilds of Varisia, leaving nothing but a smoldering ruin. After the destruction of your village, your family trained for combat against giants to prevent such a tragedy from ever happening again. Since hearing of giants mobilizing throughout the countryside, you ventured to Sandpoint to help the town prepare for a possible incursion. You gain a +1 trait bonus on Bluff, Perception, and Sense Motive checks and +1 trait bonus on attack rolls and damage rolls against creatures of the giant subtype.",
     "origin": "Archives of Nethys",
     "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            },
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Bluff, Perception, and Sense Motive checks and +1 trait bonus on attack rolls and damage rolls against creatures of the giant subtype."
+        }
+      ],
       "skills": {
         "Sense Motive": 1,
         "Perception": 1,
@@ -14753,7 +16088,24 @@
     "source": "Rise of the Runelords Anniversary Edition Player's Guide",
     "category": "Campaign",
     "text": "Perhaps you came to the Varisian Gulf in search of the Sandpoint Devil, or maybe you followed fisherman’s tales of Old Murdermaw— regardless, you’ve ventured through Varisia to hunt down famous monsters. While they have all eluded you so far, you made it to Sandpoint to research and restock before heading back out into the wilderness. Because of your training, you gain a +1 trait bonus on attack rolls and weapon damage rolls against aberrations and magical beasts.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            },
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Because of your training, you gain a +1 trait bonus on attack rolls and weapon damage rolls against aberrations and magical beasts."
+        }
+      ]
+    }
   },
   {
     "id": "scholar-of-the-ancients",
@@ -15392,7 +16744,20 @@
     "category": "Mount",
     "requirement": "Pony—Fell Pony",
     "text": "While astride a fell pony, you gain a +1 trait bonus on attack rolls against enemies you are flanking.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "While astride a fell pony, you gain a +1 trait bonus on attack rolls against enemies you are flanking."
+        }
+      ]
+    }
   },
   {
     "id": "burst-of-speed",
@@ -15495,8 +16860,8 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
-        "Knowledge (religion)": 1,
-        "Knowledge (nobility)": 1
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
       }
     }
   },
@@ -15516,7 +16881,20 @@
     "category": "Race",
     "requirement": "Strix",
     "text": "You are used to fighting enemies who cannot fly. While flying, you gain a +1 trait bonus to AC against melee attacks from creatures on the ground.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "While flying, you gain a +1 trait bonus to AC against melee attacks from creatures on the ground."
+        }
+      ]
+    }
   },
   {
     "id": "amazingly-ugly",
@@ -15667,7 +17045,24 @@
     "category": "Race",
     "requirement": "Goblin",
     "text": "You were forced to serve cruel hobgoblins at some point, much to your abject humiliation and frustration, and memories of this inspire a rage that lends you strength. Against creatures with the goblinoid subtype, you gain a +1 trait bonus on combat maneuver checks and a +1 trait bonus to CMD.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            },
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "Against creatures with the goblinoid subtype, you gain a +1 trait bonus on combat maneuver checks and a +1 trait bonus to CMD."
+        }
+      ]
+    }
   },
   {
     "id": "bureaucracy-navigator",
@@ -15694,7 +17089,20 @@
     "category": "Race",
     "requirement": "Grippli",
     "text": "Growing up in a dangerous jungle, you learned to take advantage of your mobility relative to larger predators and elusive prey. You gain a +1 trait bonus on ranged weapon damage rolls when you are on higher ground than your target and are within 30 feet.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on ranged weapon damage rolls when you are on higher ground than your target and are within 30 feet."
+        }
+      ]
+    }
   },
   {
     "id": "carrying-voice",
@@ -15762,7 +17170,20 @@
     "category": "Race",
     "requirement": "Kasatha",
     "text": "You were attacked by strangers that threatened to expose your existence to dangerous forces and you defended yourself using cover. You gain a +1 trait bonus on ranged weapon damage rolls as long as you have cover from your opponent.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on ranged weapon damage rolls as long as you have cover from your opponent."
+        }
+      ]
+    }
   },
   {
     "id": "creepy",
@@ -15833,7 +17254,20 @@
     "category": "Race",
     "requirement": "Triaxian",
     "text": "You know how dragons move and how they perceive body language. You gain a +1 trait bonus to your CMD against dragons, and whenever you encounter a particular dragon for the first time, you can make a Diplomacy check to improve its attitude toward you by a maximum of one step as a full-round action as long as you have not acted in a hostile manner toward it.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus to your CMD against dragons, and whenever you encounter a particular dragon for the first time, you can make a Diplomacy check to improve its attitude toward you by a maximum of one step as a full-round action as long as you have not acted in a hostile manner toward it."
+        }
+      ]
+    }
   },
   {
     "id": "efficient-packer",
@@ -15917,7 +17351,20 @@
     "category": "Race",
     "requirement": "Wyvaran",
     "text": "You were bullied in your youth but supported by one or more good friends, impressing upon you the importance of teamwork. You gain a +1 trait bonus on damage rolls against foes you flank.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls against foes you flank."
+        }
+      ]
+    }
   },
   {
     "id": "firebug-kobold",
@@ -16308,7 +17755,20 @@
     "category": "Race",
     "requirement": "Half-Orc, Orc",
     "text": "You take delight in delivering vicious blows with cruel weapons. Whenever you have a morale bonus on weapon attack rolls, you also receive a +1 trait bonus on weapon damage rolls.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Whenever you have a morale bonus on weapon attack rolls, you also receive a +1 trait bonus on weapon damage rolls."
+        }
+      ]
+    }
   },
   {
     "id": "minor-wishcraft",
@@ -16353,7 +17813,20 @@
     "category": "Race",
     "requirement": "Nagaji",
     "text": "Your loyalty to the nagaji nation of Nagajor is powerful. You gain a +1 trait bonus on attack rolls and saving throws against foes that directly threaten the safety of Nagajor.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls and saving throws against foes that directly threaten the safety of Nagajor."
+        }
+      ]
+    }
   },
   {
     "id": "nearly-blinded",
@@ -16478,7 +17951,20 @@
     "category": "Race",
     "requirement": "Vampire—Moroi",
     "text": "Your loneliness drove you to build your coven, and you zealously attack any who would harm it. You gain a +1 trait bonus on damage rolls against creatures you have seen attack or harm any of your vampire spawn.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls against creatures you have seen attack or harm any of your vampire spawn."
+        }
+      ]
+    }
   },
   {
     "id": "rage-of-storms",
@@ -16505,7 +17991,20 @@
     "category": "Race",
     "requirement": "Ratfolk",
     "text": "You protect your own. You gain a +1 trait bonus on weapon damage rolls against opponents you have witnessed dealing damage to one of your allies.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on weapon damage rolls against opponents you have witnessed dealing damage to one of your allies."
+        }
+      ]
+    }
   },
   {
     "id": "resilient-construction",
@@ -16873,7 +18372,20 @@
     "category": "Race",
     "requirement": "Human—Ulfen",
     "text": "As soon as you were old enough to hold it, you were trained to defend yourself with traditional Ulfen weapons. You gain a +1 trait bonus on damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, longbow, longsword, shortbow, short sword, throwing axe, and warhammer.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, longbow, longsword, shortbow, short sword, throwing axe, and warhammer."
+        }
+      ]
+    }
   },
   {
     "id": "weathered-patience",
@@ -16959,7 +18471,20 @@
     "category": "Regional",
     "requirement": "Okeno",
     "text": "You hunt those who hunt slavers, whether as one of Captain Bhey’s special task forces, or independently. You gain a +1 trait bonus on attack rolls when fighting abolitionists or those you have good reason to believe targeted you because of your slaver activities.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls when fighting abolitionists or those you have good reason to believe targeted you because of your slaver activities."
+        }
+      ]
+    }
   },
   {
     "id": "absalom-hotspur",
@@ -17094,7 +18619,20 @@
     "category": "Regional",
     "requirement": "Realm of the Mammoth Lords",
     "text": "You have spent long hours hunting giant creatures and have become skilled at bringing them down quickly. You gain a +1 trait bonus on weapon damage rolls against Large or larger creatures of the animal type.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on weapon damage rolls against Large or larger creatures of the animal type."
+        }
+      ]
+    }
   },
   {
     "id": "blackthorn-rancher",
@@ -17120,7 +18658,20 @@
     "category": "Regional",
     "requirement": "Lands of the Linnorm Kings",
     "text": "You or one of your parents belonged to a coven that honored the norns—powerful fey seers—and you still bear their favor in the form of a subtle sense for danger. You gain a +2 trait bonus on Perception checks to notice traps and ambushes, and a +1 trait bonus to your AC against traps and during any surprise round in which you are caught unaware.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "ac",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +2 trait bonus on Perception checks to notice traps and ambushes, and a +1 trait bonus to your AC against traps and during any surprise round in which you are caught unaware."
+        }
+      ]
+    }
   },
   {
     "id": "brevoy-bandit",
@@ -17138,7 +18689,20 @@
     "category": "Regional",
     "requirement": "Lands of the Linnorm Kings",
     "text": "Your blood sings with longing to relive the adventures of one of your ancestors, and you are inexorably drawn to the sea. You gain a +1 trait bonus on Profession (sailor) checks and a +1 trait bonus on attack rolls made onboard ships.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Profession (sailor) checks and a +1 trait bonus on attack rolls made onboard ships."
+        }
+      ]
+    }
   },
   {
     "id": "caravan-nomad",
@@ -17193,7 +18757,20 @@
     "category": "Regional",
     "requirement": "Cheliax",
     "text": "In overthrowing House Thrune, you’ve spent many years training to face the diabolist nobles and the devils they bind. You gain a +2 trait bonus on Knowledge checks to identify devils (and their special powers and weaknesses) and a +1 trait bonus on weapon damage rolls against devils.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +2 trait bonus on Knowledge checks to identify devils (and their special powers and weaknesses) and a +1 trait bonus on weapon damage rolls against devils."
+        }
+      ]
+    }
   },
   {
     "id": "child-of-mumia",
@@ -17398,7 +18975,20 @@
     "category": "Regional",
     "requirement": "Thuvia",
     "text": "Divs have tormented you and your loved ones for as long as you can remember. You’ve improved your skills to better oppose the creatures. You gain a +2 trait bonus on Knowledge checks to identify divs (and their special powers and weaknesses) and a +1 trait bonus on weapon damage rolls against divs.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +2 trait bonus on Knowledge checks to identify divs (and their special powers and weaknesses) and a +1 trait bonus on weapon damage rolls against divs."
+        }
+      ]
+    }
   },
   {
     "id": "dtang-ma-bloodline",
@@ -17430,7 +19020,20 @@
     "category": "Regional",
     "requirement": "Riddleport",
     "text": "You’re so excited to board other ships that you’re frequently the first one over the rail, regardless of the danger. You gain a +1 trait bonus on attack rolls made while onboard an enemy ship.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls made while onboard an enemy ship."
+        }
+      ]
+    }
   },
   {
     "id": "educated-druggist",
@@ -17687,7 +19290,24 @@
     "category": "Regional",
     "requirement": "Wastelands—Ash, Hill, River, Shadow",
     "text": "You were robbed by giants or nearly killed by a giant’s prank, and the experience gave you a keen instinct for outmaneuvering bigger creatures. You gain a +1 trait bonus on combat maneuver checks against creatures larger than you and a +1 trait bonus to CMD against such creatures.\n\nLikely Regions: Geb, Mana Wastes, Nex, Nidal, Numeria.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            },
+            {
+              "target": "cmd",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on combat maneuver checks against creatures larger than you and a +1 trait bonus to CMD against such creatures."
+        }
+      ]
+    }
   },
   {
     "id": "goblin-pirate",
@@ -18128,7 +19748,20 @@
     "category": "Regional",
     "requirement": "Mivon",
     "text": "Your training in Aldori sword fighting included several bouts in the Sevier, which has taught you how to inflict further punishment in one-on-one fights. You gain a +1 trait bonus on damage rolls when you are the only one threatening your opponent.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls when you are the only one threatening your opponent."
+        }
+      ]
+    }
   },
   {
     "id": "mizu-ki-hikari-rebel",
@@ -18137,7 +19770,20 @@
     "category": "Regional",
     "requirement": "Chu Ye",
     "text": "You have trained in martial arts under the banner of Mizu Ki Hikari rebels. You gain a +1 trait bonus on damage rolls made with unarmed attacks.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls made with unarmed attacks."
+        }
+      ]
+    }
   },
   {
     "id": "monkey-goblin",
@@ -18250,7 +19896,20 @@
     "category": "Regional",
     "requirement": "Katapesh",
     "text": "You grew up an orphan on the streets of Katapesh, and spent many years of childhood in the Nightstalls, Katapesh’s most infamous market. The strange and often horrific sights you saw there forced you to grow up fast—there’s little that can shock or unsettle you. You gain a +2 trait bonus on saves against fear effects, and when you do make a successful save against a fear effect, the resulting rush of bravado grants you a +1 trait bonus on attack rolls and all skill checks for the next minute.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +2 trait bonus on saves against fear effects, and when you do make a successful save against a fear effect, the resulting rush of bravado grants you a +1 trait bonus on attack rolls and all skill checks for the next minute."
+        }
+      ]
+    }
   },
   {
     "id": "nightstalls-escapee",
@@ -18447,7 +20106,20 @@
     "category": "Regional",
     "requirement": "Quain",
     "text": "Having grown up in Quain, you were taught under various schools of martial arts, and have used all you have learned to hone your fighting prowess. You gain a +1 trait bonus on damage rolls when using unarmed strikes.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on damage rolls when using unarmed strikes."
+        }
+      ]
+    }
   },
   {
     "id": "quantium-university-graduate",
@@ -18524,7 +20196,20 @@
     "category": "Regional",
     "requirement": "Goblin, Isger",
     "text": "The fury of the Goblinblood Wars still courses through your veins. Whenever you’re within 60 feet of an enemy hobgoblin, you gain a +1 trait bonus on all weapon damage rolls.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "Whenever you’re within 60 feet of an enemy hobgoblin, you gain a +1 trait bonus on all weapon damage rolls."
+        }
+      ]
+    }
   },
   {
     "id": "scion-of-the-shory",
@@ -18560,7 +20245,20 @@
     "category": "Regional",
     "requirement": "Realm of the Mammoth Lords",
     "text": "The rocky foothills of your homeland are ideal for staging leaping ambushes that leave your victims battered and routed. You gain a +1 trait bonus on melee damage rolls when you make a charge attack from higher ground. Once per day, when you make a charge attack from higher ground, you can use the Intimidate skill to demoralize your target as a swift action.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "melee-damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on melee damage rolls when you make a charge attack from higher ground."
+        }
+      ]
+    }
   },
   {
     "id": "secret-of-the-impossible-kingdom",
@@ -18795,8 +20493,8 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
-        "Knowledge (arcana)": 1,
-        "Knowledge (nature)": 1
+        "Knowledge (nature)": 1,
+        "Knowledge (arcana)": 1
       }
     }
   },
@@ -19057,7 +20755,20 @@
     "category": "Regional",
     "requirement": "Tymon",
     "text": "You trained at the exclusive Valknar Gladiatorial College. Select one combat maneuver when you take this trait. You gain a +1 trait bonus on performance combat checks and a +1 trait bonus on combat maneuver checks to perform the selected maneuver.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on performance combat checks and a +1 trait bonus on combat maneuver checks to perform the selected maneuver."
+        }
+      ]
+    }
   },
   {
     "id": "varisian-wanderer",
@@ -19189,7 +20900,20 @@
     "category": "Religion",
     "requirement": "Shizuru",
     "text": "You were trained by your family with a weapon passed down from a venerable ancestor. You begin play with an heirloom masterwork weapon worth up to 400 gp. You gain a +1 trait bonus on attack rolls with weapons of this type (not just your initial heirloom weapon) when you smite evil.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls with weapons of this type (not just your initial heirloom weapon) when you smite evil."
+        }
+      ]
+    }
   },
   {
     "id": "andolettas-consolation",
@@ -19216,7 +20940,20 @@
     "category": "Religion",
     "requirement": "Angradd",
     "text": "You hope to earn a place at Angradd’s side after death and are inspired to charge with all your might into any righteous battle. You gain a +1 trait bonus on all melee attack rolls when you charge.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "melee-attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on all melee attack rolls when you charge."
+        }
+      ]
+    }
   },
   {
     "id": "avowed-inspiration",
@@ -19548,6 +21285,19 @@
     "category": "Religion",
     "requirement": "Pharasma",
     "text": "Instructed at a young age in the tenets of the faith of Pharasma, you view the undead as abominations that must be destroyed so their souls can journey beyond to be judged. You gain a +1 trait bonus on weapon damage rolls against undead.",
-    "origin": "Archives of Nethys"
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on weapon damage rolls against undead."
+        }
+      ]
+    }
   }
 ]

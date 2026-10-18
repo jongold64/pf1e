@@ -14,6 +14,25 @@ export function traitSlotLabels(houseRules = {}, drawback = '') {
           ...(houseRules.drawbacks && drawback ? ['Trait for your drawback'] : [])];
 }
 
+// Chosen traits' combat bonuses (each trait's effects.combat, read from its text by the data build: "+1 trait bonus on
+// attack rolls and weapon damage rolls against giants"). Nearly all apply only sometimes, so each is a switch in Active
+// effects, counted while it's on (`on`: the keys switched on); one that always applies is always counted.
+// [{ key: 'giant-slayer:0', name, text, always, on, effect }], effect being a custom-style effect for the totals
+// ({ name, target, type: 'trait', value, more, on: true }).
+export function traitCombat(traits, on = []) {
+  const out = [];
+  for (const t of traits) {
+    (t?.effects?.combat || []).forEach((c, i) => {
+      const key = `${t.id}:${i}`;
+      const [first, ...more] = c.bonuses.map(x => ({ target: x.target, type: 'trait', value: x.value }));
+      if (!first) return;
+      out.push({ key, name: `${t.name} (trait)`, text: c.text, always: !!c.always, on: !!c.always || on.includes(key),
+                 effect: { name: `${t.name} (trait)`, ...first, more, on: true } });
+    });
+  }
+  return out;
+}
+
 // The numbers chosen traits add (from each trait's `effects`, read from its text by the data build):
 // { saves: { fort, ref, will }, initiative, skills: { name: bonus }, classSkills: Set }. Trait bonuses don't stack
 // with each other, so for each thing the highest one counts.

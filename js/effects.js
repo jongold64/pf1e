@@ -11,7 +11,7 @@ import { MORE_BUFFS } from './effect-catalog.js';
 
 export const BONUS_TYPES = ['alchemical', 'armor', 'circumstance', 'competence', 'deflection', 'dodge', 'enhancement',
   'insight', 'luck', 'morale', 'natural armor', 'natural armor enhancement', 'profane', 'resistance', 'sacred', 'shield',
-  'size', 'untyped', 'natural armor increase'];
+  'size', 'trait', 'untyped', 'natural armor increase'];
 const STACKS = new Set(['dodge', 'circumstance', 'untyped']);
 
 export const TARGETS = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'],
