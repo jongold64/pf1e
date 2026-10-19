@@ -113,13 +113,13 @@ export function renderBuild(app, view, parts) {
   const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
       ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
       : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
-  // Powers with an attack or damage roll (force missile, grave touch, fire bolt...): the touch attack and damage, the
-  // save, and their uses left; Details shows the power's text.
+  // Powers with a roll (force missile, grave touch, fire bolt, a healing touch, extra damage on your attacks...): the
+  // touch attack and damage or healing, the save, and their uses left; Details shows the power's text.
   const powerAtk = (parts.powerAttacks || []).map(p => {
     const d = daily.find(x => x.name === p.name);
     const spec = p.attack !== null
       ? { title: p.name, check: p.check, groups: [{ attacks: [p.attack], damage: p.dice, threat: 20, mult: 2 }] }
-      : { title: p.name, groups: [{ attacks: [], damage: p.dice }] };
+      : { title: p.name, groups: [{ attacks: [], damage: p.dice, ...(p.heal ? { heal: true } : p.extra ? { word: 'extra damage' } : {}) }] };
     return `<tr><td>${esc(p.name)}</td><td>${p.attack !== null ? esc(signed(p.attack)) : ''}</td><td>${esc(p.dice)}${roll(spec, p.name)}</td>
       <td class="muted">${esc(p.note)}${useDaily(p.name)}</td><td>${d ? plus('daily', d.key, p.name) : ''}</td></tr>`;
   }).join('');

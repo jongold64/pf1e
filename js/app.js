@@ -943,8 +943,8 @@ function dailyPowers() {
   return out;
 }
 
-// Chosen powers with an attack or damage roll (a wizard's force missile, acid dart or grave touch, a cleric's fire
-// bolt, a sorcerer's elemental ray...), read from their text (powerAttack), with the touch attack bonuses: the same
+// Chosen powers with a roll (a wizard's force missile, acid dart or grave touch, a cleric's fire bolt or healing touch,
+// a sorcerer's elemental ray or elemental strikes...), read from their text (powerAttack), with the touch attack bonuses: the same
 // powers as dailyPowers, named the same way so their uses left show beside them.
 function powerAttackRows() {
   const s = view.stats;
@@ -955,7 +955,7 @@ function powerAttackRows() {
   for (const { cls, level } of view.counts) {
     const add = (p, from) => {
       if ((p.level || 1) > level) return;
-      const r = powerAttack(p, { level, mod: s.mod, melee, ranged });
+      const r = powerAttack(p, { level, charLevel: view.level, mod: s.mod, melee, ranged });
       if (r) out.push({ ...r, name: `${p.name} (${from})`, text: p.text });
     };
     for (const { path } of pathsFor(cls.id)) if (!['eidolon-subtype', 'base-form'].includes(path?.kind)) for (const p of path?.powers || []) add(p, path.name);

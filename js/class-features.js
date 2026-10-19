@@ -220,48 +220,86 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
   return out;
 }
 
-// A chosen power's attack and damage, read from its rules text (a wizard's school, a cleric's domain, a sorcerer's
-// bloodline...): "As a standard action you can unleash an acid dart ... as a ranged touch attack. The acid dart deals
-// 1d6 points of acid damage + 1 for every two wizard levels you possess." level: that class's level; mod: ability
-// modifiers; melee / ranged: the touch attack bonuses. Returns { attack (null: no attack roll), check, dice ('' if
-// none), note } or null for a power with neither a touch attack nor damage of its own to roll (healing, damage you
-// take, a passive or reactive power, an unarmed strike).
+// A chosen power's roll, read from its rules text (a wizard's school, a cleric's domain, a sorcerer's bloodline...):
+// "As a standard action you can unleash an acid dart ... as a ranged touch attack. The acid dart deals 1d6 points of
+// acid damage + 1 for every two wizard levels you possess." level: that class's level; charLevel: the character's;
+// mod: ability modifiers; melee / ranged: the touch attack bonuses. Returns { attack (null: no attack roll), check,
+// dice ('' if none), heal (it heals), extra (damage added to your other attacks), note } or null for a power with
+// nothing to roll. Dice that aren't damage or healing (for 1d4 rounds, a caster level check's d20), ability damage, and
+// natural weapons (claws, fangs: counted as natural attacks) are left out.
 const ABILITY_KEYS = { strength: 'str', dexterity: 'dex', constitution: 'con', intelligence: 'int', wisdom: 'wis', charisma: 'cha' };
-export function powerAttack(power, { level = 1, mod = {}, melee = 0, ranged = 0 } = {}) {
+
+// One amount of dice in a sentence: { count, sides, bonus, type, heal, extra } with what the words around it say.
+function diceAmount(sentence, m, { level, charLevel, mod }) {
+  const half = Math.floor(level / 2);
+  const before = sentence.slice(Math.max(0, m.index - 40), m.index);
+  // The rest of its clause: up to the next amount of dice, or the end of the sentence.
+  const after = sentence.slice(m.index + m[0].length).split(/\b\d+d\d+/)[0];
+  const near = after.slice(0, 70);
+  // (A duration or a wait: "for 1d4 rounds", "1d4 rounds between each use".)
+  if (/^\s*(?:rounds?|minutes?|hours?|days?)\b/i.test(after)) return null;
+  const heal = /\b(?:heals?|healing|cures?)\b[^,;]{0,25}$/i.test(before) || /^\s*(?:\+ ?\w+ )?hit points\b/i.test(after)
+    || /^\s*points of (?:nonlethal )?damage\b/i.test(after) && /\bheal(?:s|ing)?\b[^.]*$/i.test(before);
+  const damage = /\bdamage\b/i.test(near.split(/[,;]| and (?!\d)/)[0] + near.slice(0, 45)) || /damage equal to\s*$/i.test(before);
+  if (!heal && !damage) return null;
+  if (!heal && /^\s*(?:points? of )?(?:Str|Dex|Con|Int|Wis|Cha|ability|Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)\b/i.test(after)) return null;
+  const extra = /\b(?:additional|extra)\s*\+?$/i.test(before) || /^\s*(?:additional|extra) points?\b/i.test(after)
+    || /^ points? of (?:additional|extra)\b/i.test(after);
+  let count = Number(m[1]);
+  const lead = after.split(/\+|\bplus\b/)[0];
+  if (/(?:for every|per) (?:two|2) \w+ levels?/i.test(lead)) count = Math.max(1, half) * count;
+  else if (/\bper \w+ level\b/i.test(lead) && !/\bper round\b/i.test(lead)) count = level * count;
+  const bonus = /(?:\+|plus) ?1(?: points?)?(?: of (?:[a-z]+ )?damage)? (?:for every|per) (?:two|2) \w+ levels?/i.test(after) ? half
+    : /(?:\+|plus) ?1(?: points?)?(?: of (?:[a-z]+ )?damage)? (?:for every|per) \w+ level\b/i.test(after) ? level
+    : /plus half your \w+ level\b/i.test(after) || /intense spells/i.test(after) ? Math.max(1, half)
+    : /^\s*\+ your character level\b/i.test(after) ? charLevel
+    : (() => { const a = after.match(/^\s*\+ your (\w+) modifier/i); return a && ABILITY_KEYS[a[1].toLowerCase()] ? mod[ABILITY_KEYS[a[1].toLowerCase()]] || 0 : 0; })();
+  const tm = after.match(/^\s*(?:additional |extra )?points? of (?:additional |extra )?([a-z]+(?:, [a-z]+)*(?:,? and [a-z]+)?) damage/i)
+    || before.match(/\b([a-z]+) damage equal to\s*$/i);
+  const type = !tm || /^(?:hit|additional|extra|deals?)$/i.test(tm[1]) ? '' : tm[1].toLowerCase();
+  return { count, sides: Number(m[2]), bonus, type, heal, extra };
+}
+
+export function powerAttack(power, { level = 1, charLevel = level, mod = {}, melee = 0, ranged = 0 } = {}) {
   const t = String(power?.text || '').replace(/\s+/g, ' ');
   const half = Math.floor(level / 2);
   const kind = /melee touch attack/i.test(t) ? 'melee' : /ranged touch attack/i.test(t) ? 'ranged' : null;
-  // The damage: the first "XdY points of [type] damage" (in a sentence that isn't about healing), its dice per two
-  // levels (mud missile) or per level (fiery soul), or a bonus after it. Not a rider on other attacks ("1d6 points of
-  // additional damage"), a natural attack it gives (tree limb's slam), or damage a creature takes when it fails a check.
-  const m = t.match(/(\d+)d(\d+) points? of (?:([a-z]+) )?damage([^.]*)/i);
-  const sentence = m ? t.slice(t.lastIndexOf('.', m.index) + 1, m.index + m[0].length) : '';
-  let dice = '';
-  let type = '';
-  if (m && !/\b(?:heals?|healing|healed|temporary hit points)\b/i.test(sentence) && !/\byou take \d+d\d+|avoid taking/i.test(t)
-      && !/unarmed strikes? that deal|\bgains? an? (?:slam|claw|bite|gore)\b/i.test(t) && !/^(?:additional|extra|ability)$/i.test(m[3] || '')
-      && !/\b(?:additional|extra) $/i.test(t.slice(Math.max(0, m.index - 11), m.index))
-      && (kind || /\b(?:standard|swift|move) action\b/i.test(t))) {
-    const rest = m[4];
-    const n = Number(m[1]);
-    const count = /^\s*(?:for every|per) (?:two|2) \w+ levels?/i.test(rest) ? Math.max(1, half) * n : /^\s*per \w+ level\b/i.test(rest) ? level * n : n;
-    const bonus = /\+ ?1(?: points?(?: of damage)?)? (?:for every|per) (?:two|2) \w+ levels?/i.test(rest) || /plus 1 for every two \w+ levels/i.test(rest) ? half
-      : /\+ ?1(?: points?(?: of damage)?)? (?:for every|per) \w+ level\b/i.test(rest) ? level
-      : /plus half your \w+ level \(minimum \+1\)/i.test(rest) || /intense spells/i.test(rest) ? Math.max(1, half) : 0;
-    dice = `${count}d${m[2]}${bonus ? `+${bonus}` : ''}`;
-    type = m[3] && !/^(?:points?)$/i.test(m[3]) ? m[3].toLowerCase() : '';
+  // The first sentence with damage or healing to roll; two amounts joined by "and" (freezing shards' piercing and cold)
+  // are rolled together.
+  let found = null;
+  // (Natural weapons a power gives are counted as natural attacks.)
+  const natural = /\bnatural (?:weapons?|attacks?)\b|\b(?:claw|bite|slam|gore|rend|tail slap) attacks?\b/i.test(t);
+  for (const sentence of natural ? [] : t.split(/(?<=[.!?])\s+/)) {
+    if (/\bunarmed strikes? that deal\b|^For example\b|\byou are flung back\b/i.test(sentence)) continue;
+    const parts = [];
+    for (const m of sentence.matchAll(/\b(\d+)d(\d+)\b/g)) {
+      if (m[2] === '20') continue;
+      const a = diceAmount(sentence, m, { level, charLevel, mod });
+      if (!a) continue;
+      if (parts.length && !(a.heal === parts[0].heal && /^\s*(?:points? of [a-z ,]*damage\s+)?and\s*$/i.test(sentence.slice(parts.at(-1).end, m.index)))) break;
+      parts.push({ ...a, end: m.index + m[0].length });
+    }
+    if (parts.length) { found = parts; break; }
   }
-  if (!kind && !dice) return null;
+  if (!kind && !found) return null;
+  const dice = found ? `${found.map(p => `${p.count}d${p.sides}`).join('+')}${found.reduce((n, p) => n + p.bonus, 0) ? `+${found.reduce((n, p) => n + p.bonus, 0)}` : ''}` : '';
+  const heal = !!found?.[0].heal;
+  const extra = !!found?.[0].extra && !heal;
+  const type = found ? [...new Set(found.map(p => p.type).filter(Boolean))].join(' and ') : '';
   // A saving throw for half (or to negate) when the text gives its DC as 10 + 1/2 your level + an ability modifier.
-  const dcm = t.match(/DC[^.]*?10 \+ (?:1\/2|half) your \w+ level \+ your (\w+) modifier/i);
+  const dcm = t.match(/DC[^.]*?10 \+ (?:1\/2|half) (?:your|the) \w+(?:’s|'s)? (?:\w+ )?level \+ (?:your|his|her|the \w+(?:’s|'s)?) (\w+) modifier/i);
   const save = t.match(/\b(Reflex|Fortitude|Will) (?:save|saving throw)/i)?.[1];
   const dc = dcm && ABILITY_KEYS[dcm[1].toLowerCase()] ? 10 + half + (mod[ABILITY_KEYS[dcm[1].toLowerCase()]] || 0) : null;
   const halves = /\bhal(?:f|ves)\b/i.test(t);
-  const note = [kind ? `${kind} touch` : /automatically strikes/i.test(t) ? 'hits automatically' : 'no attack roll',
-    type, dc && save ? `DC ${dc} ${save}${halves ? ' half' : ''}` : ''].filter(Boolean).join(' · ');
+  // (Share essence: the damage is yours, and the creature you touch gains that many temporary hit points.)
+  const shared = /\byou take \d+d\d+/i.test(t) && /temporary hit points/i.test(t);
+  const note = [kind ? `${kind} touch` : shared ? 'you take this; the creature you touch gains as many temporary hit points'
+    : /automatically strikes/i.test(t) ? 'hits automatically' : heal ? 'heals' : extra ? 'extra damage on your attacks' : 'no attack roll',
+    type, dc && save && !heal ? `DC ${dc} ${save}${halves ? ' half' : ''}` : ''].filter(Boolean).join(' · ');
   // (A ranged touch attack using Charisma in place of Dexterity: the unicorn bloodline's righteous fury.)
   const chaForDex = /Charisma modifier in place of your Dexterity/i.test(t) ? (mod.cha || 0) - (mod.dex || 0) : 0;
-  return { attack: kind === 'melee' ? melee : kind === 'ranged' ? ranged + chaForDex : null, check: kind ? `${kind[0].toUpperCase()}${kind.slice(1)} touch` : '', dice, note };
+  return { attack: kind === 'melee' ? melee : kind === 'ranged' ? ranged + chaForDex : null,
+           check: kind ? `${kind[0].toUpperCase()}${kind.slice(1)} touch` : '', dice, heal, extra, note };
 }
 
 // Skills a class lets you use without ranks, and whether every skill is a class skill: bard jack-of-all-trades (10th:

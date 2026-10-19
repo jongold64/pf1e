@@ -2085,7 +2085,7 @@ document.getElementById('list').innerHTML = results.map(r =>
     const { powerAttack } = await import('./class-features.js');
     const paths = await fetch('data/class-paths.json').then(r => r.json());
     const doms = await fetch('data/domains.json').then(r => r.json());
-    const pw = (list, from, name) => list.find(x => x.name === from).powers.find(x => x.name === name);
+    const pw = (list, from, name) => list.filter(x => x.name === from).flatMap(x => x.powers || []).find(x => x.name === name);
     const o = { level: 5, mod: { str: 1, dex: 2, int: 4, wis: 3 }, melee: 3, ranged: 4 };
     const show = r => (r ? `${r.attack ?? '-'}:${r.dice || '-'}:${r.note}` : 'none');
     check('force missile: no attack roll, 1d4 + intense spells', show(powerAttack(pw(paths, 'Evocation', 'Force Missile'), o)), '-:1d4+2:hits automatically');
@@ -2093,7 +2093,14 @@ document.getElementById('list').innerHTML = results.map(r =>
     check('acid dart: ranged touch, 1d6 + 1 per two levels', show(powerAttack(pw(paths, 'Conjuration', 'Acid Dart'), o)), '4:1d6+2:ranged touch · acid');
     check('fire jet: no attack roll, Reflex half at 10 + 2 + Int', show(powerAttack(pw(paths, 'Fire', 'Fire Jet'), o)), '-:1d6+2:no attack roll · fire · DC 16 Reflex half');
     check('cleric fire bolt: ranged touch 1d6 + 1 per two levels', show(powerAttack(pw(doms, 'Fire', 'Fire Bolt'), o)), '4:1d6+2:ranged touch · fire');
-    check('calming touch heals: not an attack', show(powerAttack(pw(doms, 'Community', 'Calming Touch'), o)), 'none');
+    check('calming touch: heals 1d6 + cleric level', `${show(powerAttack(pw(doms, 'Community', 'Calming Touch'), o))} ${powerAttack(pw(doms, 'Community', 'Calming Touch'), o).heal}`, '-:1d6+5:heals · nonlethal true');
+    check('freezing shards: piercing and cold rolled together', show(powerAttack(pw(paths, 'Ice', 'Freezing Shards'), o)), '-:1d4+1d6+2:no attack roll · piercing and cold · DC 16 Reflex half');
+    const bls = await fetch('data/bloodlines.json').then(r => r.json());
+    const sorc = { ...o, mod: { ...o.mod, cha: 3 } };
+    check('elemental strikes: extra damage on your attacks', `${show(powerAttack(pw(bls, 'Elemental', 'Elemental Strikes'), sorc))} ${powerAttack(pw(bls, 'Elemental', 'Elemental Strikes'), sorc).extra}`, '-:1d6:extra damage on your attacks true');
+    check('draconic breath weapon: 1d6 per sorcerer level, Reflex half', show(powerAttack(bls.find(b => b.name === 'Draconic' && b.powers.some(x => /per sorcerer level/.test(x.text))).powers.find(x => x.name === 'Breath Weapon'), sorc)), '-:5d6:no attack roll · DC 15 Reflex half');
+    check('draconic claws: a natural attack, counted elsewhere', show(powerAttack(pw(bls, 'Draconic', 'Claws'), sorc)), 'none');
+    check('fast healing for 1d4 rounds: nothing to roll', show(powerAttack(pw(paths, 'Nature', 'Spirit of Nature'), o)), 'none');
     check('intense spells (a passive bonus): not an attack', show(powerAttack(pw(paths, 'Evocation', 'Intense Spells'), o)), 'none');
   }
   check('kineticist 5, Con +3: blasts 3d6+6 and 3d6+1', ca([['kineticist', 5]], { bab: [3], mod: { dex: 2, con: 3 } }), 'Kinetic blast (physical):5:3d6+6,Kinetic blast (energy):5:3d6+1');
