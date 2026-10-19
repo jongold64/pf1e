@@ -16,7 +16,7 @@ import { rollButton } from './roll-ui.js';
 const HIGH = { str: 30, dex: 30, con: 30, int: 30, wis: 30, cha: 30 };
 const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0,
                            itemId: '', option: '', rushed: false, confirmed: new Set(), extraUnmet: 0, message: '',
-                           wsearch: '', wslot: '' });
+                           wsearch: '', wslot: '', ssearch: '' });
 
 // The two cards. Each keeps what's being planned while the page is open (not saved with the character).
 const CARDS = {
@@ -374,6 +374,42 @@ function craftInfo(app, c, key) {
   }
 }
 
+// The spells a potion, scroll or wand can hold, as the Spell list's options, narrowed by the search box (every word
+// in the name; the chosen one is kept). Buying: any spell up to the item's highest spell level, grouped by its lowest
+// level on any class list. Crafting: your classes' spells you can cast (a spontaneous caster's known ones).
+function spellOptions(app, c, list) {
+  const { state, data } = app;
+  const form = c.form;
+  const words = (form.ssearch || '').toLowerCase().split(/\s+/).filter(Boolean);
+  const hit = (s, value) => value === form.spell || words.every(w => s.name.toLowerCase().includes(w));
+  const max = SPELL_ITEMS[form.spellKind].maxSpellLevel;
+  let groups;
+  let n = 0;
+  if (c.mode === 'buy') {
+    const byLevel = new Map();
+    for (const s of data.spells || []) {
+      const lv = Math.min(...Object.values(s.levels || {}));
+      if (Number.isFinite(lv) && lv <= max && hit(s, s.id)) (byLevel.get(lv) || byLevel.set(lv, []).get(lv)).push(s);
+    }
+    groups = [...byLevel.keys()].sort((a, b) => a - b).map(lv => {
+      n += byLevel.get(lv).length;
+      return `<optgroup label="Level ${lv}">${byLevel.get(lv).sort((a, b) => a.name.localeCompare(b.name))
+        .map(s => `<option value="${esc(s.id)}"${form.spell === s.id ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</optgroup>`;
+    }).join('');
+  } else {
+    const canCast = canCastWith(app, list);
+    groups = list.map(x => {
+      const spells = (data.spells || []).filter(s => s.levels[x.cls.id] !== undefined && s.levels[x.cls.id] <= Math.min(x.maxLevel, max)
+        && canCast(s.id) && (!x.spontaneous || state.spells.includes(s.id)) && hit(s, `${x.cls.id}|${s.id}`))
+        .sort((a, b) => a.levels[x.cls.id] - b.levels[x.cls.id] || a.name.localeCompare(b.name));
+      n += spells.length;
+      return spells.length ? `<optgroup label="${esc(x.cls.name)}${x.spontaneous ? ' (spells you know)' : ''}">${spells.map(s =>
+        `<option value="${esc(x.cls.id)}|${esc(s.id)}"${form.spell === `${x.cls.id}|${s.id}` ? ' selected' : ''}>${esc(s.name)} (level ${s.levels[x.cls.id]})</option>`).join('')}</optgroup>` : '';
+    }).join('');
+  }
+  return `<option value="">${n ? (words.length ? `Choose one of ${n} spell${n === 1 ? '' : 's'}…` : 'Choose a spell…') : 'No spells match'}</option>${groups}`;
+}
+
 function kindControls(app, list, p, c) {
   const { state, data } = app;
   const form = c.form;
@@ -399,29 +435,10 @@ function kindControls(app, list, p, c) {
       `<option value="${k}"${k === form.spellKind ? ' selected' : ''}>${v.label.toLowerCase()} (spells up to level ${v.maxSpellLevel})</option>`).join('')}</select></label>${info('kind', 'Potions, scrolls and wands')}`;
     const clInput = p.clRange ? `<label>Caster level <select data-craft="cl">${Array.from({ length: p.clRange[1] - p.clRange[0] + 1 }, (_, i) => p.clRange[0] + i)
       .map(n => `<option value="${n}"${n === p.itemCL ? ' selected' : ''}>${n}</option>`).join('')}</select></label>${info('cl', 'What the caster level changes')}` : '';
-    if (c.mode === 'buy') {
-      // Any spell, grouped by its lowest level on any class list.
-      const max = SPELL_ITEMS[form.spellKind].maxSpellLevel;
-      const byLevel = new Map();
-      for (const s of data.spells || []) {
-        const lv = Math.min(...Object.values(s.levels || {}));
-        if (Number.isFinite(lv) && lv <= max) (byLevel.get(lv) || byLevel.set(lv, []).get(lv)).push(s);
-      }
-      const groups = [...byLevel.keys()].sort((a, b) => a - b).map(lv => `<optgroup label="Level ${lv}">${byLevel.get(lv)
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(s => `<option value="${esc(s.id)}"${form.spell === s.id ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</optgroup>`).join('');
-      return `${kindSelect}<label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${form.spell ? info('spell', 'The spell') : ''}${clInput}`;
-    }
-    const canCast = canCastWith(app, list);
-    const groups = list.map(x => {
-      const spells = (data.spells || []).filter(s => s.levels[x.cls.id] !== undefined && s.levels[x.cls.id] <= Math.min(x.maxLevel, SPELL_ITEMS[form.spellKind].maxSpellLevel)
-        && canCast(s.id) && (!x.spontaneous || state.spells.includes(s.id)))
-        .sort((a, b) => a.levels[x.cls.id] - b.levels[x.cls.id] || a.name.localeCompare(b.name));
-      return spells.length ? `<optgroup label="${esc(x.cls.name)}${x.spontaneous ? ' (spells you know)' : ''}">${spells.map(s =>
-        `<option value="${esc(x.cls.id)}|${esc(s.id)}"${form.spell === `${x.cls.id}|${s.id}` ? ' selected' : ''}>${esc(s.name)} (level ${s.levels[x.cls.id]})</option>`).join('')}</optgroup>` : '';
-    }).join('');
-    return `${kindSelect}
-      <label>Spell <select data-craft="spell"><option value="">Choose a spell…</option>${groups}</select></label>${form.spell ? info('spell', 'The spell') : ''}${clInput}
+    const search = `<label>Search <input type="search" data-craft="ssearch" value="${esc(form.ssearch || '')}" placeholder="Spell, e.g. cure light" autocomplete="off"></label>`;
+    const spellPick = `<label>Spell <select data-craft="spell">${spellOptions(app, c, list)}</select></label>${form.spell ? info('spell', 'The spell') : ''}`;
+    if (c.mode === 'buy') return `${kindSelect}${search}${spellPick}${clInput}`;
+    return `${kindSelect}${search}${spellPick}${clInput}
       ${list.some(x => x.spontaneous) ? '<p class="hint">Sorcerers, bards and other spontaneous casters can use only spells they know: add them under My spells on the Spells tab.</p>' : ''}`;
   }
   const item = data.itemsById.get(form.itemId);
@@ -593,7 +610,7 @@ function initCard(app, c) {
     else if (k === 'option') { form.option = t.value; reset(); }
     else if (k === 'wslot') form.wslot = t.value;
     else if (k === 'witem') { form.itemId = t.value; form.option = ''; form.extraUnmet = 0; reset(); }
-    else if (k === 'wsearch') return;
+    else if (k === 'wsearch' || k === 'ssearch') return;
     else if (k === 'rushed') form.rushed = t.checked;
     else if (t.dataset.craftOption !== undefined) form.abilities[Number(t.dataset.craftOption)].option = t.value;
     else if (t.dataset.craftConfirm !== undefined) {
@@ -603,7 +620,14 @@ function initCard(app, c) {
     redraw();
   });
   // The wondrous item search narrows the item list as you type (the list is rebuilt in place, so the box keeps focus).
+  // The potion, scroll and wand spell search too.
   card.addEventListener('input', e => {
+    if (e.target.dataset.craft === 'ssearch') {
+      form.ssearch = e.target.value;
+      const sel = card.querySelector('[data-craft="spell"]');
+      if (sel) sel.innerHTML = spellOptions(app, c, casters(app));
+      return;
+    }
     if (e.target.dataset.craft !== 'wsearch') return;
     form.wsearch = e.target.value;
     const sel = card.querySelector('[data-craft="witem"]');

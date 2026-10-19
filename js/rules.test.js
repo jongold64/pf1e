@@ -2080,6 +2080,22 @@ document.getElementById('list').innerHTML = results.map(r =>
   const ca = (list, o) => classAttacks(list.map(([id, level]) => ({ cls: cls(id), level })), o).map(c => `${c.name}:${c.attack ?? '-'}:${c.dice}`).join();
   check('rogue 5 / assassin 3: sneak attack 3d6 + 2d6 = 5d6', ca([['rogue', 5], ['assassin', 3]], {}), 'Sneak attack:-:5d6');
   check('alchemist 5, BAB 3, Dex +2, Int +3: bomb +6, 3d6+3', ca([['alchemist', 5]], { bab: [3], mod: { dex: 2, int: 3 } }), 'Bomb:6:3d6+3');
+  // Chosen powers' attacks and damage, read from their text (powerAttack): a 5th-level wizard with Int +4.
+  {
+    const { powerAttack } = await import('./class-features.js');
+    const paths = await fetch('data/class-paths.json').then(r => r.json());
+    const doms = await fetch('data/domains.json').then(r => r.json());
+    const pw = (list, from, name) => list.find(x => x.name === from).powers.find(x => x.name === name);
+    const o = { level: 5, mod: { str: 1, dex: 2, int: 4, wis: 3 }, melee: 3, ranged: 4 };
+    const show = r => (r ? `${r.attack ?? '-'}:${r.dice || '-'}:${r.note}` : 'none');
+    check('force missile: no attack roll, 1d4 + intense spells', show(powerAttack(pw(paths, 'Evocation', 'Force Missile'), o)), '-:1d4+2:hits automatically');
+    check('grave touch: a melee touch attack, no damage', show(powerAttack(pw(paths, 'Necromancy', 'Grave Touch'), o)), '3:-:melee touch');
+    check('acid dart: ranged touch, 1d6 + 1 per two levels', show(powerAttack(pw(paths, 'Conjuration', 'Acid Dart'), o)), '4:1d6+2:ranged touch · acid');
+    check('fire jet: no attack roll, Reflex half at 10 + 2 + Int', show(powerAttack(pw(paths, 'Fire', 'Fire Jet'), o)), '-:1d6+2:no attack roll · fire · DC 16 Reflex half');
+    check('cleric fire bolt: ranged touch 1d6 + 1 per two levels', show(powerAttack(pw(doms, 'Fire', 'Fire Bolt'), o)), '4:1d6+2:ranged touch · fire');
+    check('calming touch heals: not an attack', show(powerAttack(pw(doms, 'Community', 'Calming Touch'), o)), 'none');
+    check('intense spells (a passive bonus): not an attack', show(powerAttack(pw(paths, 'Evocation', 'Intense Spells'), o)), 'none');
+  }
   check('kineticist 5, Con +3: blasts 3d6+6 and 3d6+1', ca([['kineticist', 5]], { bab: [3], mod: { dex: 2, con: 3 } }), 'Kinetic blast (physical):5:3d6+6,Kinetic blast (energy):5:3d6+1');
   const pistol = { id: 'pistol', firearm: true, group: 'ranged' };
   check('gun training: Dex on damage only, with the chosen firearm', JSON.stringify(wt([{ cls: cls('gunslinger'), level: 5 }], pistol, [], { mod: { dex: 4 }, picks: { gun: ['pistol'] } })), '[{"label":"Gun training (Dexterity on damage)","value":4,"on":"damage"}]');

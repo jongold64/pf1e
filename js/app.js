@@ -46,7 +46,7 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
-import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice } from './class-features.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -827,7 +827,7 @@ function buildParts() {
     castingAbility: cid => CASTING_ABILITY[cid],
     prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
       .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
-    classAttacks: allClassAttacks(view.stats),
+    classAttacks: allClassAttacks(view.stats), powerAttacks: powerAttackRows(),
     choices: (cid, lv) => choiceItems(cid, lv),
   };
 }
@@ -939,6 +939,30 @@ function dailyPowers() {
     const bond = pathOf(cls.id, 'arcane-bond');
     if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses',
       text: bond.text || '', how: 'once a day' });
+  }
+  return out;
+}
+
+// Chosen powers with an attack or damage roll (a wizard's force missile, acid dart or grave touch, a cleric's fire
+// bolt, a sorcerer's elemental ray...), read from their text (powerAttack), with the touch attack bonuses: the same
+// powers as dailyPowers, named the same way so their uses left show beside them.
+function powerAttackRows() {
+  const s = view.stats;
+  const size = SIZE_AC[view.size] ?? 0;
+  const melee = s.bab[0] + s.mod.str + size + s.fx.attack + (s.fx['melee-attack'] || 0);
+  const ranged = s.bab[0] + s.mod.dex + size + s.fx.attack + (s.fx['ranged-attack'] || 0);
+  const out = [];
+  for (const { cls, level } of view.counts) {
+    const add = (p, from) => {
+      if ((p.level || 1) > level) return;
+      const r = powerAttack(p, { level, mod: s.mod, melee, ranged });
+      if (r) out.push({ ...r, name: `${p.name} (${from})`, text: p.text });
+    };
+    for (const { path } of pathsFor(cls.id)) if (!['eidolon-subtype', 'base-form'].includes(path?.kind)) for (const p of path?.powers || []) add(p, path.name);
+    for (const id of state.domains[cls.id] || []) {
+      const d = data.domainsById.get(id);
+      if (d) for (const p of domainGrants(d, data.domainsById).powers || []) add(p, `${d.name} domain`);
+    }
   }
   return out;
 }

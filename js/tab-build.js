@@ -113,6 +113,16 @@ export function renderBuild(app, view, parts) {
   const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
       ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
       : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
+  // Powers with an attack or damage roll (force missile, grave touch, fire bolt...): the touch attack and damage, the
+  // save, and their uses left; Details shows the power's text.
+  const powerAtk = (parts.powerAttacks || []).map(p => {
+    const d = daily.find(x => x.name === p.name);
+    const spec = p.attack !== null
+      ? { title: p.name, check: p.check, groups: [{ attacks: [p.attack], damage: p.dice, threat: 20, mult: 2 }] }
+      : { title: p.name, groups: [{ attacks: [], damage: p.dice }] };
+    return `<tr><td>${esc(p.name)}</td><td>${p.attack !== null ? esc(signed(p.attack)) : ''}</td><td>${esc(p.dice)}${roll(spec, p.name)}</td>
+      <td class="muted">${esc(p.note)}${useDaily(p.name)}</td><td>${d ? plus('daily', d.key, p.name) : ''}</td></tr>`;
+  }).join('');
   // Channel energy, lay on hands / touch of corruption (melee touch) and smite (Character tab rows), here too.
   const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
   const powers = [
@@ -122,14 +132,15 @@ export function renderBuild(app, view, parts) {
     ...smite(stats).map(sm => `<tr><td>${esc(sm.name)}</td><td>+${sm.attack}</td><td>+${sm.damage}</td><td class="muted">+${sm.deflection} deflection AC · switch it on in Active effects${useDaily(sm.name)}</td><td>${plus('classfeat', sm.name, sm.name)}</td></tr>`),
   ].join('');
   // Every other ability with daily uses (rage, bardic performance, ki, domain and school powers...): uses left and Use.
-  const shown = new Set([...channelEnergy(stats, view.haveFeats).map(channelName), ...layOnHands(stats).map(l => l.name), ...smite(stats).map(s => s.name)]);
+  const shown = new Set([...channelEnergy(stats, view.haveFeats).map(channelName), ...layOnHands(stats).map(l => l.name), ...smite(stats).map(s => s.name),
+    ...(parts.powerAttacks || []).map(p => p.name)]);
   const abilities = daily.filter(d => d.unit !== 'spells' && !shown.has(d.name))
     .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('');
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
   // Weapons and class abilities in two tables, so a class ability's long note doesn't widen the weapons' columns.
-  const attacks = noWeapons + (switches && (atk || classAtk || powers) ? `<div class="b-switches">${switches}</div>` : '')
+  const attacks = noWeapons + (switches && (atk || classAtk || powerAtk || powers) ? `<div class="b-switches">${switches}</div>` : '')
     + (atk ? `<table class="b-table"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody></table>` : '')
-    + (classAtk || powers ? `<table class="b-table b-class-table"><tbody class="b-class-attacks">${classAtk}${powers}</tbody></table>` : '')
+    + (classAtk || powerAtk || powers ? `<table class="b-table b-class-table"><tbody class="b-class-attacks">${classAtk}${powerAtk}${powers}</tbody></table>` : '')
     + (abilities ? `<h4 class="b-sub">Class abilities</h4><div class="b-feats">${abilities}</div>` : '');
 
   // Defense: the defensive switches, armor a class feature gives, and situational notes (the worn armor's numbers are
