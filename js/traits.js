@@ -82,15 +82,17 @@ export function pickableWeapon(kind, w) {
   return w.id !== 'unarmed-strike' && (w.proficiency === 'simple' || w.proficiency === 'martial');
 }
 
-// What a chosen Heirloom Weapon does for a weapon: { proficient, notes: ['+1 trait bonus on attacks of opportunity'] }.
+// What a chosen Heirloom Weapon does for a weapon: { proficient, aoo (trait bonus on attacks of opportunity with it),
+// maneuver: { name, bonus } (trait bonus on that combat maneuver with it; name '' until one is chosen) or null }.
 export function heirloomFor(traits, picks = {}, weaponId = '') {
+  const none = { proficient: false, aoo: 0, maneuver: null };
   const t = traits.find(x => x?.id === 'heirloom-weapon');
   const p = t && picks[t.id];
-  if (!p?.weapon || p.weapon !== weaponId) return { proficient: false, notes: [] };
-  if (p.benefit === 'proficiency') return { proficient: true, notes: [] };
-  if (p.benefit === 'aoo') return { proficient: false, notes: ['Heirloom Weapon: +1 trait bonus on attacks of opportunity with it'] };
-  if (p.benefit === 'maneuver') return { proficient: false, notes: [`Heirloom Weapon: +2 trait bonus on ${p.maneuver || 'one kind of'} combat maneuver checks with it`] };
-  return { proficient: false, notes: [] };
+  if (!p?.weapon || p.weapon !== weaponId) return none;
+  if (p.benefit === 'proficiency') return { ...none, proficient: true };
+  if (p.benefit === 'aoo') return { ...none, aoo: 1 };
+  if (p.benefit === 'maneuver') return { ...none, maneuver: { name: p.maneuver || '', bonus: 2 } };
+  return none;
 }
 
 // The numbers chosen traits add (from each trait's `effects`, read from its text by the data build):

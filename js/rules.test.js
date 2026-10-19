@@ -1137,8 +1137,10 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const hw = [trait('Heirloom Weapon')];
   check('Heirloom Weapon (proficiency): proficient with that weapon only',
         `${heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'proficiency' } }, 'longsword').proficient} ${heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'proficiency' } }, 'dagger').proficient}`, 'true false');
-  check('Heirloom Weapon (trip): a note on its weapon', heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'maneuver', maneuver: 'trip' } }, 'longsword').notes[0],
-        'Heirloom Weapon: +2 trait bonus on trip combat maneuver checks with it');
+  check('Heirloom Weapon (trip): +2 on trip with it', JSON.stringify(heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'maneuver', maneuver: 'trip' } }, 'longsword').maneuver),
+        '{"name":"trip","bonus":2}');
+  check('Heirloom Weapon (attacks of opportunity): +1 with it, nothing with another weapon',
+        [heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'aoo' } }, 'longsword').aoo, heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'aoo' } }, 'dagger').aoo].join(), '1,0');
   const dag = wa({ weapon: { id: 'dagger', name: 'Dagger', group: 'light', damage: { m: '1d4' } }, bab: [1], mod: { str: 2, dex: 0 },
                    training: [{ label: 'Trait: Ancestral Weapon', value: 1, on: 'attack' }] });
   check('an attack-only row: +1 to hit, nothing on damage', `${dag.attacks[0]} ${dag.damage}`, '4 1d4+2');

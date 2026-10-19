@@ -53,7 +53,8 @@ function pickControls(app, t) {
     ? (pick.weapon ? '+1 damage is counted on that weapon (Weapons tab and Actions). You must be proficient with it.' : 'Choose the monk weapon; its +1 damage is then counted on that weapon.')
     : !pick.weapon || !pick.benefit ? 'Choose the weapon and the benefit.'
     : pick.benefit === 'proficiency' ? 'You count as proficient with that weapon (no −4 on its attacks).'
-    : 'Shown on that weapon on the Weapons tab, to apply in play.';
+    : pick.benefit === 'maneuver' && !pick.maneuver ? 'Choose the combat maneuver.'
+    : `Its ${pick.benefit === 'aoo' ? 'attack of opportunity' : `${pick.maneuver} check`} has a roll of its own under that weapon (Weapons tab and the Character tab's Actions).`;
   return `<div class="trait-pick">${weapon}${benefit}${maneuver}<p class="hint">${esc(how)}</p></div>`;
 }
 

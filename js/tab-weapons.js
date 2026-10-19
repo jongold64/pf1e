@@ -1,7 +1,7 @@
 // Weapons tab: the character's weapons with attack bonus and damage, and every weapon (by category) with a
 // side panel for the weapon being looked at.
 import { fitLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { SIZE_AC, MONK_IDS, smite } from './rules.js';
+import { SIZE_AC, MONK_IDS, smite, combatManeuvers } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
@@ -191,6 +191,33 @@ function attackArgs(app, view, ctx, e) {
     effectAttack: view.stats.fx.attack + (w.group === 'ranged' ? view.flawFx.ranged + (view.stats.fx['ranged-attack'] || 0) : view.flawFx.melee + (view.stats.fx['melee-attack'] || 0)),
     effectDamage: view.stats.fx.damage + (w.group === 'ranged' ? 0 : view.stats.fx['melee-damage'] || 0),
   };
+}
+
+// Rolls a trait adds with one weapon (Heirloom Weapon): an attack of opportunity with it (one attack at your highest
+// bonus, +1 trait bonus) or the combat maneuver chosen for it (CMB, with Improved feats, +2 trait bonus). A trait bonus
+// already counted (a trait switch on, River Rat...) doesn't stack: only the higher one counts.
+// [{ label, text, damage, note, spec }] for the Weapons tab and the Character tab's Actions.
+function traitRolls(app, view, w, args, crit, weaponName) {
+  const h = heirloomFor(view.traits, app.state.traitPicks, w.id);
+  const out = [];
+  if (h.aoo) {
+    const already = Math.max(switchedTraitBonus(view, w).attack, ...args.training.filter(t => /^Trait:/.test(t.label) && t.on !== 'damage').map(t => t.value));
+    const add = Math.max(0, h.aoo - already);
+    const a = weaponAttack({ ...args, bab: [args.bab[0]], penalty: (args.penalty || 0) + add });
+    out.push({ label: 'Attack of opportunity', text: attackText(a), damage: a.damage, note: `Heirloom Weapon: +${h.aoo} trait bonus${add < h.aoo ? ', not stacking with your other trait bonus' : ''}`,
+      spec: { title: `${weaponName}: attack of opportunity`, groups: [rollGroup('', a, crit)] } });
+  }
+  if (h.maneuver) {
+    const m = combatManeuvers(view.stats, view.size, view.haveFeats);
+    const name = h.maneuver.name;
+    const base = (name && m.maneuvers.find(x => x.name.toLowerCase() === name)?.cmb) ?? m.cmb;
+    const already = Math.max(0, ...(view.traitSwitches || []).filter(s => s.on).flatMap(s => [s.effect, ...s.effect.more]).filter(p => p.target === 'cmb').map(p => p.value));
+    const total = base + Math.max(0, h.maneuver.bonus - already);
+    const label = name ? `${name[0].toUpperCase()}${name.slice(1)} with it` : 'Combat maneuver with it';
+    out.push({ label, text: total >= 0 ? `+${total}` : String(total), damage: '', note: `CMB, Heirloom Weapon +${h.maneuver.bonus}${name ? '' : ': choose the maneuver in the trait slot'}`,
+      spec: { title: `${weaponName}: ${name || 'combat maneuver'}`, check: name ? `${label} (CMB)` : 'CMB', groups: [{ attacks: [total] }] } });
+  }
+  return out;
 }
 
 // The effect bonuses on a weapon's attack and damage rolls, named, for Details popups: active effects plus a flaw's
@@ -422,6 +449,11 @@ export function renderMyWeapons(app, view) {
       extra.push(`<dt>${esc(sm.name)}</dt><dd><b>${esc(attackText(sa))}</b>, ${esc(sa.damage)}
         ${rollButton({ title: `${weaponName}: ${sm.name.toLowerCase()}`, groups: [rollGroup('', sa, crit)] }, sm.name)}</dd>`);
     }
+    // Heirloom Weapon (trait): an attack of opportunity, or the chosen combat maneuver, with this weapon.
+    for (const r of traitRolls(app, view, w, args, crit, weaponName)) {
+      extra.push(`<dt>${esc(r.label)}</dt><dd><b>${esc(r.text)}</b>${r.damage ? `, ${esc(r.damage)}` : ''} <span class="muted">(${esc(r.note)})</span>
+        ${rollButton(r.spec, r.label)}</dd>`);
+    }
     if (isDouble(w)) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
       extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
@@ -497,7 +529,6 @@ export function renderMyWeapons(app, view) {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
-        ${heirloomFor(view.traits, app.state.traitPicks, w.id).notes.map(n => `<p class="hint">${esc(n)} (apply it in play).</p>`).join('')}
         ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
           Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
         ${e.classGear ? `<p class="hint">${esc(e.gearNote || `Your ${e.gearTag}.`)} Free, from a class feature: change or remove it with its choice on the Classes tab.</p>`
@@ -619,6 +650,8 @@ export function weaponSummaries(app, view) {
       critical: critText(w, crit) + (crit.fx.burst.length ? ` (plus ${crit.fx.burst.map(b => `${b.dice} ${b.type}`).join(', ')} per step above ×1)` : ''),
       range: w.range_ft ? `${w.range_ft} ft.` : '',
       extra,
+      // Heirloom Weapon's attack of opportunity or combat maneuver with it (traitRolls), for the Character tab.
+      traitRolls: traitRolls(app, view, w, args, crit, weaponLabel(w, e)),
       proficient: args.proficient,
       // For the Build tab: its place in the list and the Roll setups the Weapons tab uses.
       index,

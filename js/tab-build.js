@@ -105,7 +105,10 @@ export function renderBuild(app, view, parts) {
       <td>${rc(w.attack, roll(w.rolls.attack, `${w.name} attack`))}</td>
       <td>${rc(w.damage, roll(w.rolls.damage, `${w.name} damage`))}</td>
       <td class="b-crit">${rc(w.critical, w.rolls.crit ? roll(w.rolls.crit, `${w.name} critical damage`) : '')}</td>
-      <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`).join('');
+      <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`
+    // Under it: an attack of opportunity or a combat maneuver a trait adds with it (Heirloom Weapon).
+    + (w.traitRolls || []).map(r => `<tr class="b-subrow"><td><small class="muted">↳ ${esc(r.label)}</small></td>
+      <td>${rc(r.text, roll(r.spec, `${w.name}: ${r.label}`))}</td><td>${r.damage ? esc(r.damage) : ''}</td><td class="b-crit"></td><td></td></tr>`).join('')).join('');
   const combat = app.state.combat || {};
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
     .filter(([, f]) => view.haveFeats.includes(f))
