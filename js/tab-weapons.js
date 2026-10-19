@@ -9,7 +9,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice } from './class-features.js';
-import { traitWeaponRows } from './traits.js';
+import { traitWeaponRows, heirloomFor } from './traits.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
@@ -142,7 +142,9 @@ function combatContext(app, view) {
   const byFeat = w => chosenFor('Exotic Weapon Proficiency').has(w.id) || chosenFor('Martial Weapon Proficiency').has(w.id);
   // A kensai's chosen weapon (archetype-choices.js).
   const byArchetype = w => (view.archFx?.proficient || []).includes(w.id) || (view.deityWeapons || []).includes(w.id);
-  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
+  // Heirloom Weapon (trait), with proficiency chosen as its benefit.
+  const byTrait = w => heirloomFor(view.traits, app.state.traitPicks, w.id).proficient;
+  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
 // Levels in the classes holding the Titan Mauler (barbarian) and Titan Fighter archetypes, for big weapons.
@@ -178,7 +180,7 @@ function attackArgs(app, view, ctx, e) {
       { mod: view.stats.mod, picks: view.archFx?.picks }),
       ...[graceRow(sized.weapon, view.haveFeats, view.featChoices.filter(c => c.feat === 'Slashing Grace').map(c => c.value), view.stats.mod)].filter(Boolean),
       // Traits' bonuses with this weapon (River Rat: +1 damage with a dagger), less a trait bonus already switched on.
-      ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w))],
+      ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w), app.state.traitPicks)],
     // Warpriest sacred weapon / brawler close weapon mastery dice.
     minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice || null,
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
@@ -495,6 +497,7 @@ export function renderMyWeapons(app, view) {
           option: `data-w="${i}" data-wab-option`, remove: `data-w="${i}" data-wab-remove`, add: `data-w="${i}" data-wab-add`,
           disabled: !(e.enh > 0) }) + (e.enh > 0 ? '' : '<p class="hint">Special abilities need at least a +1 weapon.</p>') : ''}
         ${fromFeats.length ? `<p class="hint">From your feats: ${esc(fromFeats.join(', '))}.</p>` : ''}
+        ${heirloomFor(view.traits, app.state.traitPicks, w.id).notes.map(n => `<p class="hint">${esc(n)} (apply it in play).</p>`).join('')}
         ${titanLevels(app, view).jotungrip && w.group === 'two-handed' && !e.size ? `<label class="check-row small"><input type="checkbox" data-weapon-flag="jotungrip" data-index="${i}" ${e.jotungrip ? 'checked' : ''}>
           Jotungrip: hold it in one hand (−2 on attacks; one-handed for Strength and Power Attack)</label>` : ''}
         ${e.classGear ? `<p class="hint">${esc(e.gearNote || `Your ${e.gearTag}.`)} Free, from a class feature: change or remove it with its choice on the Classes tab.</p>`

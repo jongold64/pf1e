@@ -1125,6 +1125,20 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
         traitWeaponRows([trait('Superior Clutch')], { id: 'longsword' }, {}, 'Medium').length].join(), '1,0');
   check('Ancestral Weapon: +1 attack, not damage, with a cold iron weapon', JSON.stringify(traitWeaponRows([trait('Ancestral Weapon')], { id: 'longsword' }, { material: 'cold-iron' }).map(r => [r.on, r.value])), '[["attack",1]]');
   check('a trait switch already on: the weapon trait adds only what is more', traitWeaponRows(rr, { id: 'dagger' }, {}, 'Medium', { damage: 1 }).length, 0);
+  // Traits with a weapon choice (state.traitPicks): Monk Weapon Skill's +1 damage with the chosen monk weapon only;
+  // Heirloom Weapon's chosen benefit with its weapon.
+  const { heirloomFor, pickableWeapon } = await import('./traits.js');
+  const mws = [trait('Monk Weapon Skill')];
+  check('Monk Weapon Skill: no switch; +1 damage with the chosen kama, not a sai or with nothing chosen',
+        `${traitCombat(mws).length} ${traitWeaponRows(mws, { id: 'kama' }, {}, 'Medium', {}, { 'monk-weapon-skill': { weapon: 'kama' } }).map(r => r.value).join()} ${traitWeaponRows(mws, { id: 'sai' }, {}, 'Medium', {}, { 'monk-weapon-skill': { weapon: 'kama' } }).length} ${traitWeaponRows(mws, { id: 'kama' }).length}`,
+        '0 1 0 0');
+  check('a monk weapon, not unarmed strike; heirloom: simple or martial only', [pickableWeapon('monk', { id: 'kama', special: ['monk', 'trip'] }),
+        pickableWeapon('monk', { id: 'unarmed-strike', special: ['monk'] }), pickableWeapon('simple-martial', { proficiency: 'exotic' })].join(), 'true,false,false');
+  const hw = [trait('Heirloom Weapon')];
+  check('Heirloom Weapon (proficiency): proficient with that weapon only',
+        `${heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'proficiency' } }, 'longsword').proficient} ${heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'proficiency' } }, 'dagger').proficient}`, 'true false');
+  check('Heirloom Weapon (trip): a note on its weapon', heirloomFor(hw, { 'heirloom-weapon': { weapon: 'longsword', benefit: 'maneuver', maneuver: 'trip' } }, 'longsword').notes[0],
+        'Heirloom Weapon: +2 trait bonus on trip combat maneuver checks with it');
   const dag = wa({ weapon: { id: 'dagger', name: 'Dagger', group: 'light', damage: { m: '1d4' } }, bab: [1], mod: { str: 2, dex: 0 },
                    training: [{ label: 'Trait: Ancestral Weapon', value: 1, on: 'attack' }] });
   check('an attack-only row: +1 to hit, nothing on damage', `${dag.attacks[0]} ${dag.damage}`, '4 1d4+2');

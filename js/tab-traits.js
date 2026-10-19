@@ -2,7 +2,7 @@
 // house rule), and a picker with every published trait, searchable and filtered by category. A trait from a category
 // another slot already has can't be chosen: the rules allow one trait from each category.
 import { $, esc, paragraphs } from './dom.js';
-import { traitSlotCount, traitSlotLabels } from './traits.js';
+import { traitSlotCount, traitSlotLabels, TRAIT_PICKS, MANEUVERS, pickableWeapon } from './traits.js';
 
 let pickerSlot = null;
 
@@ -32,6 +32,31 @@ function goldText(g) {
   return g.to ? `starting gold ${g.to.toLocaleString()} gp` : g.add ? `+${g.add.toLocaleString()} gp starting gold` : 'double starting gold';
 }
 
+// A trait's choice (TRAIT_PICKS): the weapon (yours first, then every one it allows) and, for Heirloom Weapon, which
+// benefit (and which combat maneuver).
+function pickControls(app, t) {
+  const spec = TRAIT_PICKS[t.id];
+  if (!spec) return '';
+  const { state, data } = app;
+  if (!data.weaponsById) { app.loadWeapons().then(() => renderTraits(app)); return '<p class="hint">Loading weapons…</p>'; }
+  const pick = state.traitPicks[t.id] || {};
+  const ok = [...data.weaponsById.values()].filter(w => pickableWeapon(spec.weapons, w)).sort((a, b) => a.name.localeCompare(b.name));
+  const mine = ok.filter(w => state.weapons.some(e => e.id === w.id));
+  const opt = w => `<option value="${esc(w.id)}"${w.id === pick.weapon ? ' selected' : ''}>${esc(w.name)}</option>`;
+  const weapon = `<label>${esc(spec.label)} <select data-trait-pick="${esc(t.id)}" data-field="weapon"><option value="">Choose…</option>
+    ${mine.length ? `<optgroup label="Your weapons">${mine.map(opt).join('')}</optgroup>` : ''}<optgroup label="${spec.weapons === 'monk' ? 'Monk weapons' : 'Simple and martial weapons'}">${ok.map(opt).join('')}</optgroup></select></label>`;
+  const benefit = spec.benefits ? `<label>Benefit <select data-trait-pick="${esc(t.id)}" data-field="benefit"><option value="">Choose…</option>
+    ${spec.benefits.map(([v, n]) => `<option value="${v}"${v === pick.benefit ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>` : '';
+  const maneuver = pick.benefit === 'maneuver' ? `<label>Maneuver <select data-trait-pick="${esc(t.id)}" data-field="maneuver"><option value="">Choose…</option>
+    ${MANEUVERS.map(m => `<option value="${m}"${m === pick.maneuver ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select></label>` : '';
+  const how = spec.weapons === 'monk'
+    ? (pick.weapon ? '+1 damage is counted on that weapon (Weapons tab and Actions). You must be proficient with it.' : 'Choose the monk weapon; its +1 damage is then counted on that weapon.')
+    : !pick.weapon || !pick.benefit ? 'Choose the weapon and the benefit.'
+    : pick.benefit === 'proficiency' ? 'You count as proficient with that weapon (no −4 on its attacks).'
+    : 'Shown on that weapon on the Weapons tab, to apply in play.';
+  return `<div class="trait-pick">${weapon}${benefit}${maneuver}<p class="hint">${esc(how)}</p></div>`;
+}
+
 function traitLabel(t) {
   return `${t.category}${t.requirement ? ` (${t.requirement})` : ''} · ${t.source}`;
 }
@@ -47,6 +72,7 @@ export function renderTraits(app) {
     const body = t ? `<details class="chosen"><summary>${esc(t.name)} <small class="muted">${esc(t.category)}</small></summary>
         <p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}</details>
         ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
+        ${pickControls(app, t)}
         <div class="slot-buttons"><button type="button" data-trait-choose="${i}">Change</button>
           <button type="button" data-trait-remove="${i}">Remove</button>
           <button type="button" class="skill-details q-details" data-trait-details="${i}" aria-label="About this trait slot and what the trait does here" title="Details">?</button></div>`
@@ -122,7 +148,8 @@ function showTraitDetails(app, i) {
         Active effects (Build tab or the Character tab's Active effects): tick it when it applies and it counts.</p>` : ''}
       ${(e.combat || []).some(c => c.weapon) ? `<p>${esc(combatText(e.combat.filter(c => c.weapon)))}: counted with the weapons it names, on the
         Weapons tab and the Character tab's Actions (Details on a weapon shows it).</p>` : ''}
-      ${!rows.length && !classSkills.length && !e.gold && !(e.combat || []).length ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
+      ${TRAIT_PICKS[t.id] ? `<p>Choose its weapon (and benefit) in the trait's slot on the Feats tab.</p>` : ''}
+      ${!rows.length && !classSkills.length && !e.gold && !(e.combat || []).length && !TRAIT_PICKS[t.id] ? '<p>Not counted in the numbers automatically: read the trait and apply it in play (or add it as a custom effect on the Build tab).</p>' : ''}`;
   } else {
     html += '<p class="hint">No trait chosen yet: press Choose a trait.</p>';
   }
@@ -155,6 +182,14 @@ export function initTraits(app) {
   const categories = [...new Set(app.data.traits.map(t => t.category))].sort();
   $('trait-category').innerHTML = '<option value="">All categories</option>' +
     categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  // A trait's choice (Heirloom Weapon's weapon and benefit, Monk Weapon Skill's weapon).
+  $('trait-slots').addEventListener('change', e => {
+    const t = e.target.closest('[data-trait-pick]');
+    if (!t) return;
+    const id = t.dataset.traitPick;
+    const now = { ...(app.state.traitPicks[id] || {}), [t.dataset.field]: t.value };
+    app.update({ traitPicks: { ...app.state.traitPicks, [id]: now } });
+  });
   $('trait-slots').addEventListener('click', e => {
     const why = e.target.closest('[data-trait-details]');
     if (why) { showTraitDetails(app, Number(why.dataset.traitDetails)); return; }

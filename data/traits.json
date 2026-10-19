@@ -2272,8 +2272,8 @@
     ],
     "effects": {
       "skills": {
-        "Knowledge (nobility)": 1,
-        "Knowledge (religion)": 1
+        "Knowledge (religion)": 1,
+        "Knowledge (nobility)": 1
       }
     }
   },
@@ -5505,8 +5505,8 @@
     "origin": "d20pfsrd",
     "effects": {
       "skills": {
-        "Knowledge (religion)": 1,
-        "Knowledge (nobility)": 1
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
       }
     }
   },
@@ -7929,7 +7929,10 @@
               "value": 1
             }
           ],
-          "text": "Benefit(s): You gain a +1 trait bonus on damage rolls with this weapon."
+          "text": "Benefit(s): You gain a +1 trait bonus on damage rolls with this weapon.",
+          "weapon": {
+            "chosen": "monk"
+          }
         }
       ]
     }
@@ -16890,8 +16893,8 @@
     "origin": "Archives of Nethys",
     "effects": {
       "skills": {
-        "Knowledge (religion)": 1,
-        "Knowledge (nobility)": 1
+        "Knowledge (nobility)": 1,
+        "Knowledge (religion)": 1
       }
     }
   },

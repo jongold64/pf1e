@@ -73,7 +73,8 @@ COMBAT_SKIP = re.compile(r'choose one|confirm(?:ing)?(?: an?)? critical|\bspells
 # Combat bonuses that depend only on the weapon used, counted on that weapon's row in the app instead of a switch:
 # (the trait's words, which weapons). ids: data/weapons.json ids; name: a word in the weapon's name; materials: the
 # weapon's special material (materials.js ids; Ancestral Weapon's chosen one is cold iron or silver); oversized: a
-# weapon made for a larger creature. Improvised weapons and bombs have no weapon row, so they stay switches.
+# weapon made for a larger creature; chosen: the one picked for the trait in the app (of that kind). Improvised weapons
+# and bombs have no weapon row, so they stay switches.
 WEAPON_RULES = [
     (r'damage rolls with a dagger', {'ids': ['dagger']}),
     (r'damage rolls with the following weapons: bastard sword, battleaxe, greataxe, greatsword, handaxe, light hammer, '
@@ -85,6 +86,8 @@ WEAPON_RULES = [
     (r'damage rolls when using any weapon with the word .dwarven. in its name', {'name': 'dwarven'}),
     (r'damage rolls when using weapons intended for creatures of a larger size', {'oversized': True}),
     (r'attack rolls with weapons made of the selected material', {'materials': ['cold-iron', 'silver']}),
+    # Monk Weapon Skill: the monk weapon you choose for it (chosen: the app asks which).
+    (r'damage rolls with this weapon\.', {'chosen': 'monk'}),
 ]
 
 

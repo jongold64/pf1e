@@ -1062,6 +1062,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .faith .warning { margin: 8px 0 0; }
 .faith .warning button { margin-left: 6px; }
 .deity-choose { font-weight: 600; }
+/* A trait's choice in its slot (Heirloom Weapon, Monk Weapon Skill: tab-traits.js pickControls). */
+.trait-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 6px 0; }
+.trait-pick select { width: auto; max-width: 100%; }
+.trait-pick .hint { flex-basis: 100%; margin: 0; }
 .b-onnow { cursor: pointer; }
 /* The Build tab's cards open in a window when tapped (popCard in app.js): the card itself, wider, its heading as the
    window's title; a placeholder keeps its place on the tab. */

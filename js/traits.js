@@ -40,17 +40,18 @@ export function traitCombat(traits, on = []) {
 // [{ label: 'Trait: River Rat', value: 1, on: 'damage' }]. Trait bonuses don't stack: for each of attack and damage only
 // the highest counts, less any trait bonus already counted there (`already`: { attack, damage }, from switches on).
 const SIZES = ['Fine', 'Diminutive', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan', 'Colossal'];
-export function weaponFits(rule, weapon, entry = {}, wielderSize = 'Medium') {
+export function weaponFits(rule, weapon, entry = {}, wielderSize = 'Medium', pick = null) {
+  if (rule.chosen) return !!pick?.weapon && pick.weapon === weapon.id;
   if (rule.ids?.includes(weapon.id)) return true;
   if (rule.name && (weapon.name || '').toLowerCase().includes(rule.name)) return true;
   if (rule.materials?.includes(entry.material)) return true;
   return !!rule.oversized && SIZES.indexOf(entry.size || wielderSize) > SIZES.indexOf(wielderSize);
 }
-export function traitWeaponRows(traits, weapon, entry = {}, wielderSize = 'Medium', already = {}) {
+export function traitWeaponRows(traits, weapon, entry = {}, wielderSize = 'Medium', already = {}, picks = {}) {
   const best = { attack: null, damage: null };
   for (const t of traits) {
     for (const c of t?.effects?.combat || []) {
-      if (!c.weapon || !weaponFits(c.weapon, weapon, entry, wielderSize)) continue;
+      if (!c.weapon || !weaponFits(c.weapon, weapon, entry, wielderSize, picks[t.id])) continue;
       for (const x of c.bonuses) {
         const on = x.target.replace(/^(melee|ranged)-/, '');
         if (on in best && (!best[on] || x.value > best[on].value)) best[on] = { name: t.name, value: x.value };
@@ -64,6 +65,32 @@ export function traitWeaponRows(traits, weapon, entry = {}, wielderSize = 'Mediu
     if (value) rows.push({ label: `Trait: ${b.name}${value < b.value ? " (less the trait bonus already on: they don't stack)" : ''}`, value, on });
   }
   return rows;
+}
+
+// Traits that ask for a choice when taken (state.traitPicks[trait id]): a weapon, and for Heirloom Weapon which of its
+// benefits (Adventurer's Armory: proficiency with that weapon, +1 on attacks of opportunity with it, or +2 on one kind
+// of combat maneuver with it). weapons: which can be chosen ('simple-martial', 'monk': a monk weapon, not unarmed).
+export const MANEUVERS = ['bull rush', 'dirty trick', 'disarm', 'drag', 'grapple', 'overrun', 'reposition', 'steal', 'sunder', 'trip'];
+export const TRAIT_PICKS = {
+  'heirloom-weapon': { weapons: 'simple-martial', label: 'Your heirloom weapon',
+    benefits: [['proficiency', 'Proficiency with it'], ['aoo', '+1 trait bonus on attacks of opportunity with it'],
+               ['maneuver', '+2 trait bonus on one kind of combat maneuver with it']] },
+  'monk-weapon-skill': { weapons: 'monk', label: 'Your monk weapon' },
+};
+export function pickableWeapon(kind, w) {
+  if (kind === 'monk') return w.id !== 'unarmed-strike' && (w.special || []).some(s => String(s).toLowerCase() === 'monk');
+  return w.id !== 'unarmed-strike' && (w.proficiency === 'simple' || w.proficiency === 'martial');
+}
+
+// What a chosen Heirloom Weapon does for a weapon: { proficient, notes: ['+1 trait bonus on attacks of opportunity'] }.
+export function heirloomFor(traits, picks = {}, weaponId = '') {
+  const t = traits.find(x => x?.id === 'heirloom-weapon');
+  const p = t && picks[t.id];
+  if (!p?.weapon || p.weapon !== weaponId) return { proficient: false, notes: [] };
+  if (p.benefit === 'proficiency') return { proficient: true, notes: [] };
+  if (p.benefit === 'aoo') return { proficient: false, notes: ['Heirloom Weapon: +1 trait bonus on attacks of opportunity with it'] };
+  if (p.benefit === 'maneuver') return { proficient: false, notes: [`Heirloom Weapon: +2 trait bonus on ${p.maneuver || 'one kind of'} combat maneuver checks with it`] };
+  return { proficient: false, notes: [] };
 }
 
 // The numbers chosen traits add (from each trait's `effects`, read from its text by the data build):

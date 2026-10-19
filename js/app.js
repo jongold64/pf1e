@@ -163,6 +163,7 @@ const state = {
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   traitOn: [],        // trait combat bonuses switched on (traits.js traitCombat): ['giant-slayer:0', ...]
+  traitPicks: {},     // choices a trait asks for (traits.js TRAIT_PICKS): { 'heirloom-weapon': { weapon, benefit, maneuver } }
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
   shieldMaterial: '',
   shieldId: '',
@@ -368,6 +369,9 @@ function load(saved) {
   state.buffs = (Array.isArray(state.buffs) ? state.buffs : []).filter(x => x && buffById.has(x.id) && !seenBuffs.has(x.id) && seenBuffs.add(x.id))
     .map(x => ({ id: x.id, cl: Math.min(20, Math.max(1, Math.floor(Number(x.cl)) || 1)), ...(x.on === false ? { on: false } : {}) }));
   state.traitOn = (Array.isArray(state.traitOn) ? state.traitOn : []).filter(k => typeof k === 'string');
+  state.traitPicks = Object.fromEntries(Object.entries(state.traitPicks && typeof state.traitPicks === 'object' ? state.traitPicks : {})
+    .filter(([, v]) => v && typeof v === 'object')
+    .map(([k, v]) => [k, Object.fromEntries(['weapon', 'benefit', 'maneuver'].filter(f => typeof v[f] === 'string').map(f => [f, v[f]]))]));
   state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
     .map(x => {
       const part = p => ({ target: TARGETS.some(([t]) => t === p?.target) ? p.target : 'attack',
