@@ -1266,7 +1266,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('the traded ki powers show as replaced in the class table',
         classWithArchetypes(um, [arch('monk-zen-archer')], trades).progression.some(r => (r.replaced || []).some(x => /ki power/.test(x))), true);
   check('feature text: "bravery +1" finds Bravery', /Will saves against fear/.test(featureDescription(cls('fighter'), 'bravery +1')), true);
-  check('off-table features: the fighter's Weapon and Armor Proficiency', offTableFeatures(cls('fighter')).some(f => /proficiency/i.test(f.name)), true);
+  check('off-table features: the fighter’s Weapon and Armor Proficiency', offTableFeatures(cls('fighter')).some(f => /proficiency/i.test(f.name)), true);
   check('off-table features: none of them is on the level table', offTableFeatures(cls('fighter')).some(f => /^bravery$/i.test(f.name)), false);
   check('feature text: a bard performance inside Bardic Performance', /counter magic effects/.test(featureDescription(cls('bard'), 'countersong')), true);
   check('feature text: "Summon monster II" finds Summon Monster I', /summon monster I/.test(featureDescription(cls('summoner'), 'Summon monster II')), true);
