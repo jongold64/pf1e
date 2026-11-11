@@ -192,6 +192,22 @@ function elementNeeded(t, elements) {
   return elements.some(e => need.includes(e)) ? '' : `needs the ${need} element`;
 }
 
+// The basic utility wild talent a kineticist element gives as a bonus (Elemental Focus at 1st level; Expanded Element
+// for its element): the talent record named "Basic ..." among the element's 1st-level talents, or null.
+export function basicWildTalent(element, all) {
+  const name = (element?.talents?.['1'] || []).find(n => /^basic /i.test(n));
+  return (name && all.find(t => t.kind === 'wild-talent' && t.name.toLowerCase() === name.toLowerCase())) || null;
+}
+
+// An element with its basic wild talent added to its powers (1st level, after its blasts), named as a bonus talent.
+export function withBasicTalent(element, all) {
+  const t = basicWildTalent(element, all);
+  if (!t || element.powers.some(p => p.name.startsWith(t.name))) return element;
+  const at = element.powers.filter(p => (p.level || 1) <= 1).length;
+  const power = { name: `${t.name} (bonus wild talent)`, level: 1, text: t.text, talentId: t.id };
+  return { ...element, powers: [...element.powers.slice(0, at), power, ...element.powers.slice(at)] };
+}
+
 // The mysteries revelations are listed under (when no mysteries list is loaded).
 export function mysteries(all) {
   return [...new Set(all.filter(t => t.kind === 'revelation' && t.mystery).map(t => t.mystery))].sort();

@@ -41,7 +41,7 @@ import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy,
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots } from './talents.js';
+import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
@@ -2737,10 +2737,16 @@ function choiceItems(cid, level) {
   }
   if (talentSlots(cid, level).some(s => s.rule.needs === 'mystery') && state.mystery) add('Mystery', state.mystery, () => popMystery(state.mystery));
   const cross = isCrossblooded(cid);
+  const shownBasic = new Set();
   for (const { rule, path } of pathsFor(cid)) {
     if (!path) continue;
     const ps = cross && rule.kind === 'bloodline' ? [] : (path.powers || []).filter(x => x.level <= level).map(x => x.name);
     add(rule.label, path.name, () => popPath(path.id, `${cid}|${slotOf(rule)}`), ps.join(', '));
+    // A kineticist element's basic wild talent: its own line, as the other wild talents have.
+    for (const p of (path.powers || []).filter(x => x.talentId && x.level <= level)) {
+      const t = data.talentsById.get(p.talentId);
+      if (t && !shownBasic.has(t.id) && shownBasic.add(t.id)) add('Bonus wild talent', t.name, () => openDetail(t.name, paragraphs(t.text || '')), `from ${path.name}`);
+    }
   }
   const opp = oppositionOf(cid);
   if (opp?.length) add(`${isThassilonian(cid) ? 'Prohibited' : 'Opposition'} schools`, opp.join(', '));
@@ -2876,7 +2882,9 @@ function openTalentPicker(slotId, search = '') {
         <span class="talent-buttons"><button type="button" class="skill-details q-details" data-choice-detail="${esc(p)}" title="Details" aria-label="Details">?</button>
         <button type="button" class="primary" data-talent-take="${esc(p)}">Choose</button></span></li>`).join('');
   } else {
-    const taken = Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v);
+    // A kineticist already has each element's basic wild talent as a bonus talent.
+    const taken = [...Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v),
+      ...(cid === 'kineticist' ? kineticElements().flatMap(e => e.powers.map(p => p.talentId).filter(Boolean)) : [])];
     const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery, revelationNames: data.mysteryByName.get(state.mystery)?.revelations,
       elements: cid === 'kineticist' ? kineticElements().map(e => e.name.toLowerCase()) : null })
       .filter(o => !q || o.talent.name.toLowerCase().includes(q) || o.talent.text.toLowerCase().includes(q))
@@ -4456,6 +4464,8 @@ async function start() {
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
   // Bloodlines in the shape of the other one-time class choices.
+  // Each kineticist element lists its basic wild talent (a bonus talent) among its powers.
+  data.kineticElements = data.kineticElements.map(e => withBasicTalent(e, data.talents));
   data.paths = [...data.classPaths, ...data.familiars, ...data.kineticElements, ...data.bloodlines.map(b => ({
     id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
     facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),

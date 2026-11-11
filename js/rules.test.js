@@ -2172,6 +2172,13 @@ document.getElementById('list').innerHTML = results.map(r =>
   const geo = to(slot, tal, { elements: ['earth'] });
   check('wild talents of another element say which element they need', geo.find(o => o.talent.name === 'Basic Pyrokinesis')?.why, 'needs the fire element');
   check('a universal or earth wild talent can be taken', [geo.find(o => o.talent.name === 'Basic Geokinesis')?.why].join(), '');
+  const { basicWildTalent, withBasicTalent } = await import('./talents.js');
+  check('every element has its basic wild talent', kin.map(e => basicWildTalent(e, tal)?.name).join(),
+    kin.map(e => `Basic ${{ aether: 'Telekinesis', air: 'Aerokinesis', earth: 'Geokinesis', fire: 'Pyrokinesis', void: 'Chaokinesis', water: 'Hydrokinesis', wood: 'Phytokinesis' }[e.name.toLowerCase()]}`).join());
+  const aether = withBasicTalent(kin.find(e => e.id === 'element-aether'), tal);
+  check('aether powers: blast, then basic telekinesis (1st), then force ward', aether.powers.map(p => `${p.name.replace(/ \(.*/, '')}@${p.level}`).join(),
+    'Telekinetic Blast@1,Basic Telekinesis@1,Force Ward@2');
+  check('adding the basic talent twice adds it once', withBasicTalent(aether, tal).powers.length, aether.powers.length);
 }
 
 // Thassilonian specialist: two school slots a level.
