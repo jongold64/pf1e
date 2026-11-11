@@ -15,6 +15,7 @@ import { companionStats } from './companion.js';
 import { familiarStats } from './familiar.js';
 import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
+import { offTableFeatures } from './archetypes.js';
 import { buffById } from './effects.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -170,7 +171,8 @@ export function renderBuild(app, view, parts) {
     const names = [...new Map(all.map(n => [n.replace(/\s*\(?[+-]?\d+(?:d\d+)?(?:\/day)?\)?\s*$/i, '').toLowerCase(), n])).values()]
       .map(n => n[0].toUpperCase() + n.slice(1));
     const picks = parts.choices(e.cls.id, e.level).map(c => c.name);
-    return `<p class="b-summary"><b>${esc(e.cls.name)} ${e.level}:</b> ${esc([...names, ...picks].join(' · ') || '—')}</p>`;
+    const also = offTableFeatures(e.cls).map(f => f.name);
+    return `<p class="b-summary"><b>${esc(e.cls.name)} ${e.level}:</b> ${esc([...also, ...names, ...picks].join(' · ') || '—')}</p>`;
   }).join('');
   const features = view.counts.map(e => {
     const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
@@ -180,10 +182,12 @@ export function renderBuild(app, view, parts) {
       const how = featureHandling(e.cls.id, n);
       return `<div class="b-feat"><span>${esc(n[0].toUpperCase() + n.slice(1))}${how !== 'text' ? ` <span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</span>${plus('feature', `${e.cls.id}|${n}`, n)}</div>`;
     }).join('');
+    // First, the features the level table doesn't name (weapon and armor proficiency, bonus languages...).
+    const also = offTableFeatures(e.cls).map(f => `<div class="b-feat"><span>${esc(f.name)}</span>${plus('feature', `${e.cls.id}|${f.name}`, f.name)}</div>`).join('');
     // Each choice (archetype, bloodline, domain, rage power...) on its own line with a ?.
     const choices = parts.choices(e.cls.id, e.level).map((c, i) => `<div class="b-feat"><span><small class="muted">${esc(c.label)}:</small> ${esc(c.name)}${c.note ? ` <small class="muted">(${esc(c.note)})</small>` : ''}</span>
       ${c.pop ? plus('choice', `${e.cls.id}|${i}`, c.name) : ''}</div>`).join('');
-    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-feats">${tagged}</div>
+    return `<div class="b-class"><b>${esc(e.cls.name)} ${e.level}</b><div class="b-feats">${also}${tagged}</div>
       ${choices ? `<h4 class="b-sub">Choices</h4><div class="b-feats">${choices}</div>` : ''}</div>`;
   }).join('');
 
