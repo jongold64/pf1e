@@ -176,7 +176,6 @@ Yellow Musk Creeper from the Tome of Horrors, © 2002, Necromancer Games, Inc.; 
 Yellow Musk Zombie from the Tome of Horrors, © 2002, Necromancer Games, Inc.; Author Scott Greene, based on original material by Albie Fiore.
 Yeti from the Tome of Horrors, © 2002, Necromancer Games, Inc.; Author Scott Greene, based on original material by Gary Gygax.
 Zombie, Juju from the Tome of Horrors, Revised, © 2002, Necromancer Games, Inc.; Author Scott Greene, based on original material by Gary Gygax.
-The Book of Fiends © 2003, Green Ronin Publishing; Authors: Aaron Loeb, Erik Mona, Chris Pramas, and Robert J. Schwalb.
 Angel, Monadic Deva from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Angel, Movanic Deva from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Daemon, Derghodaemon from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
@@ -300,7 +299,6 @@ Rot Grub from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pub
 Tentamort from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Mike Roberts.
 Pathfinder Module: Cradle of Night © 2018, Paizo Inc.; Authors: James Jacobs, F. Wesley Schneider, Neil Spicer, and Greg A. Vaughan.
 Advanced Bestiary © 2014, Green Ronin Publishing, LLC; Author: Jeff Hersh, Developer: Owen K. C. Stephens.
-The Book of Fiends © 2003, Green Ronin Publishing, LLC; Authors: Aaron Loeb, Erik Mona, Chris Pramas, and Robert J. Schwalb.
 Cinder Ghoul from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Erica Balsley.
 Corpse Orgy from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene.
 Gloomwing from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Nigel Morgan.
@@ -308,6 +306,7 @@ Necrophidius from the Tome of Horrors Complete © 2011, Necromancer Games, Inc.,
 Skeleton Warrior from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Tenebrous Worm from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Adventure Path: Curse of the Crimson Throne © 2016, Paizo Publishing Inc.; Authors: Nicolas Logue, F. Wesley Schneider, Richard Pett, Michael Kortes, Greg A. Vaughan, Tito Leati, and James Jacobs.
+Curse of the Crimson Throne © 2016, Paizo Publishing Inc.; Authors: Nicolas Logue, F. Wesley Schneider, Richard Pett, Michael Kortes, Greg A. Vaughan, Tito Leati, and James Jacobs.
 Curse of the Crimson Throne Player's Guide. Copyright 2008 Paizo Publishing, LLC; Author: James Jacobs and Mike McArtor.
 Curse of the Crimson Throne Player's Guide © 2008, Paizo Publishing, LLC; Authors: James Jacobs and Mike McArtor.
 Pathfinder Module: Curse of the Riven Sky. © 2010, Paizo Publishing, LLC; Author: Monte Cook.
@@ -433,6 +432,7 @@ Spriggan from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., pub
 Pathfinder Campaign Setting: Inner Sea Races © 2015, Paizo Inc.; Authors: Ross Byers, John Compton, Adam Daigle, Crystal Frasier, Matthew Goodall, Alex Greenshields, James Jacobs, Amanda Hamon Kunz, Ron Lundeen, Rob McCreary, Jessica Price, David N. Ross, Owen K.C. Stephens, James L. Sutter, Russ Taylor, and Jerome Virnich.
 Pathfinder Campaign Setting: Inner Sea Taverns © 2018, Paizo Inc.; Authors: Kate Baker, Eleanor Ferron, Michelle Jones, Jason Keeley, Luis Loza, Jacob W. Michaels, Joe Pasini, and David N. Ross.
 Pathfinder Campaign Setting: Inner Sea Temples © 2016, Paizo Inc.; Authors: Robert Brookes, Liz Courts, Mikko Kallio, Jeffrey Swank, and Larry Wilhelm.
+Pathfinder Campaign Setting: The Inner Sea World Guide. © 2011, Paizo Publishing, LLC; Authors: Keith Baker, Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Leandra Christine Schneider, David Schwartz, Amber E. Scott, Stan!, Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, and JD Wiker.
 Pathfinder Module: Ire of the Storm © 2016, Paizo Inc.; Author: Thurston Hillman.
 Pathfinder Adventure Path #86: Lords of Rust © 2014, Paizo Inc.; Authors: Nicolas Logue, with Adam Daigle, Jim Groves, James Jacobs, Sean K Reynolds, and Amber E. Scott.
 Pathfinder Adventure Path #89: Palace of Fallen Stars © 2014, Paizo Inc.; Authors: Tim Hitchcock, with Benjamin Bruck, Sean K Reynolds, Amber E. Scott, and Larry Wilhelm.
@@ -527,6 +527,7 @@ Devil, Flayer from the Tome of Horrors Complete © 2011, Necromancer Games, Inc.
 Pathfinder Adventure Path #106: For Queen & Empire © 2016, Paizo Inc.; Authors: Stephen Radney-MacFarland, with Adam Daigle, Crystal Frasier, Dave Gross, Garrett Guillotte, Steven T. Helt, Luis Loza, and Josh Vogt.
 Pathfinder Adventure Path #108: Hell Comes to Westcrown © 2016, Paizo Inc.; Authors: Ron Lundeen, with Jason Keeley, Rob McCreary, and Josh Vogt.
 Pathfinder Adventure Path #109: In Search of Sanity © 2016, Paizo Inc.; Authors: F. Wesley Schneider, with Eric Hindley, James Jacobs, Jenny Jarzabski, and Jason Keeley.
+Pathfinder 10: A History of Ashes. Copyright 2008, Paizo Publishing, LLC; Author: Michael Kortes.
 Pathfinder Adventure Path #110: The Thrushmoor Terror © 2016, Paizo Inc.; Authors: Tito Leati, with James Jacobs, Michelle Jones, and Christopher Rowe.
 Pathfinder Adventure Path #111: Dreams of the Yellow King © 2016, Paizo Inc.; Authors: Ron Lundeen, with Liz Courts, James Jacobs, Todd Stewart, and Wendy N. Wagner.
 Flind from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by J.D. Morris.
@@ -578,6 +579,7 @@ Pathfinder Adventure Path volume #33: The Varnhold Vanishing. © 2010, Paizo Pub
 Pathfinder Adventure Path #34: Blood for Blood. © 2010, Paizo Publishing, LLC; Author: Neil Spicer.
 Pathfinder Adventure Path #36: Sound of a Thousand Screams. © 2010, Paizo Publishing, LLC; Author: Richard Pett.
 Pathfinder Adventure Path #38: Racing to Ruin. © 2010, Paizo Publishing, LLC; Author: Tim Hitchcock.
+Pathfinder Adventure Path #39: City of Seven Spears. © 2010, Paizo Publishing, LLC; Authors: James Jacobs, Kevin Kulp, Rob McCreary, and Owen K.C. Stephens.
 Pathfinder Adventure Path #40: Vaults of Madness. © 2010, Paizo Publishing, LLC; Author Greg A. Vaughan.
 Pathfinder Adventure Path #41: The Thousand Fangs Below. © 2011, Paizo Publishing, LLC; Authors: Graeme Davis and Rob McCreary.
 Pathfinder Adventure Path #42: Sanctum of the Serpent God. © 2011, Paizo Publishing, LLC; Author: Neil Spicer.
@@ -587,7 +589,6 @@ Pathfinder Adventure Path #47: Ashes at Dawn. © 2011, Paizo Publishing, LLC; Au
 Pathfinder Adventure Path #48: Shadows of Gallowspire. © 2011, Paizo Publishing, LLC; Author: Brandon Hodge.
 Pathfinder Adventure Path #49: The Brinewall Legacy. © 2011, Paizo Publishing, LLC; Author: James Jacobs.
 Executioner’s Hood from the Tome of Horrors, Revised. © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
-Tome of Horrors III. © 2005, Necromancer Games, Inc; Author: Scott Greene, with Casey Christofferson, Erica Balsley, Kevin Baase, Lance Hawvermale, Travis Hawvermale, Ian S. Johnston, Patrick Lawinger, Nathan Paul, Clark Peterson, Greg Ragland, Robert Schwalb, and Bill Webb.
 Pathfinder Adventure Path #50: Night of Frozen Shadows. © 2011, Paizo Publishing, LLC; Author: Greg A. Vaughan.
 White Pudding from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
 Tome of Horrors II © Necromancer Games, Inc.; Author: Scott Greene; Additional Authors: Erica Balsley, Kevin Baase, Casey Christofferson, Jim Collura, Meghan Greene, Lance Hawvermale, Travis Hawvermale, Bill Kenower, Patrick Lawinger, Nathan Paul, Clark Peterson, Bill Webb and Monte Cook.
@@ -693,7 +694,6 @@ Pathfinder Player Companion: Potions & Poisons © 2017, Paizo Inc.; Authors: Kat
 Pathfinder Player Companion: Psychic Anthology © 2017, Paizo Inc.; Authors: Alexander Augunas, Isabelle Lee, Luis Loza, Alex Riggs, Mark Seifter, Loren Sieg, and Jeremy Smith
 Pathfinder Adventure Path #84: Pyramid of the Sky Pharaoh © 2014, Paizo Inc.; Authors: Mike Shel, with Tyler Beck, Adam Daigle, F. Wesley Schneider, and Amber E. Scott. Pathfinder Roleplaying Game Bestiary 5 © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, John Bennett, Logan Bonner, Creighton Broadhurst, Robert Brookes, Benjamin Bruck, Jason Bulmahn, Adam Daigle, Thurston Hillman, Eric Hindley, Joe Homes, James Jacobs, Amanda Hamon Kunz, Ben McFarland, Jason Nelson, Thom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, Wes Schneider, David Schwartz, Mark Seifter, Mike Shel, James L. Sutter, and Linda Zayas-Palmer.
 Pathfinder Companion: Qadira, Gateway to the East. Copyright 2009, Paizo Publishing, LLC; Author: Brian Cortijo. © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, Ross Beyers, Logan Bonner, Jason Bulmahn, Robert Emerson, Tim Hitchcock, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Robert Schwalb, Mark Seifter, and Russ Taylor.
-The Book of Fiends © 2003, Green Ronin Publishing; Authors: Aaron Loeb, Erik Mona, Chris Pramas, Robert J. Schwalb.
 Jackalwere from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Ian McDowell and Douglas Naismith.
 Pathfinder Campaign Setting: Qadira, Jewel of the East © 2016, Paizo Inc.; Authors: Jessica Price, with John Compton.
 Pathfinder Player Companion: Quests & Campaigns © 2013, Paizo Publishing, LLC; Authors: Amanda Hamon and David N. Ross.
@@ -729,7 +729,6 @@ Pathfinder Module: The Emerald Spire Superdungeon © 2014, Paizo Inc.; Authors: 
 Pathfinder Campaign Setting: The First World, Realm of the Fey © 2016, Paizo Inc.; Author: James L. Sutter
 Pathfinder Player Companion: The Harrow Handbook © 2014, Paizo Inc.; Authors: Crystal Frasier, Will McCardell, and David Schwartz.
 Pathfinder Module: The House on Hook Street © 2015, Paizo Inc.; Author: Brandon Hodge.
-Pathfinder Campaign Setting: The Inner Sea World Guide. © 2011, Paizo Publishing, LLC; Authors: Keith Baker, Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, Sean K Reynolds, F. Wesley Schneider, Leandra Christine Schneider, David Schwartz, Amber E. Scott, Stan!, Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, and JD Wiker.
 Pathfinder Module: The Midnight Mirror © 2012, Paizo Publishing, LLC; Author: Sam Zeitlin.
 Pathfinder Module: The Moonscar © 2012, Paizo Publishing, LLC; Author: Richard Pett.
 The Pathfinder Chronicles Campaign Setting Copyright 2008, Paizo Publishing; Author: Stan!, Keith Baker, Wolfgang Baur, Clinton J. Boomer, Jason Bulmahn, Joshua J. Frost, Ed Greenwood, Stephen S. Greer, Jeff Grubb, James Jacobs, Michael Kortes, Tito Leati, Mike McArtor, Rob McCreary, Erik Mona, Jason Eric Nelson, Jeff Quick, Sean K Reynolds, David Schwartz, Leandra Christine Schneider, F. Wesley Schneider, Amber E. Scott, Owen K.C. Stephens, Todd Stewart, James L. Sutter, Greg A. Vaughan, Jeremy Walker, JD Wiker.

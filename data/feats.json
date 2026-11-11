@@ -961,8 +961,8 @@
     "prerequisites_text": "Android, kasatha, lashunta, or triaxian.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Android"
+        "type": "race",
+        "race": "android"
       },
       {
         "type": "race",
@@ -23443,8 +23443,8 @@
         "value": 13
       },
       {
-        "type": "other",
-        "text": "android"
+        "type": "race",
+        "race": "android"
       }
     ],
     "benefit": "You lose the emotionless racial trait. You can gain morale bonuses, and can be affected by emotion-based effects and fear effects. You lack the +4 racial bonus on saving throws against mind-affecting effects.",
@@ -25768,8 +25768,8 @@
         "value": 13
       },
       {
-        "type": "other",
-        "text": "skinwalker"
+        "type": "race",
+        "race": "skinwalker"
       }
     ],
     "benefit": "When you change shape to your bestial form, you may choose one additional feature from those listed in your shapechange ability and gain that benefit while in bestial form.",
@@ -26946,8 +26946,8 @@
     "prerequisites_text": "Shabti.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Shabti"
+        "type": "race",
+        "race": "shabti"
       }
     ],
     "benefit": "As a swift action, you can designate an adjacent ally as your charge. So long as you remain adjacent to that character, he benefits from your resistance to level drain and immunity to undeath racial traits. This ability applies even if one of you is killed, so long as you remain adjacent.",
@@ -27115,8 +27115,8 @@
         "value": 6
       },
       {
-        "type": "other",
-        "text": "skinwalker"
+        "type": "race",
+        "race": "skinwalker"
       }
     ],
     "benefit": "You can assume your bestial form as a move action.",
@@ -28958,8 +28958,8 @@
         "value": 5
       },
       {
-        "type": "other",
-        "text": "shabti"
+        "type": "race",
+        "race": "shabti"
       }
     ],
     "benefit": "Once per day, you can cast greater magic weapon as a spell-like ability. You gain a second daily use at 9th level, and a third at 15th level. Only you can benefit from this spell-like ability; anyone else who wields the enchanted weapon gains no benefit from the spell. The caster level for this ability is equal to your character level.",
@@ -44278,8 +44278,8 @@
     "prerequisites_text": "Shabti.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Shabti"
+        "type": "race",
+        "race": "shabti"
       }
     ],
     "benefit": "You gain Spellcraft as a class skill. Whenever you attempt a Spellcraft check, you can roll twice and take the better of the two results.",
@@ -52396,8 +52396,8 @@
     "prerequisites_text": "Shabti.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Shabti"
+        "type": "race",
+        "race": "shabti"
       }
     ],
     "benefit": "You gain a second daily use of your suggestion spell-like ability. You gain a third daily use at 8th level, a fourth at 13th level, and a fifth at 16th level.",
@@ -61921,8 +61921,8 @@
     "prerequisites_text": "Shabti.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Shabti"
+        "type": "race",
+        "race": "shabti"
       }
     ],
     "benefit": "Whenever you attempt a check for a Knowledge skill in which you have ranks, you can roll the check twice and use the better of the two results.",

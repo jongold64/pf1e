@@ -34658,6 +34658,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "guided",
+    "name": "Guided",
+    "source": "Pathfinder #10: A History of Ashes",
+    "category": "Weapon Special Abilities",
+    "slot": "none",
+    "aura": "moderate evocation",
+    "cl": 7,
+    "price": "+1 bonus",
+    "price_gp": 1,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "A weapon with the guided property allows its wielder to use his instinct when striking blows with it. Attacks from a guided weapon generally don’t strike hard, but they strike at precisely the right moment to maximize damage if in the hands of a particularly wise wielder. A character who attacks with a guided weapon modifies his attack rolls and weapon damage rolls with his Wisdom modifier, not his Strength modifier. This modifier to damage is not adjusted for two-handed weapons or off-hand weapons—it always remains equal to the wielder’s Wisdom modifier. A guided weapon may be wielded as a normal weapon, using Strength to modify attack and damage rolls, but this goes against the weapon’s nature and imparts a –2 penalty on all attack rolls made in this manner.",
+    "construction": {
+      "requirements": "Craft Magic Arms and Armor, spiritual weapon",
+      "cost": "—"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "injecting",
     "name": "Injecting",
     "source": "Agents of Evil",
@@ -37972,6 +37991,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "hammertail",
+    "name": "Hammertail",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Magic Weapons",
+    "slot": "none",
+    "aura": "moderate transmutation",
+    "cl": 10,
+    "price": "10,305 gp",
+    "price_gp": 10305,
+    "weight": "2 lbs.",
+    "weight_lbs": 2,
+    "description": "This +1 bolas, crafted from strands of jungle vine woven into strong cord and weighted with rocks, is favored by the charauka. Ranged trip attacks with a hammertail are made with a +4 enhancement bonus on the CMB check. In addition, if an attack with a hammertail misses its target, the weapon returns as if it had the returning property.",
+    "construction": {
+      "requirements": "Craft Magic Arms and Armor, entangle, telekinesis",
+      "cost": "5,305 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "hells-eye",
     "name": "Hell's Eye",
     "source": "Inner Sea Gods",
@@ -38138,6 +38176,25 @@
     "description": "Grudge blades play a role in many of the conflicts driven by the diabolical elite, both petty and epic. The dull, dark-gray steel of the blades almost appears blunt on the edges, but these +1 rapiers are wickedly sharp. Each elegantly carved hilt displays an engraved, glaring eye that appears to wink and flash as you fight.\n\nThe true power of a grudge blade reveals itself against an opponent you have already injured with the sword. If you hit a creature with the sword on your previous turn, you gain an extra +1 bonus on damage rolls with the sword against that creature. As long as you continue to hit that creature at least once per round and attack no other creatures with the grudge blade, this damage bonus continues to build, to a maximum of +5; failing to hit that target or attacking anyone else resets the damage bonus to +0.",
     "construction": {
       "requirements": "Craft Magic Arms and Armor, death knell, magic weapon",
+      "cost": "5,320 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "wavecutter",
+    "name": "Wavecutter",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Magic Weapons",
+    "slot": "none",
+    "aura": "moderate abjuration",
+    "cl": 10,
+    "price": "10,320 gp",
+    "price_gp": 10320,
+    "weight": "4 lbs.",
+    "weight_lbs": 4,
+    "description": "This unusual +1 keen terbutje (Adventurer’s Armory 5, or as a longsword) is made of sharp chunks of quartz embedded along a length of steel. A wavecutter may be used underwater without suffering a slashing weapon’s normal –2 penalty on attack rolls.",
+    "construction": {
+      "requirements": "Craft Magic Arms and Armor, freedom of movement, keen edge",
       "cost": "5,320 gp"
     },
     "origin": "aonprd"
@@ -40983,6 +41040,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "savage-sting",
+    "name": "Savage Sting",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Magic Weapons",
+    "slot": "none",
+    "aura": "strong divination",
+    "cl": 12,
+    "price": "38,302 gp",
+    "price_gp": 38302,
+    "weight": "1 lb.",
+    "weight_lbs": 1,
+    "description": "This +1 seeking blowgun is made of a hollowed piece of reed lacquered in vibrant orange hues and decorated with a fetish of brilliantly colored feathers. Up to three times per day, the wielder may envenom a dart fired from the blowgun with a virulent toxin, which functions as the poison spell.",
+    "construction": {
+      "requirements": "Craft Magic Arms and Armor, poison, true seeing",
+      "cost": "19,302 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "silent-sentry-crossbow",
     "name": "Silent Sentry Crossbow",
     "source": "Ultimate Intrigue",
@@ -42955,6 +43031,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "ring-of-seven-virtues",
+    "name": "Ring of Seven Virtues",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Rings",
+    "slot": "ring",
+    "aura": "moderate transmutation",
+    "cl": 9,
+    "price": "10,000 gp",
+    "price_gp": 10000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "This bronze band is covered in geometric shapes and studded with tiny pearls. The wearer of the ring gains a constant endure elements effect and a +5 competence bonus on Survival checks made in jungles. In Saventh-Yhi, the wearer also enjoys the active benefits of one of that city’s seven spears for as long as she is in that spear’s district. The wearer loses the benefits of a particular spear if she leaves that spear’s district, but gains new active benefits if she enters a new spear’s district. The ring’s wearer can only gain the benefits of a single spear at any one time.",
+    "construction": {
+      "requirements": "Forge Ring, Self-Sufficient, endure elements",
+      "cost": "5,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "ring-of-the-iron-skull",
     "name": "Ring of the Iron Skull",
     "source": "Pathfinder #57: Tempest Rising",
@@ -43007,6 +43102,25 @@
     "description": "This iron ring is set with a polished bloodstone. When created, a ring of blood calling creates a link between a single mortal creature devoted to Asmodeus and a specific devil with no more than 12 Hit Dice who willingly agrees to be bound by the item. Once per day as a standard action, the ring’s wearer can place a drop of his own blood on the ring’s gem (provoking attacks of opportunity) to immediately call the devil linked to the ring to any space within 30 feet. While the wearer does not control the devil, most wearers make agreements with the devil linked to the ring for protection or some other service when called. The called devil remains for 1 hour, or the wearer can dismiss the devil as a free action.\n\nIf the devil linked to the ring is killed, the ring crumbles to dust. If wearer linked to the ring is killed, a new wearer can summon the linked devil, but can compel the devil to perform only one service, as per planar binding, which severs the devil’s link to the ring when the task is completed unless the new wearer makes his own deal with the devil, reestablishing the link between the wearer, the devil, and the ring.\n\nNicolo Alazario’s ring of blood calling is linked to a bone devil named Xanthut. If Nicolo is killed, the PCs will need to make their own arrangements with Xanthut to link themselves to the ring to call the devil.",
     "construction": {
       "requirements": "Forge Ring, planar binding",
+      "cost": "6,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "ring-of-immolation",
+    "name": "Ring of Immolation",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Rings",
+    "slot": "ring",
+    "aura": "moderate evocation (fire)",
+    "cl": 10,
+    "price": "12,000 gp",
+    "price_gp": 12000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "A ring of immolation is made of pumice and hardened ash but is as strong as metal. As a free action, the wearer can activate the ring to create a fire shield (warm) on himself. The wearer of a ring of immolation can activate a fire shield on himself for up to 10 rounds each day (these rounds need not be used consecutively). If the wearer would take magical cold damage and any rounds of duration remain, the ring automatically activates for 1 round and protects the wearer from the cold damage as per fire shield.",
+    "construction": {
+      "requirements": "Forge Ring, fire shield",
       "cost": "6,000 gp"
     },
     "origin": "aonprd"
@@ -43691,6 +43805,25 @@
     "construction": {
       "requirements": "Forge Ring, greater possession, magic aura, object possession, wish",
       "cost": "80,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "ring-of-splendid-security",
+    "name": "Ring of Splendid Security",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Rings",
+    "slot": "ring",
+    "aura": "strong abjuration",
+    "cl": 16,
+    "price": "180,000 gp",
+    "price_gp": 180000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "This extravagant ring is heavy with precious jewels. As fashions change (or as the wearer’s fancy shifts), the wearer can alter the appearance of her armor, clothing, and even weaponry at will as a standard action; this change is illusory and doesn’t affect the actual abilities of gear or weapons (although drastic changes in size are beyond the scope of this ability). A ring of splendid security’s primary purpose, though, is to grant the wearer protection from harm. As long as it is worn, the ring grants the wearer a +5 deflection bonus to her AC, a +5 resistance bonus on saving throws, and spell resistance 22.",
+    "construction": {
+      "requirements": "Forge Ring, minor image, resistance, shield or shield of faith,",
+      "cost": "90,000 gp"
     },
     "origin": "aonprd"
   },
@@ -45991,6 +46124,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "rod-of-well-deserved-rest",
+    "name": "Rod of Well-Deserved Rest",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Rods",
+    "slot": "none",
+    "aura": "strong enchantment and evocation",
+    "cl": 12,
+    "price": "62,000 gp",
+    "price_gp": 62000,
+    "weight": "5 lbs.",
+    "weight_lbs": 5,
+    "description": "This rod is made of polished gold, and features three blownglass onion domes at one end. It functions as a +1 light mace. Up to three times per day, with a successful hit in combat, the wearer may attempt to put the target of the attack asleep (DC 14 Will save negates). This functions as sleep, but there is no limit to the number of Hit Dice that may be affected.\n\nIn addition, the wielder may create an opaque sphere of force to protect himself from the elements once per day, as a tiny hut spell with a 5-foot radius. If the wielder goes to sleep with the rod in his possession, 8 hours of sleep provides healing equivalent to a full day of bed rest. Upon waking, the wielder enjoys the benefits of a good hope spell for 1 hour.",
+    "construction": {
+      "requirements": "Craft Rod, deep slumber, good hope, restful sleep ( Advanced Player's Guide 239), tiny hut",
+      "cost": "31,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "rod-of-razors",
     "name": "Rod of Razors",
     "source": "Pathfinder #35: War of the River Kings",
@@ -47028,6 +47180,22 @@
     "origin": "aonprd"
   },
   {
+    "id": "final-blade",
+    "name": "Final Blade",
+    "source": "Inner Sea World Guide",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "strong",
+    "cl": 20,
+    "price": "—",
+    "price_gp": null,
+    "weight": "1,000 lbs.",
+    "weight_lbs": 1000,
+    "description": "The guillotines known as the final blades have become symbols of Galt and the bloody excesses of the Red Revolution, yet the first of these horrific devices were actually built to serve the cause of justice. The final blades were originally designed to provide a condemned prisoner a swift and painless death, but also to prevent the resurrection of said victim by trapping her soul within the guillotine’s blade upon execution. Every blade has a unique appearance and citizens speak of them as if they are people. In speaking of a condemned prisoner, someone might say, “He’ll lie with Bloody Jaine before the sun falls.”\n\nOnly Large or smaller helpless (or willing) creatures can be executed by a final blade. When a final blade scythes down to decapitate the target, treat this as a coup de grace attempt on the victim that inflicts 6d6+12 points of damage. A final blade’s damage penetrates all damage reduction (save epic damage reduction) and negates all regeneration effects. A creature slain by this effect is immediately targeted by a soul bind effect that automatically places her soul into the blade itself (no save). A final blade has no limit to the number of souls it can hold. It is possible to release a soul from a final blade to allow that creature to be resurrected, but the ritual involved is a closely guarded secret known only to the Gray Gardeners.\n\nDestruction\n\nAlthough the final blades are minor artifacts, they can be destroyed by damage. The exact defenses of each vary, but all have hardness 20 and 200 hit points. When one is destroyed, the trapped souls explode in a wave of necromantic power— some of these souls manifest as incorporeal undead and immediately attack all living creatures in sight. The number and nature of these angry souls varies, but should usually consist of at least a CR 12 (or higher) encounter.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
     "id": "flamma-horacalcum",
     "name": "Flamma Horacalcum",
     "source": "Pathfinder #66: The Dead Heart of Xin",
@@ -48036,6 +48204,22 @@
     "origin": "aonprd"
   },
   {
+    "id": "sun-orchid-elixir",
+    "name": "Sun Orchid Elixir",
+    "source": "Inner Sea World Guide",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "strong necromancy",
+    "cl": 17,
+    "price": "—",
+    "price_gp": null,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "Thuvia’s sun orchid elixir is a nearly perfect solution for those who seek eternal life. A single dose of sun orchid elixir cannot stop the aging process, but it does the next-best thing—it restores youth. A creature that drinks the elixir is restored to its starting age as a young adult. The drinker’s new age is randomly determined using Table 7–1 on page 169 of the Pathfinder RPG Core Rulebook. All penalties to Strength, Dexterity, and Constitution the drinker may have suffered as a result of advanced age are removed, but all bonuses to Intelligence, Wisdom, and Charisma that result from advanced age remain (although as the character ages again into middle age and beyond, he does not gain any of these bonuses a second time).\n\nVanity-seekers go to nearly any length to acquire the elixir, resorting to bribery, extortion, and murder. To curtail such troubles in the land of its creation, the use of the elixir is outlawed in Thuvia (except by the formula’s creator). Each vial of sun orchid elixir requires six mature sun orchids and 1 month’s time to ferment, although the exact formula used is a secret known only to the denizen of Alchemist’s Keep in Thuvia. Prices for a dose of the elixir vary wildly since the elixir is sold at auction, but no dose has ever sold for less than 50,000 gp.\n\nDestruction\n\nA dose of sun orchid elixir is simple to destroy—merely pouring the elixir out and allowing the fluid to evaporate or be absorbed into the ground is enough to ruin it, as is mixing it with any other fluid or solvent. Of course, if word gets out of this fantastic waste of powerful magic, any number of enraged or scandalized organizations might seek out the character responsible for the elixir’s waste to extract bloody vengeance.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
     "id": "tentacle-of-the-vaults",
     "name": "Tentacle of the Vaults",
     "source": "Pathfinder #120: Vault of the Onyx Citadel",
@@ -48372,6 +48556,22 @@
     "origin": "aonprd"
   },
   {
+    "id": "wardstone",
+    "name": "Wardstone",
+    "source": "Inner Sea World Guide",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "strong abjuration",
+    "cl": 20,
+    "price": "—",
+    "price_gp": null,
+    "weight": "2,500 lbs.",
+    "weight_lbs": 2500,
+    "description": "When the Worldwound destroyed the nation of Sarkoris, the faithful of Iomedae seized upon the event as a balm against the horror of Aroden’s death. The invention of the first wardstones, giant menhirs infused with holy magic meant to contain and repel demonic creatures, was perhaps the greatest result of the crusader’s initial response to Sarkoris’s destruction. Today, dozens of wardstones stand sentinel along the borders of the Worldwound. The primary purpose of the wardstones is to contain the growing influence of the Worldwound itself, but they also exude a powerful field similar to that generated by a forbiddance spell. A single wardstone exerts this aura in a 300-foot radius, but when multiple wardstones are linked (as in the case of those running along the border of the Worldwound), they create a 300-footwide path of forbiddance, with the wardstones running down the middle. The forbiddance area, be it a radius or path, deals 12d6 points of damage per round to any demon within that area (DC 18 Will save half; spell resistance applies). Teleportation effects do not function in this zone at all. The wardstones that bolster the eastern and southern borders of the Worldwound have a further effect as well—focused on the Worldwound as they are, they prevent demons from teleporting into or out of the Worldwound and effectively contain the threat. The arrangement of the wardstones along the Mendev, Numeria, and Ustalav borders is such that even the unwarded borders to the west and north work to hamper demonic incursions.\n\nDestruction\n\nIf a wardstone misses its yearly maintenance ritual, it becomes vulnerable to damage. At this point, a wardstone can be damaged by mortal attacks, but it still has hardness 25 and 500 hit points. If a wardstone along a series of linked wardstones is destroyed, the resulting “hole” in the path of the forbiddance effect can be as narrow as a few dozen feet or as wide as several miles, depending upon numerous other variables (such as the terrain, the strength of the other wardstones, and other factors).",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
     "id": "wardstone-shard",
     "name": "Wardstone Shard",
     "source": "Pathfinder #73: The Worldwound Incursion",
@@ -48416,6 +48616,22 @@
     "weight": "12 lbs.",
     "weight_lbs": 12,
     "description": "Carved long ago from the ice at the heart of an ancient glacier and infused with a cold and unstoppable drive, this +5 icy burst quenching bastard sword (Pathfinder RPG Ultimate Equipment 146) changes size to match its wielder. Spell-like abilities used by Winter’s Heart receive the benefits of Greater Spell Focus (evocation).\n\nAs a standard action, the wielder of Winter’s Heart can dispel fire effects as a frost brand. Alternatively, as a standard action, the wielder can quench a Huge or smaller nonmagical fire by touching it with the sword.\n\nThe sword commands the following spell-like abilities:\n3/day—heroism (on its wielder only)\n1/day—empowered cone of cold (DC 21), maximized widened detonate (cold only, DC 20), word of recall\n\nThe DC for detonate is determined as if it were an 8th-level spell. If detonate is cast on a creature with the cold subtype, it also acts as heal; if cast on a creature with the fire subtype, it also acts as harm.\n\nWinter’s Heart has the special purpose of uniting the lands of the north under one iron rule. When pursuing this purpose, it surrounds its wielder in icy armor that combines the protection of stoneskin and fire shield (cold flames). If the protection of the stoneskin is exhausted, both protections are lost and the sword can’t reestablish them for 10 minutes.\n\nDestruction\n\nWinter’s Heart can be destroyed only if it’s hurled into the center of a cataclysmic volcanic eruption. Even a normal volcano’s heat is insufficient to melt the blade, and Immersing it in magma merely solidifies the magma into rock.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
+    "id": "zellaras-harrow-deck",
+    "name": "Zellara's Harrow Deck",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "moderate divination",
+    "cl": 10,
+    "price": "—",
+    "price_gp": null,
+    "weight": "1 lb.",
+    "weight_lbs": 1,
+    "description": "Hand-painted images decorate this harrow deck, and the cards frames are gilded in silver so that they sparkle and flash under lighting. Despite the worn condition of the card backs, the images on the faces are so vibrant they seem to move when viewed out of the corner of the eye. The deck handles with surprising ease, almost shuffling itself. A bent, torn, or lost card always seems to mend itself or reappear when no one is looking.\n\nThese features are subtle manifestations of the spirit that haunts the cards. In life, Zellara lived by this deck, and in death, she has become the deck. Although this magical harrow deck wasn’t created using the standard method for creating magic items, it should nonetheless be treated as an intelligent magic item. Zellara can sense the world around the deck via sight and sound, and she can communicate with anyone who holds the deck via empathy. She can create a major image once per day, often doing so to generate an image of herself manipulating the cards—in this manner, she can carry on conversations with other creatures in Common or Varisian. She can also cast identify for anyone who holds one of the cards of the deck to his forehead (a move action) up to three times per day.\n\nZellara’s harrow deck has a special purpose as well: to defend and protect the city of Korvosa, her home in life and in death. In order to attain this purpose, she can periodically perform powerful harrow readings for those she has chosen as Korvosa’s defenders—the PCs. These harrowings grant those who benefit from them a number of Harrow Points that can be used to manipulate fate and chance. See The Harrow on page 416 for more details on this complex power.\n\nZellara can suppress the deck’s powers at will and doesn’t hesitate to do so if anyone attempts to sell the deck or otherwise displeases her. At best, a foolish character could possibly sell the cards as a standard harrow deck for about 50 gp—thus, no pricing information for the deck is needed.",
     "construction": {},
     "origin": "aonprd"
   },
@@ -48740,6 +48956,22 @@
     "origin": "aonprd"
   },
   {
+    "id": "crown-of-fangs",
+    "name": "Crown of Fangs",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Artifacts",
+    "slot": "head",
+    "aura": "strong enchantment, illusion, and necromancy",
+    "cl": 20,
+    "price": "—",
+    "price_gp": null,
+    "weight": "4 lbs.",
+    "weight_lbs": 4,
+    "description": "The eponymous fangs set into this jeweled golden circlet are those of the dragon Kazavon. The crown grants its wearer a +6 enhancement bonus to her Constitution and Charisma scores, as well as regeneration 20. Only a blade capable of destroying the crown, like Serithtial, can bypass this regeneration. The wearer gains the personal benefits of foresight, while the crown itself can cast each of the following spells three times per day: alter self, dominate person (DC 17), major image (DC 17), mirror image, and mislead (DC 19).\n\nQueen Ileosa and this crown are bound together, and she retains its bonuses to her ability scores and regeneration even if she isn’t wearing the crown, regardless of the distance between the two. She prefers to wear the crown because that allows it to use its spells in her defense—and because of her vanity and pride.\n\nDestruction\n\nThe Crown of Fangs is destroyed if struck (while unattended) by a holy sword forged by a once-mortal god—the blade Serithtial is one such blade.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
     "id": "crown-of-infernal-majesty",
     "name": "Crown of Infernal Majesty",
     "source": "Pathfinder #106: For Queen and Empire",
@@ -48800,6 +49032,22 @@
     "weight": "2 lbs.",
     "weight_lbs": 2,
     "description": "The gleaming, gold scepter bears elegant boughs and leaves, blooming into a miniature, flowered treetop at one end. The scepter’s rod has four slots, onto which four large rings can be slotted. Each ring is engraved with a phrase in Sylvan, and can be placed upon or removed from the scepter as a standard action.\n\nRing 1: “Daughters of the Fangwood green.”\nRing 2: “Hear my ardent call.”\nRing 3: “Discharge now to oaths long sworn.”\nRing 4: “For Accressiel glory, live or fall.”\n\nDryad’s Song grants anyone holding it a +5 morale bonus on all Diplomacy and Intimidate skill checks against fey that live within Fangwood Forest. Dryad’s Song allows its wielder to cast diminish plants, entangle, plant growth, and wood shape at will, though these spells affect plants only within Fangwood Forest. Up to three times each day, by reciting the poem on its rings as a full-round action, Dryad’s Song allows its wielder to either summon 40 HD worth of dryads, nymphs, and satyrs, or allows its wielder and up to 19 additional Medium or smaller creatures to teleport anywhere within the Fangwood Forest as if they were very familiar with the destination. Summoned fey remain for 20 hours, can be dismissed at will, and are not obligated to obey the wielder’s command; dryads summoned by Dryad’s Song lose their tree dependence weakness while they serve on the wielder’s behalf. Unlike the corrupted version of the artifact, the fully restored Dryad’s Song grants access to its magic whether its various rings are slotted into the scepter or not. Just like the corrupted version, Dryad’s Song can purge the Darkblight from a living creature within 60 feet as a full-round action.\n\nA ring from the scepter may be gifted to another person. The ring can be worn as a bracelet or on a necklace (occupying the appropriate magic item slot), and grants a +3 resistance bonus on its wearer’s saving throws. Once per day, the ring can be used to contact the wielder of Dryad’s Song via sending.\n\nThe glaistig Gendowyn maintains a powerful connection to the artifact, and can summon Dryad’s Song to her hand as a standard action.\n\nDestruction\n\nDryad’s Song crumbles into ash if it is wholly submerged in a mixture of glaistig blood and a traitor’s tears of regret.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
+    "id": "everdawn-pool",
+    "name": "Everdawn Pool",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "strong enchantment, illusion, and necromancy",
+    "cl": 20,
+    "price": "—",
+    "price_gp": null,
+    "weight": "1,200 lbs.",
+    "weight_lbs": 1200,
+    "description": "The runelords of Thassilon had a long tradition of placing power into pools, liquefying and containing raw magic to harness for a multitude of goals. Their runewells are perhaps the most notorious of these artifacts, though others, like the Runeforge, exist. But they learned this technique from the artifacts of those who preceded them. The Everdawn Pool is one such artifact. Unlike magical pools created by the runelords, it needs no well as a container—it is a 30-foot-diameter sphere of roiling, churning blood in which brief glimpses of limbs and faces (not all of them humanoid) constantly form and dissolve.\n\nRecords of where Sorshen first discovered the Everdawn Pool have been lost, if indeed they ever existed in the first place, along with any hint of who or what may have created this potent font of magical power (although certain obscure sources hint at Leng and the creatures known as the scarlet walkers that dwell in that nightmare realm). What seems certain is that she—and later, other runelords—were able to reverse engineer some of the Everdawn Pool’s properties and build pools of power of their own. In many cases, these pools even surpassed the Everdawn Pool. Certainly, the power of Karzoug’s Runewell of Greed exceeds that of the Everdawn Pool, as would, one would guess, the runewells created by those more powerful than him (Xanderghul, Alaznist, and Sorshen). Yet the Everdawn Pool remains the first. It provided a legacy that helped shape all of Thassilon, and was a significant part of what gave Sorshen the boost in power to claim and keep the role of Runelord of Lust for the duration of that ancient empire.\n\nThe Everdawn Pool requires specially prepared blood to function. A single drop of blood and one 12-hour ritual performed by any character capable of casting 9th-level spells who succeeds at a DC 30 Spellcraft check is enough to awaken the pool and grant it 1 charge. Additional charges can be stored in the Everdawn Pool by performing this ritual multiple times, but only one such ritual can be performed at any one time (effectively limiting the Everdawn Pool’s capacity to be recharged to a rate of no more than 2 charges per day). The pool can store up to 25 charges at a time, but when the PCs start Part 3 of “Crown of Fangs,” Queen Ileosa has used most of what she stored within and the Everdawn Pool has only 10 charges stored within it.\n\nA creature that spends 10 minutes bathing in the blood of the Everdawn Pool becomes infused with its power for 1 week, during which time the creature is immune to bleed effects and modifies its total hit points with its Charisma modifier rather than its Constitution modifier. While immersed, a creature has no need to eat, drink, or breathe, and can see into every chamber of the Sunken Queen as if using an unlimited number of clairaudience/clairvoyance sensors. The creature can still observe only one location at a time, but can switch locations as a move action. As a side effect, a creature that has been so infused can use teleport effects within the Sunken Queen without restriction. The Everdawn Pool must have at least 1 charge stored to grant these boons to those that bathe within its waters, but granting these boons does not deplete its charges.\n\nOnce a creature is infused with the Everdawn Pool’s power, it can spend the pool’s charges to use the following abilities, as long as the creature is fully immersed in the pool at the time.\n\nBlood Simulacrum: A creature infused with the Everdawn Pool’s power can spend 2 of the pool’s charges to create a blood simulacrum of itself. This creation takes 12 hours to complete and functions the same as that created by the spell simulacrum, save that the simulacrum’s creator can choose at the time of creation to grant a blood simulacrum the redirection ability. Up to seven blood simulacra can exist at any one time, but only one can have the redirection ability at a time.\n\nRedirection (Su) As long as this simulacrum lives, any divination spell that attempts to locate or otherwise target the real creature is instead redirected to target this simulacrum. The caster of the divination spell has a small chance to notice the redirection with a successful DC 40 Spellcraft check as the divination spell is cast, but even if the redirection is noted, it remains impossible to tell where the effect was redirected from. This effect also affects long-distance spells like demand, dream, nightmare, and sending, but not mental communication such as telepathy.\n\nCreate Life: Once per day, a creature can use the Everdawn Pool to manifest a living creature to serve as a loyal minion—the type of creature created is determined by the combined power of the user’s soul and personality, but as a general rule the pool creates a minion whose CR is 3 lower than the creator’s CR. In Ileosa’s case, life created using this power manifests as a taniniver. Creatures created by other NPCs (or even PCs) should be selected and customized as needed by the GM to represent the source. Only one life can be created by the Everdawn Pool at a time, and as long as the created life lives, it remains loyal to its creator unless it’s subjected to mind control effects. Creating life costs 5 charges but requires only a standard action.\n\nEternal Youth: The ritual to gain eternal youth requires blood samples from numerous mortals to be mixed into the Everdawn Pool. Once this step is completed, a creature must immerse itself in the Everdawn Pool, soaking in the pool’s power. At the end of each day, the pool expends 1 charge. Once the user has spent 100 charges in this manner, and as long as all 100 charges were spent within the span of a single year, all of those creatures that provided blood samples drop dead, and for each donor that dies, the user ceases to age for 1 year. Ileosa has infused the Everdawn Pool with blood harvested from thousands of Korvosans, so if she completes this ritual, she’ll remain young for thousands of years—more than enough time to repeat the ritual as she needs to extend her effective immortality. This adventure assumes that she is only 10 days (and thus 10 charges) away from completing her ritual when the PCs begin Part 3 of Chapter 6—see page 388 for more details. Note that using this function of the Everdawn Pool is an evil act and may have alignment repercussions for the user.\n\nManifest Magic: At a cost of 20 charges, a creature can activate the Everdawn Pool as a standard action to cast wish, but only in that spell’s capacity to duplicate an existing spell. Sorshen often used this ability to cast necromancy or transmutation spells, magic her specialization normally forbade her from using. The pool currently doesn’t have enough charges remaining for Ileosa to use this ability.\n\nDestruction\n\nTo destroy the Everdawn Pool, fresh samples of blood drawn from a titan, a demon lord, an infernal duke, an empyreal lord, and a mythic vampire must be introduced into the pool simultaneously (in the same round). Once these five blood samples have been added to the pool, a mortal creature that has lived at least 10 times as long as its natural lifespan would normally allow must enter the pool and use the pool’s ability to manifest magic to cast plane shift, moving itself and the pool to the Negative Energy Plane. The Everdawn Pool can attempt to save against this effect (it has a total Will save bonus of +18 against this specific effect). If it resists, the Everdawn Pool absorbs the mortal, effectively destroying the mortal as if via a sphere of annihilation; in this event, further attempts to destroy the pool require new samples of blood drawn from different creatures than those whose blood was used for the previous attempt. If the Everdawn Pool is successfully plane shifted to the Negative Energy Plane, the energies of that plane swiftly destroy the pool and deal 20d20 points of negative energy damage to the creature that transported the pool in the first place (Fortitude DC 30 half).",
     "construction": {},
     "origin": "aonprd"
   },
@@ -49568,6 +49816,22 @@
     "weight": "3 lbs.",
     "weight_lbs": 3,
     "description": "This innocuous-looking scrap is nothing less than the physical manifestation of a man-made demiplane known as Kakishon, and the rune covering the scroll is in fact a representation of the plane’s several island regions. To open the gate, one must unfurl the scroll and speak the names Aliskiren, Isles of Night, Ismaizade, Kakishon, Khandelwal, Khosravi, and Serpent Isles, each time touching the section of the rune corresponding to the named island group. Once, this process allowed the user to choose where to appear within the realm, but the scroll is now damaged, and upon activation, all creatures within 50 feet with line of effect to the scroll must make a DC 40 Reflex save. Those who fail are sucked into the scroll and bodily transported to one of the waypoints within the demiplane of Kakishon (see map). At the same instant creatures enter the plane, any being that previously entered the plane involuntarily may choose to depart, being expelled from the scroll back to the Material Plane. Once inside Kakishon, escape can prove difficult, requiring those trapped within to wait for others to enter, for the casting of a spell similar to plane shift, or for the discovery of one of the foundations of Kakishon’s reality, all of which transport the subjects back to the Material Plane to a point within 10 feet of the Scroll of Kakishon.\n\nDestruction\n\nContaining even a small group of chaotic beings such as azatas, proteans, or demons will gradually cause Kakishon to unravel, while a larger group or a more powerful chaotic entity can rend the demiplane to shreds in moments.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
+    "id": "serithtial",
+    "name": "Serithtial",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Artifacts",
+    "slot": "none",
+    "aura": "strong abjuration",
+    "cl": 17,
+    "price": "—",
+    "price_gp": null,
+    "weight": "5 lbs.",
+    "weight_lbs": 5,
+    "description": "Serithtial is a +4 holy bastard sword crafted, it is said, by Iomedae herself as a gift to Mandraivus’s great-grandfather, a man who led several crusades against Nidal. The sword was handed down through the generations, finally coming into the hands of a well-respected hero of Lastwall— Mandraivus. Serithtial was the perfect weapon for Mandraivus’s assault on Scarwall, and some scholars of history now believe that Iomedae had foreseen its need and forged it early to ensure that Mandraivus not only would inherit it, but would respect its traditions all the more.\n\nAlthough made of steel, Serithtial is treated as if made of both cold iron and silver for the purpose of penetrating damage reduction. Serithtial glows with the equivalent of a continual flame, but its wielder can extinguish or ignite this glow as a move action. In addition, it gains a further +2 enhancement bonus and deals an extra 2d6 points of damage against foes who serve or worship Zon-Kuthon, as if it had the bane weapon special ability against such foes. This effect also functions against Queen Ileosa and those who directly serve her—including creatures like the dragon Zarmangarof (who serves her under magical compulsion) and the Red Mantis assassins (who serve as paid mercenaries). While Serithtial was forged as a bastard sword and reverts to this shape when no one wields it, when held in the hand, the sword immediately transforms into the type of blade its owner is most proficient with (choosing from dagger, short sword, longsword, scimitar, falchion, greatsword, rapier, or bastard sword—the GM can add additional sword-like weapons as she sees fit).\n\nSerithtial can cast cure moderate wounds and zone of truth three times per day each, and usually reserves its healing power to use on its wielder when he is reduced to 1/4 his total hit points.\n\nSerithtial’s wielder gains the benefits of death ward and freedom of movement against attacks and effects generated by followers of Zon-Kuthon (and by extension, Queen Ileosa and her followers).\n\nAlthough Serithtial is lawful good, as long as its wielder is dedicated to the defeat of Kazavon and those he has corrupted (such as Queen Ileosa), the sword does not attempt to seize control of its wielder. If its wielder does go against its wishes, Serithtial tries to force him to relinquish the blade to a more appropriate wielder. As with all holy weapons, Serithtial imposes 1 negative level on any evil creature attempting to wield it. The negative level remains as long as the creature holds the weapon in its hand and disappears when the weapon is no longer wielded. A worshiper of Zon-Kuthon who wields Serithtial takes 4 negative levels and is nauseated as long as these negative levels persist. The negative levels and any additional side effects cannot be overcome in any way (including by restoration spells) while the weapon is wielded.\n\nDestruction\n\nSerithtial can be destroyed only if Kazavon—restored to life—or a great wyrm shadow dragon worshiper of Zon-Kuthon uses its breath weapon on the blade while Serithtial is unattended.",
     "construction": {},
     "origin": "aonprd"
   },
@@ -50748,6 +51012,22 @@
     "weight": "25 lbs.",
     "weight_lbs": 25,
     "description": "This sky-blue suit of mistmail has the glamered armor special ability, and can once per day create a dramatic spectacle of twinkling lights, as the rainbow pattern spell. The armor is prone to dramatic soliloquies about its “prophetic visions” and “sight beyond the mystical veils”; however, it lacks actual divinatory powers.",
+    "construction": {},
+    "origin": "aonprd"
+  },
+  {
+    "id": "ukwar",
+    "name": "Ukwar",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Intelligent Items",
+    "slot": "none",
+    "aura": "moderate necromancy",
+    "cl": 8,
+    "price": "23,335 gp",
+    "price_gp": 23335,
+    "weight": "6 lbs.",
+    "weight_lbs": 6,
+    "description": "Ukwar is a +1 conductive battleaxe infused with the angry spirit of a Deadwatcher orc leader named Ukwar. After perishing in Scarwall and rising soon thereafter as a fext, Ukwar spent decades longing to be free of her curse. When she is permanently slain, her spirit enters her axe. As long as the PCs continue to adventure in Scarwall, she doesn’t attempt to exert influence over her wielder—she wants to see each and every one of Scarwall’s denizens suffer. If her wielder spends more than 1 day outside of Scarwall (and the castle remains cursed), she attempts to take control and force her wielder to return and finish this job.\n\nAs long as Ukwar remains intelligent, the blade grants weapon proficiency with the battleaxe to her wielder. If the wielder is already proficient with battleaxes, he instead gains a +1 bonus on all attack rolls and damage rolls made with Ukwar. She imposes negative levels on nonchaotic evil wielders only when they are outside of Scarwall. She can cast rage once per day, and does so on her wielder the first time each day he attacks one of the spirit anchors or the chained spirit—she can be convinced to cast rage on her wielder at another time with a successful DC 20 Diplomacy or Intimidate check (a standard action).\n\nUkwar’s special purpose is to lift Scarwall’s curse, and as long as her wielder is engaged in this quest and is within Scarwall, the weapon functions as a +1 conductive undead-bane battleaxe. If Scarwall’s curse is lifted, Ukwar’s spirit leaves the axe behind, and this weapon returns to being an unintelligent +1 conductive battleaxe.\n\nUkwar is a unique weapon created through a nonstandard method, but a character who wishes to create an identical weapon can do so using the guidelines below.",
     "construction": {},
     "origin": "aonprd"
   },
@@ -55275,6 +55555,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "plaguebringers-mask",
+    "name": "Plaguebringer's Mask",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Wondrous Items",
+    "slot": "head",
+    "aura": "faint conjuration",
+    "cl": 5,
+    "price": "2,000 gp",
+    "price_gp": 2000,
+    "weight": "2 lbs.",
+    "weight_lbs": 2,
+    "description": "Resembling the more common nonmagical doctor’s mask, a plaguebringer’s mask grants a +2 resistance bonus on saving throws against nauseating scents and immunity to one specific disease (the disease must be chosen at the time of the mask’s creation—the ones in this adventure grant immunity to blood veil). The mask also veils the wearer’s alignment, making her aura register as neutral to alignment-detecting effects.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, misdirection, remove disease",
+      "cost": "1,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "holy-mask-of-the-living-god",
     "name": "Holy Mask of the Living God",
     "source": "Gods & Magic",
@@ -59390,6 +59689,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "charm-of-fate",
+    "name": "Charm of Fate",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Wondrous Items",
+    "slot": "neck",
+    "aura": "faint abjuration",
+    "cl": 5,
+    "price": "5,000 gp",
+    "price_gp": 5000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "This talisman made of bone, claws, and beads protects its wearer from bad luck, evil spirits, and foul magic. The first time each day that the wearer fails a saving throw, the charm of fate causes the wearer to instead successfully save if the roll was missed by 5 or less. If the saving throw was missed by 6 or more, the charm’s daily use is expended to no effect.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, remove curse",
+      "cost": "2,500 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "collar-of-obedience",
     "name": "Collar of Obedience",
     "source": "Animal Archive",
@@ -60407,6 +60725,25 @@
     "construction": {
       "requirements": "Craft Wondrous Item, greater magic fang",
       "cost": "9,450 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "charm-of-aluum-control",
+    "name": "Charm of Aluum Control",
+    "source": "Inner Sea World Guide",
+    "category": "Wondrous Items",
+    "slot": "neck",
+    "aura": "moderate transmutation",
+    "cl": 20,
+    "price": "20,000 gp",
+    "price_gp": 20000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "This pendant holds a glowing crystal etched with faint runes. Created by the pactmasters of Katapesh to manipulate and control their constructs known as aluums, these charms are much sought after on the black market. Unauthorized possession of a charm of aluum control is considered a grave crime in Katapesh, punishable by decades of imprisonment, exile, or even death. Each charm of aluum control is attuned to a single, specific aluum, but the magic of the charm allows it to function somewhat against other aluums as well. Against its specific attuned aluum, the charm grants you the ability to command that construct as if you were using dominate person on a humanoid creature. This effect functions against other aluums, but non-attuned aluums gain a DC 16 Will save to resist the effect. If an aluum fails such a save, it becomes attuned to that charm and the previous aluum becomes unattuned—a single charm of aluum control can only be attuned to one aluum at a time. For purposes of this effect, ordering an aluum to attack a Pactmaster or someone who appears to be part of Katapesh’s government or army or to damage any structure in the city of Katapesh counts as an action against the aluum’s nature and allows the aluum a new saving throw with a +2 bonus to resist the charm’s effects. If an aluum escapes this effect, it is no longer attuned and typically attacks the target who attempted to command it.",
+    "construction": {
+      "requirements": "Craft Construct, Craft Wondrous Item, soul bind",
+      "cost": "10,000 gp"
     },
     "origin": "aonprd"
   },
@@ -61518,6 +61855,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "unguent-of-revivification",
+    "name": "Unguent of Revivification",
+    "source": "Inner Sea World Guide",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "faint necromancy",
+    "cl": 3,
+    "price": "300 gp",
+    "price_gp": 300,
+    "weight": "1 lb.",
+    "weight_lbs": 1,
+    "description": "This foul-smelling gray paste is typically stored in a bone container. When smeared upon a corpse, it preserves that corpse’s state of decay for 5 days, as if via the gentle repose spell. If smeared upon a corporeal undead creature, it restores that creature’s living appearance for 5 days—this has no effect on the creature’s abilities, but does grant it a +10 circumstance bonus on Disguise checks to appear as a living creature and imparts a –5 penalty on Knowledge (religion) checks to identify what type of undead creature it is. Unguent of revivification is particularly popular in Geb, where many of that nation’s movers and shakers view it as a vanity item to mask the hideous truths of their undead flesh.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, gentle repose",
+      "cost": "150 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "salt-lamp",
     "name": "Salt Lamp",
     "source": "Second Darkness Player's Guide",
@@ -61533,6 +61889,25 @@
     "construction": {
       "requirements": "Craft Wondrous Item, glitterdust, light",
       "cost": "175 gp, 14 XP"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "stunstone",
+    "name": "Stunstone",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "faint evocation",
+    "cl": 5,
+    "price": "350 gp",
+    "price_gp": 350,
+    "weight": "1 lb.",
+    "weight_lbs": 1,
+    "description": "This naturally occurring, glowing purple crystal can be thrown as a ranged attack with a range increment of 20 feet. When it strikes a target or hard surface (or is struck hard), the crystal shatters in a burst of sound and light. Every creature in a 10-foot-radius spread is outlined in faerie fire, takes 1d8 points of sonic damage, and must make a DC 13 Fortitude save or be stunned for 1 round.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, Craft (alchemy) 5 ranks, faerie fire, sound burst",
+      "cost": "175 gp"
     },
     "origin": "aonprd"
   },
@@ -63004,6 +63379,59 @@
     "origin": "aonprd"
   },
   {
+    "id": "shoanti-war-paint",
+    "name": "Shoanti War Paint",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "moderate (school varies)",
+    "cl": 7,
+    "price": "900 gp (Blue), 900 gp (Green), 900 gp (Orange), 900 gp (Red), 900 gp (Silver), 900 gp (Yellow), 1,800 gp (Black), 1,800 gp (White)",
+    "price_gp": null,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "The Shoanti have developed numerous types of magical war paint, each providing a specific benefit to aid their hunters, warriors, and heroes in a variety of tasks. Shoanti war paint can be applied to any visible part of the body—typically the face, shoulders, legs, or arms. Applying a dose of war paint is a full-round action that provokes an attack of opportunity. Shoanti war paint does not take up a magic item slot, but you can benefit from only one color of Shoanti war paint at a time and applying a dose of a different color replaces the effects of the previous application. Once Shoanti war paint is applied, its effects last for 24 hours. Below are the eight most common colors and their effects. Black (1,800 gp): The wearer becomes cloaked in shadows and smoke, gaining the effects of a blur spell. Blue (900 gp): The wearer gains a 30-foot enhancement bonus to her base move speed. Green (900 gp): When the wearer uses bardic performance to inspire courage, the morale bonus she grants increases by 1. Orange (900 gp): The wearer gains damage reduction 1/—. This effect stacks with damage reduction gained via a character class, such as barbarian. Red (900 gp): The wearer gains fire resistance 10. Silver (900 gp): The wearer gains a +3 deflection bonus to her AC. White (1,800 gp): The wearer gains a +4 resistance bonus on all saving throws against energy drain and negative energy. As soon as the wearer takes a negative level from an energy drain attack, the white war paint absorbs the negative level and then fades away, ending the ongoing duration of the paint’s effect immediately. Yellow (900 gp): The wearer gains a +5 competence bonus on Perception checks.",
+    "construction": {
+      "requirements": "Craft Wondrous Item; blur (black), clairaudience/clairvoyance (yellow), death ward (white), expeditious retreat (blue), heroism (green), resist energy (red), shield of faith (silver), stoneskin (orange)",
+      "cost": "900 gp (black and white paint), 450 gp (all other paints)"
+    },
+    "origin": "aonprd",
+    "price_options": [
+      {
+        "label": "Blue",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Green",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Orange",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Red",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Silver",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Yellow",
+        "price_gp": 900.0
+      },
+      {
+        "label": "Black",
+        "price_gp": 1800.0
+      },
+      {
+        "label": "White",
+        "price_gp": 1800.0
+      }
+    ]
+  },
+  {
     "id": "deadly-draught",
     "name": "Deadly Draught",
     "source": "Blood of the Night",
@@ -63265,6 +63693,44 @@
     "description": "This smooth lodestone is gray and streaked with veins of glossy obsidian. As a ranged touch attack, the bearer can throw it at an opponent within 30 feet. If it strikes a target in metal armor, the burdenstone attaches itself to the target for 2d6 rounds.\n\nAn attached burdenstone increases the target’s load by one step. If a target’s load is already heavy, the target is knocked prone, its movement is reduced to 10 feet, and it cannot run. An attached burdenstone also prevents the target from flying. A target may not be affected by more than one burdenstone at a time.\n\nA successful DC 20 Strength check made as a full-round action can remove the stone from a target before the duration elapses. Once a burdenstone has been removed or the duration expires, it becomes an ordinary magnetic stone.",
     "construction": {
       "requirements": "Craft Wondrous Item, burdened thoughts ( Pathfinder Player Companion: Giant Hunter's Handbook 26)",
+      "cost": "500 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "deaths-head-coffer",
+    "name": "Death's Head Coffer",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "faint necromancy",
+    "cl": 5,
+    "price": "1,000 gp",
+    "price_gp": 1000,
+    "weight": "5 lbs.",
+    "weight_lbs": 5,
+    "description": "Typically engraved with numerous skulls, this small metal coffer allows the safe transport of infectious substances of up to Tiny size. Closing the lid seals in the contents and holds them in stasis, rendering them immune to aging or any damage. In addition, any infectious material—such as the body of a creature that died of disease—is preserved for as long as the coffer is closed. A death’s head coffer‘s dimensions are approximately 4 inches by 4 inches by 6 inches, so it can potentially hold several Tiny items.\n\nA death’s head coffer can spread infections between items. Any item placed into a coffer with a disease-ridden item (something capable of spreading a disease by contact) becomes infected with the same disease. For 1 week after being removed from the coffer, the newly infected item can spread the same affliction as the disease-ridden item to any creature that touches it. For example, if a coin is placed into a death’s head coffer with a rat infected with the shakes, any creature that touches the coin must succeed at a DC 13 Fortitude save or become infected with the shakes as well.\n\nAfter a death’s head coffer is closed and then reopened, its magic dissipates, rendering the box completely mundane. Some death’s head coffers feature complex locking mechanisms, which require successful Disable Device checks with a DC of 30 or higher to open.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, contagion, gentle repose",
+      "cost": "500 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "elixir-of-spirit-sight",
+    "name": "Elixir of Spirit Sight",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "faint divination and transmutation",
+    "cl": 5,
+    "price": "1,000 gp",
+    "price_gp": 1000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "This elixir seems to be made of thick vapor rather than liquid, and constantly emits soft whispers when uncorked. For 1 minute, the drinker gains the ability to see invisibility (as the spell), and his weapons and armor are treated as if they had the ghost touch special ability.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, plane shift, see invisibility",
       "cost": "500 gp"
     },
     "origin": "aonprd"
@@ -63983,6 +64449,25 @@
     "description": "Little distinguishes this bitter-smelling stick of incense from normal incense until it is lit. In still air, the incense’s smoke permeates a 40-foot-by-40-foot area to a height of 20 feet. Within that area, incorporeal creatures take on a measure of substance, such that they can no longer pass through objects and take full damage from all attacks (even nonmagical ones). Incorporeal touch attacks within this area resolve as melee attacks, but the incorporeal creatures add their Charisma bonus on such attacks. Incorporeal creatures still lack cohesion and mass. They retain the ability to fly as well as their immunity to combat maneuvers and critical hits. They can pick up and manipulate physical objects as though they had Strength scores equal to their Charisma scores, but they are still not solid enough to wear equipment.\n\nModerate wind halves the area of incense of corporeality. Strong wind disperses the incense, rendering it ineffective as long as the wind continues. A single stick of incense of corporeality burns for 1 hour. If extinguished, the remaining incense loses effectiveness.",
     "construction": {
       "requirements": "Craft Wondrous Item, dimensional anchor, ghostbane dirge",
+      "cost": "700 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "litheria-blossom",
+    "name": "Litheria Blossom",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "moderate necromancy",
+    "cl": 7,
+    "price": "1,400 gp",
+    "price_gp": 1400,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "The litheria blossom is a rare but naturally occurring flower with large, pink petals. The pollen of the litheria blossom bridges the gap between life and death, functioning like an elixir, though inhaled rather than imbibed. A creature inhaling the pollen gains the benefit of the death ward and deathwatch spells. Both effects last for 10 minutes. If plucked, the flower remains vibrant and alive until the pollen within the flower is inhaled, at which point the flower wilts and dies. The pollen remains potent only so long as it held within the flower or immediately thereafter. If removed from the flower for longer than 1 round, both the pollen and the flower become nonmagical.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, death ward, deathwatch",
       "cost": "700 gp"
     },
     "origin": "aonprd"
@@ -67748,6 +68233,25 @@
     "construction": {
       "requirements": "Craft Wondrous Item, levitate, creator must have at least 5 ranks in Craft (woodworking)",
       "cost": "2,500 gp, 200 XP"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "soul-jar",
+    "name": "Soul Jar",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "strong necromancy",
+    "cl": 15,
+    "price": "5,000 gp",
+    "price_gp": 5000,
+    "weight": "2 lbs.",
+    "weight_lbs": 2,
+    "description": "An empty soul jar can be used to contain a soul that has been successfully trapped in a black sapphire via soul bind. Holding the gemstone against the soul jar’s lid for 1 full round transfers the soul in the gem to the soul jar (which can hold the soul of a creature of up to 20 Hit Dice), leaving the black sapphire unharmed 50% of the time. The rest of the time, transferring the soul from gem to jar shatters the black sapphire. A creature that can use soul bind as a spell-like ability (and thus does not use a focus) can automatically place a captured soul in a held soul jar as the spell-like ability is used. A soul in a soul jar cannot travel to the Boneyard to be judged, but can be restored to life via resurrection or more powerful magic. A soul jar can contain only one soul at a time. Soul jars are fragile (hardness 1, hp 10); if a soul jar is broken, the soul held within immediately escapes to the Boneyard.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, soul bind",
+      "cost": "2,500 gp"
     },
     "origin": "aonprd"
   },
@@ -71740,6 +72244,25 @@
     "origin": "aonprd"
   },
   {
+    "id": "third-eye",
+    "name": "Third Eye",
+    "source": "Curse of the Crimson Throne (PFRPG)",
+    "category": "Wondrous Items",
+    "slot": "none",
+    "aura": "moderate divination",
+    "cl": 11,
+    "price": "20,000 gp",
+    "price_gp": 20000,
+    "weight": "—",
+    "weight_lbs": null,
+    "description": "As part of the process of crafting a third eye, the creator grafts an actual eye into the palm of the recipient’s hand. Once an eye is grafted into a palm, it is undetectable while closed and doesn’t hinder the user’s manual dexterity in the slightest. When in use, the eye opens.\n\nThe owner of a third eye can use it to see through the donor creature’s remaining eye. The third eye can also be attuned to specially prepared bloodstones, allowing the user to observe things in each bloodstone’s vicinity as if the bloodstone were an eye as well. Preparing a bloodstone in this manner requires soaking it in a potion of clairvoyance/clairaudience for a week, at the end of which the owner drinks the potion and spits the bloodstone into the hand bearing the third eye. These bloodstones are often incorporated into magic items like phylacteries, rings, and amulets, allowing the user to gift such items to other creatures and thus gain a new viewpoint. This remote viewing ability functions at any range as long as the owner is on the same plane at the bloodstone. It also allows the owner to cast clairaudience/clairvoyance up to three times per day.\n\nAs long as the third eye is open in a hand that isn’t holding an object, the owner has all-round vision, gaining a +4 bonus on Perception checks and making it impossible to flank the owner. Rakshasas, whose fingers bend backwards, can use the powers of their third eyes while holding objects since their third eyes effectively look out of the “backs” of their hands.\n\nA third eye cannot be transferred between creatures—if removed from the owner’s body, a third eye is destroyed. A third eye that remains in the owner’s palm but is damaged or otherwise permanently blinded becomes useless until a remove blindness spell is cast upon it.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, clairvoyance/clairaudience, access to obscure traditions and lore",
+      "cost": "10,000 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
     "id": "music-box-trap",
     "name": "Music Box Trap",
     "source": "Magical Marketplace",
@@ -75206,6 +75729,25 @@
     "construction": {
       "requirements": "Craft Wondrous Item, beast shape I, speak with animals",
       "cost": "7,800 gp"
+    },
+    "origin": "aonprd"
+  },
+  {
+    "id": "hyena-spirit-skin",
+    "name": "Hyena Spirit Skin",
+    "source": "Pathfinder #39: The City of Seven Spears",
+    "category": "Wondrous Items",
+    "slot": "shoulders",
+    "aura": "moderate transmutation",
+    "cl": 9,
+    "price": "16,000 gp",
+    "price_gp": 16000,
+    "weight": "2 lbs.",
+    "weight_lbs": 2,
+    "description": "This ragged piece of fur and skin contains powerful magic. Once per day, when draped over the head and shoulders, the skin grants its wearer the physical characteristics of a hyena for 10 minutes as the aspect of the wolf spell. The wearer gains a +4 enhancement bonus to Strength and Dexterity, the scent ability, and a +2 enhancement bonus on trip attacks, and she can make a trip combat maneuver as a swift action that does not provoke attacks of opportunity.",
+    "construction": {
+      "requirements": "Craft Wondrous Item, aspect of the wolf ( Advanced Player's Guide 204)",
+      "cost": "8,000 gp"
     },
     "origin": "aonprd"
   },

@@ -12570,6 +12570,113 @@
   "origin": "aonprd"
  },
  {
+  "id": "familiar-house-drake",
+  "kind": "familiar",
+  "classes": [
+   "wizard",
+   "witch",
+   "arcanist",
+   "sorcerer",
+   "magus"
+  ],
+  "name": "House drake",
+  "source": "Curse of the Crimson Throne (PFRPG)",
+  "text": "",
+  "parent": null,
+  "facts": [
+   [
+    "Improved familiar",
+    "needs the Improved Familiar feat and arcane caster level 7"
+   ],
+   [
+    "Alignment",
+    "Chaotic good"
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [],
+  "hexes": [],
+  "master_bonus": [],
+  "improved": true,
+  "min_level": 7,
+  "alignment": "Chaotic good",
+  "stats": {
+   "size": "Tiny",
+   "type": "dragon",
+   "subtypes": "",
+   "alignment": "CG",
+   "ac": 16,
+   "touch": 14,
+   "flat": 14,
+   "ac_parts": "+2 Dex, +2 natural, +2 size",
+   "natural": 2,
+   "hp": 19,
+   "hd": 2,
+   "fort": 6,
+   "ref": 5,
+   "will": 7,
+   "defenses": "Defensive Abilities ferocious will; Immune paralysis, sleep",
+   "speed": "20 ft., fly 50 ft. (good)",
+   "melee": "bite +6 (1d4), sting +6 (1d4)",
+   "ranged": "",
+   "space": "0 ft.",
+   "reach": "0 ft. (5 ft. with tail)",
+   "special_attacks": "breath weapon, silver strike",
+   "scores": {
+    "str": 11,
+    "dex": 15,
+    "con": 17,
+    "int": 12,
+    "wis": 14,
+    "cha": 14
+   },
+   "bab": 2,
+   "cmb": 2,
+   "cmd": 12,
+   "feats": [
+    "Weapon Finesse"
+   ],
+   "skills": [
+    [
+     "Acrobatics",
+     4
+    ],
+    [
+     "Fly",
+     15
+    ],
+    [
+     "Knowledge (local)",
+     6
+    ],
+    [
+     "Perception",
+     7
+    ],
+    [
+     "Sense Motive",
+     7
+    ],
+    [
+     "Stealth",
+     15
+    ],
+    [
+     "Survival",
+     7
+    ]
+   ],
+   "racial": "",
+   "senses": "darkvision 60 ft., low-light vision, scent, see invisibility",
+   "languages": "Common, Draconic, InfernalEcologyEnvironment urban (Korvosa)",
+   "sq": "",
+   "abilities": "Breath Weapon (Su) Up to three times per day and no more than once every 1d4 rounds, a house drake can breathe out a small cloud of silver mist in a 10-foot cone. All creatures in this area must succeed at a DC 14 Will save or be confused for 1 round. This is a mind-affecting effect. The save DC is Constitution-based.\n\nFerocious Will (Ex) House drakes have a stubborn streak of fierce independence and gain a +2 racial bonus on Will saves (this bonus is included in the stats above). In addition, the first time in a day that a house drake successfully saves against a mind-affecting spell or spelllike ability, the caster of the spell must succeed at a DC 13 Will save or be staggered for 1 round by a blast of magical, mental feedback. This feedback is a mind-affecting effect, and the save DC is Charisma-based.\n\nSilver Strike (Ex) All of a house drake’s natural attacks are treated as being silver for the purposes of overcoming damage reduction."
+  },
+  "origin": "aonprd"
+ },
+ {
   "id": "familiar-imp-devil",
   "kind": "familiar",
   "classes": [

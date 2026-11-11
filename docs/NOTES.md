@@ -403,7 +403,8 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   only books with an OGL Section 15 notice in `scripts/ogl_notices.json` (made by `extract_ogl_notices.py` from the
   Archives of Nethys license page, plus `MANUAL_NOTICES`) or `scripts/d20_feat_notices.json` (read from d20pfsrd pages;
   `load_notices` merges both, `find_notices` matches titles with `book_key`, so "Pathfinder Chronicles: Faction Guide" =
-  "Faction Guide"). `build_license.py` appends the notices for books the data uses, skipping ones PSRD's own list has
+  "Faction Guide"; a leading "The" is ignored). `MANUAL_NOTICES` entries count even for books Foundry doesn't list
+  (`load_notices` merges them). `build_license.py` appends the notices for books the data uses, skipping ones PSRD's own list has
   for the same title and year. The d20 builders add to `d20_feat_notices.json` (never replace it) and read notices
   with `take_notices` (paragraphs or divs in or just after the "section15" box). Records from Foundry carry
   `"origin": "Foundry VTT pf1"`.

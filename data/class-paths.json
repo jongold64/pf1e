@@ -8633,6 +8633,64 @@
   "origin": "aonprd"
  },
  {
+  "id": "eidolon-subtype-kyton",
+  "kind": "eidolon-subtype",
+  "classes": [
+   "summoner-unchained"
+  ],
+  "name": "Kyton",
+  "source": "Curse of the Crimson Throne (PFRPG)",
+  "text": "Scholars of the exquisiteness of agony and explorers of the limitations of the flesh, kytons understand the mortal form is a blank canvas aching for transformation. They appear as humanoids, save that they are covered in piercings, draped with chains, and bear grisly body modifications. Kyton eidolons gain access to the tentacle and web evolutions, but kyton eidolon tentacles and webs always appear as animated chains.",
+  "parent": null,
+  "facts": [
+   [
+    "Alignment",
+    "Lawful evil"
+   ],
+   [
+    "Base form",
+    "Biped (improved natural armor, limbs [arms], limbs [legs])."
+   ]
+  ],
+  "class_skills": [],
+  "spells": [],
+  "spells_by": "class",
+  "powers": [
+   {
+    "name": "1st-level evolutions",
+    "level": 1,
+    "text": "At 1st level, kyton eidolons gain the resistance (cold) and skilled (Heal) evolutions. They also gain proficiency with the spiked chain."
+   },
+   {
+    "name": "4th-level evolutions",
+    "level": 4,
+    "text": "At 4th level, a kyton eidolon adds 1 point to its evolution pool."
+   },
+   {
+    "name": "8th-level evolutions",
+    "level": 8,
+    "text": "At 8th level, a kyton eidolon gains an unnerving gaze that manipulates the perceptions of those who look upon it. Unlike typical gaze weapons, a kyton eidolon’s unnerving gaze can affect only one creature per round when the kyton directs its gaze at the target on its turn as a free action. An unnerving gaze has a range of 30 feet, and can be negated by a successful Will save. Any creature that fails the save becomes sickened by the kyton’s grisly modifications for 1 round. A kyton eidolon is immune to the unnerving gazes of other kytons, and the kyton’s summoner is immune to its unnerving gaze. This is a mind-affecting fear effect. The save DC is Charisma-based."
+   },
+   {
+    "name": "12th-level evolutions",
+    "level": 12,
+    "text": "At 12th level, a kyton eidolon gains DR 5/good. The effects of a kyton eidolon’s unnerving gaze now persist for 1d3 rounds, and as a free action, a kytons can target up to two creatures per round with its gaze on its turns."
+   },
+   {
+    "name": "16th-level evolutions",
+    "level": 16,
+    "text": "At 16th level, a kyton eidolon loses the resistance (cold) evolution, and gains the immunity (cold) evolution in its place. The effects of a kyton eidolon’s unnerving gaze now stagger the target for 1 round, and as a free action, a kyton eidolon can target up to three creatures per round with its gaze."
+   },
+   {
+    "name": "20th-level evolutions",
+    "level": 20,
+    "text": "At 20th level, a kyton eidolon gains regeneration 5 (good weapons, good spells). It is still banished to the Shadow Plane as normal for an eidolon if it takes enough damage."
+   }
+  ],
+  "hexes": [],
+  "origin": "aonprd"
+ },
+ {
   "id": "eidolon-subtype-plant",
   "kind": "eidolon-subtype",
   "classes": [

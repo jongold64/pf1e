@@ -66,6 +66,10 @@ def load_notices():
         if os.path.exists(path):
             for book, lines in json.load(open(path, encoding='utf-8')).items():
                 notices[book] = notices.get(book, []) + [n for n in lines if n not in notices.get(book, [])]
+    # Hand-copied notices count even for books the Foundry data doesn't list (extract_ogl_notices.py only writes those).
+    from extract_ogl_notices import MANUAL_NOTICES
+    for book, lines in MANUAL_NOTICES.items():
+        notices[book] = notices.get(book, []) + [n for n in lines if n not in notices.get(book, [])]
     return notices
 
 
@@ -77,6 +81,7 @@ def book_key(title):
     # Adventure Path volumes go by two numbers ("Pathfinder #95: Anvil of Fire" = "Giantslayer #5: Anvil of Fire"),
     # so only the title after the number counts.
     t = re.sub(r'^.*#\d+:\s*', '', t)
+    t = re.sub(r'^the\s+', '', t)  # 'The Inner Sea World Guide' = 'Inner Sea World Guide'
     return re.sub(r'[^a-z0-9]', '', t)
 
 
