@@ -1362,6 +1362,7 @@ function buildControls() {
   });
   initTermPopover($('race-info'), () => raceItems);
   initTermPopover($('class-info'), () => classItems);
+  initTermPopover($('level-rows'), () => classItems);
   initTermPopover($('class-also'), () => alsoItems);
   initTraits(app);
   initEffects(app);
@@ -3240,15 +3241,6 @@ function renderClasses(view) {
   $('class-levels').querySelectorAll('select[data-favored-index]').forEach(sel => {
     sel.value = view.favoredPicks[Number(sel.dataset.favoredIndex)];
   });
-  // Your levels: one row a level, in order, with its class and Remove (not for a 1st level a prestige class would replace).
-  $('level-rows').innerHTML = classLevels.map((c, i) => {
-    const k = classLevels.slice(0, i + 1).filter(x => x.id === c.id).length;
-    const stuck = i === 0 && classLevels[1]?.category === 'prestige';
-    return `<li class="level-row"><span class="level-num">Level ${i + 1}</span><b>${esc(c.name)}</b>
-      <span class="muted">${esc(c.name)} level ${k}</span>
-      <button type="button" class="skill-details q-details" data-level-pop="${esc(c.id)}" aria-label="${esc(c.name)} in a popup" title="Details">?</button>
-      <button type="button" data-level-remove="${i}"${stuck ? ` disabled title="Level 2 is a prestige class, which can't be your 1st level"` : ''}>Remove</button></li>`;
-  }).join('') || '<li class="hint">No class yet: choose one below and press Add.</li>';
   $('remove-all-levels').disabled = !classLevels.length;
   // Add a level of: any class, or only ones that can be taken at 1st level when there are none yet.
   const addSel = $('add-level-class');
@@ -3279,6 +3271,8 @@ function renderClasses(view) {
   // Each class's section stays open (its deity, domains, archetypes and other choices in view) unless you fold it shut.
   const closed = new Set([...$('class-info').querySelectorAll('details.class-block:not([open])')].map(d => d.dataset.cls));
   classItems = [];
+  const featuresAt = new Map();  // "class id|class level" -> that level's feature buttons, shown in Your levels
+  const alsoRows = [];           // each class's features the level table doesn't name, shown above Your levels
   const openFeatures = new Set([...$('class-info').querySelectorAll('details.arch-feature[open]')].map(d => d.dataset.key));
   $('class-info').innerHTML = counts.map(e => {
     // Each level: the class's own features (ones an archetype replaced struck out) and the archetypes' features.
@@ -3298,7 +3292,7 @@ function renderClasses(view) {
       return `<button type="button" class="term${cls}" data-term="${classItems.length - 1}" aria-expanded="false">${label}${how ? `<span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</button>`;
     };
     const described = s => featureDescription(e.cls, s) || 'The class data has no description for this entry.';
-    const features = e.cls.progression.slice(0, e.level).map(r => {
+    for (const r of e.cls.progression.slice(0, e.level)) {
       const own = (r.special || []).map(s => {
         const b = pathEntry(e.cls.id, r.level, s);
         return b ? term(`${esc(s)}: ${esc(b.name)}`, `${b.name} (${s})`, b.text, '', howOf(s)) : term(esc(s), s, described(s), '', howOf(s));
@@ -3310,11 +3304,14 @@ function renderClasses(view) {
         return term(`<s>${esc(s)}</s>`, `${s} (replaced)`, `${why}\n\n${ki ? '' : described(s)}`, ' term-gone');
       });
       const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch'));
-      return `<li><b>${r.level}</b> <span class="terms">${[...own, ...gone, ...added].join('') || '—'}</span></li>`;
-    }).join('');
+      featuresAt.set(`${e.cls.id}|${r.level}`, [...own, ...gone, ...added].join(''));
+    }
     // Class features the level table doesn't list (spontaneous casting, bonus languages, proficiencies...), each with its text.
     const offTable = offTableFeatures(e.cls);
-    const alsoRow = offTable.length ? `<li><b title="Not on the level table">Also</b> <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text, '', howOf(f.name))).join('')}</span></li>` : '';
+    if (offTable.length) {
+      alsoRows.push(`<li class="level-row level-also"><span class="level-num" title="Not on the level table">Also</span><b>${esc(e.cls.name)}</b>
+        <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text, '', howOf(f.name))).join('')}</span></li>`);
+    }
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>` : '';
@@ -3335,10 +3332,21 @@ function renderClasses(view) {
       ${archChoiceHtml({ id: e.cls.id }, e.level)}
       ${choiceSources(e.cls.id, {}, state.talents).slice(1).map(id => archChoiceHtml({ id }, e.level)).join('')}
       ${archetypePicker(e.cls, e.level, openFeatures)}
-      <ol class="features">${alsoRow}${features}</ol>
-      <p class="hint how-legend">${['counted', 'roll', 'effect', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.</p>
     </details>`;
   }).join('');
+
+  // Your levels: one row a level, in order, with its class, the class features gained at that level (each a button
+  // with its text), and Remove (not for a 1st level a prestige class would replace).
+  $('level-rows').innerHTML = alsoRows.join('') + classLevels.map((c, i) => {
+    const k = classLevels.slice(0, i + 1).filter(x => x.id === c.id).length;
+    const stuck = i === 0 && classLevels[1]?.category === 'prestige';
+    return `<li class="level-row"><span class="level-num">Level ${i + 1}</span><b>${esc(c.name)} ${k}</b>
+      <span class="terms">${featuresAt.get(`${c.id}|${k}`) || '<span class="muted">—</span>'}</span>
+      <button type="button" class="skill-details q-details" data-level-pop="${esc(c.id)}" aria-label="${esc(c.name)} in a popup" title="Details">?</button>
+      <button type="button" data-level-remove="${i}"${stuck ? ` disabled title="Level 2 is a prestige class, which can't be your 1st level"` : ''}>Remove</button></li>`;
+  }).join('') || '<li class="hint">No class yet: choose one below and press Add.</li>';
+  $('level-legend').innerHTML = classLevels.length
+    ? `${['counted', 'roll', 'effect', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.` : '';
 }
 
 // The Guide: a Details button on each section's heading opens the section in a popup, with a button to go to the tab it's

@@ -143,6 +143,7 @@
         <!-- Every level in order, each with Remove; Remove all; then adding a level. -->
         <div class="level-rows-head"><h3>Your levels</h3><button type="button" id="remove-all-levels">Remove all</button></div>
         <ol id="level-rows" class="level-rows"></ol>
+        <p id="level-legend" class="hint how-legend"></p>
         <div class="slot-buttons add-level-row">
           <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
           <button type="button" id="add-level" class="primary">Add</button>
@@ -637,7 +638,7 @@
         <details>
           <summary>Classes tab</summary>
           <ul>
-            <li>Each class feature in a class's level list has a coloured dot saying how the builder uses it (the legend is under
+            <li>Each class feature in <b>Your levels</b> has a coloured dot saying how the builder uses it (the legend is under
               the list): green, counted in your numbers; red, rolled on the Build tab (sneak attack, bombs, kinetic blast,
               channel energy, inspiration...); blue, switched on in Active effects; orange, noted in the Details of the save, AC
               or skill it changes; purple, chosen on this tab; teal, a free feat or feat slot; brown, on the Spells tab; grey, its
@@ -670,10 +671,13 @@
               read from their rules text at your level.</li>
             <li>Before a class's first choice of a kind (an alchemist's discoveries start at 2nd level), its block says when it
               comes. The choice lists have a search box.</li>
-            <li><b>Your levels</b> at the top: every level in order (Level 1 Fighter, Level 2 Rogue…), each with its <b>?</b> and
-              <b>Remove</b> (the levels after it move down one; a prestige class can't become your 1st level). <b>Remove all</b>
+            <li><b>Your levels</b> at the top: every level in order (Level 1 Fighter 1, Level 2 Rogue 1…), each with the class
+              features it gives (tap one to read what it does; struck-out ones were replaced by an archetype, coloured ones come
+              from it), its <b>?</b> and <b>Remove</b> (the levels after it move down one; a prestige class can't become your 1st level). <b>Remove all</b>
               takes away every level. A new character, or anyone opening the link for the first time, starts with no class.
-              Use <b>Add a level of</b> under the list to add one (multiclassing works; the first level can't be a prestige class).</li>
+              Use <b>Add a level of</b> under the list to add one (multiclassing works; the first level can't be a prestige class).
+              An <b>Also</b> row above the levels lists each class's features the level table doesn't name (a cleric's spontaneous
+              casting, proficiencies, bonus languages...).</li>
             <li>Each class's section (its deity, domains, archetypes, bloodline, school and other choices) stays open so you can
               see and change them; tap its heading to fold it shut.</li>
             <li><b>Classes</b> below: one line per class. Tap one to see each of its levels with the choices made there (favored
@@ -685,9 +689,7 @@
               level table (base attack, saves and features) with your levels marked, with Add a level and Remove a level.
               <b>Details</b> beside <b>Favored class</b> shows what your favored class bonuses add up to and every favored class
               option your race has.</li>
-            <li>Open a class's section to add <b>archetypes</b> and to see its features by level: tap any feature to read what it does.
-              Struck-out features were replaced by an archetype; coloured ones come from it. The <b>Also</b> row lists features
-              the level table doesn't name (a cleric's spontaneous casting, proficiencies, bonus languages...).</li>
+            <li>Open a class's section to add <b>archetypes</b>; the features they change show at once in Your levels.</li>
             <li>Wizards pick their <b>Arcane bond</b>: a bonded object (amulet, ring, staff, wand or weapon) or a familiar; witches
               pick their <b>Familiar</b>. A familiar's bonus to its master (a cat's +3 Stealth, a toad's +3 hit points, a rat's +2
               Fortitude...) is counted; ones that apply only sometimes are in its Details, and its Alertness (+2 Perception and

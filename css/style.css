@@ -595,10 +595,14 @@ dialog#trait-picker::backdrop { background: rgba(0, 0, 0, 0.45); }
 /* Class feature buttons in the Classes card's level list: replaced ones struck out, archetype ones in colour. */
 ol.features li:has(.terms) { display: flex; align-items: flex-start; gap: 10px; }
 ol.features li > b { min-width: 1.4em; padding-top: 5px; }
-.features .terms { display: flex; flex-wrap: wrap; gap: 4px 6px; }
-.features button.term { min-height: 30px; padding: 2px 9px; font-size: 0.85rem; }
-.features button.term-gone { color: var(--muted); }
-.features button.term-arch { color: var(--accent); font-weight: 600; }
+.features .terms, .level-rows .terms { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.features button.term, .level-rows button.term { min-height: 30px; padding: 2px 9px; font-size: 0.85rem; }
+.features button.term-gone, .level-rows button.term-gone { color: var(--muted); }
+.features button.term-arch, .level-rows button.term-arch { color: var(--accent); font-weight: 600; }
+/* Your levels: number, class and level, then that level's feature buttons filling the row, then ? and Remove. */
+.level-row > b { min-width: 7em; }
+.level-row > .terms { flex: 1 1 14em; }
+.level-row.level-also > .terms { flex-basis: 20em; }
 
 /* Crafting card (Magic Items tab). */
 #craft-body label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
