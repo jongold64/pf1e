@@ -177,6 +177,12 @@
 
     <!-- Feats -->
     <main class="tab-panel" id="tab-feats" role="tabpanel" hidden>
+      <section class="card wide" id="class-also-card" hidden>
+        <h2>From your class</h2>
+        <!-- Class features the level table doesn't name: weapon and armor proficiency, bonus languages... -->
+        <div id="class-also" class="class-also"></div>
+        <p class="hint">Tap one to read it. These come with the class and need no feat slot.</p>
+      </section>
       <section class="card wide" id="feats-card">
         <h2>Feats <span id="feat-count" class="count"></span>
           <button type="button" id="feat-count-details" class="skill-details q-details" aria-label="Every feat slot and where it comes from" title="Details">?</button></h2>
@@ -791,6 +797,8 @@
         <details>
           <summary>Feats tab (feats, traits and flaws)</summary>
           <ul>
+            <li><b>From your class</b>, at the top, lists the class features the level table doesn't name: weapon and armor
+              proficiency, a cleric's spontaneous casting, bonus languages... Tap one to read it. They need no feat slot.</li>
             <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>,
               <b>Change</b> and <b>Remove</b>; under it, the weapon or skill it's for and any warning. The slots below list only the
               ones still to fill (a removed feat's slot comes back there).</li>

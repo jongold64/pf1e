@@ -50,7 +50,7 @@ import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduc
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
-import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM } from './archetypes.js';
+import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM, offTableFeatures } from './archetypes.js';
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
@@ -106,6 +106,7 @@ let tab = 'character';
 let raceItems = [];
 // Popup text for the class feature buttons on the Classes card (rebuilt on each draw).
 let classItems = [];
+let alsoItems = [];  // the Feats tab's "From your class" list, for its popups
 
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
@@ -1361,6 +1362,7 @@ function buildControls() {
   });
   initTermPopover($('race-info'), () => raceItems);
   initTermPopover($('class-info'), () => classItems);
+  initTermPopover($('class-also'), () => alsoItems);
   initTraits(app);
   initEffects(app);
   initCompanion(app);
@@ -3311,11 +3313,7 @@ function renderClasses(view) {
       return `<li><b>${r.level}</b> <span class="terms">${[...own, ...gone, ...added].join('') || '—'}</span></li>`;
     }).join('');
     // Class features the level table doesn't list (spontaneous casting, bonus languages, proficiencies...), each with its text.
-    const onTable = e.cls.progression.flatMap(r => r.special || []).map(x => x.toLowerCase().replace(/[\s+\-]*\d.*$/, '').trim()).filter(Boolean);
-    const offTable = (e.cls.features || []).filter(f => {
-      const n = f.name.toLowerCase();
-      return !onTable.some(t => t.startsWith(n) || n.startsWith(t));
-    });
+    const offTable = offTableFeatures(e.cls);
     const alsoRow = offTable.length ? `<li><b title="Not on the level table">Also</b> <span class="terms">${offTable.map(f => term(esc(f.name), f.name, f.text, '', howOf(f.name))).join('')}</span></li>` : '';
     const req = view.requirements.get(e.cls.id);
     const reqHtml = req ? `<p>${STATUS_ICON[req.status]} Requirements ${STATUS_WORD[req.status]}</p>
@@ -4055,6 +4053,19 @@ function popGrantedFeat(id) {
 }
 
 function renderFeats(slots, granted, ctx) {
+  // Class features the level table doesn't name (weapon and armor proficiency, bonus languages...), each opening its text.
+  alsoItems = [];
+  const alsoRows = view.counts.map(e => {
+    const fs = offTableFeatures(e.cls);
+    if (!fs.length) return '';
+    const btns = fs.map(f => {
+      alsoItems.push({ title: `${f.name} (${e.cls.name})`, text: String(f.text || 'The class data has no description for this entry.').split(/\n{2,}/).filter(Boolean) });
+      return `<button type="button" class="term" data-term="${alsoItems.length - 1}" aria-expanded="false">${esc(f.name)}</button>`;
+    }).join('');
+    return `<div class="class-also-row">${view.counts.length > 1 ? `<b>${esc(e.cls.name)}</b> ` : ''}<span class="terms">${btns}</span></div>`;
+  }).join('');
+  $('class-also').innerHTML = alsoRows;
+  $('class-also-card').hidden = !alsoRows;
   const filled = slots.filter(s => data.featsById.has(state.feats[s.id])).length;
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
   // Free feats from the classes: each name opens the feat.
