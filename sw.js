@@ -1,5 +1,6 @@
 // Offline helper (service worker): lets the installed app (or the website) work with no internet.
-// - Online: every file is fetched from the site as usual (so updates arrive as before) and a copy is kept.
+// - Online: every file is fetched from the site, checking it's the newest (so updates show on the next reload), and a
+//   copy is kept.
 // - Offline: the kept copy is used.
 // The page, its code and all the rules data are saved on the first visit, so everything works offline after that.
 // Code files the page loads are kept as they're fetched; a new data file must be added to PRECACHE below.
@@ -19,7 +20,7 @@ async function codeFiles(start = 'js/app.js') {
   const visit = async url => {
     if (seen.has(url)) return;
     seen.add(url);
-    const text = await fetch(url).then(r => (r.ok ? r.text() : '')).catch(() => '');
+    const text = await fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).catch(() => '');
     const base = new URL(url, self.location.href);
     const deps = [...text.matchAll(/\bfrom\s+['"](\.{1,2}\/[^'"]+)['"]|\bimport\s+['"](\.{1,2}\/[^'"]+)['"]/g)]
       .map(m => new URL(m[1] || m[2], base).pathname.replace(new URL('./', self.location.href).pathname, ''));
@@ -34,7 +35,7 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     const files = [...PRECACHE, ...await codeFiles()];
-    await Promise.all([...new Set(files)].map(url => cache.add(url).catch(() => null)));
+    await Promise.all([...new Set(files)].map(url => cache.add(new Request(url, { cache: 'no-cache' })).catch(() => null)));
     await self.skipWaiting();
   })());
 });
@@ -49,7 +50,9 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     try {
-      const res = await fetch(req);
+      // "no-cache": ask the site whether the file changed instead of trusting the browser's own copy (a local test
+      // server doesn't say how long to keep files, so the browser would guess and could show old code).
+      const res = await fetch(req.url, { cache: 'no-cache' });
       if (res.ok) cache.put(req, res.clone());
       return res;
     } catch {
