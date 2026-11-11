@@ -164,11 +164,15 @@ export function renderBuild(app, view, parts) {
   // Spellcasting: prepared spells with cast boxes; spontaneous casters' spells known by level.
   const spells = renderSpells(app, view, parts);
 
+  // A feature and its later steps share a key, so only the latest shows: "sneak attack +3d6", "trap sense +1",
+  // "damage reduction 2/-", "metakinesis (maximize)", "2nd favored enemy", "+2 save bonus against poison".
+  const featureStepKey = n => n.replace(/^(?:\d+(?:st|nd|rd|th)|[+-]\d+)\s+/i, '').replace(/\s*\([^)]*\)\s*$/, '')
+    .replace(/[\s+\-]*\d.*$/, '').replace(/s$/i, '').toLowerCase();
   // Class choices and features.
   // On the card, a short line per class (its features and choices by name); the full list with each ? opens larger.
   const featureSummary = view.counts.map(e => {
     const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
-    const names = [...new Map(all.map(n => [n.replace(/\s*\(?[+-]?\d+(?:d\d+)?(?:\/day)?\)?\s*$/i, '').toLowerCase(), n])).values()]
+    const names = [...new Map(all.map(n => [featureStepKey(n), n])).values()]
       .map(n => n[0].toUpperCase() + n.slice(1));
     const picks = parts.choices(e.cls.id, e.level).map(c => c.name);
     const also = offTableFeatures(e.cls).map(f => f.name);
@@ -177,7 +181,7 @@ export function renderBuild(app, view, parts) {
   const features = view.counts.map(e => {
     const all = e.cls.progression.slice(0, e.level).flatMap(r => [...(r.special || []), ...(r.archetype_features || []).map(f => f.name)]);
     // One line a feature: a feature that grows ("sneak attack +1d6", "+2d6"; "trap sense +1") shows only its latest step.
-    const latest = new Map(all.map(n => [n.replace(/\s*\(?[+-]?\d+(?:d\d+)?(?:\/day)?\)?\s*$/i, '').toLowerCase(), n]));
+    const latest = new Map(all.map(n => [featureStepKey(n), n]));
     const tagged = [...latest.values()].map(n => {
       const how = featureHandling(e.cls.id, n);
       return `<div class="b-feat"><span>${esc(n[0].toUpperCase() + n.slice(1))}${how !== 'text' ? ` <span class="how how-${how}" title="${esc(HANDLING[how])}"></span>` : ''}</span>${plus('feature', `${e.cls.id}|${n}`, n)}</div>`;

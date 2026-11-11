@@ -9,7 +9,8 @@ PSRD tables for the classes both have), and each level's features from the linke
 
 Usage: python build_foundry_classes.py path/to/classes.json   (reads and rewrites that file; set FOUNDRY if needed)
 """
-import json, re, sys
+import json, os, re, sys
+from bs4 import BeautifulSoup
 from common import slug
 from foundry import load_pack, load_sources, load_notices, paizo_source, html_text, read_files
 
@@ -18,6 +19,57 @@ ORIGIN = 'Foundry VTT pf1'
 SOURCE_FIXES = {'Vigilante': 'Ultimate Intrigue'}
 # Features Foundry links once but that come again at later levels, where the app needs every level (bonus feat slots).
 REPEATS = {'monk-unchained': {'Bonus feat': [1, 2, 6, 10, 14, 18]}}
+# The class pages saved from the Archives of Nethys (Kineticist.html, Barbarian_Unchained.html...): their level table
+# gives the later steps Foundry links only once (elemental overflow +2, rage power at 4th, sneak attack +3d6...).
+AON_CLASSES = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'aonprd-classes')
+
+
+def feature_key(s):
+    """'Elemental overflow +2', 'metakinesis (maximize)', 'Rage powers' -> 'elemental overflow', 'metakinesis', 'rage power'."""
+    s = re.sub(r'\s*\(.*?\)\s*$', '', s.lower().strip())
+    return re.sub(r's$', '', re.sub(r'[\s+\-]*\d.*$', '', s).strip())
+
+
+def book_table_repeats(cid, by_level):
+    """{level: [entry]} for the book table's entries that repeat a feature Foundry gives at an earlier level."""
+    path = os.path.join(AON_CLASSES, '_'.join(p.capitalize() for p in cid.split('-')) + '.html')
+    if not os.path.exists(path):
+        return {}
+    table = None
+    for t in BeautifulSoup(open(path, encoding='utf-8').read(), 'html.parser').find_all('table'):
+        rows = [[c.get_text(' ', strip=True) for c in tr.find_all(['td', 'th'])] for tr in t.find_all('tr')]
+        if rows and rows[0] and rows[0][0] == 'Level' and rows[0][-1] == 'Special':
+            table = rows[1:]
+            break
+    first = {}  # feature key -> (level first gained, Foundry's name)
+    for lv in sorted(by_level):
+        for n in by_level[lv]:
+            first.setdefault(feature_key(n), (lv, n))
+    out = {}
+    for r in table or []:
+        m = re.match(r'\d+', r[0] or '')
+        if not m:
+            continue
+        lv = int(m.group())
+        for e in re.split(r',(?![^()]*\))', r[-1]):
+            e = e.strip()
+            k = feature_key(e)
+            if not k:
+                continue
+            # The same name with its step ('elemental overflow +2'), or a wording around it ('utility wild talent' for
+            # Wild Talents), which keeps Foundry's name so the app sees one feature.
+            if k in first:
+                at, label = first[k][0], e[0].upper() + e[1:]
+            else:
+                hit = next((v for f, v in first.items() if f and (f in k or k in f)), None)
+                if not hit:
+                    continue
+                at, label = hit
+            if at < lv:
+                out.setdefault(lv, []).append(label)
+    return out
+
+
 # Columns the app reads from a class table ("other"), copied from a class with the same table.
 OTHER_FROM = {'monk-unchained': ('monk', ['Unarmed Damage', 'AC Bonus', 'Fast Movement'])}
 ARMOR = {'lgt': 'light armor', 'med': 'medium armor', 'hvy': 'heavy armor'}
@@ -149,6 +201,9 @@ def main():
         for fname, levels in REPEATS.get(cid, {}).items():
             for lv in levels:
                 by_level.setdefault(lv, []).insert(0, fname)
+        if cid not in REPEATS:
+            for lv, entries in book_table_repeats(cid, by_level).items():
+                by_level.setdefault(lv, []).extend(entries)
         spells = spell_rows(s['casting'], tables) if s.get('casting') else [(None, None)] * 20
         other_src = OTHER_FROM.get(cid)
         progression = []

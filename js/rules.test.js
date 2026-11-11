@@ -1253,7 +1253,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const ur = cls('rogue-unchained');
   check('the unchained rogue is offered rogue archetypes', archetypesFor('rogue-unchained', archetypes).some(a => a.class === 'rogue'), true);
   check('a rogue archetype replacing trap sense fits the unchained rogue (danger sense)', unchainedGaps(cls('rogue'), ur, arch('rogue-scout')).length, 0);
-  check('...and replaces danger sense there', replacedEntries(ur, { features: [{ name: 'x', replaces: ['trap sense'] }] }).map(e => e.name).join(), 'Danger Sense');
+  check('...and replaces danger sense there, every step', replacedEntries(ur, { features: [{ name: 'x', replaces: ['trap sense'] }] }).map(e => e.name).join(), 'Danger Sense,Danger sense +2,Danger sense +3,Danger sense +4,Danger sense +5,Danger sense +6');
   const um = cls('monk-unchained'), monk = cls('monk');
   const zenFit = unchainedFit(monk, um, arch('monk-zen-archer'));
   check('Zen Archer on the unchained monk: allowed, trading ki powers for the abilities it lacks', `${zenFit.why === ''} ${zenFit.kiPowers > 0}`, 'true true');
@@ -1267,6 +1267,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
         classWithArchetypes(um, [arch('monk-zen-archer')], trades).progression.some(r => (r.replaced || []).some(x => /ki power/.test(x))), true);
   check('feature text: "bravery +1" finds Bravery', /Will saves against fear/.test(featureDescription(cls('fighter'), 'bravery +1')), true);
   check('off-table features: the fighter’s Weapon and Armor Proficiency', offTableFeatures(cls('fighter')).some(f => /proficiency/i.test(f.name)), true);
+  check('off-table features: the ranger’s favored enemy is on the table ("1st favored enemy")', offTableFeatures(cls('ranger')).some(f => /favored enemy/i.test(f.name)), false);
   check('off-table features: none of them is on the level table', offTableFeatures(cls('fighter')).some(f => /^bravery$/i.test(f.name)), false);
   check('feature text: a bard performance inside Bardic Performance', /counter magic effects/.test(featureDescription(cls('bard'), 'countersong')), true);
   check('feature text: "Summon monster II" finds Summon Monster I', /summon monster I/.test(featureDescription(cls('summoner'), 'Summon monster II')), true);

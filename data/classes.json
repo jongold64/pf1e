@@ -23887,7 +23887,9 @@
         "fort": 4,
         "ref": 1,
         "will": 1,
-        "special": []
+        "special": [
+          "Rage power"
+        ]
       },
       {
         "level": 5,
@@ -23910,7 +23912,10 @@
         "fort": 5,
         "ref": 2,
         "will": 2,
-        "special": []
+        "special": [
+          "Danger sense +2",
+          "Rage power"
+        ]
       },
       {
         "level": 7,
@@ -23934,7 +23939,9 @@
         "fort": 6,
         "ref": 2,
         "will": 2,
-        "special": []
+        "special": [
+          "Rage power"
+        ]
       },
       {
         "level": 9,
@@ -23945,7 +23952,9 @@
         "fort": 6,
         "ref": 3,
         "will": 3,
-        "special": []
+        "special": [
+          "Danger sense +3"
+        ]
       },
       {
         "level": 10,
@@ -23956,7 +23965,10 @@
         "fort": 7,
         "ref": 3,
         "will": 3,
-        "special": []
+        "special": [
+          "Damage reduction 2/-",
+          "Rage power"
+        ]
       },
       {
         "level": 11,
@@ -23982,7 +23994,10 @@
         "fort": 8,
         "ref": 4,
         "will": 4,
-        "special": []
+        "special": [
+          "Danger sense +4",
+          "Rage power"
+        ]
       },
       {
         "level": 13,
@@ -23994,7 +24009,9 @@
         "fort": 8,
         "ref": 4,
         "will": 4,
-        "special": []
+        "special": [
+          "Damage reduction 3/-"
+        ]
       },
       {
         "level": 14,
@@ -24007,7 +24024,8 @@
         "ref": 4,
         "will": 4,
         "special": [
-          "Indomitable Will"
+          "Indomitable Will",
+          "Rage power"
         ]
       },
       {
@@ -24020,7 +24038,9 @@
         "fort": 9,
         "ref": 5,
         "will": 5,
-        "special": []
+        "special": [
+          "Danger sense +5"
+        ]
       },
       {
         "level": 16,
@@ -24033,7 +24053,10 @@
         "fort": 10,
         "ref": 5,
         "will": 5,
-        "special": []
+        "special": [
+          "Damage reduction 4/-",
+          "Rage power"
+        ]
       },
       {
         "level": 17,
@@ -24061,7 +24084,10 @@
         "fort": 11,
         "ref": 6,
         "will": 6,
-        "special": []
+        "special": [
+          "Danger sense +6",
+          "Rage power"
+        ]
       },
       {
         "level": 19,
@@ -24074,7 +24100,9 @@
         "fort": 11,
         "ref": 6,
         "will": 6,
-        "special": []
+        "special": [
+          "Damage reduction 5/-"
+        ]
       },
       {
         "level": 20,
@@ -24088,7 +24116,8 @@
         "ref": 6,
         "will": 6,
         "special": [
-          "Mighty Rage"
+          "Mighty Rage",
+          "Rage power"
         ]
       }
     ],
@@ -24233,7 +24262,8 @@
         "ref": 3,
         "will": 1,
         "special": [
-          "Elemental Overflow"
+          "Elemental Overflow",
+          "Infusion"
         ]
       },
       {
@@ -24244,7 +24274,9 @@
         "fort": 4,
         "ref": 4,
         "will": 1,
-        "special": []
+        "special": [
+          "Wild Talents"
+        ]
       },
       {
         "level": 5,
@@ -24256,7 +24288,8 @@
         "will": 1,
         "special": [
           "Infusion Specialization",
-          "Metakinesis"
+          "Metakinesis",
+          "Infusion"
         ]
       },
       {
@@ -24268,7 +24301,9 @@
         "ref": 5,
         "will": 2,
         "special": [
-          "Internal Buffer"
+          "Internal Buffer",
+          "Elemental overflow +2",
+          "Wild Talents"
         ]
       },
       {
@@ -24292,7 +24327,10 @@
         "fort": 6,
         "ref": 6,
         "will": 2,
-        "special": []
+        "special": [
+          "Infusion specialization 2",
+          "Wild Talents"
+        ]
       },
       {
         "level": 9,
@@ -24303,7 +24341,11 @@
         "fort": 6,
         "ref": 6,
         "will": 3,
-        "special": []
+        "special": [
+          "Elemental overflow +3",
+          "Infusion",
+          "Metakinesis (maximize)"
+        ]
       },
       {
         "level": 10,
@@ -24314,7 +24356,9 @@
         "fort": 7,
         "ref": 7,
         "will": 3,
-        "special": []
+        "special": [
+          "Wild Talents"
+        ]
       },
       {
         "level": 11,
@@ -24326,7 +24370,10 @@
         "ref": 7,
         "will": 3,
         "special": [
-          "Supercharge"
+          "Supercharge",
+          "Infusion",
+          "Infusion specialization 3",
+          "Internal buffer 2"
         ]
       },
       {
@@ -24338,7 +24385,10 @@
         "fort": 8,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Elemental overflow +4",
+          "Wild Talents"
+        ]
       },
       {
         "level": 13,
@@ -24349,7 +24399,10 @@
         "fort": 8,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Infusion",
+          "Metakinesis (quicken)"
+        ]
       },
       {
         "level": 14,
@@ -24360,7 +24413,10 @@
         "fort": 9,
         "ref": 9,
         "will": 4,
-        "special": []
+        "special": [
+          "Infusion specialization 4",
+          "Wild Talents"
+        ]
       },
       {
         "level": 15,
@@ -24372,7 +24428,10 @@
         "fort": 9,
         "ref": 9,
         "will": 5,
-        "special": []
+        "special": [
+          "Expanded element",
+          "Elemental overflow +5"
+        ]
       },
       {
         "level": 16,
@@ -24385,7 +24444,9 @@
         "ref": 10,
         "will": 5,
         "special": [
-          "Composite Specialization"
+          "Composite Specialization",
+          "Internal buffer 3",
+          "Wild Talents"
         ]
       },
       {
@@ -24398,7 +24459,11 @@
         "fort": 10,
         "ref": 10,
         "will": 5,
-        "special": []
+        "special": [
+          "Infusion",
+          "Infusion specialization 5",
+          "Metakinesis (twice)"
+        ]
       },
       {
         "level": 18,
@@ -24410,7 +24475,10 @@
         "fort": 11,
         "ref": 11,
         "will": 6,
-        "special": []
+        "special": [
+          "Elemental overflow +6",
+          "Wild Talents"
+        ]
       },
       {
         "level": 19,
@@ -24423,7 +24491,8 @@
         "ref": 11,
         "will": 6,
         "special": [
-          "Metakinetic Master"
+          "Metakinetic Master",
+          "Infusion"
         ]
       },
       {
@@ -24437,7 +24506,9 @@
         "ref": 12,
         "will": 6,
         "special": [
-          "Omnikinesis"
+          "Omnikinesis",
+          "Infusion specialization 6",
+          "Wild Talents"
         ]
       }
     ],
@@ -27759,7 +27830,9 @@
         "ref": 3,
         "will": 1,
         "special": [
-          "Danger Sense"
+          "Danger Sense",
+          "Finesse training",
+          "Sneak attack +2d6"
         ]
       },
       {
@@ -27772,7 +27845,8 @@
         "will": 1,
         "special": [
           "Debilitating Injury",
-          "Uncanny Dodge"
+          "Uncanny Dodge",
+          "Rogue talent"
         ]
       },
       {
@@ -27784,7 +27858,8 @@
         "ref": 4,
         "will": 1,
         "special": [
-          "Rogue's Edge"
+          "Rogue's Edge",
+          "Sneak attack +3d6"
         ]
       },
       {
@@ -27795,7 +27870,10 @@
         "fort": 2,
         "ref": 5,
         "will": 2,
-        "special": []
+        "special": [
+          "Danger sense +2",
+          "Rogue talent"
+        ]
       },
       {
         "level": 7,
@@ -27805,7 +27883,9 @@
         "fort": 2,
         "ref": 5,
         "will": 2,
-        "special": []
+        "special": [
+          "Sneak attack +4d6"
+        ]
       },
       {
         "level": 8,
@@ -27817,7 +27897,8 @@
         "ref": 6,
         "will": 2,
         "special": [
-          "Improved Uncanny Dodge"
+          "Improved Uncanny Dodge",
+          "Rogue talent"
         ]
       },
       {
@@ -27829,7 +27910,10 @@
         "fort": 3,
         "ref": 6,
         "will": 3,
-        "special": []
+        "special": [
+          "Danger sense +3",
+          "Sneak attack +5d6"
+        ]
       },
       {
         "level": 10,
@@ -27841,7 +27925,9 @@
         "ref": 7,
         "will": 3,
         "special": [
-          "Advanced Talents"
+          "Advanced Talents",
+          "Rogue talent",
+          "Rogue's edge"
         ]
       },
       {
@@ -27853,7 +27939,10 @@
         "fort": 3,
         "ref": 7,
         "will": 3,
-        "special": []
+        "special": [
+          "Finesse training",
+          "Sneak attack +6d6"
+        ]
       },
       {
         "level": 12,
@@ -27864,7 +27953,10 @@
         "fort": 4,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Danger sense +4",
+          "Rogue talent"
+        ]
       },
       {
         "level": 13,
@@ -27875,7 +27967,9 @@
         "fort": 4,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Sneak attack +7d6"
+        ]
       },
       {
         "level": 14,
@@ -27886,7 +27980,9 @@
         "fort": 4,
         "ref": 9,
         "will": 4,
-        "special": []
+        "special": [
+          "Rogue talent"
+        ]
       },
       {
         "level": 15,
@@ -27898,7 +27994,11 @@
         "fort": 5,
         "ref": 9,
         "will": 5,
-        "special": []
+        "special": [
+          "Danger sense +5",
+          "Rogue's edge",
+          "Sneak attack +8d6"
+        ]
       },
       {
         "level": 16,
@@ -27910,7 +28010,9 @@
         "fort": 5,
         "ref": 10,
         "will": 5,
-        "special": []
+        "special": [
+          "Rogue talent"
+        ]
       },
       {
         "level": 17,
@@ -27922,7 +28024,9 @@
         "fort": 5,
         "ref": 10,
         "will": 5,
-        "special": []
+        "special": [
+          "Sneak attack +9d6"
+        ]
       },
       {
         "level": 18,
@@ -27934,7 +28038,10 @@
         "fort": 6,
         "ref": 11,
         "will": 6,
-        "special": []
+        "special": [
+          "Danger sense +6",
+          "Rogue talent"
+        ]
       },
       {
         "level": 19,
@@ -27946,7 +28053,10 @@
         "fort": 6,
         "ref": 11,
         "will": 6,
-        "special": []
+        "special": [
+          "Finesse training",
+          "Sneak attack +10d6"
+        ]
       },
       {
         "level": 20,
@@ -27959,7 +28069,9 @@
         "ref": 12,
         "will": 6,
         "special": [
-          "Master Strike"
+          "Master Strike",
+          "Rogue talent",
+          "Rogue's edge"
         ]
       }
     ],
@@ -28122,7 +28234,8 @@
         "ref": 3,
         "will": 1,
         "special": [
-          "Woodland Stride"
+          "Woodland Stride",
+          "Shifter Claws"
         ]
       },
       {
@@ -28134,7 +28247,8 @@
         "ref": 4,
         "will": 1,
         "special": [
-          "Wild Shape"
+          "Wild Shape",
+          "Defensive instinct (+1)"
         ]
       },
       {
@@ -28171,7 +28285,9 @@
         "fort": 5,
         "ref": 5,
         "will": 2,
-        "special": []
+        "special": [
+          "Shifter Claws"
+        ]
       },
       {
         "level": 8,
@@ -28182,7 +28298,9 @@
         "fort": 6,
         "ref": 6,
         "will": 2,
-        "special": []
+        "special": [
+          "Defensive instinct (+2)"
+        ]
       },
       {
         "level": 9,
@@ -28218,7 +28336,9 @@
         "fort": 7,
         "ref": 7,
         "will": 3,
-        "special": []
+        "special": [
+          "Shifter Claws"
+        ]
       },
       {
         "level": 12,
@@ -28230,7 +28350,9 @@
         "fort": 8,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Defensive instinct (+3)"
+        ]
       },
       {
         "level": 13,
@@ -28242,7 +28364,9 @@
         "fort": 8,
         "ref": 8,
         "will": 4,
-        "special": []
+        "special": [
+          "Shifter Claws"
+        ]
       },
       {
         "level": 14,
@@ -28281,7 +28405,9 @@
         "fort": 10,
         "ref": 10,
         "will": 5,
-        "special": []
+        "special": [
+          "Defensive instinct (+4)"
+        ]
       },
       {
         "level": 17,
@@ -28294,7 +28420,9 @@
         "fort": 10,
         "ref": 10,
         "will": 5,
-        "special": []
+        "special": [
+          "Shifter Claws"
+        ]
       },
       {
         "level": 18,
@@ -28323,7 +28451,9 @@
         "fort": 11,
         "ref": 11,
         "will": 6,
-        "special": []
+        "special": [
+          "Shifter Claws"
+        ]
       },
       {
         "level": 20,
@@ -28337,7 +28467,8 @@
         "ref": 12,
         "will": 6,
         "special": [
-          "Final Aspect"
+          "Final Aspect",
+          "Defensive instinct (+5)"
         ]
       }
     ],
@@ -29914,7 +30045,8 @@
         "ref": 3,
         "will": 3,
         "special": [
-          "Unshakable"
+          "Unshakable",
+          "Social talent"
         ]
       },
       {
@@ -29925,7 +30057,9 @@
         "fort": 1,
         "ref": 4,
         "will": 4,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 5,
@@ -29936,7 +30070,8 @@
         "ref": 4,
         "will": 4,
         "special": [
-          "Startling Appearance"
+          "Startling Appearance",
+          "Social talent"
         ]
       },
       {
@@ -29947,7 +30082,9 @@
         "fort": 2,
         "ref": 5,
         "will": 5,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 7,
@@ -29957,7 +30094,9 @@
         "fort": 2,
         "ref": 5,
         "will": 5,
-        "special": []
+        "special": [
+          "Social talent"
+        ]
       },
       {
         "level": 8,
@@ -29968,7 +30107,9 @@
         "fort": 2,
         "ref": 6,
         "will": 6,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 9,
@@ -29979,7 +30120,9 @@
         "fort": 3,
         "ref": 6,
         "will": 6,
-        "special": []
+        "special": [
+          "Social talent"
+        ]
       },
       {
         "level": 10,
@@ -29990,7 +30133,9 @@
         "fort": 3,
         "ref": 7,
         "will": 7,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 11,
@@ -30002,7 +30147,8 @@
         "ref": 7,
         "will": 7,
         "special": [
-          "Frightening Appearance"
+          "Frightening Appearance",
+          "Social talent"
         ]
       },
       {
@@ -30014,7 +30160,9 @@
         "fort": 4,
         "ref": 8,
         "will": 8,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 13,
@@ -30025,7 +30173,9 @@
         "fort": 4,
         "ref": 8,
         "will": 8,
-        "special": []
+        "special": [
+          "Social talent"
+        ]
       },
       {
         "level": 14,
@@ -30036,7 +30186,9 @@
         "fort": 4,
         "ref": 9,
         "will": 9,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 15,
@@ -30048,7 +30200,9 @@
         "fort": 5,
         "ref": 9,
         "will": 9,
-        "special": []
+        "special": [
+          "Social talent"
+        ]
       },
       {
         "level": 16,
@@ -30060,7 +30214,9 @@
         "fort": 5,
         "ref": 10,
         "will": 10,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 17,
@@ -30073,7 +30229,8 @@
         "ref": 10,
         "will": 10,
         "special": [
-          "Stunning Appearance"
+          "Stunning Appearance",
+          "Social talent"
         ]
       },
       {
@@ -30086,7 +30243,9 @@
         "fort": 6,
         "ref": 11,
         "will": 11,
-        "special": []
+        "special": [
+          "Vigilante talent"
+        ]
       },
       {
         "level": 19,
@@ -30098,7 +30257,9 @@
         "fort": 6,
         "ref": 11,
         "will": 11,
-        "special": []
+        "special": [
+          "Social talent"
+        ]
       },
       {
         "level": 20,
@@ -30111,7 +30272,8 @@
         "ref": 12,
         "will": 12,
         "special": [
-          "Vengeance Strike"
+          "Vengeance Strike",
+          "Vigilante talent"
         ]
       }
     ],

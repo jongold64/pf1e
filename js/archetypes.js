@@ -287,7 +287,9 @@ export function classWithArchetypes(cls, archetypes = [], kiTrades = []) {
 // Class features the level table doesn't name (proficiencies, spontaneous casting, bonus languages...): the class's
 // features whose name matches no entry on its table. Shown in the Classes tab's "Also" row and on the Feats tab.
 export function offTableFeatures(cls) {
-  const onTable = cls.progression.flatMap(r => r.special || []).map(x => x.toLowerCase().replace(/[\s+\-]*\d.*$/, '').trim()).filter(Boolean);
+  // "2nd favored enemy" and "+1 save bonus against poison" name their feature after the number.
+  const onTable = cls.progression.flatMap(r => r.special || [])
+    .map(x => x.toLowerCase().replace(/^(?:\d+(?:st|nd|rd|th)|[+-]\d+)\s+/, '').replace(/[\s+\-]*\d.*$/, '').trim()).filter(Boolean);
   return (cls.features || []).filter(f => {
     const n = f.name.toLowerCase();
     return !onTable.some(t => t.startsWith(n) || n.startsWith(t));

@@ -415,7 +415,10 @@ out its long paths, so `foundry.py` reads files with `git cat-file` (first read 
   with the Core Rulebook formulas, spells from Foundry's `casterProgression` tables in `module/config.mjs` (checked to
   match PSRD for sorcerer, bard, paladin, inquisitor, summoner, arcanist, alchemist; prepared casters' cantrips go under
   per day, known-only 0-level spells kept before 1st-level spells start), features from the linked class abilities at
-  the level first gained. `REPEATS` adds repeated features the app needs (unchained monk bonus feats), `OTHER_FROM`
+  the level first gained. `REPEATS` adds repeated features the app needs (unchained monk bonus feats); for the other
+  classes `book_table_repeats` adds the later steps Foundry links only once (elemental overflow +2, rage power at 4th,
+  sneak attack +3d6...) from the class page's table saved in `aonprd-classes/` (a reworded entry keeps Foundry's
+  name, so "utility wild talent" stays "Wild Talents"), `OTHER_FROM`
   copies table columns (unchained monk uses the monk's AC bonus / unarmed damage), `SOURCE_FIXES` (vigilante has no
   source). The "Weapon and Armor Proficiency" feature is written from `weaponProf`/`armorProf` in the wording the app's
   proficiency parsers read. Categories: 'occult', 'unchained', 'base'.
