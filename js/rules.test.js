@@ -15,7 +15,7 @@ import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, c
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown, scoreRange, BUDGETS } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
-import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods } from './effects.js';
+import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods, missChance } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { itemEffects, itemBuffs, abilityEntries } from './item-effects.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
@@ -2272,6 +2272,15 @@ document.getElementById('list').innerHTML = results.map(r =>
   const texts = [...dom, ...paths].flatMap(x => (x.powers || []).map(p => p.text || '')).filter(t => /per day/i.test(t));
   const missed = texts.filter(t => !powerUses(t, 20, { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 }));
   check(`powers with "per day" read (${texts.length - missed.length} of ${texts.length})`, missed.length <= texts.length * 0.05, true);
+}
+
+// Miss chance on attacks against you from concealment effects: the highest applies, they don't stack.
+{
+  const m = l => { const r = missChance(l.map(id => ({ id }))); return r ? `${r.chance} ${r.from.join('+')}` : 'none'; };
+  check('blur: 20% miss chance', m(['blur']), '20 Blur');
+  check('blur and displacement: the higher 50%', m(['blur', 'displacement']), '50 Displacement');
+  check('blur and concealment: 20%, both named', m(['blur', 'concealment']), '20 Blur+Concealment');
+  check('no concealment effect: none', m(['bless', 'haste']), 'none');
 }
 
 document.getElementById('summary').textContent =

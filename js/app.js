@@ -40,7 +40,7 @@ import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent, invocationTalents } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
@@ -3650,6 +3650,7 @@ function showAcDetails(column = null) {
       <tfoot><tr><td><b>Total</b></td><td class="num"><b>${b.totals.ac}</b></td><td class="num"><b>${b.totals.touch}</b></td>
       <td class="num"><b>${b.totals.flat}</b></td></tr></tfoot></table>
     <p class="hint">Touch attacks ignore armor, shields and natural armor. Flat-footed, you lose your Dex bonus and dodge bonuses.</p>
+    ${(m => (m ? `<h3>Miss chance</h3><p>${m.chance}% from ${esc(m.from.join(', '))}: an attack that hits you still misses on a d100 roll of ${m.chance} or less.</p>` : ''))(missChance(view.buffs))}
     ${situationalHtml(view.situational?.ac)}`);
 }
 

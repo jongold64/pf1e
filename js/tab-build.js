@@ -16,7 +16,7 @@ import { familiarStats } from './familiar.js';
 import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
-import { buffById } from './effects.js';
+import { buffById, missChance } from './effects.js';
 import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -170,7 +170,11 @@ export function renderBuild(app, view, parts) {
   const classArmor = parts.classGear.map((g, i) => [g, i]).filter(([g]) => g.kind === 'armor')
     .map(([g, i]) => `<div class="b-feat"><span>${esc(g.name)} <small class="muted">${esc(g.note)}</small></span>${plus('classgear', String(i), g.name)}</div>`).join('');
   const defenseSw = `<div class="b-switches b-defense-sw">${defenseSwitchesHtml(view, state.combat, s => plus('defense', s.key, s.label))}</div>`;
-  const defense = `${defenseSw}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
+  // Concealment from active effects (blur, displacement...): the miss chance on attacks against you.
+  const miss = missChance(view.buffs);
+  const missHtml = miss ? `<div class="b-feats"><div class="b-feat"><span><b>Miss chance ${miss.chance}%</b> <small class="muted">(${esc(miss.from.join(', '))}):
+      attacks against you miss on a d100 roll of ${miss.chance} or less${miss.chance >= 50 ? '; total concealment' : '; concealment'}</small></span></div></div>` : '';
+  const defense = `${defenseSw}${missHtml}${classArmor ? `<h4 class="b-sub">From your class</h4><div class="b-feats">${classArmor}</div>` : ''}
       ${notes.length ? `<h4 class="b-sub">Situational</h4><div class="b-feats">${[...new Set(notes)].map(n => {
         // "Trap sense: +1 on Reflex saves against traps." -> a ? with the Trap sense class feature.
         const name = n.split(':')[0].replace(/\s*\(.*\)$/, '').trim();

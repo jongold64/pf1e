@@ -111,8 +111,8 @@ export const BUFFS = [
   { id: 'guidance', name: 'Guidance', bonuses: () => [b('d20', 'competence', 1)], note: 'one attack roll, saving throw or skill check' },
   { id: 'invisibility', name: 'Invisibility', bonuses: () => [b('attack', 'untyped', 2)], note: 'the +2 is against foes who can\u2019t see you, and they lose their Dex bonus to AC' },
   { id: 'stoneskin', name: 'Stoneskin', bonuses: () => [], note: 'DR 10/adamantine (until it has stopped 10 per caster level, max 150)' },
-  { id: 'blur', name: 'Blur', bonuses: () => [], note: 'attacks against you have a 20% miss chance (concealment)' },
-  { id: 'displacement', name: 'Displacement', bonuses: () => [], note: 'attacks against you have a 50% miss chance (total concealment)' },
+  { id: 'blur', name: 'Blur', bonuses: () => [], miss: 20, note: 'attacks against you have a 20% miss chance (concealment)' },
+  { id: 'displacement', name: 'Displacement', bonuses: () => [], miss: 50, note: 'attacks against you have a 50% miss chance (total concealment)' },
   { id: 'bless-weapon', name: 'Align weapon / bless weapon', bonuses: () => [], note: 'the weapon overcomes alignment damage reduction' },
 
   // Conferred abilities: class abilities (their level is the class level).
@@ -208,6 +208,15 @@ for (const id of ['barbarian-rage', 'unchained-rage', 'inspired-rage', 'inspire-
 // A chosen amount that isn't one of the buff's amounts (or none yet) counts as its first.
 export const buffAmount = (buff, cl) => (buff.levels ? (buff.levels.includes(cl) ? cl : buff.levels[0]) : cl);
 export const buffById = new Map(BUFFS.map(x => [x.id, x]));
+
+// The miss chance attacks against you have from active effects with `miss` (blur 20%, displacement 50%...):
+// { chance, from: [names] }, or null. Miss chances from concealment don't stack: the highest applies.
+export function missChance(buffs = []) {
+  const on = [...new Set(buffs.map(x => x.id))].map(id => buffById.get(id)).filter(x => x?.miss);
+  if (!on.length) return null;
+  const chance = Math.max(...on.map(x => x.miss));
+  return { chance, from: on.filter(x => x.miss === chance).map(x => x.name) };
+}
 
 // Every bonus from the buffs that are on ([{ id, cl }]) and custom effects ([{ name, target, type, value, on }]),
 // each with its source's name.
