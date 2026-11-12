@@ -156,7 +156,9 @@ export function slotKinds(slot) {
 // share is one record, and a name with versions per mystery ("Assumed Form (Whimsy)") keeps the mystery's own.
 const baseName = n => n.replace(/\s*\(.*\)$/, '').toLowerCase().replace(/[^a-z]/g, '');
 // elements: a kineticist's chosen elements (lower case): a wild talent of another element says which element it needs.
-export function talentOptions(slot, all, { taken = [], mystery = '', revelationNames = null, elements = null } = {}) {
+// invocation: the character has Kinetic Invocation, so its spells (invocationTalents) are offered too.
+export function talentOptions(slot, all, { taken = [], mystery = '', revelationNames = null, elements = null, invocation = false } = {}) {
+  if (!invocation) all = all.filter(t => !t.invocation);
   if (slot.rule.needs === 'mystery' && revelationNames) {
     const want = new Set(revelationNames.map(baseName));
     const fits = all.filter(t => slot.rule.kinds.includes(t.kind) && want.has(baseName(t.name)));
@@ -206,6 +208,40 @@ export function withBasicTalent(element, all) {
   const at = element.powers.filter(p => (p.level || 1) <= 1).length;
   const power = { name: `${t.name} (bonus wild talent)`, level: 1, text: t.text, talentId: t.id };
   return { ...element, powers: [...element.powers.slice(0, at), power, ...element.powers.slice(at)] };
+}
+
+// Kinetic Invocation (feat): the spells it makes utility wild talents, read from its benefit, one paragraph per element:
+// "Aether: Etheric shards (5th), instant armor (2nd), ... telekinetic charge (4th; 2 burn)." Each: { element (lower
+// case), name, level (the wild talent's level), burn (1 unless the list says otherwise), note ("self only"...) }.
+export function invocationSpells(benefit) {
+  const out = [];
+  for (const m of String(benefit || '').matchAll(/(?:^|\n)(Aether|Air|Earth|Fire|Void|Water|Wood): ([^\n]+)/g)) {
+    for (const part of m[2].replace(/\.\s*$/, '').split(/,\s*(?![^()]*\))/)) {
+      const x = part.trim().match(/^(.+?) \((\d+)(?:st|nd|rd|th)(?:; ([^)]*))?\)$/);
+      if (!x) continue;
+      const notes = (x[3] || '').split(/;\s*/).filter(Boolean);
+      const burn = notes.find(n => /^\d+ burn$/.test(n));
+      // Named as on the Spells tab: "Blessing of the Salamander".
+      const name = x[1].replace(/\b[a-z]/g, (c, i) => (i && /^(?:of|the|and)\b/.test(x[1].slice(i)) ? c : c.toUpperCase()));
+      out.push({ element: m[1].toLowerCase(), name, level: Number(x[2]),
+                 burn: burn ? Number(burn.split(' ')[0]) : 1, note: notes.filter(n => n !== burn).join('; ') });
+    }
+  }
+  return out;
+}
+
+// Those spells as wild talent records (the shape of data/talents.json), marked `invocation` (only a character with
+// the feat sees them) with the spell's id (spellId) for its full text. A wild talent of level N needs kineticist level
+// 2N, so `level` (the class level it needs) is twice the spell's.
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export function invocationTalents(benefit) {
+  return invocationSpells(benefit).map(x => ({
+    id: `invocation-${x.element}-${slug(x.name)}`, name: x.name, kind: 'wild-talent', classes: ['kineticist'],
+    source: 'Kinetic Invocation (Psychic Anthology)', invocation: true, spellId: slug(x.name), level: x.level > 1 ? 2 * x.level : null,
+    text: `Element ${x.element}; Type utility (Sp); Level ${x.level}; Burn ${x.burn}${x.note ? `; ${x.note}` : ''}\n\n`
+      + `The spell ${x.name.toLowerCase()} as a utility wild talent (Kinetic Invocation): your caster level is your kineticist level, `
+      + `the save DC is 10 + ${x.level} + your Constitution modifier, and any lasting effect ends when your burn is removed.`,
+  }));
 }
 
 // The mysteries revelations are listed under (when no mysteries list is loaded).

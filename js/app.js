@@ -42,7 +42,7 @@ import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy,
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
 import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
-import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent } from './talents.js';
+import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent, invocationTalents } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
@@ -2903,7 +2903,8 @@ function openTalentPicker(slotId, search = '') {
     const taken = [...Object.entries(state.talents).filter(([k]) => k !== slotId).map(([, v]) => v),
       ...(cid === 'kineticist' ? kineticElements().flatMap(e => e.powers.map(p => p.talentId).filter(Boolean)) : [])];
     const opts = talentOptions(slot, data.talents, { taken, mystery: state.mystery, revelationNames: data.mysteryByName.get(state.mystery)?.revelations,
-      elements: cid === 'kineticist' ? kineticElements().map(e => e.name.toLowerCase()) : null })
+      elements: cid === 'kineticist' ? kineticElements().map(e => e.name.toLowerCase()) : null,
+      invocation: cid === 'kineticist' && view.haveFeats.includes('Kinetic Invocation') })
       .filter(o => !q || o.talent.name.toLowerCase().includes(q) || o.talent.text.toLowerCase().includes(q))
       .sort((a, b) => (!!a.why - !!b.why) || a.talent.name.localeCompare(b.talent.name));
     list = opts.map(({ talent: t, why }) => `<li class="talent-option${why ? ' unavailable' : ''}">
@@ -2958,9 +2959,11 @@ function popTalent(id, slotId, preview = null) {
     ${paragraphs(t.text)}
     ${classNames.length ? `<p class="hint">Listed for: ${esc(classNames.join(', '))}.</p>` : ''}
     <p class="hint">Not counted in the numbers automatically: apply it in play, or add a custom effect on the Build tab when it applies.</p>`,
-    preview ? talentPreviewActions(id, preview)
+    // A Kinetic Invocation spell: a button for the spell's own text.
+    [...(t.spellId ? [{ label: 'Read the spell', run: () => setTimeout(() => buildDetail('spell', t.spellId), 0) }] : []),
+     ...(preview ? talentPreviewActions(id, preview)
       : slotId ? [{ label: 'Change it', run: () => setTimeout(() => openTalentPicker(slotId), 0) },
-                  { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : []);
+                  { label: 'Remove it', run: () => { const x = { ...state.talents }; delete x[slotId]; update({ talents: x }); } }] : [])]);
 }
 
 function talentPreviewActions(value, { slotId, search, why, browse }) {
@@ -4478,6 +4481,8 @@ async function start() {
   data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));
   data.domainsById = new Map(data.domains.map(d => [d.id, d]));
   data.drawbacksById = new Map(data.drawbacks.map(d => [d.id, d]));
+  // Kinetic Invocation's spells, as utility wild talents (offered only with the feat).
+  data.talents.push(...invocationTalents(data.feats.find(f => f.name === 'Kinetic Invocation')?.benefit));
   data.talentsById = new Map(data.talents.map(t => [t.id, t]));
   data.mysteryByName = new Map(data.mysteries.map(m => [m.name, m]));
   // Bloodlines in the shape of the other one-time class choices.

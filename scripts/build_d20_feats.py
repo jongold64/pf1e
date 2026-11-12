@@ -141,8 +141,11 @@ def parse_page(html, unwrap=False):
             t.decompose()
     # Some pages wrap the feat's paragraphs in a plain <div> (sometimes with a margin); the walk below reads the
     # article's own children, so with `unwrap` (used when a first reading found no benefit) those are unwrapped.
-    for d in art.find_all('div') if unwrap else []:
-        if not d.decomposed and not d.get('class') and not d.get('id'):
+    # An indented block (a plain <div> with only a margin, such as Kinetic Invocation's spell lists by element) is
+    # always unwrapped, so its paragraphs continue the section before it.
+    for d in art.find_all('div'):
+        if not d.decomposed and not d.get('class') and not d.get('id') \
+                and (unwrap or re.fullmatch(r'\s*margin(?:-left)?:\s*\d+px;?\s*', d.get('style') or '')):
             d.unwrap()
     # Text sitting loose in the article ("<b>Benefit</b>: ..." with no paragraph around it) goes into a paragraph.
     run = []

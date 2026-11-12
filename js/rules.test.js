@@ -2179,6 +2179,21 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('aether powers: blast, then basic telekinesis (1st), then force ward', aether.powers.map(p => `${p.name.replace(/ \(.*/, '')}@${p.level}`).join(),
     'Telekinetic Blast@1,Basic Telekinesis@1,Force Ward@2');
   check('adding the basic talent twice adds it once', withBasicTalent(aether, tal).powers.length, aether.powers.length);
+  const { invocationSpells, invocationTalents } = await import('./talents.js');
+  const featData = await fetch('data/feats.json').then(r => r.json());
+  const inv = invocationSpells(featData.find(f => f.name === 'Kinetic Invocation').benefit);
+  check('Kinetic Invocation: 5 aether spells, telekinetic charge 4th level with 2 burn', `${inv.filter(x => x.element === 'aether').length} ${JSON.stringify(inv.find(x => x.name === 'Telekinetic Charge'))}`,
+    '5 {"element":"aether","name":"Telekinetic Charge","level":4,"burn":2,"note":""}');
+  check('Kinetic Invocation names as on the Spells tab', inv.find(x => x.element === 'fire').name, 'Blessing of the Salamander');
+  check('Kinetic Invocation: every element has spells; notes kept', `${new Set(inv.map(x => x.element)).size} ${inv.find(x => x.name === 'Statue').note} ${inv.find(x => x.name === 'Statue').burn}`, '7 self only 0');
+  const invTal = invocationTalents(featData.find(f => f.name === 'Kinetic Invocation').benefit);
+  const rev = invTal.find(t => t.name === 'Kinetic Reverberation');
+  check('kinetic reverberation: an aether wild talent from 4th level, with its spell', `${rev.kind} ${rev.level} ${rev.spellId} ${rev.text.split('\n')[0]}`, 'wild-talent 4 kinetic-reverberation Element aether; Type utility (Sp); Level 2; Burn 1');
+  const withInv = [...tal, ...invTal];
+  const util4 = { rule: { kinds: ['wild-talent'] }, classId: 'kineticist', classLevel: 4 };
+  check('invocation spells only with the feat', `${to(util4, withInv, { elements: ['aether'] }).some(o => o.talent.invocation)} ${to(util4, withInv, { elements: ['aether'], invocation: true }).find(o => o.talent.id === rev.id)?.why}`, 'false ');
+  check('an invocation spell of another element or too high a level says why', [to(util4, withInv, { elements: ['aether'], invocation: true }).find(o => o.talent.name === 'Etheric Shards')?.why,
+    to(util4, withInv, { elements: ['aether'], invocation: true }).find(o => o.talent.name === 'Air Step')?.why].join('|'), 'needs 10th level|needs the air element');
   const { burnState, sizeBonusText } = await import('./burn.js');
   const bs = (kin, con, lv, b) => { const s = burnState(kin, con, lv, b); return `${s.max} ${s.perRound} ${s.nonlethal} +${s.overflow.attack}/+${s.overflow.damage} [${s.sizeBonus}] ${s.ignoreCrit}%`; };
   check('kineticist 1, Con +2, no burn: max 5, 1 a round, no overflow yet', bs(1, 2, 1, 0), '5 1 0 +0/+0 [] 0%');
