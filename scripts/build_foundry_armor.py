@@ -14,6 +14,7 @@ from common import slug
 from foundry import load_pack, load_sources, load_notices, find_notices, paizo_source, html_text
 
 ORIGIN = 'Foundry VTT pf1'
+MANUAL_ORIGIN = 'entered from the book'
 CATEGORY = {'lightArmor': 'light', 'mediumArmor': 'medium', 'heavyArmor': 'heavy'}
 METALS = {'steel', 'iron', 'bronze', 'gold', 'silver', 'mithral', 'adamantine', 'coldIron', 'alchemicalSilver'}
 # Foundry names for pieces build_armor.py already has under another name.
@@ -21,6 +22,18 @@ SAME_AS = {'stonelamellar': 'lamellar', 'steelmadu': 'madu', 'lightsteelshieldqu
            'lightwoodenshieldquickdraw': 'lightwoodenquickdrawshield'}
 # Specific armor that's really a magic item (no aura in Foundry's data).
 SKIP = {'Elven Chain'}
+# Armor from Paizo books Foundry's packs lack, entered by hand from the book (stats as in Archives of Nethys;
+# descriptions in our own words). Added only if the book has an OGL notice, like the rest.
+MANUAL = [
+    {'name': 'Spider-Silk Bodysuit', 'source': "Adventurer's Armory 2", 'category': 'light',
+     'bonus': 3, 'max_dex': 6, 'check_penalty': -1, 'spell_failure': 10, 'price_gp': 850, 'weight_lbs': 4, 'metal': False,
+     'description': 'A close-fitting suit woven from alchemically treated silk of giant spiders or similar creatures. '
+                    'A wearer with the drow weapon familiarity racial trait treats its maximum Dexterity bonus as 2 higher.'},
+    {'name': 'Reinforced Tunic', 'source': "Adventurer's Armory 2", 'category': 'light',
+     'bonus': 1, 'max_dex': 5, 'check_penalty': 0, 'spell_failure': 5, 'price_gp': 1, 'weight_lbs': 5, 'metal': False,
+     'description': 'A belted cloth tunic with stiff cords woven through it. Its armor bonus is 2 higher against attack '
+                    'rolls made to confirm a critical hit against the wearer.'},
+]
 
 
 def key(name):
@@ -32,7 +45,7 @@ def key(name):
 
 def main():
     out_path = sys.argv[1]
-    armor = [a for a in json.load(open(out_path, encoding='utf-8')) if a.get('origin') != ORIGIN]
+    armor = [a for a in json.load(open(out_path, encoding='utf-8')) if a.get('origin') not in (ORIGIN, MANUAL_ORIGIN)]
     have = {key(a['name']) for a in armor}
     books, notices = load_sources(), load_notices()
     added, skipped = [], []
@@ -78,6 +91,17 @@ def main():
         armor.append(rec)
         have.add(key(name))
         added.append(f'{name} ({category}, {book})')
+    for m in MANUAL:
+        if key(m['name']) in have:
+            continue
+        if not find_notices(notices, m['source']):
+            skipped.append(f"{m['name']} (no Paizo book with a notice)")
+            continue
+        armor.append({'id': slug(m['name']), **{k: v for k, v in m.items() if k not in ('metal', 'description')},
+                      'speed_30': 30 if m['category'] == 'light' else 20, 'speed_20': 20 if m['category'] == 'light' else 15,
+                      'description': m['description'], 'metal': m['metal'], 'origin': MANUAL_ORIGIN})
+        have.add(key(m['name']))
+        added.append(f"{m['name']} ({m['category']}, {m['source']}, entered by hand)")
     json.dump(armor, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
     print(len(added), 'armor and shields added:', '; '.join(added))
     print('left out:', '; '.join(skipped))
