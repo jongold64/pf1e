@@ -188,7 +188,8 @@ export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' 
 // blasts: the chosen elements' simple blasts ([{ name, type: 'physical' | 'energy', damage }]); without them, a generic
 // physical and energy blast.
 // overflow: elemental overflow's { attack, damage } bonus on kinetic blasts for the burn taken (burn.js).
-export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [], overflow = null } = {}) {
+// talents: the names of the kineticist's chosen wild talents (Kinetic Fist Infusion adds its extra damage row).
+export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [], overflow = null, talents = [] } = {}) {
   const out = [];
   const lv = id => levelOf(counts, [id]);
   const sneak = Math.ceil(lv('rogue') / 2) + Math.ceil(lv('rogue-unchained') / 2) + Math.ceil(lv('ninja') / 2) + Math.ceil(lv('assassin') / 2)
@@ -217,6 +218,13 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
       const bonus = (physical ? n + con : Math.floor(con / 2)) + (overflow?.damage || 0);
       out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}${up ? ` · elemental overflow +${up}/+${2 * up}` : ''}`,
         attack: ranged + up, dice: `${n}d6${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}` });
+    }
+    // Kinetic fist (form infusion, burn 1): 1d6 per 3 dice of the blast (at least 1d6) on each unarmed strike and natural
+    // attack until your next turn, of the blast's damage type, with none of the blast's modifiers (Con, overflow).
+    if (talents.includes('Kinetic Fist Infusion')) {
+      const type = [...new Set(list.map(b => b.damage).filter(Boolean))].join(' or ');
+      out.push({ name: 'Kinetic fist', note: `extra damage on each unarmed strike and natural attack until your next turn · burn 1 · use with an attack, charge or full attack${type ? ` · ${type}` : ''}`,
+        attack: null, dice: `${Math.max(1, Math.floor(n / 3))}d6` });
     }
   }
   return out;

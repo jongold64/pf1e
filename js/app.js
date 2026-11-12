@@ -821,7 +821,10 @@ function allClassAttacks(stats) {
   const melee = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
   return [...classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
     blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()],
-    overflow: burnNow()?.overflow }),
+    overflow: burnNow()?.overflow,
+    talents: Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v)?.name).filter(Boolean) })
+      // Kinetic fist's Details: the infusion's own text.
+      .map(c => (c.name === 'Kinetic fist' ? { ...c, text: data.talentsById.get('kinetic-fist-infusion')?.text || '' } : c)),
     ...naturalAttackRows(classNaturalAttacks(), { melee, str: stats.mod.str })];
 }
 

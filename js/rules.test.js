@@ -2202,6 +2202,10 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('kineticist 12: 4 a round; 11th with 5 burn: +4/+2/+2', `${burnState(12, 0, 12, 0).perRound} ${burnState(11, 4, 11, 5).sizeBonus}`, '4 4,2,2');
   check('kineticist 16 with 7 burn: +6/+4/+2 size', sizeBonusText(burnState(16, 5, 16, 7).sizeBonus), '+6 size bonus to one physical ability score, +4 to a second and +2 to the third');
   check('not a kineticist: no burn', burnState(0, 2, 5, 0), null);
+  const fist = lv => kca([{ cls: cls('kineticist'), level: lv }], { bab: [3], mod: { dex: 2, con: 4 }, blasts: kin.find(e => e.id === 'element-aether').blasts,
+    talents: ['Kinetic Fist Infusion'], overflow: burnState(lv, 4, lv, 2).overflow }).find(c => c.name === 'Kinetic fist');
+  check('kinetic fist: 1d6 per 3 blast dice, at least 1d6, no Con or overflow', [fist(1).dice, fist(5).dice, fist(11).dice, fist(17).dice, fist(5).attack].join(), '1d6,1d6,2d6,3d6,');
+  check('no kinetic fist row without the infusion', kca([{ cls: cls('kineticist'), level: 5 }], { mod: { con: 2 } }).some(c => c.name === 'Kinetic fist'), false);
   check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
     blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');
 }
