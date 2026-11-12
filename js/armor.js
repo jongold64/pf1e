@@ -13,6 +13,19 @@ const PROFICIENCY = {
   shield: 'Shield Proficiency',
 };
 
+// Armor whose max Dex rises for a wearer of one race with one of its racial traits: the spider-silk bodysuit
+// (Adventurer's Armory 2) gives +2 to a drow who has the weapon familiarity racial trait (not traded for an alternate).
+const RACIAL_MAX_DEX = { 'spider-silk-bodysuit': { race: 'drow', trait: 'Weapon Familiarity', bonus: 2, why: 'drow weapon familiarity' } };
+
+// The armor with that bonus added to its max Dex (and `racial_dex`: what it is, for Details), or the armor unchanged.
+// race: the race with its chosen alternate traits swapped in.
+export function withRacialMaxDex(armor, race) {
+  const r = armor && RACIAL_MAX_DEX[armor.id];
+  if (!r || race?.id !== r.race || armor.max_dex === null || armor.max_dex === undefined
+      || !(race.traits || []).some(t => !t.kind && t.name === r.trait)) return armor;
+  return { ...armor, max_dex: armor.max_dex + r.bonus, racial_dex: `+${r.bonus} for ${r.why}` };
+}
+
 // Combined effect of worn armor and a shield (either can be null). `armorEnh` / `shieldEnh` are magic
 // enhancement bonuses (+1 to +5); magic armor is always masterwork, which lowers its check penalty by 1.
 // armorMw / shieldMw: masterwork but not magic (magic armor is always masterwork).

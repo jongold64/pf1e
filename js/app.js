@@ -15,7 +15,7 @@ import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIAL
 import { setUntrainedOk,
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
-import { armorEffects, speedInArmor } from './armor.js';
+import { armorEffects, speedInArmor, withRacialMaxDex } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { defenseEffects, ARMOR_REVELATIONS, revelationArmor } from './defense.js';
@@ -2103,7 +2103,8 @@ function computeView() {
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const armorArgs = {
-    armor: withMaterial(data.armorById.get(state.armorId), state.armorMaterial) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
+    // (A drow in a spider-silk bodysuit: +2 max Dex.)
+    armor: withRacialMaxDex(withMaterial(data.armorById.get(state.armorId), state.armorMaterial), race) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
     shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
     // A fighter's armor training lowers the check penalty, raises the max Dex and lets him move normally in armor.
     training: armorTrainingStage(counts),

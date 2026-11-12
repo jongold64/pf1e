@@ -353,7 +353,7 @@ export function renderArmorTab(app, view) {
                                                 text: String(Math.min(armorOnly, view.load.checkPenalty) - armorOnly) }] : []),
   ], note: 'It applies to Str- and Dex-based skills, and to attack rolls with armor you are not proficient in.' });
   // Dex bonus to AC: Dex, capped by the armor's, the shield's and the load's limits.
-  const caps = [[gear.armor?.max_dex, gear.armor?.name], [gear.shield?.max_dex, gear.shield?.name],
+  const caps = [[gear.armor?.max_dex, gear.armor && `${gear.armor.name}${gear.armor.racial_dex ? ` (${gear.armor.racial_dex})` : ''}`], [gear.shield?.max_dex, gear.shield?.name],
     [view.load?.maxDex, view.load ? `your ${view.load.load} load` : '']].filter(([v]) => v !== null && v !== undefined);
   armorWhy.set('dex', { title: `Dex bonus to AC: ${signed(stats.dexAc)}`, total: signed(stats.dexAc), rows: [
     { label: 'Dexterity modifier', text: signed(stats.mod.dex) },

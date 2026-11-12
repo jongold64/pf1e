@@ -44,7 +44,7 @@ import { evalFormula, spellContext, spellLines, srCheck } from './spell-math.js'
 import { rollDamage, rollSpec } from './dice.js';
 import { unarmedForSize, improvedCritical } from './weapons.js';
 import { featSkillBonus } from './skills.js';
-import { spellFailureByClass } from './armor.js';
+import { spellFailureByClass, withRacialMaxDex } from './armor.js';
 import { slotCharacterLevel, setBloodlineFeats, setStyleFeats } from './feats.js';
 
 const results = [];
@@ -891,6 +891,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('magus 6 in chainmail (medium) fails, magus 7 doesn\'t',
         `${spellFailureByClass(chain, classCounts(Array(6).fill(cls('magus'))))[0].chance} ${spellFailureByClass(chain, classCounts(Array(7).fill(cls('magus'))))[0].chance}`, '30 0');
   check('Small armor weighs half', equipmentTotals([], new Map(), { armor: armorById('chainmail'), size: 'Small' }).weight, 20);
+  {
+    const suit = armorById('spider-silk-bodysuit');
+    const drow = { id: 'drow', traits: [{ name: 'Darkvision' }, { name: 'Weapon Familiarity' }] };
+    const dex = (race, a = suit) => withRacialMaxDex(a, race)?.max_dex;
+    check('spider-silk bodysuit: max Dex +6, +8 for a drow with weapon familiarity', [dex({ id: 'elf', traits: [{ name: 'Weapon Familiarity' }] }), dex(drow)].join(), '6,8');
+    check('a drow who traded weapon familiarity away, or other armor: no bonus', [dex({ id: 'drow', traits: [{ name: 'Darkvision' }] }), dex(drow, armorById('leather'))].join(), '6,6');
+    check('the drow bonus says why, and armor training adds on top', `${withRacialMaxDex(suit, drow).racial_dex} ${armorEffects({ armor: withRacialMaxDex(suit, drow), training: 1 }).maxDex}`, '+2 for drow weapon familiarity 9');
+  }
   const fr = [cls('fighter'), cls('rogue'), cls('fighter'), cls('fighter')];
   check('fighter bonus feat 2 comes at character level 3 (fighter/rogue/fighter)',
         slotCharacterLevel({ kind: 'class', clsId: 'fighter', level: 2 }, fr), 3);
