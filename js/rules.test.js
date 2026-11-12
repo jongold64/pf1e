@@ -2179,6 +2179,16 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('aether powers: blast, then basic telekinesis (1st), then force ward', aether.powers.map(p => `${p.name.replace(/ \(.*/, '')}@${p.level}`).join(),
     'Telekinetic Blast@1,Basic Telekinesis@1,Force Ward@2');
   check('adding the basic talent twice adds it once', withBasicTalent(aether, tal).powers.length, aether.powers.length);
+  const { burnState, sizeBonusText } = await import('./burn.js');
+  const bs = (kin, con, lv, b) => { const s = burnState(kin, con, lv, b); return `${s.max} ${s.perRound} ${s.nonlethal} +${s.overflow.attack}/+${s.overflow.damage} [${s.sizeBonus}] ${s.ignoreCrit}%`; };
+  check('kineticist 1, Con +2, no burn: max 5, 1 a round, no overflow yet', bs(1, 2, 1, 0), '5 1 0 +0/+0 [] 0%');
+  check('kineticist 5, 2 burn: 10 nonlethal, overflow capped at +1/+2', bs(5, 3, 5, 2), '6 1 10 +1/+2 [] 0%');
+  check('kineticist 9, 3 burn: 3 a round, overflow +3/+6, +2/+2 size, 15% crit', bs(9, 4, 9, 3), '7 3 27 +3/+6 [2,2] 15%');
+  check('kineticist 12: 4 a round; 11th with 5 burn: +4/+2/+2', `${burnState(12, 0, 12, 0).perRound} ${burnState(11, 4, 11, 5).sizeBonus}`, '4 4,2,2');
+  check('kineticist 16 with 7 burn: +6/+4/+2 size', sizeBonusText(burnState(16, 5, 16, 7).sizeBonus), '+6 size bonus to one physical ability score, +4 to a second and +2 to the third');
+  check('not a kineticist: no burn', burnState(0, 2, 5, 0), null);
+  check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
+    blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');
 }
 
 // Thassilonian specialist: two school slots a level.

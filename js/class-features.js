@@ -187,7 +187,8 @@ export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' 
 // size modifier on attacks. Each: { name, note, attack (or null), dice, uses? }.
 // blasts: the chosen elements' simple blasts ([{ name, type: 'physical' | 'energy', damage }]); without them, a generic
 // physical and energy blast.
-export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [] } = {}) {
+// overflow: elemental overflow's { attack, damage } bonus on kinetic blasts for the burn taken (burn.js).
+export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [], overflow = null } = {}) {
   const out = [];
   const lv = id => levelOf(counts, [id]);
   const sneak = Math.ceil(lv('rogue') / 2) + Math.ceil(lv('rogue-unchained') / 2) + Math.ceil(lv('ninja') / 2) + Math.ceil(lv('assassin') / 2)
@@ -212,9 +213,10 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
     const list = blasts.length ? blasts : [{ name: 'Kinetic blast (physical)', type: 'physical', damage: '' }, { name: 'Kinetic blast (energy)', type: 'energy', damage: '' }];
     for (const b of list) {
       const physical = b.type !== 'energy';
-      const bonus = physical ? n + con : Math.floor(con / 2);
-      out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}`,
-        attack: ranged, dice: `${n}d6${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}` });
+      const up = overflow?.attack || 0;
+      const bonus = (physical ? n + con : Math.floor(con / 2)) + (overflow?.damage || 0);
+      out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}${up ? ` · elemental overflow +${up}/+${2 * up}` : ''}`,
+        attack: ranged + up, dice: `${n}d6${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}` });
     }
   }
   return out;

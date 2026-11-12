@@ -1136,6 +1136,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-use-left button:not(.link) { padding: 1px 10px; min-height: 26px; }
 .b-feat.b-action .b-use-left { margin-left: auto; }
 .b-big .b-use-left button:not(.link) { min-height: 40px; padding: 0 16px; font-size: 1rem; }
+/* Burn (kineticist): − count / max, + Accept burn, Rest, ?; what it costs and gives on the line under. */
+.b-feat.b-burn { flex-wrap: wrap; padding: 4px 0; }
+.b-burn-count { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.b-burn-count b { font-size: 1.2rem; min-width: 1.2em; text-align: center; }
+.b-burn-count button { padding: 1px 10px; min-height: 30px; }
+.b-burn-note { flex-basis: 100%; }
+.b-big .b-burn-count button { min-height: 40px; padding: 0 16px; font-size: 1rem; }
 .b-use button:not(.q-details) { padding: 1px 10px; min-height: 26px; }
 .b-item-list { list-style: none; padding: 0; margin: 0; }
 .b-item-list > li { border-bottom: 1px solid var(--border); padding: 2px 0; }

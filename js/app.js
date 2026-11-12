@@ -32,6 +32,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
+import { burnState } from './burn.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
@@ -111,6 +112,7 @@ let alsoItems = [];  // the Feats tab's "From your class" list, for its popups
 const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   hpCurrent: null,           // current hit points during play; null means full
+  burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
   spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
   heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
@@ -233,6 +235,7 @@ function load(saved) {
   // A portrait: only a picture's data URL of a sensible size.
   state.portrait = typeof state.portrait === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(state.portrait) && state.portrait.length < 400000 ? state.portrait : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
+  state.burn = Number.isInteger(state.burn) && state.burn > 0 ? Math.min(40, state.burn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
     .map(t => ({ id: t.id, name: String(t.name || t.id).slice(0, 60), amount: t.amount })).slice(0, 20);
@@ -807,11 +810,18 @@ function classFeatureText(name) {
   return '';
 }
 
+// A kineticist's burn now: limits, nonlethal damage and elemental overflow (burn.js), or null for anyone else.
+function burnNow() {
+  const kin = view.counts.find(e => e.cls.id === 'kineticist')?.level || 0;
+  return burnState(kin, view.stats.mod.con, state.classLevels.length, state.burn);
+}
+
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
 function allClassAttacks(stats) {
   const melee = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
   return [...classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
-    blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()] }),
+    blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()],
+    overflow: burnNow()?.overflow }),
     ...naturalAttackRows(classNaturalAttacks(), { melee, str: stats.mod.str })];
 }
 
@@ -832,7 +842,7 @@ function buildParts() {
     castingAbility: cid => CASTING_ABILITY[cid],
     prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
       .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
-    classAttacks: allClassAttacks(view.stats), powerAttacks: powerAttackRows(),
+    classAttacks: allClassAttacks(view.stats), powerAttacks: powerAttackRows(), burn: burnNow(),
     choices: (cid, lv) => choiceItems(cid, lv),
   };
 }
@@ -880,7 +890,9 @@ function initBuild() {
     if (ud) { spendDaily(ud.dataset.bUseDaily); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
-    if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared) });
+    if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0 });
+    const burn = e.target.closest('[data-b-burn]');
+    if (burn) changeBurn(burn.dataset.bBurn);
   });
   box.addEventListener('change', e => {
     const t = e.target;
@@ -919,6 +931,11 @@ function initBuild() {
 const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneous, bladebound: (state.archetypes.magus || []).includes('magus-bladebound'), powers: dailyPowers() });
 
 // One use (round, point) of a daily ability spent, up to its total.
+// Burn: + accepts a point, − takes one off (a mistake), rest clears it all (a full night's rest).
+function changeBurn(how) {
+  update({ burn: how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : 1))) });
+}
+
 function spendDaily(key) {
   const d = dailyUsesFor().find(x => x.key === key);
   if (d) update({ daily: { ...state.daily, [key]: Math.min(d.max, (state.daily[key] || 0) + 1) } });
@@ -4498,6 +4515,8 @@ async function start() {
     if (d) { buildDetail(d.dataset.bDetail, d.dataset.arg); return; }
     const ud = e.target.closest('.b-big [data-b-use-daily]');
     if (ud) { spendDaily(ud.dataset.bUseDaily); openBigCard(ud.closest('[data-big-pop]').dataset.bigPop); return; }
+    const bn = e.target.closest('.b-big [data-b-burn]');
+    if (bn) { changeBurn(bn.dataset.bBurn); openBigCard(bn.closest('[data-big-pop]').dataset.bigPop); return; }
     const uo = e.target.closest('.b-big [data-b-uses]');
     if (uo) { popDailyUses(app, view, buildParts(), uo.dataset.bUses); return; }
     const use = e.target.closest('.b-big [data-b-use-item]');

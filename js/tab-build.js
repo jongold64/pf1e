@@ -17,6 +17,7 @@ import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
 import { buffById } from './effects.js';
+import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
 const bigCards = {};
@@ -140,11 +141,26 @@ export function renderBuild(app, view, parts) {
     ...(parts.powerAttacks || []).map(p => p.name)]);
   const abilities = daily.filter(d => d.unit !== 'spells' && !shown.has(d.name))
     .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('');
+  // A kineticist's burn: − / + to change it and Rest to clear it, with what it costs (nonlethal damage) and what
+  // elemental overflow gives for it (already added to the kinetic blast rows above).
+  const bs = parts.burn;
+  const burnHtml = bs ? `<h4 class="b-sub">Burn</h4><div class="b-feats"><div class="b-feat b-burn">
+      <span class="b-burn-count"><button type="button" data-b-burn="less" aria-label="One less burn"${bs.burn ? '' : ' disabled'}>−</button>
+        <b>${bs.burn}</b> <span class="muted">/ ${bs.max}</span>
+        <button type="button" class="primary" data-b-burn="more">+ Accept burn</button>
+        <button type="button" data-b-burn="rest"${bs.burn ? '' : ' disabled'}>Rest</button></span>${plus('feature', 'kineticist|Burn', 'Burn')}
+      <small class="muted b-burn-note">${esc([`up to ${bs.perRound} a round`,
+        bs.burn ? `${bs.nonlethal} nonlethal damage (burn × character level)` : '',
+        bs.overflow.attack ? `elemental overflow +${bs.overflow.attack} attack, +${bs.overflow.damage} damage on kinetic blasts` : bs.overflow.max ? `elemental overflow up to +${bs.overflow.max}` : '',
+        sizeBonusText(bs.sizeBonus), bs.ignoreCrit ? `${bs.ignoreCrit}% to ignore a critical hit or sneak attack` : ''].filter(Boolean).join(' · '))}</small>
+      ${bs.burn > bs.max ? `<small class="warning b-burn-note">More than 3 + Con modifier (${bs.max}): only burn forced on you counts past that.</small>` : ''}
+    </div></div>` : '';
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
   // Weapons and class abilities in two tables, so a class ability's long note doesn't widen the weapons' columns.
   const attacks = noWeapons + (switches && (atk || classAtk || powerAtk || powers) ? `<div class="b-switches">${switches}</div>` : '')
     + (atk ? `<table class="b-table"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody></table>` : '')
     + (classAtk || powerAtk || powers ? `<table class="b-table b-class-table"><tbody class="b-class-attacks">${classAtk}${powerAtk}${powers}</tbody></table>` : '')
+    + burnHtml
     + (abilities ? `<h4 class="b-sub">Class abilities</h4><div class="b-feats">${abilities}</div>` : '');
 
   // Defense: the defensive switches, armor a class feature gives, and situational notes (the worn armor's numbers are
@@ -403,7 +419,7 @@ export function popDailyUses(app, view, parts, focus = '') {
   app.openDetail('Daily uses', `<div class="b-daily"><table class="skill-why"><tbody>${rows || '<tr><td>No limited abilities.</td></tr>'}</tbody></table>
     <p class="hint">Tick a box for each use (rounds of rage or performance, points from a pool, spells cast). New day clears them all,
       and the cast boxes of prepared spells.</p></div>`,
-    [{ label: 'New day', run: () => app.update({ daily: {}, prepared: newDayPrepared(state.prepared) }) }]);
+    [{ label: 'New day', run: () => app.update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0 }) }]);
 }
 
 // Prepared spells with every cast box cleared.
