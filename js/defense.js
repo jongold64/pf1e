@@ -11,7 +11,10 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 
 // What each switch does now: [{ key, label, what, rows: [[label, value]], note }]. trained: 3 or more ranks in
 // Acrobatics (+1 dodge fighting defensively, +2 on total defense). conjured: [{ id, name, bonus }].
-export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [] } = {}) {
+// magus / cavalier: class levels, for the attack switches classes give (attack: true; shown with the attack switches):
+// spell combat (magus: -2 on attacks while casting with the free hand) and cavalier's charge (3rd: +4 melee attack on a
+// mounted charge instead of +2, no AC penalty; mighty charge at 11th, supreme charge at 20th noted).
+export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0 } = {}) {
   const trained = acrobatics >= 3;
   const step = expertiseStep(bab);
   const out = [];
@@ -26,6 +29,16 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
   out.push({ key: 'fightingDefensively', label: 'Fighting defensively', what: `−4 on attacks, +${trained ? 3 : 2} dodge AC`,
     rows: [['All attack rolls this round', '−4'], [`Dodge bonus to AC${trained ? ' (3 or more ranks in Acrobatics: +3)' : ''}`, `+${trained ? 3 : 2}`]],
     note: 'Declared with a standard action attack or a full attack; it lasts until your next turn.' });
+  if (magus) out.push({ key: 'spellCombat', label: 'Spell combat', attack: true, what: '−2 on attacks; cast a magus spell with your free hand',
+    rows: [['Attack rolls this round (your weapon’s and the spell’s)', '−2'],
+      ['Concentration check to cast defensively', magus >= 14 ? '+ twice the extra attack penalty you choose (greater spell combat)'
+        : `${magus >= 8 ? '+2 (improved spell combat) ' : ''}+ the extra attack penalty you choose, up to your Int bonus`]],
+    note: 'A full-round action: a light or one-handed melee weapon in one hand, the other free. Switch it off after your turn.' });
+  if (cavalier >= 3) out.push({ key: 'mountedCharge', label: 'Mounted charge', attack: true, what: '+4 melee attack, no AC penalty (cavalier’s charge)',
+    rows: [['Melee attack roll on the charge', '+4 (instead of +2)'], ['AC after the charge', 'no −2 penalty'],
+      ...(cavalier >= 11 ? [['Threat range of your weapons (mighty charge)', 'doubled; a free bull rush, disarm, sunder or trip on a hit']] : []),
+      ...(cavalier >= 20 ? [['Damage (supreme charge)', 'double (triple with a lance); a confirmed critical stuns 1d4 rounds']] : [])],
+    note: 'Use it in place of the Charging effect while you charge on your mount; it lasts until your next turn.' });
   out.push({ key: 'totalDefense', label: 'Total defense', what: `no attacks, +${trained ? 6 : 4} dodge AC`,
     rows: [[`Dodge bonus to AC${trained ? ' (3 or more ranks in Acrobatics: +6)' : ''}`, `+${trained ? 6 : 4}`], ['Attacks of opportunity', 'none']],
     note: 'A standard action instead of attacking; it can’t be combined with fighting defensively or Combat Expertise.' });
@@ -52,6 +65,8 @@ export function defenseEffects(combat = {}, opts = {}) {
       fx('Fighting defensively', 'ac', 'dodge', trained ? 3 : 2);
     }
   }
+  if (combat.spellCombat && has('spellCombat')) fx('Spell combat', 'attack', 'untyped', -2);
+  if (combat.mountedCharge && has('mountedCharge')) fx('Cavalier’s charge', 'melee-attack', 'untyped', 4);
   const c = (opts.conjured || []).find(x => x.id === combat.conjured);
   if (c) fx(c.name, 'ac', 'armor', c.bonus);
   return out;

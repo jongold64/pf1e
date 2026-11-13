@@ -2035,6 +2035,15 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('conjured armor: an armor bonus', show(defenseEffects({ conjured: 'armor-of-bones' }, { conjured: [{ id: 'armor-of-bones', name: 'Armor of Bones', bonus: 6 }] })), 'ac:armor:6');
   check('switches: shield only when one is worn', [defenseSwitches({}).map(s => s.key).join(), defenseSwitches({ shield: 'Buckler' })[0].label].join(' | '),
         'fightingDefensively,totalDefense | Buckler in hand');
+  check('spell combat (magus): −2 on attacks; only for a magus', [show(defenseEffects({ spellCombat: true }, { magus: 1 })), defenseEffects({ spellCombat: true }, {}).length].join(' | '), 'attack:untyped:-2 | 0');
+  check('mounted charge (cavalier 3+): +4 melee attack; cavalier 2: no switch', [show(defenseEffects({ mountedCharge: true }, { cavalier: 3 })),
+    defenseSwitches({ cavalier: 2 }).some(s => s.key === 'mountedCharge')].join(' | '), 'melee-attack:untyped:4 | false');
+  check('class switches are attack switches; spell combat concentration text grows at 8th and 14th',
+        [defenseSwitches({ magus: 1, cavalier: 3 }).filter(s => s.attack).map(s => s.key).join(), /improved/.test(defenseSwitches({ magus: 8 }).find(s => s.key === 'spellCombat').rows[1][1]),
+          /twice/.test(defenseSwitches({ magus: 14 }).find(s => s.key === 'spellCombat').rows[1][1])].join(' | '), 'spellCombat,mountedCharge | true | true');
+  const { setCombatSwitch } = await import('./tab-armor.js');
+  check('total defense switches off spell combat, and spell combat total defense',
+        [JSON.stringify(setCombatSwitch({ spellCombat: true }, 'totalDefense', true).spellCombat), JSON.stringify(setCombatSwitch({ totalDefense: true }, 'spellCombat', true).totalDefense)].join(), 'false,false');
 }
 
 // Natural attacks read from class feature texts (natural-attacks.js).

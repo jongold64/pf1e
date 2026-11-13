@@ -92,6 +92,8 @@ const BY_CLASS = new Map([
   ...['monk:slow fall', 'monk:wholeness of body', 'monk:abundant step', 'monk:empty body', 'monk:diamond soul', 'shadowdancer:darkvision',
     'dragon-disciple:blindsense'].map(k => [k, 'counted']),
   ['shadowdancer:shadow jump', 'daily'],
+  ...['magus:spell combat', 'magus:improved spell combat', 'magus:greater spell combat', "cavalier:cavalier's charge", 'cavalier:mighty charge',
+    'cavalier:supreme charge'].map(k => [k, 'effect']),
   // Same name, handled differently for one class.
   ['kineticist:infusion', 'choice'], ['kineticist:infusion specialization', 'counted'],
   ...['burn', 'elemental overflow', 'gather power', 'metakinesis', 'internal buffer', 'supercharge', 'composite specialization']

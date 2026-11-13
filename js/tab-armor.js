@@ -197,16 +197,18 @@ export function setCombatSwitch(combat, key, on) {
     return c;
   }
   c[key] = on;
-  if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; }
-  if (on && ['combatExpertise', 'fightingDefensively'].includes(key)) c.totalDefense = false;
+  // Total defense means no attacks: it switches off the attack-time switches, and they switch it off.
+  if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; c.spellCombat = false; c.mountedCharge = false; }
+  if (on && ['combatExpertise', 'fightingDefensively', 'spellCombat', 'mountedCharge'].includes(key)) c.totalDefense = false;
   return c;
 }
 
 // The defensive switches as tick boxes (Armor tab, and the Character tab's Defense card): whether each is on, what it
 // does, and a ? (detail: the attribute the ? uses; the Character tab's are its own Details buttons).
 const switchOn = (combat, s) => (s.key === 'shieldOff' ? !combat.shieldOff : s.key.startsWith('conjured:') ? combat.conjured === s.key.slice(9) : !!combat[s.key]);
-export function defenseSwitchesHtml(view, combat, why) {
-  return defenseSwitches(view.defenseOpts).map(s => `<label class="check-row"><input type="checkbox" data-b-combat="${esc(s.key)}"${s.inverted ? ' data-invert="1"' : ''}${switchOn(combat, s) ? ' checked' : ''}>
+// attacks: the class attack switches (spell combat, mounted charge) too; without it, only the defensive ones.
+export function defenseSwitchesHtml(view, combat, why, attacks = false) {
+  return defenseSwitches(view.defenseOpts).filter(s => attacks || !s.attack).map(s => `<label class="check-row"><input type="checkbox" data-b-combat="${esc(s.key)}"${s.inverted ? ' data-invert="1"' : ''}${switchOn(combat, s) ? ' checked' : ''}>
       ${esc(s.label)} <span class="muted">(${esc(s.what)})</span>${why(s)}</label>`).join('');
 }
 
