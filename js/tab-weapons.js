@@ -10,6 +10,8 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice } from './class-features.js';
 import { traitWeaponRows, heirloomFor } from './traits.js';
+import { defenseSwitches } from './defense.js';
+import { setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
@@ -285,7 +287,11 @@ function renderCombat(app, view, ctx) {
   $('combat-switches').innerHTML = switches.map(([key, feat, what]) =>
     `<label class="check-row"><input type="checkbox" data-combat="${key}" ${state.combat[key] ? 'checked' : ''}> Use ${esc(feat)} <span class="muted">(${esc(what)})</span>
       <button type="button" class="skill-details q-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does" title="Details">?</button></label>`).join('')
-    || '<p class="hint">Power Attack, Deadly Aim, Rapid Shot and Point-Blank Shot switches appear here once you have those feats.</p>';
+    // Class attack switches (a magus's spell combat, a cavalier's mounted charge), the same ones as on the Character tab.
+    + defenseSwitches(view.defenseOpts).filter(s => s.attack).map(s =>
+    `<label class="check-row"><input type="checkbox" data-combat="${esc(s.key)}" data-class-switch="1" ${state.combat[s.key] ? 'checked' : ''}> Use ${esc(s.label.toLowerCase())} <span class="muted">(${esc(s.what)})</span>
+      <button type="button" class="skill-details q-details" data-defense-why="${esc(s.key)}" aria-label="What ${esc(s.label)} does" title="Details">?</button></label>`).join('')
+    || '<p class="hint">Power Attack, Deadly Aim, Rapid Shot and Point-Blank Shot switches appear here once you have those feats (spell combat and mounted charge with the magus and cavalier classes).</p>';
 
   // Hands: every carried weapon except ranged ones; the off hand can also be the other end of a double weapon.
   const melee = state.weapons.map((e, i) => [i, e, data.weaponsById.get(e.id)]).filter(([, , w]) => w && w.group !== 'ranged');
@@ -790,6 +796,8 @@ export function initWeaponsTab(app) {
 function initCombat(app) {
   for (const id of ['combat-switches', 'twf-result']) {
     $(id).addEventListener('click', e => {
+      const d = e.target.closest('[data-defense-why]');
+      if (d) { e.preventDefault(); showDefenseWhy(app, d.dataset.defenseWhy); return; }
       const b = e.target.closest('[data-combat-why]');
       if (!b) return;
       e.preventDefault();  // inside a label: don't tick the box
@@ -798,7 +806,8 @@ function initCombat(app) {
   }
   $('combat-switches').addEventListener('change', e => {
     const key = e.target.dataset.combat;
-    if (key) app.update({ combat: { ...app.state.combat, [key]: e.target.checked } });
+    // A class switch goes through setCombatSwitch (total defense and attacking don't go together).
+    if (key) app.update({ combat: e.target.dataset.classSwitch ? setCombatSwitch(app.state.combat, key, e.target.checked) : { ...app.state.combat, [key]: e.target.checked } });
   });
   $('twf-hands').addEventListener('change', e => {
     if (e.target.id === 'twf-main') app.update({ combat: { ...app.state.combat, main: e.target.value, off: '' } });
