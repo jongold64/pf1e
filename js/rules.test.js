@@ -2267,6 +2267,21 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('monk numbers: slow fall 40 ft. at 8th; 20th any distance; wholeness of body heals monk level',
         [classNumbers([{ cls: cls('monk'), level: 8 }]).map(c => c.text).join(' / '), classNumbers([{ cls: cls('monk'), level: 20 }])[0].text].join(' | '),
         '40 ft. shorter fall, beside a wall / heal 8 hit points of your own (2 ki, standard action) | any distance, beside a wall');
+  const { scalingDice } = await import('./class-features.js');
+  const sd = (t, l) => { const d = scalingDice(t, l); return d ? `${d.count}d${d.sides}` : 'none'; };
+  check('scaling dice: +1d6 at 4th and every 4 after; every 2 after 3rd up to 10d6; "At 4th level and every four levels thereafter"; "increases to 3d6 at 15th"',
+        [sd('dealing 1d6 points of sneak attack damage at 1st level; the damage increases by 1d6 at 4th level and every 4 alchemist levels thereafter.', 12),
+          sd('Each bolt of lightning deals 1d6 points of electricity damage. This damage increases by 1d6 at 3rd level and every 2 levels thereafter, to a maximum of 10d6 at 19th level.', 20),
+          sd('At 4th level and every four levels thereafter, a bushwhacker deals 1d6 points of extra damage.', 10),
+          sd('A colluding scoundrel deals 2d6 additional points of damage. This increases to 3d6 points of damage at 15th level.', 15),
+          sd('At 5th level, a sandman inflicts +1d6 points of damage. This damage increases by +1d6 every five levels after 5th.', 15)].join(), '4d6,10d6,2d6,3d6,3d6');
+  const { classWithArchetypes: cwa } = await import('./archetypes.js');
+  const allArchetypes = await fetch('data/archetypes.json').then(r => r.json());
+  const withArch = (id, a, level, mod = {}) => kca([{ cls: cwa(cls(id), [allArchetypes.find(x => x.id === a)]), level }], { bab: [level], mod });
+  check('archetype sneak attack joins the Sneak attack row (eldritch poisoner 8: 3d6)', withArch('alchemist', 'alchemist-eldritch-poisoner', 8).find(c => c.name === 'Sneak attack')?.dice, '3d6');
+  check('archetype attack rows: storm caller 10 storm\'s fury 5d6; vox 5 wounding words 1d6+5; thug gets no row for giving up sneak dice',
+        [withArch('summoner', 'summoner-storm-caller', 10).find(c => /Storm's Fury/.test(c.name))?.dice, withArch('mesmerist', 'mesmerist-vox', 5).find(c => c.name === 'Wounding Words')?.dice,
+          withArch('rogue', 'rogue-thug', 5).some(c => c.name === 'Brutal Beating')].join(), '5d6,1d6+5,false');
   check('no kinetic fist row without the infusion', kca([{ cls: cls('kineticist'), level: 5 }], { mod: { con: 2 } }).some(c => c.name === 'Kinetic fist'), false);
   check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
     blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');

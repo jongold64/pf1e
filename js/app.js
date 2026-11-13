@@ -47,7 +47,7 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
-import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, archetypeAttacks, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -3355,7 +3355,8 @@ function renderClasses(view) {
       });
       // An archetype feature's dot: a daily counter when its text gives a daily limit, an attack row when it gives a
       // natural attack; none otherwise (rules text, or changes the archetype rules count elsewhere).
-      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length ? 'roll' : null);
+      const archRoll = f => { const a = archetypeAttacks([{ cls: { progression: [{ archetype_features: [f] }] }, level: e.level }], { mod: view.stats.mod }); return a.rows.length || a.sneak.length; };
+      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length || archRoll(f) ? 'roll' : null);
       const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch', archHow(f)));
       featuresAt.set(`${e.cls.id}|${r.level}`, [...own, ...gone, ...added].join(''));
     }

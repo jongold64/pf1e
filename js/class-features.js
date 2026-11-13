@@ -245,7 +245,11 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
   const lv = id => levelOf(counts, [id]);
   const sneak = Math.ceil(lv('rogue') / 2) + Math.ceil(lv('rogue-unchained') / 2) + Math.ceil(lv('ninja') / 2) + Math.ceil(lv('assassin') / 2)
     + Math.floor(lv('slayer') / 3) + Math.floor(lv('arcane-trickster') / 2) + (lv('master-spy') ? 1 + Math.floor((lv('master-spy') - 1) / 3) : 0);
-  if (sneak) out.push({ name: 'Sneak attack', note: 'extra damage when the target is flanked or denied its Dex bonus to AC', attack: null, dice: `${sneak}d6` });
+  // Archetypes that give sneak attack (eldritch poisoner, bushwhacker's sneak shot...): their dice stack with the rest.
+  const arch = archetypeAttacks(counts, { mod, melee: bab[0] + (mod.str || 0) + sizeAttack + (fx.attack || 0) + (fx['melee-attack'] || 0),
+    ranged: bab[0] + (mod.dex || 0) + sizeAttack + (fx.attack || 0) + (fx['ranged-attack'] || 0) });
+  const sneakAll = sneak + arch.sneak.reduce((n, s) => n + s.dice, 0);
+  if (sneakAll) out.push({ name: 'Sneak attack', note: `extra damage when the target is flanked or denied its Dex bonus to AC${arch.sneak.length && sneak ? ` (with${arch.sneak.map(s => `${s.dice}d6 from ${s.from}`).join(', ')})` : ''}`, attack: null, dice: `${sneakAll}d6` });
   const inv = lv('investigator');
   if (inv >= 4) out.push({ name: 'Studied strike', note: 'extra damage on a melee hit against your studied target, ending studied combat', attack: null, dice: `${Math.floor(inv / 2) - 1}d6` });
   if (inv) out.push({ name: 'Inspiration', note: `add to a skill or ability check (free on trained Knowledge, Linguistics and Spellcraft) · ${Math.max(1, Math.floor(inv / 2) + (mod.int || 0))}/day`,
@@ -290,6 +294,7 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
         attack: null, dice: `${Math.max(1, Math.floor(n / 3))}d6` });
     }
   }
+  out.push(...arch.rows);
   // Dragon disciple breath weapon (3rd level): the draconic bloodline's, 1d6 of your energy type per sorcerer level,
   // Reflex half, DC 10 + half your sorcerer level + Cha; dragon disciple levels add to sorcerer levels for it.
   const dd = lv('dragon-disciple');
@@ -362,6 +367,79 @@ function diceAmount(sentence, m, { level, charLevel, mod }) {
     || before.match(/\b([a-z]+) damage equal to\s*$/i);
   const type = !tm || /^(?:hit|additional|extra|deals?)$/i.test(tm[1]) ? '' : tm[1].toLowerCase();
   return { count, sides: Number(m[2]), bonus, type, heal, extra };
+}
+
+// Dice that grow with the class level, read from a rules text: "1d6 ... at 1st level; the damage increases by 1d6 at
+// 4th level and every 4 alchemist levels thereafter", "At 4th level and every four levels thereafter, ... deals 1d6 points
+// of extra damage", "deals 2d6 additional points of damage ... This increases to 3d6 points of damage at 15th level".
+// Returns { count, sides } at that level, or null when the text gives no such scaling.
+const WORD_NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+const numOf = w => WORD_NUM[String(w).toLowerCase()] || Number(w) || 0;
+export function scalingDice(text, level) {
+  const t = String(text || '').replace(/\s+/g, ' ');
+  // The level it starts at: "At 3rd level, ..." before the dice, or "... 1d6 at 1st level".
+  const inc = t.match(/(\d+)d(\d+)(?:[^.]*?\bat (\d+)(?:st|nd|rd|th) level)?[^.]*?(?:\.\s*[^.]*?)?\bincreases? by \+?(\d+)d\d+ (?:at (\d+)(?:st|nd|rd|th) level and )?(?:every|each) (\w+) (?:[a-z]+ )?levels?(?: thereafter| after that| beyond)?(?:[^.]*?maximum of (\d+)d\d+)?/i);
+  if (inc && numOf(inc[6])) {
+    const lead = t.slice(0, inc.index).match(/\bAt (\d+)(?:st|nd|rd|th) level\b(?![^.]*\.)/i);
+    const start = Number(inc[3] || lead?.[1] || 1);
+    const from = inc[5] ? Number(inc[5]) : start + numOf(inc[6]);
+    const n = level < start ? 0 : Number(inc[1]) + (level >= from ? Number(inc[4]) * (1 + Math.floor((level - from) / numOf(inc[6]))) : 0);
+    return { count: inc[7] ? Math.min(Number(inc[7]), n) : n, sides: Number(inc[2]) };
+  }
+  const every = t.match(/\bAt (\d+)(?:st|nd|rd|th) level and every (\w+) levels? thereafter,[^.]*?(\d+)d(\d+)/i);
+  if (every && numOf(every[2])) {
+    const n = level < Number(every[1]) ? 0 : Number(every[3]) * (1 + Math.floor((level - Number(every[1])) / numOf(every[2])));
+    return { count: n, sides: Number(every[4]) };
+  }
+  const base = t.match(/(\d+)d(\d+) (?:additional |extra )?points of/i);
+  const steps = [...t.matchAll(/increases? to (\d+)d(\d+)(?: points of [a-z ]*?damage)? at (\d+)(?:st|nd|rd|th) level/gi)];
+  if (base && steps.length) {
+    const reached = steps.filter(s => level >= Number(s[3])).pop();
+    return reached ? { count: Number(reached[1]), sides: Number(reached[2]) } : { count: Number(base[1]), sides: Number(base[2]) };
+  }
+  return null;
+}
+
+// Archetype features that give an attack or extra damage, read from their rules text at the class level (counts: classes
+// with their archetypes applied). { sneak: [{ dice, from }], rows: [{ name, note, attack, dice, ... }] }:
+// - a sneak attack the archetype gives ("gains a sneak attack identical to the rogue class feature", "works identically
+//   to a rogue's sneak attack") adds its dice to the Sneak attack row;
+// - other damage (a touch attack, extra damage on your attacks, a save for half) is its own row, its dice scaled by
+//   scalingDice when the text says how they grow. Features that change a row already drawn (bombs, channel energy,
+//   wild shape, a performance, deeds, discoveries) and ones with no dice to roll are left out.
+const ARCH_SKIP = /bomb|channel|wild shape|performance|deeds?\b|discover|judgment|revelation|hex|talents?\b|mutagen|eidolon|phantom|companion|familiar/i;
+export function archetypeAttacks(counts, { mod = {}, melee = 0, ranged = 0 } = {}) {
+  const sneak = [], rows = [];
+  for (const e of counts) {
+    for (const r of (e.cls.progression || []).slice(0, e.level)) {
+      for (const f of r.archetype_features || []) {
+        const text = String(f.text || '').replace(/\s+/g, ' ');
+        const name = String(f.name).replace(/\s*\((?:Ex|Su|Sp)(?:(?:,\s*|\s+or\s+)(?:Ex|Su|Sp))*\)\s*$/i, '');
+        // Giving up sneak attack dice for an effect (brutal beating, bravado's blade) isn't damage of its own.
+        if (/\bforgo\b/i.test(text)) continue;
+        const sneaky = /\bsneak attack\b[^.]*?\b(?:identical to|as the|works identically to|like) (?:the |a )?rogue/i.test(text) || /\bidentically to a rogue's sneak attack\b/i.test(text)
+          || (/sneak/i.test(name) && /\bflank|\bdenied (?:its|their|his|her) Dex/i.test(text));
+        if (sneaky) {
+          const d = scalingDice(text, e.level);
+          if (d?.count) sneak.push({ dice: d.count, from: name });
+          continue;
+        }
+        if (ARCH_SKIP.test(name)) continue;
+        const p = powerAttack({ name, text }, { level: e.level, charLevel: e.level, mod, melee, ranged });
+        if (!p?.dice) continue;
+        const d = scalingDice(text, e.level);
+        if (d && !d.count) continue;
+        const dice = d ? p.dice.replace(/^\d+d\d+/, `${d.count}d${d.sides}`) : p.dice;
+        // Kept only when the reading is solid: an attack roll, a save DC, healing, dice that scale as the text says, or a
+        // small fixed extra die on your attacks.
+        const solid = p.attack !== null || /\bDC \d+/.test(p.note) || p.heal || d || (p.extra && Number(p.dice.match(/^(\d+)d/)?.[1]) <= 2);
+        if (!solid) continue;
+        const note = p.note.replace(/ · (?:of|that|the|a|an)(?= ·|$)/g, '');
+        rows.push({ name, note: `${note} · ${f.archetype}`, attack: p.attack, dice, word: p.heal ? 'healing' : p.extra || p.attack !== null ? undefined : 'damage', text: f.text || '' });
+      }
+    }
+  }
+  return { sneak, rows };
 }
 
 export function powerAttack(power, { level = 1, charLevel = level, mod = {}, melee = 0, ranged = 0 } = {}) {
