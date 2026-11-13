@@ -2130,6 +2130,9 @@ document.getElementById('list').innerHTML = results.map(r =>
     check('fast healing for 1d4 rounds: nothing to roll', show(powerAttack(pw(paths, 'Nature', 'Spirit of Nature'), o)), 'none');
     check('intense spells (a passive bonus): not an attack', show(powerAttack(pw(paths, 'Evocation', 'Intense Spells'), o)), 'none');
   }
+  check('kineticist 5, BAB 3, Deadly Aim and Point-Blank Shot: −1+1 attack, +2+1 damage', ca([['kineticist', 5]], { bab: [3], mod: { dex: 2, con: 3 }, combat: { deadlyAim: true, pointBlank: true } }), 'Kinetic blast (physical):5:3d6+9,Kinetic blast (energy):5:3d6+4');
+  check('kineticist 9, BAB 6: Deadly Aim −2/+4', ca([['kineticist', 9]], { bab: [6], mod: { dex: 0, con: 0 }, combat: { deadlyAim: true } }), 'Kinetic blast (physical):4:5d6+9,Kinetic blast (energy):4:5d6+4');
+  check('alchemist 5, BAB 3, Point-Blank Shot: bomb +7, 3d6+4', ca([['alchemist', 5]], { bab: [3], mod: { dex: 2, int: 3 }, combat: { pointBlank: true } }), 'Bomb:7:3d6+4');
   check('kineticist 5, Con +3: blasts 3d6+6 and 3d6+1', ca([['kineticist', 5]], { bab: [3], mod: { dex: 2, con: 3 } }), 'Kinetic blast (physical):5:3d6+6,Kinetic blast (energy):5:3d6+1');
   const pistol = { id: 'pistol', firearm: true, group: 'ranged' };
   check('gun training: Dex on damage only, with the chosen firearm', JSON.stringify(wt([{ cls: cls('gunslinger'), level: 5 }], pistol, [], { mod: { dex: 4 }, picks: { gun: ['pistol'] } })), '[{"label":"Gun training (Dexterity on damage)","value":4,"on":"damage"}]');

@@ -188,8 +188,11 @@ export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' 
 // blasts: the chosen elements' simple blasts ([{ name, type: 'physical' | 'energy', damage }]); without them, a generic
 // physical and energy blast.
 // overflow: elemental overflow's { attack, damage } bonus on kinetic blasts for the burn taken (burn.js).
+// combat: the ranged attack switches on that the character has the feat for, { deadlyAim, pointBlank }: Deadly Aim
+// (−1 attack / +2 damage, a step more at BAB +4 and every +4 after) and Point-Blank Shot (+1 / +1 within 30 ft.) on
+// bombs and kinetic blasts.
 // talents: the names of the kineticist's chosen wild talents (Kinetic Fist Infusion adds its extra damage row).
-export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [], overflow = null, talents = [] } = {}) {
+export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack = 0, blasts = [], overflow = null, talents = [], combat = {} } = {}) {
   const out = [];
   const lv = id => levelOf(counts, [id]);
   const sneak = Math.ceil(lv('rogue') / 2) + Math.ceil(lv('rogue-unchained') / 2) + Math.ceil(lv('ninja') / 2) + Math.ceil(lv('assassin') / 2)
@@ -199,13 +202,23 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
   if (inv >= 4) out.push({ name: 'Studied strike', note: 'extra damage on a melee hit against your studied target, ending studied combat', attack: null, dice: `${Math.floor(inv / 2) - 1}d6` });
   if (inv) out.push({ name: 'Inspiration', note: `add to a skill or ability check (free on trained Knowledge, Linguistics and Spellcraft) · ${Math.max(1, Math.floor(inv / 2) + (mod.int || 0))}/day`,
     attack: null, dice: inv >= 20 ? '2d6' : '1d6' });
-  const ranged = bab[0] + (mod.dex || 0) + sizeAttack + (fx.attack || 0) + (fx['ranged-attack'] || 0);
+  const ranged0 = bab[0] + (mod.dex || 0) + sizeAttack + (fx.attack || 0) + (fx['ranged-attack'] || 0);
+  // Deadly Aim and Point-Blank Shot on ranged attacks: { attack, damage, note }.
+  const aim = 1 + Math.floor(Math.max(0, bab[0]) / 4);
+  const feat = {
+    attack: (combat.deadlyAim ? -aim : 0) + (combat.pointBlank ? 1 : 0),
+    damage: (combat.deadlyAim ? 2 * aim : 0) + (combat.pointBlank ? 1 : 0),
+    note: [combat.deadlyAim ? `Deadly Aim −${aim}/+${2 * aim}` : '', combat.pointBlank ? 'Point-Blank Shot +1/+1 (within 30 ft.)' : ''].filter(Boolean).join(' · '),
+  };
+  const ranged = ranged0 + feat.attack;
+  const featNote = feat.note ? ` · ${feat.note}` : '';
+  const plusDamage = (dice, bonus) => `${dice}${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}`;
   const alch = lv('alchemist') + lv('master-chymist');
   if (lv('alchemist')) {
     const n = Math.ceil(alch / 2);
     const int = mod.int || 0;
-    out.push({ name: 'Bomb', note: `ranged touch (+1 from Throw Anything) · splash ${n + int} · DC ${10 + Math.floor(alch / 2) + int} Reflex for splash · ${lv('alchemist') + int}/day`,
-      attack: ranged + 1, dice: `${n}d6${int ? (int > 0 ? `+${int}` : int) : ''}`, kind: 'fire' });
+    out.push({ name: 'Bomb', note: `ranged touch (+1 from Throw Anything) · splash ${n + int} · DC ${10 + Math.floor(alch / 2) + int} Reflex for splash · ${lv('alchemist') + int}/day${featNote}`,
+      attack: ranged + 1, dice: plusDamage(`${n}d6`, int + feat.damage), kind: 'fire' });
   }
   const kin = lv('kineticist');
   if (kin) {
@@ -215,9 +228,9 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
     for (const b of list) {
       const physical = b.type !== 'energy';
       const up = overflow?.attack || 0;
-      const bonus = (physical ? n + con : Math.floor(con / 2)) + (overflow?.damage || 0);
-      out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}${up ? ` · elemental overflow +${up}/+${2 * up}` : ''}`,
-        attack: ranged + up, dice: `${n}d6${bonus > 0 ? `+${bonus}` : bonus < 0 ? bonus : ''}` });
+      const bonus = (physical ? n + con : Math.floor(con / 2)) + (overflow?.damage || 0) + feat.damage;
+      out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}${up ? ` · elemental overflow +${up}/+${2 * up}` : ''}${featNote}`,
+        attack: ranged + up, dice: plusDamage(`${n}d6`, bonus) });
     }
     // Kinetic fist (form infusion, burn 1): 1d6 per 3 dice of the blast (at least 1d6) on each unarmed strike and natural
     // attack until your next turn, of the blast's damage type, with none of the blast's modifiers (Con, overflow).

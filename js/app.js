@@ -822,6 +822,8 @@ function allClassAttacks(stats) {
   return [...classAttacks(view.counts, { bab: stats.bab, mod: stats.mod, fx: stats.fx, sizeAttack: SIZE_AC[view.size] ?? 0,
     blasts: [...new Map(kineticElements().flatMap(e => e.blasts || []).map(b => [b.name, b])).values()],
     overflow: burnNow()?.overflow,
+    // Deadly Aim and Point-Blank Shot switched on (Actions card or Weapons tab), for a character with the feat.
+    combat: { deadlyAim: !!state.combat.deadlyAim && view.haveFeats.includes('Deadly Aim'), pointBlank: !!state.combat.pointBlank && view.haveFeats.includes('Point-Blank Shot') },
     talents: Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v)?.name).filter(Boolean) })
       // Kinetic fist's Details: the infusion's own text.
       .map(c => (c.name === 'Kinetic fist' ? { ...c, text: data.talentsById.get('kinetic-fist-infusion')?.text || '' } : c)),
