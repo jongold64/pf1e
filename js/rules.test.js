@@ -2333,6 +2333,35 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('shadow jump: shadowdancer 4: 4 jumps (40 ft.), 8th: 16 (160 ft.), 3rd: none',
         [use('shadowdancer', 4, 'Shadow jump (10 ft. each)'), use('shadowdancer', 8, 'Shadow jump (10 ft. each)'), use('shadowdancer', 3, 'Shadow jump (10 ft. each)')].join(), '4 uses,16 uses,none');
   check('breath weapon: dragon disciple 3 once; with sorcerer 6 (level 9) twice; dragon disciple 2 none', [bw(3, 0), bw(3, 6), bw(2, 7)].join(), '1,2,0');
+  const { amountOf } = await import('./daily.js');
+  const am = (e, l) => amountOf(e, l, { str: 2, dex: 4, con: 2, int: 3, wis: 3, cha: 3 });
+  check('amounts in words: 3 + Wis, half level + Cha, twice level, double Wis, Cha + double level',
+        [am('3 + her Wisdom modifier', 10), am('half her paladin level + her Charisma modifier', 10), am('twice her inquisitor level', 10),
+          am('double her Wisdom bonus', 10), am('his Charisma modifier + double his medium level', 10)].join(), '6,8,20,6,23');
+  check('amounts: the rest of the sentence isn\'t counted; "plus 1 for each level beyond 1st"; the higher of two abilities; 1/4 level',
+        [am('his Charisma modifier, a songhealer can cause any healing effect of his level', 20), am('4 + his Charisma modifier at 1st level, plus 1 additional round per day for each level beyond 1st', 10),
+          am('his Strength or Dexterity modifier, whichever is higher', 10), am('1/4 her witch level', 12), am('the immolator\'s level', 7)].join(), '3,16,4,3,7');
+  const { classWithArchetypes } = await import('./archetypes.js');
+  const allArch = await fetch('data/archetypes.json').then(r => r.json());
+  const archOf = id => allArch.find(a => a.id === id);
+  const archUse = (clsId, archId, level, name, mod = {}) => {
+    const d = dailyUses({ ...v(clsId, level, mod), counts: [{ cls: classWithArchetypes(cls(clsId), [archOf(archId)]), level }] }).find(x => x.name === name);
+    return d ? `${d.max} ${d.unit}` : 'none';
+  };
+  check('archetype counters: vox wounding words 3 + Cha; martyr 7 stigmata 4 + Cha + a round a level after 1st; bouncer lesser flexibility at least 3',
+        [archUse('mesmerist', 'mesmerist-vox', 5, 'Wounding Words', { cha: 4 }), archUse('paladin', 'paladin-martyr', 7, 'Stigmata', { cha: 2 }),
+          archUse('brawler', 'brawler-bouncer', 1, 'Lesser Flexibility')].join(), '7 uses,12 rounds,3 uses');
+  const { powerUses: pu, limitedName } = await import('./daily.js');
+  check('more uses by level: "plus once per six levels beyond 2nd", "three times ... plus one per 4 levels beyond 2nd", "one more at 5th and every 4 levels thereafter"',
+        [pu('At 2nd level, an archivist may take 20 on Knowledge checks once per day, plus once per six levels beyond 2nd.', 12)?.max,
+          pu('A verdivant can use this ability three times per day, plus one additional time per day for every 4 cavalier levels he has beyond 2nd.', 12)?.max,
+          pu('He can only do this once per day. He can create one additional demolition bomb per day at 5th level and every 4 alchemist levels thereafter.', 12)?.max].join(), '2,5,3');
+  check('"once per day for every 4 fighter levels he has": 3 at 12th', pu('The opportunist can use this ability once per day for every 4 fighter levels he has.', 12)?.max, 3);
+  check('a feature listing several abilities names the counter after the limited one',
+        limitedName('A Keleshite prophet must take the following revelation at 1st level. Divining Dance (Su) Once per day, you can dance.', 'Revelations'), 'Divining Dance');
+  check('an archetype feature that alters a counter changes it instead of adding one (bouncer 6: one flexibility counter, 2 + 3 = 5)',
+        dailyUses({ ...v('brawler', 6), counts: [{ cls: classWithArchetypes(cls('brawler'), [archOf('brawler-bouncer')]), level: 6 }] })
+          .filter(x => /flexibility/i.test(x.name)).map(x => `${x.name}:${x.max}`).join(), 'Lesser Flexibility:5');
   const { featureHandling } = await import('./feature-coverage.js');
   check('daily dot: grit, summon monster IV, knockout 2/day', [featureHandling('gunslinger', 'Grit'), featureHandling('summoner', 'Summon monster IV'), featureHandling('brawler', 'knockout 2/day')].join(), 'daily,daily,daily');
 }

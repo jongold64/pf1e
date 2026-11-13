@@ -112,6 +112,25 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
       if (u && u.max > 0) add(f.name, u.max, u.unit, '', { how: own ? u.how : `from its rules text, at ${e.cls.name} level ${e.level}`, cls: e.cls.id, feature: f.name });
     }
   }
+  // Archetype features with a daily limit, read from their rules text at the class level. Skipped when a counter of that
+  // name is already listed (an archetype's "Wild Shape" changing the druid's keeps the one counter).
+  for (const e of counts) {
+    for (const r of e.cls.progression.slice(0, e.level)) {
+      for (const f of r.archetype_features || []) {
+        const name = limitedName(f.text, archetypeFeatureName(f.name));
+        const k = key(name);
+        if (out.some(x => x.key === k || key(x.name.replace(/\s*\(.*\)$/, '')) === k)) continue;
+        const u = powerUses(f.text, e.level, mod);
+        if (!u || u.max <= 0) continue;
+        const how = `from its rules text (${f.archetype}), at ${e.cls.name} level ${e.level}`;
+        // "This alters martial flexibility." / "This ability modifies wild shape.": that counter takes the new limit.
+        const target = String(f.text || '').match(/\b(?:alters|modifies|changes|replaces)\s+(?:the\s+)?(?:[a-z]+'s\s+)?([a-z' -]+?)(?:\s+(?:ability|class feature))?\s*[.,;]/i);
+        const old = target && out.find(x => key(x.name.replace(/\s*\(.*\)$/, '')) === key(target[1]));
+        if (old) Object.assign(old, { name, max: u.max, unit: u.unit, how, text: f.text || '', cls: '', feature: '' });
+        else add(name, u.max, u.unit, '', { how, text: f.text || '' });
+      }
+    }
+  }
   // Chosen powers (school, domain, bloodline...).
   for (const p of powers) if (!out.some(x => x.key === key(p.name))) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
   // Spontaneous casters: spells a day of each level.
@@ -122,6 +141,19 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   // One entry per key (two classes giving the same pool).
   return [...new Map(out.map(x => [x.key, x])).values()];
 }
+// An archetype feature's name without its "(Su)" / "(Ex or Su)" / "(Sp, Su)" tag.
+export const archetypeFeatureName = name => String(name).replace(/\s*\((?:Ex|Su|Sp)(?:(?:,\s*|\s+or\s+)(?:Ex|Su|Sp))*\)\s*$/i, '');
+
+// A feature that lists several abilities ("Deeds", "Revelations", "Benefactor Hexes") names its counter after the one
+// with the daily limit: the "Divining Dance (Su)" heading nearest before the first "per day". fallback: the feature's name.
+export function limitedName(text, fallback) {
+  const t = String(text || '').replace(/\s+/g, ' ');
+  const at = t.search(/\b(?:once|twice|three times|four times|five times|times|rounds|minutes) (?:per|a) day\b/i);
+  if (at < 0) return fallback;
+  const heads = [...t.slice(0, at).matchAll(/([A-Z][A-Za-z'-]*(?: (?:of|the|and|to|[A-Z][A-Za-z'-]*))*) \((?:Ex|Su|Sp)(?:(?:,\s*|\s+or\s+)(?:Ex|Su|Sp))*\):?/g)];
+  return heads.length ? heads[heads.length - 1][1] : fallback;
+}
+
 // Daily limits whose wording powerUses can't follow: class:feature (lower case) -> (class level, mods) -> { max, unit, how }.
 const FEATURE_USES = {
   'samurai:honorable stand': lv => ({ max: lv >= 16 ? 2 : 1, unit: 'uses', how: 'once a day at 11th level, twice at 16th' }),
@@ -149,6 +181,36 @@ const ordinal = n => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st',
 const ABILITY_WORD = { strength: 'str', dexterity: 'dex', constitution: 'con', intelligence: 'int', wisdom: 'wis', charisma: 'cha' };
 const COUNT_WORD = { once: 1, twice: 2, 'three times': 3, 'four times': 4, 'five times': 5 };
 const NUM_WORD = { two: 2, three: 3, four: 4, five: 5, six: 6 };
+// An amount in words, added up term by term: "3 + her Wisdom modifier", "1/2 his antipaladin level plus his Charisma
+// bonus", "half her paladin level + her Charisma modifier", "twice her inquisitor level", "double her Wisdom bonus",
+// "his Charisma modifier + double his medium level", "4 + his Charisma modifier at 1st level, plus 1 additional round
+// per day for each level beyond 1st". It stops at the first part that isn't a number, a level or an ability, so the rest
+// of the sentence ("..., a songhealer can cause...", "as per a cleric with an effective level...") isn't counted.
+const WHOSE = "(?:(?:your|his|her|their|its|the [a-z' -]+?'s)\\s+)?";
+const TIMES = '(1/2|1/4|half|one-half|twice|double|\\d+ times)\\s+(?:of\\s+)?';
+const LEVEL_TERM = new RegExp(`^(?:${TIMES})?${WHOSE}(?:[a-z-]+\\s+){0,3}?(?:class\\s+)?levels?\\b`, 'i');
+const ABILITY_TERM = new RegExp(`^(?:${TIMES})?${WHOSE}(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)(?:\\s+or\\s+(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma))?\\s+(?:modifier|bonus)`, 'i');
+const factor = w => (!w ? 1 : /^1\/4$/.test(w) ? 0.25 : /^(1\/2|half|one-half)$/i.test(w) ? 0.5 : /^(twice|double)$/i.test(w) ? 2 : Number(w.split(' ')[0]));
+export function amountOf(expr, level, mod = {}) {
+  let rest = String(expr || '');
+  let n = 0;
+  // "plus 1 (additional) round (per day) for every/each (inquisitor) level above/beyond/after 4th"
+  const beyond = rest.match(/,?\s*plus (\d+) (?:additional )?\w+(?: per day)? for (?:every|each) (?:[a-z]+ )?level (?:above|beyond|after) (\d+)(?:st|nd|rd|th)?/i);
+  if (beyond) { n += Number(beyond[1]) * Math.max(0, level - Number(beyond[2])); rest = rest.replace(beyond[0], ''); }
+  for (const raw of rest.split(/\s*(?:\+|\bplus\b)\s*/i)) {
+    const part = raw.trim();
+    const num = part.match(/^(\d+)\b(?!\s*(?:times|\/))/);
+    const lv = part.match(LEVEL_TERM);
+    const ab = part.match(ABILITY_TERM);
+    // "his Strength or Dexterity modifier, whichever is higher": the higher of the two.
+    if (ab) n += Math.floor(factor(ab[1]) * Math.max(...[ab[2], ab[3]].filter(Boolean).map(w => mod[ABILITY_WORD[w.toLowerCase()]] || 0)));
+    else if (lv) n += Math.floor(factor(lv[1]) * level);
+    else if (num) n += Number(num[1]);
+    else break;
+  }
+  return n;
+}
+
 export function powerUses(text, level, mod = {}) {
   const t = String(text || '').replace(/\s+/g, ' ');
   // "a number of <unit> per day equal to <amount>": the amount is added up from its parts (3 +, a class level or half
@@ -156,19 +218,9 @@ export function powerUses(text, level, mod = {}) {
   const eq = t.match(/(?:number|total number) of (times|rounds|minutes|bolts[a-z ]*?|uses)(?: of this effect)? per day (?:is )?equal to ([^.;]*)/i)
     || t.match(/(times|rounds|minutes) per day equal to ([^.;]*)/i);
   if (eq) {
-    const expr = eq[2];
-    let n = 0;
-    if (/^(?:your |her |his )?3 \+|^3 \+/i.test(expr)) n += 3;
-    const times = expr.match(/(\d+) times (?:your|her|his) [a-z]+ level/i);
-    const lvl = expr.match(/(1\/2 )?(?:your|her|his) (?:[a-z]+ ){0,2}level/i);
-    if (times) n += Number(times[1]) * level;
-    else if (lvl && !/level above/.test(expr.slice(0, lvl.index + lvl[0].length + 6))) n += lvl[1] ? Math.floor(level / 2) : level;
-    const ab = expr.match(/(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma) (?:modifier|bonus)/i);
-    if (ab) n += mod[ABILITY_WORD[ab[1].toLowerCase()]] || 0;
-    const above = expr.match(/plus 1 \w+ for every [a-z]+ level above (\d+)/i);
-    if (above) n += Math.max(0, level - Number(above[1]));
     const unit = /rounds/i.test(eq[1]) ? 'rounds' : /minutes/i.test(eq[1]) ? 'minutes' : /bolt/i.test(eq[1]) ? 'bolts' : 'uses';
-    return { max: Math.max(/minimum 1/i.test(t) ? 1 : 0, n), unit };
+    const least = Number(t.match(/\(minimum (\d+)/i)?.[1] || 0);
+    return { max: Math.max(least, amountOf(eq[2], level, mod)), unit };
   }
   // "1 minute per day per cleric level", "10 feet per cleric level per day", "3 times your wizard level per day" (points).
   const perLevel = t.match(/(\d+) (minute|foot|feet) per day per [a-z]+ level/i) || t.match(/(\d+) (feet) per [a-z]+ level per day/i);
@@ -190,11 +242,29 @@ export function powerUses(text, level, mod = {}) {
   const steps = [...[...t.matchAll(/(once|twice|three times|four times) per day at (\d+)(?:st|nd|rd|th)/gi)].map(m => [m[1], m[2]]),
     ...[...t.matchAll(/At (\d+)(?:st|nd|rd|th) level,[^.]*?(once|twice|three times|four times) per day/gi)].map(m => [m[2], m[1]])]
     .map(([w, lv]) => [COUNT_WORD[w.toLowerCase()], Number(lv)]);
+  // "once per day for every 4 fighter levels he has", "once per day per two class levels".
+  const perLevels = t.match(/\bonce per day (?:for every|per|for each) (\w+) (?:[a-z]+ )?levels?\b/i);
+  if (perLevels && stepOf(perLevels[1]) > 1) return { max: Math.floor(level / stepOf(perLevels[1])), unit: 'uses' };
   const flat = t.match(/\b(once|twice|three times|four times|five times) per day(?! at)/i);
   const plain = flat ? COUNT_WORD[flat[1].toLowerCase()] : 0;
-  if (steps.length) return { max: Math.max(plain, ...steps.filter(([, lv]) => level >= lv).map(([n]) => n), 0), unit: 'uses' };
-  if (plain) return { max: plain, unit: 'uses' };
+  if (steps.length) {
+    const base = Math.max(plain, ...steps.filter(([, lv]) => level >= lv).map(([n]) => n), 0);
+    return { max: base + (base && flat ? moreUses(t.slice(flat.index), level) : 0), unit: 'uses' };
+  }
+  if (plain) return { max: plain + moreUses(t.slice(flat.index), level), unit: 'uses' };
   return null;
+}
+
+// More uses a level brings, after a flat count: "plus once per six levels beyond 2nd", "plus one additional time per
+// day for every 4 cavalier levels he has beyond 2nd", "one additional demolition bomb per day at 5th level and every 4
+// alchemist levels thereafter". t: the text from the flat count on.
+const stepOf = w => NUM_WORD[String(w).toLowerCase()] || Number(w) || 0;
+function moreUses(t, level) {
+  const beyond = t.match(/^[^.]*?\bplus (?:once|one(?: additional| more)?(?: time| use)?|1 (?:additional|more)(?: time| use)?)(?: per day)? (?:for every|per|every) (\w+) (?:[a-z]+ )?levels? (?:(?:she|he|it|you) (?:has|have|possesses|possess) )?(?:beyond|after|above) (\d+)/i);
+  if (beyond && stepOf(beyond[1])) return Math.max(0, Math.floor((level - Number(beyond[2])) / stepOf(beyond[1])));
+  const from = t.match(/^[^.]*?(?:\.\s*[^.]*?)?\b(?:one|1) additional [a-z ]*?per day at (\d+)(?:st|nd|rd|th) level and (?:every|each) (\w+) (?:[a-z]+ )?levels? (?:thereafter|after that)/i);
+  if (from && stepOf(from[2])) return level >= Number(from[1]) ? 1 + Math.floor((level - Number(from[1])) / stepOf(from[2])) : 0;
+  return 0;
 }
 
 // Uses left of an entry: its max less what's spent today (never below 0).

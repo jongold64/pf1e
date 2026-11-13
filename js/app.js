@@ -3353,7 +3353,10 @@ function renderClasses(view) {
           : `Replaced by ${replacedBy.get(`${r.level}|${s}`) || 'an archetype'}.`;
         return term(`<s>${esc(s)}</s>`, `${s} (replaced)`, `${why}\n\n${ki ? '' : described(s)}`, ' term-gone');
       });
-      const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch'));
+      // An archetype feature's dot: a daily counter when its text gives a daily limit, an attack row when it gives a
+      // natural attack; none otherwise (rules text, or changes the archetype rules count elsewhere).
+      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length ? 'roll' : null);
+      const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch', archHow(f)));
       featuresAt.set(`${e.cls.id}|${r.level}`, [...own, ...gone, ...added].join(''));
     }
     // Class features the level table doesn't list (spontaneous casting, bonus languages, proficiencies...), each with its text.
