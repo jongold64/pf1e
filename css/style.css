@@ -884,6 +884,7 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .how-feat { background: #00838f; }
 .how-spells { background: #5d4037; }
 .how-card { background: #757575; }
+.how-daily { background: #c2185b; }
 .how-legend .how { margin: 0 2px 0 0; }
 
 /* ---------------- Build tab: the whole character on one page (tab-build.js) ---------------- */

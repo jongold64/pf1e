@@ -9,6 +9,8 @@
 // spells: on the Spells tab.
 // card: its own card (animal companion, familiar).
 // roll: a row with a Roll button on the Character tab (channel energy, bombs, sneak attack...).
+// daily: a counter of its uses, rounds or points a day on the Character tab (Daily uses), read from its rules text or
+//   the class table's "N/day" (daily.js).
 // text: rules text used in play (what it does is in its description; there's no number to count).
 export const HANDLING = {
   counted: 'counted in your numbers',
@@ -18,7 +20,8 @@ export const HANDLING = {
   feat: 'a free feat or feat slot (Feats tab)',
   spells: 'on the Spells tab',
   card: 'has its own card',
-  roll: 'rolled on the Build tab',
+  roll: 'rolled on the Character tab',
+  daily: 'its uses a day are counted on the Character tab',
   text: 'rules text, used in play',
 };
 
@@ -65,7 +68,23 @@ const BY_NAME = new Map([
   ...list('card', ['eidolon', 'animal companion', "hunter's bond", 'mount', 'nature bond', "witch's familiar", 'summon familiar',
     'spirit animal', 'companion bond', 'bonus trick', 'bonus tricks']),
 ]);
+// Features with a daily limit that daily.js counts (from the class table's "N/day" or the feature's text).
+const DAILY = ['antipaladin:fiendish boon', 'arcane-archer:hail of arrows', 'arcane-archer:phase arrow', 'arcane-archer:seeker arrow',
+  'arcane-trickster:impromptu sneak attack', 'arcane-trickster:invisible thief', 'arcane-trickster:tricky spells', 'assassin:angel of death',
+  'assassin:swift death', 'bard:lore master', 'brawler:knockout', 'brawler:martial flexibility', 'dragon-disciple:dragon form',
+  'inquisitor:discern lies', 'loremaster:true lore', 'master-chymist:mutate', 'master-spy:nonmagical aura', 'medium:propitiation',
+  'mesmerist:touch treatment', 'monk:quivering palm', 'mystic-theurge:spell synthesis', 'nature-warden:animal speech',
+  'nature-warden:companion soul', 'nature-warden:plant speech', 'nature-warden:woodforging', 'pathfinder-chronicler:live to tell the tale',
+  'psychic:detect thoughts', 'psychic:telepathic bond', 'samurai:honorable stand', 'samurai:last stand', 'shadowdancer:defensive roll',
+  'shadowdancer:shadow call', 'shadowdancer:shadow illusion', 'shadowdancer:shadow power', 'skald:lore master', 'skald:spell kenning',
+  "slayer:slayer's advance", 'spiritualist:bonded manifestation', 'spiritualist:bonded senses', 'spiritualist:call spirit',
+  'spiritualist:calm spirit', 'spiritualist:phantom recall', 'spiritualist:see invisibility', 'spiritualist:shared consciousness',
+  'stalwart-defender:last word', 'summoner-unchained:bond senses', "summoner-unchained:maker's call", 'summoner-unchained:merge forms',
+  'summoner-unchained:summon monster', 'summoner-unchained:twin eidolon', 'summoner:bond senses', "summoner:maker's call",
+  'summoner:merge forms', 'summoner:summon monster', 'summoner:twin eidolon', 'gunslinger:grit', 'arcanist:arcane reservoir',
+  'psychic:phrenic pool', 'spiritualist:dual bond'];
 const BY_CLASS = new Map([
+  ...DAILY.map(k => [k, 'daily']),
   // Same name, handled differently for one class.
   ['kineticist:infusion', 'choice'], ['kineticist:infusion specialization', 'counted'],
   ...['burn', 'elemental overflow', 'gather power', 'metakinesis', 'internal buffer', 'supercharge', 'composite specialization']
@@ -80,6 +99,8 @@ const clean = name => String(name).toLowerCase().replace(/\s*\((?:ex|su|sp)\)\s*
   .replace(/\s*\(.*?\)\s*$/, '').replace(/[\s+\-]*\d.*$/, '').trim();
 // The handling key for a class's feature ('text' when nothing in the builder uses it).
 export function featureHandling(clsId, name) {
-  const n = clean(name);
-  return BY_CLASS.get(`${clsId}:${n}`) || BY_NAME.get(n) || 'text';
+  // "Summon monster IV" is the summoner's summon monster; a "knockout 2/day" table entry is a daily counter.
+  const n = clean(name).replace(/^(summon monster) [ivx]+$/, '$1');
+  const how = BY_CLASS.get(`${clsId}:${n}`) || BY_NAME.get(n) || 'text';
+  return how === 'text' && /\d+\/day/i.test(name) ? 'daily' : how;
 }

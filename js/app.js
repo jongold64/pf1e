@@ -3393,7 +3393,7 @@ function renderClasses(view) {
       <button type="button" data-level-remove="${i}"${stuck ? ` disabled title="Level 2 is a prestige class, which can't be your 1st level"` : ''}>Remove</button></li>`;
   }).join('') || '<li class="hint">No class yet: choose one below and press Add.</li>';
   $('level-legend').innerHTML = classLevels.length
-    ? `${['counted', 'roll', 'effect', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.` : '';
+    ? `${['counted', 'roll', 'effect', 'daily', 'note', 'choice', 'feat', 'spells', 'card'].map(k => `<span class="how how-${k}"></span> ${esc(HANDLING[k])}`).join(' · ')} · no dot: ${esc(HANDLING.text)}.` : '';
 }
 
 // The Guide: a Details button on each section's heading opens the section in a popup, with a button to go to the tab it's

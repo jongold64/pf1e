@@ -2276,6 +2276,26 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('cavalier 7: challenge 3/day (the latest table entry)', dailyUses(v('cavalier', 7)).find(d => /challenge/i.test(d.name))?.max, 3);
   check('druid 6: wild shape 2/day', dailyUses(v('druid', 6)).find(d => /wild shape/i.test(d.name))?.max, 2);
   check('uses left: max less what was spent', usesLeft({ key: 'rage', max: 15 }, { rage: 4 }), 11);
+  const use = (id, level, name, mod) => { const d = dailyUses(v(id, level, mod)).find(x => x.name.toLowerCase() === name.toLowerCase()); return d ? `${d.max} ${d.unit}` : 'none'; };
+  check('brawler 6, Int 0: martial flexibility 3 + half level = 6', use('brawler', 6, 'Martial Flexibility'), '6 uses');
+  check('brawler 4: knockout once a day (one counter, from the table)', dailyUses(v('brawler', 4)).filter(x => /knockout/i.test(x.name)).map(x => x.max).join(), '1');
+  check('summoner 1, Cha +3: summon monster 6 a day', use('summoner', 1, 'Summon Monster I', { cha: 3 }), '6 uses');
+  check('summoner 5: no maker\'s call before 6th', use('summoner', 5, "Maker's Call"), 'none');
+  check('summoner 10: maker\'s call twice a day', use('summoner', 10, "Maker's Call"), '2 uses');
+  check('inquisitor 7: discern lies 7 rounds', use('inquisitor', 7, 'Discern Lies'), '7 rounds');
+  check('arcane archer 8: seeker arrow 3, phase arrow 2, hail of arrows 1',
+        ['Seeker Arrow', 'Phase Arrow', 'Hail of Arrows'].map(n => use('arcane-archer', 8, n)).join(), '3 uses,2 uses,1 uses');
+  check('arcane archer 7: no hail of arrows yet (8th level)', use('arcane-archer', 7, 'Hail of Arrows'), 'none');
+  check('arcane trickster 9: invisible thief 9 rounds (two-word class name)', use('arcane-trickster', 9, 'Invisible Thief'), '9 rounds');
+  check('samurai 16: honorable stand twice a day', use('samurai', 16, 'Honorable Stand'), '2 uses');
+  check('shadowdancer 10: shadow power twice, shadow illusion 5, shadow call 4',
+        ['Shadow Power', 'Shadow Illusion', 'Shadow Call'].map(n => use('shadowdancer', 10, n)).join(), '2 uses,5 uses,4 uses');
+  check('spiritualist 17: bonded manifestation 3 + twice level; calm spirit 3; no dual bond counter',
+        [use('spiritualist', 17, 'Bonded Manifestation'), use('spiritualist', 17, 'Calm Spirit'), use('spiritualist', 17, 'Dual Bond')].join(), '37 rounds,3 uses,none');
+  check('ranger 20: master hunter gets no counter (once per favored enemy type)', use('ranger', 20, 'Master Hunter'), 'none');
+  check('monk 15: quivering palm once a day', use('monk', 15, 'Quivering Palm'), '1 uses');
+  const { featureHandling } = await import('./feature-coverage.js');
+  check('daily dot: grit, summon monster IV, knockout 2/day', [featureHandling('gunslinger', 'Grit'), featureHandling('summoner', 'Summon monster IV'), featureHandling('brawler', 'knockout 2/day')].join(), 'daily,daily,daily');
 }
 
 // Powers' uses a day read from their text (school, domain, bloodline powers).

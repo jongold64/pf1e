@@ -1,6 +1,8 @@
 // Daily uses (Build tab): every limited ability a character has, with its uses a day, so the player can tick them off
 // as they're spent and start a new day. state.daily = { key: uses spent }. No page code here.
 import { channelEnergy, layOnHands, smite } from './rules.js';
+import { featureHandling } from './feature-coverage.js';
+import { featureLevel } from './archetypes.js';
 
 const levelOf = (counts, ids) => Math.max(0, ...counts.filter(e => ids.includes(e.cls.id)).map(e => e.level));
 const lower = s => String(s || '').toLowerCase();
@@ -81,6 +83,20 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
     }
     for (const [name, n] of latest.values()) add(`${name}${counts.length > 1 ? ` (${e.cls.name})` : ''}`, n, 'uses', '', { how: `${n}/day at ${e.cls.name} level ${e.level} (the class table)`, cls: e.cls.id, feature: name });
   }
+  // Other class features with a daily limit (feature-coverage.js marks them 'daily'): read from their rules text, or
+  // worked out here when the text's wording is one powerUses can't follow. Skipped when already listed (a table "N/day").
+  for (const e of counts) {
+    const replaced = new Set(e.cls.progression.flatMap(r => r.replaced || []).map(lower));
+    for (const f of e.cls.features || []) {
+      const id = `${e.cls.id}:${lower(f.name)}`;
+      if (featureHandling(e.cls.id, f.name) !== 'daily' || replaced.has(lower(f.name)) || out.some(x => x.key === key(f.name))) continue;
+      const lv = featureLevel(e.cls, f) || Number(String(f.text).match(/^\s*(?:At|Starting at|Beginning at) (\d+)(?:st|nd|rd|th) level/i)?.[1]) || 1;
+      if (e.level < lv) continue;
+      const own = FEATURE_USES[id];
+      const u = own ? own(e.level, mod) : powerUses(f.text, e.level, mod);
+      if (u && u.max > 0) add(f.name, u.max, u.unit, '', { how: own ? u.how : `from its rules text, at ${e.cls.name} level ${e.level}`, cls: e.cls.id, feature: f.name });
+    }
+  }
   // Chosen powers (school, domain, bloodline...).
   for (const p of powers) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
   // Spontaneous casters: spells a day of each level.
@@ -91,6 +107,20 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   // One entry per key (two classes giving the same pool).
   return [...new Map(out.map(x => [x.key, x])).values()];
 }
+// Daily limits whose wording powerUses can't follow: class:feature (lower case) -> (class level, mods) -> { max, unit, how }.
+const FEATURE_USES = {
+  'samurai:honorable stand': lv => ({ max: lv >= 16 ? 2 : 1, unit: 'uses', how: 'once a day at 11th level, twice at 16th' }),
+  'shadowdancer:shadow power': lv => ({ max: lv >= 10 ? 2 : 1, unit: 'uses', how: 'once a day at 8th level, twice at 10th' }),
+  'shadowdancer:shadow illusion': lv => ({ max: Math.floor(lv / 2), unit: 'uses', how: `once a day per two shadowdancer levels (${lv})` }),
+  'pathfinder-chronicler:live to tell the tale': lv => ({ max: Math.floor(lv / 2), unit: 'uses', how: `once a day per two Pathfinder chronicler levels (${lv})` }),
+  'spiritualist:calm spirit': lv => ({ max: Math.min(4, 1 + (lv >= 11 ? 1 + Math.floor((lv - 11) / 4) : 0)), unit: 'uses',
+    how: 'once a day at 7th level, one more at 11th and every 4 levels after (4 at 19th)' }),
+  'spiritualist:bonded manifestation': lv => ({ max: 3 + (lv >= 17 ? 2 : 1) * lv, unit: 'rounds',
+    how: lv >= 17 ? `3 + twice your spiritualist level (${2 * lv}; dual bond)` : `3 + your spiritualist level (${lv})` }),
+  // Dual bond raises bonded manifestation's rounds (above); it has no uses of its own.
+  'spiritualist:dual bond': () => null,
+};
+
 const ordinal = n => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
 
 // A power's uses a day from its rules text, at a class level with the ability modifiers: { max, unit } or null when the
@@ -113,7 +143,7 @@ export function powerUses(text, level, mod = {}) {
     let n = 0;
     if (/^(?:your |her |his )?3 \+|^3 \+/i.test(expr)) n += 3;
     const times = expr.match(/(\d+) times (?:your|her|his) [a-z]+ level/i);
-    const lvl = expr.match(/(1\/2 )?(?:your|her|his) (?:[a-z]+ )?level/i);
+    const lvl = expr.match(/(1\/2 )?(?:your|her|his) (?:[a-z]+ ){0,2}level/i);
     if (times) n += Number(times[1]) * level;
     else if (lvl && !/level above/.test(expr.slice(0, lvl.index + lvl[0].length + 6))) n += lvl[1] ? Math.floor(level / 2) : level;
     const ab = expr.match(/(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma) (?:modifier|bonus)/i);
