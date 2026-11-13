@@ -15,7 +15,7 @@ import { abilityOptions, magicArmsPrice, spellItemPrice, craftCost, craftTime, c
 import { applyHp, addTempHp, classCounts, babList, racialAdjustments, saveBreakdown, acBreakdown, maneuverBreakdown, initiativeBreakdown, scoreRange, BUDGETS } from './rules.js';
 import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
-import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods, missChance } from './effects.js';
+import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods, missChance, effectDr } from './effects.js';
 import { flawEffects } from './flaws.js';
 import { itemEffects, itemBuffs, abilityEntries } from './item-effects.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
@@ -2284,6 +2284,10 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('blur and displacement: the higher 50%', m(['blur', 'displacement']), '50 Displacement');
   check('blur and concealment: 20%, both named', m(['blur', 'concealment']), '20 Blur+Concealment');
   check('no concealment effect: none', m(['bless', 'haste']), 'none');
+  const drs = l => effectDr(l.map(([id, cl]) => ({ id, cl }))).map(d => `${d.value}/${d.against}`).join(', ') || 'none';
+  check('stoneskin: DR 10/adamantine', drs([['stoneskin', 7]]), '10/adamantine');
+  check('righteous might: DR 5, 10 from caster level 15', drs([['righteous-might', 9]]) + ' | ' + drs([['righteous-might', 15]]), '5/evil or good (the opposite of your alignment) | 10/evil or good (the opposite of your alignment)');
+  check('two DR/magic effects: the higher counts; other kinds listed', drs([['form-of-the-dragon-2', 9], ['frightful-aspect', 15], ['stoneskin', 9]]), '10/magic, 10/adamantine');
 }
 
 document.getElementById('summary').textContent =

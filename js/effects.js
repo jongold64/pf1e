@@ -110,7 +110,7 @@ export const BUFFS = [
   { id: 'true-strike', name: 'True strike', bonuses: () => [b('attack', 'insight', 20)], note: 'your next single attack only; no miss chance from concealment' },
   { id: 'guidance', name: 'Guidance', bonuses: () => [b('d20', 'competence', 1)], note: 'one attack roll, saving throw or skill check' },
   { id: 'invisibility', name: 'Invisibility', bonuses: () => [b('attack', 'untyped', 2)], note: 'the +2 is against foes who can\u2019t see you, and they lose their Dex bonus to AC' },
-  { id: 'stoneskin', name: 'Stoneskin', bonuses: () => [], note: 'DR 10/adamantine (until it has stopped 10 per caster level, max 150)' },
+  { id: 'stoneskin', name: 'Stoneskin', bonuses: () => [], dr: () => ({ value: 10, against: 'adamantine' }), note: 'DR 10/adamantine (until it has stopped 10 per caster level, max 150)' },
   { id: 'blur', name: 'Blur', bonuses: () => [], miss: 20, note: 'attacks against you have a 20% miss chance (concealment)' },
   { id: 'displacement', name: 'Displacement', bonuses: () => [], miss: 50, note: 'attacks against you have a 50% miss chance (total concealment)' },
   { id: 'bless-weapon', name: 'Align weapon / bless weapon', bonuses: () => [], note: 'the weapon overcomes alignment damage reduction' },
@@ -208,6 +208,18 @@ for (const id of ['barbarian-rage', 'unchained-rage', 'inspired-rage', 'inspire-
 // A chosen amount that isn't one of the buff's amounts (or none yet) counts as its first.
 export const buffAmount = (buff, cl) => (buff.levels ? (buff.levels.includes(cl) ? cl : buff.levels[0]) : cl);
 export const buffById = new Map(BUFFS.map(x => [x.id, x]));
+
+// Damage reduction from active effects with `dr` (stoneskin 10/adamantine, oath of peace 10/evil...):
+// [{ value, against, from }]. DR of the same kind doesn't stack: the highest of each kind counts.
+export function effectDr(buffs = []) {
+  const best = new Map();
+  for (const x of buffs.filter(y => y.on !== false)) {
+    const buff = buffById.get(x.id);
+    const d = buff?.dr?.(x.cl || 1);
+    if (d && !(best.get(d.against)?.value >= d.value)) best.set(d.against, { ...d, from: buff.name });
+  }
+  return [...best.values()];
+}
 
 // The miss chance attacks against you have from active effects with `miss` (blur 20%, displacement 50%...):
 // { chance, from: [names] }, or null. Miss chances from concealment don't stack: the highest applies.

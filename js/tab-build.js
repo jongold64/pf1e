@@ -16,7 +16,7 @@ import { familiarStats } from './familiar.js';
 import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
-import { buffById, missChance } from './effects.js';
+import { buffById, missChance, effectDr } from './effects.js';
 import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -55,7 +55,8 @@ export function renderBuild(app, view, parts) {
   // One row of the numbers card: label, value, d20, ?, then a note (CMD); an empty cell keeps the columns lined up.
   const stat = (label, value, rollHtml = '', plusHtml = '', note = '') => `<div class="b-stat"><span>${label}</span><b>${value}</b>${rollHtml || '<span></span>'}${plusHtml || '<span></span>'}${note ? `<span class="muted">${note}</span>` : ''}</div>`;
   const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
-  const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`)];
+  const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
+    ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
   // AC and HP: in the highlighted row at the top, beside who the character is.
   // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.
@@ -67,7 +68,7 @@ export function renderBuild(app, view, parts) {
   const acBox = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
   // The numbers card: the ability scores in a column on the left; the saves, BAB, CMB, initiative and speed on the right.
   const core = `<div class="b-split">
-        <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a]), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
+        <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a] + (stats.fx.checks || 0) + (view.flawFx?.checks?.[a] || 0)), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
         <div class="b-grid">
           ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
           ${stat('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
