@@ -64,6 +64,13 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   const psy = levelOf(counts, ['psychic']);
   if (psy) add('Phrenic pool', Math.floor(psy / 2) + Math.max(mod.wis, mod.cha), 'points', 'Wisdom or Charisma, by your discipline',
     { how: half(psy, 'psychic', 'Wisdom or Charisma', Math.max(mod.wis, mod.cha)), ...from(['psychic'], 'Phrenic Pool') });
+  // Shadow jump (shadowdancer 4th level): 40 ft. a day, doubling every two levels (320 ft. at 10th), in jumps that each
+  // count as at least 10 ft., so counted in 10-ft. jumps.
+  const sd = levelOf(counts, ['shadowdancer']);
+  if (sd >= 4) {
+    const feet = 40 * 2 ** Math.floor((sd - 4) / 2);
+    add('Shadow jump (10 ft. each)', feet / 10, 'uses', `${feet} ft. a day`, { how: `40 ft. a day at 4th level, doubling every two levels after (${feet} ft. at ${sd}th), each jump at least 10 ft.`, ...from(['shadowdancer'], 'Shadow Jump') });
+  }
   // Dragon disciple breath weapon (3rd level): once a day, plus the draconic bloodline's own uses once the sorcerer
   // level (dragon disciple levels added) grants them: 1 at 9th, 2 at 17th, 3 at 20th.
   const dd = levelOf(counts, ['dragon-disciple']);
@@ -127,6 +134,8 @@ const FEATURE_USES = {
     how: lv >= 17 ? `3 + twice your spiritualist level (${2 * lv}; dual bond)` : `3 + your spiritualist level (${lv})` }),
   // Dual bond raises bonded manifestation's rounds (above); it has no uses of its own.
   'spiritualist:dual bond': () => null,
+  // Shadow jump has its own counter in 10-ft. jumps (dailyUses).
+  'shadowdancer:shadow jump': () => null,
 };
 
 const ordinal = n => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;

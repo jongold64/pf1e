@@ -2244,6 +2244,20 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('assassin 5, Int +3: death attack DC 18', row('assassin', 5, 'Death attack', { int: 3 }), 'DC 18 Fort');
   check('monk 15, Wis +4: quivering palm DC 21; monk 14: none', [row('monk', 15, 'Quivering palm', { wis: 4 }), row('monk', 14, 'Quivering palm')].join(), 'DC 21 Fort,none');
   check('master strike: rogue 20 Int +5 DC 25, unchained rogue 20 Dex +6 DC 26', [row('rogue', 20, 'Master strike', { int: 5 }), row('rogue-unchained', 20, 'Master strike', { dex: 6 })].join(), 'DC 25 Fort,DC 26 Fort');
+  const { classSenses, spellResistance, classNumbers } = await import('./class-features.js');
+  check('senses: shadowdancer 2 adds darkvision 60, or 30 more; dragon disciple 5 / 10 blindsense 30 / 60',
+        [classSenses([{ cls: cls('shadowdancer'), level: 2 }], []), classSenses([{ cls: cls('shadowdancer'), level: 2 }], ['darkvision 60 ft.']),
+          classSenses([{ cls: cls('dragon-disciple'), level: 5 }]), classSenses([{ cls: cls('dragon-disciple'), level: 10 }])].map(s => s.join('+')).join('|'),
+        'darkvision 60 ft.|darkvision 90 ft.|blindsense 30 ft.|blindsense 60 ft.');
+  const drowRace = { traits: [{ name: 'Spell Resistance', text: 'Drow possess spell resistance equal to 6 plus their class levels.' }] };
+  const sr = (race, counts, level) => { const r = spellResistance(race, counts, level); return r ? `${r.value} ${r.from} [${r.notes}]` : 'none'; };
+  check('spell resistance: drow 5 → 11; monk 13 → 23 (diamond soul); drow monk 13 → the higher; human fighter none',
+        [sr(drowRace, [], 5), sr({}, [{ cls: cls('monk'), level: 13 }], 13), sr(drowRace, [{ cls: cls('monk'), level: 13 }], 13), sr({}, [{ cls: cls('fighter'), level: 5 }], 5)].join('|'),
+        '11 spell resistance []|23 diamond soul []|23 diamond soul []|none');
+  check('spell resistance only against some spells is a note', sr({ traits: [{ name: 'Exalted Resistance', text: 'An aasimar with this racial trait gains spell resistance equal to 5 + her level against spells with the evil descriptor.' }] }, [], 4), '0  [SR 9 against some spells (Exalted Resistance)]');
+  check('monk numbers: slow fall 40 ft. at 8th; 20th any distance; wholeness of body heals monk level',
+        [classNumbers([{ cls: cls('monk'), level: 8 }]).map(c => c.text).join(' / '), classNumbers([{ cls: cls('monk'), level: 20 }])[0].text].join(' | '),
+        '40 ft. shorter fall, beside a wall / heal 8 hit points of your own (2 ki, standard action) | any distance, beside a wall');
   check('no kinetic fist row without the infusion', kca([{ cls: cls('kineticist'), level: 5 }], { mod: { con: 2 } }).some(c => c.name === 'Kinetic fist'), false);
   check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
     blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');
@@ -2307,6 +2321,8 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('monk 15: quivering palm once a day', use('monk', 15, 'Quivering Palm'), '1 uses');
   const bw = (dd, sorc) => dailyUses({ ...v('dragon-disciple', dd), counts: [{ cls: cls('dragon-disciple'), level: dd }, ...(sorc ? [{ cls: cls('sorcerer'), level: sorc }] : [])] })
     .find(x => x.name === 'Breath weapon')?.max ?? 0;
+  check('shadow jump: shadowdancer 4: 4 jumps (40 ft.), 8th: 16 (160 ft.), 3rd: none',
+        [use('shadowdancer', 4, 'Shadow jump (10 ft. each)'), use('shadowdancer', 8, 'Shadow jump (10 ft. each)'), use('shadowdancer', 3, 'Shadow jump (10 ft. each)')].join(), '4 uses,16 uses,none');
   check('breath weapon: dragon disciple 3 once; with sorcerer 6 (level 9) twice; dragon disciple 2 none', [bw(3, 0), bw(3, 6), bw(2, 7)].join(), '1,2,0');
   const { featureHandling } = await import('./feature-coverage.js');
   check('daily dot: grit, summon monster IV, knockout 2/day', [featureHandling('gunslinger', 'Grit'), featureHandling('summoner', 'Summon monster IV'), featureHandling('brawler', 'knockout 2/day')].join(), 'daily,daily,daily');

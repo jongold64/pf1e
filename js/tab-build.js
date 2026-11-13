@@ -49,7 +49,7 @@ export function renderBuild(app, view, parts) {
   const head = `<div class="b-head">${state.name ? `<b class="b-name">${esc(state.name)}</b>` : ''}
       <span>${esc(race.name)} ${esc(view.counts.map(e => `${e.cls.name}${e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : ''} ${e.level}`).join(' / '))}</span>
       <span class="muted">${esc([race.size, state.alignment, deity ? `${deity.name} (${deity.alignment})` : '',
-        (race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
+        (view.senses || race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
 
   // Core numbers.
   // One row of the numbers card: label, value, d20, ?, then a note (CMD); an empty cell keeps the columns lined up.
@@ -75,6 +75,7 @@ export function renderBuild(app, view, parts) {
           ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD ${cmd}`)}
           ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'))}
           ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
+          ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}
         </div>
       </div>`;
 
@@ -141,7 +142,9 @@ export function renderBuild(app, view, parts) {
   const shown = new Set([...channelEnergy(stats, view.haveFeats).map(channelName), ...layOnHands(stats).map(l => l.name), ...smite(stats).map(s => s.name),
     ...(parts.powerAttacks || []).map(p => p.name)]);
   const abilities = daily.filter(d => d.unit !== 'spells' && !shown.has(d.name))
-    .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('');
+    .map(d => `<div class="b-feat b-action"><span>${esc(d.name)}${d.note ? ` <small class="muted">${esc(d.note)}</small>` : ''}</span>${useDaily(d.name)}${plus('daily', d.key, d.name)}</div>`).join('')
+    // Class numbers to know in play (slow fall, wholeness of body...), with the feature's text in its ?.
+    + (view.classNumbers || []).map(c => `<div class="b-feat b-action"><span>${esc(c.name)} <small class="muted">${esc(c.text)}</small></span>${plus('feature', `monk|${c.name}`, c.name)}</div>`).join('');
   // A kineticist's burn: − / + to change it and Rest to clear it, with what it costs (nonlethal damage) and what
   // elemental overflow gives for it (already added to the kinetic blast rows above).
   const bs = parts.burn;

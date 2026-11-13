@@ -89,6 +89,9 @@ const BY_CLASS = new Map([
   ...['shifter:shifter claws', 'dragon-disciple:dragon bite', 'dragon-disciple:breath weapon', 'mesmerist:hypnotic stare',
     'mesmerist:painful stare', 'assassin:death attack', 'monk:quivering palm', 'rogue:master strike', 'rogue-unchained:master strike']
     .map(k => [k, 'roll']),
+  ...['monk:slow fall', 'monk:wholeness of body', 'monk:abundant step', 'monk:empty body', 'monk:diamond soul', 'shadowdancer:darkvision',
+    'dragon-disciple:blindsense'].map(k => [k, 'counted']),
+  ['shadowdancer:shadow jump', 'daily'],
   // Same name, handled differently for one class.
   ['kineticist:infusion', 'choice'], ['kineticist:infusion specialization', 'counted'],
   ...['burn', 'elemental overflow', 'gather power', 'metakinesis', 'internal buffer', 'supercharge', 'composite specialization']

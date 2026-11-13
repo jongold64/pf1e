@@ -47,7 +47,7 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
-import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
+import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
@@ -2300,7 +2300,9 @@ function computeView() {
       baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
       casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
-    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element }), situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element }), familiarNow),
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element }),
+    senses: classSenses(counts, race?.senses || []), sr: spellResistance(race, counts, classLevels.length), classNumbers: classNumbers(counts),
+    situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element }), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).

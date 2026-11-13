@@ -116,6 +116,52 @@ export function uncannyDodge(counts) {
 
 // Damage reduction from class levels: [{ value, against, source }]. Different sources don't stack (the highest
 // counts), except as a class says.
+// Senses: the race's with class ones added: a shadowdancer's darkvision (2nd level: 60 ft., or 30 ft. more if she
+// already has darkvision) and a dragon disciple's blindsense (30 ft. at 5th, 60 ft. at 10th). raceSenses: ['darkvision 60 ft.'].
+export function classSenses(counts, raceSenses = []) {
+  const out = [...raceSenses];
+  if (levelOf(counts, ['shadowdancer']) >= 2) {
+    const i = out.findIndex(s => /^darkvision (\d+)/i.test(s));
+    if (i >= 0) out[i] = `darkvision ${Number(out[i].match(/(\d+)/)[1]) + 30} ft.`;
+    else out.push('darkvision 60 ft.');
+  }
+  const dd = levelOf(counts, ['dragon-disciple']);
+  if (dd >= 5) out.push(`blindsense ${dd >= 10 ? 60 : 30} ft.`);
+  return out;
+}
+
+// Spell resistance: the best of a monk's diamond soul (13th level: 10 + monk level) and a race's (drow: 6 + level;
+// drow noble: 11 + level; Magic Resistant dwarves: 5 + level...). One that applies only against some spells is a note.
+// race: the race with its alternate traits; level: character level. Returns { value, from, notes: [...] } or null.
+export function spellResistance(race, counts, level) {
+  const all = [], notes = [];
+  const monk = levelOf(counts, ['monk']);
+  if (monk >= 13) all.push({ value: 10 + monk, from: 'diamond soul' });
+  for (const t of race?.traits || []) {
+    const text = String(t.text || '').replace(/\s+/g, ' ');
+    const m = text.match(/spell resistance equal to (\d+) (?:\+|plus) (?:her|his|their|the character's) (?:(?:character|class) )?levels?/i);
+    if (!m) continue;
+    const value = Number(m[1]) + level;
+    if (/spell resistance equal to[^.]*?\bagainst\b/i.test(text)) notes.push(`SR ${value} against some spells (${t.name})`);
+    else all.push({ value, from: t.name.toLowerCase() });
+  }
+  if (!all.length && !notes.length) return null;
+  const best = all.sort((a, b) => b.value - a.value)[0];
+  return { value: best?.value || 0, from: best?.from || '', notes };
+}
+
+// Class numbers to know in play that aren't rolls or daily uses: a monk's slow fall, wholeness of body, abundant step
+// and empty body. [{ name, text }].
+export function classNumbers(counts) {
+  const out = [];
+  const monk = levelOf(counts, ['monk']);
+  if (monk >= 4) out.push({ name: 'Slow fall', text: monk >= 20 ? 'any distance, beside a wall' : `${20 + 10 * Math.floor((monk - 4) / 2)} ft. shorter fall, beside a wall` });
+  if (monk >= 7) out.push({ name: 'Wholeness of body', text: `heal ${monk} hit points of your own (2 ki, standard action)` });
+  if (monk >= 12) out.push({ name: 'Abundant step', text: `dimension door, caster level ${monk}, yourself only (2 ki, move action)` });
+  if (monk >= 19) out.push({ name: 'Empty body', text: 'ethereal for 1 minute (3 ki, move action)' });
+  return out;
+}
+
 export function classDamageReduction(counts, { armor = null, shield = null, element = '' } = {}) {
   const out = [];
   for (const e of counts) {
