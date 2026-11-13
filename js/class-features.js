@@ -244,6 +244,37 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
         attack: null, dice: `${Math.max(1, Math.floor(n / 3))}d6` });
     }
   }
+  // Dragon disciple breath weapon (3rd level): the draconic bloodline's, 1d6 of your energy type per sorcerer level,
+  // Reflex half, DC 10 + half your sorcerer level + Cha; dragon disciple levels add to sorcerer levels for it.
+  const dd = lv('dragon-disciple');
+  if (dd >= 3) {
+    const sorc = lv('sorcerer') + dd;
+    out.push({ name: 'Breath weapon', word: 'damage', attack: null, dice: `${sorc}d6`,
+      note: `Reflex DC ${10 + Math.floor(sorc / 2) + (mod.cha || 0)} half · your energy type, shape by your dragon type · sorcerer level ${sorc} (dragon disciple levels count)` });
+  }
+  // Mesmerist: hypnotic stare (-2 on the target's Will saves, -3 at 8th) and painful stare (half the mesmerist level, at
+  // least 1, when an attack hits the stared target; +1d6 per 3 levels on the mesmerist's own attacks; precision).
+  const mes = lv('mesmerist');
+  if (mes) {
+    const half = Math.max(1, Math.floor(mes / 2)), d6 = Math.floor(mes / 3);
+    out.push({ name: 'Hypnotic stare', attack: null, dice: '', dc: `−${mes >= 8 ? 3 : 2} Will`,
+      note: `swift action: one creature within 30 ft. takes −${mes >= 8 ? 3 : 2} on Will saves while you keep staring` });
+    out.push({ name: 'Painful stare', attack: null, dice: d6 ? `${d6}d6+${half}` : String(half),
+      note: `once a round, when your attack hits your stare's target (+${half} on an ally's hit) · precision, not doubled on a critical` });
+  }
+  // Save DCs: death attack (assassin: 10 + assassin level + Int), quivering palm (monk 15th: 10 + half level + Wis),
+  // master strike (rogue 20th: 10 + half level + Int; unchained rogue: Dex).
+  const asn = lv('assassin');
+  if (asn) out.push({ name: 'Death attack', attack: null, dice: '', dc: `DC ${10 + asn + (mod.int || 0)} Fort`,
+    note: `after 3 rounds of study, a melee sneak attack: Fortitude or die, or be paralyzed 1d6+${asn} rounds (your choice)` });
+  const monk = lv('monk');
+  if (monk >= 15) out.push({ name: 'Quivering palm', attack: null, dice: '', dc: `DC ${10 + Math.floor(monk / 2) + (mod.wis || 0)} Fort`,
+    note: `once a day: an unarmed hit sets it; within ${monk} days, will the target to die (Fortitude negates)` });
+  for (const [id, ab] of [['rogue', 'int'], ['rogue-unchained', 'dex']]) {
+    const r = lv(id);
+    if (r >= 20) out.push({ name: 'Master strike', attack: null, dice: '', dc: `DC ${10 + Math.floor(r / 2) + (mod[ab] || 0)} Fort`,
+      note: 'with sneak attack damage: sleep 1d4 hours, paralysis 2d6 rounds or death (Fortitude negates); immune for 24 hours after' });
+  }
   return out;
 }
 

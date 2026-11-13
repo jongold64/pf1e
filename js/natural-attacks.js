@@ -51,7 +51,7 @@ export function naturalAttacks(text, level, { small = false } = {}) {
   // Extra damage on a hit from a level ("flaming weapons, each dealing an additional 1d6 points of fire damage", "an
   // additional 1d6 points of damage of your energy type").
   const extra = [];
-  for (const m of t.matchAll(new RegExp(`At ${ord} level,[^.]*?additional (\\d+d\\d+) points of (?:([a-z]+) damage|damage of your (energy) type)`, 'gi'))) {
+  for (const m of t.matchAll(new RegExp(`(?:At|Upon reaching) ${ord} level,[^.]*?(?:additional|also deals) (\\d+d\\d+) points of (?:([a-z]+) damage|damage of your (energy) type)`, 'gi'))) {
     if (level >= Number(m[1])) extra.push(`+${m[2]} ${m[3] || m[4]}`);
   }
   const when = /while (?:you are )?bloodraging/i.test(t) ? 'while bloodraging' : /while raging/i.test(t) ? 'while raging'

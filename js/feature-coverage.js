@@ -8,7 +8,8 @@
 // feat: a free feat or a feat slot (Feats tab).
 // spells: on the Spells tab.
 // card: its own card (animal companion, familiar).
-// roll: a row with a Roll button on the Character tab (channel energy, bombs, sneak attack...).
+// roll: a row on the Character tab's Actions card, with a Roll button or its save DC (channel energy, bombs, sneak
+//   attack, death attack...).
 // daily: a counter of its uses, rounds or points a day on the Character tab (Daily uses), read from its rules text or
 //   the class table's "N/day" (daily.js).
 // text: rules text used in play (what it does is in its description; there's no number to count).
@@ -20,7 +21,7 @@ export const HANDLING = {
   feat: 'a free feat or feat slot (Feats tab)',
   spells: 'on the Spells tab',
   card: 'has its own card',
-  roll: 'rolled on the Character tab',
+  roll: 'on the Actions card (Character tab)',
   daily: 'its uses a day are counted on the Character tab',
   text: 'rules text, used in play',
 };
@@ -85,6 +86,9 @@ const DAILY = ['antipaladin:fiendish boon', 'arcane-archer:hail of arrows', 'arc
   'psychic:phrenic pool', 'spiritualist:dual bond'];
 const BY_CLASS = new Map([
   ...DAILY.map(k => [k, 'daily']),
+  ...['shifter:shifter claws', 'dragon-disciple:dragon bite', 'dragon-disciple:breath weapon', 'mesmerist:hypnotic stare',
+    'mesmerist:painful stare', 'assassin:death attack', 'monk:quivering palm', 'rogue:master strike', 'rogue-unchained:master strike']
+    .map(k => [k, 'roll']),
   // Same name, handled differently for one class.
   ['kineticist:infusion', 'choice'], ['kineticist:infusion specialization', 'counted'],
   ...['burn', 'elemental overflow', 'gather power', 'metakinesis', 'internal buffer', 'supercharge', 'composite specialization']

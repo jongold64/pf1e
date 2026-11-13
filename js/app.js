@@ -1125,7 +1125,7 @@ function buildDetail(kind, arg) {
     const c = allClassAttacks(view.stats)[Number(arg)];
     if (!c) return;
     const text = c.text || classFeatureText(c.name);
-    openDetail(c.name, `<p>${c.attack !== null ? `<b>${esc(signed(c.attack))}</b> to hit${c.count > 1 ? ` (${c.count} attacks)` : ''} · ` : ''}<b>${esc(c.dice)}</b>${c.attack === null ? ' extra damage' : ' damage'}</p>
+    openDetail(c.name, `<p>${c.attack !== null ? `<b>${esc(signed(c.attack))}</b> to hit${c.count > 1 ? ` (${c.count} attacks)` : ''} · ` : ''}${c.dice ? `<b>${esc(c.dice)}</b>${c.attack === null ? ` ${c.word || 'extra damage'}` : ' damage'}` : `<b>${esc(c.dc || '')}</b>`}</p>
       ${c.note ? `<p class="hint">${esc(c.note)}</p>` : ''}${text ? paragraphs(text) : ''}`);
   } else if (kind === 'hero') {
     openDetail('Hero points', `<p><b>${state.heroPoints ?? 1}</b> of ${heroPointMax(view.haveFeats)} at most. Spend them, or add ones the GM awards, on the Build tab.</p>

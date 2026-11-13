@@ -116,9 +116,9 @@ export function renderBuild(app, view, parts) {
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
     .filter(([, f]) => view.haveFeats.includes(f))
     .map(([k, f]) => `<label class="b-switch"><input type="checkbox" data-b-combat="${k}"${combat[k] ? ' checked' : ''}> ${esc(f)}</label>${plus('combatswitch', k, f)}`).join('');
-  const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice)}${roll(c.attack !== null
+  const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice || c.dc || '')}${!c.dice ? '' : roll(c.attack !== null
       ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
-      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
+      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: c.word || 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
   // Powers with a roll (force missile, grave touch, fire bolt, a healing touch, extra damage on your attacks...): the
   // touch attack and damage or healing, the save, and their uses left; Details shows the power's text.
   const powerAtk = (parts.powerAttacks || []).map(p => {

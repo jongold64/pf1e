@@ -64,6 +64,14 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   const psy = levelOf(counts, ['psychic']);
   if (psy) add('Phrenic pool', Math.floor(psy / 2) + Math.max(mod.wis, mod.cha), 'points', 'Wisdom or Charisma, by your discipline',
     { how: half(psy, 'psychic', 'Wisdom or Charisma', Math.max(mod.wis, mod.cha)), ...from(['psychic'], 'Phrenic Pool') });
+  // Dragon disciple breath weapon (3rd level): once a day, plus the draconic bloodline's own uses once the sorcerer
+  // level (dragon disciple levels added) grants them: 1 at 9th, 2 at 17th, 3 at 20th.
+  const dd = levelOf(counts, ['dragon-disciple']);
+  if (dd >= 3) {
+    const eff = levelOf(counts, ['sorcerer']) + dd;
+    const blood = eff >= 20 ? 3 : eff >= 17 ? 2 : eff >= 9 ? 1 : 0;
+    add('Breath weapon', 1 + blood, 'uses', '', { how: `once a day from dragon disciple${blood ? `, plus ${blood} from the draconic bloodline at sorcerer level ${eff}` : ''}`, ...from(['dragon-disciple'], 'Breath Weapon') });
+  }
   // Worked out by the rules elsewhere: channel energy, lay on hands / touch of corruption, smite.
   const classOf = name => counts.find(e => e.cls.name === name)?.cls.id || '';
   for (const c of channelEnergy(stats, view.haveFeats)) add(`Channel ${c.energy} energy${c.source !== 'Cleric' ? ` (${c.source})` : ''}`, c.uses, 'uses', '',
@@ -98,7 +106,7 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
     }
   }
   // Chosen powers (school, domain, bloodline...).
-  for (const p of powers) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
+  for (const p of powers) if (!out.some(x => x.key === key(p.name))) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
   // Spontaneous casters: spells a day of each level.
   for (const { cls, table } of spellTables) {
     for (const r of table.rows) if (r.spellLevel >= 1 && r.canCast && r.total) add(`${cls.name} ${ordinal(r.spellLevel)}-level spells`, r.total, 'spells', '',

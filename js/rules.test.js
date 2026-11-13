@@ -2059,6 +2059,8 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('shifter claws: 1d4, 1d6 at 7th, 1d8 at 11th, 1d10 at 13th', [1, 7, 11, 13].map(lv => naturalAttacks(shifter, lv)[0].dice).join(), '1d4,1d6,1d8,1d10');
   const bite = naturalAttacks(cls('dragon-disciple').features.find(f => f.name === 'Dragon Bite').text, 2)[0];
   check('dragon bite: 1d6 with 1½ × Strength', `${bite.dice} x${bite.strMult}`, '1d6 x1.5');
+  const biteText = cls('dragon-disciple').features.find(f => f.name === 'Dragon Bite').text;
+  check('dragon bite: +1d6 energy from 6th level ("upon reaching")', [naturalAttacks(biteText, 5)[0].extra.join(), naturalAttacks(biteText, 6)[0].extra.join()].join('|'), '|+1d6 energy');
   check('rows: dragon bite +4 Str → 1d6+6; claws are two attacks', [naturalAttackRows([{ attack: bite, from: 'Dragon Bite' }], { melee: 7, str: 4 })[0].dice,
     naturalAttackRows([{ attack: naturalAttacks(abyssal, 1)[0], from: 'Claws' }], { melee: 7, str: 4 })[0].count].join(), '1d6+6,2');
 }
@@ -2233,6 +2235,15 @@ document.getElementById('list').innerHTML = results.map(r =>
     talents: ['Kinetic Fist Infusion'], overflow: burnState(lv, 4, lv, 2).overflow }).find(c => c.name === 'Kinetic fist');
   check('kinetic fist: 1d6 per 3 blast dice, at least 1d6, no Con or overflow', [fist(1).dice, fist(5).dice, fist(11).dice, fist(17).dice, fist(5).attack].join(), '1d6,1d6,2d6,3d6,');
   check('kinetic fist: burn 1 before 5th level, 0 after infusion specialization', [/burn 1 /.test(fist(4).note), /burn 0 \(1, less infusion specialization\)/.test(fist(5).note)].join(), 'true,true');
+  const row = (id, level, name, mod = {}, more = []) => { const r = kca([{ cls: cls(id), level }, ...more], { bab: [level], mod }).find(c => c.name === name); return r ? `${r.dice || r.dc}` : 'none'; };
+  check('dragon disciple 3 (sorcerer 5), Cha +4: breath weapon 8d6, Reflex DC 18', [row('dragon-disciple', 3, 'Breath weapon', { cha: 4 }, [{ cls: cls('sorcerer'), level: 5 }]),
+    /Reflex DC 18/.test(kca([{ cls: cls('dragon-disciple'), level: 3 }, { cls: cls('sorcerer'), level: 5 }], { mod: { cha: 4 } }).find(c => c.name === 'Breath weapon').note)].join(), '8d6,true');
+  check('dragon disciple 2: no breath weapon yet', row('dragon-disciple', 2, 'Breath weapon'), 'none');
+  check('mesmerist 7: hypnotic stare −2, painful stare 2d6+3', [row('mesmerist', 7, 'Hypnotic stare'), row('mesmerist', 7, 'Painful stare')].join(), '−2 Will,2d6+3');
+  check('mesmerist 2: painful stare 1 (no d6 yet); 8th: stare −3', [row('mesmerist', 2, 'Painful stare'), row('mesmerist', 8, 'Hypnotic stare')].join(), '1,−3 Will');
+  check('assassin 5, Int +3: death attack DC 18', row('assassin', 5, 'Death attack', { int: 3 }), 'DC 18 Fort');
+  check('monk 15, Wis +4: quivering palm DC 21; monk 14: none', [row('monk', 15, 'Quivering palm', { wis: 4 }), row('monk', 14, 'Quivering palm')].join(), 'DC 21 Fort,none');
+  check('master strike: rogue 20 Int +5 DC 25, unchained rogue 20 Dex +6 DC 26', [row('rogue', 20, 'Master strike', { int: 5 }), row('rogue-unchained', 20, 'Master strike', { dex: 6 })].join(), 'DC 25 Fort,DC 26 Fort');
   check('no kinetic fist row without the infusion', kca([{ cls: cls('kineticist'), level: 5 }], { mod: { con: 2 } }).some(c => c.name === 'Kinetic fist'), false);
   check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
     blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');
@@ -2294,6 +2305,9 @@ document.getElementById('list').innerHTML = results.map(r =>
         [use('spiritualist', 17, 'Bonded Manifestation'), use('spiritualist', 17, 'Calm Spirit'), use('spiritualist', 17, 'Dual Bond')].join(), '37 rounds,3 uses,none');
   check('ranger 20: master hunter gets no counter (once per favored enemy type)', use('ranger', 20, 'Master Hunter'), 'none');
   check('monk 15: quivering palm once a day', use('monk', 15, 'Quivering Palm'), '1 uses');
+  const bw = (dd, sorc) => dailyUses({ ...v('dragon-disciple', dd), counts: [{ cls: cls('dragon-disciple'), level: dd }, ...(sorc ? [{ cls: cls('sorcerer'), level: sorc }] : [])] })
+    .find(x => x.name === 'Breath weapon')?.max ?? 0;
+  check('breath weapon: dragon disciple 3 once; with sorcerer 6 (level 9) twice; dragon disciple 2 none', [bw(3, 0), bw(3, 6), bw(2, 7)].join(), '1,2,0');
   const { featureHandling } = await import('./feature-coverage.js');
   check('daily dot: grit, summon monster IV, knockout 2/day', [featureHandling('gunslinger', 'Grit'), featureHandling('summoner', 'Summon monster IV'), featureHandling('brawler', 'knockout 2/day')].join(), 'daily,daily,daily');
 }
