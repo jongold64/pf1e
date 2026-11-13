@@ -298,7 +298,8 @@ export function initSpellList(app) {
 const SPELLBOOK = new Set(['wizard', 'witch', 'magus', 'arcanist', 'alchemist', 'investigator']);
 export function preparers(app, view) {
   return view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
-                                                                            extraSlot: app.extraSlotOn?.(c.cls.id), knownChange: app.knownChange?.(c.cls.id) || 0 }) }))
+                                                                            extraSlot: app.extraSlotOn?.(c.cls.id), knownChange: app.knownChange?.(c.cls.id) || 0,
+                                                                            diminished: !!app.diminished?.(c.cls.id) }) }))
     .filter(x => x.table && (x.cls.id === 'arcanist' || x.table.rows.every(r => r.known === null)));
 }
 // How many slots of each spell level today: the spells per day (cantrips: the number prepared); an arcanist prepares

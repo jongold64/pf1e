@@ -1277,6 +1277,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('off-table features: the fighter’s Weapon and Armor Proficiency', offTableFeatures(cls('fighter')).some(f => /proficiency/i.test(f.name)), true);
   check('off-table features: the ranger’s favored enemy is on the table ("1st favored enemy")', offTableFeatures(cls('ranger')).some(f => /favored enemy/i.test(f.name)), false);
   check('off-table features: none of them is on the level table', offTableFeatures(cls('fighter')).some(f => /^bravery$/i.test(f.name)), false);
+  check('off-table features: a feature an archetype replaced (kensai: knowledge pool) stays on the table',
+        offTableFeatures(classWithArchetypes(cls('magus'), [arch('magus-kensai')])).some(f => /knowledge pool|spell recall/i.test(f.name)), false);
   check('feature text: a bard performance inside Bardic Performance', /counter magic effects/.test(featureDescription(cls('bard'), 'countersong')), true);
   check('feature text: "Summon monster II" finds Summon Monster I', /summon monster I/.test(featureDescription(cls('summoner'), 'Summon monster II')), true);
   check('ordinal', `${ordinal(1)} ${ordinal(2)} ${ordinal(3)} ${ordinal(11)} ${ordinal(12)} ${ordinal(22)}`, '1st 2nd 3rd 11th 12th 22nd');
