@@ -192,7 +192,8 @@ const LEVEL_TERM = new RegExp(`^(?:${TIMES})?${WHOSE}(?:[a-z-]+\\s+){0,3}?(?:cla
 const ABILITY_TERM = new RegExp(`^(?:${TIMES})?${WHOSE}(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)(?:\\s+or\\s+(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma))?\\s+(?:modifier|bonus)`, 'i');
 const factor = w => (!w ? 1 : /^1\/4$/.test(w) ? 0.25 : /^(1\/2|half|one-half)$/i.test(w) ? 0.5 : /^(twice|double)$/i.test(w) ? 2 : Number(w.split(' ')[0]));
 export function amountOf(expr, level, mod = {}) {
-  let rest = String(expr || '');
+  // "(minimum +1)" is a floor, not a part to add.
+  let rest = String(expr || '').replace(/\(minimum[^)]*\)/gi, '');
   let n = 0;
   // "plus 1 (additional) round (per day) for every/each (inquisitor) level above/beyond/after 4th"
   const beyond = rest.match(/,?\s*plus (\d+) (?:additional )?\w+(?: per day)? for (?:every|each) (?:[a-z]+ )?level (?:above|beyond|after) (\d+)(?:st|nd|rd|th)?/i);

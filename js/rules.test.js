@@ -2377,6 +2377,30 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('an archetype feature that alters a counter changes it instead of adding one (bouncer 6: one flexibility counter, 2 + 3 = 5)',
         dailyUses({ ...v('brawler', 6), counts: [{ cls: classWithArchetypes(cls('brawler'), [archOf('brawler-bouncer')]), level: 6 }] })
           .filter(x => /flexibility/i.test(x.name)).map(x => `${x.name}:${x.max}`).join(), 'Lesser Flexibility:5');
+  const { steadyBonuses, archetypeBonusEffects } = await import('./archetype-bonuses.js');
+  const sb = (t, l, name = '', mod = {}) => steadyBonuses(t, l, mod, name).map(b => `${b.target} +${b.value} ${b.type}`).join(', ') || 'none';
+  check('steady bonus: "+2 bonus on Fly checks, +4 at 5th, +6 at 8th"; "+1 per 4 levels after 2nd"; level lists; "At 4th, and every 4 levels thereafter"',
+        [sb('At 2nd level, an aerochemist gains a +2 bonus on Fly checks. This bonus increases to +4 at 5th level, and +6 at 8th level.', 6, 'Aerochemist'),
+          sb('At 2nd level, a tactician gains a +1 bonus on initiative checks. This bonus increases by +1 for every four levels after 2nd level.', 10, 'Tactician'),
+          sb('She gains a +1 natural armor bonus to AC. At 10th, 13th, 16th, and 19th levels, this bonus increases by 1.', 13, 'Hag-Riven'),
+          sb('A wit gains a +1 bonus on Bluff and Diplomacy checks. At 4th level, and every 4 bard levels thereafter, this bonus increases by 1, to a maximum of +6 at 20th level.', 8, 'Wit')].join(' | '),
+        'skill:Fly +4 untyped | init +3 untyped | ac +3 natural armor | skill:Bluff +3 untyped, skill:Diplomacy +3 untyped');
+  check('steady bonus: "equal to half her level (minimum +1)"; a sacred bonus on two saves',
+        [sb('An umbral stalker gains a morale bonus on all Acrobatics and Stealth checks equal to half her inquisitor level (minimum +1).', 7, 'Umbral Stalker'),
+          sb('She gains a +1 sacred bonus on Fortitude and Will saving throws.', 5, 'Sanctified Rogue')].join(' | '),
+        'skill:Acrobatics +3 morale, skill:Stealth +3 morale | fort +1 sacred, will +1 sacred');
+  check('not steady: in some terrain, a companion\'s or an item\'s, a choice, an ability used per day, against some creatures',
+        [sb('An arctic druid gains a bonus on Initiative checks equal to 1/2 her druid level in cold or icy terrain.', 6, 'Arctic Druid'),
+          sb('The clockwork spy gains a +2 resistance bonus on Reflex saves.', 6, 'Tinkerer'),
+          sb('A Jistkan artificer\'s golem arm gains a +1 enhancement bonus on attack and damage rolls.', 6, 'Jistkan Artificer'),
+          sb('At 7th level, he selects two powers. Dark Power: The fiend keeper gains a +1 profane bonus on attack and damage rolls.', 7, 'Fiend Keeper'),
+          sb('She can invoke her patron for a number of minutes per day equal to her level, and she gains a +2 resistance bonus on saving throws.', 6, 'Invoker'),
+          sb('The realm wanderer gains a bonus on attack rolls equal to his Wisdom modifier against creatures that have saved.', 6, 'Realm Wanderer', { wis: 3 })].join(),
+        'none,none,none,none,none,none');
+  const { classWithArchetypes: cwa2 } = await import('./archetypes.js');
+  const archList = await fetch('data/archetypes.json').then(r => r.json());
+  check('archetype bonus effects: a nimble guardian monk 3 gets +2 on Reflex saves',
+        archetypeBonusEffects([{ cls: cwa2(cls('monk'), [archList.find(a => a.id === 'monk-nimble-guardian')]), level: 3 }]).map(x => `${x.target}:${x.value}`).join(), 'ref:2');
   const { featureHandling } = await import('./feature-coverage.js');
   check('daily dot: grit, summon monster IV, knockout 2/day', [featureHandling('gunslinger', 'Grit'), featureHandling('summoner', 'Summon monster IV'), featureHandling('brawler', 'knockout 2/day')].join(), 'daily,daily,daily');
 }

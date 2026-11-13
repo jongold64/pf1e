@@ -33,6 +33,7 @@ import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
 import { burnState, infusionCosts } from './burn.js';
+import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
@@ -2193,6 +2194,8 @@ function computeView() {
                                                 shield: !!gear.shield, load: load?.load || 'light', element });
   // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
   classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield && !gear.shieldOff }));
+  // Steady bonuses archetype features give, read from their text (archetype-bonuses.js): +2 on Will saves, +1 dodge AC...
+  classFx.push(...archetypeBonusEffects(counts, statsWith(gear).mod));
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
@@ -3356,7 +3359,8 @@ function renderClasses(view) {
       // An archetype feature's dot: a daily counter when its text gives a daily limit, an attack row when it gives a
       // natural attack; none otherwise (rules text, or changes the archetype rules count elsewhere).
       const archRoll = f => { const a = archetypeAttacks([{ cls: { progression: [{ archetype_features: [f] }] }, level: e.level }], { mod: view.stats.mod }); return a.rows.length || a.sneak.length; };
-      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length || archRoll(f) ? 'roll' : null);
+      const archCounted = f => archetypeBonusEffects([{ cls: { progression: [{ archetype_features: [f] }] }, level: e.level }], view.stats.mod).length;
+      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length || archRoll(f) ? 'roll' : archCounted(f) ? 'counted' : null);
       const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch', archHow(f)));
       featuresAt.set(`${e.cls.id}|${r.level}`, [...own, ...gone, ...added].join(''));
     }
