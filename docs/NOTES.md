@@ -98,7 +98,9 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   'divine', 'alchemist' or 'any' per progression row) to a matching class (the first, or the player's choice).
   Caster level = effective level (minus 3 for classes whose spells start at 4th). Feat prerequisites use
   `featContext({ counts, casting })`: `levelsIn(ctx, 'fighter')` for class levels, class features from any class.
-- Feats and prestige requirements are checked against the character as of the level they were taken:
+- Feats are checked against the character as it is now (the player's choice: a build started at 5th level fills its
+  1st-level slot with anything 5th level qualifies for): `featContextFor(slot)` = `view.contextAt(view.level, slot.id)`,
+  every feat but the one in that slot. Prestige requirements are still checked as of the level before entering:
   `slotCharacterLevel` (feats.js) turns a slot into a character level (class bonus feat n = the n-th level in that
   class), and `view.contextAt(level, exceptSlotId)` builds a feat context from the levels up to then (BAB, casting,
   ability increases, feats in earlier or same-level slots, free class feats, skill ranks capped at that level).

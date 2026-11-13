@@ -1759,11 +1759,11 @@ function buildControls() {
       const f = data.featsById.get(pop.dataset.featPop);
       const slot = view.slots.find(s => s.id === pickerSlotId);
       if (!f || !slot) return;
-      const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+      const check = checkFeat(f, featContextFor(slot), slot);
       const applied = featApplied(f.name, { level: view.level, skillFeats: SKILL_FEATS });
-      openDetail(f.name, `<p class="hint">For: ${esc(slot.label)} (checked as of character level ${slot.charLevel})</p>${featDetails(f, check)}
+      openDetail(f.name, `<p class="hint">For: ${esc(slot.label)}</p>${featDetails(f, check)}
         <h4>In the app</h4><p>${esc(applied || 'Not counted in the numbers automatically: apply it in play (or add it as a custom effect on the Build tab).')}</p>
-        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}
+        ${check.status === 'unmet' ? unmetWarning(check) : ''}
         ${takenElsewhere(slot.id).has(f.id) && !canRepeat(f) ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>' : ''}`,
         takenElsewhere(slot.id).has(f.id) && !canRepeat(f) ? [] : [{ label: `Choose ${f.name}`, primary: check.status !== 'unmet', run: () => {
           update({ feats: { ...state.feats, [pickerSlotId]: f.id } });
@@ -1782,7 +1782,7 @@ function buildControls() {
     if (!item?.open) return;
     const f = data.featsById.get(item.dataset.feat);
     const slot = view.slots.find(s => s.id === pickerSlotId);
-    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot)) +
+    item.querySelector('.feat-body').innerHTML = featDetails(f, checkFeat(f, featContextFor(slot), slot)) +
       (takenElsewhere(slot.id).has(f.id) && !canRepeat(f)
         ? '<p class="hint">You already have this feat in another slot, and it can only be taken once.</p>'
         : `<button type="button" class="primary" data-pick="${esc(f.id)}">Choose ${esc(f.name)}</button>`);
@@ -3918,9 +3918,9 @@ function showFeatSlotDetails(slotId) {
     : slot.id === 'antihero' ? 'For playing an antihero (no hero points): any feat you qualify for.'
     : `Every character gets a feat at 1st level and every odd level (3rd, 5th, 7th...). This is the one for character level ${slot.level}.`;
   let html = `<h3>This slot</h3><p>${esc(why)}</p>
-    <p class="hint">Prerequisites are checked against your character at level ${slot.charLevel} (the level the feat is taken).</p>`;
+    <p class="hint">Prerequisites are checked against your character as it is now (at level ${view.level}).</p>`;
   if (f) {
-    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+    const check = checkFeat(f, featContextFor(slot), slot);
     const choice = view.featChoices.find(c => c.slotId === slot.id);
     const applied = featApplied(f.name, { level: view.level, choice: choice?.value ? choiceLabel(choice) : '', skillFeats: SKILL_FEATS });
     html += `<h3>Prerequisites for ${esc(f.name)}</h3>${check.waived ? '<p class="hint">Waived for this bonus feat.</p>'
@@ -4053,14 +4053,15 @@ function renderFlaws() {
       }).join('')}</ul></details>`;
 }
 
-// Which prerequisites aren't met, and at which level: a feat is checked as the character was when its slot was gained
-// (Extra Rage Power in a 1st-level slot fails: rage powers start at barbarian 2nd).
-function unmetWarning(check, slot) {
+// Which prerequisites aren't met by the character as it is now.
+function unmetWarning(check) {
   const unmet = check.parts.filter(x => x.status === 'unmet').map(x => x.why);
-  const later = view.slots.some(s => s.charLevel > slot.charLevel && !data.featsById.has(state.feats[s.id]));
-  return `<p class="warning">Not met at level ${slot.charLevel}, when this slot was gained: ${esc(unmet.join('; '))}.
-    ${slot.charLevel < view.level ? `Feats are checked as your character was at that level${later ? '; a later feat slot may qualify' : ''}.` : ''}</p>`;
+  return `<p class="warning">Not met: ${esc(unmet.join('; '))}.</p>`;
 }
+
+// What a feat in a slot is checked against: the character as it is now (every level taken so far), without the feat in
+// that slot itself, so a feat can't count toward its own prerequisites.
+const featContextFor = slot => view.contextAt(view.level, slot.id);
 
 const featByName = name =>data.feats.find(f => f.name.toLowerCase() === String(name).toLowerCase());
 
@@ -4069,7 +4070,7 @@ const featByName = name =>data.feats.find(f => f.name.toLowerCase() === String(n
 function popFeatSlots() {
   const rows = view.slots.slice().sort((a, b) => a.charLevel - b.charLevel).map(s => {
     const f = data.featsById.get(state.feats[s.id]);
-    const st = f ? checkFeat(f, view.contextAt(s.charLevel, s.id), s).status : null;
+    const st = f ? checkFeat(f, featContextFor(s), s).status : null;
     return `<tr><td>${s.charLevel}</td><td>${esc(s.label)}</td><td>${f ? `${STATUS_ICON[st]} ${esc(f.name)}` : '<span class="hint">not chosen</span>'}</td></tr>`;
   }).join('');
   const filled = view.slots.filter(s => data.featsById.has(state.feats[s.id])).length;
@@ -4123,7 +4124,7 @@ function renderFeats(slots, granted, ctx) {
   // The chosen feats, one line each, above the search.
   const chosenLines = slots.filter(s => data.featsById.has(state.feats[s.id])).sort((a, b) => a.charLevel - b.charLevel).map(slot => {
     const f = data.featsById.get(state.feats[slot.id]);
-    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+    const check = checkFeat(f, featContextFor(slot), slot);
     const choice = view.featChoices.find(c => c.slotId === slot.id);
     // Each chosen feat on one line with its slot, Details, Change and Remove; under it the weapon (skill, school) it's
     // for and any warning. (Its slot isn't listed again below.)
@@ -4134,7 +4135,7 @@ function renderFeats(slots, granted, ctx) {
       <button type="button" data-remove="${slot.id}">Remove</button></span></div>
       ${choice ? choiceSelect(choice) : ''}
       ${!slotAccepts(slot, f) ? '<p class="warning">This feat isn’t allowed in this slot.</p>' : ''}
-      ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}</li>`;
+      ${check.status === 'unmet' ? unmetWarning(check) : ''}</li>`;
   });
   $('feat-chosen').innerHTML = chosenLines.join('');
   $('feat-chosen').hidden = !chosenLines.length;
@@ -4145,7 +4146,7 @@ function renderFeats(slots, granted, ctx) {
     const rule = slot.kind === 'class' ? BONUS_FEAT_RULES[slot.ruleId].note : '';
     let body;
     if (f) {
-      const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+      const check = checkFeat(f, featContextFor(slot), slot);
       const wrongSlot = !slotAccepts(slot, f);
       const choice = view.featChoices.find(c => c.slotId === slot.id);
       body = `
@@ -4155,7 +4156,7 @@ function renderFeats(slots, granted, ctx) {
         </details>
         ${choice ? choiceSelect(choice) : ''}
         ${wrongSlot ? '<p class="warning">This feat isn\'t allowed in this slot.</p>' : ''}
-        ${check.status === 'unmet' ? unmetWarning(check, slot) : ''}
+        ${check.status === 'unmet' ? unmetWarning(check) : ''}
         <div class="slot-buttons">
           <button type="button" data-choose="${slot.id}">Change</button>
           <button type="button" data-remove="${slot.id}">Remove</button>
@@ -4207,7 +4208,7 @@ function renderPicker() {
     const already = taken.has(f.id) && !canRepeat(f);
     if (type && !(f.types || []).includes(type)) continue;
     if (search && !f.name.toLowerCase().includes(search)) continue;
-    const check = checkFeat(f, view.contextAt(slot.charLevel, slot.id), slot);
+    const check = checkFeat(f, featContextFor(slot), slot);
     if (hideUnmet && check.status === 'unmet' && !already) { hidden++; continue; }
     matches.push({ f, check, already });
   }
