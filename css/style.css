@@ -1142,6 +1142,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-burn-count b { font-size: 1.2rem; min-width: 1.2em; text-align: center; }
 .b-burn-count button { padding: 1px 10px; min-height: 30px; }
 .b-burn-note { flex-basis: 100%; }
+.b-buffer { flex-basis: 100%; margin-top: 4px; }
 .b-big .b-burn-count button { min-height: 40px; padding: 0 16px; font-size: 1rem; }
 .b-use button:not(.q-details) { padding: 1px 10px; min-height: 26px; }
 .b-item-list { list-style: none; padding: 0; margin: 0; }

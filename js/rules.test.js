@@ -2223,6 +2223,11 @@ document.getElementById('list').innerHTML = results.map(r =>
         JSON.stringify(infusionCosts([{ name: 'Kinetic Fist Infusion', kind: 'infusion', text: 'Element universal; Type form infusion; Level 1; Burn 1' },
           { name: 'Pushing Infusion', kind: 'infusion', text: 'Level 1; Burn 1' }, { name: 'Basic Telekinesis', kind: 'utility', text: 'Burn 0' }], 5)),
         '[{"name":"Kinetic Fist","burn":1,"after":0},{"name":"Pushing","burn":1,"after":0}]');
+  const g = kin => { const s = burnState(kin, 2, kin, 0); return `${s.gather.move}/${s.gather.full} [${s.metakinesis.map(m => `${m.name}:${m.burn}`)}] buffer ${s.bufferMax} composite ${s.compositeCut}`; };
+  check('kineticist 4: gather power 1/2, no metakinesis, no buffer', g(4), '1/2 [] buffer 0 composite 0');
+  check('kineticist 6: empower, internal buffer 1', g(6), '1/2 [empower:1] buffer 1 composite 0');
+  check('kineticist 11: supercharge 2/3, maximize, buffer 2', g(11), '2/3 [empower:1,maximize:2] buffer 2 composite 0');
+  check('kineticist 17: all four metakineses, buffer 3, composite specialization', g(17), '2/3 [empower:1,maximize:2,quicken:3,double blast:4] buffer 3 composite 1');
   check('burn state carries the infusion specialization cut', [burnState(4, 2, 4, 0).infusionCut, burnState(8, 2, 8, 0).infusionCut].join(), '0,2');
   const fist = lv => kca([{ cls: cls('kineticist'), level: lv }], { bab: [3], mod: { dex: 2, con: 4 }, blasts: kin.find(e => e.id === 'element-aether').blasts,
     talents: ['Kinetic Fist Infusion'], overflow: burnState(lv, 4, lv, 2).overflow }).find(c => c.name === 'Kinetic fist');

@@ -113,6 +113,7 @@ const state = {
   name: '',                  // the player's name for the character; '' shows "Human Fighter 1" instead
   hpCurrent: null,           // current hit points during play; null means full
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
+  buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
   spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
   heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
@@ -236,6 +237,7 @@ function load(saved) {
   state.portrait = typeof state.portrait === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(state.portrait) && state.portrait.length < 400000 ? state.portrait : '';
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
   state.burn = Number.isInteger(state.burn) && state.burn > 0 ? Math.min(40, state.burn) : 0;
+  state.buffer = Number.isInteger(state.buffer) && state.buffer > 0 ? Math.min(3, state.buffer) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
     .map(t => ({ id: t.id, name: String(t.name || t.id).slice(0, 60), amount: t.amount })).slice(0, 20);
@@ -816,7 +818,7 @@ function burnNow() {
   const bs = burnState(kin, view.stats.mod.con, state.classLevels.length, state.burn);
   // The chosen infusions' burn on a blast, after infusion specialization.
   const chosen = Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v));
-  return bs && { ...bs, infusions: infusionCosts(chosen, kin) };
+  return bs && { ...bs, infusions: infusionCosts(chosen, kin), buffer: Math.min(state.buffer, bs.bufferMax) };
 }
 
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
@@ -901,6 +903,8 @@ function initBuild() {
     if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0 });
     const burn = e.target.closest('[data-b-burn]');
     if (burn) changeBurn(burn.dataset.bBurn);
+    const buf = e.target.closest('[data-b-buffer]');
+    if (buf) changeBuffer(buf.dataset.bBuffer);
   });
   box.addEventListener('change', e => {
     const t = e.target;
@@ -942,6 +946,12 @@ const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneo
 // Burn: + accepts a point, − takes one off (a mistake), rest clears it all (a full night's rest).
 function changeBurn(how) {
   update({ burn: how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : 1))) });
+}
+// Internal buffer: fill accepts 1 burn to store 1 point (up to its most); spend takes a point out instead of accepting burn.
+function changeBuffer(how) {
+  const most = burnNow()?.bufferMax || 0;
+  if (how === 'fill' && state.buffer < most) update({ buffer: state.buffer + 1, burn: Math.min(40, state.burn + 1) });
+  if (how === 'spend' && state.buffer > 0) update({ buffer: state.buffer - 1 });
 }
 
 function spendDaily(key) {
@@ -4533,6 +4543,8 @@ async function start() {
     if (ud) { spendDaily(ud.dataset.bUseDaily); openBigCard(ud.closest('[data-big-pop]').dataset.bigPop); return; }
     const bn = e.target.closest('.b-big [data-b-burn]');
     if (bn) { changeBurn(bn.dataset.bBurn); openBigCard(bn.closest('[data-big-pop]').dataset.bigPop); return; }
+    const bb = e.target.closest('.b-big [data-b-buffer]');
+    if (bb) { changeBuffer(bb.dataset.bBuffer); openBigCard(bb.closest('[data-big-pop]').dataset.bigPop); return; }
     const uo = e.target.closest('.b-big [data-b-uses]');
     if (uo) { popDailyUses(app, view, buildParts(), uo.dataset.bUses); return; }
     const use = e.target.closest('.b-big [data-b-use-item]');

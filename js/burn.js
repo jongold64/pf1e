@@ -6,11 +6,17 @@
 // - max: 3 + Con modifier, the most burn she can choose to accept (more can be forced on her).
 // - perRound: 1, 2 at 6th level, and 1 more every 3 levels after (3 at 9th, 4 at 12th...).
 // - nonlethal: 1 point per character level for each point of burn.
+// - gather: gather power, burn taken off one blast: { move, full } (1 and 2; 2 and 3 with supercharge at 11th).
+// - metakinesis: the ones reached, [{ name, burn }]: empower 1 (5th), maximize 2 (9th), quicken 3 (13th), double blast 4 (17th).
+// - bufferMax: internal buffer, the most points it holds (1 at 6th, 2 at 11th, 3 at 16th; 0 before).
+// - compositeCut: composite specialization (16th), 1 less burn on composite blasts.
 // - infusionCut (5th level): infusion specialization, how much less burn the infusions used on one blast cost in all.
 // - overflow (3rd level): + burn on kinetic blast attacks, up to +1 per 3 kineticist levels; double that on damage.
 // - sizeBonus: the size bonuses to physical ability scores at enough burn (6th: 3+ burn, +2 to two; 11th: 5+, +4/+2/+2;
 //   16th: 7+, +6/+4/+2), as [6, 4, 2]-style lists ([] when none); ignoreCrit: % chance to ignore a critical hit or
 //   sneak attack (6th level: 5% per point of burn).
+const METAKINESIS = [{ name: 'empower', burn: 1, level: 5 }, { name: 'maximize', burn: 2, level: 9 },
+  { name: 'quicken', burn: 3, level: 13 }, { name: 'double blast', burn: 4, level: 17 }];
 export function burnState(kin, con, charLevel, burn = 0) {
   if (!kin) return null;
   const max = Math.max(0, 3 + con);
@@ -20,7 +26,10 @@ export function burnState(kin, con, charLevel, burn = 0) {
   const n = Math.min(b, omax);
   const sizeBonus = kin >= 16 && b >= 7 ? [6, 4, 2] : kin >= 11 && b >= 5 ? [4, 2, 2] : kin >= 6 && b >= 3 ? [2, 2] : [];
   return { burn: b, max, perRound, nonlethal: b * charLevel, overflow: { attack: n, damage: 2 * n, max: omax },
-           sizeBonus, ignoreCrit: kin >= 6 ? 5 * b : 0, infusionCut: infusionSpecialization(kin) };
+           sizeBonus, ignoreCrit: kin >= 6 ? 5 * b : 0, infusionCut: infusionSpecialization(kin),
+           gather: kin >= 11 ? { move: 2, full: 3 } : { move: 1, full: 2 },
+           metakinesis: METAKINESIS.filter(m => kin >= m.level).map(({ name, burn: cost }) => ({ name, burn: cost })),
+           bufferMax: kin >= 16 ? 3 : kin >= 11 ? 2 : kin >= 6 ? 1 : 0, compositeCut: kin >= 16 ? 1 : 0 };
 }
 
 // Infusion specialization: whenever she uses infusions with a blast, their combined burn costs this much less (never

@@ -153,9 +153,15 @@ export function renderBuild(app, view, parts) {
       <small class="muted b-burn-note">${esc([`up to ${bs.perRound} a round`,
         bs.burn ? `${bs.nonlethal} nonlethal damage (burn × character level)` : '',
         bs.overflow.attack ? `elemental overflow +${bs.overflow.attack} attack, +${bs.overflow.damage} damage on kinetic blasts` : bs.overflow.max ? `elemental overflow up to +${bs.overflow.max}` : '',
+        `gather power: a move action takes ${bs.gather.move} off a blast's burn, a full round ${bs.gather.full}${bs.gather.move > 1 ? ' (supercharge)' : ' (and a move action on your next turn, 3 in all)'}`,
+        bs.metakinesis.length ? `metakinesis: ${bs.metakinesis.map(m => `${m.name} ${m.burn} burn`).join(', ')}` : '',
+        bs.compositeCut ? `composite blasts cost ${bs.compositeCut} less burn (composite specialization)` : '',
         bs.infusionCut ? `infusions on one blast cost ${bs.infusionCut} less burn in all (infusion specialization)${(bs.infusions || []).length
           ? `: ${bs.infusions.map(i => `${i.name} ${i.after}${i.after !== i.burn ? ` (was ${i.burn})` : ''}`).join(', ')}` : ''}` : '',
         sizeBonusText(bs.sizeBonus), bs.ignoreCrit ? `${bs.ignoreCrit}% to ignore a critical hit or sneak attack` : ''].filter(Boolean).join(' · '))}</small>
+      ${bs.bufferMax ? `<span class="b-burn-count b-buffer">Internal buffer <b>${bs.buffer}</b> <span class="muted">/ ${bs.bufferMax}</span>
+        <button type="button" data-b-buffer="fill"${bs.buffer < bs.bufferMax ? '' : ' disabled'}>+ Store 1 (accept 1 burn)</button>
+        <button type="button" data-b-buffer="spend"${bs.buffer ? '' : ' disabled'}>Spend 1 (instead of burn)</button></span>` : ''}
       ${bs.burn > bs.max ? `<small class="warning b-burn-note">More than 3 + Con modifier (${bs.max}): only burn forced on you counts past that.</small>` : ''}
     </div></div>` : '';
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
