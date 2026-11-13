@@ -6,6 +6,7 @@
 // - max: 3 + Con modifier, the most burn she can choose to accept (more can be forced on her).
 // - perRound: 1, 2 at 6th level, and 1 more every 3 levels after (3 at 9th, 4 at 12th...).
 // - nonlethal: 1 point per character level for each point of burn.
+// - infusionCut (5th level): infusion specialization, how much less burn the infusions used on one blast cost in all.
 // - overflow (3rd level): + burn on kinetic blast attacks, up to +1 per 3 kineticist levels; double that on damage.
 // - sizeBonus: the size bonuses to physical ability scores at enough burn (6th: 3+ burn, +2 to two; 11th: 5+, +4/+2/+2;
 //   16th: 7+, +6/+4/+2), as [6, 4, 2]-style lists ([] when none); ignoreCrit: % chance to ignore a critical hit or
@@ -19,7 +20,21 @@ export function burnState(kin, con, charLevel, burn = 0) {
   const n = Math.min(b, omax);
   const sizeBonus = kin >= 16 && b >= 7 ? [6, 4, 2] : kin >= 11 && b >= 5 ? [4, 2, 2] : kin >= 6 && b >= 3 ? [2, 2] : [];
   return { burn: b, max, perRound, nonlethal: b * charLevel, overflow: { attack: n, damage: 2 * n, max: omax },
-           sizeBonus, ignoreCrit: kin >= 6 ? 5 * b : 0 };
+           sizeBonus, ignoreCrit: kin >= 6 ? 5 * b : 0, infusionCut: infusionSpecialization(kin) };
+}
+
+// Infusion specialization: whenever she uses infusions with a blast, their combined burn costs this much less (never
+// below 0): 1 at 5th level, 1 more at 8th, 11th, 14th, 17th and 20th.
+export const infusionSpecialization = kin => (kin >= 5 ? 1 + Math.floor((kin - 5) / 3) : 0);
+// The burn of the infusions used on one blast together, after infusion specialization: [1, 2] at 5th level -> 2.
+export const infusionBurn = (costs, kin) => Math.max(0, costs.reduce((a, b) => a + b, 0) - infusionSpecialization(kin));
+// Each chosen infusion's burn when used alone on a blast: [{ name, burn, after }]. talents: wild talent records
+// ({ name, kind, text }); the burn is read from the text's "Burn N" (no number: 0).
+export function infusionCosts(talents, kin) {
+  return talents.filter(t => t && t.kind === 'infusion').map(t => {
+    const burn = Number(String(t.text || '').match(/\bBurn (\d+)/)?.[1] || 0);
+    return { name: t.name.replace(/ Infusion$/, ''), burn, after: infusionBurn([burn], kin) };
+  });
 }
 
 // The size bonuses in words: [4, 2, 2] -> "+4 size bonus to one physical ability score, +2 to the other two".

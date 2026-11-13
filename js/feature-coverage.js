@@ -67,7 +67,7 @@ const BY_NAME = new Map([
 ]);
 const BY_CLASS = new Map([
   // Same name, handled differently for one class.
-  ['kineticist:infusion', 'choice'], ['alchemist:poison use', 'text'], ['shadowdancer:rogue talent', 'choice'],
+  ['kineticist:infusion', 'choice'], ['kineticist:infusion specialization', 'counted'], ['alchemist:poison use', 'text'], ['shadowdancer:rogue talent', 'choice'],
   ['horizon-walker:favored terrain', 'effect'], ['nature-warden:favored terrain', 'effect'], ['stalwart-defender:ac bonus', 'counted'],
   ['pathfinder-chronicler:bardic performance', 'effect'], ['battle-herald:inspire greatness', 'effect'],
   ['ranger:hunter\'s bond', 'card'], ['druid:wild shape', 'effect'], ['shifter:wild shape', 'effect'],

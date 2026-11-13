@@ -32,7 +32,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
-import { burnState } from './burn.js';
+import { burnState, infusionCosts } from './burn.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
 import { popSpell, preparers } from './tab-spells.js';
@@ -813,7 +813,10 @@ function classFeatureText(name) {
 // A kineticist's burn now: limits, nonlethal damage and elemental overflow (burn.js), or null for anyone else.
 function burnNow() {
   const kin = view.counts.find(e => e.cls.id === 'kineticist')?.level || 0;
-  return burnState(kin, view.stats.mod.con, state.classLevels.length, state.burn);
+  const bs = burnState(kin, view.stats.mod.con, state.classLevels.length, state.burn);
+  // The chosen infusions' burn on a blast, after infusion specialization.
+  const chosen = Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v));
+  return bs && { ...bs, infusions: infusionCosts(chosen, kin) };
 }
 
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.

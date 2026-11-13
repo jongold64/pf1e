@@ -2215,9 +2215,19 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('kineticist 12: 4 a round; 11th with 5 burn: +4/+2/+2', `${burnState(12, 0, 12, 0).perRound} ${burnState(11, 4, 11, 5).sizeBonus}`, '4 4,2,2');
   check('kineticist 16 with 7 burn: +6/+4/+2 size', sizeBonusText(burnState(16, 5, 16, 7).sizeBonus), '+6 size bonus to one physical ability score, +4 to a second and +2 to the third');
   check('not a kineticist: no burn', burnState(0, 2, 5, 0), null);
+  const { infusionSpecialization, infusionBurn, infusionCosts } = await import('./burn.js');
+  check('infusion specialization: 0 before 5th, 1 at 5th, +1 at 8th, 11th, 14th, 17th, 20th',
+        [4, 5, 7, 8, 11, 14, 17, 20].map(infusionSpecialization).join(), '0,1,1,2,3,4,5,6');
+  check('infusion burn: combined, less specialization, never below 0', [infusionBurn([1], 5), infusionBurn([1, 2], 5), infusionBurn([1], 4), infusionBurn([2], 11)].join(), '0,2,1,0');
+  check('infusion costs: read from the talent text, utility talents left out',
+        JSON.stringify(infusionCosts([{ name: 'Kinetic Fist Infusion', kind: 'infusion', text: 'Element universal; Type form infusion; Level 1; Burn 1' },
+          { name: 'Pushing Infusion', kind: 'infusion', text: 'Level 1; Burn 1' }, { name: 'Basic Telekinesis', kind: 'utility', text: 'Burn 0' }], 5)),
+        '[{"name":"Kinetic Fist","burn":1,"after":0},{"name":"Pushing","burn":1,"after":0}]');
+  check('burn state carries the infusion specialization cut', [burnState(4, 2, 4, 0).infusionCut, burnState(8, 2, 8, 0).infusionCut].join(), '0,2');
   const fist = lv => kca([{ cls: cls('kineticist'), level: lv }], { bab: [3], mod: { dex: 2, con: 4 }, blasts: kin.find(e => e.id === 'element-aether').blasts,
     talents: ['Kinetic Fist Infusion'], overflow: burnState(lv, 4, lv, 2).overflow }).find(c => c.name === 'Kinetic fist');
   check('kinetic fist: 1d6 per 3 blast dice, at least 1d6, no Con or overflow', [fist(1).dice, fist(5).dice, fist(11).dice, fist(17).dice, fist(5).attack].join(), '1d6,1d6,2d6,3d6,');
+  check('kinetic fist: burn 1 before 5th level, 0 after infusion specialization', [/burn 1 /.test(fist(4).note), /burn 0 \(1, less infusion specialization\)/.test(fist(5).note)].join(), 'true,true');
   check('no kinetic fist row without the infusion', kca([{ cls: cls('kineticist'), level: 5 }], { mod: { con: 2 } }).some(c => c.name === 'Kinetic fist'), false);
   check('kineticist 6 fire blast with 2 burn: +2 attack, +4 damage', kca([{ cls: cls('kineticist'), level: 6 }], { bab: [4], mod: { dex: 2, con: 4 },
     blasts: kin.find(e => e.id === 'element-fire').blasts, overflow: burnState(6, 4, 6, 2).overflow }).map(c => `${c.attack} ${c.dice}`).join(), '8 3d6+6');

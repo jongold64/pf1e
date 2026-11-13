@@ -9,7 +9,9 @@
 // - situationalBonuses: the ones that only apply in some situations (bravery against fear, trap sense, evasion...),
 //   shown as notes in the Details of the save, AC or skill they touch.
 
-const half = lv => Math.max(1, Math.floor(lv / 2));
+import { infusionBurn } from './burn.js';
+
+const half =lv => Math.max(1, Math.floor(lv / 2));
 // The class levels a feature counts: the highest of the classes listed (the same feature from two classes doesn't
 // add up, except where a class says its levels stack).
 const levelOf = (counts, ids) => Math.max(0, ...counts.filter(e => ids.includes(e.cls.id)).map(e => e.level));
@@ -234,9 +236,11 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
     }
     // Kinetic fist (form infusion, burn 1): 1d6 per 3 dice of the blast (at least 1d6) on each unarmed strike and natural
     // attack until your next turn, of the blast's damage type, with none of the blast's modifiers (Con, overflow).
+    // Its burn (1) after infusion specialization.
     if (talents.includes('Kinetic Fist Infusion')) {
       const type = [...new Set(list.map(b => b.damage).filter(Boolean))].join(' or ');
-      out.push({ name: 'Kinetic fist', note: `extra damage on each unarmed strike and natural attack until your next turn · burn 1 · use with an attack, charge or full attack${type ? ` · ${type}` : ''}`,
+      const burn = infusionBurn([1], lv('kineticist'));
+      out.push({ name: 'Kinetic fist', note: `extra damage on each unarmed strike and natural attack until your next turn · burn ${burn}${burn < 1 ? ' (1, less infusion specialization)' : ''} · use with an attack, charge or full attack${type ? ` · ${type}` : ''}`,
         attack: null, dice: `${Math.max(1, Math.floor(n / 3))}d6` });
     }
   }

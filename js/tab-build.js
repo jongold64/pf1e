@@ -153,6 +153,8 @@ export function renderBuild(app, view, parts) {
       <small class="muted b-burn-note">${esc([`up to ${bs.perRound} a round`,
         bs.burn ? `${bs.nonlethal} nonlethal damage (burn × character level)` : '',
         bs.overflow.attack ? `elemental overflow +${bs.overflow.attack} attack, +${bs.overflow.damage} damage on kinetic blasts` : bs.overflow.max ? `elemental overflow up to +${bs.overflow.max}` : '',
+        bs.infusionCut ? `infusions on one blast cost ${bs.infusionCut} less burn in all (infusion specialization)${(bs.infusions || []).length
+          ? `: ${bs.infusions.map(i => `${i.name} ${i.after}${i.after !== i.burn ? ` (was ${i.burn})` : ''}`).join(', ')}` : ''}` : '',
         sizeBonusText(bs.sizeBonus), bs.ignoreCrit ? `${bs.ignoreCrit}% to ignore a critical hit or sneak attack` : ''].filter(Boolean).join(' · '))}</small>
       ${bs.burn > bs.max ? `<small class="warning b-burn-note">More than 3 + Con modifier (${bs.max}): only burn forced on you counts past that.</small>` : ''}
     </div></div>` : '';
