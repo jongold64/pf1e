@@ -92,6 +92,8 @@ const BY_CLASS = new Map([
   ...['monk:slow fall', 'monk:wholeness of body', 'monk:abundant step', 'monk:empty body', 'monk:diamond soul', 'shadowdancer:darkvision',
     'dragon-disciple:blindsense'].map(k => [k, 'counted']),
   ['shadowdancer:shadow jump', 'daily'],
+  // Archetype features the builder uses: the kensai's bonus Weapon Focus, the bladebound's black blade (on the weapons list).
+  ['magus:weapon focus', 'feat'], ['magus:black blades', 'counted'],
   ...['magus:spell combat', 'magus:improved spell combat', 'magus:greater spell combat', "cavalier:cavalier's charge", 'cavalier:mighty charge',
     'cavalier:supreme charge'].map(k => [k, 'effect']),
   // Same name, handled differently for one class.

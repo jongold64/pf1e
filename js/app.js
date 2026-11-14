@@ -36,7 +36,7 @@ import { burnState, infusionCosts } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
-import { popSpell, preparers } from './tab-spells.js';
+import { popSpell, preparers, slotCount } from './tab-spells.js';
 import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
@@ -846,12 +846,16 @@ function buildParts() {
   const spontaneous = view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
     extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id), diminished: diminished(c.cls.id) }) }))
     .filter(x => x.table && x.cls.id !== 'arcanist' && x.table.rows.some(r => r.known !== null));
-  const prepIds = new Set(preparers(app, view).map(p => p.cls.id));
+  const preps = preparers(app, view);
+  const prepIds = new Set(preps.map(p => p.cls.id));
+  // Today's slots of each level: a prepared list saved before the slots shrank (Kensai's diminished spellcasting) shows
+  // only the spells that still fit, as on the Spells tab.
+  const slotsAt = (cid, lv) => { const p = preps.find(x => x.cls.id === cid); const r = p?.table.rows.find(x => x.spellLevel === lv); return r ? slotCount(p.cls, r) : 0; };
   return {
     name: characterLabel(state), skills, spontaneous, powers: dailyPowers(), classGear: classGearNotes(),
     bladebound: (state.archetypes.magus || []).includes('magus-bladebound'),
     castingAbility: cid => CASTING_ABILITY[cid],
-    prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots }))
+    prepared: cid => (!prepIds.has(cid) ? null : Object.entries(state.prepared[cid] || {}).map(([lv, slots]) => ({ lv: Number(lv), slots: slots.slice(0, slotsAt(cid, Number(lv))) }))
       .filter(x => x.slots.some(y => y.id)).sort((a, b) => a.lv - b.lv)),
     classAttacks: allClassAttacks(view.stats), powerAttacks: powerAttackRows(), burn: burnNow(),
     choices: (cid, lv) => choiceItems(cid, lv),
@@ -3360,7 +3364,9 @@ function renderClasses(view) {
       // natural attack; none otherwise (rules text, or changes the archetype rules count elsewhere).
       const archRoll = f => { const a = archetypeAttacks([{ cls: { progression: [{ archetype_features: [f] }] }, level: e.level }], { mod: view.stats.mod }); return a.rows.length || a.sneak.length; };
       const archCounted = f => archetypeBonusEffects([{ cls: { progression: [{ archetype_features: [f] }] }, level: e.level }], view.stats.mod).length;
-      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length || archRoll(f) ? 'roll' : archCounted(f) ? 'counted' : null);
+      const archHow = f => ((powerUses(f.text, e.level, view.stats.mod)?.max || 0) > 0 ? 'daily' : naturalAttacks(f.text, e.level).length || archRoll(f) ? 'roll' : archCounted(f) ? 'counted' : archNamed(f));
+      // Otherwise the dot a class feature of that name has (an archetype's canny defense, diminished spellcasting...).
+      function archNamed(f) { const h = featureHandling(e.cls.id, String(f.name).replace(/\s*\((?:Ex|Su|Sp)[^)]*\)\s*$/i, '')); return h === 'text' ? null : h; }
       const added = (r.archetype_features || []).map(f => term(esc(f.name), `${f.name} (${f.archetype})`, f.text, ' term-arch', archHow(f)));
       featuresAt.set(`${e.cls.id}|${r.level}`, [...own, ...gone, ...added].join(''));
     }

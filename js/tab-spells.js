@@ -304,7 +304,7 @@ export function preparers(app, view) {
 }
 // How many slots of each spell level today: the spells per day (cantrips: the number prepared); an arcanist prepares
 // the "spells prepared" number and casts from them.
-const slotCount = (cls, r) => (!r.canCast ? 0 : cls.id === 'arcanist' ? r.prepared ?? 0 : r.total ?? 0);
+export const slotCount = (cls, r) => (!r.canCast ? 0 : cls.id === 'arcanist' ? r.prepared ?? 0 : r.total ?? 0);
 
 function renderPrepared(app, view) {
   const list = preparers(app, view);
