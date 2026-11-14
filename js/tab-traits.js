@@ -70,16 +70,16 @@ export function renderTraits(app) {
   $('trait-slots').innerHTML = Array.from({ length: count }, (_, i) => {
     const t = chosen[i];
     const label = traitSlotLabels(state.houseRules, state.drawback)[i] || `Trait ${i + 1}`;
-    const body = t ? `<details class="chosen"><summary>${esc(t.name)} <small class="muted">${esc(t.category)}</small></summary>
+    // One row: the slot, the trait (tap to read it), what it counts and the buttons; a weapon or benefit pick below.
+    const picks = pickControls(app, t || {});
+    const body = t ? `<details class="chosen"><summary><span>${esc(t.name)} <small class="muted">${esc(t.category)}</small>${effectText(t) ? ` <small class="trait-counted">Counted: ${esc(effectText(t))}</small>` : ''}</span></summary>
         <p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}</details>
-        ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
-        ${pickControls(app, t)}
         <div class="slot-buttons"><button type="button" data-trait-choose="${i}">Change</button>
           <button type="button" data-trait-remove="${i}">Remove</button>
           <button type="button" class="skill-details q-details" data-trait-details="${i}" aria-label="About this trait slot and what the trait does here" title="Details">?</button></div>`
       : `<div class="slot-buttons"><button type="button" class="primary" data-trait-choose="${i}">Choose a trait</button>
           <button type="button" class="skill-details q-details" data-trait-details="${i}" aria-label="About this trait slot" title="Details">?</button></div>`;
-    return `<li class="slot"><div class="slot-label">${label}</div>${body}</li>`;
+    return `<li class="slot trait-row"><div class="slot-label">${label}</div>${body}${t && picks ? `<div class="trait-picks">${picks}</div>` : ''}</li>`;
   }).join('');
   // Traits chosen beyond the slots (the house rule was switched off) are kept but not counted.
   const extra = chosen.slice(count).filter(Boolean);

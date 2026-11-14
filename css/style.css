@@ -160,6 +160,15 @@ table.spells { width: 100%; border-collapse: collapse; margin-top: 4px; }
 .slot .hint { margin: 0 0 6px; }
 .slot .warning { margin: 6px 0 0; font-size: 0.95rem; }
 .slot-buttons { display: flex; gap: 8px; margin-top: 8px; }
+/* Feats tab traits: each slot on one row (label, trait, buttons); an opened trait's text and a weapon pick go below. */
+.trait-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.trait-row .slot-label { flex: 0 0 12em; margin: 0; }
+.trait-row details.chosen { flex: 1 1 14em; min-width: 0; }
+.trait-row details.chosen[open] { flex-basis: 100%; order: 3; }
+.trait-row .slot-buttons { margin: 0 0 0 auto; order: 2; }
+.trait-row .trait-picks { flex-basis: 100%; order: 4; }
+.trait-row summary small { font-weight: 400; margin-left: 4px; }
+.trait-counted { color: var(--muted, #666); }
 button.primary { background: var(--accent); color: #fff; border-color: var(--accent); padding: 0 16px; }
 .status { display: inline-block; width: 1.4em; text-align: center; font-weight: 700; }
 .status.met { color: var(--good); }
