@@ -118,6 +118,22 @@ export function itemSpellNumbersHtml(view, classes, spell, cl) {
   return spellNumbersHtml({ ...view, stats, featChoices: [], haveFeats: [], schoolBonus: null }, cls, cl, spell);
 }
 
+// What My spells still needs, for the Spells tab's tint (tab-todo.js): spells known not yet chosen (a spontaneous
+// caster, for the class My spells shows), or no spells at all (a caster who can cast already). The spell list loads
+// when the character has spells, so before then none are chosen.
+export function spellsLeftToChoose(app, view) {
+  const none = { spellsLeft: 0, noSpells: false };
+  if (!view.casting?.casting?.length) return none;
+  if (!app.data.spells) return { spellsLeft: 0, noSpells: !app.state.spells.length };
+  const { cls, table, maxLevel } = listClass(app, view);
+  if (maxLevel < 0 || !app.data.spells.some(s => s.levels[cls.id] !== undefined)) return none;
+  const byId = new Map(app.data.spells.map(s => [s.id, s]));
+  const levels = app.state.spells.map(id => byId.get(id)?.levels[cls.id]).filter(lv => lv !== undefined);
+  const known = (table?.rows || []).filter(r => r.known !== null && r.canCast);
+  if (known.length) return { spellsLeft: known.reduce((n, r) => n + Math.max(0, r.known - levels.filter(lv => lv === r.spellLevel).length), 0), noSpells: false };
+  return { spellsLeft: 0, noSpells: !levels.length };
+}
+
 function renderMySpells(app, view) {
   lineDetails.clear();
   const { cls, level, table, maxLevel } = listClass(app, view);

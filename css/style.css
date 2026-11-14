@@ -8,6 +8,7 @@
   --good: #1a7f37;
   --bad: #cf222e;
   --warn: #9a6700;
+  --todo-bg: #f8d7d3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +22,7 @@
     --good: #57c27a;
     --bad: #ff7b72;
     --warn: #d4a72c;
+    --todo-bg: #5a2a26;
   }
 }
 
@@ -245,7 +247,9 @@ button.link { border: 0; background: none; color: var(--accent); min-height: 0; 
   flex: 1 0 auto; border: 0; background: none; color: var(--text); font-weight: 600;
   padding: 0 0.5em; white-space: nowrap; font-size: 1rem; font-size: clamp(0.72rem, 1.5cqi, 15.3px);
 }
+.tabs button.todo { background: var(--todo-bg); }
 .tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
+.tabs button.todo[aria-selected="true"] { box-shadow: inset 0 -4px 0 var(--todo-bg); }
 .tab-panel { max-width: 900px; margin: 0 auto; }
 
 /* Search: one box above every tab's page. */

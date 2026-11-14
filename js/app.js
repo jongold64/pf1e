@@ -36,7 +36,8 @@ import { burnState, infusionCosts } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
-import { popSpell, preparers, slotCount } from './tab-spells.js';
+import { popSpell, preparers, slotCount, spellsLeftToChoose } from './tab-spells.js';
+import { tabsToDo } from './tab-todo.js';
 import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
@@ -3673,7 +3674,35 @@ function render() {
   if (tab === 'craft') renderCrafting(app, 'craft');
   if (tab === 'weapons') renderMyWeapons(app, view);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
+  renderTabTodo();
   requestAnimationFrame(() => fitLines());
+}
+
+// Tabs with something still to finish (points, ranks, feats, choices...) are tinted light red; the tooltip says what.
+function renderTabTodo() {
+  const race = data.races.find(r => r.id === state.race);
+  const reached = INCREASE_LEVELS.filter(lv => state.level >= lv).length;
+  const traitSlots = traitSlotCount(state.houseRules, state.drawback);
+  const todo = tabsToDo({
+    noRace: !race,
+    pointsLeft: state.budget === 'custom' ? 0 : state.budget - pointsSpent(state.base),
+    increasesLeft: state.increases.slice(0, reached).filter(a => !a).length,
+    flexibleLeft: (race?.flexible_ability_bonus && !ABILITIES.includes(state.flexible) ? 1 : 0)
+      + (race?.dual_talent && !ABILITIES.includes(state.flexible2) ? 1 : 0),
+    noClass: !state.classLevels.length,
+    classChoicesLeft: view.counts.reduce((n, e) => n + choicesLeft(e.cls, e.level), 0),
+    ranksLeft: ranksToDo,
+    featsLeft: view.slots.filter(s => !data.featsById.has(state.feats[s.id])).length,
+    traitsLeft: state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length < traitSlots
+      ? traitSlots - state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length : 0,
+    ...spellsLeftToChoose(app, view),
+  });
+  for (const b of document.querySelectorAll('.tabs [data-tab]')) {
+    const why = todo[b.dataset.tab];
+    b.classList.toggle('todo', !!why);
+    if (why) b.title = `Still to do: ${why}`;
+    else b.removeAttribute('title');
+  }
 }
 
 // A Details popup's table: one row per thing that adds, then the total.
@@ -3888,6 +3917,8 @@ function skillTextHtml(name) {
 let showSkillDetails = () => {};
 let showRankDetails = () => {};
 
+let ranksToDo = 0;  // skill ranks left to spend (negative: too many), for the Skills tab's tint
+
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
   const byClass = classSkillTest([...classes, pathSkills()]);
@@ -3900,6 +3931,7 @@ function renderSkills(race, classes, scores, featNames) {
   const available = byLevel.reduce((n, r) => n + r.total, 0);
   const names = skillRowNames();
   const used = names.reduce((sum, n) => sum + (state.skills[n] || 0), 0);
+  ranksToDo = available - used;
   // Skill ranks in a popup: what each level gives (class ranks + Int, Skilled, favored class) and where they went.
   showRankDetails = () => {
     const spent = names.filter(n => state.skills[n]).map(n => [n, state.skills[n]]);

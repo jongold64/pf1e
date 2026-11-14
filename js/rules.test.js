@@ -34,6 +34,7 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, w
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
          carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
+import { tabsToDo } from './tab-todo.js';
 import { exportData, importData, exportedDate, shortDate, idDate, nextCharacter } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -988,6 +989,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('import reads an export', importData(JSON.parse(JSON.stringify(exported))).race, 'elf');
   check('import accepts a bare saved character', importData({ race: 'dwarf', classLevels: ['fighter'] }).race, 'dwarf');
   check('import refuses other JSON', importData({ hello: 1 }), null);
+  check('finished character: no tab to do', JSON.stringify(tabsToDo({ pointsLeft: 0, ranksLeft: 0, featsLeft: 0 })), '{}');
+  check('new character: build and classes to do', Object.keys(tabsToDo({ noRace: true, noClass: true, classChoicesLeft: 2 })).join(','), 'character,classes');
+  check('no class wins over choices', tabsToDo({ noClass: true, classChoicesLeft: 2 }).classes, 'Choose a class');
+  check('abilities: points and increases', tabsToDo({ pointsLeft: 3, increasesLeft: 1 }).abilities, '3 points left to spend; 1 ability increase to choose');
+  check('abilities: over budget', tabsToDo({ pointsLeft: -1 }).abilities, '1 point over budget');
+  check('skills: ranks left', tabsToDo({ ranksLeft: 1 }).skills, '1 skill rank left to spend');
+  check('skills: too many', tabsToDo({ ranksLeft: -2 }).skills, '2 skill ranks too many');
+  check('feats and traits share the Feats tab', tabsToDo({ featsLeft: 1, traitsLeft: 2 }).feats, '1 feat to choose; 2 traits to choose');
+  check('spells to choose', tabsToDo({ spellsLeft: 4 }).spells, '4 spells to choose');
+  check('prepared caster with no spells', tabsToDo({ noSpells: true }).spells, 'Choose your spells');
   check('export date read back', exportedDate({ format: 'pf1e-builder-character', exported: '2026-11-01T10:00:00.000Z' }), '2026-11-01T10:00:00.000Z');
   check('no export date on a bare character', exportedDate({ race: 'elf' }), null);
   check('id gives the day it was made', idDate(Date.UTC(2026, 0, 2).toString(36) + 'abcd'), '2026-01-02T00:00:00.000Z');
