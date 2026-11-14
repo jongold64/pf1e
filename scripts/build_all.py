@@ -47,6 +47,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Paizo feats from later books, from d20pfsrd pages cached by fetch_d20pfsrd_feats.py.
                     *([('build_d20_feats.py', 'data/feats.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-feats')) else []),
+                    # Paizo feats neither has (Equipment Trick, the Champion of ... feats), from Archives of Nethys pages.
+                    ('build_aon_feats.py', 'data/feats.json'),
                     # Traits read the skill names from classes.json, so they come after the classes.
                     ('build_traits.py', 'data/traits.json'),
                     # Archetypes read the class ids and race names, so they also come after the classes.
