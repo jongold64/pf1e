@@ -35,7 +35,7 @@ import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
          carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
 import { tabsToDo } from './tab-todo.js';
-import { exportData, importData, exportedDate, shortDate, idDate, nextCharacter } from './storage.js';
+import { exportData, importData, exportedDate, shortDate, idDate, nextCharacter, exportFileName } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
@@ -1009,6 +1009,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('feats and traits share the Feats tab', tabsToDo({ featsLeft: 1, traitsLeft: 2 }).feats, '1 feat to choose; 2 traits to choose');
   check('spells to choose', tabsToDo({ spellsLeft: 4 }).spells, '4 spells to choose');
   check('prepared caster with no spells', tabsToDo({ noSpells: true }).spells, 'Choose your spells');
+  check('export file name: odd characters taken out; none gives character.json', [exportFileName('Ghai Aether: v2?'), exportFileName('')].join(), 'Ghai Aether v2.json,character.json');
   check('export date read back', exportedDate({ format: 'pf1e-builder-character', exported: '2026-11-01T10:00:00.000Z' }), '2026-11-01T10:00:00.000Z');
   check('no export date on a bare character', exportedDate({ race: 'elf' }), null);
   check('id gives the day it was made', idDate(Date.UTC(2026, 0, 2).toString(36) + 'abcd'), '2026-01-02T00:00:00.000Z');

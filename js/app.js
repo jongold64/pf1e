@@ -57,7 +57,8 @@ import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescrip
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices, raceBonusFeats } from './race-options.js';
 import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
-import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, setArchived, nextCharacter, newId, exportData, importData, exportedDate, shortDate } from './storage.js';
+import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, setArchived, nextCharacter, newId, exportData, importData, exportedDate, shortDate, exportFileName } from './storage.js';
+import { folderSaveSupported, savedFolder, chooseFolder, saveToFolder } from './folder-save.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
 import { spellContext } from './spell-math.js';
@@ -631,7 +632,7 @@ function initCharacterBar() {
   const FILE_TYPES = [{ description: 'Pathfinder character', accept: { 'application/json': ['.json'] } }];
   $('char-export').addEventListener('click', async () => {
     const text = JSON.stringify(exportData(state), null, 2);
-    const name = `${characterLabel(state).replace(/[^\w\- ]+/g, '').trim() || 'character'}.json`;
+    const name = exportFileName(characterLabel(state));
     if (window.showSaveFilePicker) {
       try {
         const handle = await window.showSaveFilePicker({ id: 'pf1e-characters', suggestedName: name, types: FILE_TYPES });
@@ -655,6 +656,33 @@ function initCharacterBar() {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  // Save to folder (Edge and Chrome on a computer, folder-save.js): the open character written straight into the folder
+  // picked the first time, replacing its earlier copy there. The 📁 button beside it (its tooltip names the folder) picks another.
+  const showFolder = name => {
+    $('char-folder').hidden = !name;
+    $('char-folder').textContent = '📁';
+    $('char-folder').setAttribute('aria-label', `Choose another folder (now ${name})`);
+    $('char-folder').title = `Saves go to the folder ${name}. Tap to choose another folder.`;
+  };
+  if (folderSaveSupported()) {
+    $('char-save-folder').hidden = false;
+    savedFolder().then(dir => showFolder(dir && (dir.name || 'your folder')));
+  }
+  $('char-save-folder').addEventListener('click', async () => {
+    const btn = $('char-save-folder');
+    try {
+      const folder = await saveToFolder(exportFileName(characterLabel(state)), JSON.stringify(exportData(state), null, 2));
+      if (!folder) return;
+      showFolder(folder);
+      btn.textContent = 'Saved ✓';
+      setTimeout(() => { btn.textContent = 'Save to folder'; }, 2000);
+    } catch (err) {
+      alert(`Couldn't save to the folder: ${err?.message || err}`);
+    }
+  });
+  $('char-folder').addEventListener('click', async () => {
+    try { const dir = await chooseFolder(); if (dir) showFolder(dir.name || 'your folder'); } catch (err) { alert(`Couldn't choose that folder: ${err?.message || err}`); }
   });
   // Import: a character file; Edge and Chrome open in the folder Export used.
   const importText = async text => {

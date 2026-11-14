@@ -113,6 +113,10 @@ export const EXPORT_FORMAT = 'pf1e-builder-character';
 export function exportData(character) {
   return { format: EXPORT_FORMAT, version: 1, exported: new Date().toISOString(), character };
 }
+// The file name for a character: its name with characters a file name can't hold taken out ("Serelith Valeora.json").
+export function exportFileName(label) {
+  return `${String(label || '').replace(/[^\w\- ]+/g, '').trim() || 'character'}.json`;
+}
 // The date an export file was made, or null.
 export function exportedDate(parsed) {
   return parsed && parsed.format === EXPORT_FORMAT && isDate(parsed.exported) ? new Date(parsed.exported).toISOString() : null;

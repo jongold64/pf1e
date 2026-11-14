@@ -48,6 +48,8 @@ header .char-buttons { flex: 1 1 0; min-width: 0; display: flex; flex-wrap: nowr
 header .char-buttons[hidden] { display: none; }
 header .char-buttons button { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 0 4px; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis; font-size: clamp(0.68rem, 1.3vw, 0.9rem); }
+/* The Save to folder button's 📁 (the folder's name is in its tooltip). */
+header .char-buttons .char-folder { flex: 0 0 auto; padding: 0 6px; }
 @media (max-width: 640px) {
   header .char-buttons { flex-basis: 100%; flex-wrap: wrap; }
   header .char-buttons button { font-size: 0.85rem; padding: 0 8px; }
