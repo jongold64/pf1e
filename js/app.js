@@ -4239,6 +4239,8 @@ function renderFeats(slots, granted, ctx) {
     const what = arch ? ` (${[arch.weapon && data.weaponsById?.get(arch.weapon)?.name, arch.from].filter(Boolean).join('; ')})` : '';
     return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>${esc(what)}` : esc(n + what);
   }).join(', ')}.` : '';
+  // They sit in the From your class card, shown when it has class features or bonus feats.
+  $('class-also-card').hidden = !$('class-also').innerHTML.trim() && !granted.length;
 
   // The chosen feats, one line each, above the search.
   const chosenLines = slots.filter(s => data.featsById.has(state.feats[s.id])).sort((a, b) => a.charLevel - b.charLevel).map(slot => {

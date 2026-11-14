@@ -184,6 +184,8 @@
         <h2>From your class</h2>
         <!-- Class features the level table doesn't name: weapon and armor proficiency, bonus languages... -->
         <div id="class-also" class="class-also"></div>
+        <!-- Bonus feats the class gives (a ranger's Endurance, the black blade's Alertness). -->
+        <p id="granted-feats" class="granted-feats"></p>
         <p class="hint">Tap one to read it. These come with the class and need no feat slot.</p>
       </section>
       <section class="card wide" id="feats-card">
@@ -196,7 +198,6 @@
           <button type="submit" class="primary">Search</button>
         </form>
         <ul id="feat-tab-results" class="search-results" hidden></ul>
-        <p id="granted-feats" class="granted-feats"></p>
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
@@ -840,7 +841,7 @@
           <summary>Feats tab (feats, traits and flaws)</summary>
           <ul>
             <li><b>From your class</b>, at the top, lists the class features the level table doesn't name: weapon and armor
-              proficiency, a cleric's spontaneous casting, bonus languages... Tap one to read it. They need no feat slot.</li>
+              proficiency, a cleric's spontaneous casting, bonus languages... and the bonus feats your class gives free (a ranger's Endurance, a black blade's Alertness). Tap one to read it. They need no feat slot.</li>
             <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>,
               <b>Change</b> and <b>Remove</b>; under it, the weapon or skill it's for and any warning. The slots below list only the
               ones still to fill (a removed feat's slot comes back there).</li>
