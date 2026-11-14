@@ -56,7 +56,7 @@ import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescrip
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
-import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData } from './storage.js';
+import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData, exportedDate, shortDate } from './storage.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
 import { spellContext } from './spell-math.js';
@@ -539,8 +539,13 @@ function domainSpellsFor(clsId) {
     .flatMap(d => Object.entries(domainGrants(d, data.domainsById).spells).map(([lv, name]) => ({ level: Number(lv), name, domain: d.name })));
 }
 
-function save() {
-  saveCharacter(roster, currentId, state, characterLabel(state));
+// touch: false when opening a character, so its date in the Character list stays (see storage.js).
+function save(touch = true) {
+  const entry = roster.characters.find(c => c.id === currentId);
+  const was = entry?.changed;
+  saveCharacter(roster, currentId, state, characterLabel(state), touch);
+  // The page was drawn before this save: show the new date.
+  if (entry && entry.changed !== was) renderCharacterBar();
 }
 
 // "Valeros", or "Human Fighter 1" / "Elf Wizard 3 / Fighter 2" for a character without a name.
@@ -555,7 +560,7 @@ function characterLabel(s) {
 // The character bar: pick a saved character, name it, add, copy, delete, export, import and print.
 function renderCharacterBar() {
   $('char-select').innerHTML = roster.characters.map(c =>
-    `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}</option>`).join('');
+    `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}${c.changed ? ` · ${esc(shortDate(c.changed))}` : ''}</option>`).join('');
   $('char-select').value = currentId;
   // One saved character: nothing to switch to, so its name is plain text rather than a list.
   const several = roster.characters.length > 1;
@@ -570,14 +575,15 @@ function switchCharacter(id, character = undefined) {
   roster.current = id;
   saveRoster(roster);
   load(character === undefined ? loadCharacter(id) : character);
-  save();
+  save(false);
   pickerSlotId = null;
   render();
 }
 
-function addCharacter(character) {
+// changed: the date to show (an imported file's export date); now by default.
+function addCharacter(character, changed = new Date().toISOString()) {
   const id = newId();
-  roster.characters.push({ id, label: '' });
+  roster.characters.push({ id, label: '', changed });
   switchCharacter(id, character);
 }
 
@@ -628,13 +634,14 @@ function initCharacterBar() {
   // Import: a character file; Edge and Chrome open in the folder Export used.
   const importText = async text => {
     let character = null;
-    try { character = importData(JSON.parse(text)); } catch { character = null; }
+    let when = null;
+    try { const parsed = JSON.parse(text); character = importData(parsed); when = exportedDate(parsed); } catch { character = null; }
     if (!character) {
       alert('That file isn\'t a character exported from this app.');
       return;
     }
     save();
-    addCharacter(character);
+    addCharacter(character, when || undefined);
   };
   $('char-import').addEventListener('click', async () => {
     if (window.showOpenFilePicker) {
@@ -4560,7 +4567,7 @@ async function start() {
   roster = openRoster();
   currentId = roster.current;
   load(loadCharacter(currentId));
-  save();
+  save(false);
   buildControls();
   initCharacterBar();
   initRolls();

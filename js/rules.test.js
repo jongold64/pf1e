@@ -34,7 +34,7 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, w
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
          carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
-import { exportData, importData } from './storage.js';
+import { exportData, importData, exportedDate, shortDate, idDate } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
@@ -988,6 +988,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('import reads an export', importData(JSON.parse(JSON.stringify(exported))).race, 'elf');
   check('import accepts a bare saved character', importData({ race: 'dwarf', classLevels: ['fighter'] }).race, 'dwarf');
   check('import refuses other JSON', importData({ hello: 1 }), null);
+  check('export date read back', exportedDate({ format: 'pf1e-builder-character', exported: '2026-11-01T10:00:00.000Z' }), '2026-11-01T10:00:00.000Z');
+  check('no export date on a bare character', exportedDate({ race: 'elf' }), null);
+  check('id gives the day it was made', idDate(Date.UTC(2026, 0, 2).toString(36) + 'abcd'), '2026-01-02T00:00:00.000Z');
+  check('odd id has no date', idDate('hello'), null);
+  const now = new Date(2026, 10, 13, 15, 0);
+  check('date today', shortDate(new Date(2026, 10, 13, 14, 5).toISOString(), now), 'today 2:05 pm');
+  check('date yesterday', shortDate(new Date(2026, 10, 12, 9, 30).toISOString(), now), 'yesterday 9:30 am');
+  check('older date', shortDate(new Date(2026, 9, 3, 12, 0).toISOString(), now), '3 Oct 2026');
 }
 
 {
