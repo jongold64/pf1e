@@ -102,3 +102,24 @@ export function abilityEntries(state, weaponsById) {
   return [...(state.armorId ? of(state.armorAbilities, 'armor', 'armor') : []), ...(state.shieldId ? of(state.shieldAbilities, 'shield', 'shield') : []),
     ...state.weapons.flatMap((w, i) => of(w.abilities, `weapon:${i}`, weaponsById?.get(w.id)?.name.toLowerCase() || 'weapon'))];
 }
+
+// The magic on the armor and shield you wear and on your weapons, for the Active effects card: enhancement bonuses and the
+// special abilities that work without a switch (flaming: already counted in the weapon's damage). Abilities with a bonus to
+// count (shadow armor's Stealth) come through itemBuffs instead. armor, shield: the worn ones' data records.
+// Returns labels: "+1 flaming Longsword: +1 enhancement on attack and damage, flaming".
+export function gearMagic(state, { armor = null, shield = null, weaponsById = null, itemsById = null } = {}) {
+  const out = [];
+  const plain = list => (list || []).filter(a => { const item = itemsById?.get(a.id); return !item || !itemEffects(item, a.option).length; })
+    .map(a => `${a.name.toLowerCase()}${a.option ? ` (${a.option})` : ''}`);
+  const add = (name, enh, what, abilities) => {
+    const parts = [enh > 0 ? `+${enh} enhancement ${what}` : '', ...plain(abilities)].filter(Boolean);
+    if (parts.length) out.push(`${enh > 0 ? `+${enh} ` : ''}${name}: ${parts.join(', ')}`);
+  };
+  if (armor) add(armor.name, state.armorEnh || 0, 'to armor bonus', state.armorAbilities);
+  if (shield) add(shield.name, state.shieldEnh || 0, 'to shield bonus', state.shieldAbilities);
+  for (const w of state.weapons || []) {
+    const weapon = weaponsById?.get(w.id);
+    if (weapon) add(weapon.name, w.enh || 0, 'on attack and damage', w.abilities);
+  }
+  return out;
+}

@@ -17,7 +17,7 @@ import { domainChoices, domainConflict, domainGrants } from './domains.js';
 import { withMaterial, materialsFor, weaponMaterialsFor } from './materials.js';
 import { effectTotals, stackTotal, acWithEffects, shiftSize, countedBonuses, BUFFS, buffAmount, setEffectMods, missChance, effectDr } from './effects.js';
 import { flawEffects } from './flaws.js';
-import { itemEffects, itemBuffs, abilityEntries } from './item-effects.js';
+import { itemEffects, itemBuffs, abilityEntries, gearMagic } from './item-effects.js';
 import { talentSlots, talentOptions, slotKinds, archetypeEffects, ruleOf, featTalentSlots } from './talents.js';
 import { companionLevel, companionStats, parseAttacks, bardingCost } from './companion.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, weaponTraining, situationalBonuses } from './class-features.js';
@@ -1935,6 +1935,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('ability entries: armor, and each weapon (no shield worn)', ents.map(x => `${x.ref}=${x.where}`).join(), 'armor:0=armor,weapon:0:0=weapon,weapon:1:0=dagger');
   check('shadow armor: +5 Stealth; dueling only where switched on', fx(ents), 'mi-shadow:' + (byId.get('shadow').cl || 1) + ',mi-dueling:' + (byId.get('dueling').cl || 1));
   check('shadow armor named for the armor', itemBuffs(ents, byId)[0].label, 'Shadow (on your armor)');
+  // The magic on worn armor and weapons, for the Active effects card (shadow has a bonus, so itemBuffs lists it instead).
+  const gm = gearMagic({ ...st, armorEnh: 1, weapons: [{ id: 'dagger', enh: 2, abilities: [{ id: 'flaming', name: 'Flaming' }] }, { id: 'dagger' }] },
+    { armor: { name: 'Chain shirt' }, weaponsById: new Map([['dagger', { name: 'Dagger' }]]), itemsById: byId });
+  check('gear magic: armor enhancement, weapon enhancement and flaming; a plain dagger has none', gm.join(' | '),
+    '+1 Chain shirt: +1 enhancement to armor bonus | +2 Dagger: +2 enhancement on attack and damage, flaming');
   check('brawling armor vs brawling weapon: by id', [itemEffects(byId.get('brawling-armor-and-shield-special-abilities')).length, itemEffects(itemsD.find(x => x.name === 'Brawling' && x.id !== 'brawling-armor-and-shield-special-abilities')).length].join(), '1,0');
 }
 

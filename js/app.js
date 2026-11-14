@@ -29,7 +29,7 @@ import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
-import { itemBuffs, abilityEntries } from './item-effects.js';
+import { itemBuffs, abilityEntries, gearMagic } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
 import { burnState, infusionCosts } from './burn.js';
@@ -2364,7 +2364,10 @@ function computeView() {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     slots, chosen, granted, raceFeats, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
-    load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
+    load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
+    // Enhancement bonuses and plain special abilities on worn armor, shield and weapons (Active effects card).
+    gearMagic: gearMagic(state, { armor: gear.armor, shield: gear.shield, weaponsById: data.weaponsById, itemsById: data.itemsById }),
+    allClassSkills: access.allClass,
     // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.
     deityWeapons: counts.some(c => DEITY_CLASSES.includes(c.cls.id)) && data.weaponsById ? favoredWeaponIds(data.deitiesById.get(state.deity), [...data.weaponsById.values()]) : [],
     // The familiar (if any) and its master's numbers for its statistics (familiar.js).

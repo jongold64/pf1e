@@ -6,6 +6,8 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
+import { weaponLabel } from './weapons.js';
+import { magicPrefix } from './crafting.js';
 import { spellNumbersHtml, itemSpellNumbersHtml } from './tab-spells.js';
 import { ownedSources, itemRowHtml } from './item-rows.js';
 import { defenseSwitchesHtml } from './tab-armor.js';
@@ -82,6 +84,7 @@ export function renderBuild(app, view, parts) {
   // On now: effects counting, each with a switch-off.
   const onNow = [...state.buffs.filter(x => x.on !== false).map(x => ({ name: buffById.get(x.id)?.name, off: `buff:${x.id}` })).filter(x => x.name),
     ...(view.fromItems || []).map(x => ({ name: x.label })),
+    ...(view.gearMagic || []).map(name => ({ name })),
     ...state.customEffects.map((c, i) => ({ name: c.name || 'Custom effect', off: `custom:${i}`, on: c.on && c.value })).filter(x => x.on),
     ...(view.traitSwitches || []).filter(s => s.on).map(s => ({ name: s.name, off: s.always ? '' : `trait:${s.key}` })),
     ...defenseOn(state.combat, view.defenseOpts).map(x => ({ name: x.label, off: `combat:${x.key}` }))];
@@ -273,7 +276,29 @@ export function renderBuild(app, view, parts) {
       <span class="b-use"><button type="button" data-b-use-item="${i}">Use</button>${plus('spell', e.spellId, e.spellName)}</span>
       ${nums ? `<div class="b-spell-nums">${nums}</div>` : ''}</div>`;
   });
-  const gearHtml = `${list('From your class', fromClass)}${magic.length ? `<h4 class="b-sub">Magic items</h4><ul class="b-item-list">${magic.join('')}</ul>` : ''}${list('Potions, scrolls and wands', made)}`;
+  // Armor and shield worn, and weapons: magic or not, with what makes each one special.
+  const worn = [['armor', view.gear.armor, state.armorEnh, state.armorMw, state.armorAbilities],
+                ['shield', view.gear.shield, state.shieldEnh, state.shieldMw, state.shieldAbilities]]
+    .filter(([, a]) => a).map(([what, a, enh, mw, abilities]) => {
+      const prefix = magicPrefix(enh || 0, mw && !a.mw_included, abilities || []);
+      // "+1 shadow mithral chain shirt" (a material's name starts the armor's: lower it after a prefix).
+      const name = prefix ? `${prefix} ${a.material ? a.name.replace(/^./, c => c.toLowerCase()) : a.name}` : a.name;
+      const bonus = (a.bonus || 0) + (enh || 0);
+      const note = [`+${bonus} ${what} bonus`, a.material_notes || ''].filter(Boolean).join(' · ');
+      return gearRow(name.replace(/^[a-z]/, c => c.toUpperCase()), note, 'armor', a.id);
+    });
+  const weaponRows = data.weaponsById ? state.weapons.map((e, i) => {
+    const w = data.weaponsById.get(e.id);
+    return w ? gearRow(weaponLabel(w, e) + (e.qty > 1 ? ` ×${e.qty}` : ''), '', 'weapon', String(i)) : '';
+  }).filter(Boolean) : [];
+  // Everything else carried (data/equipment.json; loaded on first need, then drawn again).
+  if (state.inventory.length && !data.gearById) app.loadGear().then(() => app.update({}));
+  const carried = data.gearById ? state.inventory.map(e => {
+    const item = data.gearById.get(e.id);
+    return item ? gearRow(`${item.name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, e.variant && e.variant !== 'Common' ? e.variant.toLowerCase() : '', 'gear', item.id) : '';
+  }).filter(Boolean) : [];
+  const gearHtml = `${list('Armor and shield', worn)}${list('Weapons', weaponRows)}${list('From your class', fromClass)}${magic.length ? `<h4 class="b-sub">Magic items</h4><ul class="b-item-list">${magic.join('')}</ul>` : ''}${list('Potions, scrolls and wands', made)}${list('Equipment', carried)}`
+    || '<p class="muted">Nothing yet: buy gear on the Equipment, Armor, Weapons and Magic Items tabs.</p>';
 
   // Actions: the attacks and class abilities, then the spells.
   const actions = attacks + (spells ? `<h4 class="b-sub">Spells</h4>${spells}` : '');

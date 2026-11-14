@@ -46,6 +46,8 @@ export function popOnNow(app) {
     ${traitSwitchesHtml(view, 'data-onnow-trait')}
     ${(view.fromItems || []).length ? `<h3>From your magic items</h3><ul>${view.fromItems.map(x => `<li>✓ ${esc(x.label)}</li>`).join('')}</ul>
       <p class="hint">Switch an item on or off on the Magic Items tab (or in Active effects).</p>` : ''}
+    ${(view.gearMagic || []).length ? `<h3>From your armor and weapons</h3><ul>${view.gearMagic.map(x => `<li>✓ ${esc(x)}</li>`).join('')}</ul>
+      <p class="hint">Change these on the Armor and Weapons tabs.</p>` : ''}
     <h3>Combat switches</h3>
     ${attackSw.join('')}${defenseSwitchesHtml(view, state.combat, () => '', true)}
   </div>`, [
@@ -111,7 +113,7 @@ export function renderEffects(app, view) {
   // Effects in your list: switched on, or kept switched off (unticked) so they're at hand for next time.
   const saved = new Map(state.buffs.map(x => [x.id, x]));
   const on = new Map(state.buffs.filter(x => x.on !== false).map(x => [x.id, x]));
-  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length + (view.fromItems || []).length
+  const activeCount = on.size + state.customEffects.filter(c => c.on && c.value).length + (view.fromItems || []).length + (view.gearMagic || []).length
     + (view.traitSwitches || []).filter(s => s.on).length;
   $('effects-count').textContent = activeCount ? `${activeCount} on` : '';
 
@@ -160,7 +162,7 @@ export function renderEffects(app, view) {
   ];
   // Everything on now, by name: effects you switched on, your items' effects, custom effects and always-on class features.
   const onNow = [...state.buffs.filter(x => x.on !== false).map(x => buffById.get(x.id)?.name).filter(Boolean),
-    ...(view.fromItems || []).map(x => x.label),
+    ...(view.fromItems || []).map(x => x.label), ...(view.gearMagic || []),
     ...view.customAll.filter(c => c.on !== false && (c.value || (c.more || []).length)).map(c => c.name || 'Custom effect')];
   box.innerHTML = `
     ${onNow.length ? `<div class="on-now"><h3>On now <span class="count">${onNow.length}</span></h3>
