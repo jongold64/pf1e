@@ -21848,5 +21848,27 @@
         "Diplomacy": 1
       }
     }
+  },
+  {
+    "id": "goblin-bravery",
+    "name": "Goblin Bravery",
+    "source": "We Be Goblins!",
+    "category": "Race",
+    "requirement": "Goblin",
+    "text": "You have a worrying propensity for overconfidence in combat. When facing an enemy that's larger than you, if you have no allies in any adjacent squares, your posturing, bravado, and cussing grant a +1 trait bonus on attack rolls with non-reach melee weapons.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "When facing an enemy that's larger than you, if you have no allies in any adjacent squares, your posturing, bravado, and cussing grant a +1 trait bonus on attack rolls with non-reach melee weapons."
+        }
+      ]
+    }
   }
 ]
