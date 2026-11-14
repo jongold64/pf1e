@@ -655,6 +655,21 @@ function initCharacterBar() {
       for (const handle of params.files || []) await importText(await (await handle.getFile()).text());
     });
   }
+  // Drag and drop: a character file dropped anywhere on the page is imported, as Import does (an iPad: drag it from the
+  // Files app with the two side by side; a laptop: from File Explorer). A hint covers the page while a file is over it.
+  const draggingFiles = e => [...(e.dataTransfer?.types || [])].includes('Files');
+  let dragDepth = 0;
+  const showDropHint = on => { $('drop-hint').hidden = !on; };
+  document.addEventListener('dragenter', e => { if (draggingFiles(e)) { dragDepth += 1; showDropHint(true); } });
+  document.addEventListener('dragleave', e => { if (draggingFiles(e)) { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) showDropHint(false); } });
+  document.addEventListener('dragover', e => { if (draggingFiles(e)) e.preventDefault(); });
+  document.addEventListener('drop', async e => {
+    if (!draggingFiles(e)) return;
+    e.preventDefault();
+    dragDepth = 0;
+    showDropHint(false);
+    for (const file of e.dataTransfer.files) await importText(await file.text());
+  });
   $('char-file').addEventListener('change', async e => {
     const file = e.target.files[0];
     e.target.value = '';
