@@ -112423,5 +112423,108 @@
         "save_text": "Will negates"
       }
     ]
+  },
+  {
+    "id": "companion-transportation",
+    "name": "Companion Transportation",
+    "source": "Ultimate Wilderness",
+    "school": "conjuration",
+    "subschool": "teleportation",
+    "descriptors": null,
+    "levels": {
+      "antipaladin": 4,
+      "arcanist": 5,
+      "druid": 5,
+      "hunter": 4,
+      "paladin": 4,
+      "ranger": 4,
+      "shaman": 5,
+      "sorcerer": 5,
+      "witch": 5,
+      "wizard": 5
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, F (a feather, tuft of fur, or similar momento from your target)",
+    "range": "long (400 ft. + 40 ft./level)",
+    "effects": [
+      [
+        "Target",
+        "yourself and one animal companion, familiar, or spirit animal within range"
+      ]
+    ],
+    "duration": "instantaneous",
+    "saving_throw": "none (Harmless)",
+    "spell_resistance": "no",
+    "summary": "You trade places with the other target, teleporting as if you were both affected by dimension door.",
+    "description": "You trade places with the other target, teleporting as if you were both affected by dimension door. Both you and the other target arrive in a square you choose in the other’s former space. If the targets are different sizes, they must appear in locations that cover previously occupied squares. As with dimension door, after casting this spell, you can’t take any other actions until your next turn, and the other target is staggered until the end of its next turn due to the transposition.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "languid-venom",
+    "name": "Languid Venom",
+    "source": "Ultimate Intrigue",
+    "school": "necromancy",
+    "subschool": null,
+    "descriptors": "poison",
+    "levels": {
+      "alchemist": 2,
+      "arcanist": 2,
+      "investigator": 2,
+      "shaman": 2,
+      "skald": 2,
+      "sorcerer": 2,
+      "wizard": 2
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S, M (herbs used in antitoxin worth 25 gp)",
+    "range": "touch",
+    "effects": [
+      [
+        "Target",
+        "one dose of poison or one venomous creature"
+      ]
+    ],
+    "duration": "permanent until discharged (D)",
+    "saving_throw": "Fortitude negates",
+    "spell_resistance": "yes",
+    "summary": "You greatly extend the time it takes for the poison you touch to take effect, giving that poison an onset time up to 1 hour per caster level.",
+    "description": "You greatly extend the time it takes for the poison you touch to take effect, giving that poison an onset time up to 1 hour per caster level. (You touch the poison’s container, so you don’t risk exposing yourself to a contact poison.) The target doesn’t attempt a saving throw when initially exposed to the languid venom, but instead saves at the end of the poison’s onset time. If the poison is neutralized or otherwise cured prior to the end of its onset time, it is rendered harmless. Failing saves against multiple doses of languid venom have the normal cumulative effect for poisons (Pathfinder RPG Core Rulebook 558).\n\nLanguid venom is difficult to detect or identify. Detect poison and similar effects detect languid venom only with a successful caster level check against a DC equal to 11 + your caster level (rolled secretly by the GM). Even if the poison is detected, the DC of Craft (alchemy) or Wisdom checks to identify the poison is increased by 10. If a poison is affected by an additional effect that requires a caster level check to detect the poison or increases the DC to identify it—such as obscure poison—those effects don’t stack. Use only the caster level check with the higher DC and increase the DC of the check to identify the poison by the higher of the two.\n\nIf cast upon a venomous creature, languid venom delays the onset of that creature’s poison when the creature next delivers its natural poison. Contingent VenomSource Ultimate Intrigue pg. 208\nSchool necromancy [poison]; Level arcanist 4, shaman 4, sorcerer 4, wizard 4CastingCasting Time 1 standard action\nComponents V, S, M (herbs used in antitoxins worth 25 gp)EffectRange touch\nTarget one dose of poison or one venomous creature\nDuration permanent until discharged (D)\nSaving Throw Fortitude negates; Spell Resistance yesDescriptionThis spell functions as languid venom, but you can stipulate a specific condition or circumstance that will end the poison’s onset time and cause it to take effect. The conditions for triggering the poison can be as general or as detailed as desired, but the triggers must be visual or audible (as per magic mouth) or else based on physical contact with or consumption of a specific object, substance, or creature. This triggering condition can either result in the immediate onset of the poison, or cause the poison to take effect a number of rounds after being triggered no greater than 1 round per caster level. You must make all decisions involving triggering when you cast contingent venom, and you can’t change those decisions later.",
+    "origin": "Archives of Nethys",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "save",
+        "save": "fort",
+        "save_text": "Fortitude negates"
+      }
+    ]
+  },
+  {
+    "id": "pattern-recognition",
+    "name": "Pattern Recognition",
+    "source": "Second Darkness Player's Guide",
+    "school": "transmutation",
+    "subschool": null,
+    "descriptors": null,
+    "levels": {
+      "arcanist": 1,
+      "sorcerer": 1,
+      "wizard": 1
+    },
+    "casting_time": "1 standard action",
+    "components": "V, S",
+    "range": "personal",
+    "effects": [
+      [
+        "Target",
+        "you"
+      ]
+    ],
+    "duration": "10 min./level",
+    "saving_throw": null,
+    "spell_resistance": null,
+    "summary": "Pattern recognition allows you to notice unusual breaks in the patterns of stones in a wall, boards in a floor, cracks in glass, trees in a forest, or similar interruptions.",
+    "description": "Pattern recognition allows you to notice unusual breaks in the patterns of stones in a wall, boards in a floor, cracks in glass, trees in a forest, or similar interruptions. You gain an insight bonus equal to one-half your caster level (minimum +1, maximum +10) on Search checks.\n\nYou gain the same bonus on Survival checks made to follow tracks. Pattern recognition does not grant you the Track feat, a rogue’s trapfinding ability, or the ability to disable traps. You can use it in conjunction with those abilities if you possess them, though.",
+    "origin": "Archives of Nethys"
   }
 ]
