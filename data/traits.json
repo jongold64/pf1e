@@ -21368,5 +21368,485 @@
         }
       ]
     }
+  },
+  {
+    "id": "keleshite-princess",
+    "name": "Keleshite Princess",
+    "source": "Qadira, Gateway to the East",
+    "category": "Social",
+    "requirement": "Qadiran Keleshite female",
+    "text": "You have been raised to expect obedience from those around you, regardless of their station, and are not shy about demanding what you want. You gain a +1 trait bonus to Diplomacy and Intimidate checks, and one of these skills (your choice) is always a class skill for you.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "dockside-avenger",
+    "name": "Dockside Avenger",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "No crime is too despicable for Gaedren Lamm and his thugs—a gang of lowlife murderers, kidnappers, and drug dealers that operate in Korvosa’s Midland district. You’ve lost someone to Lamm and now you’re out for revenge. While Lamm remains alive and free, you are not slain until your hit point total reaches a negative number equal to your Constitution score + 3. Once Lamm is imprisoned or killed, you lose the former benefit but gain 3 permanent hit points.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "varisian-immunity",
+    "name": "Varisian Immunity",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "Your family is particularly hearty, and has even passed down tales of a Varisian ancestor who sought to cure (or, some loose-lipped relatives say, create) diseases. You gain a +1 trait bonus on saving throws made to resist diseases. Additionally, you are immune to the diseases Vorel’s phage and blood veil. You do not need to be of the Varisian ethnicity to take this campaign trait, but if you’re not, your background should explain how you have a Varisian ancestor.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "kraggodan-castaway",
+    "name": "Kraggodan Castaway",
+    "source": "Ironfang Invasion Player's Guide",
+    "category": "Campaign",
+    "requirement": "Dwarf",
+    "text": "You hail from the dwarven Sky Citadel of Kraggodan in southern Nirmathas and have spent the past several years among the surface people serving as a mercenary in the war, trading with Nirmathi towns, or simply seeing the surface world. Molthune’s recent siege of Kraggodan has squelched any hopes you had of returning home, and now you struggle to find a home on the surface. Thanks to your travels, you gain one of the following as a bonus language: Common, Hallit, Varisian, or Undercommon. In addition, your homesickness means time spent underground revitalizes your spirits; whenever you are underground—either in natural caverns or an artificial complex—you automatically stabilize if brought below 0 hit points, and if reduced to 0 hit points (or you are stable and conscious when below 0 hit points) you do not take the usual 1 point of damage disabled characters take from performing a standard action. This revitalizing effect fades after 4 consecutive days spent underground, but returns after you spend more than a week above ground again.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "best-customer",
+    "name": "Best Customer",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "You’ve sat on your favorite barstool at the Rusty Dragon every night for as long as you can remember— and some nights you can’t remember thanks to a few too many drinks. In your various hazes, you’ve gotten to know the tap house’s proprietor, Ameiko, or one of her regulars, Sandru, quite well. Additionally, you’re well acquainted with a variety of uses for strong drink. Any time you have an alcoholic beverage on hand, you can expend one use of it to grant you a +2 trait bonus on a Heal check. This bonus increases to +4 if you’re treating your favorite drinking buddy (your NPC of choice). NPC Choices: Ameiko, Sandru.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "foreign-tongued",
+    "name": "Foreign-Tongued",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "Intrigued by the travels of one of your long-time acquaintances, you’ve convinced her to teach you one of the exotic languages she picked up in her journeys. Choose one of the following characters. You may select one of that character’s languages as a bonus language. Additionally, you gain a +2 trait bonus on Bluff checks made to pass secret messages to the chosen character (see the description of the Bluff skill). NPC Choices: Ameiko, Koya, Sandru, Shalelu.\n\nAmeiko: Tien, Varisian\nKoya or Sandru: Varisian\nShalelu: Elven, Goblin",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "bastard-km",
+    "name": "Bastard (KM)",
+    "source": "Kingmaker Player's Guide",
+    "category": "Campaign",
+    "requirement": "Human",
+    "text": "One of your parents was a member of one of the great families of Brevoy, perhaps even of the line of Rogarvia itself. Yet you have no substantive proof of your nobility, and you’ve learned that claiming nobility without evidence makes you as good as a liar. While you might own a piece of jewelry, a scrap of once-rich fabric, or an aged confession of love, none of this directly supports your claim. Thus, you’ve lived your life in the shadow of nobility, knowing that you deserve the comforts and esteem of the elite, even though the contempt of fate brings you nothing but their scorn. Whether a recent attempt to prove your heritage has brought down the wrath of a noble family’s henchmen or you merely seek to prove the worth of the blood in your veins, you’ve joined an expedition into the Stolen Lands, hoping to make a name all your own. You take a –1 penalty on all Charisma-based skill checks made when dealing with members of Brevic nobility but gain a +1 trait bonus on Will saves as a result of your stubbornness and individuality. (The penalty aspect of this trait is removed if you ever manage to establish yourself as a true noble.)",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "sandpoint-faithful",
+    "name": "Sandpoint Faithful",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "As a faithful adherent of Abadar, Desna, Erastil, Gozreh, Sarenrae, or Shelyn, you’ve come to the Swallowtail Festival to celebrate the consecration of Sandpoint Cathedral. You gain a silver holy symbol of your chosen deity, and so long as you worship that deity and openly wear his or her symbol, you regain +1 additional hit point every time you receive magical healing.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "daring-doomsayer",
+    "name": "Daring Doomsayer",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "The end times are coming, and the shadow in the sky over Riddleport is just the first piece of proof. Convinced that the end of the world is nigh, you’ve decided to take part in the Golden Goblin’s gambling tournament—after all, what do you have to lose? Whenever you roll a “1” on an attack roll, you gain a +1 trait bonus on your next attack roll so long as it is made within 1 minute. You also begin play with a placard bearing an apocalyptic slogan of your choice—this wooden sign can be used as a club.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "fixer-of-odds",
+    "name": "Fixer of Odds",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "You’re going to win the Golden Goblin’s upcoming “Cheat the Devil and Take His Gold” tournament one way or the other. You gain a +1 trait bonus on Profession (gambling) checks, and creatures searching you for objects hidden on your body don’t gain the usual +4 bonus on their Perception checks. Additionally, you begin play with a “fixed” six-sided die (it has two “6s” and no “1”) and a dagger.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "portentous-perception",
+    "name": "Portentous Perception",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "You’ve come (or been sent) to Riddleport to observe the strange Blot that has appeared in the city’s sky. You’ve decided to put your keen senses to the test at the Golden Goblin’s upcoming gambling competition while you’re here. Your sharp eyesight makes it easier for you to notice things at a distance. For you, Perception checks only start increasing in difficulty at a range of 20 feet or farther, as opposed to the normal 10. This has no effect on checks made to perceive things within 10 feet.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "ex-sczarni",
+    "name": "Ex-Sczarni",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Campaign",
+    "text": "Though you were raised as a member of one of Magnimar’s various Sczarni gangs, you never fit in with the rest of your settled, metropolitan brethren. The Pathfinder Society in particular recognized your wanderlust and potential as an agent, and on more than one occasion you impressed or bamboozled their agents with your street smarts and finesse. Over the years, you fell out of favor with the Sczarni, and eventually left to pursue interests outside of simple banditry, though you still remember the lessons your criminal relations taught you. You gain a +2 trait bonus on Bluff checks to pass hidden messages. Also, anytime you deliver a coup de grace, you deal an additional 1d6 points of damage.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "azlant-fanatic",
+    "name": "Azlant Fanatic",
+    "source": "Taldor, Echoes of Glory",
+    "category": "Race",
+    "requirement": "Human—Azlanti",
+    "text": "Your years spent in libraries reading every musty tome you could find about the ancient lost civilization of Azlant have given you insight into the subjects of history and the arcane. You gain a +1 trait bonus to Knowledge (arcana) and Knowledge (history) checks. One of these skills (your choice) is always a class skill for you.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "shoanti-steed",
+    "name": "Shoanti Steed",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Race",
+    "requirement": "Human—Shoanti",
+    "text": "Your nomadic culture gives you a profound knowledge of and respect for the horses that roam your homelands. You begin play with a combat trained light horse (Pathfinder RPG Bestiary 177). While riding this horse bareback, you are treated as though you were riding it with a riding saddle (placing any actual saddle upon the horse negates this benefit). The horse can fend for itself outside of settlements in all but the most hostile environments. If whistled for outside of a community, the horse typically arrives within 1d6 minutes. If your horse is slain, you may receive a new horse by returning to your clan and performing a vigil for its spirit (a rite that costs 100 gp in rare herbs and incense).",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "shoanti-tattoo",
+    "name": "Shoanti Tattoo",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Race",
+    "requirement": "Human—Shoanti",
+    "text": "Upon reaching adulthood, you received a tribal tattoo, marking you with the symbols of your quah and totem spirits (see the inside back cover for suggestions and designs for Shoanti tattoos). You gain a +1 trait bonus on saving throws against fear effects. Additionally, you are proficient with earth breakers, klars, and Shoanti bolas.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "varisian-tattoo",
+    "name": "Varisian Tattoo",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Race",
+    "requirement": "Human—Varisian",
+    "text": "You bear the elaborate tattoos of your people, marking you as a free son or daughter of the road. You gain a +1 trait bonus on saving throws against charm and compulsion effects. Additionally, you are proficient with bladed scarves and starknives.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "bellis-axe-master",
+    "name": "Bellis Axe Master",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Bellis [in Andoran]",
+    "text": "No one knows how to swing an axe better than a Bellisian! You gain a +2 trait bonus on all rolls made to confirm critical hits with axes (battle axe, hand axe, or greataxe).",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "bellis-honey-harvester",
+    "name": "Bellis Honey Harvester",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Bellis [in Andoran]",
+    "text": "Your frequent exposure to bees—and their stings—makes all such creatures seem more like nuisances than actual threats. You gain DR 3/— against damage dealt by swarms and a +1 trait bonus on saving throws against distraction and poison from swarms.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "bellis-log-roller",
+    "name": "Bellis Log Roller",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Bellis [in Andoran]",
+    "text": "The time you spent leaping between slippery logs as they whirled down the Sellen River taught you how to keep your footing. You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "cmb",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on Acrobatics checks and a +1 trait bonus to your CMB when attempting to resist trip attacks."
+        }
+      ],
+      "skills": {
+        "Acrobatics": 1
+      }
+    }
+  },
+  {
+    "id": "carpenden-lobber",
+    "name": "Carpenden Lobber",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Carpenden [in Andoran]",
+    "text": "Your regular participation in the moonmelon festival has made you wickedly effective at hurling harmless objects. You gain a +2 trait bonus on attack rolls when throwing items that do not deal normal hit point damage (such as weapons that deal nonlethal damage or items such as tanglefoot bags and thunderstones).",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on attack rolls when throwing items that do not deal normal hit point damage (such as weapons that deal nonlethal damage or items such as tanglefoot bags and thunderstones)."
+        }
+      ]
+    }
+  },
+  {
+    "id": "carpenden-roof-runner",
+    "name": "Carpenden Roof Runner",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Carpenden [in Andoran]",
+    "text": "Your childhood playing atop Carpenden’s buildings has given you a remarkable head for heights. You gain a +2 trait bonus on Acrobatics checks made when you are at least 20 feet above the ground.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "citizen-of-eleder",
+    "name": "Citizen of Eleder",
+    "source": "Sargava, the Lost Colony",
+    "category": "Regional",
+    "requirement": "Eleder",
+    "text": "You live and work in Eleder. You gain a +1 trait bonus on all Knowledge (local) and Knowledge (nobility) checks regarding Eleder.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "citizen-of-kalabuto",
+    "name": "Citizen of Kalabuto",
+    "source": "Sargava, the Lost Colony",
+    "category": "Regional",
+    "requirement": "Kalabuto",
+    "text": "You live and work in Kalabuto. You gain a +1 trait bonus on all Knowledge (local) and Knowledge (history) checks regarding Kalabuto.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "dump-salvager",
+    "name": "Dump Salvager",
+    "source": "Cheliax, Empire of Devils",
+    "category": "Regional",
+    "requirement": "Westcrown",
+    "text": "You grew up in or around Westcrown’s rubbish-strewn shores and spent your spare time digging through trash looking for things worth selling. You gain a +3 trait bonus on Perception checks to search for concealed items.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "egorian-school-apprentice",
+    "name": "Egorian School Apprentice",
+    "source": "Cheliax, Empire of Devils",
+    "category": "Regional",
+    "requirement": "Egorian",
+    "text": "You studied under one of the masters of the Egorian School style of architecture. You gain a +3 trait bonus on Knowledge (engineering) checks and a +2 trait bonus on Perception checks to find secret doors or traps in buildings built in the Egorian School style.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (engineering)": 3
+      }
+    }
+  },
+  {
+    "id": "emberkin-imposter",
+    "name": "Emberkin Imposter",
+    "source": "Qadira, Jewel of the East",
+    "category": "Regional",
+    "requirement": "Qadira",
+    "text": "You have found it is easier to be mistaken for someone with celestial blood than to reveal your true nature. You gain a +5 trait bonus on Disguise checks when pretending to be an aasimar, and a +2 trait bonus on Diplomacy checks against those you have convinced of your supposed celestial nature.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "empathic-diplomat",
+    "name": "Empathic Diplomat",
+    "source": "Qadira, Jewel of the East",
+    "category": "Regional",
+    "requirement": "Qadira or Osirion",
+    "text": "You have long followed the path of common sense and empathic insight when using diplomacy. You modify your Diplomacy checks using your Wisdom modifier, not your Charisma modifier.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "empyreal-cultist",
+    "name": "Empyreal Cultist",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "requirement": "Varisia—Magnimar",
+    "text": "Your faith in the empyreal lords—a host of good demigods—and your fascination with the legendary Angel of the Arvensoar have you constantly on the hopeful lookout for celestial messengers. Choose an empyreal lord as your patron deity. You gain Celestial as a bonus language and a +1 trait bonus on Diplomacy checks when dealing with good-aligned humanoids.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "keleshite-trader",
+    "name": "Keleshite Trader",
+    "source": "Qadira, Jewel of the East",
+    "category": "Regional",
+    "requirement": "Kelesh or Qadira",
+    "text": "Your cosmopolitan upbringing has given you familiarity with many cultures. You gain two bonus languages and a +2 trait bonus on Knowledge (local) checks.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Knowledge (local)": 2
+      }
+    }
+  },
+  {
+    "id": "kobolds-neighbor",
+    "name": "Kobold's Neighbor",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Andoran",
+    "text": "You grew up in wilderness where kobolds make their homes. You learned early on how to find traps before they find you, how to disable them, and when you should just walk away. You gain a +2 trait bonus to Perception checks to discover traps and a +1 trait bonus to Disable Device checks.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "merchant-of-katheer",
+    "name": "Merchant of Katheer",
+    "source": "Qadira, Gateway to the East",
+    "category": "Regional",
+    "requirement": "Qadira",
+    "text": "You grew up among the market stalls of the greatest trading post in all the world, and can almost smell the value of an item before you touch it. You gain a +1 trait bonus to Appraise checks, and Appraise is always a class skill for you.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "class_skills": [
+        "Appraise"
+      ]
+    }
+  },
+  {
+    "id": "narrows-survivor",
+    "name": "Narrows Survivor",
+    "source": "Taldor, Echoes of Glory",
+    "category": "Regional",
+    "requirement": "Taldor",
+    "text": "You spent your childhood in the infamous Narrows district of Oppara. Years of living in violent squalor have sharpened your senses and given you an ardent distrust of humanity. You gain a +1 trait bonus to Initiative and Sense Motive checks. Sense Motive is always a class skill for you.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "class_skills": [
+        "Sense Motive"
+      ]
+    }
+  },
+  {
+    "id": "oregent-desperation",
+    "name": "Oregent Desperation",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Oregent [in Andoran]",
+    "text": "Your instinct to survive easily overpowers your intellect, and you consider this a more than fair trade. Once per day you can improve your condition from dying to disabled by taking 4 points of Intelligence damage.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "oregent-timing",
+    "name": "Oregent Timing",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Oregent [in Andoran]",
+    "text": "After years of soulnumbing obedience to the schedules of others, you find synchronizing your actions with an ally second nature. Once per day when you take a readied action in combat, you gain a +3 trait bonus on the d20 roll for that action if it was triggered by an ally’s action.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "oregent-vandal",
+    "name": "Oregent Vandal",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Oregent [in Andoran]",
+    "text": "You find it quite easy to apply your carefully honed instincts for building and repairing to destruction instead. You gain a +2 trait bonus on damage rolls made against targets with hardness. This bonus does not apply to attacks that ignore hardness.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "damage",
+              "value": 2
+            }
+          ],
+          "text": "You gain a +2 trait bonus on damage rolls made against targets with hardness."
+        }
+      ]
+    }
+  },
+  {
+    "id": "paraheen-weaponsmith",
+    "name": "Paraheen Weaponsmith",
+    "source": "Qadira, Jewel of the East",
+    "category": "Regional",
+    "requirement": "Qadira",
+    "text": "You are a descendant of a long line of skilled dwarven weapon makers or have apprenticed under such artisans. Either way, you learned their long-held secrets relating to the production of magical arms and armor. You treat your caster level as 1 higher for purposes of creating magical weapons, and gain a +1 trait bonus on Craft checks to create magical armor, shields, or weapons.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "prismati-player",
+    "name": "Prismati Player",
+    "source": "Andoran, Spirit of Liberty",
+    "category": "Regional",
+    "requirement": "Andoran",
+    "text": "You’ve grown up playing the confusing game of prismati and throw stones with accuracy and ease. You gain a +1 trait bonus on attack rolls with fistsized rocks or similarly shaped objects, and a +1 trait bonus on concentration checks.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "combat": [
+        {
+          "bonuses": [
+            {
+              "target": "attack",
+              "value": 1
+            }
+          ],
+          "text": "You gain a +1 trait bonus on attack rolls with fistsized rocks or similarly shaped objects, and a +1 trait bonus on concentration checks."
+        }
+      ]
+    }
+  },
+  {
+    "id": "roof-racer",
+    "name": "Roof Racer",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "requirement": "Varisia—Korvosa",
+    "text": "You’ve spent more than your fair share of time among the strange sloping slums that cover the rooftops of much of Old Korvosa. When using the Acrobatics skill to make a long jump, you treat the DC of the skill check as if the distance being jumped were 5 feet shorter than it actually is.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "underbridge-dweller",
+    "name": "Underbridge Dweller",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "requirement": "Varisia—Magnimar",
+    "text": "You were raised in the Shadow district of Magnimar beneath the Irespan, a veiled place the light of the sun touches for only 3 hours per day. Your well-founded suspicions grant you a +2 trait bonus on Perception checks in dim light, and Perception is always a class skill for you.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "class_skills": [
+        "Perception"
+      ]
+    }
+  },
+  {
+    "id": "venicaan-medic",
+    "name": "Venicaan Medic",
+    "source": "Qadira, Gateway to the East",
+    "category": "Regional",
+    "requirement": "Qadira",
+    "text": "You have studied at the College of Medicaments and Chirurgery, and know by sight the signs of ailments and toxins you might encounter. You gain a +2 trait bonus to Heal checks to treat diseases or poisons, and Heal is always a class skill for you.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "class_skills": [
+        "Heal"
+      ]
+    }
+  },
+  {
+    "id": "watching-taldor",
+    "name": "Watching Taldor",
+    "source": "Qadira, Jewel of the East",
+    "category": "Regional",
+    "requirement": "Characters from Qadira who have had family members, neighbors, or friends affected by Taldan aggression or who have fallen victim to this hatred themselves.",
+    "text": "You have spent your adult life waiting for Taldor to give you an excuse to fight. You gain a +1 trait bonus on initiative checks, and if you are able to act during the surprise round of an encounter, you can draw a weapon (but not a potion or magic item) as a free action during that round.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "initiative": 1
+    }
+  },
+  {
+    "id": "whisper-woods-hunter",
+    "name": "Whisper Woods Hunter",
+    "source": "Cheliax, Empire of Devils",
+    "category": "Regional",
+    "requirement": "Whisper Woods",
+    "text": "Your family prepared you for a life of evading or destroying fiendish creatures. You gain a +2 trait bonus on Survival checks to track evil outsiders and a +2 trait bonus on initiative checks when you know your opponent is an evil outsider.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "winners-luck",
+    "name": "Winner's Luck",
+    "source": "Varisia, Birthplace of Legends",
+    "category": "Regional",
+    "requirement": "Varisia—Riddleport",
+    "text": "Winning at the tables in Riddleport’s gambling houses can be as devastating as losing. Years of dodging the jealous blows of card table patrons have given you a sixth sense for when your luck is about to run out. Whenever you succeed at a Reflex saving throw, you may draw a weapon as an immediate action, or a hidden weapon as a move action.",
+    "origin": "Archives of Nethys"
+  },
+  {
+    "id": "faithful-arodenite",
+    "name": "Faithful Arodenite",
+    "source": "Sargava, the Lost Colony",
+    "category": "Religion",
+    "requirement": "Aroden",
+    "text": "You worship a dead god, and are skilled at making that sound reasonable. You gain a +1 trait bonus on Diplomacy checks; this bonus increases to +3 if you are dealing with a follower of Aroden or Iomedae.",
+    "origin": "Archives of Nethys",
+    "effects": {
+      "skills": {
+        "Diplomacy": 1
+      }
+    }
   }
 ]

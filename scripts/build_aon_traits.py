@@ -39,10 +39,15 @@ def parse(name, page):
     m = re.match(r'Source (.+?)(?:\n|$)', body)
     if not m:
         return None
-    source = aon_book(re.sub(r'\s*pg\..*$', '', m.group(1).split(',')[0]).strip())
+    # The first book: "Andoran, Spirit of Liberty pg. 18, ..." (a book's name can have a comma, so cut at " pg.").
+    source = aon_book(re.split(r'\s+pg\.', m.group(1))[0].strip())
     rest = body[m.end():]
-    rest = re.sub(r'^Category [^\n]*\n', '', rest)
+    # "Category Campaign (Human Only) One of your parents..." runs straight into the text; the race is its requirement.
+    only = re.match(r'Category Campaign \((\w[\w -]*?) Only\)\s*', rest)
+    rest = rest[only.end():] if only else re.sub(r'^Category [^\n]*\n', '', rest)
     req = re.match(r'Requirements?\(?s?\)? ([^\n]*)\n', rest)
+    if only and not req:
+        return {'source': source, 'requirement': only.group(1), 'text': re.split(r'\n(?:Archives of Nethys|Site Owner)', rest)[0].strip()}
     if req:
         rest = rest[req.end():]
     text = re.split(r'\n(?:Archives of Nethys|Site Owner)', rest)[0].strip()
