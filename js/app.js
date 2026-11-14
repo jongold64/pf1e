@@ -648,6 +648,13 @@ function initCharacterBar() {
     }
     $('char-file').click();
   });
+  // Opened from Windows ("Open with" -> PF1e Builder) with the app installed from Edge or Chrome: each file is imported
+  // like Import does (manifest.webmanifest's file_handlers). Other browsers and tablets don't have launchQueue.
+  if ('launchQueue' in window) {
+    window.launchQueue.setConsumer(async params => {
+      for (const handle of params.files || []) await importText(await (await handle.getFile()).text());
+    });
+  }
   $('char-file').addEventListener('change', async e => {
     const file = e.target.files[0];
     e.target.value = '';
