@@ -2039,11 +2039,17 @@ function kiTradesFor(cls) {
   return original ? kiPowerTrades(original, cls, chosenArchetypes(cls.id)).trades : [];
 }
 
+// The feats skill totals count: chosen ones, free ones from a class or archetype (the black blade's Alertness), and
+// Skill Focus-style picks as "Skill Focus (Perception)".
+function skillFeatNames() {
+  return [...new Set([...view.chosen.map(f => f.name), ...view.granted,
+    ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)])];
+}
+
 // A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
 function skillTotalFor(name) {
   const isClassSkill = view.allClassSkills || classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name);
-  const featNames = [...view.chosen.map(f => f.name),
-    ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)];
+  const featNames = skillFeatNames();
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
                       racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
                       traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + oneSkillFx(name) + flawSkill(name), size: view.size });
@@ -3648,8 +3654,7 @@ function render() {
     ${cm.maneuvers.map((m, i) => rollRow(`${m.name} (CMB)`, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] },
       i === 0 ? 'defense-row first-cmb' : 'defense-row')).join('')}`;
 
-  renderSkills(race, view.classes, stats.scores, [...view.chosen.map(f => f.name),
-    ...view.featChoices.filter(c => c.kind === 'skill' && c.value).map(c => `${c.feat} (${c.value})`)]);
+  renderSkills(race, view.classes, stats.scores, skillFeatNames());
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
   renderEffects(app, view);
