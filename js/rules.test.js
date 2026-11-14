@@ -1000,6 +1000,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('finished character: no tab to do', JSON.stringify(tabsToDo({ pointsLeft: 0, ranksLeft: 0, featsLeft: 0 })), '{}');
   check('new character: build and classes to do', Object.keys(tabsToDo({ noRace: true, noClass: true, classChoicesLeft: 2 })).join(','), 'character,classes');
   check('racial bonus feat to choose', tabsToDo({ raceFeatsLeft: 1 }).character, '1 racial bonus feat choice to make');
+  check('to-do names the empty slot', tabsToDo({ featsLeft: 1 }, { feats: ['Level 3'] }).feats, '1 feat to choose (Level 3)');
   check('no class wins over choices', tabsToDo({ noClass: true, classChoicesLeft: 2 }).classes, 'Choose a class');
   check('abilities: points and increases', tabsToDo({ pointsLeft: 3, increasesLeft: 1 }).abilities, '3 points left to spend; 1 ability increase to choose');
   check('abilities: over budget', tabsToDo({ pointsLeft: -1 }).abilities, '1 point over budget');

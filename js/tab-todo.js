@@ -5,12 +5,14 @@
 //   noRace, raceFeatsLeft (a racial bonus feat's skill or weapon not chosen), pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
 //   noClass, classChoicesLeft, ranksLeft (negative is too many), featsLeft, traitsLeft, spellsLeft (spells known not
 //   chosen), noSpells (a caster with no spells chosen at all).
+// names: optional { feats: [slot labels], raceFeats: [trait names] } to say which ones.
 // Returns { tabId: 'why' } for each tab with something left (tab ids as in index.html: 'character' is the Build tab).
-export function tabsToDo(left = {}) {
+export function tabsToDo(left = {}, names = {}) {
   const out = {};
   const n = (count, one, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
+  const which = list => (list?.length ? ` (${list.join(', ')})` : '');
   if (left.noRace) out.character = 'Choose a race';
-  else if (left.raceFeatsLeft > 0) out.character = `${n(left.raceFeatsLeft, 'racial bonus feat choice')} to make`;
+  else if (left.raceFeatsLeft > 0) out.character = `${n(left.raceFeatsLeft, 'racial bonus feat choice')} to make${which(names.raceFeats)}`;
   const abilities = [];
   if (left.pointsLeft > 0) abilities.push(`${n(left.pointsLeft, 'point')} left to spend`);
   if (left.pointsLeft < 0) abilities.push(`${n(-left.pointsLeft, 'point')} over budget`);
@@ -22,7 +24,7 @@ export function tabsToDo(left = {}) {
   if (left.ranksLeft > 0) out.skills = `${n(left.ranksLeft, 'skill rank')} left to spend`;
   if (left.ranksLeft < 0) out.skills = `${n(-left.ranksLeft, 'skill rank')} too many`;
   const feats = [];
-  if (left.featsLeft > 0) feats.push(`${n(left.featsLeft, 'feat')} to choose`);
+  if (left.featsLeft > 0) feats.push(`${n(left.featsLeft, 'feat')} to choose${which(names.feats)}`);
   if (left.traitsLeft > 0) feats.push(`${n(left.traitsLeft, 'trait')} to choose`);
   if (feats.length) out.feats = feats.join('; ');
   if (left.spellsLeft > 0) out.spells = `${n(left.spellsLeft, 'spell')} to choose`;

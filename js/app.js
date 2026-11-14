@@ -1271,6 +1271,7 @@ function showTab(name) {
   for (const t of TABS) $(`tab-${t}`).hidden = t !== name;
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   if (location.hash.slice(1) !== name) history.replaceState(null, '', `#${name}`);
+  showTabTodo();
   if (name === 'spells') renderSpellList(app, view);
   if (name === 'magic-items') renderItemsTab(app);
   if (name === 'craft') renderCrafting(app, 'craft');
@@ -3710,6 +3711,14 @@ function render() {
   requestAnimationFrame(() => fitLines());
 }
 
+let tabTodo = {};  // { tabId: what's left } from the last render
+// The line under the tabs: what the open tab still needs (hidden when nothing).
+function showTabTodo() {
+  const why = tabTodo[tab];
+  $('tab-todo-note').hidden = !why;
+  $('tab-todo-note').textContent = why ? `Still to do here: ${why}.` : '';
+}
+
 // Tabs with something still to finish (points, ranks, feats, choices...) are tinted light red; the tooltip says what.
 function renderTabTodo() {
   const race = data.races.find(r => r.id === state.race);
@@ -3729,7 +3738,12 @@ function renderTabTodo() {
     traitsLeft: state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length < traitSlots
       ? traitSlots - state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length : 0,
     ...spellsLeftToChoose(app, view),
+  }, {
+    feats: view.slots.filter(s => !data.featsById.has(state.feats[s.id])).map(s => s.label),
+    raceFeats: view.raceFeats.filter(f => !f.value).map(f => f.trait),
   });
+  tabTodo = todo;
+  showTabTodo();
   for (const b of document.querySelectorAll('.tabs [data-tab]')) {
     const why = todo[b.dataset.tab];
     b.classList.toggle('todo', !!why);

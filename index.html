@@ -56,6 +56,8 @@
       <button type="button" role="tab" data-tab="equipment">Equipment</button>
       <button type="button" role="tab" data-tab="build">Character</button>
     </nav>
+    <!-- What the open tab still needs (its tab is tinted light red), set by renderTabTodo. -->
+    <p id="tab-todo-note" class="tab-todo-note" hidden></p>
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
@@ -481,7 +483,7 @@
           <ul>
             <li>Everything saves automatically in this browser. Each device (laptop, tablet) keeps its own characters.</li>
             <li>Racial traits that give a bonus feat with a choice (a half-elf's <b>Adaptability</b>: Skill Focus; <b>Ancestral Arms</b>: proficiency with one martial or exotic weapon) have a list under the race's alternate traits on the Build tab. The feat is counted (Skill Focus on the Skills tab, the weapon proficient on the Weapons tab) and listed with your free feats on the Feats tab.</li>
-            <li>A tab tinted <b>light red</b> still has something to finish: points or skill ranks to spend, an ability increase, a class choice, a feat or trait slot, or spells to choose. Point at it (or open it) to see what; the tab you're on shows a light red strip along its bottom instead. Gear tabs are never tinted.</li>
+            <li>A tab tinted <b>light red</b> still has something to finish: points or skill ranks to spend, an ability increase, a class choice, a feat or trait slot, or spells to choose. Open it and a light red line under the tabs says what's left (on a laptop, pointing at the tab says it too); the tab you're on shows a light red strip along its bottom instead. Gear tabs are never tinted.</li>
             <li>Use the <b>Character</b> list at the top to switch between characters. Each name shows when that character was last changed ("today 2:15 pm", "yesterday", or the date; an imported character shows when its file was exported), so you can tell copies apart and delete the old ones. Just opening a character doesn't change its date. <b>Archive</b> moves the open character to an <b>Archived</b> group at the bottom of the list, out of the way but kept; open it from there and tap <b>Unarchive</b> to bring it back up. <b>Delete</b> removes it for good; <b>New</b>, <b>Duplicate</b>, <b>Delete</b> and the other character buttons are on the title's line at the very top.
               With only one character saved, its name is shown there as plain text; the list appears once you have two or more.
               Type a <b>Name</b> to label one.</li>
