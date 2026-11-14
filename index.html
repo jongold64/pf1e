@@ -24,7 +24,6 @@
       <button type="button" id="char-delete">Delete</button>
       <button type="button" id="char-archive">Archive</button>
       <button type="button" id="char-export">Export</button>
-      <button type="button" id="char-save-folder" hidden title="Save the open character into your characters folder">Save to folder</button>
       <button type="button" id="char-folder" class="char-folder" hidden></button>
       <button type="button" id="char-import">Import</button>
       <button type="button" id="char-print">Print</button>
@@ -472,11 +471,11 @@
             <li><b>Moving or backing up a character:</b> <button type="button" data-guide-click="char-export">Export</button>
               saves the open character to a file; on the other browser or device, <button type="button" data-guide-click="char-import">Import</button>
               that file. Export now and then as a backup: clearing the browser's history and site data deletes saved characters.</li>
-            <li><b>Save to folder</b> (Edge or Chrome on a computer; the iPad uses Export): keep every character in one folder, such
-              as a OneDrive folder the iPad can also reach in its Files app. The first time, choose the folder; after that each press saves the
-              open character straight into it (as its name, .json), replacing the copy there, and says <b>Saved ✓</b>. The 📁 button beside it
-              shows which folder when you point at it, and chooses another. After the browser restarts it asks once to allow saving there again. On another
-              device, <b>Import</b> the file from that folder.</li>
+            <li><b>Export on a computer</b> (Edge or Chrome): keeps every character in one folder, such as a OneDrive folder the iPad can
+              also reach in its Files app. The first time, choose the folder; after that each Export saves the open character straight into it
+              (as its name, .json), replacing the copy there, and says <b>Saved ✓</b>. The 📁 button beside Export shows which folder when you
+              point at it, and chooses another. After the browser restarts it asks once to allow saving there again. On the iPad, Export offers
+              Save to Files: choose the same folder.</li>
             <li><b>Seeing or clearing the saved data</b> (a browser won't open these from a link: copy one and paste it into the
               address bar):
               Edge <code>edge://settings/content/all</code> <button type="button" data-copy="edge://settings/content/all">Copy</button> ·

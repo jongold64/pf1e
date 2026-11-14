@@ -627,22 +627,31 @@ function initCharacterBar() {
     if (next && !roster.characters.find(c => c.id === next).archived) switchCharacter(next);
     else render();
   });
-  // Export: save the open character to a file, in a place you choose. Edge and Chrome on a laptop show a Save as window
-  // (it starts in the folder used last time); a tablet's Share sheet offers Save to Files; otherwise it downloads.
-  const FILE_TYPES = [{ description: 'Pathfinder character', accept: { 'application/json': ['.json'] } }];
+  // Export: save the open character to a file. Edge and Chrome on a computer (folder-save.js) save it straight into one
+  // folder, picked the first time and remembered, replacing its earlier copy there; the 📁 button beside Export (its tooltip
+  // names the folder) picks another. A tablet's Share sheet offers Save to Files; otherwise it downloads.
+  const showFolder = name => {
+    $('char-folder').hidden = !name;
+    $('char-folder').textContent = '📁';
+    $('char-folder').setAttribute('aria-label', `Choose another folder (now ${name})`);
+    $('char-folder').title = `Export saves to the folder ${name}. Tap to choose another folder.`;
+  };
+  if (folderSaveSupported()) savedFolder().then(dir => showFolder(dir && (dir.name || 'your folder')));
   $('char-export').addEventListener('click', async () => {
     const text = JSON.stringify(exportData(state), null, 2);
     const name = exportFileName(characterLabel(state));
-    if (window.showSaveFilePicker) {
+    if (folderSaveSupported()) {
+      const btn = $('char-export');
       try {
-        const handle = await window.showSaveFilePicker({ id: 'pf1e-characters', suggestedName: name, types: FILE_TYPES });
-        const out = await handle.createWritable();
-        await out.write(text);
-        await out.close();
-        return;
+        const folder = await saveToFolder(name, text);
+        if (!folder) return;  // the folder window was closed
+        showFolder(folder);
+        btn.textContent = 'Saved ✓';
+        setTimeout(() => { btn.textContent = 'Export'; }, 2000);
       } catch (err) {
-        if (err?.name === 'AbortError') return;  // the window was closed without saving
+        alert(`Couldn't save to the folder: ${err?.message || err}`);
       }
+      return;
     }
     const file = new File([text], name, { type: 'application/json' });
     // (A tablet or phone: a touch screen that can share files.)
@@ -657,34 +666,11 @@ function initCharacterBar() {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
-  // Save to folder (Edge and Chrome on a computer, folder-save.js): the open character written straight into the folder
-  // picked the first time, replacing its earlier copy there. The 📁 button beside it (its tooltip names the folder) picks another.
-  const showFolder = name => {
-    $('char-folder').hidden = !name;
-    $('char-folder').textContent = '📁';
-    $('char-folder').setAttribute('aria-label', `Choose another folder (now ${name})`);
-    $('char-folder').title = `Saves go to the folder ${name}. Tap to choose another folder.`;
-  };
-  if (folderSaveSupported()) {
-    $('char-save-folder').hidden = false;
-    savedFolder().then(dir => showFolder(dir && (dir.name || 'your folder')));
-  }
-  $('char-save-folder').addEventListener('click', async () => {
-    const btn = $('char-save-folder');
-    try {
-      const folder = await saveToFolder(exportFileName(characterLabel(state)), JSON.stringify(exportData(state), null, 2));
-      if (!folder) return;
-      showFolder(folder);
-      btn.textContent = 'Saved ✓';
-      setTimeout(() => { btn.textContent = 'Save to folder'; }, 2000);
-    } catch (err) {
-      alert(`Couldn't save to the folder: ${err?.message || err}`);
-    }
-  });
   $('char-folder').addEventListener('click', async () => {
     try { const dir = await chooseFolder(); if (dir) showFolder(dir.name || 'your folder'); } catch (err) { alert(`Couldn't choose that folder: ${err?.message || err}`); }
   });
   // Import: a character file; Edge and Chrome open in the folder Export used.
+  const FILE_TYPES = [{ description: 'Pathfinder character', accept: { 'application/json': ['.json'] } }];
   const importText = async text => {
     let character = null;
     let when = null;

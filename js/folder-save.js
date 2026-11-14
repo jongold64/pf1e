@@ -1,6 +1,6 @@
-// Save to folder: the open character saved straight into one chosen folder (a OneDrive folder, say), without a Save
-// window each time. Only Edge and Chrome on a computer can write to a folder (window.showDirectoryPicker); elsewhere the
-// buttons stay hidden and Export does the job. The folder is remembered in the browser's IndexedDB (a folder can't go in
+// Export on a computer: the open character saved straight into one chosen folder (a OneDrive folder, say), without a Save
+// window each time. Only Edge and Chrome on a computer can write to a folder (window.showDirectoryPicker); elsewhere Export
+// shares or downloads the file instead. The folder is remembered in the browser's IndexedDB (a folder can't go in
 // localStorage), so it is picked once; after the browser restarts it asks once to allow saving there again.
 
 const DB = 'pf1e-builder-folder';
@@ -32,7 +32,7 @@ export async function savedFolder() {
   try { return (await run('readonly', s => s.get(KEY))) || null; } catch { return null; }
 }
 
-// Ask for a folder (starting where Export saves); remembers and returns it, or null if the window was closed.
+// Ask for a folder; remembers and returns it, or null if the window was closed.
 export async function chooseFolder() {
   try {
     const dir = await window.showDirectoryPicker({ id: 'pf1e-characters', mode: 'readwrite' });
