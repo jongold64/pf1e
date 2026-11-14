@@ -2,7 +2,7 @@
 // tested on its own.
 //
 // left: what is still to do, all numbers (0 when done) except noRace / noClass:
-//   noRace, pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
+//   noRace, raceFeatsLeft (a racial bonus feat's skill or weapon not chosen), pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
 //   noClass, classChoicesLeft, ranksLeft (negative is too many), featsLeft, traitsLeft, spellsLeft (spells known not
 //   chosen), noSpells (a caster with no spells chosen at all).
 // Returns { tabId: 'why' } for each tab with something left (tab ids as in index.html: 'character' is the Build tab).
@@ -10,6 +10,7 @@ export function tabsToDo(left = {}) {
   const out = {};
   const n = (count, one, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
   if (left.noRace) out.character = 'Choose a race';
+  else if (left.raceFeatsLeft > 0) out.character = `${n(left.raceFeatsLeft, 'racial bonus feat choice')} to make`;
   const abilities = [];
   if (left.pointsLeft > 0) abilities.push(`${n(left.pointsLeft, 'point')} left to spend`);
   if (left.pointsLeft < 0) abilities.push(`${n(-left.pointsLeft, 'point')} over budget`);

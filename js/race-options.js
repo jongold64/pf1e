@@ -130,3 +130,24 @@ export function favoredChoices(race, classLevels, favoredClassId, picks = []) {
     return 'hp';
   });
 }
+
+// Racial traits that give a bonus feat with something to choose: a half-elf's Adaptability (Skill Focus), Ancestral
+// Arms (Martial or Exotic Weapon Proficiency with one weapon). Hand-entered: the rules text names the feat but the
+// choice has to be made in the app.
+export const RACE_FEATS = {
+  'Adaptability': { kind: 'skill', feat: 'Skill Focus', label: 'Skill Focus in' },
+  'Ancestral Arms': { kind: 'weapon', label: 'Weapon proficiency with' },
+};
+
+// The bonus feats the race (alternates applied) gives: [{ trait, feat, kind, value, label }]. picks: { trait: value }
+// (a skill name, or a weapon id). A weapon's feat is Exotic Weapon Proficiency for an exotic weapon, otherwise Martial.
+export function raceBonusFeats(race, picks = {}, weaponsById = null) {
+  return (race?.traits || []).filter(t => RACE_FEATS[t.name]).map(t => {
+    const spec = RACE_FEATS[t.name];
+    const value = typeof picks[t.name] === 'string' ? picks[t.name] : '';
+    const feat = spec.kind === 'weapon'
+      ? (weaponsById?.get(value)?.proficiency === 'exotic' ? 'Exotic Weapon Proficiency' : 'Martial Weapon Proficiency')
+      : spec.feat;
+    return { trait: t.name, feat, kind: spec.kind, value, label: spec.label };
+  });
+}

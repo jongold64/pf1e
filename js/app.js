@@ -54,7 +54,7 @@ import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
 import { DOMAIN_CLASSES, domainChoices, domainConflict, domainGrants } from './domains.js';
 import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescription, archetypesFor, unchainedFit, kiPowerTrades, UNCHAINED_FROM, offTableFeatures } from './archetypes.js';
-import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
+import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices, raceBonusFeats } from './race-options.js';
 import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
 import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, setArchived, nextCharacter, newId, exportData, importData, exportedDate, shortDate } from './storage.js';
@@ -169,6 +169,7 @@ const state = {
   buffs: [],          // active common buffs: [{ id (effects.js BUFFS), cl (caster level) }]
   customEffects: [],  // typed-in effects: [{ name, target, type, value, on }]
   traitOn: [],        // trait combat bonuses switched on (traits.js traitCombat): ['giant-slayer:0', ...]
+  raceFeats: {},      // what a racial bonus feat is for (race-options.js RACE_FEATS): { Adaptability: 'Perception', 'Ancestral Arms': 'longbow' }
   traitPicks: {},     // choices a trait asks for (traits.js TRAIT_PICKS): { 'heirloom-weapon': { weapon, benefit, maneuver } }
   armorMaterial: '',   // special material (materials.js id: 'mithral'...), '' for the usual
   shieldMaterial: '',
@@ -276,6 +277,8 @@ function load(saved) {
   if (state.natureBond !== 'domain') state.natureBond = 'companion';
   const altNames = new Set((data.races.find(r => r.id === state.race)?.alternate_traits || []).map(a => a.name));
   state.alternates = (Array.isArray(state.alternates) ? state.alternates : []).filter(n => altNames.has(n));
+  state.raceFeats = Object.fromEntries(Object.entries(state.raceFeats && typeof state.raceFeats === 'object' ? state.raceFeats : {})
+    .filter(([k, v]) => typeof k === 'string' && typeof v === 'string' && v));
   // Saves from before multiclassing have one class and a level instead of a class for each level.
   const legacyClass = !!saved && !Array.isArray(saved.classLevels);
   if (legacyClass) state.classLevels = [];
@@ -1350,6 +1353,14 @@ function buildControls() {
       taken ? [{ label: 'Remove it', run: () => update({ alternates: state.alternates.filter(n => n !== a.name) }) }]
         : conflict ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => update({ alternates: [...state.alternates, a.name] }) }]);
   });
+  $('race-feats').addEventListener('change', e => {
+    const trait = e.target.dataset.raceFeat;
+    if (trait === undefined) return;
+    const raceFeats = { ...state.raceFeats };
+    if (e.target.value) raceFeats[trait] = e.target.value;
+    else delete raceFeats[trait];
+    update({ raceFeats });
+  });
   $('race-alternates').addEventListener('change', e => {
     const name = e.target.dataset.alternate;
     if (name === undefined) return;
@@ -2176,8 +2187,11 @@ function computeView() {
   });
   // Archetype choices: the kensai's Weapon Focus with the chosen weapon, the black blade's Alertness.
   const archFx = archetypeChoiceEffects(counts, state.archetypes, state.archChoices, state.talents);
-  const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name)])];
+  // Racial bonus feats: a half-elf's Skill Focus (Adaptability), Ancestral Arms' weapon proficiency.
+  const raceFeats = raceBonusFeats(race, state.raceFeats, data.weaponsById);
+  const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name), ...raceFeats.map(f => f.feat)])];
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
+  featChoices.push(...raceFeats.filter(f => f.value).map(f => ({ slotId: `race:${f.trait}`, feat: f.feat, kind: f.kind, value: f.value, from: f.trait })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
   const armorArgs = {
     // (A drow in a spider-silk bodysuit: +2 max Dex.)
@@ -2347,7 +2361,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
+    slots, chosen, granted, raceFeats, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems, allClassSkills: access.allClass,
     // A cleric's, warpriest's or inquisitor's proficiency with the deity's favored weapon.
@@ -2391,6 +2405,23 @@ const STATUS_WORD = { met: 'met', unmet: 'not met', unknown: 'some can\'t be che
 // Alternate racial traits (Race card): a tick box for each, what it replaces, and its text. One that replaces a
 // trait another chosen alternate already replaces can't be ticked. Redrawn only when the race or the choices change,
 // keeping the list open or closed as it was.
+// Racial bonus feats that need a choice (race-options.js RACE_FEATS): a list for each, under the alternate traits.
+function renderRaceFeats() {
+  const box = $('race-feats');
+  if (!view.raceFeats.length) { box.innerHTML = ''; return; }
+  const weapons = view.raceFeats.some(f => f.kind === 'weapon');
+  if (weapons && !data.weaponsById) { loadWeapons().then(render); box.innerHTML = '<p class="hint">Loading weapons…</p>'; return; }
+  box.innerHTML = view.raceFeats.map(f => {
+    const opts = f.kind === 'weapon'
+      ? [...data.weaponsById.values()].filter(w => w.id !== 'unarmed-strike' && ['martial', 'exotic'].includes(w.proficiency))
+        .sort((a, b) => a.name.localeCompare(b.name)).map(w => [w.id, `${w.name}${w.proficiency === 'exotic' ? ' (exotic)' : ''}`])
+      : skillRowNames().map(n => [n, n]);
+    return `<label class="row-label race-feat"><span><b>${esc(f.trait)}</b>: free ${esc(f.feat)}. ${esc(f.label)}</span>
+      <select data-race-feat="${esc(f.trait)}"><option value="">Choose…</option>${opts.map(([v, n]) =>
+        `<option value="${esc(v)}"${v === f.value ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`;
+  }).join('');
+}
+
 function renderAlternates(baseRace) {
   const box = $('race-alternates');
   const alts = baseRace.alternate_traits || [];
@@ -3535,6 +3566,7 @@ function render() {
   }
 
   renderAlternates(data.races.find(r => r.id === state.race));
+  renderRaceFeats();
   renderFaith();
   renderClasses(view);
   renderCharacterBar();
@@ -3685,6 +3717,7 @@ function renderTabTodo() {
   const traitSlots = traitSlotCount(state.houseRules, state.drawback);
   const todo = tabsToDo({
     noRace: !race,
+    raceFeatsLeft: view.raceFeats.filter(f => !f.value).length,
     pointsLeft: state.budget === 'custom' ? 0 : state.budget - pointsSpent(state.base),
     increasesLeft: state.increases.slice(0, reached).filter(a => !a).length,
     flexibleLeft: (race?.flexible_ability_bonus && !ABILITIES.includes(state.flexible) ? 1 : 0)
@@ -4231,12 +4264,15 @@ function renderFeats(slots, granted, ctx) {
   $('feat-count').textContent = `${filled} of ${slots.length} chosen`;
   // Free feats from the classes: each name opens the feat.
   // Bonus feats the class table gives (a ranger's Endurance, a wizard's Scribe Scroll): they need no slot.
-  $('granted-feats').innerHTML = granted.length ? `<b>Bonus feats from your class${view.classes.length > 1 ? 'es' : ''}</b> (no slot needed; they count for
+  $('granted-feats').innerHTML = granted.length ? `<b>Bonus feats from your class${view.classes.length > 1 ? 'es' : ''}${view.raceFeats.length ? ' and race' : ''}</b> (no slot needed; they count for
     prerequisites and numbers): ${granted.map(n => {
     const f = featByName(n);
     // From an archetype choice: "Weapon Focus (Katana; Kensai)".
     const arch = (view.archFx?.feats || []).find(x => x.name === n);
-    const what = arch ? ` (${[arch.weapon && data.weaponsById?.get(arch.weapon)?.name, arch.from].filter(Boolean).join('; ')})` : '';
+    // From a racial trait: "Martial Weapon Proficiency (Longbow; Ancestral Arms)".
+    const rf = view.raceFeats.find(x => x.feat === n);
+    const what = arch ? ` (${[arch.weapon && data.weaponsById?.get(arch.weapon)?.name, arch.from].filter(Boolean).join('; ')})`
+      : rf ? ` (${[rf.kind === 'weapon' ? data.weaponsById?.get(rf.value)?.name : rf.value, rf.trait].filter(Boolean).join('; ')})` : '';
     return f ? `<button type="button" class="link" data-granted-pop="${esc(f.id)}">${esc(n)}</button>${esc(what)}` : esc(n + what);
   }).join(', ')}.` : '';
   // They sit in the From your class card, shown when it has class features or bonus feats.

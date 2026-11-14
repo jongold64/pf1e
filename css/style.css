@@ -1240,3 +1240,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* The portrait picture, and its popup. */
 .b-portrait.b-has-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portrait-pop img { width: 256px; max-width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; border: 2px solid var(--accent); display: block; margin: 0 auto 10px; }
+
+/* Build tab: racial bonus feats with a choice (Adaptability, Ancestral Arms). */
+.race-feats { display: grid; gap: 6px; margin: 8px 0; }
+.race-feats:empty { display: none; }
+.race-feat { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.race-feat select { flex: 1 1 12em; min-width: 0; }

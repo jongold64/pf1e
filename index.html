@@ -73,6 +73,8 @@
           <p class="hint term-hint">Tap or point at an item to see what it does.</p>
           <div id="race-info" class="info"></div>
           <div id="race-alternates" class="race-alternates"></div>
+          <!-- Racial bonus feats with a choice: a half-elf's Skill Focus, Ancestral Arms' weapon. -->
+          <div id="race-feats" class="race-feats"></div>
           <div id="faith" class="faith"></div>
           <div class="hp-tracker">
             <div class="hp-now"><span class="hp-label">Hit Points</span><b id="hp-current"></b><span id="hp-max"></span><span id="hp-temp" class="hp-temp"></span>
@@ -478,6 +480,7 @@
           <summary>Saving, switching and printing characters</summary>
           <ul>
             <li>Everything saves automatically in this browser. Each device (laptop, tablet) keeps its own characters.</li>
+            <li>Racial traits that give a bonus feat with a choice (a half-elf's <b>Adaptability</b>: Skill Focus; <b>Ancestral Arms</b>: proficiency with one martial or exotic weapon) have a list under the race's alternate traits on the Build tab. The feat is counted (Skill Focus on the Skills tab, the weapon proficient on the Weapons tab) and listed with your free feats on the Feats tab.</li>
             <li>A tab tinted <b>light red</b> still has something to finish: points or skill ranks to spend, an ability increase, a class choice, a feat or trait slot, or spells to choose. Point at it (or open it) to see what; the tab you're on shows a light red strip along its bottom instead. Gear tabs are never tinted.</li>
             <li>Use the <b>Character</b> list at the top to switch between characters. Each name shows when that character was last changed ("today 2:15 pm", "yesterday", or the date; an imported character shows when its file was exported), so you can tell copies apart and delete the old ones. Just opening a character doesn't change its date. <b>Archive</b> moves the open character to an <b>Archived</b> group at the bottom of the list, out of the way but kept; open it from there and tap <b>Unarchive</b> to bring it back up. <b>Delete</b> removes it for good; <b>New</b>, <b>Duplicate</b>, <b>Delete</b> and the other character buttons are on the title's line at the very top.
               With only one character saved, its name is shown there as plain text; the list appears once you have two or more.
@@ -841,7 +844,7 @@
           <summary>Feats tab (feats, traits and flaws)</summary>
           <ul>
             <li><b>From your class</b>, at the top, lists the class features the level table doesn't name: weapon and armor
-              proficiency, a cleric's spontaneous casting, bonus languages... and the bonus feats your class gives free (a ranger's Endurance, a black blade's Alertness). Tap one to read it. They need no feat slot.</li>
+              proficiency, a cleric's spontaneous casting, bonus languages... and the bonus feats your class or race gives free (a ranger's Endurance, a black blade's Alertness, a half-elf's Skill Focus). Tap one to read it. They need no feat slot.</li>
             <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>,
               <b>Change</b> and <b>Remove</b>; under it, the weapon or skill it's for and any warning. The slots below list only the
               ones still to fill (a removed feat's slot comes back there).</li>
