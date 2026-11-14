@@ -56,7 +56,7 @@ import { classWithArchetypes, archetypeConflict, replacedEntries, featureDescrip
 import { raceWithAlternates, replacedTraits, alternateConflict, favoredOption, favoredOptionTotal, favoredChoices } from './race-options.js';
 import { traitEffects, traitSlotCount, traitCombat } from './traits.js';
 import { initTraits, renderTraits } from './tab-traits.js';
-import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, newId, exportData, importData, exportedDate, shortDate } from './storage.js';
+import { openRoster, saveRoster, loadCharacter, saveCharacter, removeCharacter, setArchived, nextCharacter, newId, exportData, importData, exportedDate, shortDate } from './storage.js';
 import { buildSheet } from './sheet.js';
 import { initRolls, rollButton, setRollOptions } from './roll-ui.js';
 import { spellContext } from './spell-math.js';
@@ -559,9 +559,15 @@ function characterLabel(s) {
 
 // The character bar: pick a saved character, name it, add, copy, delete, export, import and print.
 function renderCharacterBar() {
-  $('char-select').innerHTML = roster.characters.map(c =>
-    `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}${c.changed ? ` · ${esc(shortDate(c.changed))}` : ''}</option>`).join('');
+  // Archived characters are kept in their own group at the bottom.
+  const option = c => `<option value="${esc(c.id)}">${esc(c.id === currentId ? characterLabel(state) : c.label || 'Unnamed character')}${c.changed ? ` · ${esc(shortDate(c.changed))}` : ''}</option>`;
+  const archived = roster.characters.filter(c => c.archived);
+  $('char-select').innerHTML = roster.characters.filter(c => !c.archived).map(option).join('')
+    + (archived.length ? `<optgroup label="Archived">${archived.map(option).join('')}</optgroup>` : '');
   $('char-select').value = currentId;
+  const isArchived = !!roster.characters.find(c => c.id === currentId)?.archived;
+  $('char-archive').textContent = isArchived ? 'Unarchive' : 'Archive';
+  $('char-archive').title = isArchived ? 'Move this character back up to the main list' : 'Move this character to the Archived group at the bottom of the Character list';
   // One saved character: nothing to switch to, so its name is plain text rather than a list.
   const several = roster.characters.length > 1;
   $('char-pick').hidden = !several;
@@ -597,9 +603,24 @@ function initCharacterBar() {
   });
   $('char-delete').addEventListener('click', () => {
     if (!confirm(`Delete ${characterLabel(state)}? This can't be undone.`)) return;
+    const next = nextCharacter(roster, currentId);
     removeCharacter(roster, currentId);
-    if (roster.characters.length) switchCharacter(roster.characters[0].id);
+    if (next) switchCharacter(next);
     else addCharacter(null);
+  });
+  // Archive: the character moves to the Archived group at the bottom of the list and the next one opens. An archived
+  // character, opened from that group, has Unarchive instead.
+  $('char-archive').addEventListener('click', () => {
+    save();
+    if (roster.characters.find(c => c.id === currentId)?.archived) {
+      setArchived(roster, currentId, false);
+      render();
+      return;
+    }
+    setArchived(roster, currentId, true);
+    const next = nextCharacter(roster, currentId);
+    if (next && !roster.characters.find(c => c.id === next).archived) switchCharacter(next);
+    else render();
   });
   // Export: save the open character to a file, in a place you choose. Edge and Chrome on a laptop show a Save as window
   // (it starts in the folder used last time); a tablet's Share sheet offers Save to Files; otherwise it downloads.

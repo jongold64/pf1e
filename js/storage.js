@@ -1,5 +1,6 @@
-// Saved characters in the browser's localStorage: a list ("roster") of { id, label, changed } plus one entry per
-// character. changed: when the character was last changed (an ISO date), shown in the Character list.
+// Saved characters in the browser's localStorage: a list ("roster") of { id, label, changed, archived? } plus one entry
+// per character. changed: when the character was last changed (an ISO date), shown in the Character list. archived:
+// moved to the Archived group at the bottom of the list, kept but out of the way.
 // Storage can be blocked (private browsing), so reads return null and failed writes are ignored.
 
 const LIST_KEY = 'pf1e-builder-characters';
@@ -37,7 +38,8 @@ export function openRoster() {
   }
   roster.characters = roster.characters.filter(c => c && typeof c.id === 'string')
     .map(c => ({ id: c.id, label: typeof c.label === 'string' ? c.label : '',
-                 changed: isDate(c.changed) ? c.changed : idDate(c.id) || new Date().toISOString() }));
+                 changed: isDate(c.changed) ? c.changed : idDate(c.id) || new Date().toISOString(),
+                 ...(c.archived === true ? { archived: true } : {}) }));
   if (!roster.characters.length) roster.characters.push({ id: newId(), label: '', changed: new Date().toISOString() });
   if (!roster.characters.some(c => c.id === roster.current)) roster.current = roster.characters[0].id;
   write(LIST_KEY, roster);
@@ -80,6 +82,24 @@ export function shortDate(iso, now = new Date()) {
   if (ago === 1) return `yesterday ${time}`;
   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
   return `${d.getDate()} ${month} ${d.getFullYear()}`;
+}
+
+// Archive a character, or bring it back (archived false).
+export function setArchived(roster, id, archived) {
+  const entry = roster.characters.find(c => c.id === id);
+  if (!entry) return;
+  if (archived) entry.archived = true;
+  else delete entry.archived;
+  write(LIST_KEY, roster);
+}
+
+// The character to open after the open one is archived or deleted: the next one on the list that isn't archived
+// (else the first archived one), or null when there's no other.
+export function nextCharacter(roster, id) {
+  const others = roster.characters.filter(c => c.id !== id);
+  const i = roster.characters.findIndex(c => c.id === id);
+  const after = [...roster.characters.slice(i + 1), ...roster.characters.slice(0, Math.max(i, 0))].filter(c => c.id !== id);
+  return (after.find(c => !c.archived) || others[0] || null)?.id || null;
 }
 
 export function removeCharacter(roster, id) {

@@ -34,7 +34,7 @@ import { proficiencyTest, strToDamage, formatDamage, weaponAttack, weaponCost, w
 import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
          carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
-import { exportData, importData, exportedDate, shortDate, idDate } from './storage.js';
+import { exportData, importData, exportedDate, shortDate, idDate, nextCharacter } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
 import { heroPointMax, heroPointsAfter, clampHeroPoints, spendHeroPoint } from './hero-points.js';
@@ -995,6 +995,11 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const now = new Date(2026, 10, 13, 15, 0);
   check('date today', shortDate(new Date(2026, 10, 13, 14, 5).toISOString(), now), 'today 2:05 pm');
   check('date yesterday', shortDate(new Date(2026, 10, 12, 9, 30).toISOString(), now), 'yesterday 9:30 am');
+  const ros = { characters: [{ id: 'a' }, { id: 'b', archived: true }, { id: 'c' }] };
+  check('next character skips archived', nextCharacter(ros, 'a'), 'c');
+  check('next character wraps round', nextCharacter(ros, 'c'), 'a');
+  check('only archived ones left', nextCharacter({ characters: [{ id: 'a' }, { id: 'b', archived: true }] }, 'a'), 'b');
+  check('no other character', nextCharacter({ characters: [{ id: 'a' }] }, 'a'), null);
   check('older date', shortDate(new Date(2026, 9, 3, 12, 0).toISOString(), now), '3 Oct 2026');
 }
 
