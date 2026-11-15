@@ -405,6 +405,7 @@ Pathfinder Player Companion: Heroes of the Wild © 2015, Paizo Inc.; Authors: Ty
 . Crypt Thing from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Roger Musson.
 Hangman Tree from the Tome of Horrors Complete © 2011, Necromancer Games, Inc., published and distributed by Frog God Games; Author: Scott Greene, based on original material by Gary Gygax
 . Pathfinder Roleplaying Game Horror Adventures © 2016, Paizo Inc.; Authors: John Bennett, Clinton J. Boomer, Logan Bonner, Robert Brookes, Jason Bulmahn, Ross Byers, Jim Groves, Steven Helt, Thurston Hillman, Eric Hindley, Brandon Hodge, Mikko Kallio, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, F. Wesley Schneider, David Schwartz, Mark Seifter, and Linda Zayas-Palmer.
+Pathfinder Campaign Setting: Horror Realms © 2016, Paizo Inc.; Author: Thurston Hillman, Tim Hitchcock, James Jacobs, Patrick Renie, David N. Ross, and Linda Zayas-Palmer.
 Daemon, Ceustodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Ian McDowall.
 Daemon, Oinodaemon from the Tome of Horrors, Revised © 2002, Necromancer Games, Inc.; Author: Scott Greene, based on original material by Gary Gygax.
 Pathfinder Campaign Setting: Horsemen of the Apocalypse: Book of the Damned, Vol. 3 © 2011, Paizo Publishing, LLC; Author: Todd Stewart.
@@ -680,6 +681,7 @@ Kobold Quarterly Issue 14 © 2010, Open Design LLC, www.koboldquarterly.com.
 Pathfinder Player Companion: Pathfinder Society Primer © 2013, Paizo Publishing, LLC; Authors: John Compton and Mark Moreland.
 Pathfinder Roleplaying Game Pathfinder Unchained © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, Ross Beyers, Logan Bonner, Jason Bulmahn, Robert Emerson, Tim Hitchcock, Jason Nelson, Tom Phillips, Stephen Radney-MacFarland, Thomas M. Reid, Robert Schwalb, Mark Seifter, and Russ Taylor.
 Pathfinder: Spiral of Bones #3 Copyright 2018 Paizo, Inc. Author: Crystal Frasier
+Pathfinder: Spiral of Bones #4 Copyright 2018 Paizo, Inc. Author: Crystal Frasier
 . Pathfinder Player Companion: Paths of the Righteous © 2016, Paizo Inc.; Authors: Alexander Augunas, John Compton, Jenny Jarzabski, Isabelle Lee, Stephen Rowe, and Owen K.C. Stephens.
 Pathfinder Player Companion: People of the North © 2012, Paizo Publishing, LLC; Authors: Matthew Goodall, Shaun Hocking, Rob McCreary, Philip Minchin, and William Thrasher.
 Pathfinder Player Companion: People of the River © 2014, Paizo Inc.; Authors: Tim Akers, Jason Brick, Ethan Day-Jones, James Jacobs, Nick Salestrom, David Schwartz, and William Thrasher.

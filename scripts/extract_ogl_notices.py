@@ -44,6 +44,9 @@ MANUAL_NOTICES = {
     # Read from the Section 15 on d20pfsrd.com's pages for the Bestiary 5 and 6 player races.
     'Bestiary 5': ["Pathfinder Roleplaying Game Bestiary 5 © 2015, Paizo Inc.; Authors: Dennis Baker, Jesse Benner, John Bennett, Logan Bonner, Creighton Broadhurst, Robert Brookes, Benjamin Bruck, Jason Bulmahn, Adam Daigle, Thurston Hillman, Eric Hindley, Joe Homes, James Jacobs, Amanda Hamon Kunz, Ben McFarland, Jason Nelson, Thom Phillips, Stephen Radney-MacFarland, Alistair Rigg, Alex Riggs, David N. Ross, Wes Schneider, David Schwartz, Mark Seifter, Mike Shel, James L. Sutter, and Linda Zayas-Palmer."],
     'Bestiary 6': ["Pathfinder Roleplaying Game Bestiary 6 © 2017, Paizo Inc.; Authors: Robert Brookes, Benjamin Bruck, John Compton, Paris Crenshaw, Adam Daigle, Crystal Frasier, James Jacobs, Thurston Hillman, Tim Hitchcock, Brandon Hodge, Jason Keeley, Isabelle Lee, Jason Nelson, Tim Nightengale, F. Wesley Schneider, David Schwartz, Mark Seifter, Todd Stewart, Josh Vogt, and Linda Zayas-Palmer."],
+    # Read from the Section 15 on d20pfsrd.com's pages for their archetypes (Mute Musician; Elegist, through the Wayback Machine).
+    'Horror Realms': ["Pathfinder Campaign Setting: Horror Realms © 2016, Paizo Inc.; Author: Thurston Hillman, Tim Hitchcock, James Jacobs, Patrick Renie, David N. Ross, and Linda Zayas-Palmer."],
+    'Pathfinder: Spiral of Bones #4': ["Pathfinder: Spiral of Bones #4 Copyright 2018 Paizo, Inc. Author: Crystal Frasier"],
     # Read from the module's own Section 15 (the free PDF on downloads.paizo.com), for its Goblin Bravery trait.
     'We Be Goblins!': ["Pathfinder Module: We Be Goblins! © 2011, Paizo Publishing, LLC; Author: Richard Pett."],
 }

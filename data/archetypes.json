@@ -7312,6 +7312,67 @@
     "origin": "aonprd"
   },
   {
+    "id": "bard-mute-musician",
+    "name": "Mute Musician",
+    "class": "bard",
+    "source": "Horror Realms",
+    "description": "A mute musician forswears speech for the unnatural songs and thunderous silences of the depths of space. She learns to blend light and sound in seemingly impossible ways. Some mute musicians look to the darker aspects of Desna as their inspiration for these performances, but most mute musicians find their muse in the alien sounds of the Elder Mythos and the entities that orbit the blind idiot god Azathoth, who floats in the heart of the Dark Tapestry.",
+    "features": [
+      {
+        "name": "Mute (Ex)",
+        "text": "A mute musician has a disability or injury (possibly self-inflicted or even psychological) that prevents her from speaking or vocalizing. Language-dependent effects (including Perform [oratory]) require the bard to be able to use telepathy, nonverbal languages, or writing to communicate. She cannot use Perform (sing) or speak languages, though she can still create audible bardic performances by means of a musical instrument. A mute musician can provide verbal and somatic components for spells she casts via any musical instrument in which she has ranks in the appropriate Perform skill."
+      },
+      {
+        "name": "Eschew Materials (Ex)",
+        "text": "A mute musician gains Eschew Materials as a bonus feat at 1st level.\n\nThis ability replaces bardic knowledge.",
+        "level": 1,
+        "replaces": [
+          "bardic knowledge"
+        ]
+      },
+      {
+        "name": "Bardic Performance",
+        "text": "A mute musician gains the following bardic performances.\n\nSymphony of Silence (Su): At 3rd level, the mute musician's music muffles all other sounds within a 30-foot radius. All creatures in the area of effect gain a +2 bonus on all saving throws made against sonic attacks or language-dependent effects. This bonus increases to +3 at 7th level, +4 at 11th level, +5 at 15th level, and +6 at 19th level. Symphony of silence relies on audible components.\n\nThis bardic performance replaces inspire competence.\n\nMaddening Harmonics (Su): At 14th level, the mute musician can create a performance so baffling and discordant that it usurps all thought within a 30-foot radius with chaos and entropy. The mute musician can select which creatures in this area are affected by the maddening harmonics and which are not. All targeted creatures within this area must succeed at a Will saving throw (DC = 10 + 1/2 the bard's level + the bard's Charisma modifier) or be confused for as long as they can hear the performance. If the creature succeeds at its saving throw, it is immune to this ability for 24 hours. This performance relies on audible components.\n\nThis bardic performance replaces frightening tune.\n\nCeaseless Performance (Su): At 15th level, the mute musician can continue taking the free action to maintain a bardic performance even while confused, cowering in fear, dazed, nauseated, panicked, paralyzed, petrified, silenced, staggered, stunned, or unconscious. Even if the mute musician is killed, she can continue to take the free action to maintain her performance as long as she has rounds remaining. Only the utter destruction of the mute musician's body (such as via destruction or disintegrate, or by reducing the bard to a negative hit point total equal to 10 × her Constitution score) causes the performance to end.\n\nThis ability replaces inspire heroics.\n\nSong of the Conjunction (Su): At 18th level, the mute musician can harmonize with the alien chorus beyond the music of the spheres, creating a portentous cosmic alignment. This effect duplicates a gate used to travel, save that the destination point must be on the same plane as the bard, but it is not otherwise limited by distance.\n\nThis bardic performance replaces mass suggestion.",
+        "level": 3,
+        "replaces": [
+          "inspire competence",
+          "frightening tune",
+          "inspire heroics",
+          "mass suggestion"
+        ]
+      },
+      {
+        "name": "Insights from Beyond (Ex)",
+        "text": "At 2nd level, a mute musician adds two abjuration, conjuration (calling), conjuration (summoning), or conjuration (teleportation) spells from the sorcerer/wizard spell list to her list of bard spells known. At 6th level and every 4 bard levels thereafter, she can choose two more spells to add to her spells known.\n\nThis class feature replaces versatile performance.",
+        "level": 2,
+        "replaces": [
+          "versatile performance"
+        ]
+      },
+      {
+        "name": "Dulled Horror (Ex)",
+        "text": "At 2nd level, a mute musician gains a +4 bonus on saves against confusion, fear, insanity effects, and the supernatural abilities of aberrations.\n\nThis class feature replaces well-versed.",
+        "level": 2,
+        "replaces": [
+          "well-versed"
+        ]
+      },
+      {
+        "name": "Eldritch Caesura (Su)",
+        "text": "At 10th level, a mute musician can insert unsettling silences into her otherworldly music by spending an additional 1 round of bardic performance per round. This supernatural technique impossibly blurs the line between music and light, transmitting audible performances and sonic bard spells through most barriers save lead. This allows the music and sonic spells to affect creatures across planar boundaries (including on the Ethereal or Shadow Planes), vacuums, and areas of magical silence.\n\nThis class feature replaces jack-of-all-trades.",
+        "level": 10,
+        "replaces": [
+          "jack-of-all-trades"
+        ]
+      },
+      {
+        "name": "Ex-Mute Musicians",
+        "text": "A mute musician who regains the ability to speak or chooses to speak aloud loses all abilities granted by this archetype. She can regain the archetype's abilities by spending 24 hours without speaking."
+      }
+    ],
+    "origin": "aonprd"
+  },
+  {
     "id": "bard-negotiator",
     "name": "Negotiator",
     "class": "bard",
@@ -27540,6 +27601,37 @@
     ]
   },
   {
+    "id": "magus-sorrowblade",
+    "name": "Sorrowblade",
+    "class": "magus",
+    "source": "Pathfinder: Spiral of Bones #4",
+    "description": "A magus who has suffered greatly over the course ofher life can learn to channel that misery into her weapon and inflict it on others.",
+    "features": [
+      {
+        "name": "Despairing Strike (Su)",
+        "text": "At 3rd level, the sorrowblade can wield the power of despair. By spending 1 point from her arcane pool as a swift action, she can imbue the weapon she is wielding with pure anguish. The first creature she strikes with this weapon within the next minute must succeed at a Will saving throw (DC = 10 + 1/2 the sorrowblade's magus level + her intelligence modifier) or become shaken for 1 minute. Multiple despairing strikes can't make a creature frightened.\n\nThis ability replaces the magus arcana gained at 3rd level.",
+        "level": 3,
+        "replaces": [
+          "magus arcana gained at 3rd level"
+        ]
+      },
+      {
+        "name": "Cruel Weapon (Su)",
+        "text": "At 5th level, the sorrowblade adds cruelto the list of magic weapon properties she can infuse with her arcane pool, but removes speed from that list.",
+        "level": 5
+      },
+      {
+        "name": "Wretched Strike (Su)",
+        "text": "At 12th level, the sorrowblade can cause foes to lose all hope. By spending 1 point from her arcane pool as a swift action, she can imbue the weapon she is wielding with the power of unbridled pessimism. The first creature she strikes with this weapon within the next minute must succeed at a Will saving throw (DC = to + 1/2 the sorrowblade's magus level + her intelligence modifier) or take a -2 penalty an attack rolls, saving throws, ability checks, skill checks, and weapon damage rolls for 1 hour. Additionally, during this time, the creature can't gain morale bonuses of any kind, and whenever the creature rolls a natural 1 on an attack roll or saving throw, fails an ability or skill check by more than 5, or takes additional damage as a result of a foe's confirmed critical hit, the penalty on rolls imposed by the wretched strike becomes -3 for 1 round. This increased penalty doesn't stack, even if multiple catastrophes occur on the same round.\n\nThis ability replaces the magus arcana gained at 12th level.",
+        "level": 12,
+        "replaces": [
+          "magus arcana gained at 12th level"
+        ]
+      }
+    ],
+    "origin": "aonprd"
+  },
+  {
     "id": "magus-soul-forger",
     "name": "Soul Forger",
     "class": "magus",
@@ -31468,6 +31560,27 @@
         "level": 15,
         "replaces": [
           "quivering palm"
+        ]
+      }
+    ],
+    "origin": "aonprd"
+  },
+  {
+    "id": "monk-scarred-monk",
+    "name": "Scarred Monk",
+    "class": "monk",
+    "source": "Horror Realms",
+    "description": "Scarred monks find unique clarity in physical discomfort. For monks who seek the truth hidden in pain, the practice of mortifications of the flesh helps to achieve enlightenment and acquire disturbing powers. Those who worship Zon-Kuthon tend to be particularly eager to explore the limitations of the flesh, yet monks of his faith are not the only ones to use self-mutilation and scarification to seek personal enhancement and power.",
+    "features": [
+      {
+        "name": "Mortifications (Su)",
+        "text": "Detailed below are a number of unusual, grisly, and harrowing processes known as mortifications that a monk can inflict upon herself in exchange for an unusual ki power. The monk must adhere to a philosophy that finds power in self-mortification; among the deities of the Inner Sea region, Zon-Kuthon's devoted are the most associated with this practice, but other lawful faiths, such as those dedicated to the empyreal lords Neshen and Vildeis, the infernal duke Zaebos, or the whore queen Doloras, count mortifications among their approved methods of self-enlightenment. While mortal followers of the mysterious kyton demagogues are rare in the Inner Sea region, the kytons also encourage their monk worshipers to invest deeply in mortifications.\n\nA scarred monk chooses her first mortification at 4th level, selecting one from the list of potential mortifications detailed below. The scarred monk gains another mortification every 3 monk levels after this, to a maximum of six mortifications at 19th level. Once a scarred monk selects a mortification, she cannot change it. Some mortifications have prerequisites, such as already knowing certain mortifications or attaining a specific level (as noted in their descriptions). Unless otherwise stated, a scarred monk cannot select an individual mortification more than once.\n\nWhen a scarred monk gains her first mortification, she gains a number of ki points equal to 1/2 her monk level + her Wisdom modifier. These ki points can only be spent to activate powers granted from mortifications or to make ki strikes. A scarred monk cannot spend ki points to make an additional attack at her highest attack bonus when making a flurry of blows, to increase her base speed, or to give herself a +4 dodge bonus to AC, nor can she use any of the other powers normally granted to monks that utilize their ki pools.\n\nMortifications alter the ki pool and replace high jump, wholeness of body, abundant step, and empty body.\n\nArmor of Scars (Su): A scarred monk can force ki into her extensive scars, hardening them like armor. Provided she has at least 1 ki point in her pool, she gains a +1 bonus to her natural armor. A scarred monk can take this mortification multiple times; its effects stack.\n\nBlood Eagle (Su): The monk's rib bones are unusually prominent and press hideously against the flesh of her chest. As a swift action, she can spend 1 ki point to cause her ribs to break through her flesh, lacerating and tearing any opponent that has engaged her in a grapple attack or that has swallowed her whole. This does not cause the monk any damage; a few seconds after she extrudes them, the ribs retract into her body, leaving behind angry red welts. The ribs deal an amount of slashing damage equal to her base unarmed strike damage to any creature that is currently grappling her or has swallowed her whole. If the monk attempts to escape from that grapple in the same round, she adds the amount of damage her ribs inflicted to her Escape Artist or CMB check as a circumstance bonus.\n\nContortionist (Su): Over the years, the scarred monk has broken many of her bones and reset them at odd and repulsive angles to allow her to contort into entirely unnatural forms. The monk can spend 1 ki point as a free action to gain a +20 circumstance bonus on any Escape Artist check.\n\nDoll Face (Su): When acquiring a new face with the face collector mortification (see below), the scarred monk can spend an additional 2 ki points to perform an eerie blood ritual that gives the stolen flesh the appearance of aged ceramic. When the face is stitched to her flesh, the monk gains the appearance of an aged porcelain doll, complete with cracked and peeling paint and a glassy, unblinking stare. A scarred monk with a doll face does not gain the bonus on Disguise checks but does gain a +4 bonus on Intimidate checks. Once per hour, the scarred monk can cause the doll face to shift and appear as the face of a lost loved one or friend of a single viewer within 30 feet-that targeted individual must succeed at a Will save (DC = 10 + 1/2 the scarred monk's monk level + the scarred monk's Charisma modifier) or become nauseated with fear for a number of rounds equal to the number of mortifications the scarred monk has. This is a mind-affecting fear effect. Unlike a face of flesh, a doll face ages and cracks, falling off and restoring the scarred monk's true and deformed face after 24 hours. A scarred monk must have the face collector mortification to take this mortification.\n\nEyes Stitched Shut (Su): The scarred monk can stitch her eyes shut. This takes 1 minute to accomplish, after which the monk is effectively blind. However, as long as the monk retains at least 1 point in her ki pool, she gains blindsense to a distance of 60 feet. She can detect living creatures with at least 1 point of damage within 30 feet of her as if via blindsight. The monk can remove the stitches as a full-round action to restore her normal sight and end this effect.\n\nFace Collector (Su): This mortification requires a monk to surgically remove the flesh from her face, surrendering her appearance and all associated identity. The flesh of her face heals into a featureless mass of scars at the end of this surgical ritual. Thereafter, at the cost of 1 ki point and as a standard action, the scarred monk can alter her facial features to duplicate those of a dead body she touches. The body must be of the same creature type as the scarred monk, and as her face changes, the corpse's face withers away into rot and decay. This grants the scarred monk a +8 circumstance bonus on Disguise checks to appear as that individual (although the penalties for gender, race, age, and size still apply). As a side effect to this unnatural shifting of appearance, a scarred monk gains a +2 bonus on all saving throws against scrying effects. For 24 hours after claiming a new face, this bonus increases to +4.\n\nPain Binding (Su): By spending 1 ki point when she makes a single unarmed strike against a living creature as a standard action, the scarred monk can link her own pain to the creature struck. For a number of rounds equal to the total number of mortifications the scarred monk has, any time the scarred monk takes lethal damage, the creature she has bound her pain to must succeed at a Will save (DC = 10 + 1/2 the monk's level + the monk's Charisma modifier) or take an equal amount of nonlethal damage. The effects of pain binding end immediately once the pain-bound creature falls unconscious.\n\nRings of Pain (Su): The scarred monk has pierced her flesh with numerous large metal rings. As a standard action and at the cost of 2 ki points, she can tear one of these piercings free from her flesh to flood her body with searing pain. As she does so, she exudes waves of agony in a 30-foot radius to deal damage equal to twice the monk's unarmed strike modified by twice her Wisdom modifier to all creatures in the area of effect. A successful Will save (DC = 10 + 1/2 the monk's level + her Wisdom modifier) halves the damage, but on a failed Will save, a creature is sickened by the pain for 1 round. A scarred monk must be at least 10th level to take this mortification.\n\nShare Pain (Su): Whenever the monk takes damage from a weapon, she can spend 1 ki point as an immediate action to cause the body of her attacker to suffer the pain of that blow. The attacking creature must succeed at a Fortitude saving throw (DC = 10 + 1/2 the monk's level + the monk's Wisdom modifier) or take damage equal to the amount the weapon blow inflicted on the monk and become staggered from the pain for 1 round as well. A successful saving throw halves the damage the attacker suffers from shared pain and negates the staggered effect.\n\nThird Eye (Su): The scarred monk bores a hole in her brow and then implants a mummified or alchemically preserved third eye in this opening. The third eye must come from a creature of the same size and creature type as the scarred monk. The scarred monk can then spend 1 ki point to gain true seeing, as per the spell, for 1 round. A scarred monk must be at least 13th level to take this mortification.\n\nTongueless Master (Su): The monk assumes a vow of silence and slices out her own tongue. Thereafter, she wears the preserved appendage on a cord about her neck. She can no longer speak or cast spells with verbal components. Whenever she hits a creature with an unarmed strike, she can spend 1 point from her ki pool to steal the voice from her target. The target can resist this effect with a successful Will save (DC = 10 + 1/2 the scarred monk's level + her Wisdom modifier), otherwise the victim loses the ability to speak or cast spells with verbal components for a number of minutes equal to the total number of mortifications known by the scarred monk. During this time, the scarred monk can speak in the victim's voice.\n\nTorturous Vision (Su): As a move action, the scarred monk can spend 1 ki point to cause a creature that recently wounded her to suffer-in one sudden blast of agony-the pain of all the wounds the scarred monk has endured. The monk can target any living creature within 60 feet who has been affected by share pain in the last 24 hours. The creature becomes stunned with pain for 1 round and then staggered for 1d3 rounds unless it succeeds at a Will save (DC = 10 + 1/2 the monk's level + the monk's Wisdom modifier). The scarred monk must be at least 13th level and have the share pain mortification in order to take this mortification.",
+        "level": 4,
+        "replaces": [
+          "high jump",
+          "wholeness of body",
+          "abundant step",
+          "empty body"
         ]
       }
     ],
@@ -46733,6 +46846,46 @@
         "replaces": [
           "song of marching"
         ]
+      }
+    ],
+    "origin": "aonprd"
+  },
+  {
+    "id": "skald-elegist",
+    "name": "Elegist",
+    "class": "skald",
+    "source": "Pathfinder: Spiral of Bones #4",
+    "description": "Some skalds internalize the saddest and must mournful of stories, so much that they are able to manifest the emotions caused by these tales in physical form. These spirits are able to inflict the misery onto the elegist's enemies.",
+    "features": [
+      {
+        "name": "Melancholic Apparition (Su)",
+        "text": "By using music, oration, and similar performances, an elegist can call forth a physical manifestation of the sorrow of his tales. This functions as a spiritualist's phantom with the despair focus. He can manifest his melancholic apparition as a standard action and dismiss it as a free action. The phantom appears adjacent to the skatd and can act immediately. The melancholic apparition is immediately dismissed if the elegist is killed, paralyzed, stunned, knocked unconscious, or otherwise prevented from taking a free action each round to maintain the performance that keeps the phantom manifested. At 1st level, an elegist can keep his apparition manifested for a total number of rounds each day equal to 3 + his Charisma modifier. For each skald level beyond 1st, he can manifest his apparition 2 additional rounds per day.\n\nUnlike a spiritualist's phantom, a melancholic apparition can't be harbored in the elegist's consciousness. When manifested, the melancholic apparition has the same number of hit points it had when previously manifested that day. It regains all of its hit points when the elegist regains his spells for the day. If the melancholic apparition is slain, the elegist can manifest it again in the same day by spending a number of additional rounds ot'this ability equal to half his skald level (minimum 1); the melancholic apparition returns with half its normal total of hit points.\n\nThis replaces raging song and all related performances. as well as rage powers.",
+        "level": 1,
+        "replaces": [
+          "raging song",
+          "all related performances"
+        ]
+      },
+      {
+        "name": "Steady Hearted (Ex)",
+        "text": "At 2nd level, an elegist receives a +4 bonus to saving throws against emotion effects.\n\nThis replaces well-versed.",
+        "level": 2,
+        "replaces": [
+          "well-versed"
+        ]
+      },
+      {
+        "name": "Somber Damage Reduction (Ex)",
+        "text": "The damage reduction an elegist gains at 9th level is shared by his melancholic apparition when it is manifested.\n\nThis alters damage reduction.",
+        "level": 9,
+        "alters": [
+          "damage reduction"
+        ]
+      },
+      {
+        "name": "Master Elegist (Su)",
+        "text": "At 20th level, the elegist can manifest his melancholic apparition as a swift action. If it is slain. the elegist can manifest a new phantom in the same day with no additional expenditure of rounds of the melancholic apparition ability, and the new phantom has all of its hit points.",
+        "level": 20
       }
     ],
     "origin": "aonprd"
