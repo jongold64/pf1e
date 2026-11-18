@@ -129,7 +129,7 @@ function combatContext(app, view) {
   // Talented monk (third-party): its fighting style weapons use the specialty attack bonus, and its flurry of blows edge
   // adds attacks with them (all at -2).
   const tm = view.tm;
-  const tmStyle = w => !!tm && styleWeapon(tm.picks, w);
+  const tmStyle = w => !!tm && styleWeapon(tm.picks, w, view.archFx?.picks?.adaptive || []);
   const tmBab = babList(view.stats.bab[0] + (tm?.specialty || 0));
   const tmFlurry = tm && tm.picks.some(p => p.name === 'Flurry of Blows')
     ? { kind: 'talented-monk', name: 'Flurry of blows', penalty: -2, babs: tmFlurryBabs(tmBab, tm.level), weapons: tmStyle } : null;

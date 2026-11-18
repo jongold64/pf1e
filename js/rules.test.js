@@ -2060,6 +2060,15 @@ document.getElementById('list').innerHTML = results.map(r =>
   const fx = archetypeChoiceEffects([{ cls: magus, level: 3 }], { magus: ['magus-kensai'] }, { 'magus-kensai:weapon': 'katana' });
   check('kensai: Weapon Focus with the chosen weapon, proficient', `${fx.feats.map(f => `${f.name}:${f.weapon}`).join()}|${fx.proficient.join()}`, 'Weapon Focus:katana|katana');
   check('black blade chosen at 3rd, not before', [archetypeChoices(['magus-bladebound'], 2).length, archetypeChoices(['magus-bladebound'], 3).length].join(), '0,1');
+  // Talented monk adaptive style: each pick its own weapon, which counts as a style weapon and gives proficiency.
+  const { choiceSources } = await import('./archetype-choices.js');
+  const adTalents = { 'talented-monk|talent|1': 'tm-adaptive-style', 'talented-monk|talent|1-2': 'tm-adaptive-style', 'rogue|rogue-talent|2': 'x' };
+  check('adaptive style twice: two sources', choiceSources('talented-monk', {}, adTalents).slice(1).join(), 'talent:tm-adaptive-style,talent:tm-adaptive-style#2');
+  check('adaptive style choices', archetypeChoices(choiceSources('talented-monk', {}, adTalents).slice(1), 1).map(c => `${c.id}=${c.label}`).join(' '),
+    'talent:tm-adaptive-style:weapon=Adaptive style weapon talent:tm-adaptive-style#2:weapon=Adaptive style weapon 2');
+  const adFx = archetypeChoiceEffects([{ cls: { id: 'talented-monk' }, level: 1 }], {}, { 'talent:tm-adaptive-style:weapon': 'kama', 'talent:tm-adaptive-style#2:weapon': 'longsword' }, adTalents);
+  check('adaptive style weapons: proficient and picked', [adFx.proficient.join(), adFx.picks.adaptive.join()].join(' '), 'kama,longsword kama,longsword');
+  check('adaptive style weapon is a style weapon', styleWeapon([], { id: 'longsword', name: 'Longsword', groups: ['Blades, heavy'] }, ['longsword']), true);
   const k = lv => kensaiEffects([{ cls: magus, level: lv }], { magus: ['magus-kensai'] }, { mod: { int: 4 } }).map(e => `${e.target}:${e.value}`).join();
   check('kensai 1: canny defense +1 (Int up to level); 7: iaijutsu +4 and canny +4', [k(1), k(7)].join('|'), 'ac:1|init:4,ac:4');
   check('kensai in armor: no canny defense', kensaiEffects([{ cls: magus, level: 7 }], { magus: ['magus-kensai'] }, { mod: { int: 4 }, armor: true }).map(e => e.target).join(), 'init');

@@ -83,6 +83,11 @@ export const ARCH_CHOICES = {
     weapons: w => ['club', 'quarterstaff', 'longspear', 'shortspear', 'spear'].includes(w.id),
     gear: { tag: 'wooden weapon', enh: REVELATION_ENH, masterwork: level => level >= 3, proficient: true,
       note: 'Your wooden weapon (revelation): lasts 1 minute per oracle level, 3 + Charisma modifier times a day.' } }],
+  // Talented monk (third-party) adaptive style talent: one manufactured weapon each time it's taken; proficiency, the
+  // specialty attack bonus and weapon-related (*) edges and talents with it.
+  'talent:tm-adaptive-style': [{ key: 'weapon', label: 'Adaptive style weapon', fromLevel: 1,
+    hint: 'One manufactured weapon: you are proficient with it, use your specialty attack bonus with it, and can use your weapon-related (*) edges and talents with it.',
+    weapons: w => w.id !== 'unarmed-strike' && w.group !== 'unarmed' }],
   warpriest: [{ key: 'focus', label: 'Focus weapon', fromLevel: 1,
     hint: 'Weapon Focus with it as a bonus feat; sacred weapon damage dice with it (1d6, growing with your level) when they beat its own.',
     weapons: w => !w.firearm }],
@@ -100,21 +105,30 @@ export const ARCH_CHOICES = {
 };
 
 // The choices to make for a class's archetypes at a class level: [{ archetype, key, label, hint, weapons, id: saved key }].
+// A talent taken more than once (adaptive style) is a source per pick: "talent:x", "talent:x#2"..., each its own choice.
 export function archetypeChoices(archetypeIds = [], classLevel = 0) {
-  return archetypeIds.flatMap(a => (ARCH_CHOICES[a] || []).filter(c => classLevel >= c.fromLevel)
-    .map(c => ({ ...c, archetype: a, id: `${a}:${c.key}` })));
+  return archetypeIds.flatMap(a => {
+    const [base, n] = a.split('#');
+    return (ARCH_CHOICES[base] || []).filter(c => classLevel >= c.fromLevel)
+      .map(c => ({ ...c, label: n ? `${c.label} ${n}` : c.label, archetype: base, id: `${a}:${c.key}` }));
+  });
 }
 
 // The choice sources open to a class: itself, its archetypes, and its chosen talents ("talent:" + id; talents are saved
 // by slot, "class|kind|level").
-export const choiceSources = (clsId, archetypes = {}, talents = {}) => [clsId, ...(archetypes[clsId] || []),
-  ...Object.entries(talents).filter(([slot, id]) => slot.split('|')[0] === clsId && typeof id === 'string').map(([, id]) => `talent:${id}`)];
+// A talent chosen in more than one slot is numbered from its second pick ("talent:x#2"), so each pick has its own choice.
+export function choiceSources(clsId, archetypes = {}, talents = {}) {
+  const seen = {};
+  return [clsId, ...(archetypes[clsId] || []),
+    ...Object.entries(talents).filter(([slot, id]) => slot.split('|')[0] === clsId && typeof id === 'string')
+      .map(([, id]) => { seen[id] = (seen[id] || 0) + 1; return `talent:${id}${seen[id] > 1 ? `#${seen[id]}` : ''}`; })];
+}
 
 // What the choices give, for every class: { feats: [{ name, weapon, from }], proficient: [weapon ids],
 // blades: [{ weapon, level }], gear: [{ id, weapon, tag, enh, masterwork, proficient, material, note }] }.
 // counts: [{ cls, level }]; archetypes: state.archetypes; choices: state.archChoices; talents: state.talents.
 export function archetypeChoiceEffects(counts, archetypes = {}, choices = {}, talents = {}) {
-  const out = { feats: [], proficient: [], blades: [], gear: [], picks: { focus: null, gun: [], finesse: [], expertise: null } };
+  const out = { feats: [], proficient: [], blades: [], gear: [], picks: { focus: null, gun: [], finesse: [], expertise: null, adaptive: [] } };
   for (const { cls, level } of counts) {
     for (const c of archetypeChoices(choiceSources(cls.id, archetypes, talents), level)) {
       const weapon = choices[c.id];
@@ -134,6 +148,7 @@ export function archetypeChoiceEffects(counts, archetypes = {}, choices = {}, ta
       if (c.archetype === 'gunslinger' && /^gun\d/.test(c.key)) out.picks.gun.push(weapon);
       if (c.archetype === 'rogue-unchained') out.picks.finesse.push(weapon);
       if (c.archetype === 'samurai') out.picks.expertise = weapon;
+      if (c.archetype === 'talent:tm-adaptive-style') { out.proficient.push(weapon); out.picks.adaptive.push(weapon); }
       if (c.archetype === 'magus-bladebound') {
         out.blades.push({ weapon, level });
         // Alertness (Ex): while wielding the black blade, the magus has the Alertness feat.

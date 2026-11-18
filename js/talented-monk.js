@@ -58,9 +58,11 @@ const plainName = n => String(n).toLowerCase().replace(/^(.+?),\s*(.+)$/, '$2 $1
 
 // Does a weapon work with the talented monk's weapon-related edges and talents (marked *) and the specialty attack
 // bonus? Yes for the fighting style groups chosen (by the weapon's groups, or named in the group's list, which is
-// how the book's pirate and improvised groups work), and for unarmed strikes with unfettered kata.
-export function styleWeapon(picks, weapon) {
+// how the book's pirate and improvised groups work), for unarmed strikes with unfettered kata, and for the weapons chosen
+// with the adaptive style talent (adaptive: weapon ids).
+export function styleWeapon(picks, weapon, adaptive = []) {
   if (!weapon) return false;
+  if (adaptive.includes(weapon.id)) return true;
   if (weapon.id === 'unarmed-strike' && has(picks, 'Unfettered Kata')) return true;
   const groups = (weapon.groups || []).map(g => g.toLowerCase());
   const names = [plainName(weapon.name), String(weapon.name).toLowerCase()];
