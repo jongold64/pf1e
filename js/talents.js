@@ -96,6 +96,15 @@ export const TALENT_RULES = {
   loremaster: [{ key: 'secret', label: 'Loremaster secret', kinds: ['loremaster-secret'], levels: odd(1, 9) }],
   'rage-prophet': [{ key: 'spirit-guide-spell', label: 'Spirit guide spell', kinds: [], levels: even(2, 10),
                      choices: listOf(Object.keys(RAGE_PROPHET_SPELLS), s => `an extra oracle spell known (${RAGE_PROPHET_SPELLS[s]} level)`) }],
+  // Talented monk (Rogue Genius Games, third-party; data/third-party.json), Table 1: three edges at 1st level, one at
+  // 2nd, 3rd, 4th, 8th and 20th; two talents at 1st, 2nd and 3rd, then one a level except 8th; advanced talents in
+  // place of talents from 10th; a grand talent (or a talent or advanced talent) at 20th.
+  'talented-monk': [
+    { key: 'edge', label: 'Monk edge', kinds: ['tm-edge'], levels: [1, 1, 1, 2, 3, 4, 8, 20], browse: true },
+    { key: 'talent', label: 'Monk talent', kinds: ['tm-talent'], levels: [1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+      later: [{ from: 10, kinds: ['tm-advanced-talent'] }], browse: true },
+    { key: 'grand', label: 'Grand talent', kinds: ['tm-grand-talent', 'tm-talent', 'tm-advanced-talent'], levels: [20] },
+  ],
 };
 
 // Feats that give one more pick of a class's choices each time they're taken: feat name -> rule keys it adds to (the
@@ -138,9 +147,13 @@ export function ruleOf(slotId) {
 }
 
 // The pick slots a class has up to a class level: [{ id, rule, classId, classLevel }] (ids like "barbarian|rage-power|4").
+// A level with more than one pick (a talented monk's three 1st-level edges) numbers the others: "…|edge|1", "…|edge|1-2".
 export function talentSlots(classId, classLevel) {
   return (TALENT_RULES[classId] || []).flatMap(rule => rule.levels.filter(l => l <= classLevel)
-    .map(l => ({ id: `${classId}|${rule.key}|${l}`, rule, classId, classLevel: l })));
+    .map((l, i, all) => {
+      const n = all.slice(0, i).filter(x => x === l).length;
+      return { id: `${classId}|${rule.key}|${l}${n ? `-${n + 1}` : ''}`, rule, classId, classLevel: l };
+    }));
 }
 
 // The data kinds allowed in a slot (more open up at later levels).

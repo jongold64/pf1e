@@ -12,7 +12,9 @@ characters from it.
 
 - The user is new to coding. Keep the app plain HTML/CSS/JavaScript with ES modules: no framework, no build
   step, no npm dependencies. Explain any new tool before asking them to install it.
-- Paizo content only, and only from books whose OGL Section 15 notice is known (see License below).
+- Paizo content, and only from books whose OGL Section 15 notice is known (see License below). Third-party books are the
+  exception: `data/third-party.json` (built from the user's own PDFs in `..rd Party`), offered only on a character with
+  the 3rd Party house rule and that book ticked.
 - House-rule switches implement the official Paizo version of the rule.
 
 ## File layout
@@ -74,6 +76,8 @@ python scripts/validate.py data
 - Hand-entered facts missing from the sources go in override dicts at the top of the builders
   (`MANUAL_NOTICES`, `FEAT_SOURCES`, `PAGES`, `SPEED_OVERRIDES`, …), not in special-case parse logic.
 - License: every book the data uses needs its Section 15 notice in `LICENSE-OGL.txt`. A notice counts only if it
-  names Paizo Publishing or Paizo Inc; third-party material on d20pfsrd is left out.
+  names Paizo Publishing or Paizo Inc; third-party material on d20pfsrd is left out. Third-party books chosen on purpose
+  carry their own notices in `data/third-party.json` (`books[].notices`), which `build_license.py` adds. Their PDFs carry
+  the buyer's name: it must never reach the data.
 - Commit when a piece of work is done; the user pushes with `! git push`. No cache-busting: just remind them to
   reload the tablet.

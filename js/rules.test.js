@@ -35,6 +35,8 @@ import { raceTerms } from './race-terms.js';
 import { racialAc, combatManeuvers, initiative, currentHp, changeHp, hpStatus, channelEnergy, layOnHands, smite,
          carryingCapacity, encumbrance, slowedSpeed, fastMovement } from './rules.js';
 import { tabsToDo } from './tab-todo.js';
+import { talentedMonkPicks, talentedMonkEffects, talentedMonkDaily, talentedMonkFeats, tmFastMovement, unfetteredBonus, deadlyStrikesDie,
+         styleWeapon, simpleCritical, tmFlurryBabs, armorAllows } from './talented-monk.js';
 import { exportData, importData, exportedDate, shortDate, idDate, nextCharacter, exportFileName } from './storage.js';
 import { tradition } from './multiclass.js';
 import { traitEffects, traitSlotCount } from './traits.js';
@@ -1984,6 +1986,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('paladin 9: mercies at 3, 6, 9', talentSlots('paladin', 9).map(s => s.classLevel).join(), '3,6,9');
   check('unchained monk 5: ki powers 4 and a style strike', talentSlots('monk-unchained', 5).map(s => s.rule.key).join(), 'ki-power,style-strike');
   check('skald 7: 2 rage powers, 2 versatile performances', talentSlots('skald', 7).length, 4);
+  // Talented monk (third-party): three edges and two talents at 1st level, numbered apart.
+  const tm1 = talentSlots('talented-monk', 1);
+  check('talented monk 1: 3 edges, 2 talents', tm1.map(x => x.rule.key).join(), 'edge,edge,edge,talent,talent');
+  check('talented monk 1: slot ids apart', tm1.map(x => x.id).slice(0, 3).join(), 'talented-monk|edge|1,talented-monk|edge|1-2,talented-monk|edge|1-3');
+  check('talented monk 8: 7 edges, 10 talents', [talentSlots('talented-monk', 8).filter(x => x.rule.key === 'edge').length,
+    talentSlots('talented-monk', 8).filter(x => x.rule.key === 'talent').length].join(), '7,10');
+  check('talented monk 20: 8 edges, 21 talents, a grand talent', ['edge', 'talent', 'grand'].map(k => talentSlots('talented-monk', 20).filter(x => x.rule.key === k).length).join(), '8,21,1');
+  check('talented monk: advanced talents from 10th', slotKinds(talentSlots('talented-monk', 10).filter(x => x.rule.key === 'talent').pop()).join(), 'tm-talent,tm-advanced-talent');
   check('ranger favored enemy: a fixed list', !!ruleOf('ranger|favored-enemy|5').choices.Undead, true);
   const stance = [{ id: 's1', name: 'Accurate Stance (Unchained)', kind: 'rage-power' }, { id: 'f1', name: 'Animal Fury', kind: 'rage-power' },
                   { id: 'f2', name: 'Animal Fury (Unchained)', kind: 'rage-power' }];
@@ -2007,6 +2017,34 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     talentOptions(talentSlots('oracle', 1).find(s => s.rule.key === 'revelation'), shared, { mystery: 'Whimsy', revelationNames: ['Brain Drain', 'Assumed Form'] })
       .map(o => o.talent.id).join(), 'bd,af2');
   check('oracle: only the mystery revelations', talentOptions(talentSlots('oracle', 1).find(s => s.rule.key === 'revelation'), rev, { mystery: 'Flame' }).map(o => o.talent.id).join(), 'x');
+
+  // Talented monk edges and talents as numbers (talented-monk.js).
+  const tmp = (...names) => names.map(n => ({ name: n, text: '' }));
+  const tmFx = (picks, lv, o) => Object.fromEntries(talentedMonkEffects(picks, lv, o).map(e => [e.name, [e, ...(e.more || [])].map(x => `${x.target}:${x.type}:${x.value}`).join(' ')]));
+  check('unfettered kata 8, Wis +3: +5 AC', tmFx(tmp('Unfettered Kata'), 8, { mod: { wis: 3 } })['Unfettered kata (talented monk)'], 'ac:untyped:5');
+  check('unfettered kata: not in armor', tmFx(tmp('Unfettered Kata', 'Light Armor Kata'), 8, { mod: { wis: 3 }, armorCategory: 'light' })['Unfettered kata (talented monk)'], undefined);
+  check('unfettered kata bonus caps at +5', unfetteredBonus(20), 5);
+  check('fast movement edge 1st / 6th / 9th / 18th', [1, 6, 9, 18].map(tmFastMovement).join(), '10,20,30,60');
+  check('fast movement: not in light armor without the kata', tmFx(tmp('Fast Movement'), 3, { armorCategory: 'light' })['Fast movement (talented monk)'], undefined);
+  check('fast movement: light armor kata', tmFx(tmp('Fast Movement', 'Light Armor Kata'), 3, { armorCategory: 'light' })['Fast movement (talented monk)'], 'speed:untyped:10');
+  check('medium armor needs medium kata', [armorAllows(tmp('Light Armor Kata'), 'medium'), armorAllows(tmp('Medium Armor Kata'), 'medium')].join(), 'false,true');
+  check('iron monk +1 natural armor', tmFx(tmp('Iron Monk'), 1)['Iron monk (talented monk)'], 'ac:natural armor:1');
+  check('devoted guardian 7: +3 init', tmFx(tmp('Devoted Guardian'), 7)['Devoted guardian (talented monk)'], 'init:untyped:3');
+  check('maneuver training: specialty on CMD', tmFx(tmp('Maneuver Training'), 6, { specialty: 2 })['Maneuver training (talented monk)'], 'cmd:untyped:2');
+  check('deadly strikes medium 4th / small 1st / table 2 medium 12th', [deadlyStrikesDie(4), deadlyStrikesDie(1, 'Small'), deadlyStrikesDie(12, 'Medium', false)].join(), '1d8,1d4,1d10');
+  check('20/x2 vs 18-20 critical', [simpleCritical({ critical: '20/x2' }), simpleCritical({ critical: '18-20/x2' }), simpleCritical({ critical: 'x3' })].join(), 'true,false,false');
+  const styles = [{ name: 'Fighting Style: Monk', weapon_group: 'Monk', text: 'Monk: bo staff, kama, and wushu dart.\n\nrules' },
+                  { name: 'Fighting Style: Pirate', weapon_group: 'Pirate', text: 'Pirate: crossbow, cutlass, dagger, hook hand, rapier, and short sword.\n\nrules' }];
+  check('fighting style by weapon group', styleWeapon(styles, { id: 'quarterstaff', name: 'Quarterstaff', groups: ['Double', 'Monk'] }), true);
+  check('fighting style by the list (pirate: short sword)', styleWeapon(styles, { id: 'short-sword', name: 'Sword, short', groups: ['Blades, light'] }), true);
+  check('not a style weapon', styleWeapon(styles, { id: 'longsword', name: 'Longsword', groups: ['Blades, heavy'] }), false);
+  check('unarmed with unfettered kata', [styleWeapon(tmp('Unfettered Kata'), { id: 'unarmed-strike', name: 'Unarmed strike' }), styleWeapon([], { id: 'unarmed-strike', name: 'Unarmed strike' })].join(), 'true,false');
+  check('talented flurry 1st / 8th / 15th', [tmFlurryBabs([1], 1), tmFlurryBabs([8, 3], 8), tmFlurryBabs([15, 10, 5], 15)].map(x => x.join('/')).join(' '), '1/1 8/8/5/3 15/15/12/8/10/5');
+  check('ki pool edge 6, Wis +2: 5 points', talentedMonkDaily(tmp('Ki Pool'), 6, 0, { wis: 2 })[0].max, 5);
+  check('stunning fist talent 5 + 4 other levels: 6/day', talentedMonkDaily(tmp('Stunning Fist'), 5, 4, {})[0].max, 6);
+  check('granted feats', talentedMonkFeats(tmp('Unfettered Kata', 'Stunning Fist')).join(), 'Improved Unarmed Strike,Stunning Fist');
+  check('picks: only the talented monk slots', talentedMonkPicks({ 'talented-monk|edge|1': 'a', 'rogue|rogue-talent|2': 'b' },
+    new Map([['a', { name: 'A' }], ['b', { name: 'B' }]])).map(x => x.name).join(), 'A');
 }
 
 const failed = results.filter(r => !r.pass);

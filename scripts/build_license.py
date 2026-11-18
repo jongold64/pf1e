@@ -74,5 +74,16 @@ for book in sorted(used):
             out.append(n)
             added += 1
 print(f'{added} notices added for {len(used)} books from the Foundry data')
+
+# Third-party books (data/third-party.json, from build_rgg_talented_monk.py): each book's own Section 15 lines.
+tp_path = os.path.join(data_dir, 'third-party.json')
+if os.path.exists(tp_path):
+    for b in json.load(open(tp_path, encoding='utf-8')).get('books', []):
+        for n in b.get('notices', []):
+            k = re.sub(r'\W', '', n.lower())
+            if k not in have:
+                have.add(k)
+                out.append(n)
+                print('third-party notice:', n[:70])
 open(sys.argv[1], 'w', encoding='utf-8').write('\n'.join(out).strip() + '\n')
 print('wrote', sys.argv[1])

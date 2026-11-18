@@ -29,7 +29,9 @@ function entries(app) {
 function run(app) {
   const query = $('global-search').value;
   index ??= buildIndex(entries(app));
-  const hits = search(index, query);
+  // A third-party class shows only on a character with the 3rd Party house rule and its book ticked (Build tab).
+  const hidden = new Set(app.data.classes.filter(c => c.third_party && !(app.state.houseRules?.thirdParty && app.state.books?.[c.third_party])).map(c => c.id));
+  const hits = search(index, query).filter(h => !(h.type === 'class' && hidden.has(h.id)));
   const tooShort = query.trim().length < 2;
   $('search-results').hidden = tooShort;
   const status = !complete ? 'Loading spells, magic items, weapons and equipment so they can be searched too…'

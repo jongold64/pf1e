@@ -1,7 +1,7 @@
 // Weapons tab: the character's weapons with attack bonus and damage, and every weapon (by category) with a
 // side panel for the weapon being looked at.
 import { fitLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
-import { SIZE_AC, MONK_IDS, smite, combatManeuvers } from './rules.js';
+import { SIZE_AC, MONK_IDS, smite, combatManeuvers, babList } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
@@ -10,6 +10,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice } from './class-features.js';
 import { traitWeaponRows, heirloomFor } from './traits.js';
+import { styleWeapon, deadlyStrikesDie, simpleCritical, tmFlurryBabs } from './talented-monk.js';
 import { defenseSwitches } from './defense.js';
 import { setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
@@ -125,7 +126,14 @@ function combatContext(app, view) {
     ? unarmedForSize(unarmedFrom.cls.progression[unarmedFrom.level - 1]?.other?.['Unarmed Damage'], view.size) : null;
   // Flurry of blows: monk (from 1st level) or brawler's flurry (from 2nd). Monk levels count as BAB for it.
   const flurryFrom = view.counts.find(e => MONK_IDS.includes(e.cls.id)) || view.counts.find(e => e.cls.id === 'brawler' && e.level >= 2);
-  const flurry = flurryFrom ? {
+  // Talented monk (third-party): its fighting style weapons use the specialty attack bonus, and its flurry of blows edge
+  // adds attacks with them (all at -2).
+  const tm = view.tm;
+  const tmStyle = w => !!tm && styleWeapon(tm.picks, w);
+  const tmBab = babList(view.stats.bab[0] + (tm?.specialty || 0));
+  const tmFlurry = tm && tm.picks.some(p => p.name === 'Flurry of Blows')
+    ? { kind: 'talented-monk', name: 'Flurry of blows', penalty: -2, babs: tmFlurryBabs(tmBab, tm.level), weapons: tmStyle } : null;
+  const flurry = !flurryFrom ? tmFlurry : flurryFrom ? {
     kind: flurryFrom.cls.id,
     name: flurryFrom.cls.id === 'brawler' ? "Brawler's flurry" : 'Flurry of blows',
     // The unchained monk's flurry has no attack penalty.
@@ -146,7 +154,8 @@ function combatContext(app, view) {
   const byArchetype = w => (view.archFx?.proficient || []).includes(w.id) || (view.deityWeapons || []).includes(w.id);
   // Heirloom Weapon (trait), with proficiency chosen as its benefit.
   const byTrait = w => heirloomFor(view.traits, app.state.traitPicks, w.id).proficient;
-  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
+  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w) || tmStyle(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
+           tmStyle, tmBab,
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
 // Levels in the classes holding the Titan Mauler (barbarian) and Titan Fighter archetypes, for big weapons.
@@ -172,7 +181,7 @@ function attackArgs(app, view, ctx, e) {
   return {
     // Arcane archer enhance arrows: arrows fired from a bow are +1 at least.
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w),
-      ...(view.counts.some(c => c.cls.id === 'arcane-archer') && launcherOf(w) === 'bow' ? { ammo: { ...(e.ammo || { id: 'enhance-arrows' }), enh: Math.max(1, e.ammo?.enh || 0) } } : {}) }, bab: view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
+      ...(view.counts.some(c => c.cls.id === 'arcane-archer') && launcherOf(w) === 'bow' ? { ammo: { ...(e.ammo || { id: 'enhance-arrows' }), enh: Math.max(1, e.ammo?.enh || 0) } } : {}) }, bab: ctx.tmStyle(w) ? ctx.tmBab : view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
@@ -184,7 +193,9 @@ function attackArgs(app, view, ctx, e) {
       // Traits' bonuses with this weapon (River Rat: +1 damage with a dagger), less a trait bonus already switched on.
       ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w), app.state.traitPicks)],
     // Warpriest sacred weapon / brawler close weapon mastery dice.
-    minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice || null,
+    // Talented monk deadly strikes: its table's die with fighting style weapons, if better.
+    minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice
+      || (ctx.tmStyle(w) && view.tm.picks.some(p => p.name === 'Deadly Strikes') ? deadlyStrikesDie(view.tm.level, view.size, simpleCritical(w)) : null),
     // Power Attack / Deadly Aim grow with the real BAB, even in a flurry (where monk levels count as BAB).
     powerBab: view.stats.bab[0],
     // Active effects' bonuses on attack and damage rolls (bless, divine favor...).
@@ -444,7 +455,7 @@ export function renderMyWeapons(app, view) {
     // a flurry with monk weapons, and a double weapon used as two weapons.
     const extra = crit.fx.vs.map(v => `<dt>${esc(v.name)}</dt><dd>+${esc(v.dice)} against ${esc(v.vs)}
         ${rollButton({ title: `${weaponName}: ${v.name.toLowerCase()} damage`, groups: [{ attacks: [], damage: v.dice, word: `${v.name.toLowerCase()} damage` }] }, `Roll +${v.dice}`)}</dd>`);
-    if (ctx.flurry?.babs && isMonkWeapon(w)) {
+    if (ctx.flurry?.babs && (ctx.flurry.weapons ? ctx.flurry.weapons(w) : isMonkWeapon(w))) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}
         ${rollButton({ title: `${weaponName}: ${ctx.flurry.name.toLowerCase()}`, groups: [rollGroup('', f, crit)] })}</dd>`);
@@ -641,7 +652,7 @@ export function weaponSummaries(app, view) {
     const flags = ctx.flagsFor(e, w);
     const crit = critOf(w, flags, have, e);
     const extra = crit.fx.vs.map(v => `${v.name} +${v.dice} against ${v.vs}`);
-    if (ctx.flurry?.babs && isMonkWeapon(w)) {
+    if (ctx.flurry?.babs && (ctx.flurry.weapons ? ctx.flurry.weapons(w) : isMonkWeapon(w))) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`${ctx.flurry.name} ${attackText(f)} (${f.damage})`);
     }

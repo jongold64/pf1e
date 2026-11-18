@@ -79,5 +79,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_equipment.py', 'data/equipment.json'), ('build_weapons.py', 'data/weapons.json'),
                     # Weapons from later Paizo books PSRD lacks (butchering axe...), added to build_weapons.py's (AoN).
                     ('build_aon_weapons.py', 'data/weapons.json'),
+                    # Third-party books (the talented monk), from the user's PDFs in ../../3rd Party (kept when that's missing).
+                    *([('build_rgg_talented_monk.py', 'data/third-party.json')]
+                      if os.path.isdir(os.path.join(here, '..', '..', '3rd Party')) else []),
                     ('build_license.py', 'LICENSE-OGL.txt'), ('validate.py', 'data')]:
     subprocess.run([sys.executable, os.path.join(here, script), os.path.join(here, '..', out)], check=True, env=os.environ)

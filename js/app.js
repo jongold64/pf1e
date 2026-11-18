@@ -49,6 +49,7 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
+import { TALENTED_MONK, talentedMonkPicks, talentedMonkEffects, talentedMonkDaily, talentedMonkFeats } from './talented-monk.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, archetypeAttacks, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -69,7 +70,7 @@ import { ALIGNMENTS, ALIGNMENT_NAMES, alignmentProblems } from './alignment.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
-                      ['alternate', 'Alternate'], ['prestige', 'Prestige']];
+                      ['alternate', 'Alternate'], ['prestige', 'Prestige'], ['third-party', 'Third-party']];
 const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'build', 'guide'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
@@ -122,6 +123,7 @@ const state = {
   heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
   antihero: false,           // Action Points house rule: no hero points, a bonus feat at 1st level instead
   houseRules: {},            // house rules switched on: encumbrance, maxHealing, actionPoints, flaws, extraTrait
+  books: {},                 // third-party books ticked (data/third-party.json books[].id: true); count with the 3rd Party house rule
   race: 'human',
   classLevels: [],           // class id at each character level, 1st level first (a new character has none yet)
   favoredClass: '',          // favored class id; '' means the first class
@@ -208,7 +210,7 @@ const HOUSE_RULES = [
   ['drawbacks', 'Drawbacks', "Drawbacks (Ultimate Campaign): take one drawback and gain an extra trait (Feats tab)."],
   // A placeholder: no third-party content is in the app yet (only Paizo books), so this switch does nothing so far.
   ['extraChannel', 'Extra Channel (multiple)', 'Extra Channel (multiple): Extra Channel can be taken more than once, each time for two more channels a day (by the official rules it can be taken only once).'],
-  ['thirdParty', '3rd Party', '3rd Party: a placeholder for now. Third-party (non-Paizo) content isn’t in the app yet, so this changes nothing.'],
+  ['thirdParty', '3rd Party', '3rd Party: third-party (non-Paizo) books can be switched on one by one in the Third-party books card below.'],
 ];
 
 // A fresh character, for "New" and for resetting before a saved one is loaded.
@@ -250,6 +252,8 @@ function load(saved) {
   state.antihero = state.antihero === true;
   const hr = state.houseRules && typeof state.houseRules === 'object' ? state.houseRules : {};
   state.houseRules = Object.fromEntries(HOUSE_RULES.filter(([k]) => hr[k] === true).map(([k]) => [k, true]));
+  const books = state.books && typeof state.books === 'object' ? state.books : {};
+  state.books = Object.fromEntries((data.thirdParty?.books || []).filter(b => books[b.id] === true).map(b => [b.id, true]));
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
   if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
   if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
@@ -1049,6 +1053,10 @@ function dailyPowers() {
       const d = data.domainsById.get(id);
       if (d) for (const p of domainGrants(d, data.domainsById).powers || []) add(p, `${d.name} domain`);
     }
+    if (cls.id === TALENTED_MONK && view.tm) {
+      const other = view.classLevels.length - level;
+      out.push(...talentedMonkDaily(view.tm.picks, level, other, view.stats.mod));
+    }
     const bond = pathOf(cls.id, 'arcane-bond');
     if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses',
       text: bond.text || '', how: 'once a day' });
@@ -1476,6 +1484,10 @@ function buildControls() {
   $('house-rules').addEventListener('click', e => {
     const key = e.target.closest('[data-house-rule]')?.dataset.houseRule;
     if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
+  });
+  $('third-party-books').addEventListener('click', e => {
+    const id = e.target.closest('[data-book]')?.dataset.book;
+    if (id) update({ books: { ...state.books, [id]: !state.books[id] } });
   });
   initTermPopover($('race-info'), () => raceItems);
   initTermPopover($('class-info'), () => classItems);
@@ -2204,7 +2216,14 @@ function computeView() {
   const archFx = archetypeChoiceEffects(counts, state.archetypes, state.archChoices, state.talents);
   // Racial bonus feats: a half-elf's Skill Focus (Adaptability), Ancestral Arms' weapon proficiency.
   const raceFeats = raceBonusFeats(race, state.raceFeats, data.weaponsById);
-  const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name), ...raceFeats.map(f => f.feat)])];
+  // Talented monk (third-party): its chosen edges and talents, its level, and its specialty attack bonus (Table 1) as a
+  // total with the other classes' base attack bonus.
+  const tmEntry = counts.find(c => c.cls.id === TALENTED_MONK);
+  const tmPicks = tmEntry ? talentedMonkPicks(state.talents, data.talentsById) : [];
+  const tmRow = tmEntry ? tmEntry.cls.progression[tmEntry.level - 1] : null;
+  const tmSpecialty = tmRow ? (tmRow.specialty_bab?.[0] ?? tmRow.bab[0]) - tmRow.bab[0] : 0;
+  const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name), ...raceFeats.map(f => f.feat),
+                               ...talentedMonkFeats(tmPicks)])];
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   featChoices.push(...raceFeats.filter(f => f.value).map(f => ({ slotId: `race:${f.trait}`, feat: f.feat, kind: f.kind, value: f.value, from: f.trait })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
@@ -2286,6 +2305,9 @@ function computeView() {
   classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield && !gear.shieldOff }));
   // Steady bonuses archetype features give, read from their text (archetype-bonuses.js): +2 on Will saves, +1 dodge AC...
   classFx.push(...archetypeBonusEffects(counts, statsWith(gear).mod));
+  // Talented monk edges and talents that are always on (unfettered kata, fast movement, iron monk...).
+  classFx.push(...talentedMonkEffects(tmPicks, tmEntry?.level || 0, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.category : null,
+                                                                    shield: !!gear.shield, load: load?.load || 'light', specialty: tmSpecialty }));
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
@@ -2379,6 +2401,8 @@ function computeView() {
     slots, chosen, granted, raceFeats, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
+    // Talented monk: level, chosen edges and talents, and how much higher its specialty attack bonus is than its BAB.
+    tm: tmEntry ? { level: tmEntry.level, picks: tmPicks, specialty: tmSpecialty } : null,
     // Enhancement bonuses and plain special abilities on worn armor, shield and weapons (Active effects card).
     gearMagic: gearMagic(state, { armor: gear.armor, shield: gear.shield, weaponsById: data.weaponsById, itemsById: data.itemsById }),
     allClassSkills: access.allClass,
@@ -3053,7 +3077,7 @@ function openTalentPicker(slotId, search = '') {
   const featNote = slot.fromFeat ? `<p class="hint">You took ${esc(slot.fromFeat)} at character level ${slot.charLevel}, as a ${esc(ordinal(slot.classLevel))}-level
       ${esc(cls.name.toLowerCase())}, so this pick counts as ${esc(ordinal(slot.classLevel))} level. To take an option that needs a higher level, take the
       feat in a later feat slot (Feats tab).</p>` : '';
-  openDetail(slot.fromFeat ? `${slot.rule.label}: from ${slot.fromFeat} (${ordinal(slot.classLevel)} level)` : `${slot.rule.label}: ${cls.name} ${ordinal(Number(lv))} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
+  openDetail(slot.fromFeat ? `${slot.rule.label}: from ${slot.fromFeat} (${ordinal(slot.classLevel)} level)` : `${slot.rule.label}: ${cls.name} ${ordinal(slot.classLevel)} level`, `<div class="talent-picker" data-slot="${esc(slotId)}">
       ${featNote}
       ${slot.rule.choices ? '' : `<input type="search" class="talent-search" placeholder="Search by name or text" value="${esc(search)}" aria-label="Search">`}
       ${mysteryNote}<ul class="plain-list talent-list">${list}</ul></div>`,
@@ -3336,13 +3360,23 @@ function archetypePicker(cls, level, openFeatures) {
       }).join('')}</ul></details></div>`;
 }
 
+// A third-party book counts when the 3rd Party house rule is on and the book is ticked in the Third-party books card.
+const bookOn = id => !!state.houseRules.thirdParty && !!state.books[id];
+
+// The classes the class pickers offer: a third-party class only when its book is ticked (Third-party books, Build tab)
+// or the character already has levels in it.
+function offeredClasses(classLevels = []) {
+  return data.classes.filter(c => !c.third_party || bookOn(c.third_party) || classLevels.some(x => x.id === c.id));
+}
+
 // The Classes card: a class for each level, favored class, where prestige spellcasting goes, and each
 // class's features (and requirements, for prestige classes).
 function renderClasses(view) {
   const { counts, classLevels } = view;
   $('class-summary').textContent = classLevels.length ? `${counts.map(e => `${e.cls.name} ${e.level}`).join(' / ')} (level ${classLevels.length})` : 'no class yet';
-  const baseOptions = groupedOptions(data.classes.filter(c => c.category !== 'prestige'), CLASS_GROUPS);
-  const allOptions = groupedOptions(data.classes, CLASS_GROUPS);
+  const offered = offeredClasses(classLevels);
+  const baseOptions = groupedOptions(offered.filter(c => c.category !== 'prestige'), CLASS_GROUPS);
+  const allOptions = groupedOptions(offered, CLASS_GROUPS);
   // One line per class (in the order first taken): how many levels and which character levels; opened, the choices
   // made at each of its levels (favored class bonus, feats, traits, ability increases) and buttons to add, remove or
   // change it.
@@ -3632,6 +3666,16 @@ function render() {
       <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
   }).join('');
   $('house-rules-note').textContent = HOUSE_RULES.filter(([k]) => state.houseRules[k]).map(([, , note]) => note).join(' ');
+  // Third-party books: a Y/N button for each; ticked, its classes join the class lists.
+  const tpBooks = data.thirdParty?.books || [];
+  $('third-party-card').hidden = !tpBooks.length || !state.houseRules.thirdParty;
+  $('third-party-books').innerHTML = tpBooks.map(b => {
+    const on = !!state.books[b.id];
+    return `<button type="button" class="house-rule${on ? ' on' : ''}" data-book="${esc(b.id)}" aria-pressed="${on}"
+      title="${esc(`${b.publisher}, by ${b.author}: ${b.sources.join(' and ')}`)}">${esc(b.name)} <small>(${esc(b.publisher)})</small>
+      <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
+  }).join('');
+  $('third-party-note').textContent = tpBooks.filter(b => state.books[b.id]).map(b => b.note).join(' ');
   setRollOptions({ maxHealing: !!state.houseRules.maxHealing, autoCrit: !!state.houseRules.autoCrit });
 
   // Hit point tracker: current hit points (full unless damage has been applied) and what they mean at 0 or below.
@@ -4659,6 +4703,10 @@ async function start() {
       fetch('data/deities.json').then(r => r.json()),
       fetch('data/blessings.json').then(r => r.json()),
     ]);
+    // Third-party books (only offered on a character that ticks the book). A missing file just means none.
+    data.thirdParty = await fetch('data/third-party.json').then(r => r.json()).catch(() => ({ books: [], classes: [], talents: [] }));
+    data.classes.push(...data.thirdParty.classes);
+    data.talents.push(...data.thirdParty.talents);
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
       'start the local server (python -m http.server 8000) and open http://localhost:8000/ instead.';

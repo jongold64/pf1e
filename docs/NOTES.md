@@ -394,6 +394,17 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   by an older version still loading (`load()` migrates or drops old fields). `msedge --print-to-pdf` shows the
   printed sheet (copy `#print-sheet` into a page that links css/style.css; the Read tool shows the PDF).
 
+- Third-party books (`data/third-party.json`, `scripts/build_rgg_talented_monk.py` from the PDFs in `..rd Party`; needs
+  pypdf and cryptography): `{ books: [{ id, name, publisher, author, sources, notices, note }], classes, talents }`, merged into
+  data.classes / data.talents at startup. Records carry `third_party` (the book id) and origin. `state.books` { id: true } with
+  the 3rd Party house rule (`bookOn`) decides what the class pickers (`offeredClasses`) and search offer; a character with
+  levels in a class keeps it. Talented monk: class progression rows have `specialty_bab`; options are kinds tm-edge,
+  tm-talent, tm-advanced-talent, tm-grand-talent (talents.js TALENT_RULES['talented-monk']; several picks at one level get
+  slot ids "...|edge|1", "...|edge|1-2"). List picks (ki powers, elemental ki powers, aspects, unearthly path/way/master,
+  fighting style groups) are one record each with `pick` (the parent) and `weapon_group` / `element`. js/talented-monk.js:
+  talentedMonkEffects (classFx), talentedMonkDaily (dailyPowers), talentedMonkFeats (granted), styleWeapon / tmFlurryBabs /
+  deadlyStrikesDie (tab-weapons: specialty BAB via view.tm.specialty, proficiency, minDice, flurry).
+
 ## Data build commands
 
 Requires Python 3.9+ and `pip install beautifulsoup4 pyyaml`, plus the PSRD-Data book databases. On this
