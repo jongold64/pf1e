@@ -82,8 +82,39 @@ def parse_one(q, feat_names):
 
 
 def parse_prereqs(raw, feat_names):
+    # A list whose last item starts with "or" is one choice: "base attack bonus +6, brawler's flurry class feature, or
+    # flurry of blows class feature"; "Great Fortitude, Iron Will, or Lightning Reflexes". The list ends at a semicolon
+    # (or covers the whole text when there is none).
     items = []
-    for p in split_prereqs(raw):
+    for seg in split_top(raw, ';'):
+        pieces = split_prereqs(seg)
+        if len(pieces) > 1 and re.match(r'or\s', pieces[-1], re.I):
+            opts = parse_list([re.sub(r'^or\s+', '', p, flags=re.I) for p in pieces], feat_names)
+            text = ', '.join(pieces)
+            # A part that can't be read ("worshiper of a deity of blood, death, or assassination") may mean the list
+            # isn't a choice after all: the whole list is left as text to check by hand.
+            items.append({'type': 'any_of', 'options': opts, 'text': text} if all(o['type'] != 'other' for o in opts)
+                         else {'type': 'other', 'text': text})
+        else:
+            items.extend(parse_list(pieces, feat_names))
+    return items
+
+
+def split_top(s, sep):
+    # Splits on sep outside parentheses.
+    out, depth, cur = [], 0, ''
+    for ch in s:
+        depth += (ch == '(') - (ch == ')')
+        if ch == sep and depth == 0:
+            out.append(cur); cur = ''
+        else:
+            cur += ch
+    return [p for p in out + [cur] if p.strip()]
+
+
+def parse_list(pieces, feat_names):
+    items = []
+    for p in pieces:
         q = re.sub(r'^and\s+', '', p, flags=re.I).strip()
         one = parse_one(q, feat_names)
         if one:

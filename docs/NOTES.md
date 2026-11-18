@@ -134,7 +134,11 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   domains and chosen class options; "favored enemy (undead)", "favored terrain (…)", "weapon training (thrown)" are
   checked against the picks in `state.talents`. A feature named nowhere in the data (`featureIndex`) is 'unknown', not
   'unmet'. Class level prerequisites read "unchained summoner", "specialist wizard" and archetype names ("flowing
-  monk"); skill ones read "A or B", "Knowledge (any)", "SpellCraft", "Performance (sing)". Free class feats
+  monk"); "monk level" also counts unchained monk and talented monk levels. Skill ones read "A or B", "Knowledge (any)",
+  "SpellCraft", "Performance (sing)". In the data build (`parse_prereqs`), a list whose last item starts with "or" ("base
+  attack bonus +6, brawler's flurry class feature, or flurry of blows class feature", up to a semicolon) is one `any_of`;
+  if a part can't be read the whole list stays `other` text. The prerequisite context at each feat slot's level
+  (`contextAt`) counts racial bonus feats and the talented monk's feats from picks made by then. Free class feats
   come from class-table specials (`grantedFeats`) and armor/shield proficiency from the class's
   proficiency text (`proficiencyFeats`). Mythic feats are filtered out in `app.js`.
 - Skills: `js/skills.js` has the Core Rulebook skill list (abilities, trained-only, and the Craft /

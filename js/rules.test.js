@@ -1836,6 +1836,16 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('"specialist wizard" level 1', checkPrereq({ type: 'class_level', class: 'specialist wizard', value: 1 }, ctxOf([['wizard', 3]]), {}).status, 'met');
   check('"flowing monk" level 5 with the archetype', checkPrereq({ type: 'class_level', class: 'flowing monk', value: 5 },
     ctxOf([['monk', 5]], { archetypes: { monk: [{ name: 'Flowing Monk', features: [] }] } }), {}).status, 'met');
+  const tm = lv => ({ counts: [{ cls: { id: 'talented-monk', name: 'Talented Monk', progression: [] }, level: lv }], haveFeats: new Set(),
+    classNames: new Set(['talented-monk', 'talented monk', 'monk']) });
+  check('"monk level 3rd": a 3rd-level talented monk', checkPrereq({ type: 'class_level', class: 'monk', value: 3 }, tm(3), {}).status, 'met');
+  check('"monk level 3rd": an unchained monk 3', checkPrereq({ type: 'class_level', class: 'monk', value: 3 }, ctxOf([['monk-unchained', 3]]), {}).status, 'met');
+  check('"monk level 3rd": a 2nd-level talented monk', checkPrereq({ type: 'class_level', class: 'monk', value: 3 }, tm(2), {}).status, 'unmet');
+  // "base attack bonus +7, brawler level 4th, or monk level 4th" is one choice (data build), not three requirements.
+  const dodge = allFeats.find(f => f.name === 'Anticipate Dodge');
+  check('Anticipate Dodge: BAB, brawler or monk level is one choice', dodge.prerequisites.filter(p => p.type === 'any_of').length, 1);
+  check('Anticipate Dodge: a 4th-level talented monk with Dodge and Mobility', checkFeat(dodge, { ...tm(4), bab: 3, haveFeats: new Set(['dodge', 'mobility']) }).status, 'met');
+  check('Marked for Glory: one of the three save feats', checkFeat(allFeats.find(f => f.name === 'Marked for Glory'), { ...tm(1), haveFeats: new Set(['iron will']) }).status, 'met');
   check('"arcane caster" level: can\u2019t be checked', checkPrereq({ type: 'class_level', class: 'arcane caster', value: 1 }, ctxOf([['wizard', 3]]), {}).status, 'unknown');
   const sk = (skill, ranks, skillRanks, feats = []) => checkPrereq({ type: 'skill', skill, ranks }, { ...ctxOf([['rogue', 5]]), skillRanks, haveFeats: new Set(feats) }, {}).status;
   check('"Acrobatics or Fly"', sk('Acrobatics or Fly', 5, { Fly: 5 }), 'met');

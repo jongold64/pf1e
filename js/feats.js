@@ -372,6 +372,9 @@ export function checkPrereq(p, ctx, feat, slotRule = null) {
     }
     case 'class_level': {
       let lv = p.class === 'fighter' ? Math.max(fighterLevel, levelsIn(ctx, 'fighter')) : levelsIn(ctx, p.class);
+      // "Monk level" counts the replacement monks too: the unchained monk, and the talented monk (third-party; its
+      // book writes "monk level" for its own levels throughout).
+      if (p.class === 'monk') lv += levelsIn(ctx, 'monk-unchained') + levelsIn(ctx, 'talented-monk');
       // Not a class the character has: maybe a wizard specialist or an archetype; a name that isn't a class at all
       // ("arcane caster") can't be checked.
       if (!lv && ctx.classNames && !ctx.classNames.has(lower(p.class)) && !/^unchained \w+$/.test(lower(p.class))) {

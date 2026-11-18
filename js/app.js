@@ -2367,6 +2367,10 @@ function computeView() {
       const feats = [
         ...slots.filter(s => s.charLevel <= lv && s.id !== except).map(s => data.featsById.get(state.feats[s.id])?.name).filter(Boolean),
         ...grantedFeatsFor(beforeCounts, data.feats.map(f => f.name)), ...proficiencyFeatsFor(beforeCounts.map(e => e.cls)),
+        ...raceFeats.map(f => f.feat),
+        // The talented monk's feats from edges and talents picked by then (slot "talented-monk|edge|3-2": class level 3).
+        ...talentedMonkFeats(talentedMonkPicks(Object.fromEntries(Object.entries(state.talents)
+          .filter(([slot]) => parseInt(slot.split('|')[2], 10) <= (beforeCounts.find(c => c.cls.id === TALENTED_MONK)?.level || 0))), data.talentsById)),
       ];
       const ranks = Object.fromEntries(Object.entries(skillRanks).map(([n, r]) => [n, Math.min(r, lv)]));
       contexts.set(key, featContext({ race, counts: beforeCounts, casting: castingClasses(beforeCounts, state.casterChoices).casting,

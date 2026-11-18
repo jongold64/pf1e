@@ -231,11 +231,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must carry a curse that can be lifted only by a quest or similar great undertaking"
-      },
-      {
-        "type": "other",
-        "text": "or have the Cursed Birth background"
+        "text": "You must carry a curse that can be lifted only by a quest or similar great undertaking, or have the Cursed Birth background"
       }
     ],
     "benefit": "You gain spell resistance equal to 5 + your character level, as the curse interferes with all magic. Unlike most spell resistance, it can't voluntarily be lowered, though your own spells and magic items still automatically affect you.",
@@ -792,11 +788,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "A friend or ally must have been significantly corrupted by a specific natural or supernatural blight"
-      },
-      {
-        "type": "other",
-        "text": "or you must have a regional background trait tied to a specific blight"
+        "text": "A friend or ally must have been significantly corrupted by a specific natural or supernatural blight, or you must have a regional background trait tied to a specific blight"
       }
     ],
     "benefit": "Choose one type of terrain affiliated with the relevant blight. You gain a +1 bonus on Knowledge (geography) and Knowledge (nature) checks regarding the blighted terrain and can attempt those Knowledge checks untrained. You also gain a +1 bonus on attack rolls against creatures corrupted by the relevant blight, and you gain a +1 bonus on saving throws against the abilities of such creatures.",
@@ -979,20 +971,8 @@
     "prerequisites_text": "Android, kasatha, lashunta, or triaxian.",
     "prerequisites": [
       {
-        "type": "race",
-        "race": "android"
-      },
-      {
-        "type": "race",
-        "race": "kasatha"
-      },
-      {
         "type": "other",
-        "text": "lashunta"
-      },
-      {
-        "type": "race",
-        "race": "triaxian"
+        "text": "Android, kasatha, lashunta, or triaxian"
       }
     ],
     "benefit": "Whenever you're adjacent to at least one other android, kasatha, lashunta, or triaxian ally who also has this feat, you gain a +4 circumstance bonus on saves against mind-affecting effects and divination (scrying) effects, unless the effect comes from an android, kasatha, lashunta, or triaxian.",
@@ -1103,27 +1083,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Deliver the killing blow to 20 gnolls"
-      },
-      {
-        "type": "other",
-        "text": "hyenas"
-      },
-      {
-        "type": "other",
-        "text": "dire hyenas"
-      },
-      {
-        "type": "other",
-        "text": "werehyenas"
-      },
-      {
-        "type": "other",
-        "text": "jackalweres"
-      },
-      {
-        "type": "other",
-        "text": "or minions of an evil god or goddess"
+        "text": "Deliver the killing blow to 20 gnolls, hyenas, dire hyenas, werehyenas, jackalweres, or minions of an evil god or goddess"
       }
     ],
     "benefit": "As long as you carry some sort of trophy harvested from a gnoll (a necklace of ears, a set of teeth, a magic weapon taken from a chieftain, etc.), you gain a +2 morale bonus on all Will saves. You also gain a +2 competence bonus on attack rolls and weapon damage rolls against gnolls, hyenas, dire hyenas, werehyenas, jackalweres, and minions of evil gods.",
@@ -1970,18 +1930,24 @@
         "feat": "Mobility"
       },
       {
-        "type": "bab",
-        "value": 7
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 4
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 4
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 7
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 4
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 4
+          }
+        ],
+        "text": "base attack bonus +7, brawler level 4th, or monk level 4th"
       }
     ],
     "benefit": "You automatically know whether a creature you can see has a dodge bonus to its AC. You gain up to a +2 bonus on attack rolls against a target that has a dodge bonus. This bonus cannot exceed the dodge bonus of the creature you attack."
@@ -2031,11 +1997,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have had direct contact with a deity or godlike being"
-      },
-      {
-        "type": "other",
-        "text": "or have been risen from the dead at the personal behest of a deity or godlike being"
+        "text": "You must have had direct contact with a deity or godlike being, or have been risen from the dead at the personal behest of a deity or godlike being"
       }
     ],
     "benefit": "You gain a +2 bonus on Constitution checks to stabilize while dying. Anytime you or an ally who worships the god that contacted you casts augury or a similar effect, your chance of receiving a meaningful reply is increased by 5% (to a maximum of 95%).",
@@ -2499,16 +2461,22 @@
         "value": 10
       },
       {
-        "type": "race",
-        "race": "elf"
-      },
-      {
-        "type": "race",
-        "race": "half-elf"
-      },
-      {
-        "type": "race",
-        "race": "gnome"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "elf"
+          },
+          {
+            "type": "race",
+            "race": "half-elf"
+          },
+          {
+            "type": "race",
+            "race": "gnome"
+          }
+        ],
+        "text": "elf, half-elf, or gnome"
       }
     ],
     "benefit": "Choose a 0-level spell from the sorcerer/wizard spell list. You can cast this spell three times per day as a spell-like ability. The caster level is equal to your character level. The save DC is 10 + your Charisma modifier."
@@ -2777,11 +2745,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have been slain and brought back from the dead"
-      },
-      {
-        "type": "other",
-        "text": "or have the Left to Die or Cursed Birth background"
+        "text": "You must have been slain and brought back from the dead, or have the Left to Die or Cursed Birth background"
       }
     ],
     "benefit": "You don't die until your negative hit point total is equal to or greater than 4 + your Constitution score. Once per day as a standard action, you can force yourself to carry on by strength of will alone, gaining 1 temporary hit point per hit die. These temporary hit points last for 10 minutes.",
@@ -3148,15 +3112,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Proficiency with light crossbow"
-      },
-      {
-        "type": "other",
-        "text": "heavy crossbow"
-      },
-      {
-        "type": "other",
-        "text": "or musket"
+        "text": "Proficiency with light crossbow, heavy crossbow, or musket"
       },
       {
         "type": "other",
@@ -3677,15 +3633,7 @@
       },
       {
         "type": "other",
-        "text": "ability to cast lesser planar ally"
-      },
-      {
-        "type": "other",
-        "text": "lesser planar binding"
-      },
-      {
-        "type": "other",
-        "text": "or a higher-level version of these spells"
+        "text": "ability to cast lesser planar ally, lesser planar binding, or a higher-level version of these spells"
       }
     ],
     "benefit": "Choose a subtype of outsider, such as angel or elemental. When using the planar ally or planar binding spells, you can call 2 additional Hit Dice of outsiders with the chosen subtype. You also gain an additional benefit depending on what spell you are casting.\n\nWhen you call an outsider of the chosen subtype with planar ally spells, you reduce the price it demands for service by 25%, to a minimum of 1,000 gp.\n\nWhen you bind an outsider of the chosen subtype with planar binding spells and request a service of the outsider, you gain a +2 bonus on Charisma checks to do so.",
@@ -3745,15 +3693,7 @@
       },
       {
         "type": "other",
-        "text": "aura"
-      },
-      {
-        "type": "other",
-        "text": "aura of good"
-      },
-      {
-        "type": "class_feature",
-        "feature": "aura of evil"
+        "text": "aura, aura of good, or aura of evil class feature"
       },
       {
         "type": "other",
@@ -4714,19 +4654,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must successfully cast a conjuration (healing) spell on an ally after being hit by an attack of opportunity"
-      },
-      {
-        "type": "other",
-        "text": "or have the Battle"
-      },
-      {
-        "type": "other",
-        "text": "Chaplain"
-      },
-      {
-        "type": "other",
-        "text": "or Healed background"
+        "text": "You must successfully cast a conjuration (healing) spell on an ally after being hit by an attack of opportunity, or have the Battle, Chaplain, or Healed background"
       }
     ],
     "benefit": "When attempting a concentration check caused by receiving damage (including ongoing damage), you reduce the damage taken by 50% for the purposes of determining the concentration check DC.",
@@ -5363,15 +5291,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have had a valuable item (worth at least 1,000 gp per character level) stolen by a former ally"
-      },
-      {
-        "type": "other",
-        "text": "have been left for dead by a former ally"
-      },
-      {
-        "type": "other",
-        "text": "or have the Wrong Enemy background"
+        "text": "You must have had a valuable item (worth at least 1,000 gp per character level) stolen by a former ally, have been left for dead by a former ally, or have the Wrong Enemy background"
       }
     ],
     "benefit": "When you are in a harmful area of effect created by an ally (through a spell or other means), you can roll your saving throw twice and take the better result. If you do so, your shaken trust means you do not provide flanking bonuses to any allies for 1 hour.",
@@ -5965,15 +5885,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have had friendly contact with a good outsider that would qualify as a challenging foe"
-      },
-      {
-        "type": "other",
-        "text": "be a sorcerer with the celestial bloodline"
-      },
-      {
-        "type": "other",
-        "text": "or have direct celestial ancestry (such as by being an aasimar)"
+        "text": "You must have had friendly contact with a good outsider that would qualify as a challenging foe, be a sorcerer with the celestial bloodline, or have direct celestial ancestry (such as by being an aasimar)"
       }
     ],
     "benefit": "You gain a +2 bonus on Charisma-based checks involving good-aligned outsiders and a +1 bonus to the DC of spells and spell-like abilities you use against such creatures. You take a -2 penalty on Charisma-based checks involving evil-aligned outsiders.",
@@ -6995,15 +6907,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Worshiper of a deity of darkness"
-      },
-      {
-        "type": "other",
-        "text": "loss"
-      },
-      {
-        "type": "other",
-        "text": "or pain"
+        "text": "Worshiper of a deity of darkness, loss, or pain"
       }
     ],
     "benefit": "Whenever you threaten a critical hit with a piercing or slashing weapon (regardless of whether you confirm the critical hit or not), you deal 1 point of bleed damage to the targeted creature.",
@@ -7105,30 +7009,8 @@
     "prerequisites_text": "Dex 15, Exotic Weapon Proficiency (sawtooth sabre), Two-Weapon Fighting, worshiper of a deity of blood, death, or assassination.",
     "prerequisites": [
       {
-        "type": "ability",
-        "ability": "dex",
-        "value": 15
-      },
-      {
-        "type": "feat",
-        "feat": "Exotic Weapon Proficiency",
-        "detail": "sawtooth sabre"
-      },
-      {
-        "type": "feat",
-        "feat": "Two-Weapon Fighting"
-      },
-      {
         "type": "other",
-        "text": "worshiper of a deity of blood"
-      },
-      {
-        "type": "other",
-        "text": "death"
-      },
-      {
-        "type": "other",
-        "text": "or assassination"
+        "text": "Dex 15, Exotic Weapon Proficiency (sawtooth sabre), Two-Weapon Fighting, worshiper of a deity of blood, death, or assassination"
       }
     ],
     "benefit": "If you hit an opponent with both your primary weapon and your off-hand weapon as part of the same attack action, and both of those weapons are sawtooth sabres, you deal 1 point of bleed damage in addition to the normal damage dealt by these attacks.",
@@ -7466,16 +7348,22 @@
     "prerequisites_text": "Great Fortitude, Iron Will, or Lightning Reflexes; Halfling Jinx alternate racial trait.",
     "prerequisites": [
       {
-        "type": "feat",
-        "feat": "Great Fortitude"
-      },
-      {
-        "type": "feat",
-        "feat": "Iron Will"
-      },
-      {
-        "type": "feat",
-        "feat": "Lightning Reflexes"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Great Fortitude"
+          },
+          {
+            "type": "feat",
+            "feat": "Iron Will"
+          },
+          {
+            "type": "feat",
+            "feat": "Lightning Reflexes"
+          }
+        ],
+        "text": "Great Fortitude, Iron Will, or Lightning Reflexes"
       },
       {
         "type": "other",
@@ -7928,16 +7816,22 @@
     "prerequisites_text": "Dwarf, elf, or gnome; 100+ years old.",
     "prerequisites": [
       {
-        "type": "race",
-        "race": "dwarf"
-      },
-      {
-        "type": "race",
-        "race": "elf"
-      },
-      {
-        "type": "race",
-        "race": "gnome"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "dwarf"
+          },
+          {
+            "type": "race",
+            "race": "elf"
+          },
+          {
+            "type": "race",
+            "race": "gnome"
+          }
+        ],
+        "text": "Dwarf, elf, or gnome"
       },
       {
         "type": "other",
@@ -8251,8 +8145,8 @@
         "feat": "Combat Reflexes"
       },
       {
-        "type": "other",
-        "text": "wyvaran"
+        "type": "race",
+        "race": "wyvaran"
       }
     ],
     "benefit": "If an opponent misses its attack on an ally after you successfully used the aid another action to improve that ally’s AC this round, you can attempt an Intimidate check as an immediate action to demoralize that opponent.",
@@ -8738,18 +8632,24 @@
         "feat": "Improved Unarmed Strike"
       },
       {
-        "type": "bab",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 4
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 4
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 4
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 4
+          }
+        ],
+        "text": "base attack bonus +8, brawler level 4th, or monk level 4th"
       }
     ],
     "benefit": "When you successfully grapple a creature with the Bull-Catcher Style feat, you can immediately move that creature into any square you threaten. After it is placed, you can break your grapple as an immediate action to move the creature an additional 5 feet in any direction. You can't use this maneuver to move a foe into a space that is intrinsically dangerous or unstable, such as a pit, wall of fire, or midair.",
@@ -8787,18 +8687,24 @@
         "feat": "Improved Unarmed Strike"
       },
       {
-        "type": "bab",
-        "value": 12
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 8
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 12
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 8
+          }
+        ],
+        "text": "base attack bonus +12, brawler level 8th, or monk level 8th"
       }
     ],
     "benefit": "When a creature is charging you, and you successfully grapple it with the Bull-Catcher Style feat, you can immediately move it as per the Bull-Catcher Toss feat. Once the creature is moved, you can break your grapple as an immediate action. If you do, select another creature in the repositioned target's threatened area. That creature becomes the new target of the initial charge attack.",
@@ -9756,20 +9662,8 @@
     "prerequisites_text": "Aasimar, animal companion, familiar, or mount class feature.",
     "prerequisites": [
       {
-        "type": "race",
-        "race": "aasimar"
-      },
-      {
         "type": "other",
-        "text": "animal companion"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "class_feature",
-        "feature": "mount"
+        "text": "Aasimar, animal companion, familiar, or mount class feature"
       }
     ],
     "benefit": "Your animal companion, familiar, or mount gains the celestial template and becomes a magical beast, though you may still treat it as an animal when using Handle Animal, wild empathy, or any other spells or class abilities that specifically affect animals."
@@ -10132,23 +10026,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have defeated a single challenging foe without any aid from another"
-      },
-      {
-        "type": "other",
-        "text": "or have the Champion of a God"
-      },
-      {
-        "type": "other",
-        "text": "Champion of the People"
-      },
-      {
-        "type": "other",
-        "text": "Competition Champion"
-      },
-      {
-        "type": "other",
-        "text": "or Gladiator background"
+        "text": "You must have defeated a single challenging foe without any aid from another, or have the Champion of a God, Champion of the People, Competition Champion, or Gladiator background"
       }
     ],
     "benefit": "As a swift action, you can declare a single combat challenge to one foe within 50 feet and in line of sight. Upon doing so, you gain a +1 bonus on attack rolls and a +1 dodge bonus to AC against that foe as long as no one else threatens that opponent or until the single combat challenge ends. If another combatant attacks you or your foe, the challenge ends and you take a -2 penalty on attack rolls and to AC for 1 round. Though you can declare a single combat challenge at will, once you declare it on a foe you can't declare it on the same foe for another 24 hours.",
@@ -11518,11 +11396,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must permanently dwell in a settlement at least as large as a large town. You must also have a fey ancestor somewhere in your family line"
-      },
-      {
-        "type": "other",
-        "text": "or have The Wanderer background"
+        "text": "You must permanently dwell in a settlement at least as large as a large town. You must also have a fey ancestor somewhere in your family line, or have The Wanderer background"
       }
     ],
     "benefit": "When interacting with NPCs who live in your settlement, you gain a +1 bonus on Bluff, Diplomacy, and Sense Motive checks.",
@@ -11894,11 +11768,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "The character must own a business that can supply a single type of good worth 10 gp or more in bulk to a Keleshite merchant house"
-      },
-      {
-        "type": "other",
-        "text": "or a business that can donate a unique rare good (an antique, an object of archeological interest, an artwork, or a magical weapon) of the patron’s choice at least once per month"
+        "text": "The character must own a business that can supply a single type of good worth 10 gp or more in bulk to a Keleshite merchant house, or a business that can donate a unique rare good (an antique, an object of archeological interest, an artwork, or a magical weapon) of the patron’s choice at least once per month"
       }
     ],
     "benefit": "Once per month, a client can choose one of the following: 500 gp, the services of a house guard (human fighter 3; use the statistics for a traitorous brigand from page 81 of the Pathfinder RPG NPC Codex) for 24 hours, or the services of a house emissary who can automatically change the attitude of a ruler or other influential NPC from indifferent to friendly or from friendly to helpful.",
@@ -12093,8 +11963,8 @@
         "value": 13
       },
       {
-        "type": "other",
-        "text": "strix"
+        "type": "race",
+        "race": "strix"
       }
     ],
     "benefit": "When you fold your wings, you gain a +2 bonus on Disguise checks to pose as a human, and ignore the penalties for disguising yourself as a different race while doing so. Additionally, you can hide one small item within your wings’ folds (such as a potion, a wand, a weapon weighing 1 pound or less, or a similarly sized item at your GM’s discretion). Any such hidden item requires a successful DC 25 Perception check for others to notice. You can retrieve this item with a swift action, but unfolding your wings causes it to drop to the ground.",
@@ -12926,19 +12796,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Chaotic"
-      },
-      {
-        "type": "other",
-        "text": "evil"
-      },
-      {
-        "type": "other",
-        "text": "good"
-      },
-      {
-        "type": "other",
-        "text": "or lawful alignment"
+        "text": "Chaotic, evil, good, or lawful alignment"
       }
     ],
     "benefit": "As a full-round action, you can reduce the power of the aura generated by your alignment for 1 minute. During this time, for the purposes of spells that detect alignment, your aura’s power is lessened by one step (for example, if you are a 12th-level neutral good fighter, your aura power is faint rather than moderate). You also gain a +2 bonus on Bluff checks to send secret messages.",
@@ -13310,15 +13168,7 @@
       },
       {
         "type": "other",
-        "text": "must be of the magical beast"
-      },
-      {
-        "type": "other",
-        "text": "outsider"
-      },
-      {
-        "type": "other",
-        "text": "or undead type"
+        "text": "must be of the magical beast, outsider, or undead type"
       }
     ],
     "benefit": "When you start your turn having swallowed at least one creature, each swallowed creature must succeed at a Fortitude save (DC = 10 + 1/2 your Hit Dice + your Charisma modifier) or gain a temporary negative level. Swallowed creatures that die from these negative levels are consumed as per disintegrate. This is a death effect.",
@@ -13540,18 +13390,24 @@
     "prerequisites_text": "Bluff 5 ranks, Perform (act) 5 ranks, or dual identity class feature.",
     "prerequisites": [
       {
-        "type": "skill",
-        "skill": "Bluff",
-        "ranks": 5
-      },
-      {
-        "type": "skill",
-        "skill": "Perform (act)",
-        "ranks": 5
-      },
-      {
-        "type": "class_feature",
-        "feature": "dual identity"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "skill",
+            "skill": "Bluff",
+            "ranks": 5
+          },
+          {
+            "type": "skill",
+            "skill": "Perform (act)",
+            "ranks": 5
+          },
+          {
+            "type": "class_feature",
+            "feature": "dual identity"
+          }
+        ],
+        "text": "Bluff 5 ranks, Perform (act) 5 ranks, or dual identity class feature"
       }
     ],
     "benefit": "Your dual identity is never considered publicly compromised barring some massive, public unmasking, allowing you to benefit from your dual identity or masked persona regardless of how many people know your true identity. You gain a +5 circumstance bonus on Bluff skill checks to convince people your masked persona and your true identity are entirely different people, and on Disguise checks to maintain your masked persona.",
@@ -14025,18 +13881,24 @@
         "feat": "Mobility"
       },
       {
-        "type": "bab",
-        "value": 9
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 6
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 6
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 9
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 6
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 6
+          }
+        ],
+        "text": "base attack bonus +9, brawler level 6th, or monk level 6th"
       }
     ],
     "benefit": "Opponents with the Mobility feat do not gain the dodge bonus granted by that feat when they provoke attacks of opportunity by moving out of or within your threatened area."
@@ -14242,8 +14104,8 @@
         "value": 11
       },
       {
-        "type": "other",
-        "text": "changeling"
+        "type": "race",
+        "race": "changeling"
       }
     ],
     "benefit": "You can join a changeling coven even if you are not a witch with the coven hex. Your effective witch level is equal to half your character level. A changeling coven must still include at least one changeling witch who has the coven hex.\n\nAdditionally, select a single a 0-level spell drawn from the witch’s spell list. You gain the ability to cast this spell three times per day as a spell-like ability with a caster level equal to your character level. The save DC for this spell is 10 + your Intelligence modifier.",
@@ -15319,15 +15181,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Lawful neutral"
-      },
-      {
-        "type": "other",
-        "text": "neutral"
-      },
-      {
-        "type": "other",
-        "text": "or chaotic neutral alignment. Your alignment must have shifted from either good or evil at least once since 1st level or the last time you completed this feat (see Special)"
+        "text": "Lawful neutral, neutral, or chaotic neutral alignment. Your alignment must have shifted from either good or evil at least once since 1st level or the last time you completed this feat (see Special)"
       }
     ],
     "benefit": "You are an enigma unto those who cleave to notions of morality as guiding life principles. Habits and mannerisms from your past life send subtly confusing signals to those trying to read you. Whenever another character attempts to discern your alignment, loyalties, or intentions (including via magical effects such as detect thoughts and when you are using Bluff to send a secret message or feint), you gain a +2 bonus on opposed skill checks and on Will saving throws to resist such effects.",
@@ -16098,11 +15952,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have a romantic interest who has fallen to some dark influence and rejects you out of shame or fear of newfound capabilities"
-      },
-      {
-        "type": "other",
-        "text": "or must have the Bad Romance or Temptation background"
+        "text": "You must have a romantic interest who has fallen to some dark influence and rejects you out of shame or fear of newfound capabilities, or must have the Bad Romance or Temptation background"
       }
     ],
     "benefit": "You are well versed in a dark society's way of thinking and in weathering abuse. Select a form of corruption that your lover fell to or willingly embraced: evil divine casters, evil arcane casters, undead creatures, or humanoid creatures with the shapeshifter subtype. You gain a +2 bonus on Diplomacy and Sense Motive checks when dealing with such creatures, and a +2 bonus on saving throws to resist any effects that would spread their corruption to you (such as a vampire's create spawn ability or a werewolf's curse of lycanthropy). Once per day, when you would normally be reduced below 0 hit points by an attack from such a creature, you instead immediately gain a number of temporary hit points equal to half your character level.",
@@ -16336,19 +16186,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have had friendly contact with an evil-aligned outsider that would qualify as a challenging foe"
-      },
-      {
-        "type": "other",
-        "text": "have a fiend-related sorcerous bloodline such as abyssal or infernal"
-      },
-      {
-        "type": "other",
-        "text": "have direct fiendish ancestry (such as being a tiefling or half-fiend)"
-      },
-      {
-        "type": "other",
-        "text": "or have the Fiend Raised or The Fiend background"
+        "text": "You must have had friendly contact with an evil-aligned outsider that would qualify as a challenging foe, have a fiend-related sorcerous bloodline such as abyssal or infernal, have direct fiendish ancestry (such as being a tiefling or half-fiend), or have the Fiend Raised or The Fiend background"
       }
     ],
     "benefit": "You gain a +2 bonus on Charisma-based checks involving evil-aligned outsiders and +1 bonus to the DC of spells and spell-like abilities you use against such creatures. You take a -2 penalty on Charisma-based checks involving good-aligned outsiders.",
@@ -16486,15 +16324,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Dare"
-      },
-      {
-        "type": "other",
-        "text": "deeds"
-      },
-      {
-        "type": "other",
-        "text": "or inspiration class ability"
+        "text": "Dare, deeds, or inspiration class ability"
       }
     ],
     "benefit": "Once per day before using the derring-do deed, a dare, or a similar ability that allows you to roll a die and add the result to a d20 roll, you can roll the bonus die twice and take the higher result. If rolling a high result would allow you to roll the bonus dice additional times, you gain the benefits of this feat only on the first roll. You can use this feat one additional time per day for every 4 character levels you have.",
@@ -16873,11 +16703,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have failed your saving throws against at least five different emotion-manipulating spells or your saving throw against a supernatural creature's fear effect (such as a dragon's frightful presence)"
-      },
-      {
-        "type": "other",
-        "text": "or you have the Sunless or Sole Survivor background"
+        "text": "You must have failed your saving throws against at least five different emotion-manipulating spells or your saving throw against a supernatural creature's fear effect (such as a dragon's frightful presence), or you have the Sunless or Sole Survivor background"
       }
     ],
     "benefit": "When you are the target of a spell or spell-like ability with the emotion or fear descriptor, you can roll your saving throw twice and take the better result.",
@@ -18645,19 +18471,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have witnessed the death of a close companion in battle-a death that could have been prevented"
-      },
-      {
-        "type": "other",
-        "text": "such as from bleeding"
-      },
-      {
-        "type": "other",
-        "text": "failure to stabilize"
-      },
-      {
-        "type": "other",
-        "text": "or ongoing poison damage-or have the Death in the Family or The War background"
+        "text": "You must have witnessed the death of a close companion in battle-a death that could have been prevented, such as from bleeding, failure to stabilize, or ongoing poison damage-or have the Death in the Family or The War background"
       }
     ],
     "benefit": "You gain a +2 bonus on Heal checks. If you have 10 or more ranks in Heal, this bonus increases to +4. You can apply first aid as a move action and don't take a penalty when treating deadly wounds without a healing kit.",
@@ -18917,23 +18731,7 @@
       },
       {
         "type": "other",
-        "text": "ability to cast detect chaos"
-      },
-      {
-        "type": "other",
-        "text": "detect evil"
-      },
-      {
-        "type": "other",
-        "text": "detect good"
-      },
-      {
-        "type": "other",
-        "text": "detect law"
-      },
-      {
-        "type": "other",
-        "text": "or detect magic"
+        "text": "ability to cast detect chaos, detect evil, detect good, detect law, or detect magic"
       }
     ],
     "benefit": "When you use any of the spells listed in this feat's prerequisites to detect a creature's alignment or its magic, you have a chance of detecting what spellcasting expertise it has. After you observe a creature with the detect spell for 3 rounds, it must make a Will save (DC 10 + 1/2 your caster level + your Intelligence modifier). If it fails the saving throw, you learn what bloodlines, domains, hexes, schools, or mysteries (if any) the creature possesses. If the creature makes its save, it is immune to the effects of this feat for 24 hours."
@@ -19032,15 +18830,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Face 10 different devils in combat and take damage or suffer some other sort of injury from five or more attacks made by each one without falling unconscious"
-      },
-      {
-        "type": "other",
-        "text": "fleeing"
-      },
-      {
-        "type": "other",
-        "text": "or otherwise becoming unable to strike back at them"
+        "text": "Face 10 different devils in combat and take damage or suffer some other sort of injury from five or more attacks made by each one without falling unconscious, fleeing, or otherwise becoming unable to strike back at them"
       }
     ],
     "benefit": "Your attacks count as Good-aligned for the purposes of bypassing the damage reduction of devils.",
@@ -20734,19 +20524,7 @@
       },
       {
         "type": "other",
-        "text": "animal companion"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "other",
-        "text": "or other allied creature with the share spells ability"
+        "text": "animal companion, eidolon, familiar, or other allied creature with the share spells ability"
       }
     ],
     "benefit": "The range of your allied creature's share spells ability increases to close (25 feet + 5 feet for every 2 levels) as long as you have line of effect to the creature when you cast the shared spell. If your allied creature has the deliver touch spells ability, you can designate your allied creature as the spell's source when you cast a touch spell as long as you are within close range of it. The creature must still deliver the touch spell at its touch range.",
@@ -21310,15 +21088,7 @@
       },
       {
         "type": "other",
-        "text": "blessings"
-      },
-      {
-        "type": "other",
-        "text": "domains"
-      },
-      {
-        "type": "class_feature",
-        "feature": "mystery"
+        "text": "blessings, domains, or mystery class feature"
       }
     ],
     "benefit": "You gain a bonus equal to your Charisma modifier on all saving throws. If your Charisma modifier is already applied as a bonus on all saving throw (such as from the divine grace class feature), you instead gain a +1 bonus on all saving throws."
@@ -21567,8 +21337,8 @@
         "detail": "Perception"
       },
       {
-        "type": "other",
-        "text": "goblin"
+        "type": "race",
+        "race": "goblin"
       }
     ],
     "benefit": "You gain the scent ability, but only against canines (including dogs, goblin dogs, wolves, worgs, yeth hounds, and any similar creatures, subject to GM approval). Against these creatures, you gain a +1 morale bonus on attack rolls and a +2 morale bonus on weapon damage rolls.",
@@ -21855,8 +21625,8 @@
         "text": "Lawful alignment"
       },
       {
-        "type": "other",
-        "text": "wyvaran"
+        "type": "race",
+        "race": "wyvaran"
       }
     ],
     "benefit": "When fighting an enemy you’ve witnessed breaking the law, you gain a +1 circumstance bonus on your first attack roll and on all damage rolls against that target until it has been tried for its crime.",
@@ -24352,11 +24122,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have created a new spell"
-      },
-      {
-        "type": "other",
-        "text": "or have The Way Things Work background"
+        "text": "You must have created a new spell, or have The Way Things Work background"
       }
     ],
     "benefit": "When casting a spell you've created, add 1 to your caster level. In addition, you gain a +2 bonus on Spellcraft checks. If you have 10 or more ranks in Spellcraft, this bonus increases to +4.",
@@ -24713,24 +24479,30 @@
     "prerequisites_text": "Character level 15th, ifrit, oread, sylph, or undine.",
     "prerequisites": [
       {
-        "type": "character_level",
-        "value": 15
-      },
-      {
-        "type": "race",
-        "race": "ifrit"
-      },
-      {
-        "type": "race",
-        "race": "oread"
-      },
-      {
-        "type": "race",
-        "race": "sylph"
-      },
-      {
-        "type": "race",
-        "race": "undine"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "character_level",
+            "value": 15
+          },
+          {
+            "type": "race",
+            "race": "ifrit"
+          },
+          {
+            "type": "race",
+            "race": "oread"
+          },
+          {
+            "type": "race",
+            "race": "sylph"
+          },
+          {
+            "type": "race",
+            "race": "undine"
+          }
+        ],
+        "text": "Character level 15th, ifrit, oread, sylph, or undine"
       }
     ],
     "benefit": "Once per day, you can cast plane shift as a spell-like ability with a caster level equal to your level to transport yourself and willing targets to an elemental plane that is appropriate to your race (ifrits to the Plane of Fire, oreads to the Plane of Earth, sylphs to the Plane of Air, and undines to the Plane of Water). While on that plane, you (but not anyone transported with you) are treated as though under the effect of the spell planar adaptation."
@@ -24830,20 +24602,26 @@
     "prerequisites_text": "Ifrit, oread, sylph, or undine.",
     "prerequisites": [
       {
-        "type": "race",
-        "race": "ifrit"
-      },
-      {
-        "type": "race",
-        "race": "oread"
-      },
-      {
-        "type": "race",
-        "race": "sylph"
-      },
-      {
-        "type": "race",
-        "race": "undine"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "ifrit"
+          },
+          {
+            "type": "race",
+            "race": "oread"
+          },
+          {
+            "type": "race",
+            "race": "sylph"
+          },
+          {
+            "type": "race",
+            "race": "undine"
+          }
+        ],
+        "text": "Ifrit, oread, sylph, or undine"
       }
     ],
     "benefit": "As a swift action, you can imbue your weapons with elemental energy. For 1 round, your weapons deal an additional 1 point of energy damage. The type of energy damage depends on your race: acid for oread, electricity for sylph, fire for ifrit, or cold for undine. For every 5 levels you possess, this bonus increases by 1, to a maximum of +5 at 20th level.",
@@ -25158,11 +24936,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have an evil fey such as a quickling or redcap somewhere in your family line"
-      },
-      {
-        "type": "other",
-        "text": "or you must have the Shameful Heritage background"
+        "text": "You must have an evil fey such as a quickling or redcap somewhere in your family line, or you must have the Shameful Heritage background"
       }
     ],
     "benefit": "You gain a +2 bonus on Intimidate checks. If you have 10 or more ranks in Intimidate, this bonus increases to +4. You also gain a +2 circumstance bonus on attack rolls made to confirm critical hits.",
@@ -25522,23 +25296,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have encountered a cult whose general alignment is opposite to yours on at least one axis or who threatened your beliefs or way of life"
-      },
-      {
-        "type": "other",
-        "text": "or you must have the Angelic Encounter"
-      },
-      {
-        "type": "other",
-        "text": "the False Witness"
-      },
-      {
-        "type": "other",
-        "text": "The Omen"
-      },
-      {
-        "type": "other",
-        "text": "or the Terrible Secret background"
+        "text": "You must have encountered a cult whose general alignment is opposite to yours on at least one axis or who threatened your beliefs or way of life, or you must have the Angelic Encounter, the False Witness, The Omen, or the Terrible Secret background"
       }
     ],
     "benefit": "Choose an appropriate detect chaos/evil/good/law spell that would aid you in opposing your chosen enemy cult.\n\nYou can cast this spell twice per day as a spell-like ability with a caster level equal to your character level.",
@@ -25609,19 +25367,7 @@
       },
       {
         "type": "other",
-        "text": "Air"
-      },
-      {
-        "type": "other",
-        "text": "Earth"
-      },
-      {
-        "type": "other",
-        "text": "Fire"
-      },
-      {
-        "type": "other",
-        "text": "or Water domain or blessing"
+        "text": "Air, Earth, Fire, or Water domain or blessing"
       }
     ],
     "benefit": "A swift action, you can expend one use of channel energy to grant your weapon attacks a bonus on damage rolls equal to twice the number of dice rolled for your channel energy. This additional damage is of an energy type determined by your domain or blessing: acid (Earth), cold (Water), electricity (Air), or fire (Fire). If you have more than one of those domains or blessings, you must choose one of those damage types when you use this ability. This effect lasts for your next three weapon attacks or until the end of combat, whichever comes first."
@@ -25743,8 +25489,8 @@
     "prerequisites_text": "Changeling, coven hex or Coven-Touched.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Changeling"
+        "type": "race",
+        "race": "changeling"
       },
       {
         "type": "other",
@@ -28093,8 +27839,8 @@
         "text": "Light and dark racial trait"
       },
       {
-        "type": "other",
-        "text": "wayang"
+        "type": "race",
+        "race": "wayang"
       }
     ],
     "benefit": "Your light and dark ability lasts 1 additional minute per day.",
@@ -29294,19 +29040,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have a fey ancestor somewhere in your family line"
-      },
-      {
-        "type": "other",
-        "text": "you must have the Adopted by the Fey"
-      },
-      {
-        "type": "other",
-        "text": "Fey Meeting"
-      },
-      {
-        "type": "other",
-        "text": "or Met a Fantastic Creature background"
+        "text": "You must have a fey ancestor somewhere in your family line, and you must have the Adopted by the Fey, Fey Meeting, or Met a Fantastic Creature background"
       }
     ],
     "benefit": "You gain a +2 bonus on Charisma-based ability checks and skill checks other than Diplomacy checks.",
@@ -29754,19 +29488,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must be ordained as a sacred (or profane) champion of your faith by a high-ranking member of its clergy"
-      },
-      {
-        "type": "other",
-        "text": "or have the Devoted"
-      },
-      {
-        "type": "other",
-        "text": "Faith-Bringer"
-      },
-      {
-        "type": "other",
-        "text": "or Moral Debt background. Such an honor goes above and beyond the normal oaths required of a cleric or paladin"
+        "text": "You must be ordained as a sacred (or profane) champion of your faith by a high-ranking member of its clergy, or have the Devoted, Faith-Bringer, or Moral Debt background. Such an honor goes above and beyond the normal oaths required of a cleric or paladin"
       }
     ],
     "benefit": "Once per day, you can add a +2 bonus on any single attack roll, caster level check, saving throw, or skill check. You must choose to add this bonus after the die has been rolled and success or failure determined, but before any results (such as damage) are rolled and applied. If you have 10 or more levels or hit dice, this bonus increases to +4.",
@@ -30134,11 +29856,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have reverted to savage behavior through a traumatic event or extended period in the wilderness"
-      },
-      {
-        "type": "other",
-        "text": "or have the Raised by Beasts background"
+        "text": "You must have reverted to savage behavior through a traumatic event or extended period in the wilderness, or have the Raised by Beasts background"
       }
     ],
     "benefit": "Whenever you receive a morale bonus on Strength or attack rolls (such as from heroism or the barbarian rage class feature), you receive a +2 bonus on Dexterity- and Strength-based ability and skill checks and a +1 bonus on Reflex saves until the morale bonus effect ends.",
@@ -30672,15 +30390,7 @@
       },
       {
         "type": "other",
-        "text": "must worship a fiendish deity"
-      },
-      {
-        "type": "other",
-        "text": "demigod"
-      },
-      {
-        "type": "other",
-        "text": "or quasi deity (such as any of the entities presented in Chapter 1 of this book)"
+        "text": "must worship a fiendish deity, demigod, or quasi deity (such as any of the entities presented in Chapter 1 of this book)"
       }
     ],
     "benefit": "Each fiend requires a different daily obedience, but all obediences take no more than 1 hour per day to perform. You can combine the ritual of obedience with the time needed to prepare your spellcasting for the day. Once you've performed an obedience, you gain the benefit of a special ability or defense as indicated in the \"Obedience\" entry for the fiend to whom you performed the obedience.\n\nIf you have at least 12 Hit Dice, upon undertaking your obedience, you also gain the first boon granted by your fiend.\n\nIf you have at least 16 Hit Dice, you also gain the deity's second boon. If you have 20 Hit Dice or more, you also gain the deity's third boon. Unless a specific duration or number of uses per day is listed, a boon's effects are constant.\n\nWhen you gain boons from Fiendish Obedience, you typically gain that fiend's exalted boons. If you take the Damned Disciple or Damned Soldier feat, you can choose instead to take a sentinel or evangelist boon as appropriate.\n\nCertain prestige classes also alter which category of boon you gain. Regardless, once you select a boon, you can't normally change the type of boon you've selected at a later date (unless taking levels in a specific prestige class retroactively changes your boons).\n\nThe demoniac, diabolist, and souldrinker prestige classes grant access to these boons at lower Hit Dice as a benefit of their prestige class. For each of these classes, you must select whether you want to take the evangelist, exalted, or sentinel boons; once you make that choice, you are locked in to that category of boon (and previous boon choices retroactively change as appropriate).\n\nIf you ever fail to perform a daily obedience, you lose all access to the benefits and boons granted by this feat until you next perform the obedience.",
@@ -30780,16 +30490,22 @@
         "value": 13
       },
       {
-        "type": "race",
-        "race": "dwarf"
-      },
-      {
-        "type": "race",
-        "race": "half-orc"
-      },
-      {
-        "type": "race",
-        "race": "orc"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "dwarf"
+          },
+          {
+            "type": "race",
+            "race": "half-orc"
+          },
+          {
+            "type": "race",
+            "race": "orc"
+          }
+        ],
+        "text": "dwarf, half-orc, or orc"
       }
     ],
     "benefit": "Once per day, you can gain a number of temporary hit points equal to your Constitution modifier. You can activate this feat as an immediate action when reduced to 0 or fewer hit points. You can use this feat to prevent yourself from dying. These temporary hit points last for 1 minute. If your hit points drop below 0 due to the loss of these temporary hit points, you fall unconscious and are dying as normal. If you also have the ferocity racial trait, you can use that once you have lost the temporary hit points from this feat."
@@ -30892,15 +30608,7 @@
       },
       {
         "type": "other",
-        "text": "naga"
-      },
-      {
-        "type": "other",
-        "text": "serpentfolk"
-      },
-      {
-        "type": "other",
-        "text": "or creature that has the constrict special attack"
+        "text": "naga, serpentfolk, or creature that has the constrict special attack"
       },
       {
         "type": "bab",
@@ -30932,15 +30640,7 @@
       },
       {
         "type": "other",
-        "text": "naga"
-      },
-      {
-        "type": "other",
-        "text": "serpentfolk"
-      },
-      {
-        "type": "other",
-        "text": "or creature that has the constrict special attack"
+        "text": "naga, serpentfolk, or creature that has the constrict special attack"
       },
       {
         "type": "feat",
@@ -30975,15 +30675,7 @@
       },
       {
         "type": "other",
-        "text": "naga"
-      },
-      {
-        "type": "other",
-        "text": "serpentfolk"
-      },
-      {
-        "type": "other",
-        "text": "or creature that has the constrict special attack"
+        "text": "naga, serpentfolk, or creature that has the constrict special attack"
       },
       {
         "type": "feat",
@@ -31727,20 +31419,26 @@
         "text": "Ability to cast spells"
       },
       {
-        "type": "race",
-        "race": "ifrit"
-      },
-      {
-        "type": "race",
-        "race": "oread"
-      },
-      {
-        "type": "race",
-        "race": "sylph"
-      },
-      {
-        "type": "race",
-        "race": "undine"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "ifrit"
+          },
+          {
+            "type": "race",
+            "race": "oread"
+          },
+          {
+            "type": "race",
+            "race": "sylph"
+          },
+          {
+            "type": "race",
+            "race": "undine"
+          }
+        ],
+        "text": "ifrit, oread, sylph, or undine"
       }
     ],
     "benefit": "Whenever you're adjacent to an ifrit, oread, sylph, or undine ally who also has this feat, you can spontaneously replace or split a spell's damage when casting it, as though the spell were affected by Elemental Spell (without using a higher-level spell slot). The type of energy damage depends on your ally's race: acid for oread, electricity for sylph, fire for ifrit, or cold for undine.",
@@ -31761,16 +31459,8 @@
         "value": 15
       },
       {
-        "type": "class_feature",
-        "feature": "bloodrage"
-      },
-      {
-        "type": "class_feature",
-        "feature": "elemental focus"
-      },
-      {
         "type": "other",
-        "text": "or Magic Tattoo (evocation)"
+        "text": "bloodrage class feature, elemental focus class feature, or Magic Tattoo (evocation)"
       }
     ],
     "benefit": "When casting an evocation spell that deals fire damage, you can deal +1 point of fire damage per die.\n\nIf you do, you must succeed at a Fortitude save (DC = 15 + the spell or blast's level) or become fatigued. You cannot use this feat while fatigued or if you cannot become fatigued.\n\nIf you are raging (such as when using bloodrage or affected by the rage spell), this damage increases to +2 points per die and you roll twice when attempting the Fortitude save and take the better result. This feat does not otherwise grant you the ability to cast spells while raging.",
@@ -32240,47 +31930,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have been defeated and robbed of at least half your possessions by a particular group of humanoids or monstrous humanoids"
-      },
-      {
-        "type": "other",
-        "text": "or have the An Eye for an Eye"
-      },
-      {
-        "type": "other",
-        "text": "Hated Foe"
-      },
-      {
-        "type": "other",
-        "text": "Raiders"
-      },
-      {
-        "type": "other",
-        "text": "or Vengeance background. You may choose a specific race"
-      },
-      {
-        "type": "other",
-        "text": "such as duergar"
-      },
-      {
-        "type": "other",
-        "text": "or a broader group"
-      },
-      {
-        "type": "other",
-        "text": "such as goblinoids. At the GM's option"
-      },
-      {
-        "type": "other",
-        "text": "you may instead choose residents of a particular country"
-      },
-      {
-        "type": "other",
-        "text": "settlement"
-      },
-      {
-        "type": "other",
-        "text": "or tribe"
+        "text": "You must have been defeated and robbed of at least half your possessions by a particular group of humanoids or monstrous humanoids, or have the An Eye for an Eye, Hated Foe, Raiders, or Vengeance background. You may choose a specific race, such as duergar, or a broader group, such as goblinoids. At the GM's option, you may instead choose residents of a particular country, settlement, or tribe"
       }
     ],
     "benefit": "The save DCs for your spells or abilities increase by 1 when you use them against the chosen group, and you gain a +1 dodge bonus to AC against their attacks.",
@@ -32787,15 +32437,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "be a good-aligned member of a family or organization whose secret evil has been publicly revealed"
-      },
-      {
-        "type": "other",
-        "text": "or have the Dishonored Family or Betrayal backgrounds"
+        "text": "Be a member of a specific House, be a good-aligned member of a family or organization whose secret evil has been publicly revealed, or have the Dishonored Family or Betrayal backgrounds"
       }
     ],
     "benefit": "Your experience with infiltrating your own family or organization gives you a +2 bonus on Disguise checks. If you have 10 or more ranks in Disguise, this bonus increases to +4. If you are not evil, as a standard action you can choose to radiate a faint aura of evil for the purposes of spells such as detect evil. You can dismiss this ersatz aura as a standard action.",
@@ -33500,23 +33142,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You have encountered a ghost or haunt"
-      },
-      {
-        "type": "other",
-        "text": "or have the Bones"
-      },
-      {
-        "type": "other",
-        "text": "the Died"
-      },
-      {
-        "type": "other",
-        "text": "the Raised Among the Dead"
-      },
-      {
-        "type": "other",
-        "text": "or The Dead One background"
+        "text": "You have encountered a ghost or haunt, or have the Bones, the Died, the Raised Among the Dead, or The Dead One background"
       }
     ],
     "benefit": "Whenever you communicate with a ghost or haunt, whether while adventuring or through use of spells such as call spirit, speak with haunt, and speak with dead, or seances and talking boards, you gain a +2 bonus on Diplomacy and Sense Motive checks. The GM can also extend this benefit to any intelligent undead creature that has an interest in being laid to rest. If you have more than 10 ranks in either these skills, you instead gain a +4 bonus on the appropriate skill.",
@@ -33987,19 +33613,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have faced an undead"
-      },
-      {
-        "type": "other",
-        "text": "evil outsider"
-      },
-      {
-        "type": "other",
-        "text": "or aberration with a CR greater than your level +4"
-      },
-      {
-        "type": "other",
-        "text": "or have the Raised Among the Dead or The Dead One background"
+        "text": "You must have faced an undead, evil outsider, or aberration with a CR greater than your level +4, or have the Raised Among the Dead or The Dead One background"
       }
     ],
     "benefit": "You gain a +2 bonus on Knowledge (dungeoneering) checks to identify the vulnerabilities and powers of aberrations, Knowledge (planes) checks to identify the vulnerabilities and powers of evil outsiders, and Knowledge (religion) checks to identify the vulnerabilities and powers of undead, and you can make such checks untrained. If you have 10 or more ranks in any of these Knowledge skills, the bonus increases to +4 for the appropriate skill. In addition, you gain a +2 bonus on saves against fear effects.",
@@ -34549,18 +34163,24 @@
         "feat": "Improved Grapple"
       },
       {
-        "type": "bab",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 4
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 4
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 4
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 4
+          }
+        ],
+        "text": "base attack bonus +8, brawler level 4th, or monk level 4th"
       }
     ],
     "benefit": "When you are using Grabbing Style, if you use the move grapple action, you can move both yourself and a single target that you're grappling your full speed instead of half your speed. After you have done so, you can use a move action to move yourself and the target of your grapple half your speed without needing to attempt an additional combat maneuver check. You cannot use this feat if you are grappling two targets."
@@ -34588,18 +34208,24 @@
         "feat": "Improved Grapple"
       },
       {
-        "type": "bab",
-        "value": 12
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 8
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 12
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 8
+          }
+        ],
+        "text": "base attack bonus +12, brawler level 8th, or monk level 8th"
       }
     ],
     "benefit": "When you are grabbing two opponents while using Grabbing Style, you can use your grapple to move or damage one or both opponents you are grappling, instead of just one."
@@ -34620,16 +34246,22 @@
         "feat": "Improved Grapple"
       },
       {
-        "type": "bab",
-        "value": 6
-      },
-      {
-        "type": "class_feature",
-        "feature": "brawler's flurry"
-      },
-      {
-        "type": "class_feature",
-        "feature": "flurry of blows"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 6
+          },
+          {
+            "type": "class_feature",
+            "feature": "brawler's flurry"
+          },
+          {
+            "type": "class_feature",
+            "feature": "flurry of blows"
+          }
+        ],
+        "text": "base attack bonus +6, brawler's flurry class feature, or flurry of blows class feature"
       }
     ],
     "benefit": "When you use this style, you do not take a -4 penalty on combat maneuver checks to grapple a foe with only one hand. Additionally, you do not lose your Dexterity bonus to AC while pinning an opponent.",
@@ -38499,19 +38131,7 @@
       },
       {
         "type": "other",
-        "text": "worshiper of an archdevil"
-      },
-      {
-        "type": "other",
-        "text": "infernal duke"
-      },
-      {
-        "type": "other",
-        "text": "malbranche"
-      },
-      {
-        "type": "other",
-        "text": "or whore queen"
+        "text": "worshiper of an archdevil, infernal duke, malbranche, or whore queen"
       }
     ],
     "benefit": "Once per day when you channel negative energy to damage living creatures, you can attempt to affect damaged creatures with a dimensional anchor. Those damaged must make a successful Will save (DC equal to the DC of the channel effect) in addition to the normal Will save to halve damage from the channeled energy. Those that fail their save against the channeled energy take a –4 penalty on their saving throw against the dimensional anchor effect. Those that fail their second Will save are affected by dimensional anchor for a number of minutes equal to your Charisma modifier (minimum 1 minute).",
@@ -38751,23 +38371,7 @@
       },
       {
         "type": "other",
-        "text": "ability to gain an animal companion"
-      },
-      {
-        "type": "other",
-        "text": "cohort"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "other",
-        "text": "or mount"
+        "text": "ability to gain an animal companion, cohort, eidolon, familiar, or mount"
       }
     ],
     "benefit": "Your animal companion, cohort, eidolon, familiar, or mount doesn't count as threatening your opponent for the purposes of feats that require you to be the only character threatening a target. Allies with Hit Dice equal to or less than 1/2 your own Hit Dice don't count as threatening opponents for the purposes of such feats.",
@@ -39440,15 +39044,7 @@
       },
       {
         "type": "other",
-        "text": "either the animal companion"
-      },
-      {
-        "type": "other",
-        "text": "divine bond (mount)"
-      },
-      {
-        "type": "class_feature",
-        "feature": "mount"
+        "text": "either the animal companion, divine bond (mount), or mount class feature"
       },
       {
         "type": "race",
@@ -42395,8 +41991,8 @@
     "prerequisites_text": "Fetchling, shadowy resistance racial trait.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Fetchling"
+        "type": "race",
+        "race": "fetchling"
       },
       {
         "type": "other",
@@ -42417,25 +42013,8 @@
     "prerequisites_text": "Spellcraft 10 ranks, ability to acquire an animal companion, eidolon, familiar, or special mount.",
     "prerequisites": [
       {
-        "type": "skill",
-        "skill": "Spellcraft",
-        "ranks": 10
-      },
-      {
         "type": "other",
-        "text": "ability to acquire an animal companion"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "other",
-        "text": "or special mount"
+        "text": "Spellcraft 10 ranks, ability to acquire an animal companion, eidolon, familiar, or special mount"
       }
     ],
     "benefit": "Any non-instantaneous spell (but not any spell-like ability) you cast on yourself can also affect a creature bonded to you (such as an animal companion, eidolon, familiar, or special mount). The creature must be within 5 feet of you at the time of casting to receive the benefit. The spell's duration is halved between you and your bonded creature (for example, a spell with a duration of 1 hour has a duration of 30 minutes for both you and your bonded creature).\n\nIf the spell or effect has a duration other than instantaneous, it stops affecting the creature if it moves farther than 5 feet away from you. It does not affect the creature again if it returns before the duration expires.\n\nYou may share spells in this fashion even if the spells normally do not affect creatures of that type.\n\nThis feat only applies to animal companions, eidolons, familiars, or special mounts gained through a class feature."
@@ -42562,19 +42141,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Ability to acquire an animal companion"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "other",
-        "text": "or special mount"
+        "text": "Ability to acquire an animal companion, eidolon, familiar, or special mount"
       }
     ],
     "benefit": "When you are adjacent to or sharing a square with your companion creature and that companion creature has this feat, you can cast a spell on yourself and divide the duration evenly between yourself and the companion creature. You can use this feat only on spells with a duration of at least 2 rounds. For example, you could cast bull's strength on yourself, and instead of the spell lasting 1 minute per level on yourself, it lasts 5 rounds per level on yourself and 5 rounds per level on your companion.\n\nOnce the spell is cast, you and the companion creature can move farther apart without ending the effect."
@@ -44048,19 +43615,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must slay at least 50 intelligent noncombatants for either your own personal gain or for no cause at all"
-      },
-      {
-        "type": "other",
-        "text": "or have the Bloodthirsty"
-      },
-      {
-        "type": "other",
-        "text": "First Kill"
-      },
-      {
-        "type": "other",
-        "text": "or The Kill background"
+        "text": "You must slay at least 50 intelligent noncombatants for either your own personal gain or for no cause at all, or have the Bloodthirsty, First Kill, or The Kill background"
       }
     ],
     "benefit": "You gain a +2 bonus on Intimidate checks. If you have 10 or more ranks in Intimidate, this bonus increases to +4. Each time you slay an intelligent creature, you gain a +1 bonus on attack rolls and caster level checks for 1 minute (this bonus does not stack with itself).",
@@ -45048,16 +44603,22 @@
         "value": 13
       },
       {
-        "type": "race",
-        "race": "dwarf"
-      },
-      {
-        "type": "race",
-        "race": "half-orc"
-      },
-      {
-        "type": "race",
-        "race": "orc"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "dwarf"
+          },
+          {
+            "type": "race",
+            "race": "half-orc"
+          },
+          {
+            "type": "race",
+            "race": "orc"
+          }
+        ],
+        "text": "dwarf, half-orc, or orc"
       }
     ],
     "benefit": "You gain a +2 racial bonus on saving throws against any effect causing the nauseated or sickened conditions and against all ingested poisons (but not other poisons). In addition, you receive a +2 bonus on Survival skill checks to find food for yourself (and only yourself)."
@@ -45078,16 +44639,22 @@
         "value": 13
       },
       {
-        "type": "race",
-        "race": "dwarf"
-      },
-      {
-        "type": "race",
-        "race": "half-orc"
-      },
-      {
-        "type": "race",
-        "race": "orc"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "dwarf"
+          },
+          {
+            "type": "race",
+            "race": "half-orc"
+          },
+          {
+            "type": "race",
+            "race": "orc"
+          }
+        ],
+        "text": "dwarf, half-orc, or orc"
       }
     ],
     "benefit": "You gain a +1 natural armor bonus due to your unusually tough hide."
@@ -45163,18 +44730,24 @@
         "feat": "Mobility"
       },
       {
-        "type": "bab",
-        "value": 9
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 5
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 5
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 9
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 5
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 5
+          }
+        ],
+        "text": "base attack bonus +9, brawler level 5th, or monk level 5th"
       }
     ],
     "benefit": "Each time you hit with an unarmed strike while using Jabbing Style, you can move 5 feet without provoking an attack of opportunity as long as you move to a space adjacent to the opponent you hit with the unarmed strike. If you use this feat, you cannot take a 5-foot step during your next turn."
@@ -45214,18 +44787,24 @@
         "feat": "Power Attack"
       },
       {
-        "type": "bab",
-        "value": 12
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 8
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 12
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 8
+          }
+        ],
+        "text": "base attack bonus +12, brawler level 8th, or monk level 8th"
       }
     ],
     "benefit": "While using Jabbing Style, the extra damage you deal when you hit a single target with two unarmed strikes increases to 2d6, and the extra damage when you hit a single target with three or more unarmed strikes increases to 4d6."
@@ -45246,16 +44825,22 @@
         "feat": "Improved Unarmed Strike"
       },
       {
-        "type": "bab",
-        "value": 6
-      },
-      {
-        "type": "class_feature",
-        "feature": "brawler's flurry"
-      },
-      {
-        "type": "class_feature",
-        "feature": "flurry of blows"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 6
+          },
+          {
+            "type": "class_feature",
+            "feature": "brawler's flurry"
+          },
+          {
+            "type": "class_feature",
+            "feature": "flurry of blows"
+          }
+        ],
+        "text": "base attack bonus +6, brawler's flurry class feature, or flurry of blows class feature"
       }
     ],
     "benefit": "Once per round, when you hit a single target with two unarmed strikes, you deal an extra 1d6 points of damage to that target. That extra damage is added to the damage of your second attack. If you hit a single target with three or more unarmed strikes, you instead deal an extra 2d6 points of damage, which is added to your final unarmed strike against the target during the round."
@@ -45968,15 +45553,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Cold simple blast"
-      },
-      {
-        "type": "other",
-        "text": "fire simple blast"
-      },
-      {
-        "type": "other",
-        "text": "or water simple blast"
+        "text": "Cold simple blast, fire simple blast, or water simple blast"
       },
       {
         "type": "class_feature",
@@ -47941,11 +47518,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have been enslaved for at least 6 months"
-      },
-      {
-        "type": "other",
-        "text": "or have the Imprisoned or Kidnapped background"
+        "text": "You must have been enslaved for at least 6 months, or have the Imprisoned or Kidnapped background"
       }
     ],
     "benefit": "You gain a +1 bonus on attack rolls, weapon damage rolls, and skill checks when your actions would directly lead to freeing prisoners or slaves.",
@@ -48172,23 +47745,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Devoted"
-      },
-      {
-        "type": "other",
-        "text": "Exemplar"
-      },
-      {
-        "type": "other",
-        "text": "Marked by the Gods"
-      },
-      {
-        "type": "other",
-        "text": "or Righteous Mentor background"
+        "text": "Be a member of a specific House, or have the Devoted, Exemplar, Marked by the Gods, or Righteous Mentor background"
       }
     ],
     "benefit": "Once per day as a standard action, you can give all allies within 30 feet who can hear you a +1 bonus on attack rolls and on saving throws against mindaffecting effects for 1 minute.",
@@ -48890,11 +48447,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Your family must have claim to an inherited title or position that no longer belongs to them"
-      },
-      {
-        "type": "other",
-        "text": "or have the Dishonored Family background. You can take this feat even if you have no knowledge of this lost family title"
+        "text": "Your family must have claim to an inherited title or position that no longer belongs to them, or have the Dishonored Family background. You can take this feat even if you have no knowledge of this lost family title"
       }
     ],
     "benefit": "You gain a +1 bonus on Charisma-based ability checks and skill checks.",
@@ -49460,35 +49013,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Bloodline"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "mystery"
-      },
-      {
-        "type": "other",
-        "text": "phantom"
-      },
-      {
-        "type": "other",
-        "text": "spirit animal"
-      },
-      {
-        "type": "other",
-        "text": "or witch's familiar class feature and you must have an unknown secret about your magic or family history (even if you do not yet know the topic of the secret) or have the One of a Kind"
-      },
-      {
-        "type": "other",
-        "text": "the Outsider's Lineage"
-      },
-      {
-        "type": "other",
-        "text": "or the Unknown background"
+        "text": "Bloodline, eidolon, mystery, phantom, spirit animal, or witch's familiar class feature and you must have an unknown secret about your magic or family history (even if you do not yet know the topic of the secret) or have the One of a Kind, the Outsider's Lineage, or the Unknown background"
       }
     ],
     "benefit": "Select a class feature from the following list: one bloodline power, eidolon evolutions, one revelation, phantom abilities, spirit animal, or witch's familiar. The feature must be from a class you have at least 1 level in, and you must have the class feature. You can treat either your class level as being 1 higher, or your Intelligence, Wisdom, or Charisma score as 2 higher, for the purpose of calculating the effect of the selected power. This impacts only the calculations of your existing powers that are based on class level or the appropriate ability score.\n\nIt does not grant you early access to abilities gained at higher levels.",
@@ -49574,19 +49099,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must either have sold five or more self-created works of art worth a total of at least 5"
-      },
-      {
-        "type": "other",
-        "text": "000 gp"
-      },
-      {
-        "type": "other",
-        "text": "have performed at least five performances for audiences of 50 or more while achieving a great performance result or better on your Perform check"
-      },
-      {
-        "type": "other",
-        "text": "or have the Virtuoso background"
+        "text": "You must either have sold five or more self-created works of art worth a total of at least 5, 000 gp, have performed at least five performances for audiences of 50 or more while achieving a great performance result or better on your Perform check, or have the Virtuoso background"
       }
     ],
     "benefit": "Choose a single Craft or Perform skill. Whenever you take 10 with this skill, treat your die result as a 15 instead.",
@@ -50198,16 +49711,22 @@
     "prerequisites_text": "Great Fortitude, Iron Will, or Lightning Reflexes.",
     "prerequisites": [
       {
-        "type": "feat",
-        "feat": "Great Fortitude"
-      },
-      {
-        "type": "feat",
-        "feat": "Iron Will"
-      },
-      {
-        "type": "feat",
-        "feat": "Lightning Reflexes"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Great Fortitude"
+          },
+          {
+            "type": "feat",
+            "feat": "Iron Will"
+          },
+          {
+            "type": "feat",
+            "feat": "Lightning Reflexes"
+          }
+        ],
+        "text": "Great Fortitude, Iron Will, or Lightning Reflexes"
       }
     ],
     "benefit": "You can use the surge ability once per day (adding 1d6). If you are or become mythic, you can use your surge one additional time per day."
@@ -52646,15 +52165,7 @@
       },
       {
         "type": "other",
-        "text": "divine bond (mount)"
-      },
-      {
-        "type": "other",
-        "text": "hunter's bond (animal companion)"
-      },
-      {
-        "type": "other",
-        "text": "or mount class feature with an effective druid level of 4"
+        "text": "divine bond (mount), hunter's bond (animal companion), or mount class feature with an effective druid level of 4"
       }
     ],
     "benefit": "You can select an exotic beast from the list of monstrous mounts to serve as your animal companion or special mount. You acquire and advance this creature in the same way as the mount or animal companion detailed in the class feature used as a prerequisite for this feat. You can also dismiss the creature as dictated by your class feature.\n\nYou must meet additional prerequisites to choose a creature with an Intelligence score of 3 or higher, as described in each creature's entry.",
@@ -52882,8 +52393,8 @@
         "value": 9
       },
       {
-        "type": "other",
-        "text": "duskwalker"
+        "type": "race",
+        "race": "duskwalker"
       },
       {
         "type": "other",
@@ -54412,19 +53923,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Adopted by Dragons"
-      },
-      {
-        "type": "other",
-        "text": "Path of Righteous Rage"
-      },
-      {
-        "type": "other",
-        "text": "or Proud Heritage background"
+        "text": "Be a member of a specific House, or have the Adopted by Dragons, Path of Righteous Rage, or Proud Heritage background"
       }
     ],
     "benefit": "Your stern demeanor gives you a +2 bonus on Intimidate checks. If you have 10 or more ranks in Intimidate, this bonus increases to +4. You also gain a +2 bonus on saves against paralysis and sleep effects.",
@@ -54467,15 +53966,7 @@
       },
       {
         "type": "other",
-        "text": "moon"
-      },
-      {
-        "type": "other",
-        "text": "stars"
-      },
-      {
-        "type": "other",
-        "text": "or winter patron"
+        "text": "moon, stars, or winter patron"
       }
     ],
     "benefit": "When you gain this feat, choose one hex that you can use to affect no more than one opponent. When you are in view of the night sky and use that hex, increase the save DC of that hex by 2.",
@@ -55054,15 +54545,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have some highly personal stake in attaining the object of your quest as determined collectively by you and the GM-such as needing an ancestral weapon to exact your revenge against a known betrayer"
-      },
-      {
-        "type": "other",
-        "text": "seeking to destroy the artifact that caused your family's downfall generations ago"
-      },
-      {
-        "type": "other",
-        "text": "or attempting to behead a monster that ravaged your homeland during your youth"
+        "text": "You must have some highly personal stake in attaining the object of your quest as determined collectively by you and the GM-such as needing an ancestral weapon to exact your revenge against a known betrayer, seeking to destroy the artifact that caused your family's downfall generations ago, or attempting to behead a monster that ravaged your homeland during your youth"
       }
     ],
     "benefit": "When you gain this feat, select one of the quest objects on this page, or devise a quest object with your GM based on the quest objects presented in this section.\n\nYou gain a +2 bonus on any Knowledge checks to gain information on the object of your quest. If you have 10 or more ranks in the Knowledge skill in question, the bonus increases to +4. In addition, once per day when you threaten a critical hit against a foe who specifically aims to stop you from completing your quest, you gain a +10 bonus on your confirmation roll against that opponent. You must announce the use of this ability after threatening the critical hit and before rolling your confirmation roll. This bonus does not stack with bonuses on confirmation rolls from other feats, such as Critical Focus.",
@@ -56024,15 +55507,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have refused an evil creature with at least 15 Hit Dice who offered gifts or assistance"
-      },
-      {
-        "type": "other",
-        "text": "have refused an evil creature offering to cast a spell of 7th-level or higher on your behalf"
-      },
-      {
-        "type": "other",
-        "text": "or have the Planar Offering background"
+        "text": "You must have refused an evil creature with at least 15 Hit Dice who offered gifts or assistance, have refused an evil creature offering to cast a spell of 7th-level or higher on your behalf, or have the Planar Offering background"
       }
     ],
     "benefit": "When negotiating with evil outsiders, you gain a +2 bonus on Bluff and Diplomacy checks. You gain an amount of spell resistance equal to 5 + your character level against spells and spell-like abilities originating from outsiders with the evil subtype.",
@@ -56052,23 +55527,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Bloodthirsty"
-      },
-      {
-        "type": "other",
-        "text": "Omen"
-      },
-      {
-        "type": "other",
-        "text": "Tree Tender"
-      },
-      {
-        "type": "other",
-        "text": "or Unsuspecting Master background"
+        "text": "Be a member of a specific House, or have the Bloodthirsty, Omen, Tree Tender, or Unsuspecting Master background"
       }
     ],
     "benefit": "You add 1 day to the time you can go without food or water before making Constitution checks and you add +4 to Constitution checks to stave off the effects of starvation and thirst.",
@@ -56282,19 +55741,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have been defeated by the same individual"
-      },
-      {
-        "type": "other",
-        "text": "organization"
-      },
-      {
-        "type": "other",
-        "text": "or creature type at least four times"
-      },
-      {
-        "type": "other",
-        "text": "or have the Boarding School or Humiliated background"
+        "text": "You must have been defeated by the same individual, organization, or creature type at least four times, or have the Boarding School or Humiliated background"
       }
     ],
     "benefit": "You take only half the normal penalties from exhaustion. Choose one skill upon selecting this feat. Once per day, you can forgo rest to study or practice, gaining a +3 bonus on all checks attempted with your selected skill for 24 hours but becoming fatigued in the process. If you rest to recover from this fatigue, this bonus ends (but not if you recover from your fatigue in other ways, such as via lesser restoration). Forgoing rest for this purpose does not interfere with a spellcaster's ability to prepare spells.",
@@ -57181,16 +56628,8 @@
     "prerequisites_text": "Half-elf, half-orc, or halfling (see Special).",
     "prerequisites": [
       {
-        "type": "race",
-        "race": "half-elf"
-      },
-      {
-        "type": "race",
-        "race": "half-orc"
-      },
-      {
         "type": "other",
-        "text": "or halfling (see Special)"
+        "text": "Half-elf, half-orc, or halfling (see Special)"
       }
     ],
     "benefit": "You receive a +10 bonus on Disguise checks to disguise yourself as a human, and do not receive the penalty for disguising yourself as a member of another race when you do so. In areas largely populated or settled by humans, you can take 10 on your Disguise check, meaning most people tend to assume you are human unless given a reason to think otherwise.",
@@ -57821,15 +57260,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Ability to cause disease via a spell"
-      },
-      {
-        "type": "other",
-        "text": "spell-like ability"
-      },
-      {
-        "type": "other",
-        "text": "or supernatural means"
+        "text": "Ability to cause disease via a spell, spell-like ability, or supernatural means"
       }
     ],
     "benefit": "When you successfully use a spell, spell-like ability, or supernatural ability to cause a creature to contract a disease, you gain a +2 bonus on attack rolls with natural weapons and unarmed strikes against that creature. In addition, such attacks deal an additional 1d6 points of negative energy damage. If you have the supernatural ability to cause a single disease (such as mummy rot), you gain these bonuses against any creature that has contracted the same disease, even if it did not contract it from you.",
@@ -58489,31 +57920,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must spend a significant amount of time on a plane other than your home plane or the Material Plane. Typically"
-      },
-      {
-        "type": "other",
-        "text": "this amount of time should coincide with an adventure set on that plane"
-      },
-      {
-        "type": "other",
-        "text": "but at the GM's discretion"
-      },
-      {
-        "type": "other",
-        "text": "you can qualify for this feat in other ways"
-      },
-      {
-        "type": "other",
-        "text": "such as by being subjected to a powerful planar effect via the influence of an artifact associated with that plane"
-      },
-      {
-        "type": "other",
-        "text": "being exposed to raw energies from the plane"
-      },
-      {
-        "type": "other",
-        "text": "or even by dying on another plane and being brought back to life in that reality"
+        "text": "You must spend a significant amount of time on a plane other than your home plane or the Material Plane. Typically, this amount of time should coincide with an adventure set on that plane, but at the GM's discretion, you can qualify for this feat in other ways, such as by being subjected to a powerful planar effect via the influence of an artifact associated with that plane, being exposed to raw energies from the plane, or even by dying on another plane and being brought back to life in that reality"
       }
     ],
     "benefit": "Your body, mind, or soul gains a benefit of some sort as a result of your infusion with the plane of your choice for which you meet the prerequisite. Details on planar infusions can be found in each plane's Infusion section (here).\n\nPlanar infusions that take actions to activate are supernatural abilities unless they specifically allow for the use of a spell, in which case they are spell-like abilities.\n\nYour caster level for spell-like abilities granted by a planar infusion is equal to your Hit Dice (maximum CL 20th). All other planar infusions are extraordinary abilities.",
@@ -59808,23 +59215,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Craftsperson"
-      },
-      {
-        "type": "other",
-        "text": "Inheritance"
-      },
-      {
-        "type": "other",
-        "text": "Well-Connected Friend"
-      },
-      {
-        "type": "other",
-        "text": "or Worldshaker background"
+        "text": "Be a member of a specific House, or have the Craftsperson, Inheritance, Well-Connected Friend, or Worldshaker background"
       }
     ],
     "benefit": "When in a settlement the size of a large city or smaller, you receive a +2 bonus on Appraise checks and Diplomacy checks. If you have 10 or more ranks in one of these skills, the bonus on that skill increases to +4.",
@@ -59886,23 +59277,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Your community has come under persecution and requires considerable defense"
-      },
-      {
-        "type": "other",
-        "text": "or you have the Raiders"
-      },
-      {
-        "type": "other",
-        "text": "the Righting a Wrong"
-      },
-      {
-        "type": "other",
-        "text": "The War"
-      },
-      {
-        "type": "other",
-        "text": "or The Way Things Work background"
+        "text": "Your community has come under persecution and requires considerable defense, or you have the Raiders, the Righting a Wrong, The War, or The Way Things Work background"
       }
     ],
     "benefit": "You temporarily gain the Craft Construct feat for the purposes of building one golem to satisfy the goal of this story feat. You do not need to meet Craft Construct's prerequisites, and it can't be used as a prerequisite for any other crafting endeavor.",
@@ -60244,18 +59619,24 @@
         "feat": "Pummeling Style"
       },
       {
-        "type": "bab",
-        "value": 9
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 5
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 5
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 9
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 5
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 5
+          }
+        ],
+        "text": "base attack bonus +9, brawler level 5th, or monk level 5th"
       }
     ],
     "benefit": "When you hit with a Pummeling Style attack, you can attempt a reposition or trip combat maneuver check as a free action."
@@ -60279,18 +59660,24 @@
         "feat": "Pummeling Style"
       },
       {
-        "type": "bab",
-        "value": 12
-      },
-      {
-        "type": "class_level",
-        "class": "brawler",
-        "value": 8
-      },
-      {
-        "type": "class_level",
-        "class": "monk",
-        "value": 8
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 12
+          },
+          {
+            "type": "class_level",
+            "class": "brawler",
+            "value": 8
+          },
+          {
+            "type": "class_level",
+            "class": "monk",
+            "value": 8
+          }
+        ],
+        "text": "base attack bonus +12, brawler level 8th, or monk level 8th"
       }
     ],
     "benefit": "When using Pummeling Style, you can charge and make a Pummeling Style attack at the end of your charge as part of the charge action.",
@@ -60312,16 +59699,22 @@
         "feat": "Improved Unarmed Strike"
       },
       {
-        "type": "bab",
-        "value": 6
-      },
-      {
-        "type": "class_feature",
-        "feature": "brawler's flurry"
-      },
-      {
-        "type": "class_feature",
-        "feature": "flurry of blows"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "bab",
+            "value": 6
+          },
+          {
+            "type": "class_feature",
+            "feature": "brawler's flurry"
+          },
+          {
+            "type": "class_feature",
+            "feature": "flurry of blows"
+          }
+        ],
+        "text": "base attack bonus +6, brawler's flurry class feature, or flurry of blows class feature"
       }
     ],
     "benefit": "As a full-round action, you can pool all your attack potential in one devastating punch. Make a number of rolls equal to the number of attacks you can make with a full attack or a flurry of blows (your choice) with the normal attack bonus for each attack. For each roll that is a hit, you deal the normal amount of damage, adding it to any damage the attack has already dealt from previous rolls (if any). If any of the attack rolls are critical threats, make one confirmation roll for the entire attack at your highest base attack bonus. If it succeeds, the entire attack is a confirmed critical hit."
@@ -60436,19 +59829,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have survived an encounter with a challenging foe without suffering significant harm by striking a deal (regardless of whether the deal was with the challenging foe or not)"
-      },
-      {
-        "type": "other",
-        "text": "or have the Boss"
-      },
-      {
-        "type": "other",
-        "text": "the Liege Lord"
-      },
-      {
-        "type": "other",
-        "text": "or the Well-Connected Friend background"
+        "text": "You must have survived an encounter with a challenging foe without suffering significant harm by striking a deal (regardless of whether the deal was with the challenging foe or not), or have the Boss, the Liege Lord, or the Well-Connected Friend background"
       }
     ],
     "benefit": "If you succeed at a Diplomacy check to make a request of a creature by 5 or more, the DCs of additional requests you attempt increase by 1 per request, rather than 5.",
@@ -62571,11 +61952,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have lost class features by violating the code of conduct of a class that possesses such a code"
-      },
-      {
-        "type": "other",
-        "text": "or have the Dishonored Family background"
+        "text": "You must have lost class features by violating the code of conduct of a class that possesses such a code, or have the Dishonored Family background"
       }
     ],
     "benefit": "As an immediate action, you can add a +1 bonus to the result of an ability check, attack roll, saving throw, or skill check you have just rolled by becoming shaken for 1 minute. You must choose before the result is revealed.",
@@ -62974,8 +62351,8 @@
     "prerequisites_text": "Wyvaran.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Wyvaran"
+        "type": "race",
+        "race": "wyvaran"
       }
     ],
     "benefit": "You gain a +2 bonus on Appraise checks to determine an item’s value and on Spellcraft checks to determine an item’s magic properties. For every 5 points by which you exceed the DC, you can determine additional details about the item at the GM’s discretion, such as its country of origin, the crafter’s race, techniques employed in its creation, or whether it has any historical significance.",
@@ -63177,11 +62554,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Divine bond (armor or shield)"
-      },
-      {
-        "type": "class_feature",
-        "feature": "sacred armor"
+        "text": "Divine bond (armor or shield), or sacred armor class feature"
       }
     ],
     "benefit": "While your armor or shield is under the effect of your divine bond or your sacred armor ability, you gain an amount of damage reduction equal to your armor's enhancement bonus (including the bonus from your divine bond or sacred armor) against the first attack to strike you in each round. An adamantine weapon overcomes this damage reduction, but any attack against you made with such a weapon does not count against this effect's duration."
@@ -67161,19 +66534,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Ability to acquire an animal companion"
-      },
-      {
-        "type": "other",
-        "text": "eidolon"
-      },
-      {
-        "type": "other",
-        "text": "familiar"
-      },
-      {
-        "type": "other",
-        "text": "or special mount"
+        "text": "Ability to acquire an animal companion, eidolon, familiar, or special mount"
       }
     ],
     "benefit": "When you and your companion creature have this feat, your companion creature is adjacent to you or sharing your square, and you receive the benefit of a healing spell (whether from yourself or another source), you can divide the hit points healed evenly between yourself and your companion creature."
@@ -67761,15 +67122,7 @@
       },
       {
         "type": "other",
-        "text": "proficiency with light shields"
-      },
-      {
-        "type": "other",
-        "text": "heavy shields"
-      },
-      {
-        "type": "other",
-        "text": "or tower shields"
+        "text": "proficiency with light shields, heavy shields, or tower shields"
       }
     ],
     "benefit": "You can use a two-handed weapon sized appropriately for you from the polearm or spears weapon group while also using a light, heavy, or tower shield with which you are proficient. The shield's armor check penalty (if any) applies to attacks made with the weapon.",
@@ -68712,24 +68065,30 @@
         "ranks": 1
       },
       {
-        "type": "race",
-        "race": "kitsune"
-      },
-      {
-        "type": "race",
-        "race": "nagaji"
-      },
-      {
-        "type": "race",
-        "race": "samsaran"
-      },
-      {
-        "type": "race",
-        "race": "tengu"
-      },
-      {
-        "type": "race",
-        "race": "wayang"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "kitsune"
+          },
+          {
+            "type": "race",
+            "race": "nagaji"
+          },
+          {
+            "type": "race",
+            "race": "samsaran"
+          },
+          {
+            "type": "race",
+            "race": "tengu"
+          },
+          {
+            "type": "race",
+            "race": "wayang"
+          }
+        ],
+        "text": "kitsune, nagaji, samsaran, tengu, or wayang"
       }
     ],
     "benefit": "You gain a +2 insight bonus on Will saves against mind-affecting spells and effects and a +3 insight bonus on Bluff checks. Both benefits apply only against humanoid creatures of races other than your own.",
@@ -68993,16 +68352,8 @@
         "ranks": 7
       },
       {
-        "type": "feat",
-        "feat": "Improved Called Shot"
-      },
-      {
         "type": "other",
-        "text": "targeted strike swashbuckler deed"
-      },
-      {
-        "type": "other",
-        "text": "or targeting gunslinger deed"
+        "text": "Improved Called Shot, targeted strike swashbuckler deed, or targeting gunslinger deed"
       }
     ],
     "benefit": "Each creature you hit using a called shot, the targeted strike swashbuckler deed, or the targeting gunslinger deed must succeed at a Will save or be shaken for 1d3 rounds (DC = 10 + half your character level + your Charisma modifier).\n\nYou must be using this style and attacking with a weapon for which you have Weapon Focus to gain this benefit. This is a fear effect that doesn't stack with itself or with other fear effects. If a creature is already shaken and you make it shaken using this feat, the duration of the shaken condition is merely extended.\n\nIf this attack deals damage, you can also have the injury leave a distinctive mark, such as a letter, shape, or other simple symbol. This mark heals naturally and disappears once the target has healed the damage dealt by your attack.\n\nAs a free action after the attack, you can spend 1 grit point or 1 panache point to make the mark heal as a permanent scar unless the target succeeds at a Fortitude save (DC = 10 + half your character level + your Charisma modifier). You gain a +2 bonus on Perception checks to see through the disguises of creatures that bear your mark.",
@@ -69272,8 +68623,8 @@
     "prerequisites_text": "Wyvaran.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Wyvaran"
+        "type": "race",
+        "race": "wyvaran"
       }
     ],
     "benefit": "You gain a +4 circumstance bonus on Craft checks to recreate an object you have seen before. You can spend 1 week studying the object to increase the circumstance bonus to +8. This doesn’t include the time spent crafting the item.",
@@ -71833,16 +71184,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Con"
-      },
-      {
-        "type": "other",
-        "text": "Dex"
-      },
-      {
-        "type": "ability",
-        "ability": "wis",
-        "value": 13
+        "text": "Con, Dex, or Wis 13"
       }
     ],
     "benefit": "Select one school of magic. You gain a +2 bonus on all saving throws against spells of that school.",
@@ -72120,16 +71462,22 @@
         "value": 13
       },
       {
-        "type": "feat",
-        "feat": "Great Fortitude"
-      },
-      {
-        "type": "feat",
-        "feat": "Iron Will"
-      },
-      {
-        "type": "feat",
-        "feat": "Lightning Reflexes"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Great Fortitude"
+          },
+          {
+            "type": "feat",
+            "feat": "Iron Will"
+          },
+          {
+            "type": "feat",
+            "feat": "Lightning Reflexes"
+          }
+        ],
+        "text": "Great Fortitude, Iron Will, or Lightning Reflexes"
       }
     ],
     "benefit": "Once per hour, as an immediate action after you succeed at a saving throw against a creature's spell or spell-like ability, you gain a number of temporary hit points equal to 1d6 plus the spell's level for 1 minute. While these temporary hit points last, you gain a +2 bonus on saving throws against spells and spell-like abilities cast by that creature. If you have 10 or more Hit Dice, the number of temporary hit points you gain from this feat doubles. These temporary hit points stack with those gained from other sources, but not with each other.",
@@ -72535,15 +71883,7 @@
       },
       {
         "type": "other",
-        "text": "Lawful neutral"
-      },
-      {
-        "type": "other",
-        "text": "lawful evil"
-      },
-      {
-        "type": "other",
-        "text": "or neutral evil"
+        "text": "Lawful neutral, lawful evil, or neutral evil"
       }
     ],
     "benefit": "Whenever you wear a specially crafted oni mask (which costs 50 gp), you gain a primary gore attack dealing 1d4 points of damage. If you have poison use, you can apply poison to this gore attack as a move action.",
@@ -73826,19 +73166,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Hunter"
-      },
-      {
-        "type": "other",
-        "text": "Nature"
-      },
-      {
-        "type": "other",
-        "text": "or Tree Tender background"
+        "text": "Be a member of a specific House, or have the Hunter, Nature, or Tree Tender background"
       }
     ],
     "benefit": "Once per day as a move action, you gain a +2 bonus on saving throws against mind-affecting effects for 1 minute.",
@@ -74107,18 +73435,8 @@
     "prerequisites_text": "Cha 15, Int 15, or Wis 15 (see special).",
     "prerequisites": [
       {
-        "type": "ability",
-        "ability": "cha",
-        "value": 15
-      },
-      {
-        "type": "ability",
-        "ability": "int",
-        "value": 15
-      },
-      {
         "type": "other",
-        "text": "or Wis 15 (see special)"
+        "text": "Cha 15, Int 15, or Wis 15 (see special)"
       }
     ],
     "benefit": "Whenever you fail a concentration check while casting defensively and would normally lose a prepared spell or spell slot, you may attempt a Will save (DC = 15 + spell level) to retain the spell as though you had not attempted to cast it. The failed concentration check still results in the spell's failure, even if the spell is retained.",
@@ -74277,19 +73595,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Channel energy 7d6"
-      },
-      {
-        "type": "other",
-        "text": "worshiper of a deity of metal"
-      },
-      {
-        "type": "other",
-        "text": "stone"
-      },
-      {
-        "type": "other",
-        "text": "or mountains"
+        "text": "Channel energy 7d6, worshiper of a deity of metal, stone, or mountains"
       }
     ],
     "benefit": "Once per day when you channel positive energy to heal living creatures, you can grant healed creatures damage reduction. Affected creatures gain DR 2/- (or increase their DR/- by 2, if they already have DR/-) for a number of minutes equal to your Charisma bonus (minimum 1 minute).",
@@ -75601,11 +74907,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Ability to cast a spell or spell-like ability with the curse descriptor"
-      },
-      {
-        "type": "other",
-        "text": "or a special ability with a curse effect"
+        "text": "Ability to cast a spell or spell-like ability with the curse descriptor, or a special ability with a curse effect"
       }
     ],
     "benefit": "Any curse effect you create is difficult to remove.\n\nWhen a creature makes a caster level check to remove the curse, it must roll twice and take the worse result.",
@@ -76281,15 +75583,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Chaotic neutral"
-      },
-      {
-        "type": "other",
-        "text": "lawful neutral"
-      },
-      {
-        "type": "other",
-        "text": "or neutral alignment"
+        "text": "Chaotic neutral, lawful neutral, or neutral alignment"
       }
     ],
     "benefit": "When casting a summon monster spell, you gain access to the list of neutral creatures at right. You may also summon creatures from the standard summon monster list and apply the counterpoised creature simple template to applicable creatures instead of the celestial or fiendish template.\n\nCreatures you summon from the list and creatures you summon with the counterpoised template gain a +2 resistance bonus on Will saves.\n\nTable: Summon Monster I\nTable: Summon Monster I Creature Alignment Subtype(s) Sprite CN - Stirge N - Table: Summon Monster II Creature Alignment Subtype(s) Atomie CN - Brownie N - Table: Summon Monster III Creature Alignment Subtype(s) Arbiter LN inevitable Nosoi N psychopomp Paracletus N aeon Thoqqua N - Voidworm CN protean Table: Summon Monster IV Creature Alignment Subtype(s) D'ziriak N - Magmin CN - Mephit (any) N - Satyr CN - Shae N - Viduus ( psychopomp ) N psychopomp Table: Summon Monster V Creature Alignment Subtype(s) Catrina N psychopomp Mercane LN - Rast N - Tojanida N - Table: Summon Monster VI Creature Alignment Subtype(s) Chaos Beast CN - Invisible stalker N - Naunet CN protean Theletos N aeon Vanth N psychopomp Table: Summon Monster VII Creature Alignment Subtype(s) Axiomite LN - Jyoti N - Shoki N psychopomp Zelekhut LN inevitable Table: Summon Monster VIII Creature Alignment Subtype(s) Imentesh CN protean Table: Summon Monster IX Creature Alignment Subtype(s) Akhana N aeon Morrigna N psychopomp Valkyrie CN - | Creature | Alignment | Subtype(s) | Sprite | CN | - | Stirge | N | - | Creature | Alignment | Subtype(s) | Atomie | CN | - | Brownie | N | - | Creature | Alignment | Subtype(s) | Arbiter | LN | inevitable | Nosoi | N | psychopomp | Paracletus | N | aeon | Thoqqua | N | - | Voidworm | CN | protean | Creature | Alignment | Subtype(s) | D'ziriak | N | - | Magmin | CN | - | Mephit (any) | N | - | Satyr | CN | - | Shae | N | - | Viduus ( psychopomp ) | N | psychopomp | Creature | Alignment | Subtype(s) | Catrina | N | psychopomp | Mercane | LN | - | Rast | N | - | Tojanida | N | - | Creature | Alignment | Subtype(s) | Chaos Beast | CN | - | Invisible stalker | N | - | Naunet | CN | protean | Theletos | N | aeon | Vanth | N | psychopomp | Creature | Alignment | Subtype(s) | Axiomite | LN | - | Jyoti | N | - | Shoki | N | psychopomp | Zelekhut | LN | inevitable | Creature | Alignment | Subtype(s) | Imentesh | CN | protean | Creature | Alignment | Subtype(s) | Akhana | N | aeon | Morrigna | N | psychopomp | Valkyrie | CN | -\nCreature | Alignment | Subtype(s)\nSprite | CN | -\nStirge | N | -\nCreature | Alignment | Subtype(s)\nAtomie | CN | -\nBrownie | N | -\nCreature | Alignment | Subtype(s)\nArbiter | LN | inevitable\nNosoi | N | psychopomp\nParacletus | N | aeon\nThoqqua | N | -\nVoidworm | CN | protean\nCreature | Alignment | Subtype(s)\nD'ziriak | N | -\nMagmin | CN | -\nMephit (any) | N | -\nSatyr | CN | -\nShae | N | -\nViduus ( psychopomp ) | N | psychopomp\nCreature | Alignment | Subtype(s)\nCatrina | N | psychopomp\nMercane | LN | -\nRast | N | -\nTojanida | N | -\nCreature | Alignment | Subtype(s)\nChaos Beast | CN | -\nInvisible stalker | N | -\nNaunet | CN | protean\nTheletos | N | aeon\nVanth | N | psychopomp\nCreature | Alignment | Subtype(s)\nAxiomite | LN | -\nJyoti | N | -\nShoki | N | psychopomp\nZelekhut | LN | inevitable\nCreature | Alignment | Subtype(s)\nImentesh | CN | protean\nCreature | Alignment | Subtype(s)\nAkhana | N | aeon\nMorrigna | N | psychopomp\nValkyrie | CN | -",
@@ -76658,19 +75952,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Alchemist discovery"
-      },
-      {
-        "type": "other",
-        "text": "arcane discovery"
-      },
-      {
-        "type": "other",
-        "text": "arcanist exploit"
-      },
-      {
-        "type": "other",
-        "text": "or magus arcana class feature and you must either have observed a created magical effect you could not understand or have the Master Craftsman or the Unquenchable Hunger for Knowledge background"
+        "text": "Alchemist discovery, arcane discovery, arcanist exploit, or magus arcana class feature and you must either have observed a created magical effect you could not understand or have the Master Craftsman or the Unquenchable Hunger for Knowledge background"
       }
     ],
     "benefit": "Treat your Intelligence, Wisdom, or Charisma score as 2 higher for the purpose of calculating the effects and save DCs of one of the following class features: alchemist discoveries, arcane discoveries, arcanist exploits, or magus arcana. You select both the ability score and class feature to be affected when you select this feat, and the choice cannot be changed. This increases the potency of the abilities but does not grant access to additional abilities.",
@@ -76871,8 +76153,8 @@
     "prerequisites_text": "Drow, spell-like abilities drow racial trait.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Drow"
+        "type": "race",
+        "race": "drow"
       },
       {
         "type": "other",
@@ -78975,15 +78257,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Assassinate ninja master trick"
-      },
-      {
-        "type": "other",
-        "text": "assassinate slayer advanced talent"
-      },
-      {
-        "type": "other",
-        "text": "or death attack"
+        "text": "Assassinate ninja master trick, assassinate slayer advanced talent, or death attack"
       }
     ],
     "benefit": "If you attempt to instantly kill a foe with a death attack, or with the assassinate master trick or advanced talent, and the target doesn't die, the target is shaken for 2d4 rounds.",
@@ -79191,15 +78465,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have stolen at least 1"
-      },
-      {
-        "type": "other",
-        "text": "000 gp worth of treasure without being caught and kept mementos of these thefts worth at least 500 gp"
-      },
-      {
-        "type": "other",
-        "text": "or have the Greed background"
+        "text": "You must have stolen at least 1, 000 gp worth of treasure without being caught and kept mementos of these thefts worth at least 500 gp, or have the Greed background"
       }
     ],
     "benefit": "Once per day when you attempt a Disable Device check to open a lock or Sleight of Hand check to pick a pocket, you can roll twice and take the better result.",
@@ -79875,19 +79141,25 @@
     "prerequisites_text": "Craft (any) 1 rank, Disable Device 1 rank, or Profession (any) 1 rank.",
     "prerequisites": [
       {
-        "type": "skill",
-        "skill": "Craft (any)",
-        "ranks": 1
-      },
-      {
-        "type": "skill",
-        "skill": "Disable Device",
-        "ranks": 1
-      },
-      {
-        "type": "skill",
-        "skill": "Profession (any)",
-        "ranks": 1
+        "type": "any_of",
+        "options": [
+          {
+            "type": "skill",
+            "skill": "Craft (any)",
+            "ranks": 1
+          },
+          {
+            "type": "skill",
+            "skill": "Disable Device",
+            "ranks": 1
+          },
+          {
+            "type": "skill",
+            "skill": "Profession (any)",
+            "ranks": 1
+          }
+        ],
+        "text": "Craft (any) 1 rank, Disable Device 1 rank, or Profession (any) 1 rank"
       }
     ],
     "benefit": "You take no penalty for using an improvised tool associated with a skill in which you have at least 1 rank. For example, if you have 1 rank in Disable Device, you take no penalty when opening a lock without a proper tool. If you have at least 3 ranks in a skill, you can treat a normal tool associated with that skill as though it were a masterwork tool.",
@@ -80234,15 +79506,7 @@
       },
       {
         "type": "other",
-        "text": "no barbarian totem rage powers except those chosen with this feat"
-      },
-      {
-        "type": "feat",
-        "feat": "Totemic Disciple"
-      },
-      {
-        "type": "feat",
-        "feat": "Totemic Initiate"
+        "text": "no barbarian totem rage powers except those chosen with this feat, Totemic Disciple, or Totemic Initiate"
       },
       {
         "type": "other",
@@ -80480,11 +79744,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have 5 ranks in Intimidate and a personal motivation to clean up a particular town (such as an old friend calling in a favor, or seeking a place to settle down)"
-      },
-      {
-        "type": "other",
-        "text": "or you must have the Bounty Hunter or Champion of the People background"
+        "text": "You must have 5 ranks in Intimidate and a personal motivation to clean up a particular town (such as an old friend calling in a favor, or seeking a place to settle down), or you must have the Bounty Hunter or Champion of the People background"
       }
     ],
     "benefit": "Choose a particular settlement. When you're in your chosen settlement, the DC of Intimidate checks made against you increases by 10. You gain a +1 bonus on attack rolls and a +1 dodge bonus to AC against undesirable elements like criminals or ruffians in your chosen settlement. This bonus increases to +2 for combat maneuver checks.",
@@ -81389,35 +80649,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have found love with a person you can't be with"
-      },
-      {
-        "type": "other",
-        "text": "have a current lover"
-      },
-      {
-        "type": "other",
-        "text": "or have the Current Lover"
-      },
-      {
-        "type": "other",
-        "text": "For Love"
-      },
-      {
-        "type": "other",
-        "text": "or The Lover background. Possible complications include distance"
-      },
-      {
-        "type": "other",
-        "text": "your love being with another"
-      },
-      {
-        "type": "other",
-        "text": "your feelings being unrequited"
-      },
-      {
-        "type": "other",
-        "text": "or your relationship being forbidden"
+        "text": "You must have found love with a person you can't be with, have a current lover, or have the Current Lover, For Love, or The Lover background. Possible complications include distance, your love being with another, your feelings being unrequited, or your relationship being forbidden"
       }
     ],
     "benefit": "You add 1 to the save DC and caster level of your spells and spell-like abilities with the emotion descriptor. In addition, you gain a +2 bonus on Sense Motive checks. If you have 10 or more ranks in Sense Motive, this bonus increases to +4.",
@@ -81868,11 +81100,7 @@
       },
       {
         "type": "other",
-        "text": "Improved Two-Weapon Fighting and Two-Weapon Fighting"
-      },
-      {
-        "type": "class_feature",
-        "feature": "flurry of blows"
+        "text": "Improved Two-Weapon Fighting and Two-Weapon Fighting, or flurry of blows class feature"
       },
       {
         "type": "feat",
@@ -81919,11 +81147,7 @@
       },
       {
         "type": "other",
-        "text": "Improved Two-Weapon Fighting and Two-Weapon Fighting"
-      },
-      {
-        "type": "class_feature",
-        "feature": "flurry of blows"
+        "text": "Improved Two-Weapon Fighting and Two-Weapon Fighting, or flurry of blows class feature"
       },
       {
         "type": "feat",
@@ -82206,16 +81430,22 @@
         "value": 15
       },
       {
-        "type": "feat",
-        "feat": "Fencing Grace"
-      },
-      {
-        "type": "feat",
-        "feat": "Slashing Grace"
-      },
-      {
-        "type": "feat",
-        "feat": "Starry Grace"
+        "type": "any_of",
+        "options": [
+          {
+            "type": "feat",
+            "feat": "Fencing Grace"
+          },
+          {
+            "type": "feat",
+            "feat": "Slashing Grace"
+          },
+          {
+            "type": "feat",
+            "feat": "Starry Grace"
+          }
+        ],
+        "text": "Fencing Grace, Slashing Grace, or Starry Grace"
       },
       {
         "type": "feat",
@@ -83227,27 +82457,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have a close relative"
-      },
-      {
-        "type": "other",
-        "text": "spouse"
-      },
-      {
-        "type": "other",
-        "text": "or other person dear to your heart who never returned from a journey"
-      },
-      {
-        "type": "other",
-        "text": "was captured"
-      },
-      {
-        "type": "other",
-        "text": "or otherwise vanished with little trace"
-      },
-      {
-        "type": "other",
-        "text": "or you have the Major Disaster background"
+        "text": "You must have a close relative, spouse, or other person dear to your heart who never returned from a journey, was captured, or otherwise vanished with little trace, or you have the Major Disaster background"
       }
     ],
     "benefit": "Your dogged determination reduces any nonlethal damage you take by 1 point, to a minimum of 1 point of nonlethal damage. You also gain a +1 bonus on Will saves.",
@@ -84286,11 +83496,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have a close family member or other loved one slain by a specific challenging foe or that foe's minions"
-      },
-      {
-        "type": "other",
-        "text": "or have the Raiders or Vengeance background"
+        "text": "You must have a close family member or other loved one slain by a specific challenging foe or that foe's minions, or have the Raiders or Vengeance background"
       }
     ],
     "benefit": "You gain a +1 bonus on saving throws, attack rolls, and weapon damage rolls against your chosen foe and known minions of that foe.",
@@ -84308,11 +83514,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You witnessed at least one family member or a close friend being killed by demons or demonic cultists"
-      },
-      {
-        "type": "other",
-        "text": "or you have the Hated Foe or An Eye for an Eye background"
+        "text": "You witnessed at least one family member or a close friend being killed by demons or demonic cultists, or you have the Hated Foe or An Eye for an Eye background"
       }
     ],
     "benefit": "You gain a +2 bonus on saving throws against spells or effects originating from demon worshipers and from creatures of the demon type.",
@@ -85416,7 +84618,17 @@
         "value": 13
       },
       {
-        "type": "other",
+        "type": "any_of",
+        "options": [
+          {
+            "type": "race",
+            "race": "half-orc"
+          },
+          {
+            "type": "race",
+            "race": "orc"
+          }
+        ],
         "text": "half-orc or orc"
       },
       {
@@ -85689,8 +84901,8 @@
     "prerequisites_text": "Wayang.",
     "prerequisites": [
       {
-        "type": "other",
-        "text": "Wayang"
+        "type": "race",
+        "race": "wayang"
       }
     ],
     "benefit": "You gain the shadow speaker racial trait (see page 10). If you already have the shadow speaker racial trait, you can increase the number of times per day that you can use shadow speaker by 1, and increase the insight bonus granted from each type of use by 1.",
@@ -85709,19 +84921,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "Be a member of a specific House"
-      },
-      {
-        "type": "other",
-        "text": "or have the Champion of the People"
-      },
-      {
-        "type": "other",
-        "text": "Duty"
-      },
-      {
-        "type": "other",
-        "text": "or Raider background"
+        "text": "Be a member of a specific House, or have the Champion of the People, Duty, or Raider background"
       }
     ],
     "benefit": "Three times per day as a move action, you can declare a single dragon, magical beast, or monstrous humanoid within 50 feet and in line of sight to be your mark. You gain a +1 bonus on attack rolls and on Bluff, Knowledge, Perception, Sense Motive, and Survival checks against your mark. These bonuses last for 1 minute, until you designate a new mark, or until the mark is dead. After you have declared a creature as your mark, it can't be your mark again for another 24 hours.",
@@ -86476,15 +85676,7 @@
       },
       {
         "type": "other",
-        "text": "summer"
-      },
-      {
-        "type": "other",
-        "text": "thorns"
-      },
-      {
-        "type": "other",
-        "text": "or woodlands patron"
+        "text": "summer, thorns, or woodlands patron"
       }
     ],
     "benefit": "When you gain this feat, choose one hex that you can use to affect no more than one opponent. If the target of your hex fails its saving throw to resist your hex, the square it occupies becomes overgrown with thorny plants that count as difficult terrain. A creature moving in or out of the square must succeed at a Reflex save or Acrobatics check (DC = 10 + half your level + your Charisma modifier) or take 1d6 points of piercing damage and immediately end its movement. For every 5 by which the target fails its save against your hex, you can create 1 additional square of difficult terrain adjacent to any square the target occupies. The difficult terrain lasts a number of rounds equal to your Charisma modifier (minimum 1). The ground must be composed of a material able to support plant life (such as soil).",
@@ -86505,8 +85697,8 @@
         "text": "Bleachling racial trait"
       },
       {
-        "type": "other",
-        "text": "gnome"
+        "type": "race",
+        "race": "gnome"
       }
     ],
     "benefit": "You can use your speak with animals spell-like ability at will.",
@@ -86754,22 +85946,8 @@
     "prerequisites_text": "Bluff 1 rank, Sense Motive 1 rank, base attack bonus +1, or you must have the Military Strategist background.",
     "prerequisites": [
       {
-        "type": "skill",
-        "skill": "Bluff",
-        "ranks": 1
-      },
-      {
-        "type": "skill",
-        "skill": "Sense Motive",
-        "ranks": 1
-      },
-      {
-        "type": "bab",
-        "value": 1
-      },
-      {
         "type": "other",
-        "text": "or you must have the Military Strategist background"
+        "text": "Bluff 1 rank, Sense Motive 1 rank, base attack bonus +1, or you must have the Military Strategist background"
       }
     ],
     "benefit": "Once per day, you can use your ranks in Sense Motive in place of your total Will saving throw modifier when attempting a Will save. You must decide to use this ability prior to attempting the saving throw.",
@@ -87368,11 +86546,7 @@
     "prerequisites": [
       {
         "type": "other",
-        "text": "You must have purchased a scroll or spellbook containing a spell with the evil descriptor in a place where such dealings are illegal"
-      },
-      {
-        "type": "other",
-        "text": "or must have the Secret Society Inductee or Diabolical Upbringing background"
+        "text": "You must have purchased a scroll or spellbook containing a spell with the evil descriptor in a place where such dealings are illegal, or must have the Secret Society Inductee or Diabolical Upbringing background"
       }
     ],
     "benefit": "You can always purchase potions and scrolls of spells with the evil descriptor at a 10% discount, even if they are not normally available in a settlement because of its size or the local laws. You gain a +4 bonus on Knowledge (arcana), Spellcraft, and Use Magic Device checks related to spells with the evil descriptor or evil written works.",
@@ -87440,8 +86614,8 @@
         "ranks": 6
       },
       {
-        "type": "other",
-        "text": "wyvaran"
+        "type": "race",
+        "race": "wyvaran"
       }
     ],
     "benefit": "Select one spell you can cast that you gained through your draconic bloodline, the Scalykind domain (Pathfinder Campaign Setting: The Inner Sea World Guide 216), or the Dragon subdomain (Pathfinder Campaign Setting: Inner Sea Gods 224). It must be at least 1 spell level lower than the highest-level spell you can cast. You can cast this spell as a spell-like ability twice per day.",
