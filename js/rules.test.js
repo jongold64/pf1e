@@ -2587,6 +2587,33 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('maneuvers: every one has a discipline, type and level', tp.maneuvers.every(m => m.discipline && ['strike', 'boost', 'counter', 'stance'].includes(m.type) && m.level >= 1 && m.level <= 9), true);
 }
 
+// Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
+{
+  const CF = await import('./class-features.js');
+  const D = await import('./defense.js');
+  const W = await import('./weapons.js');
+  const tp = await fetch('data/third-party.json').then(r => r.json());
+  const tmCls = tp.classes.find(c => c.id === 'talented-monk');
+  const monk = classes.find(c => c.id === 'monk');
+  const ks = (counts, opts) => CF.kiStrike(counts, opts)?.kinds.join(', ') ?? 'none';
+  check('ki strike: monk 3 none, 4 magic', `${ks([{ cls: monk, level: 3 }])} | ${ks([{ cls: monk, level: 4 }])}`, 'none | magic');
+  check('ki strike: monk 16', ks([{ cls: monk, level: 16 }]), 'magic, cold iron, silver, lawful, adamantine');
+  check('ki strike: talented monk needs the ki pool edge', ks([{ cls: tmCls, level: 13 }], { alignment: 'LN' }), 'none');
+  check('ki strike: talented monk 13 LN with ki pool', ks([{ cls: tmCls, level: 13 }], { alignment: 'LN', kiPool: true }), 'magic, cold iron, silver, lawful');
+  check('ki strike: talented monk LG picks one, TN none', `${ks([{ cls: tmCls, level: 10 }], { alignment: 'LG', kiPool: true })} | ${ks([{ cls: tmCls, level: 10 }], { alignment: 'N', kiPool: true })}`,
+    'magic, cold iron, silver, lawful or good | magic, cold iron, silver');
+  check('Jabbing Style: 1d6 and 2d6; with Jabbing Master 2d6 and 4d6',
+    `${CF.unarmedStyleDamage(['Jabbing Style']).map(j => j.dice)} | ${CF.unarmedStyleDamage(['Jabbing Style', 'Jabbing Master']).map(j => j.dice)} | ${CF.unarmedStyleDamage([]).length}`, '1d6,2d6 | 2d6,4d6 | 0');
+  const unarmed = { id: 'unarmed-strike', name: 'Unarmed Strike', group: 'unarmed', finesse: true, damage: { m: '1d3' }, critical: '×2' };
+  const mod = { str: -2, dex: 4, wis: 5 };
+  const base = { weapon: unarmed, bab: [13], mod, haveFeats: ['Weapon Finesse'] };
+  check('Linnorm Style: Wisdom instead of Strength on unarmed damage', W.weaponAttack({ ...base, training: CF.linnormRows(['Linnorm Style'], mod) }).damage, '1d3+5');
+  check('Linnorm Style: not when Strength is higher', CF.linnormRows(['Linnorm Style'], { str: 3, wis: 1 }).length, 0);
+  check('Linnorm Vengeance: +2 attack', W.weaponAttack({ ...base, training: CF.linnormRows(['Linnorm Style', 'Linnorm Vengeance'], mod) }).attacks[0], 19);
+  check('exploit weakness switch: +2 attack while on', JSON.stringify(D.defenseEffects({ exploitWeakness: true }, { exploit: true }).map(f => [f.target, f.value])), '[["attack",2]]');
+  check('Linnorm Style switch only with the feat', [D.defenseSwitches({ haveFeats: ['Linnorm Style'] }), D.defenseSwitches({})].map(l => l.some(s => s.key === 'linnormStyle')).join(), 'true,false');
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

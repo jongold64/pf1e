@@ -8,7 +8,7 @@ import { abilityOptions } from './crafting.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
-import { weaponTraining, classWeaponDice } from './class-features.js';
+import { weaponTraining, classWeaponDice, kiStrike, unarmedStyleDamage, linnormRows } from './class-features.js';
 import { traitWeaponRows, heirloomFor } from './traits.js';
 import { styleWeapon, deadlyStrikesDie, simpleCritical, tmFlurryBabs } from './talented-monk.js';
 import { defenseSwitches } from './defense.js';
@@ -191,7 +191,9 @@ function attackArgs(app, view, ctx, e) {
       { mod: view.stats.mod, picks: view.archFx?.picks }),
       ...[graceRow(sized.weapon, view.haveFeats, view.featChoices.filter(c => c.feat === 'Slashing Grace').map(c => c.value), view.stats.mod)].filter(Boolean),
       // Traits' bonuses with this weapon (River Rat: +1 damage with a dagger), less a trait bonus already switched on.
-      ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w), app.state.traitPicks)],
+      ...traitWeaponRows(view.traits, w, e, view.size, switchedTraitBonus(view, w), app.state.traitPicks),
+      // Linnorm Style switched on (Combat options): Wisdom on unarmed damage.
+      ...(w.id === 'unarmed-strike' && app.state.combat.linnormStyle ? linnormRows(view.haveFeats, view.stats.mod) : [])],
     // Warpriest sacred weapon / brawler close weapon mastery dice.
     // Talented monk deadly strikes: its table's die with fighting style weapons, if better.
     minDice: classWeaponDice(view.counts, w, { focus: view.archFx?.picks?.focus, size: view.size })?.dice
@@ -206,19 +208,38 @@ function attackArgs(app, view, ctx, e) {
   };
 }
 
-// Rolls a trait adds with one weapon (Heirloom Weapon): an attack of opportunity with it (one attack at your highest
-// bonus, +1 trait bonus) or the combat maneuver chosen for it (CMB, with Improved feats, +2 trait bonus). A trait bonus
-// already counted (a trait switch on, River Rat...) doesn't stack: only the higher one counts.
-// [{ label, text, damage, note, spec }] for the Weapons tab and the Character tab's Actions.
+// Rolls a trait adds with one weapon (Heirloom Weapon, or Bullied with unarmed strikes): an attack of opportunity with
+// it (one attack at your highest bonus, +1 trait bonus) or the combat maneuver chosen for it (CMB, with Improved feats,
+// +2 trait bonus). A trait bonus already counted (a trait switch on, River Rat...) doesn't stack: only the higher one
+// counts. Also a monk's unarmed extras: ki strike (the damage reduction it overcomes, no roll), Jabbing Style's extra
+// damage, and a talented monk's ki weapons (up to +3 enhancement for 3 ki).
+// [{ label, text, damage, note, spec (null: nothing to roll) }] for the Weapons tab and the Character tab's Actions.
 function traitRolls(app, view, w, args, crit, weaponName) {
   const h = heirloomFor(view.traits, app.state.traitPicks, w.id);
+  const bullied = w.id === 'unarmed-strike' && view.traits.some(t => t?.id === 'bullied') ? 1 : 0;
   const out = [];
-  if (h.aoo) {
+  const aoo = Math.max(h.aoo, bullied);
+  if (aoo) {
     const already = Math.max(switchedTraitBonus(view, w).attack, ...args.training.filter(t => /^Trait:/.test(t.label) && t.on !== 'damage').map(t => t.value));
-    const add = Math.max(0, h.aoo - already);
+    const add = Math.max(0, aoo - already);
     const a = weaponAttack({ ...args, bab: [args.bab[0]], penalty: (args.penalty || 0) + add });
-    out.push({ label: 'Attack of opportunity', text: attackText(a), damage: a.damage, note: `Heirloom Weapon: +${h.aoo} trait bonus${add < h.aoo ? ', not stacking with your other trait bonus' : ''}`,
+    out.push({ label: 'Attack of opportunity', text: attackText(a), damage: a.damage, note: `${h.aoo >= bullied ? 'Heirloom Weapon' : 'Bullied'}: +${aoo} trait bonus${add < aoo ? ', not stacking with your other trait bonus' : ''}`,
       spec: { title: `${weaponName}: attack of opportunity`, groups: [rollGroup('', a, crit)] } });
+  }
+  const unarmed = w.id === 'unarmed-strike';
+  const ki = kiStrike(view.counts, { alignment: app.state.alignment, kiPool: !!view.tm?.picks.some(p => p.name === 'Ki Pool') });
+  if (ki && (unarmed || (ki.allAttacks && view.tm && styleWeapon(view.tm.picks, w, view.archFx?.picks?.adaptive || [])))) {
+    out.push({ label: 'Ki strike', text: '', damage: '', note: `overcomes DR/${ki.kinds.join(', ')} while you have ki · ${ki.from}`, spec: null });
+  }
+  if (unarmed) {
+    for (const j of unarmedStyleDamage(view.haveFeats)) {
+      out.push({ label: j.label, text: '', damage: `+${j.dice}`, note: j.note, spec: { title: `${weaponName}: ${j.label}`, groups: [{ attacks: [], damage: j.dice, word: 'extra damage' }] } });
+    }
+  }
+  if (view.tm?.picks.some(p => p.name === 'Ki Weapons') && (unarmed || styleWeapon(view.tm.picks, w, view.archFx?.picks?.adaptive || [])) && (args.entry.enh || 0) < 3) {
+    const a = weaponAttack({ ...args, entry: { ...args.entry, enh: 3 } });
+    out.push({ label: 'Ki weapons +3', text: attackText(a), damage: a.damage,
+      note: 'talented monk: a free action, 1 ki per +1 for 1 round (up to 3 ki); or weapon special abilities instead', spec: { title: `${weaponName}: ki weapons +3`, groups: [rollGroup('', a, crit)] } });
   }
   if (h.maneuver) {
     const m = combatManeuvers(view.stats, view.size, view.haveFeats);
@@ -300,7 +321,7 @@ function renderCombat(app, view, ctx) {
       <button type="button" class="skill-details q-details" data-combat-why="${key}" aria-label="What ${esc(feat)} does" title="Details">?</button></label>`).join('')
     // Class attack switches (a magus's spell combat, a cavalier's mounted charge), the same ones as on the Character tab.
     + defenseSwitches(view.defenseOpts).filter(s => s.attack).map(s =>
-    `<label class="check-row"><input type="checkbox" data-combat="${esc(s.key)}" data-class-switch="1" ${state.combat[s.key] ? 'checked' : ''}> Use ${esc(s.label.toLowerCase())} <span class="muted">(${esc(s.what)})</span>
+    `<label class="check-row"><input type="checkbox" data-combat="${esc(s.key)}" data-class-switch="1" ${state.combat[s.key] ? 'checked' : ''}> Use ${esc(s.feat ? s.label : s.label.toLowerCase())} <span class="muted">(${esc(s.what)})</span>
       <button type="button" class="skill-details q-details" data-defense-why="${esc(s.key)}" aria-label="What ${esc(s.label)} does" title="Details">?</button></label>`).join('')
     || '<p class="hint">Power Attack, Deadly Aim, Rapid Shot and Point-Blank Shot switches appear here once you have those feats (spell combat and mounted charge with the magus and cavalier classes).</p>';
 
@@ -468,8 +489,8 @@ export function renderMyWeapons(app, view) {
     }
     // Heirloom Weapon (trait): an attack of opportunity, or the chosen combat maneuver, with this weapon.
     for (const r of traitRolls(app, view, w, args, crit, weaponName)) {
-      extra.push(`<dt>${esc(r.label)}</dt><dd><b>${esc(r.text)}</b>${r.damage ? `, ${esc(r.damage)}` : ''} <span class="muted">(${esc(r.note)})</span>
-        ${rollButton(r.spec, r.label)}</dd>`);
+      extra.push(`<dt>${esc(r.label)}</dt><dd>${r.text ? `<b>${esc(r.text)}</b>` : ''}${r.damage ? `${r.text ? ', ' : ''}${esc(r.damage)}` : ''} <span class="muted">(${esc(r.note)})</span>
+        ${r.spec ? rollButton(r.spec, r.label) : ''}</dd>`);
     }
     if (isDouble(w)) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
@@ -589,7 +610,8 @@ export function showAttackDetails(app, i, part = null) {
   const args = attackArgs(app, view, ctx, e);
   const a = weaponAttack(args);
   const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
-  const b = attackBreakdown(a, { effects: weaponEffects(app, w) });
+  const b = attackBreakdown(a, { effects: weaponEffects(app, w),
+    ...(ctx.tmStyle(w) ? { babLabel: `Specialty attack bonus (talented monk; base attack bonus +${view.stats.bab[0]})` } : {}) });
   // The weapon-size penalty in its pieces (size steps, Giant Weapon Wielder, Massive Weapons, Incredible Heft, Jotungrip).
   const sizeAt = b.attackRows.findIndex(r => r.label === 'Weapon size (and archetype rules)');
   const sizeRows = args.sized.rows.filter(r => r.value);

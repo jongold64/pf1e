@@ -491,7 +491,7 @@ function load(saved) {
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
-  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge']
+  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge', 'linnormStyle', 'exploitWeakness']
     .filter(k => c[k] === true).map(k => [k, true])),
                    ...(typeof c.conjured === 'string' && c.conjured ? { conjured: c.conjured } : {}),
                    main: hand(c.main), off: hand(c.off) };
@@ -2342,7 +2342,8 @@ function computeView() {
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
-                        magus: counts.find(e => e.cls.id === 'magus')?.level || 0, cavalier: counts.find(e => e.cls.id === 'cavalier')?.level || 0 };
+                        magus: counts.find(e => e.cls.id === 'magus')?.level || 0, cavalier: counts.find(e => e.cls.id === 'cavalier')?.level || 0,
+                        exploit: tmPicks.some(p => p.name === 'Exploit Weakness') };
   classFx.push(...defenseEffects(state.combat, defenseOpts));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))

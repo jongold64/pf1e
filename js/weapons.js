@@ -298,7 +298,9 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
 
   // Strength to damage depends on how the weapon is held.
   // Finesse training (unchained rogue): Dexterity instead of Strength on damage with the chosen weapon (melee).
-  const dmgMod = melee && training.some(t => t.swapStr) ? mod.dex : mod.str;
+  // Linnorm Style: Wisdom instead (swapStr: 'wis').
+  const swapRow = training.find(t => t.swapStr);
+  const dmgMod = melee && swapRow ? mod[swapRow.swapStr === true ? 'dex' : swapRow.swapStr] : mod.str;
   let strDamage;
   if (hand === 'off') strDamage = dmgMod > 0 && !has.has('Double Slice') ? Math.floor(dmgMod / 2) : dmgMod;
   else if ((hand === 'main' || hand === 'flurry') && melee) strDamage = dmgMod;
@@ -380,10 +382,11 @@ export function graceRow(weapon, haveFeats = [], graceWeapons = [], mod = {}) {
 // Everything that adds to a weapon's attack and damage, named (Weapons tab Details popup). a: weaponAttack's result;
 // effects: active effect bonuses ({ source, type, value, target: 'attack' | 'damage' }). Returns
 // { attackRows, damageRows, attackTotal (first attack), damageTotal (bonus added to the dice) }.
-export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penaltyLabel = 'Fighting penalty', effects = [] } = {}) {
+// babLabel: what the base attack bonus row is called (a talented monk's specialty attack bonus).
+export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penaltyLabel = 'Fighting penalty', effects = [], babLabel = 'Base attack bonus' } = {}) {
   const p = a.parts;
   const ab = a.abilityUsed === 'dex' ? 'Dexterity' : 'Strength';
-  const attackRows = [{ label: a.babs.length > 1 ? `Base attack bonus (attacks at ${a.babs.map(b => (b >= 0 ? `+${b}` : b)).join('/')})` : 'Base attack bonus',
+  const attackRows = [{ label: a.babs.length > 1 ? `${babLabel} (attacks at ${a.babs.map(b => (b >= 0 ? `+${b}` : b)).join('/')})` : babLabel,
                         value: a.babs[0] }];
   const add = (rows, label, value, note = '') => { if (value) rows.push({ label, value, note }); };
   attackRows.push({ label: `${ab} modifier`, value: p.abilityMod });
@@ -409,7 +412,7 @@ export function attackBreakdown(a, { proficiencyLabel = 'Not proficient', penalt
     : sm > 0 && p.strDamage === Math.floor(sm / 2) ? 'Strength × ½ (off hand)'
     : 'Strength (a bow adds only a penalty, or up to the strength rating of a composite bow; crossbows and firearms none)';
   const swap = (p.training || []).find(t => t.swapStr);
-  const strLabelNow = swap ? (/^Dexterity instead/.test(swap.label) ? swap.label : 'Dexterity instead of Strength (finesse training)') : strLabel;
+  const strLabelNow = swap ? (/ instead of Strength/.test(swap.label) ? swap.label : 'Dexterity instead of Strength (finesse training)') : strLabel;
   if (p.rating !== null && p.rating !== undefined) damageRows.push({ label: strLabel, value: p.strDamage });
   else add(damageRows, strLabelNow, p.strDamage);
   add(damageRows, p.enhDamage > p.enh ? 'Ammunition\u2019s enhancement bonus' : 'Enhancement bonus', p.enhDamage ?? p.enh);

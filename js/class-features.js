@@ -230,6 +230,51 @@ export function classWeaponDice(counts, weapon, { focus = null, size = 'Medium' 
   return null;
 }
 
+// Ki strike: the kinds of damage reduction a monk's unarmed strikes overcome while it has ki (Core Rulebook monk from
+// 4th level, unchained monk from 3rd; a talented monk with the ki pool edge from 1st, with all its attacks): magic,
+// cold iron and silver at 7th, lawful at 10th (a talented monk: one part of its alignment, chosen at 10th; none if
+// neutral), adamantine at 16th. alignment: "LN", "CG"... Returns { kinds: [...], from } or null.
+export function kiStrike(counts, { alignment = '', kiPool = false } = {}) {
+  const at = (id, from) => { const lv = levelOf(counts, [id]); return lv >= from ? lv : 0; };
+  const options = [['monk', at('monk', 4), 'monk'], ['monk-unchained', at('monk-unchained', 3), 'unchained monk'],
+                   ['talented-monk', kiPool ? at('talented-monk', 1) : 0, 'talented monk']].filter(o => o[1]);
+  if (!options.length) return null;
+  const [id, lv, name] = options.sort((a, b) => b[1] - a[1])[0];
+  const kinds = ['magic'];
+  if (lv >= 7) kinds.push('cold iron', 'silver');
+  if (lv >= 10) {
+    if (id !== 'talented-monk') kinds.push('lawful');
+    else {
+      const a = String(alignment).toUpperCase();
+      const parts = [a[0] === 'L' ? 'lawful' : a[0] === 'C' ? 'chaotic' : '', a[1] === 'G' ? 'good' : a[1] === 'E' ? 'evil' : ''].filter(Boolean);
+      if (parts.length) kinds.push(parts.join(' or '));
+    }
+  }
+  if (lv >= 16) kinds.push('adamantine');
+  return { kinds, from: `Ki strike (${name} ${lv})`, allAttacks: id === 'talented-monk' };
+}
+
+// Style feats' extra damage with unarmed strikes, as rolls of their own: Jabbing Style (+1d6 on the second unarmed hit
+// on one target in a round, +2d6 on the third or later; Jabbing Master: 2d6 and 4d6). [{ label, dice, note }].
+export function unarmedStyleDamage(haveFeats = []) {
+  if (!haveFeats.includes('Jabbing Style')) return [];
+  const master = haveFeats.includes('Jabbing Master');
+  const name = master ? 'Jabbing Style and Jabbing Master' : 'Jabbing Style';
+  return [{ label: 'Jabbing: 2nd hit on one target', dice: master ? '2d6' : '1d6', note: `${name}: once a round, added to the second unarmed hit on a single target` },
+          { label: 'Jabbing: 3rd hit or more', dice: master ? '4d6' : '2d6', note: `${name}: instead, added to the last of three or more unarmed hits on a single target` }];
+}
+
+// Linnorm Style switched on (Combat options): with unarmed strikes, Wisdom instead of Strength on damage against a
+// creature that made a melee attack against you (when Wisdom is higher), and Linnorm Vengeance's +2 on attack rolls
+// against a creature that hit you. Training rows for weaponAttack.
+export function linnormRows(haveFeats = [], mod = {}) {
+  const out = [];
+  if (!haveFeats.includes('Linnorm Style')) return out;
+  if ((mod.wis || 0) > (mod.str || 0)) out.push({ label: 'Wisdom instead of Strength (Linnorm Style)', value: 0, swapStr: 'wis' });
+  if (haveFeats.includes('Linnorm Vengeance')) out.push({ label: 'Linnorm Vengeance (the creature hit you)', value: 2, on: 'attack' });
+  return out;
+}
+
 // Attacks and extra damage from class features, for the Character tab: sneak attack (the classes' dice stack), studied
 // strike, alchemist bombs (master chymist levels stack) and kinetic blasts. stats: { bab, mod, fx }; sizeAttack: the
 // size modifier on attacks. Each: { name, note, attack (or null), dice, uses? }.

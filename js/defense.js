@@ -14,7 +14,9 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 // magus / cavalier: class levels, for the attack switches classes give (attack: true; shown with the attack switches):
 // spell combat (magus: -2 on attacks while casting with the free hand) and cavalier's charge (3rd: +4 melee attack on a
 // mounted charge instead of +2, no AC penalty; mighty charge at 11th, supreme charge at 20th noted).
-export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0 } = {}) {
+// Linnorm Style (the feat; unarmed strikes, weapons.js) and a talented monk's exploit weakness edge (exploit: true; +2 on
+// attacks this turn) are attack switches too.
+export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false } = {}) {
   const trained = acrobatics >= 3;
   const step = expertiseStep(bab);
   const out = [];
@@ -39,6 +41,16 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
       ...(cavalier >= 11 ? [['Threat range of your weapons (mighty charge)', 'doubled; a free bull rush, disarm, sunder or trip on a hit']] : []),
       ...(cavalier >= 20 ? [['Damage (supreme charge)', 'double (triple with a lance); a confirmed critical stuns 1d4 rounds']] : [])],
     note: 'Use it in place of the Charging effect while you charge on your mount; it lasts until your next turn.' });
+  if (haveFeats.includes('Linnorm Style')) out.push({ key: 'linnormStyle', label: 'Linnorm Style', feat: true, attack: true,
+    what: 'unarmed damage with Wisdom instead of Strength against a creature that attacked you',
+    rows: [['Unarmed strike damage', 'your Wisdom bonus instead of Strength (when it’s higher)'],
+      ...(haveFeats.includes('Linnorm Vengeance') ? [['Unarmed attack rolls against a creature that hit you (Linnorm Vengeance)', '+2']] : []),
+      ['AC against melee attacks while in the style', '−2 (not counted: apply it in play)']],
+    note: 'After a creature makes a melee attack against you, until the start of its next turn. Switch it on for attacks on that creature.' });
+  if (exploit) out.push({ key: 'exploitWeakness', label: 'Exploit weakness', attack: true, what: '+2 on attacks this turn, ignore DR and hardness',
+    rows: [['Attack rolls until the end of your turn', '+2'], ['Damage reduction and hardness', 'ignored'],
+      ['To use it', 'a swift action: Wisdom check + your monk level against DC 10 + the target’s CR (or hardness)']],
+    note: 'Talented monk edge. Switch it on after the check succeeds, and off after your turn.' });
   out.push({ key: 'totalDefense', label: 'Total defense', what: `no attacks, +${trained ? 6 : 4} dodge AC`,
     rows: [[`Dodge bonus to AC${trained ? ' (3 or more ranks in Acrobatics: +6)' : ''}`, `+${trained ? 6 : 4}`], ['Attacks of opportunity', 'none']],
     note: 'A standard action instead of attacking; it can’t be combined with fighting defensively or Combat Expertise.' });
@@ -67,6 +79,7 @@ export function defenseEffects(combat = {}, opts = {}) {
   }
   if (combat.spellCombat && has('spellCombat')) fx('Spell combat', 'attack', 'untyped', -2);
   if (combat.mountedCharge && has('mountedCharge')) fx('Cavalier’s charge', 'melee-attack', 'untyped', 4);
+  if (combat.exploitWeakness && has('exploitWeakness')) fx('Exploit weakness', 'attack', 'untyped', 2);
   const c = (opts.conjured || []).find(x => x.id === combat.conjured);
   if (c) fx(c.name, 'ac', 'armor', c.bonus);
   return out;
