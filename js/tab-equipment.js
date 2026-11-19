@@ -263,6 +263,7 @@ export async function renderEquipment(app, view) {
           <b class="line-name">${esc(armorLabel(a, enh, mw, abilities))}</b><span class="wl-k">worn</span>
           <span class="wl-part"><b>${esc(state[`${k}Free`] ? 'free' : formatGp(cost))}</b></span>
           <span class="wl-k">${esc(formatLbs(a.weight_lbs * sizeFactor))}</span>
+          ${armorCost(a, enh, mw, abilities, false) ? sellButton(`data-armor-sell="${k}"`, armorLabel(a, enh, mw, abilities)) : ''}
           <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="More about it" title="Details">?</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
           <div class="breakdown">worn${crafted ? ' · crafted' : ''} · change it on the Armor tab</div>
@@ -375,6 +376,19 @@ export function initEquipmentTab(app) {
       const d = invWhy.get(key);
       if (d) app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody></table>
         ${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+      return;
+    }
+    // Selling the worn armor or shield: half its market price (material, enhancement and abilities; a crafted one gives
+    // back what it cost to make), and it's taken off (no armor or shield worn).
+    const asell = e.target.closest('[data-armor-sell]');
+    if (asell) {
+      const k = asell.dataset.armorSell;
+      const v = app.view;
+      const a = k === 'armor' ? v.gear.armor : v.gear.shield;
+      const st = app.state;
+      const args = [a, st[`${k}Enh`], st[`${k}Mw`], st[`${k}Abilities`]];
+      sellItem(app, { name: armorLabel(...args), value: armorCost(...args, false), paid: st[`${k}Free`] ? 0 : armorCost(...args, st[`${k}Crafted`]) },
+        { [`${k}Id`]: '', [`${k}Enh`]: 0, [`${k}Mw`]: false, [`${k}Abilities`]: [], [`${k}Material`]: '', [`${k}Crafted`]: false, [`${k}Free`]: false });
       return;
     }
     const sell = e.target.closest('[data-inv-sell]');

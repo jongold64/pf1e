@@ -5,6 +5,7 @@ import { $, esc, signed, paragraphs, facts } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { TRICKS, ATTACK_FEATS, companionStats, bardingCost, bardingWeight } from './companion.js';
 import { formatGp, formatLbs } from './equipment.js';
+import { sellButton, sellItem } from './tab-equipment.js';
 import { materialsFor, withMaterial } from './materials.js';
 import { BUFFS, buffById, buffAmount, effectTotals, EFFECT_GROUPS } from './effects.js';
 
@@ -95,7 +96,7 @@ export function renderCompanion(app, view) {
       ${b ? `<select data-comp="armorEnh" aria-label="Barding quality">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}"${n === (c.armorEnh || 0) ? ' selected' : ''}>${n ? `+${n}` : 'Normal'}</option>`).join('')}</select>` : ''}</div>
     ${b ? `<p class="hint">+${b.ac} armor to AC${b.item.max_dex !== null ? `, Dex bonus at most +${b.item.max_dex}` : ''}${b.acp ? `, ${b.acp} on Str and Dex skills` : ''}.
         Costs ${esc(formatGp(bardingCost(b.item, s.size, b.enh)))} and weighs ${esc(formatLbs(bardingWeight(b.item, s.size)))} (${esc(s.size)} animal: barding costs more than a person's armor),
-        counted in your gold on the Equipment tab.</p>
+        counted in your gold on the Equipment tab. ${sellButton('data-comp-sell="barding"', `${b.item.name} barding`)}</p>
       ${b.proficient ? '' : `<p class="warning">Without the ${esc(b.profFeat)} feat, its check penalty (${b.acp}) also applies to its attack rolls.</p>`}
       ${['medium', 'heavy'].includes(b.item.category) ? '<p class="hint">Medium or heavy barding slows it, and a flying animal can\u2019t fly in it.</p>' : ''}`
       : '<p class="hint">Companions can wear armor (barding); it needs the Armor Proficiency feats to use without penalty on attacks.</p>'}`;
@@ -290,6 +291,18 @@ export function initCompanion(app) {
     if (rm) { set({ buffs: (state.companion.buffs || []).filter(x => x.id !== rm.dataset.compBuffRemove) }); return; }
     const w = e.target.closest('[data-comp-why]');
     if (w) { showWhy(app, w.dataset.compWhy); return; }
+    // Selling the barding: half its price to gold, and the animal wears none.
+    if (e.target.closest('[data-comp-sell]')) {
+      const { data } = app;
+      const animal = data.companions.animals.find(a => a.id === state.companion.animal);
+      const s = animal && companionStats(animal, app.view.companion.level, data.companions.progression, companionChoices(state, data));
+      const b = s?.barding;
+      if (!b) return;
+      const cost = bardingCost(b.item, s.size, b.enh);
+      sellItem(app, { name: `${b.item.name} barding`, value: cost, paid: cost },
+        { companion: { ...state.companion, armorId: '', armorEnh: 0, armorMaterial: '' } });
+      return;
+    }
     const b = e.target.closest('[data-comp-skill]');
     if (!b) return;
     const name = b.dataset.compSkill;
