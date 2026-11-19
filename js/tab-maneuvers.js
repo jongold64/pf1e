@@ -41,6 +41,7 @@ export function renderManeuvers(app, view) {
         initiation modifier ${signed(x.initMod)} (${esc(ABILITY[init.ability] || init.ability)})</small></h3>
       <p>Disciplines: ${discs || '<span class="muted">none yet</span>'}${pick ? ` ${pick}` : ''}</p>
       <h4>Maneuvers known <span class="count">${choice.known.length} of ${slots.known}</span> · readied <span class="count">${choice.readied.length} of ${slots.readied}</span></h4>
+      ${slots.granted ? `<p class="hint">At the start of each encounter ${slots.granted} of the readied maneuvers are granted (picked at random); the rest are withheld until granted.</p>` : ''}
       ${known ? `<ul class="maneuver-list">${known}</ul>` : ''}
       ${choice.known.length < slots.known ? `<button type="button" class="primary" data-mv-add="${esc(cls.id)}" data-kind="maneuver">Add a maneuver</button>` : ''}
       <h4>Stances known <span class="count">${choice.stances.length} of ${slots.stances}</span></h4>

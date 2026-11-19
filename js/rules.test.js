@@ -2541,7 +2541,7 @@ document.getElementById('list').innerHTML = results.map(r =>
   const pc = id => tp.classes.find(c => c.id === id);
   const byId = new Map(tp.maneuvers.map(m => [m.id, m]));
   const warlord = pc('warlord'), stalker = pc('stalker'), warder = pc('warder');
-  check('Path of War: three classes with initiator data', [warlord, stalker, warder].every(c => c?.initiator && c.progression.length === 20), true);
+  check('Path of War: classes with initiator data', [warlord, stalker, warder].every(c => c?.initiator && c.progression.length === 20), true);
   check('warlord: Charisma, five disciplines + Piercing Thunder or Tempest Gale',
     `${warlord.initiator.ability} ${warlord.initiator.disciplines.length} ${warlord.initiator.choose.join('/')}`, 'cha 5 Piercing Thunder/Tempest Gale');
   const ct = list => list.map(([c, level]) => ({ cls: c, level }));
@@ -2574,6 +2574,16 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('stalker ki pool: half level + initiation modifier', M.martialDaily([{ cls: stalker, level: 5, initMod: 2 }])[0].max, 4);
   check('warder: Combat Reflexes', M.martialFeats([{ cls: warder, level: 1 }]).join(), 'Combat Reflexes');
   check('Path of War feats: Greater Unarmed Strike is one', tp.feats.some(f => f.name === 'Greater Unarmed Strike' && f.third_party === 'path-of-war'), true);
+  // Path of War Expanded: harbinger, mystic, zealot.
+  const harbinger = pc('harbinger'), mystic = pc('mystic'), zealot = pc('zealot');
+  check('Expanded: harbinger Int, mystic Wis, zealot Cha', [harbinger, mystic, zealot].map(c => `${c.initiator.ability} ${c.progression.length}`).join(), 'int 20,wis 20,cha 20');
+  check('mystic 1st level: 7 known, 5 readied (2 granted), 1 stance', JSON.stringify(M.maneuverSlots(mystic, 1)), '{"known":7,"readied":5,"stances":1,"granted":2}');
+  const hfx = lv => M.martialClassEffects([{ cls: harbinger, level: lv, initMod: 4 }]).map(e => [e, ...(e.more || [])].map(x => `${x.target} ${x.type} ${x.value}`).join('; '));
+  check('harbinger 1 (Int +4): attack +2 insight, speed +10', hfx(1).join(' | '), 'attack insight 2 | speed competence 10');
+  check('harbinger 10: damage +4 too, speed +20', hfx(10).join(' | '), 'attack insight 2; damage insight 4 | speed competence 20');
+  check('zealot 1 (Cha +3): 1 power point + 1 bonus', M.martialDaily([{ cls: zealot, level: 1, initMod: 3 }])[0].max, 2);
+  check('zealot 5: Diehard; 4: not yet', `${M.martialFeats([{ cls: zealot, level: 5 }]).join()}|${M.martialFeats([{ cls: zealot, level: 4 }]).join()}`, 'Diehard|');
+  check('zealot missions: three', tp.talents.filter(t => t.kind === 'pow-mission').map(t => t.name).join(), 'Creation,Destruction,Protection');
   check('maneuvers: every one has a discipline, type and level', tp.maneuvers.every(m => m.discipline && ['strike', 'boost', 'counter', 'stance'].includes(m.type) && m.level >= 1 && m.level <= 9), true);
 }
 

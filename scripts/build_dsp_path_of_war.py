@@ -2,10 +2,12 @@
 fetch_d20pfsrd_path_of_war.py. The app offers it only on a character that has the book ticked under Third-party books
 (Build tab, with the 3rd Party house rule).
 
-- classes: the stalker, warder and warlord (the core book's classes; Path of War Expanded's harbinger, mystic and zealot
-  are later work). Each progression row has `maneuvers: { known, readied, stances }`, and the class has
+- classes: the stalker, warder and warlord (the core book) and the harbinger, mystic and zealot (Path of War Expanded).
+  Each progression row has `maneuvers: { known, readied, stances }` (the mystic's also `granted`; the zealot's rows
+  have `power_points`), and the class has
   `initiator: { ability, disciplines, choose }` (choose: the "either X or Y" pair, one of which is picked).
-- talents: the stalker's arts (kind pow-stalker-art) and the warlord's gambits (kind pow-gambit), chosen like rogue talents.
+- talents: the stalker's arts (kind pow-stalker-art), the warlord's gambits (pow-gambit), the harbinger's grim news
+  (pow-grim-news), the zealot's convictions (pow-conviction) and missions (pow-mission), chosen like rogue talents.
 - disciplines: { id, name, skill, weapon_groups, supernatural, text }.
 - maneuvers: { id, name, discipline, type (strike, boost, counter, stance), descriptor, level, prerequisite (count of
   maneuvers of the discipline needed), action, range, target, area, duration, save, summary, text }.
@@ -28,12 +30,14 @@ BASE = 'https://www.d20pfsrd.com/alternative-rule-systems/3rd-party-rules-system
 ORIGIN = 'Dreamscarred Press'
 BOOK_ID = 'path-of-war'
 BOOK = 'Path of War'
-CLASSES = ['stalker', 'warder', 'warlord']
+CLASSES = ['stalker', 'warder', 'warlord', 'harbinger', 'mystic', 'zealot']
 # "Starting Wealth and Age: As cleric." -> that class's starting wealth.
 WEALTH = {'cleric': {'dice': '4d6 x 10 gp', 'average_gp': 140}, 'fighter': {'dice': '5d6 x 10 gp', 'average_gp': 175},
           'paladin': {'dice': '5d6 x 10 gp', 'average_gp': 175}}
 # Class features chosen from a list: class -> (feature heading, option kind, how the options are written).
-CHOICES = {'stalker': [('Stalker Arts', 'pow-stalker-art', 'labels')], 'warlord': [('Warlord’s Gambit', 'pow-gambit', 'table')]}
+CHOICES = {'stalker': [('Stalker Arts', 'pow-stalker-art', 'labels')], 'warlord': [('Warlord’s Gambit', 'pow-gambit', 'table')],
+           'harbinger': [('Grim News', 'pow-grim-news', 'labels')],
+           'zealot': [('Conviction', 'pow-conviction', 'labels'), ('Mission', 'pow-mission', ['Creation', 'Destruction', 'Protection'])]}
 ABILITY = {'strength': 'str', 'dexterity': 'dex', 'constitution': 'con', 'intelligence': 'int', 'wisdom': 'wis', 'charisma': 'cha'}
 WORDS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}
 
@@ -90,17 +94,23 @@ def class_record(cid, art):
     col = {h: i for i, h in enumerate(head)}
     ints = lambda s: [int(x) for x in s.replace('+', '').split('/')]
     progression = []
+    stances = col.get('Stances', col.get('Stances Known'))
     for r in body:
+        # The mystic's readied column is "5 (2)": maneuvers readied (of which granted at the start of an encounter).
+        readied = re.match(r'(\d+)(?:\s*\((\d+)\))?', r[col['Maneuvers Readied']])
         row = {'level': int(re.match(r'\d+', r[0]).group(0)), 'bab': ints(r[col['Base Attack Bonus']]),
                'fort': int(r[col['Fort Save']].replace('+', '')), 'ref': int(r[col['Ref Save']].replace('+', '')),
                'will': int(r[col['Will Save']].replace('+', '')),
                'special': [s.strip() for s in re.split(r',\s*(?![^()]*\))', r[col['Special']]) if s.strip() not in ('', '-', '—')],
-               'maneuvers': {'known': int(r[col['Maneuvers Known']]), 'readied': int(r[col['Maneuvers Readied']]),
-                             'stances': int(r[col['Stances']])}}
+               'maneuvers': {'known': int(r[col['Maneuvers Known']]), 'readied': int(readied.group(1)),
+                             **({'granted': int(readied.group(2))} if readied.group(2) else {}),
+                             'stances': int(r[stances])}}
         if 'Dodge Bonus' in col:
             row['dodge_bonus'] = int(r[col['Dodge Bonus']].replace('+', ''))
+        if 'PP/day' in col:
+            row['power_points'] = int(r[col['PP/day']] or 0)
         progression.append(row)
-    skills = re.search(r"class skills \(and the key ability for each skill\) are: (.+?)\. Skill Ranks", t).group(1)
+    skills = re.search(r"class skills (?:\(and the key ability for each skill\) )?are:? (.+?)\. Skill Ranks", t).group(1)
     class_skills = [{'skill': m.group(1).strip(), 'ability': m.group(2).lower()}
                     for m in re.finditer(r'(?:and )?([A-Z][\w ()]+?) \((Str|Dex|Con|Int|Wis|Cha)\)', skills)]
     disc = re.search(r'The disciplines available to \w+ are (.+?)(?: to \w+ list of available disciplines)?\. ', t).group(1)
@@ -119,6 +129,7 @@ def class_record(cid, art):
                 m = re.search(r'At (\d+)(?:st|nd|rd|th) level', ftext)
                 features.append({'name': fname, **({'level': int(m.group(1))} if m else {}), 'text': ftext})
     wealth = re.search(r'Starting Wealth and Age: As (\w+)', t)
+    gold = re.search(r'Starting Wealth: (\d+d6) × 10 gp \(average (\d+)', t)
     hit_die = re.search(r'Hit Die: (d\d+)', t).group(1)
     ability = ABILITY[re.search(r'initiat\w+ modifier is (\w+)', t).group(1).lower()]
     summary = clean(art.find('p').get_text(' ')) if art.find('p') else ''
@@ -128,7 +139,8 @@ def class_record(cid, art):
     return {'id': cid, 'name': name, 'source': BOOK, 'category': 'third-party', 'summary': intro, 'hit_die': hit_die,
             'alignment': alignment, 'role': role, 'class_skills': class_skills,
             'skill_ranks_per_level': int(re.search(r'Skill Ranks per Level: (\d+)', t).group(1)),
-            'starting_wealth': WEALTH.get(wealth.group(1).lower() if wealth else 'fighter'), 'progression': progression,
+            'starting_wealth': {'dice': f'{gold.group(1)} x 10 gp', 'average_gp': int(gold.group(2))} if gold
+                                else WEALTH.get(wealth.group(1).lower() if wealth else 'fighter'), 'progression': progression,
             'features': features,
             'initiator': {'ability': ability, 'disciplines': disciplines, **({'choose': [either.group(1).strip(), either.group(2).strip()]} if either else {})},
             'origin': ORIGIN, 'third_party': BOOK_ID}
@@ -155,8 +167,15 @@ def class_options(cid, art):
                 level = re.search(r'must be (?:at least )?(\d+)(?:st|nd|rd|th) level', body)
                 out.append({'id': f'pow-{slug(name)}', 'name': name, 'kind': kind, 'classes': [cid], 'source': BOOK,
                             'text': body, 'level': int(level.group(1)) if level else None,
-                            'repeatable': bool(re.search(r'may be selected more than once', body)), 'origin': ORIGIN,
+                            'repeatable': bool(re.search(r'may be selected more than once|can gain this conviction a second time', body)), 'origin': ORIGIN,
                             'third_party': BOOK_ID})
+        elif isinstance(how, list):
+            # Options that are headings of their own after this one (a zealot's missions), each with its abilities.
+            for name in how:
+                oh = next(x for x in art.find_all('h4') if clean(x.get_text(' ')) == name)
+                out.append({'id': f'pow-{slug(name)}', 'name': name, 'kind': kind, 'classes': [cid], 'source': BOOK,
+                            'text': text(html_of(section(oh))).strip(), 'level': None, 'repeatable': False,
+                            'origin': ORIGIN, 'third_party': BOOK_ID})
         else:
             table = next(x for e in els for x in ([e] if e.name == 'table' else e.find_all('table')))
             for r in table.find_all('tr')[1:]:
@@ -352,7 +371,7 @@ def main():
     notices = NOTICES
     book = {'id': BOOK_ID, 'name': 'Path of War', 'publisher': ORIGIN, 'author': '',
             'sources': [BOOK, 'Path of War - Expanded'], 'notices': notices,
-            'note': 'Path of War: the stalker, warder and warlord are in the class list (Classes tab, Third-party group), with '
+            'note': 'Path of War: the stalker, warder, warlord, harbinger, mystic and zealot are in the class list (Classes tab, Third-party group), with '
                     'their maneuvers and stances on the Classes tab; Path of War feats join the feat list.'}
     save_third_party(out_path, book, classes=classes, talents=options, disciplines=sorted(discs, key=lambda d: d['name']),
                      maneuvers=sorted(mans, key=lambda m: (m['discipline'], m['level'], m['name'])), feats=feat_recs)

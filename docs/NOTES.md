@@ -412,17 +412,20 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   fighting style groups) are one record each with `pick` (the parent) and `weapon_group` / `element`. js/talented-monk.js:
   talentedMonkEffects (classFx), talentedMonkDaily (dailyPowers), talentedMonkFeats (granted), styleWeapon / tmFlurryBabs /
   deadlyStrikesDie (tab-weapons: specialty BAB via view.tm.specialty, proficiency, minDice, flurry).
-  Path of War: classes stalker, warder, warlord have `initiator { ability, disciplines, choose }` and rows with
-  `maneuvers { known, readied, stances }` (stalker rows also `dodge_bonus`); talents kinds pow-stalker-art, pow-gambit;
+  Path of War: classes stalker, warder, warlord (and Expanded's harbinger, mystic, zealot) have `initiator { ability,
+  disciplines, choose }` and rows with `maneuvers { known, readied, stances }` (stalker rows also `dodge_bonus`, mystic
+  `maneuvers.granted`, zealot `power_points`); talents kinds pow-stalker-art, pow-gambit, pow-grim-news, pow-conviction,
+  pow-mission (the zealot's missions are headings of their own: CHOICES lists them by name);
   maneuvers `{ id, name, discipline, type, level, prerequisite (count of the discipline's maneuvers needed), action, range,
   target, duration, save, summary, text, summary_only? }` (the Black Seraph page has only its summary tables). js/maneuvers.js
   holds the rules (initiatorLevel, maxManeuverLevel, maneuverSlots with Extra Readied Maneuver / Advanced Study, canLearn,
   tidyChoices, STANCE_EFFECTS for stances with plain bonuses, martialClassEffects, martialDaily, martialFeats);
   computeView builds `view.initiators` (one per martial class: il, maxLevel, slots, tidied choice, disciplines, initMod,
   problems) from `state.maneuvers[class id] = { discipline, known, stances, readied, stance }`; js/tab-maneuvers.js draws
-  the Maneuvers card (Classes tab). Discipline skills join pathSkills (class skills). Not done: Path of War Expanded's
-  classes, archetypes, prestige classes, and feats' effects beyond prerequisites (Martial Training's maneuvers for other
-  classes).
+  the Maneuvers card (Classes tab). Discipline skills join pathSkills (class skills). Not done: archetypes, prestige
+  classes, psionic skills (Autohypnosis, Knowledge (psionics)) and feats, a mystic's animus and glyphs, a zealot's
+  collective and zeal (rules text), convictions' bonus feats, and feats' effects beyond prerequisites (Martial Training's
+  maneuvers for other classes).
 
 ## Data build commands
 

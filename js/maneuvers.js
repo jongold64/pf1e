@@ -1,8 +1,8 @@
 // Path of War (Dreamscarred Press; third-party, data/third-party.json): martial maneuvers and stances. No page code here,
 // so these functions can be tested on their own.
 //
-// A martial disciple class (stalker, warder, warlord) has `initiator: { ability, disciplines, choose }` and each level's
-// row has `maneuvers: { known, readied, stances }`. The character's choices for a class are saved in
+// A martial disciple class (stalker, warder, warlord; Path of War Expanded's harbinger, mystic, zealot) has `initiator: { ability, disciplines, choose }` and each level's
+// row has `maneuvers: { known, readied, stances }` (a mystic's also `granted`). The character's choices for a class are saved in
 // state.maneuvers[class id] = { discipline (the "either X or Y" pick), known: [maneuver ids], stances: [ids],
 // readied: [ids], stance (the stance in use, '' for none) }.
 
@@ -30,7 +30,8 @@ export function maneuverSlots(cls, level, { extraReadied = 0, advancedStudy = 0,
   const row = cls?.progression?.[Math.min(level, cls.progression.length) - 1]?.maneuvers;
   if (!row) return { known: 0, readied: 0, stances: 0 };
   const swapped = Math.min(studyStances, advancedStudy);
-  return { known: row.known + 2 * (advancedStudy - swapped), readied: row.readied + extraReadied, stances: row.stances + swapped };
+  return { known: row.known + 2 * (advancedStudy - swapped), readied: row.readied + extraReadied, stances: row.stances + swapped,
+           ...(row.granted ? { granted: row.granted } : {}) };
 }
 
 // The disciplines a class can learn from: its list, plus the one picked from its "either X or Y".
@@ -126,7 +127,9 @@ export function stanceEffects(stance, il, opts = {}) {
 
 // The martial disciple classes' always-on features: a stalker's dodge bonus (the class table's column) and combat
 // insight (2nd: initiation modifier to initiative and Reflex, insight), a warlord's force of personality (3rd:
-// initiation modifier to Will). entries: [{ cls, level, initMod }].
+// initiation modifier to Will), a harbinger's accursed will (insight on attack rolls, half the initiation modifier, at
+// least +1; on damage the full modifier from 10th) and ill tidings (+10 ft. competence to speed, +20 ft. from 10th).
+// entries: [{ cls, level, initMod }].
 export function martialClassEffects(entries) {
   const out = [];
   for (const { cls, level, initMod } of entries) {
@@ -136,17 +139,35 @@ export function martialClassEffects(entries) {
       if (level >= 2 && initMod > 0) out.push(...fx('Combat insight (stalker)', ['init', 'ref'].map(target => ({ target, type: 'insight', value: initMod }))));
     }
     if (cls.id === 'warlord' && level >= 3 && initMod > 0) out.push(...fx('Force of personality (warlord)', [{ target: 'will', type: 'untyped', value: initMod }]));
+    if (cls.id === 'harbinger') {
+      out.push(...fx('Accursed will (harbinger)', [{ target: 'attack', type: 'insight', value: Math.max(1, Math.floor(initMod / 2)) },
+                                                   { target: 'damage', type: 'insight', value: level >= 10 ? Math.max(0, initMod) : 0 }]));
+      out.push(...fx('Ill tidings (harbinger)', [{ target: 'speed', type: 'competence', value: level >= 10 ? 20 : 10 }]));
+    }
   }
   return out;
 }
 
-// Daily uses: a stalker's ki pool (half the stalker level + initiation modifier, at least 1).
+// Daily uses: a stalker's ki pool (half the stalker level + initiation modifier, at least 1); a zealot's power points
+// (the class table's PP/day, plus bonus power points for Charisma: modifier × zealot level ÷ 2, rounded down, the
+// psionics table's rule with the zealot level as manifester level).
 export function martialDaily(entries) {
-  return entries.filter(e => e.cls.id === 'stalker').map(({ level, initMod, cls }) => ({
-    name: 'Ki pool (stalker)', max: Math.max(1, Math.floor(level / 2) + initMod), unit: 'points',
-    how: `half your stalker level (${Math.floor(level / 2)}) + your initiation modifier (${initMod}), at least 1`,
-    text: cls.features.find(f => f.name.startsWith('Ki Pool'))?.text || '' }));
+  const out = [];
+  for (const { level, initMod, cls } of entries) {
+    if (cls.id === 'stalker') out.push({ name: 'Ki pool (stalker)', max: Math.max(1, Math.floor(level / 2) + initMod), unit: 'points',
+      how: `half your stalker level (${Math.floor(level / 2)}) + your initiation modifier (${initMod}), at least 1`,
+      text: cls.features.find(f => f.name.startsWith('Ki Pool'))?.text || '' });
+    if (cls.id === 'zealot') {
+      const base = cls.progression[level - 1]?.power_points || 0;
+      const bonus = Math.max(0, Math.floor(initMod * level / 2));
+      out.push({ name: 'Power points (zealot)', max: base + bonus, unit: 'points',
+        how: `${base} from the zealot table + ${bonus} bonus for Charisma (modifier ${initMod} × zealot level ${level} ÷ 2)`,
+        text: cls.features.find(f => f.name === 'Power Points')?.text || '' });
+    }
+  }
+  return out;
 }
 
-// Feats the classes grant: a warder's Combat Reflexes (defensive focus, 1st level).
-export const martialFeats = entries => (entries.some(e => e.cls.id === 'warder') ? ['Combat Reflexes'] : []);
+// Feats the classes grant: a warder's Combat Reflexes (defensive focus, 1st level), a zealot's Diehard (defiance, 5th).
+export const martialFeats = entries => [...(entries.some(e => e.cls.id === 'warder') ? ['Combat Reflexes'] : []),
+                                        ...(entries.some(e => e.cls.id === 'zealot' && e.level >= 5) ? ['Diehard'] : [])];

@@ -41,6 +41,7 @@ export const BONUS_FEAT_RULES = {
   // Path of War (third-party): the warder's and warlord's bonus feats.
   warder: { note: 'Must be a combat or teamwork feat.', allowed: f => hasType(f, 'Combat', 'Teamwork') },
   warlord: { note: 'Must be a combat or teamwork feat.', allowed: f => hasType(f, 'Combat', 'Teamwork') },
+  mystic: { note: 'Must be a combat or item creation feat.', allowed: f => hasType(f, 'Combat', 'Item Creation') },
   rangerStyle: { note: 'Must be from your combat style\'s list (more feats join it at 6th and 10th level). Prerequisites are waived.',
                  allowed: (f, slotLevel, slot) => !STYLE_FEATS[slot?.clsId] || styleFeatsAt(STYLE_FEATS[slot.clsId], slotLevel).includes(lower(f.name)),
                  waivePrereqs: true },

@@ -109,6 +109,11 @@ export const TALENT_RULES = {
   // gambits (two at 1st, then one at 4th and every four levels).
   stalker: [{ key: 'art', label: 'Stalker art', kinds: ['pow-stalker-art'], levels: [1, 3, 7, 11, 15, 19], browse: true }],
   warlord: [{ key: 'gambit', label: 'Gambit', kinds: ['pow-gambit'], levels: [1, 1, 4, 8, 12, 16, 20], browse: true }],
+  // Path of War Expanded: a harbinger's grim news ability (9th and 15th); a zealot's convictions (2nd, then every four
+  // levels) and mission (4th).
+  harbinger: [{ key: 'grim-news', label: 'Grim news ability', plural: 'Grim news abilities', kinds: ['pow-grim-news'], levels: [9, 15] }],
+  zealot: [{ key: 'conviction', label: 'Conviction', kinds: ['pow-conviction'], levels: [2, 6, 10, 14, 18], browse: true },
+           { key: 'mission', label: 'Mission', kinds: ['pow-mission'], levels: [4] }],
 };
 
 // Feats that give one more pick of a class's choices each time they're taken: feat name -> rule keys it adds to (the
