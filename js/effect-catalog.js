@@ -42,6 +42,15 @@ const spell = (id, name, bonuses, extra = {}) => ({ id, name, bonuses: typeof bo
 const item = (id, name, bonuses, extra = {}) => ({ id, name, group: 'item', bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ref: { item: extra.refName || name, ...(extra.refId ? { id: extra.refId } : {}) }, ...extra });
 const ability = (id, name, bonuses, extra = {}) => ({ id, name, group: 'ability', bonuses: typeof bonuses === 'function' ? bonuses : () => bonuses, ...extra });
 
+// Energy resistance: a choice of energy type and amount (each a form with `resist: { type, value }`; `absorb` for
+// protection from energy, which absorbs 12 points per caster level, up to 120, then ends). effects.js effectResist adds
+// them up for the Character tab.
+const ENERGY = ['acid', 'cold', 'electricity', 'fire', 'sonic'];
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const resistForms = tiers => ENERGY.flatMap(type => tiers.map(([value, when]) => ({ label: `${cap(type)} ${value}${when ? ` (${when})` : ''}`, resist: { type, value }, bonuses: [] })));
+const RESIST_SPELL = [[10, 'caster level 1–6'], [20, 'caster level 7–10'], [30, 'caster level 11+']];
+const absorbForms = () => ENERGY.map(type => ({ label: cap(type), resist: { type, absorb: true }, bonuses: [] }));
+
 export const MORE_BUFFS = [
   // ---------------- Spells (Core Rulebook first, then later books) ----------------
   poly('alter-self', 'Alter self', [form('Small humanoid', 'Small', [sz('dex', 2)]), form('Medium humanoid', 'Medium', [sz('str', 2)])], 'Alter Self', 'the form’s movement and senses (see the spell)'),
@@ -80,6 +89,18 @@ export const MORE_BUFFS = [
   spell('cloak-of-chaos', 'Cloak of chaos', [b('ac', 'deflection', 4), b('saves', 'resistance', 4)], { note: 'against lawful creatures’ attacks and effects; also spell resistance 25' }),
   spell('dispel-evil', 'Dispel evil', [b('ac', 'deflection', 4)], { note: 'against evil creatures’ attacks' }),
   spell('protection-from-spells', 'Protection from spells', [b('saves', 'resistance', 8)], { note: 'only against spells and spell-like abilities' }),
+  { id: 'resist-energy', name: 'Resist energy', forms: resistForms(RESIST_SPELL), levelName: 'energy', ref: { spell: 'Resist Energy' },
+    note: 'reduces damage of the chosen energy type each time; it doesn\u2019t stack with other resistance to that energy (the highest counts)' },
+  { id: 'resist-energy-communal', name: 'Resist energy, communal', forms: resistForms(RESIST_SPELL), levelName: 'energy', ref: { spell: 'Resist Energy, Communal' },
+    note: 'as resist energy, the duration split among those touched' },
+  { id: 'protection-from-energy', name: 'Protection from energy', forms: absorbForms(), levelName: 'energy', ref: { spell: 'Protection from Energy' },
+    note: 'absorbs 12 points of the chosen energy per caster level (max 120), then ends; used up before resist energy' },
+  { id: 'protection-from-energy-communal', name: 'Protection from energy, communal', forms: absorbForms(), levelName: 'energy', ref: { spell: 'Protection from Energy, Communal' },
+    note: 'as protection from energy, the duration split among those touched' },
+  { id: 'ring-of-energy-resistance', name: 'Ring of energy resistance', group: 'item', forms: resistForms([[10, 'minor'], [20, 'major'], [30, 'greater']]), levelName: 'energy',
+    ref: { item: 'Ring of Energy Resistance' } },
+  { id: 'armor-energy-resistance', name: 'Energy resistance (armor ability)', group: 'item', forms: resistForms([[10, ''], [20, 'improved'], [30, 'greater']]), levelName: 'energy',
+    ref: { item: 'Energy Resistance' } },
   spell('shield-other', 'Shield other', [b('ac', 'deflection', 1), b('saves', 'resistance', 1)], { note: 'the caster takes half of the damage dealt to you' }),
   spell('death-knell', 'Death knell', [b('str', 'enhancement', 2)], { note: '1d8 temporary hit points and +1 effective caster level' }),
   spell('holy-sword', 'Holy sword', [b('attack', 'enhancement', 5), b('damage', 'enhancement', 5)], { note: 'on the paladin’s weapon; it becomes holy (+2d6 against evil)' }),

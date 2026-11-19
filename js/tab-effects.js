@@ -241,7 +241,8 @@ export async function popBuff(app, id) {
     ${buff.size ? `<p>It makes you one size ${buff.size > 0 ? 'larger' : 'smaller'}: size changes to AC, attacks, CMB/CMD and weapon damage are counted.</p>` : ''}
     ${buff.note ? `<p class="hint">Not counted: ${esc(buff.note)}.</p>` : ''}
     ${ruleText ? `<details class="rules"><summary>Rules text: ${esc(ruleText[0])}</summary>${paragraphs(ruleText[1] || '')}</details>` : ''}
-    ${buff.forms ? `<p class="hint">Choose the form in its list (${buff.forms.length} forms)${buff.forms.some(f => f.size) ? '; your size becomes the form\u2019s' : ''}.</p>` : ''}
+    ${buff.forms && buff.levelName === 'energy' ? '<p class="hint">Choose the energy type and amount in its list; it shows as Resist on the Character tab.</p>' : ''}
+    ${buff.forms && buff.levelName !== 'energy' ? `<p class="hint">Choose the form in its list (${buff.forms.length} forms)${buff.forms.some(f => f.size) ? '; your size becomes the form\u2019s' : ''}.</p>` : ''}
     ${spell ? `<h3>The spell</h3>${facts([['Range', spell.range], ['Duration', spell.duration], ['Target', spell.target || null], ['Saving throw', spell.saving_throw]])}
       <details class="rules"><summary>Spell text</summary>${paragraphs(spell.description)}</details>` : ''}`,
     [cur ? { label: 'Switch it off', run: () => app.update({ buffs: state.buffs.map(x => (x.id === id ? { ...x, on: false } : x)) }) }

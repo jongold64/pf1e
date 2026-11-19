@@ -2589,6 +2589,16 @@ document.getElementById('list').innerHTML = results.map(r =>
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
+  const E = await import('./effects.js');
+  const re = E.buffById.get('resist-energy');
+  const fire20 = re.forms.findIndex(f => f.label.startsWith('Fire 20')) + 1;
+  const ring = E.buffById.get('ring-of-energy-resistance');
+  const fire10 = ring.forms.findIndex(f => f.label.startsWith('Fire 10')) + 1;
+  const cold = ring.forms.findIndex(f => f.label.startsWith('Cold 30')) + 1;
+  check('resist energy: fire 20 and a ring of fire 10 -> fire 20 (they don’t stack); cold 30 from another ring',
+    JSON.stringify(E.effectResist([{ id: 'resist-energy', cl: fire20 }, { id: 'ring-of-energy-resistance', cl: fire10 }, { id: 'ring-of-energy-resistance', cl: cold }]).map(r => [r.type, r.value])),
+    '[["cold",30],["fire",20]]');
+  check('protection from energy: absorbs, listed apart', E.effectResist([{ id: 'protection-from-energy', cl: 4 }]).map(r => `${r.type} ${r.absorb}`).join(), 'fire true');
   const { goldForLeft, sellGold } = await import('./equipment.js');
   check('Sell: a bought 2,000 gp item gives 1,000 (Gold 5,000 -> 4,000, Left up 1,000)', JSON.stringify(sellGold(5000, 2000, 2000)), '{"gold":4000,"gets":1000}');
   check('Sell: found (free) 2,000 gp item adds 1,000 to Gold', sellGold(5000, 2000, 0).gold, 6000);

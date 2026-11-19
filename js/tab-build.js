@@ -18,7 +18,7 @@ import { familiarStats } from './familiar.js';
 import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
-import { buffById, missChance, effectDr } from './effects.js';
+import { buffById, missChance, effectDr, effectResist } from './effects.js';
 import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -59,6 +59,8 @@ export function renderBuild(app, view, parts) {
   const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
     ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
+  // Energy resistance from active effects (resist energy, a ring of energy resistance); protection from energy absorbs.
+  const resist = effectResist(view.buffs).map(r => (r.absorb ? `${r.type}: absorbs 12/caster level (max 120)` : `${r.type} ${r.value}`) + ` (${r.from})`);
   // AC and HP: in the highlighted row at the top, beside who the character is.
   // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.
@@ -77,6 +79,7 @@ export function renderBuild(app, view, parts) {
           ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD ${cmd}`)}
           ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'))}
           ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
+          ${resist.length ? stat('Resist', esc(resist.join(', '))) : ''}
           ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}
         </div>
       </div>`;

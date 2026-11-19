@@ -221,6 +221,21 @@ export function effectDr(buffs = []) {
   return [...best.values()];
 }
 
+// Energy resistance from active effects with resist forms (resist energy, a ring of energy resistance...): one entry
+// per energy type, the highest counting (they don't stack). [{ type, value, from }] with value null for protection
+// from energy (absorbs, listed as `absorb`).
+export function effectResist(buffs = []) {
+  const best = new Map();
+  for (const x of buffs.filter(y => y.on !== false)) {
+    const buff = buffById.get(x.id);
+    const r = buff?.forms?.[buffAmount(buff, x.cl) - 1]?.resist;
+    if (!r) continue;
+    const key = r.absorb ? `${r.type}:absorb` : r.type;
+    if (!(best.get(key)?.value >= (r.value || 0))) best.set(key, { type: r.type, value: r.value ?? null, absorb: !!r.absorb, from: buff.name });
+  }
+  return [...best.values()].sort((a, b) => a.type.localeCompare(b.type) || a.absorb - b.absorb);
+}
+
 // The miss chance attacks against you have from active effects with `miss` (blur 20%, displacement 50%...):
 // { chance, from: [names] }, or null. Miss chances from concealment don't stack: the highest applies.
 export function missChance(buffs = []) {
