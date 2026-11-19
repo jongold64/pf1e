@@ -558,10 +558,23 @@ export function renderCrafting(app, which = null) {
   }
 }
 
+// The Add magic gear card opens and closes (Open / Done); it starts closed.
+export function showBuyCard(open) {
+  if (!$('buy-wrap')) return;
+  $('buy-wrap').hidden = !open;
+  $('buy-toggle').textContent = open ? 'Close' : 'Open';
+  $('buy-toggle').setAttribute('aria-expanded', String(open));
+}
+export function initBuyCard() {
+  $('buy-toggle')?.addEventListener('click', () => showBuyCard($('buy-wrap').hidden));
+  $('buy-done')?.addEventListener('click', () => { showBuyCard(false); $('buy-card').scrollIntoView({ block: 'nearest' }); });
+}
+
 // Making worn armor or a shield magic from the Armor tab's list: the Add magic gear card (buy) or the Craft tab's card
 // (craft), set to that armor or shield.
 export function openMagicArmor(app, target, mode = 'buy') {
   const c = CARDS[mode];
+  if (mode === 'buy') showBuyCard(true);
   const enh = Math.max(1, app.state[`${target}Enh`] || 0);
   Object.assign(c.form, { kind: 'armor', target, enh, abilities: [], confirmed: new Set(), extraUnmet: 0, message: '' });
   app.showTab(mode === 'buy' ? 'magic-items' : 'craft');
@@ -572,6 +585,7 @@ export function openMagicArmor(app, target, mode = 'buy') {
 // A potion, scroll or wand from the Magic Items list's search: the Add magic gear card set to that kind.
 export function openSpellItem(app, spellKind) {
   const c = CARDS.buy;
+  showBuyCard(true);
   Object.assign(c.form, { kind: 'spell', spellKind, spell: '', cl: 0, confirmed: new Set(), extraUnmet: 0, message: '' });
   renderCrafting(app, 'buy');
   $(c.card).scrollIntoView({ block: 'start' });
@@ -691,6 +705,7 @@ function popAbility(app, id, picker) {
 }
 
 export function initCrafting(app) {
+  initBuyCard();
   for (const c of Object.values(CARDS)) if ($(c.card)) initCard(app, c);
   // Details on special abilities, wherever a picker is (Craft tab, Add magic gear, weapon cards).
   document.addEventListener('click', e => {

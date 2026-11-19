@@ -119,6 +119,14 @@ export function equipmentTotals(inventory, itemsById, worn = {}) {
   return { cost: Math.round(cost * 100) / 100, weight: Math.round(weight * 100) / 100, unpriced, unweighed };
 }
 
+// The gold to enter so that what's left after spending is `left`: the gold you have now plus what's been spent
+// (to the copper). A blank or negative left gives null (use the starting gold again only if nothing was entered).
+export function goldForLeft(left, spent) {
+  const n = Number(left);
+  if (left === '' || left === null || !Number.isFinite(n) || n < 0) return null;
+  return Math.round((n + spent) * 100) / 100;
+}
+
 // 1250 -> "1,250 gp", 0.5 -> "5 sp", 0.01 -> "1 cp", 2.55 -> "2 gp 5 sp 5 cp", null -> "—".
 export function formatGp(gp) {
   if (gp === null || gp === undefined) return '—';

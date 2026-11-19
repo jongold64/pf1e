@@ -293,11 +293,14 @@
         <p id="my-items-total" class="hint"></p>
       </section>
       <section class="card wide" id="buy-card">
-        <h2>Add magic gear</h2>
-        <p class="hint">Treasure or purchases: make a weapon or armor magic, or add potions, scrolls and wands, at their
-          market price (no feats or checks needed). Items in the list below have their own Add buttons. To make items
-          yourself, use the Craft tab.</p>
-        <div id="buy-body"></div>
+        <h2>Add magic gear <button type="button" id="buy-toggle" class="primary" aria-expanded="false" aria-controls="buy-wrap">Open</button></h2>
+        <div id="buy-wrap" hidden>
+          <p class="hint">Treasure or purchases: make a weapon or armor magic, or add potions, scrolls and wands, at their
+            market price (no feats or checks needed). Items in the list below have their own Add buttons. To make items
+            yourself, use the Craft tab.</p>
+          <div id="buy-body"></div>
+          <button type="button" id="buy-done">Done: close this card</button>
+        </div>
       </section>
       <section class="card wide">
         <h2>Magic items <span id="item-count" class="count"></span></h2>
@@ -419,7 +422,10 @@
           <label>Gold <input id="gold" type="number" min="0" step="any" inputmode="decimal"></label>
           <button type="button" id="gold-start"></button>
           <button type="button" id="gold-wealth" hidden></button>
+          <label>Gold left now <input id="gold-left" type="number" min="0" step="any" inputmode="decimal"></label>
         </div>
+        <p class="hint">Gold is what you started with; everything you buy is taken from it in Left. Already paid for your gear? Type
+          the gold you really have in <b>Gold left now</b> (0 if none): Gold is set so Left matches it.</p>
         <dl id="money-summary" class="facts wide-facts"></dl>
         <p id="money-note" class="hint"></p>
       </section>
@@ -1063,7 +1069,8 @@
             <li>Browse by category or search; choose an item to see it, then <b>Add</b> it (pick a version, e.g. +2, if it has one).
               <b>Details</b> on a row opens the item in a popup, with its Add and Craft buttons.</li>
             <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed: make a weapon or armor magic,
-              or add potions, scrolls and wands of any spell (type in <b>Search</b> to narrow the spell list: "cure light").</li>
+              or add potions, scrolls and wands of any spell (type in <b>Search</b> to narrow the spell list: "cure light"). It starts
+              closed: <b>Open</b> shows it, and <b>Close</b> or <b>Done</b> at the bottom puts it away.</li>
             <li><b>My magic items</b> lists what you own, with − / + for quantities; <b>Details</b> shows how each cost is worked out (market price, or the cost to make for crafted items).</li>
           </ul>
         </details>
@@ -1091,6 +1098,8 @@
           <ul>
             <li>In <b>Inventory</b>, each item (and the armor and shield you wear) is one line: how many, cost, weight, with
               <b>Details</b> at the end to open how many (− / +), the cost breakdown and the item itself.</li>
+            <li><b>Gold left now</b>: everything you buy is taken from Gold in <b>Left</b>. If you've already paid for your gear,
+              type the gold you really have (0 if none) and Gold is set so Left matches it; buying more still takes from it.</li>
             <li><b>Details</b> beside <b>Gold</b> shows your class's starting gold and the wealth-by-level table; beside
               <b>Carrying capacity</b>, the light, medium and heavy loads for your Strength and size, what each does, and your load now.</li>
             <li>Set your <b>gold</b>, or use your class's starting gold (with any trait that changes it, like Rich Parents) or the wealth for your level.</li>

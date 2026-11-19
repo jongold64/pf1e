@@ -1,6 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { WEALTH_BY_LEVEL, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
+import { WEALTH_BY_LEVEL, goldForLeft, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
@@ -80,6 +80,9 @@ function renderList(app) {
 
 // Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
 // A "Free" tick box: found, a gift or from a class feature, so it costs no gold.
+// What the character has spent (Gold − Left), from the last draw: the "Gold left now" box adds it to what's typed.
+let spentNow = 0;
+
 export const freeBox = (attr, on) => `<label class="check-row small free-box"><input type="checkbox" ${attr}${on ? ' checked' : ''}> Free (found or a gift: no gold)</label>`;
 
 export async function renderEquipment(app, view) {
@@ -133,6 +136,9 @@ export async function renderEquipment(app, view) {
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponsWeight = carried.reduce((sum, [w, e]) => sum + weaponWeight(w, e, view.race.size), 0);
   const left = Math.round((gold - armorSpend - gearSpend - magic.cost - weaponSpend) * 100) / 100;
+  // "Gold left now": typing the gold you have sets Gold to it plus what's been spent.
+  spentNow = Math.round((gold - left) * 100) / 100;
+  if (document.activeElement !== $('gold-left')) $('gold-left').value = left;
   const carriedWeight = totals.weight + magic.weight + weaponsWeight;
 
   // What each total is made of, for its Details popup.
@@ -362,6 +368,10 @@ export function initEquipmentTab(app) {
     }
     const show = e.target.closest('[data-show-gear]');
     if (show) showGear(app, show.dataset.showGear);
+  });
+  $('gold-left').addEventListener('change', e => {
+    const g = goldForLeft(e.target.value, spentNow);
+    if (g !== null) app.update({ gold: g });
   });
   $('gold').addEventListener('change', e => {
     const n = Number(e.target.value);

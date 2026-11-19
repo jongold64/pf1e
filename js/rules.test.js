@@ -2589,6 +2589,9 @@ document.getElementById('list').innerHTML = results.map(r =>
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
+  const { goldForLeft } = await import('./equipment.js');
+  check('Gold left now: 0 left with 1,234.5 gp spent sets Gold to 1,234.5', goldForLeft('0', 1234.5), 1234.5);
+  check('Gold left now: 200 left, 50 spent: Gold 250; blank or negative: no change', `${goldForLeft(200, 50)} ${goldForLeft('', 50)} ${goldForLeft(-1, 50)}`, '250 null null');
   const CF = await import('./class-features.js');
   const D = await import('./defense.js');
   const W = await import('./weapons.js');
