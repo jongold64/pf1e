@@ -38,6 +38,9 @@ export const BONUS_FEAT_RULES = {
   'monk-unchained': { note: 'Must be from the monk bonus feat list. Prerequisites are waived.',
                       allowed: (f, slotLevel) => monkFeatList(slotLevel).includes(f.name), waivePrereqs: true },
   teamwork: { note: 'Must be a teamwork feat.', allowed: f => hasType(f, 'Teamwork') },
+  // Path of War (third-party): the warder's and warlord's bonus feats.
+  warder: { note: 'Must be a combat or teamwork feat.', allowed: f => hasType(f, 'Combat', 'Teamwork') },
+  warlord: { note: 'Must be a combat or teamwork feat.', allowed: f => hasType(f, 'Combat', 'Teamwork') },
   rangerStyle: { note: 'Must be from your combat style\'s list (more feats join it at 6th and 10th level). Prerequisites are waived.',
                  allowed: (f, slotLevel, slot) => !STYLE_FEATS[slot?.clsId] || styleFeatsAt(STYLE_FEATS[slot.clsId], slotLevel).includes(lower(f.name)),
                  waivePrereqs: true },
@@ -65,7 +68,7 @@ function bonusFeatRule(cls, special) {
   const s = lower(special);
   if (s === 'bonus feat') return BONUS_FEAT_RULES[cls.id] ? cls.id : null;
   if (s === 'bonus combat feat') return 'brawler';
-  if (s === 'teamwork feat' || s === 'tactician') return 'teamwork';
+  if (s === 'teamwork feat' || s === 'tactician' || (s === 'warleader' && cls.id === 'warlord')) return 'teamwork';
   if (s === 'combat style feat') return 'rangerStyle';
   if (s === 'bloodline feat') return 'bloodline';
   return null;

@@ -398,9 +398,13 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   by an older version still loading (`load()` migrates or drops old fields). `msedge --print-to-pdf` shows the
   printed sheet (copy `#print-sheet` into a page that links css/style.css; the Read tool shows the PDF).
 
-- Third-party books (`data/third-party.json`, `scripts/build_rgg_talented_monk.py` from the PDFs in `..rd Party`; needs
-  pypdf and cryptography): `{ books: [{ id, name, publisher, author, sources, notices, note }], classes, talents }`, merged into
-  data.classes / data.talents at startup. Records carry `third_party` (the book id) and origin. `state.books` { id: true } with
+- Third-party books (`data/third-party.json`; each book's builder replaces only its own records through
+  `common.save_third_party`: `scripts/build_rgg_talented_monk.py` from the PDFs in `../3rd Party`, needing pypdf and
+  cryptography; `scripts/build_dsp_path_of_war.py` from the d20pfsrd pages `fetch_d20pfsrd_path_of_war.py` saves in
+  `../d20pfsrd-path-of-war`): `{ books: [{ id, name, publisher, author, sources, notices, note }], classes, talents,
+  disciplines, maneuvers, feats }`, merged into data.classes / data.talents / data.feats at startup (data.maneuvers,
+  data.disciplines kept as they are). Third-party feats (and skills with `book`, Knowledge (martial)) show only with
+  their book on (feat picker, skill rows, search). Records carry `third_party` (the book id) and origin. `state.books` { id: true } with
   the 3rd Party house rule (`bookOn`) decides what the class pickers (`offeredClasses`) and search offer; a character with
   levels in a class keeps it. Talented monk: class progression rows have `specialty_bab`; options are kinds tm-edge,
   tm-talent, tm-advanced-talent, tm-grand-talent (talents.js TALENT_RULES['talented-monk']; several picks at one level get
@@ -408,6 +412,17 @@ lists pass/fail. There is no command-line test runner (Node is not installed).
   fighting style groups) are one record each with `pick` (the parent) and `weapon_group` / `element`. js/talented-monk.js:
   talentedMonkEffects (classFx), talentedMonkDaily (dailyPowers), talentedMonkFeats (granted), styleWeapon / tmFlurryBabs /
   deadlyStrikesDie (tab-weapons: specialty BAB via view.tm.specialty, proficiency, minDice, flurry).
+  Path of War: classes stalker, warder, warlord have `initiator { ability, disciplines, choose }` and rows with
+  `maneuvers { known, readied, stances }` (stalker rows also `dodge_bonus`); talents kinds pow-stalker-art, pow-gambit;
+  maneuvers `{ id, name, discipline, type, level, prerequisite (count of the discipline's maneuvers needed), action, range,
+  target, duration, save, summary, text, summary_only? }` (the Black Seraph page has only its summary tables). js/maneuvers.js
+  holds the rules (initiatorLevel, maxManeuverLevel, maneuverSlots with Extra Readied Maneuver / Advanced Study, canLearn,
+  tidyChoices, STANCE_EFFECTS for stances with plain bonuses, martialClassEffects, martialDaily, martialFeats);
+  computeView builds `view.initiators` (one per martial class: il, maxLevel, slots, tidied choice, disciplines, initMod,
+  problems) from `state.maneuvers[class id] = { discipline, known, stances, readied, stance }`; js/tab-maneuvers.js draws
+  the Maneuvers card (Classes tab). Discipline skills join pathSkills (class skills). Not done: Path of War Expanded's
+  classes, archetypes, prestige classes, and feats' effects beyond prerequisites (Martial Training's maneuvers for other
+  classes).
 
 ## Data build commands
 

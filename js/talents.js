@@ -105,6 +105,10 @@ export const TALENT_RULES = {
       later: [{ from: 10, kinds: ['tm-advanced-talent'] }], browse: true },
     { key: 'grand', label: 'Grand talent', kinds: ['tm-grand-talent', 'tm-talent', 'tm-advanced-talent'], levels: [20] },
   ],
+  // Path of War (Dreamscarred Press, third-party): a stalker's arts (1st, 3rd, then every four levels); a warlord's
+  // gambits (two at 1st, then one at 4th and every four levels).
+  stalker: [{ key: 'art', label: 'Stalker art', kinds: ['pow-stalker-art'], levels: [1, 3, 7, 11, 15, 19], browse: true }],
+  warlord: [{ key: 'gambit', label: 'Gambit', kinds: ['pow-gambit'], levels: [1, 1, 4, 8, 12, 16, 20], browse: true }],
 };
 
 // Feats that give one more pick of a class's choices each time they're taken: feat name -> rule keys it adds to (the
@@ -115,6 +119,7 @@ export const EXTRA_FEATS = {
   'Extra Discovery': ['discovery'], 'Extra Arcana': ['magus-arcana'], 'Extra Revelation': ['revelation'],
   'Extra Arcanist Exploit': ['arcanist-exploit'], 'Extra Mercy': ['mercy'], 'Extra Amplification': ['phrenic-amplification'],
   'Extra Wild Talent': ['wild-talent'], 'Extra Focus Power': ['focus-power'],
+  'Extra Stalker Art': ['art'], 'Extra Gambit': ['gambit'],
 };
 
 // The extra pick slots feats give: feats is [{ slotId (the feat slot), name, charLevel }] and classLevels the class id at

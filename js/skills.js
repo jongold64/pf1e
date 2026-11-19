@@ -22,6 +22,9 @@ export const SKILLS = [
   ...['arcana', 'dungeoneering', 'engineering', 'geography', 'history', 'local', 'nature', 'nobility',
       'planes', 'religion'].map(k => ({ name: `Knowledge (${k})`, ability: 'int', trained: true,
                                 untrained: 'Without ranks, only for checks of DC 10 or lower (common knowledge).' })),
+  // Path of War (Dreamscarred Press, third-party): shown only on a character with that book ticked.
+  { name: 'Knowledge (martial)', ability: 'int', trained: true, book: 'path-of-war',
+    untrained: 'Without ranks, only for checks of DC 10 or lower (common knowledge).' },
   { name: 'Linguistics', ability: 'int', trained: true },
   { name: 'Perception', ability: 'wis' },
   { name: 'Perform', ability: 'cha', family: true },

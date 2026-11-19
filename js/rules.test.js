@@ -2531,6 +2531,49 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('two DR/magic effects: the higher counts; other kinds listed', drs([['form-of-the-dragon-2', 9], ['frightful-aspect', 15], ['stoneskin', 9]]), '10/magic, 10/adamantine');
 }
 
+// Path of War (third-party): initiator level, maneuver levels, slots, learning, stances, class features.
+{
+  const M = await import('./maneuvers.js');
+  const tp = await fetch('data/third-party.json').then(r => r.json());
+  const pc = id => tp.classes.find(c => c.id === id);
+  const byId = new Map(tp.maneuvers.map(m => [m.id, m]));
+  const warlord = pc('warlord'), stalker = pc('stalker'), warder = pc('warder');
+  check('Path of War: three classes with initiator data', [warlord, stalker, warder].every(c => c?.initiator && c.progression.length === 20), true);
+  check('warlord: Charisma, five disciplines + Piercing Thunder or Tempest Gale',
+    `${warlord.initiator.ability} ${warlord.initiator.disciplines.length} ${warlord.initiator.choose.join('/')}`, 'cha 5 Piercing Thunder/Tempest Gale');
+  const ct = list => list.map(([c, level]) => ({ cls: c, level }));
+  const fighter = classes.find(c => c.id === 'fighter');
+  check('initiator level: single class', M.initiatorLevel(ct([[warlord, 5]]), 'warlord'), 5);
+  check('initiator level: + half the other levels', M.initiatorLevel(ct([[warlord, 4], [fighter, 3]]), 'warlord'), 5);
+  check('initiator level: no martial class, half the character level', M.initiatorLevel(ct([[fighter, 7]]), 'warlord'), 3);
+  check('max maneuver level by initiator level', [1, 2, 3, 6, 16, 17, 20].map(M.maxManeuverLevel).join(','), '1,1,2,3,8,9,9');
+  check('warlord 1st level: 6 known, 4 readied, 1 stance', JSON.stringify(M.maneuverSlots(warlord, 1)), '{"known":6,"readied":4,"stances":1}');
+  check('Extra Readied Maneuver and Advanced Study add', JSON.stringify(M.maneuverSlots(warder, 1, M.maneuverFeatCounts(['Extra Readied Maneuver', 'Advanced Study']))),
+    '{"known":7,"readied":4,"stances":1}');
+  check('disciplines: the "either" pick joins', M.disciplinesFor(warlord, 'Tempest Gale').includes('Tempest Gale') && !M.disciplinesFor(warlord, '').includes('Tempest Gale'), true);
+  const gl = tp.maneuvers.filter(m => m.discipline === 'Golden Lion');
+  const needsOne = gl.find(m => m.prerequisite === 1 && m.level === 3);
+  const free = gl.filter(m => m.prerequisite === 0 && m.type !== 'stance');
+  const ctx = known => ({ disciplines: M.disciplinesFor(warlord, ''), il: 5, known, byId });
+  check(`${needsOne.name}: needs one other Golden Lion maneuver`, M.canLearn(needsOne, ctx([])).ok, false);
+  check(`${needsOne.name}: with one known`, M.canLearn(needsOne, ctx([free[0].id])).ok, true);
+  check('a level too high for the initiator level', M.canLearn(gl.find(m => m.level === 4), ctx(free.map(m => m.id))).why.startsWith('level 4'), true);
+  check('another class’s discipline', M.canLearn(tp.maneuvers.find(m => m.discipline === 'Iron Tortoise'), ctx([])).ok, false);
+  const tidy = M.tidyChoices({ known: [free[0].id, free[1].id, 'nope'], readied: [free[1].id, 'x'], stances: [free[0].id], stance: 'x' }, { known: 1, readied: 4, stances: 1 }, byId);
+  check('tidy: unknown ids out, cut to the slots, readied only from known', JSON.stringify(tidy), JSON.stringify({ discipline: '', known: [free[0].id], stances: [], readied: [], stance: '' }));
+  const st = name => M.stanceEffects(tp.maneuvers.find(m => m.name === name), 9).map(e => [e, ...(e.more || [])].map(x => `${x.target} ${x.type} ${x.value}`).join('; ')).join('');
+  check('Iron Hand Stance at initiator level 9: +3 shield', st('Iron Hand Stance'), 'ac shield 3');
+  check('Silver Crane Waltz at 9: +5 init, +3 Ref and AC (insight)', st('Silver Crane Waltz'), 'init insight 5; ref insight 3; ac insight 3');
+  check('a stance with no plain numbers: nothing counted', st('Circular Stance'), '');
+  const fxs = M.martialClassEffects([{ cls: stalker, level: 6, initMod: 3 }, { cls: warlord, level: 3, initMod: 2 }])
+    .map(e => [e, ...(e.more || [])].map(x => `${x.target} ${x.type} ${x.value}`).join('; '));
+  check('stalker 6: dodge +2, combat insight +3; warlord 3: Will +2', fxs.join(' | '), 'ac dodge 2 | init insight 3; ref insight 3 | will untyped 2');
+  check('stalker ki pool: half level + initiation modifier', M.martialDaily([{ cls: stalker, level: 5, initMod: 2 }])[0].max, 4);
+  check('warder: Combat Reflexes', M.martialFeats([{ cls: warder, level: 1 }]).join(), 'Combat Reflexes');
+  check('Path of War feats: Greater Unarmed Strike is one', tp.feats.some(f => f.name === 'Greater Unarmed Strike' && f.third_party === 'path-of-war'), true);
+  check('maneuvers: every one has a discipline, type and level', tp.maneuvers.every(m => m.discipline && ['strike', 'boost', 'counter', 'stance'].includes(m.type) && m.level >= 1 && m.level <= 9), true);
+}
+
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
 document.getElementById('summary').className = failed.length ? 'fail' : 'pass';

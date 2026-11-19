@@ -13,15 +13,15 @@ characters from it.
 - The user is new to coding. Keep the app plain HTML/CSS/JavaScript with ES modules: no framework, no build
   step, no npm dependencies. Explain any new tool before asking them to install it.
 - Paizo content, and only from books whose OGL Section 15 notice is known (see License below). Third-party books are the
-  exception: `data/third-party.json` (built from the user's own PDFs in `..rd Party`), offered only on a character with
-  the 3rd Party house rule and that book ticked.
+  exception: `data/third-party.json` (built from the user's own PDFs in `../3rd Party`, or open-content d20pfsrd pages for
+  Path of War), offered only on a character with the 3rd Party house rule and that book ticked.
 - House-rule switches implement the official Paizo version of the rule.
 
 ## File layout
 
 - `index.html`, `css/style.css`, `js/` — the app. `js/app.js` owns the page (state, `computeView()`, render);
   `js/rules.js`, `feats.js`, `skills.js`, `weapons.js`, `armor.js`, `equipment.js`, `race-options.js`, `archetypes.js`, `crafting.js`,
-  `hero-points.js`, `traits.js`, `spell-math.js`, `dice.js` hold the rules as pure functions; `js/tab-*.js`
+  `hero-points.js`, `traits.js`, `spell-math.js`, `dice.js`, `maneuvers.js` hold the rules as pure functions; `js/tab-*.js`
   draw the tabs.
 - `tests.html` + `js/rules.test.js` — the browser test page.
 - `data/*.json` — generated rules data (races, classes, archetypes, feats, traits, spells, armor, weapons,

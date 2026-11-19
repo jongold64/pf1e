@@ -67,6 +67,9 @@ import { HERO_POINT_USES, heroPointMax, heroPointsAfter, clampHeroPoints, spendH
 import { randomDie, rollDamage } from './dice.js';
 import { weaponSummaries } from './tab-weapons.js';
 import { ALIGNMENTS, ALIGNMENT_NAMES, alignmentProblems } from './alignment.js';
+import { tidyChoices, initiatorClasses, initiatorLevel, maxManeuverLevel, maneuverSlots, disciplinesFor, initiationModifier,
+         maneuverFeatCounts, choiceProblems, stanceEffects, martialClassEffects, martialDaily, martialFeats } from './maneuvers.js';
+import { renderManeuvers, initManeuvers } from './tab-maneuvers.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
@@ -150,6 +153,9 @@ const state = {
   skills: {},      // skill name -> ranks, e.g. { Acrobatics: 2, 'Craft (alchemy)': 1 }
   specialties: [], // Craft/Perform/Profession specialties the player added, e.g. ['Craft (alchemy)']
   traits: [],      // chosen trait ids, one per trait slot (null for an empty slot); see traits.js
+  // Path of War (third-party) martial disciple classes: class id -> { discipline, known, stances, readied, stance }
+  // (maneuvers.js).
+  maneuvers: {},
   talents: {},     // class choices by slot ("barbarian|rage-power|4" -> talent id; bard versatile performance -> Perform type)
   mystery: '',     // an oracle's mystery (for which revelations fit)
   paths: {},       // one-time class choices by "class|kind": { 'wizard|school': 'school-evocation', 'wizard|opposition': [names] }
@@ -316,6 +322,10 @@ function load(saved) {
     return rule && typeof v === 'string' && (rule.choices ? Object.hasOwn(rule.choices, v) : data.talentsById.has(v));
   }));
   if (typeof state.mystery !== 'string' || !data.mysteries.some(m => m.name === state.mystery)) state.mystery = '';
+  // Maneuvers: per class, tidied to each class's level when the view is worked out (maneuvers.js tidyChoices).
+  const mv = state.maneuvers && typeof state.maneuvers === 'object' && !Array.isArray(state.maneuvers) ? state.maneuvers : {};
+  state.maneuvers = Object.fromEntries(Object.entries(mv).filter(([cid, v]) => data.classes.some(c => c.id === cid && c.initiator)
+    && v && typeof v === 'object').map(([cid, v]) => [cid, tidyChoices(v, { known: 99, readied: 99, stances: 99 }, data.maneuversById)]));
   const ps = state.paths && typeof state.paths === 'object' && !Array.isArray(state.paths) ? { ...state.paths } : {};
   // Bloodlines saved by an earlier version ({ sorcerer: id }) move into paths.
   const oldBloodlines = state.bloodlines && typeof state.bloodlines === 'object' ? state.bloodlines : {};
@@ -524,7 +534,7 @@ function syncClassWeapons() {
 
 // Skill rows in table order: each Craft/Perform/Profession row is followed by its specialties.
 function skillRowNames() {
-  return SKILLS.flatMap(s => (s.family
+  return SKILLS.filter(s => !s.book || bookOn(s.book)).flatMap(s => (s.family
     ? [s.name, ...state.specialties.filter(n => splitSkill(n).base === s.name).sort()]
     : [s.name]));
 }
@@ -1057,6 +1067,8 @@ function dailyPowers() {
       const other = view.classLevels.length - level;
       out.push(...talentedMonkDaily(view.tm.picks, level, other, view.stats.mod));
     }
+    // Path of War: a stalker's ki pool.
+    out.push(...martialDaily((view.initiators || []).filter(e => e.cls.id === cls.id)));
     const bond = pathOf(cls.id, 'arcane-bond');
     if (bond?.kind === 'arcane-bond') out.push({ name: `Bonded object: ${bond.name.replace(/^Bonded object:\s*/i, '')} (any spell in your spellbook)`, max: 1, unit: 'uses',
       text: bond.text || '', how: 'once a day' });
@@ -1956,6 +1968,7 @@ function buildControls() {
   initEquipmentTab(app);
   initWeaponsTab(app);
   initSearch(app);
+  initManeuvers(app);
   initGuide();
   initTabSearches();
 }
@@ -2223,7 +2236,7 @@ function computeView() {
   const tmRow = tmEntry ? tmEntry.cls.progression[tmEntry.level - 1] : null;
   const tmSpecialty = tmRow ? (tmRow.specialty_bab?.[0] ?? tmRow.bab[0]) - tmRow.bab[0] : 0;
   const granted = [...new Set([...grantedFeatsFor(counts, data.feats.map(f => f.name)), ...archFx.feats.map(f => f.name), ...raceFeats.map(f => f.feat),
-                               ...talentedMonkFeats(tmPicks)])];
+                               ...talentedMonkFeats(tmPicks), ...martialFeats(initiatorClasses(counts))])];
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   featChoices.push(...raceFeats.filter(f => f.value).map(f => ({ slotId: `race:${f.trait}`, feat: f.feat, kind: f.kind, value: f.value, from: f.trait })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
@@ -2308,6 +2321,24 @@ function computeView() {
   // Talented monk edges and talents that are always on (unfettered kata, fast movement, iron monk...).
   classFx.push(...talentedMonkEffects(tmPicks, tmEntry?.level || 0, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.category : null,
                                                                     shield: !!gear.shield, load: load?.load || 'light', specialty: tmSpecialty }));
+  // Path of War: each martial disciple class's initiator level, maneuver slots and choices (maneuvers.js), its always-on
+  // features and the stance in use.
+  const studyArts = Object.entries(state.talents).filter(([k]) => k.startsWith('stalker|')).map(([, id]) => data.talentsById.get(id)?.name).filter(Boolean);
+  const featCounts = maneuverFeatCounts([...haveFeats, ...studyArts]);
+  const initiators = initiatorClasses(counts).map((e, i) => {
+    const il = initiatorLevel(counts, e.cls.id);
+    const slots = maneuverSlots(e.cls, e.level, i === 0 ? featCounts : {});
+    const choice = tidyChoices(state.maneuvers[e.cls.id], slots, data.maneuversById);
+    if (!(e.cls.initiator.choose || []).includes(choice.discipline)) choice.discipline = '';
+    return { cls: e.cls, level: e.level, il, maxLevel: maxManeuverLevel(il), slots, choice, disciplines: disciplinesFor(e.cls, choice.discipline),
+             initMod: initiationModifier(e.cls, statsWith(gear).mod) };
+  });
+  const allKnown = initiators.flatMap(x => [...x.choice.known, ...x.choice.stances]);
+  for (const x of initiators) {
+    x.problems = choiceProblems(x.choice, { disciplines: x.disciplines, il: x.il, known: allKnown, byId: data.maneuversById });
+    classFx.push(...stanceEffects(data.maneuversById.get(x.choice.stance), x.il, { shield: !!gear.shield && !gear.shieldOff }));
+  }
+  classFx.push(...martialClassEffects(initiators));
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
@@ -2402,7 +2433,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, raceFeats, haveFeats, featChoices, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
+    slots, chosen, granted, raceFeats, haveFeats, featChoices, initiators, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
     // Talented monk: level, chosen edges and talents, and how much higher its specialty attack bonus is than its BAB.
@@ -2691,7 +2722,9 @@ const oppositionOf = cid => (isThassilonian(cid) ? THASSILONIAN[pathOf(cid, 'sch
 // The chosen choices' class skills (bloodlines, orders), as a class record for classSkillTest. "Knowledge (any one)"
 // isn't counted (the player picks it; the Details says so).
 function pathSkills() {
-  const skills = view.classes.flatMap(c => pathsFor(c.id).flatMap(({ path }) => path?.class_skills || []))
+  // (A martial disciple's disciplines make their associated skills class skills.)
+  const discSkills = (view.initiators || []).flatMap(x => x.disciplines.flatMap(d => data.disciplines.find(y => y.name === d)?.skills || []));
+  const skills = [...view.classes.flatMap(c => pathsFor(c.id).flatMap(({ path }) => path?.class_skills || [])), ...discSkills]
     .filter(s => !/any one/i.test(s)).map(s => s.replace(/\((\w)/, (m, c) => `(${c.toLowerCase()}`));
   return { id: 'class-paths', class_skills: skills.map(skill => ({ skill })) };
 }
@@ -3676,7 +3709,7 @@ function render() {
   $('third-party-books').innerHTML = tpBooks.map(b => {
     const on = !!state.books[b.id];
     return `<button type="button" class="house-rule${on ? ' on' : ''}" data-book="${esc(b.id)}" aria-pressed="${on}"
-      title="${esc(`${b.publisher}, by ${b.author}: ${b.sources.join(' and ')}`)}">${esc(b.name)} <small>(${esc(b.publisher)})</small>
+      title="${esc(`${b.publisher}${b.author ? `, by ${b.author}` : ''}: ${b.sources.join(' and ')}`)}">${esc(b.name)} <small>(${esc(b.publisher)})</small>
       <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
   }).join('');
   $('third-party-note').textContent = tpBooks.filter(b => state.books[b.id]).map(b => b.note).join(' ');
@@ -3759,6 +3792,7 @@ function render() {
   renderEffects(app, view);
   renderCompanion(app, view);
   renderFamiliar(app, view);
+  renderManeuvers(app, view);
   renderEidolon(app, view);
   drawBuild();
   renderFlaws();
@@ -4440,6 +4474,7 @@ function renderPicker() {
   const matches = [];
   let hidden = 0;  // matching feats left out because you don't qualify yet
   for (const f of data.feats) {
+    if (f.third_party && !bookOn(f.third_party)) continue;
     if (!slotAccepts(slot, f)) continue;
     const already = taken.has(f.id) && !canRepeat(f);
     if (type && !(f.types || []).includes(type)) continue;
@@ -4711,6 +4746,10 @@ async function start() {
     data.thirdParty = await fetch('data/third-party.json').then(r => r.json()).catch(() => ({ books: [], classes: [], talents: [] }));
     data.classes.push(...data.thirdParty.classes);
     data.talents.push(...data.thirdParty.talents);
+    // Path of War: its feats join the feat list (offered only with the book ticked), its maneuvers and disciplines.
+    data.feats.push(...(data.thirdParty.feats || []));
+    data.maneuvers = data.thirdParty.maneuvers || [];
+    data.disciplines = data.thirdParty.disciplines || [];
   } catch (err) {
     $('loading').textContent = 'Could not load the rules data. If you opened this file directly, ' +
       'start the local server (python -m http.server 8000) and open http://localhost:8000/ instead.';
@@ -4722,6 +4761,7 @@ async function start() {
   // Mythic feats need mythic tiers, which the builder doesn't support.
   data.feats = data.feats.filter(f => !(f.types || []).includes('Mythic'));
   data.featsById = new Map(data.feats.map(f => [f.id, f]));
+  data.maneuversById = new Map((data.maneuvers || []).map(m => [m.id, m]));
   data.armorById = new Map(data.armor.map(a => [a.id, a]));
   data.traitsById = new Map(data.traits.map(t => [t.id, t]));
   data.archetypesById = new Map(data.archetypes.map(a => [a.id, a]));

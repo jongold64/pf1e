@@ -75,7 +75,7 @@ for book in sorted(used):
             added += 1
 print(f'{added} notices added for {len(used)} books from the Foundry data')
 
-# Third-party books (data/third-party.json, from build_rgg_talented_monk.py): each book's own Section 15 lines.
+# Third-party books (data/third-party.json, from build_rgg_talented_monk.py and build_dsp_path_of_war.py): each book's own Section 15 lines.
 tp_path = os.path.join(data_dir, 'third-party.json')
 if os.path.exists(tp_path):
     for b in json.load(open(tp_path, encoding='utf-8')).get('books', []):

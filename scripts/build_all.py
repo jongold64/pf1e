@@ -82,5 +82,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Third-party books (the talented monk), from the user's PDFs in ../../3rd Party (kept when that's missing).
                     *([('build_rgg_talented_monk.py', 'data/third-party.json')]
                       if os.path.isdir(os.path.join(here, '..', '..', '3rd Party')) else []),
+                    # Path of War (Dreamscarred Press), from d20pfsrd pages cached by fetch_d20pfsrd_path_of_war.py.
+                    *([('build_dsp_path_of_war.py', 'data/third-party.json')]
+                      if os.path.isdir(os.path.join(here, '..', '..', 'd20pfsrd-path-of-war')) else []),
                     ('build_license.py', 'LICENSE-OGL.txt'), ('validate.py', 'data')]:
     subprocess.run([sys.executable, os.path.join(here, script), os.path.join(here, '..', out)], check=True, env=os.environ)

@@ -16,7 +16,7 @@ Usage: python build_rgg_talented_monk.py path/to/third-party.json [folder with t
 """
 import json, os, re, sys
 import pypdf
-from common import slug
+from common import slug, save_third_party
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PDF_DIR = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, '..', '..', '3rd Party')
@@ -311,12 +311,11 @@ def main():
         add(e['name'], kind, text, e)
 
     missing = sorted(set(known) - {norm(r.get('pick') or r['name']) for r in records} - set(PICK_LISTS))
-    data = {'books': [{'id': BOOK_ID, 'name': 'Talented Monk', 'publisher': ORIGIN, 'author': 'Owen K.C. Stephens',
+    book = {'id': BOOK_ID, 'name': 'Talented Monk', 'publisher': ORIGIN, 'author': 'Owen K.C. Stephens',
                        'sources': [BOOK, MORE], 'notices': NOTICES[BOOK] + NOTICES[MORE],
                        'note': 'Talented Monk: the class is in the class list (Classes tab, Third-party group); its edges and '
-                               'talents are chosen like rogue talents.'}],
-            'classes': [cls], 'talents': sorted(records, key=lambda r: (r['kind'], r['name']))}
-    json.dump(data, open(out_path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
+                               'talents are chosen like rogue talents.'}
+    save_third_party(out_path, book, classes=[cls], talents=sorted(records, key=lambda r: (r['kind'], r['name'])))
     from collections import Counter
     print(f"talented monk: {len(cls['progression'])} levels, {len(cls['class_skills'])} class skills; "
           f"{len(records)} options: {dict(Counter(r['kind'] for r in records))}")

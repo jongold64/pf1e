@@ -215,3 +215,18 @@ def parse_table(table_html):
         if cells:
             rows.append(cells)
     return headers, rows
+
+
+def save_third_party(path, book, **lists):
+    """data/third-party.json holds every third-party book: { books, classes, talents, ... }. A book's builder replaces only
+    its own entries (records whose third_party is the book's id, and the book itself), so each book can be rebuilt alone.
+    lists: classes=[...], talents=[...], maneuvers=[...]..."""
+    import json, os
+    data = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {}
+    data['books'] = [b for b in data.get('books', []) if b['id'] != book['id']] + [book]
+    for key in set(data) | set(lists):
+        if key == 'books':
+            continue
+        kept = [r for r in data.get(key, []) if r.get('third_party') != book['id']]
+        data[key] = kept + list(lists.get(key, []))
+    json.dump(data, open(path, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)

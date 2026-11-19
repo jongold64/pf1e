@@ -11,11 +11,11 @@ function entries(app) {
   const out = [
     ...data.races.map(r => ({ type: 'race', id: r.id, name: r.name, detail: `${r.category} race` })),
     ...data.classes.map(c => ({ type: 'class', id: c.id, name: c.name, detail: `${c.category} class` })),
-    ...data.feats.map(f => ({ type: 'feat', id: f.id, name: f.name, detail: (f.types || []).join(', ') })),
+    ...data.feats.map(f => ({ type: 'feat', id: f.id, name: f.name, detail: (f.types || []).join(', '), book: f.third_party })),
     ...(data.archetypes || []).map(a => ({ type: 'archetype', id: a.id, name: a.name,
       detail: `${data.classes.find(c => c.id === a.class)?.name || a.class} archetype` })),
     ...(data.traits || []).map(t => ({ type: 'trait', id: t.id, name: t.name, detail: `${t.category} trait` })),
-    ...SKILLS.map(s => ({ type: 'skill', id: s.name, name: s.name, detail: s.ability.toUpperCase() })),
+    ...SKILLS.map(s => ({ type: 'skill', id: s.name, name: s.name, detail: s.ability.toUpperCase(), book: s.book })),
     ...data.armor.map(a => ({ type: 'armor', id: a.id, name: a.name,
                               detail: a.category === 'shield' ? 'shield' : `${a.category} armor` })),
   ];
@@ -31,7 +31,8 @@ function run(app) {
   index ??= buildIndex(entries(app));
   // A third-party class shows only on a character with the 3rd Party house rule and its book ticked (Build tab).
   const hidden = new Set(app.data.classes.filter(c => c.third_party && !(app.state.houseRules?.thirdParty && app.state.books?.[c.third_party])).map(c => c.id));
-  const hits = search(index, query).filter(h => !(h.type === 'class' && hidden.has(h.id)));
+  const bookOn = b => !!(app.state.houseRules?.thirdParty && app.state.books?.[b]);
+  const hits = search(index, query).filter(h => !(h.type === 'class' && hidden.has(h.id)) && !(h.book && !bookOn(h.book)));
   const tooShort = query.trim().length < 2;
   $('search-results').hidden = tooShort;
   const status = !complete ? 'Loading spells, magic items, weapons and equipment so they can be searched too…'
