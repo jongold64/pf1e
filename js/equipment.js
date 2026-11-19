@@ -127,6 +127,14 @@ export function goldForLeft(left, spent) {
   return Math.round((n + spent) * 100) / 100;
 }
 
+// Selling one item (Core Rulebook: for half its market price). Gold is what you started with, and Left takes off what
+// your items cost, so taking the item off the list already gives back what it cost (`paid`: 0 if found, the cost to make
+// if crafted): the new Gold is gold + half the value - what it cost. Returns { gold, gets }.
+export function sellGold(gold, value, paid = 0) {
+  const gets = Math.round((value || 0) * 50) / 100;
+  return { gold: Math.round((gold + gets - (paid || 0)) * 100) / 100, gets };
+}
+
 // 1250 -> "1,250 gp", 0.5 -> "5 sp", 0.01 -> "1 cp", 2.55 -> "2 gp 5 sp 5 cp", null -> "—".
 export function formatGp(gp) {
   if (gp === null || gp === undefined) return '—';

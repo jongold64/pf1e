@@ -2589,7 +2589,10 @@ document.getElementById('list').innerHTML = results.map(r =>
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
-  const { goldForLeft } = await import('./equipment.js');
+  const { goldForLeft, sellGold } = await import('./equipment.js');
+  check('Sell: a bought 2,000 gp item gives 1,000 (Gold 5,000 -> 4,000, Left up 1,000)', JSON.stringify(sellGold(5000, 2000, 2000)), '{"gold":4000,"gets":1000}');
+  check('Sell: found (free) 2,000 gp item adds 1,000 to Gold', sellGold(5000, 2000, 0).gold, 6000);
+  check('Sell: crafted for 1,000, sells for 1,000: Gold unchanged', sellGold(5000, 2000, 1000).gold, 5000);
   check('Gold left now: 0 left with 1,234.5 gp spent sets Gold to 1,234.5', goldForLeft('0', 1234.5), 1234.5);
   check('Gold left now: 200 left, 50 spent: Gold 250; blank or negative: no change', `${goldForLeft(200, 50)} ${goldForLeft('', 50)} ${goldForLeft(-1, 50)}`, '250 null null');
   const CF = await import('./class-features.js');

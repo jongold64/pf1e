@@ -35,6 +35,7 @@ function ammoControls(app, w, e, i) {
 }
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
 import { formatGp, formatLbs } from './equipment.js';
+import { sellButton, sellItem } from './tab-equipment.js';
 import { rollButton } from './roll-ui.js';
 
 let selectedId = null;
@@ -515,7 +516,7 @@ export function renderMyWeapons(app, view) {
         <span class="wl-part"><span class="wl-k">Critical</span> <b>${esc(critText(w, crit))}</b>
           ${w.critical ? rollButton({ title: `${weaponName} critical damage`, groups: [{ attacks: [], damage: a.damage, critMult: crit.mult, extra: crit.extra, burst: crit.burst }] }) : ''}</span>
         <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-weapon-more="${i}" aria-expanded="${open}" aria-label="Everything about ${esc(w.name)}" title="Details">?</button>
-        ${e.classGear ? '' : `<button type="button" class="wl-remove" data-remove-weapon="${i}" aria-label="Remove ${esc(w.name)}">Remove</button>`}
+        ${e.classGear ? '' : `${weaponCostRows(w, e).reduce((n, r) => n + r.gp, 0) ? sellButton(`data-sell-weapon="${i}"`, weaponName) : ''}<button type="button" class="wl-remove" data-remove-weapon="${i}" aria-label="Remove ${esc(w.name)}">Remove</button>`}
       </div>
       <div class="weapon-more"${open ? '' : ' hidden'}>
       <div class="weapon-head">
@@ -744,6 +745,17 @@ export function initWeaponsTab(app) {
       if (box.hidden) openWeapons.delete(i); else openWeapons.add(i);
       more.classList.toggle('on', !box.hidden);
       more.setAttribute('aria-expanded', String(!box.hidden));
+      return;
+    }
+    // Sell: half its price (with its enhancement and abilities) to gold, and off the list.
+    const sell = e.target.closest('[data-sell-weapon]');
+    if (sell) {
+      const i = Number(sell.dataset.sellWeapon);
+      const we = app.state.weapons[i];
+      const ww = app.data.weaponsById.get(we.id);
+      openWeapons.clear();
+      sellItem(app, { name: weaponLabel(ww, we), value: weaponCostRows(ww, we).reduce((n, r) => n + r.gp, 0), paid: weaponCost(ww, we) },
+        { weapons: app.state.weapons.filter((_, j) => j !== i), combat: { ...app.state.combat, main: '', off: '' } });
       return;
     }
     const remove = e.target.closest('[data-remove-weapon]');

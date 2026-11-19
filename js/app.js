@@ -434,7 +434,8 @@ function load(saved) {
   if (!levels.includes(state.favoredClass) || byId.get(state.favoredClass)?.category === 'prestige') state.favoredClass = '';
   if (typeof state.casterChoices !== 'object' || state.casterChoices === null) state.casterChoices = {};
   syncDerived();
-  if (!(typeof state.gold === 'number' && state.gold >= 0)) state.gold = null;
+  // Gold can be below 0 after selling something bought over budget (Sell keeps Left right).
+  if (!(typeof state.gold === 'number' && Number.isFinite(state.gold))) state.gold = null;
   // Items the equipment data no longer has are skipped when shown. The separate masterwork entries that were
   // removed from the data become the base item's Masterwork version.
   const MERGED = { 'backpack-masterwork': 'backpack', 'artisans-tools-masterwork': 'artisans-tools',

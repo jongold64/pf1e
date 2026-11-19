@@ -1,6 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { WEALTH_BY_LEVEL, goldForLeft, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
+import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
 import { craftedItemCost, magicPrefix } from './crafting.js';
@@ -80,6 +80,22 @@ function renderList(app) {
 
 // Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
 // A "Free" tick box: found, a gift or from a class feature, so it costs no gold.
+// The gold entered (or the class's starting gold, with traits, when none is).
+export function goldNow(app) {
+  const { state, data, view } = app;
+  return state.gold ?? traitStartingGold(startingGold(view.cls, data.classes, !!state.houseRules.maxGold), view.traits).gp ?? 0;
+}
+
+// A Sell button for an item line (attr: its data attribute), and selling one: after a yes, `change` (the state with the
+// item gone or one fewer) is saved with half its market value (value, each) added to gold. paid: what it cost (0 if found).
+export const sellButton = (attr, name) => `<button type="button" class="wl-sell" ${attr} aria-label="Sell ${esc(name)} for half its price">Sell</button>`;
+export function sellItem(app, { name, value, paid }, change) {
+  if (!value) { alert(`${name} has no price listed, so it can't be sold here: remove it and add the gold by hand.`); return; }
+  const { gold, gets } = sellGold(goldNow(app), value, paid);
+  if (!confirm(`Sell one ${name} for ${formatGp(gets)} (half its price of ${formatGp(value)})? It comes off your list and the gold is added.`)) return;
+  app.update({ ...change, gold });
+}
+
 // What the character has spent (Gold − Left), from the last draw: the "Gold left now" box adds it to what's typed.
 let spentNow = 0;
 
@@ -277,6 +293,7 @@ export async function renderEquipment(app, view) {
           ${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
           <span class="wl-part"><b>${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
           <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
+          ${s.price_gp ? sellButton(`data-inv-sell="${i}"`, entryName(item, e.variant)) : ''}
           <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}" title="Details">?</button></div>
         <div class="line-more"${open ? '' : ' hidden'}>
           ${item.category ? `<div class="breakdown">${esc(item.category)}</div>` : ''}
@@ -358,6 +375,16 @@ export function initEquipmentTab(app) {
       const d = invWhy.get(key);
       if (d) app.openDetail(d.title, `<table class="skill-why"><tbody>${d.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${esc(r.text)}</td></tr>`).join('')}</tbody></table>
         ${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
+      return;
+    }
+    const sell = e.target.closest('[data-inv-sell]');
+    if (sell) {
+      const i = Number(sell.dataset.invSell);
+      const x = app.state.inventory[i];
+      const item = app.data.gearById.get(x.id);
+      const s = entryStats(item, x.variant);
+      const inv = app.state.inventory.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0);
+      sellItem(app, { name: entryName(item, x.variant), value: s.price_gp, paid: x.free ? 0 : s.price_gp }, { inventory: inv });
       return;
     }
     const step = e.target.closest('[data-qty]');

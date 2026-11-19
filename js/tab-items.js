@@ -5,7 +5,7 @@ import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from '.
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem } from './tab-crafting.js';
 import { givesHtml, itemRowHtml, itemRowChange, itemRowClick, popSource } from './item-rows.js';
-import { freeBox } from './tab-equipment.js';
+import { freeBox, sellButton, sellItem } from './tab-equipment.js';
 
 let selectedId = null;
 let listed = false;
@@ -155,6 +155,7 @@ export function renderMyItems(app) {
         ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
         <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
+        ${s.price_gp ? sellButton(`data-item-sell="${i}"`, name) : ''}
         <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}" title="Details">?</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <div class="breakdown">${esc(item.category)}${slot ? ` · ${esc(slot)} slot` : ''}${e.crafted ? ' · crafted (cost to make)' : ''}</div>
@@ -187,6 +188,7 @@ export function renderMyItems(app) {
         <span class="line-name">${esc(name)}</span>
         <span class="wl-k">caster level ${e.cl}</span>${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(formatGp(craftedItemCost(e) * e.qty))}</b></span>
+        ${sellButton(`data-made-sell="${i}"`, name)}
         <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}" title="Details">?</button></div>
       <div class="line-more"${open ? '' : ' hidden'}>
         <div class="breakdown">${e.bought ? 'bought or found' : `crafted (cost to make; worth ${esc(formatGp(craftedItemPrice(e)))})`}</div>
@@ -269,6 +271,26 @@ export function initItemsTab(app) {
   });
   $('my-items-rows').addEventListener('click', e => {
     if (itemRowClick(app, e)) return;
+    // Sell one: half its market price to gold (a crafted item gives back what it cost to make).
+    const sell = e.target.closest('[data-item-sell]');
+    if (sell) {
+      const i = Number(sell.dataset.itemSell);
+      const x = app.state.magicItems[i];
+      const item = app.data.itemsById.get(x.id);
+      const s = magicItemStats(item, x.option);
+      const paid = x.free ? 0 : x.crafted ? listedCost(item, x.option || null, s.price_gp) : s.price_gp;
+      sellItem(app, { name: entryName(item, x.option), value: s.price_gp, paid },
+        { magicItems: app.state.magicItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
+      return;
+    }
+    const msell = e.target.closest('[data-made-sell]');
+    if (msell) {
+      const i = Number(msell.dataset.madeSell);
+      const x = app.state.craftedItems[i];
+      sellItem(app, { name: `${SPELL_ITEMS[x.kind].label} of ${x.spellName}`, value: craftedItemPrice(x), paid: craftedItemCost(x) },
+        { craftedItems: app.state.craftedItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
+      return;
+    }
     const step = e.target.closest('[data-item-qty]');
     if (step) {
       const owned = app.state.magicItems.map(x => ({ ...x }));
