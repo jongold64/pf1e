@@ -12,6 +12,14 @@ const perDay = s => { const m = String(s).match(/^(.*?)\s*\(?(\d+)\/day\)?\s*$/i
 // Uses the rules work out elsewhere (rules.js), so their "N/day" table entries aren't listed twice.
 const COMPUTED = new Set(['smite evil', 'smite good', 'channel energy', 'lay on hands', 'touch of corruption']);
 
+// Feats that make a pool bigger: feat name -> [the pools it adds to (by name), how much each time it's taken].
+export const EXTRA_POOL_FEATS = {
+  'Extra Ki': [/^Ki pool/i, 2], 'Extra Rage': [/^Rage$/i, 6], 'Extra Performance': [/^(Bardic performance|Raging song)$/i, 6],
+  'Extra Bombs': [/^Bombs$/i, 2], 'Extra Arcane Pool': [/^Arcane pool$/i, 2], 'Extra Grit': [/^Grit$/i, 2],
+  'Extra Panache': [/^Panache$/i, 2], 'Extra Inspiration': [/^Inspiration$/i, 3], 'Extra Lay On Hands': [/^Lay on hands$/i, 2],
+  'Extra Reservoir': [/^Arcane reservoir$/i, 3],
+};
+
 // [{ key, name, max, unit ('uses' | 'rounds' | 'points' | 'spells'), note, how, cls, feature, text }] for the character.
 // how: how the total is worked out; cls + feature: the class feature whose rules text explains it (or text, for a chosen
 // power). view: computeView's result (counts, stats, haveFeats, casting); extra: { spellTables: [{ cls, table }] for
@@ -133,6 +141,15 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   }
   // Chosen powers (school, domain, bloodline...).
   for (const p of powers) if (!out.some(x => x.key === key(p.name))) add(p.name, p.max, p.unit || 'uses', p.note || '', { how: p.how || '', text: p.text || '' });
+  // Feats that add to a pool ("Your ki pool increases by 2"), each time taken.
+  for (const [feat, [test, n]] of Object.entries(EXTRA_POOL_FEATS)) {
+    const times = (view.haveFeats || []).filter(f => f === feat).length;
+    if (!times) continue;
+    for (const x of out.filter(e => test.test(e.name))) {
+      x.max += n * times;
+      x.how = `${x.how || 'from your class'}, + ${n * times} from ${feat}${times > 1 ? ` (taken ${times} times)` : ''}`;
+    }
+  }
   // Spontaneous casters: spells a day of each level.
   for (const { cls, table } of spellTables) {
     for (const r of table.rows) if (r.spellLevel >= 1 && r.canCast && r.total) add(`${cls.name} ${ordinal(r.spellLevel)}-level spells`, r.total, 'spells', '',

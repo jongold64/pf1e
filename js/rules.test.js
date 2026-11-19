@@ -2419,6 +2419,9 @@ document.getElementById('list').innerHTML = results.map(r =>
   const names = (id, level, mod) => dailyUses(v(id, level, mod)).map(d => `${d.name}:${d.max}`).join();
   check('barbarian 5, Con +3: rage 15 rounds', names('barbarian', 5, { con: 3 }), 'Rage:15');
   check('monk 6, Wis +3: ki pool 6', dailyUses(v('monk', 6, { wis: 3 })).find(d => d.name === 'Ki pool')?.max, 6);
+  check('monk 6, Wis +3, Extra Ki twice: ki pool 10', dailyUses({ ...v('monk', 6, { wis: 3 }), haveFeats: ['Extra Ki', 'Extra Ki'] }).find(d => d.name === 'Ki pool')?.max, 10);
+  check('talented monk ki pool (a chosen power) + Extra Ki', dailyUses({ ...v('fighter', 1), haveFeats: ['Extra Ki'] }, { powers: [{ name: 'Ki pool', max: 3, unit: 'points' }] }).find(d => d.name === 'Ki pool')?.max, 5);
+  check('barbarian 5, Extra Rage: 21 rounds', dailyUses({ ...v('barbarian', 5, { con: 3 }), haveFeats: ['Extra Rage'] }).find(d => d.name === 'Rage')?.max, 21);
   check('cavalier 7: challenge 3/day (the latest table entry)', dailyUses(v('cavalier', 7)).find(d => /challenge/i.test(d.name))?.max, 3);
   check('druid 6: wild shape 2/day', dailyUses(v('druid', 6)).find(d => /wild shape/i.test(d.name))?.max, 2);
   check('uses left: max less what was spent', usesLeft({ key: 'rage', max: 15 }, { rage: 4 }), 11);

@@ -342,6 +342,13 @@ def main():
             mans += ms
     paizo = json.load(open(os.path.join(os.path.dirname(os.path.abspath(out_path)), 'feats.json'), encoding='utf-8'))
     feat_recs = feats({f['name'].lower(): f['name'] for f in paizo})
+    # Paizo feats the book reprints word for word (Extra Ki) stay only as the Paizo feat.
+    words = lambda t: re.sub(r'[^a-z0-9]', '', (t or '').lower())
+    paizo_benefit = {f['name'].lower(): words(f.get('benefit')) for f in paizo}
+    reprints = [f['name'] for f in feat_recs if paizo_benefit.get(f['name'].lower()) == words(f.get('benefit'))]
+    feat_recs = [f for f in feat_recs if f['name'] not in reprints]
+    if reprints:
+        print('  reprints of Paizo feats left out:', ', '.join(reprints))
     notices = NOTICES
     book = {'id': BOOK_ID, 'name': 'Path of War', 'publisher': ORIGIN, 'author': '',
             'sources': [BOOK, 'Path of War - Expanded'], 'notices': notices,

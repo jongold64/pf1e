@@ -456,6 +456,10 @@ const ITEM_CREATION = ['Brew Potion', 'Craft Magic Arms and Armor', 'Craft Rod',
 export function featApplied(name, { level = 1, choice = '', skillFeats = {} } = {}) {
   const what = choice ? ` (${choice})` : '';
   const saves = { 'Great Fortitude': 'Fortitude', 'Lightning Reflexes': 'Reflex', 'Iron Will': 'Will' };
+  const pools = { 'Extra Ki': '+2 ki points', 'Extra Rage': '+6 rounds of rage', 'Extra Performance': '+6 rounds of bardic performance (or raging song)',
+    'Extra Bombs': '+2 bombs', 'Extra Arcane Pool': '+2 arcane pool points', 'Extra Grit': '+2 grit points', 'Extra Panache': '+2 panache points',
+    'Extra Inspiration': '+3 uses of inspiration', 'Extra Lay On Hands': '+2 uses of lay on hands', 'Extra Reservoir': '+3 arcane reservoir points' };
+  if (pools[name]) return `${pools[name]} each time you take it: counted in Daily uses (Character tab).`;
   if (name === 'Toughness') return `+${Math.max(3, level)} hit points (3, or 1 per character level from 4th): counted in your hit points.`;
   if (saves[name]) return `+2 on ${saves[name]} saves: counted (see Details beside the save).`;
   if (name === 'Dodge') return '+1 dodge bonus to AC: counted in AC, touch AC and CMD (not when flat-footed).';

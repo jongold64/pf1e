@@ -22466,26 +22466,6 @@
       "third_party": "path-of-war"
     },
     {
-      "id": "pow-extra-ki",
-      "name": "Extra Ki",
-      "source": "Path of War",
-      "types": [
-        "General"
-      ],
-      "description": "You can use your ki pool more times per day than most.",
-      "prerequisites_text": "Ki pool class feature.",
-      "prerequisites": [
-        {
-          "type": "class_feature",
-          "feature": "ki pool"
-        }
-      ],
-      "benefit": "Your ki pool increases by 2.",
-      "special": "You can gain Extra Ki multiple times. Its effects stack.",
-      "origin": "Dreamscarred Press",
-      "third_party": "path-of-war"
-    },
-    {
       "id": "pow-extra-marks",
       "name": "Extra Marks",
       "source": "Path of War",
