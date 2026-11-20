@@ -5,6 +5,7 @@ import { SIZE_AC, MONK_IDS, smite, combatManeuvers, babList } from './rules.js';
 import { armorAttackPenalty } from './armor.js';
 import { abilityPicker, chosenAbility } from './tab-crafting.js';
 import { abilityOptions } from './crafting.js';
+import { bondCost, bondEntry, bondText, bondProblems } from './weapon-bonds.js';
 import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel, isComposite, compositeRating, ratingPrice, abilityDamage, damageWithExtras, twoWeaponAttack, flurryBabs, isDouble, isMonkWeapon,
          powerAttackStep, unarmedForSize, improvedCritical, attackBreakdown, sizedWeapon, bigWeaponRules, WEAPON_SIZES } from './weapons.js';
 import { activeBonuses } from './effects.js';
@@ -156,7 +157,7 @@ function combatContext(app, view) {
   // Heirloom Weapon (trait), with proficiency chosen as its benefit.
   const byTrait = w => heirloomFor(view.traits, app.state.traitPicks, w.id).proficient;
   // Ki: extra attack switched on (Character tab): one more attack at the highest bonus in a full attack.
-  const kiExtra = !!(app.state.combat.kiFlurry && view.defenseOpts?.monk?.kiPool);
+  const kiExtra = !!(app.state.combat.kiFlurry && (view.defenseOpts?.monk?.kiPool || view.defenseOpts?.ninja));
   const withKi = babs => (kiExtra ? [babs[0], ...babs] : babs);
   return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w) || tmStyle(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats), withKi,
            tmStyle, tmBab,
@@ -184,6 +185,15 @@ function kiWeaponsOn(app, view, w) {
     && (w.id === 'unarmed-strike' || styleWeapon(view.tm.picks, w, view.archFx?.picks?.adaptive || []));
 }
 
+// The weapon bonds switched on for this weapon entry (the one chosen in the bond's popup, or any of the same weapon).
+function bondsOn(app, view, e) {
+  return (view.bonds || []).filter(b => {
+    const c = app.state.weaponBonds?.[b.id];
+    const target = c?.on && app.state.weapons[c.weapon];
+    return target && (target === e || target.id === e.id);
+  });
+}
+
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted (with the Titan
@@ -191,6 +201,8 @@ function attackArgs(app, view, ctx, e) {
   const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip, !!e.lace);
   // Ki weapons switched on (talented monk, Character tab): its enhancement and abilities on unarmed strikes and style weapons.
   if (kiWeaponsOn(app, view, w)) e = kiWeaponsEntry(e, app.state.kiWeapons);
+  // Arcane pool, divine bond, fiendish boon, sacred weapon switched on for this weapon (Character tab).
+  for (const b of bondsOn(app, view, e)) e = bondEntry(e, app.state.weaponBonds[b.id]);
   return {
     // Arcane archer enhance arrows: arrows fired from a bow are +1 at least.
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w),
@@ -254,6 +266,9 @@ function traitRolls(app, view, w, args, crit, weaponName) {
   }
   if (kiWeaponsOn(app, view, w)) {
     out.push({ label: 'Ki weapons on', text: '', damage: '', note: `${kiWeaponsText(app.state.kiWeapons)}: counted in this weapon's numbers this round`, spec: null });
+  }
+  for (const b of bondsOn(app, view, args.entry || {})) {
+    out.push({ label: `${b.name} on`, text: '', damage: '', note: `${bondText(app.state.weaponBonds[b.id])}: counted in this weapon's numbers`, spec: null });
   }
   if (h.maneuver) {
     const m = combatManeuvers(view.stats, view.size, view.haveFeats);
@@ -778,6 +793,83 @@ function initKiWeapons(app) {
   });
 }
 
+// A weapon bond's popup (Character tab: arcane pool, divine bond, fiendish boon, sacred weapon): the weapon, its
+// enhancement bonus and special abilities within the bond's budget, then Switch on (takes a point, use or round from
+// Daily uses) or off. weapon-bonds.js has the rules.
+let bondShown = '';
+const bondPool = (app, b) => app.dailyUses().find(d => b.pool.test(d.name));
+export async function popBond(app, id) {
+  const b = (app.view.bonds || []).find(x => x.id === id);
+  if (!b) return;
+  if (!app.data.itemsById) await app.loadItems();
+  bondShown = id;
+  const c = { enh: 0, abilities: [], weapon: -1, on: false, ...(app.state.weaponBonds[id] || {}) };
+  const cost = bondCost(c);
+  const left = b.budget - cost;
+  const pool = bondPool(app, b);
+  const poolLeft = pool ? pool.max - (app.state.daily[pool.key] || 0) : null;
+  const weapons = app.state.weapons.map((e, i) => ({ i, e, w: app.data.weaponsById.get(e.id) })).filter(x => x.w);
+  const target = app.state.weapons[c.weapon];
+  const allowed = new Set(b.allowed);
+  const abilities = b.abilities ? app.data.items.filter(i => i.category === 'Weapon Special Abilities' && allowed.has(i.name))
+    .map(i => ({ i, o: abilityOptions(i).find(o => o.bonus) })).filter(x => x.o)
+    .sort((x, y) => x.o.bonus - y.o.bonus || x.i.name.localeCompare(y.i.name)) : [];
+  const rows = abilities.map(({ i, o }) => {
+    const on = c.abilities.some(a => a.id === i.id);
+    return `<li><label class="check-row"><input type="checkbox" data-bond-ability="${esc(i.id)}" data-bonus="${o.bonus}"${on ? ' checked' : ''}${!on && o.bonus > left ? ' disabled' : ''}>
+      ${esc(i.name)} <small class="muted">+${o.bonus}</small></label>
+      <button type="button" class="skill-details q-details" data-ability-pop="${esc(i.id)}" aria-label="${esc(i.name)}: details" title="Details">?</button></li>`;
+  }).join('');
+  const problems = bondProblems(c, target?.enh || 0);
+  const maxEnh = Math.min(5, b.budget);
+  app.openDetail(b.name, `<p class="hint">${esc(b.how)}. Up to +${b.budget} at ${b.cls} level ${b.level}, spent on an enhancement bonus (it stacks
+      with the weapon's own, to +5) or special abilities${b.abilities ? '' : ` (from ${b.cls} level ${b.abilitiesFrom})`}.</p>
+    <p><b>Now: ${cost ? esc(bondText(c)) : 'nothing chosen'}</b>${c.on ? ' · <b>on</b>' : ''}${pool ? ` · ${esc(pool.name.toLowerCase())}: ${poolLeft} of ${pool.max} ${pool.unit} left` : ''}</p>
+    <label>Weapon <select data-bond-weapon><option value="-1">choose a weapon</option>${weapons.map(x => `<option value="${x.i}"${x.i === c.weapon ? ' selected' : ''}>${esc(x.w.name)}${x.e.enh ? ` +${x.e.enh}` : ''}</option>`).join('')}</select></label>
+    ${weapons.length ? '' : '<p class="hint">Add the weapon on the Weapons tab first.</p>'}
+    <label>Enhancement bonus <select data-bond-enh>${Array.from({ length: maxEnh + 1 }, (_, n) => `<option value="${n}"${n === c.enh ? ' selected' : ''}${n - c.enh > left ? ' disabled' : ''}>${n ? `+${n}` : 'none'}</option>`).join('')}</select></label>
+    ${problems.map(x => `<p class="warning">${esc(x)}</p>`).join('')}
+    <div class="line-controls">
+      <button type="button" class="primary" data-bond-on${cost && target ? '' : ' disabled'}>${c.on ? 'Use again' : 'Switch on'}${pool ? ` (spend ${esc(b.spend)})` : ''}</button>
+      ${c.on ? '<button type="button" data-bond-off>Switch off</button>' : ''}
+      ${cost ? '<button type="button" data-bond-clear>Clear choices</button>' : ''}</div>
+    ${b.abilities ? `<h3>Special abilities <small class="muted">(+${left} left to add)</small></h3><ul class="plain-list kiw-list">${rows}</ul>` : ''}`);
+}
+function initBonds(app) {
+  const body = $('detail-body');
+  const set = (change, spend = false) => {
+    const b = (app.view.bonds || []).find(x => x.id === bondShown);
+    if (!b) return;
+    const c = { enh: 0, abilities: [], weapon: -1, on: false, ...(app.state.weaponBonds[b.id] || {}), ...change };
+    const patch = { weaponBonds: { ...app.state.weaponBonds, [b.id]: c } };
+    const pool = spend && bondPool(app, b);
+    if (pool) patch.daily = { ...app.state.daily, [pool.key]: Math.min(pool.max, (app.state.daily[pool.key] || 0) + 1) };
+    app.update(patch);
+    popBond(app, b.id);
+  };
+  body.addEventListener('change', e => {
+    const t = e.target;
+    if (!bondShown) return;
+    if (t.matches('[data-bond-weapon]')) set({ weapon: Number(t.value) });
+    else if (t.matches('[data-bond-enh]')) set({ enh: Number(t.value) });
+    else if (t.matches('[data-bond-ability]')) {
+      const a = app.data.itemsById.get(t.dataset.bondAbility);
+      const list = (app.state.weaponBonds[bondShown]?.abilities || []).filter(x => x.id !== a.id);
+      set({ abilities: t.checked ? [...list, { id: a.id, name: a.name, bonus: Number(t.dataset.bonus) }] : list });
+    }
+  });
+  body.addEventListener('click', e => {
+    if (!bondShown) return;
+    if (e.target.closest('[data-bond-on]')) {
+      const b = (app.view.bonds || []).find(x => x.id === bondShown);
+      const pool = b && bondPool(app, b);
+      if (pool && pool.max - (app.state.daily[pool.key] || 0) < 1 && !confirm(`No ${pool.name.toLowerCase()} left today. Switch it on anyway?`)) return;
+      set({ on: true }, true);
+    } else if (e.target.closest('[data-bond-off]')) set({ on: false });
+    else if (e.target.closest('[data-bond-clear]')) set({ enh: 0, abilities: [], on: false });
+  });
+}
+
 // A weapon to add: a composite bow comes with a strength rating that matches your Strength bonus now.
 function newEntry(app, w) {
   return { id: w.id, enh: 0, ...(isComposite(w) ? { strRating: Math.max(0, app.view.stats.mod.str) } : {}) };
@@ -789,6 +881,7 @@ function changeEntry(app, index, changes) {
 
 export function initWeaponsTab(app) {
   initKiWeapons(app);
+  initBonds(app);
   initCombat(app);
   $('weapon-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
   $('weapon-search').addEventListener('input', () => renderList(app));

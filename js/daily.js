@@ -62,6 +62,14 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   const magus = levelOf(counts, ['magus']);
   if (magus) add('Arcane pool', Math.max(1, Math.floor(magus / (bladebound ? 3 : 2)) + mod.int), 'points', '',
     { how: `${bladebound ? 'a third' : 'half'} of your magus level (${Math.floor(magus / (bladebound ? 3 : 2))}) ${sg(mod.int)} (Intelligence modifier), at least 1${bladebound ? ' (bladebound)' : ''}`, ...from(['magus'], 'Arcane Pool') });
+  // Weapon bonds (weapon-bonds.js): divine bond and fiendish boon uses, sacred weapon rounds.
+  for (const [id, name, feature] of [['paladin', 'Divine bond', 'Divine Bond'], ['antipaladin', 'Fiendish boon', 'Fiendish Boon']]) {
+    const lv = levelOf(counts, [id]);
+    if (lv >= 5) add(name, Math.min(4, 1 + Math.floor((lv - 5) / 4)), 'uses', 'the weapon bond: the mount’s calling is once a day instead',
+      { how: 'once a day at 5th level, one more every 4 levels after (4 at 17th)', ...from([id], feature) });
+  }
+  const warpriest = levelOf(counts, ['warpriest']);
+  if (warpriest >= 4) add('Sacred weapon', warpriest, 'rounds', 'enhancing a sacred weapon', { how: `your warpriest level (${warpriest})`, ...from(['warpriest'], 'Sacred Weapon') });
   const arcanist = levelOf(counts, ['arcanist']);
   if (arcanist) add('Arcane reservoir', 3 + arcanist, 'points', 'holds at most 3 + your arcanist level; starts the day at 3 + half your level',
     { how: `3 + your arcanist level (${arcanist})`, ...from(['arcanist'], 'Arcane Reservoir') });

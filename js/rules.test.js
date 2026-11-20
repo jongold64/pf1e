@@ -2600,7 +2600,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     check('ki speed and defense; flowing dodge 3 adjacent; Linnorm in style -2 AC', fx({ kiSpeed: true, kiDefense: true, flowingDodge: 3, linnormStance: true }),
       'speed:untyped:20 ac:dodge:4 ac:dodge:3 ac:untyped:-2');
     check('flowing dodge: no more than the Wisdom limit', fx({ flowingDodge: 9 }), 'ac:dodge:5');
-    check('ki costs: extra attack, speed, defense, iron limb +4', Object.keys(D2.KI_COST).join(), 'kiFlurry,kiSpeed,kiDefense,ironLimbKi');
+    check('ki costs: extra attack, speed, defense, iron limb +4, ninja Stealth', Object.keys(D2.KI_COST).join(), 'kiFlurry,kiSpeed,kiDefense,ironLimbKi,kiStealth');
   }
   const TM = await import('./talented-monk.js');
   const kw = TM.tidyKiWeapons({ enh: 2, abilities: [{ id: 'flaming', name: 'Flaming', bonus: 1 }, { id: 'keen', name: 'Keen', bonus: 1 }], on: true });
@@ -2661,6 +2661,33 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('Linnorm Vengeance: +2 attack', W.weaponAttack({ ...base, training: CF.linnormRows(['Linnorm Style', 'Linnorm Vengeance'], mod) }).attacks[0], 19);
   check('exploit weakness switch: +2 attack while on', JSON.stringify(D.defenseEffects({ exploitWeakness: true }, { exploit: true }).map(f => [f.target, f.value])), '[["attack",2]]');
   check('Linnorm Style switch only with the feat', [D.defenseSwitches({ haveFeats: ['Linnorm Style'] }), D.defenseSwitches({})].map(l => l.some(s => s.key === 'linnormStyle')).join(), 'true,false');
+}
+
+// Other classes' versions of the talented monk's pieces: ninja ki switches, weapon bonds, effects that spend a use.
+{
+  const D3 = await import('./defense.js');
+  const nk = D3.defenseSwitches({ ninja: true }).map(s => s.key);
+  check('ninja ki pool: extra attack, +20 ft., +4 Stealth, no dodge', ['kiFlurry', 'kiSpeed', 'kiStealth'].every(k => nk.includes(k)) && !nk.includes('kiDefense'), true);
+  check('ninja ki Stealth: +4 insight', JSON.stringify(D3.defenseEffects({ kiStealth: true }, { ninja: true }).map(f => [f.target, f.type, f.value])), '[["skill:Stealth","insight",4]]');
+  const WB = await import('./weapon-bonds.js');
+  const cls = id => classes.find(c => c.id === id);
+  const bud = (id, lv) => WB.bondsFor([{ cls: cls(id), level: lv }], 'LG').map(b => `${b.id} ${b.budget}`).join();
+  check('weapon bonds: magus 1 +1, 9 +3, 17 +5', [1, 9, 17].map(l => bud('magus', l)).join(' | '), 'arcane-pool 1 | arcane-pool 3 | arcane-pool 5');
+  check('weapon bonds: paladin 4 none, 5 +1, 20 +6', [4, 5, 20].map(l => bud('paladin', l)).join(' | '), ' | divine-bond 1 | divine-bond 6');
+  check('weapon bonds: warpriest 4 +1, 20 +5; antipaladin 8 +2', `${bud('warpriest', 4)} | ${bud('warpriest', 20)} | ${bud('antipaladin', 8)}`, 'sacred-weapon 1 | sacred-weapon 5 | fiendish-boon 2');
+  check('weapon bonds: magus abilities from 5th', [4, 5].map(l => WB.bondsFor([{ cls: cls('magus'), level: l }])[0].abilities).join(), 'false,true');
+  const sw = a => WB.bondsFor([{ cls: cls('warpriest'), level: 8 }], a)[0].allowed;
+  check('sacred weapon: good adds holy and ghost touch, neutral spell storing', `${sw('NG').includes('Holy')} ${sw('NG').includes('Ghost Touch')} ${sw('N').includes('Spell Storing')} ${sw('LE').includes('Holy')}`, 'true true true false');
+  const t = WB.tidyBond({ enh: 2, abilities: [{ id: 'flaming', name: 'Flaming', bonus: 1 }, { id: 'speed', name: 'Speed', bonus: 3 }], weapon: 0, on: true }, 3);
+  check('weapon bond tidied to its budget: +2 and flaming fit +3, speed dropped', `${t.abilities.map(x => x.id)} ${WB.bondCost(t)} ${t.weapon} ${t.on}`, 'flaming 3 0 true');
+  const be = WB.bondEntry({ id: 'longsword', enh: 4, abilities: [{ id: 'flaming' }] }, t);
+  check('weapon bond on: enhancement stacks to +5, abilities not doubled', `${be.enh} ${be.abilities.map(x => x.id)}`, '5 flaming');
+  check('weapon bond problems: abilities need +1 first', WB.bondProblems({ enh: 0, abilities: [{ id: 'keen', bonus: 1 }] }, 0).length, 1);
+  const E2 = await import('./effects.js');
+  const uses = [{ key: 'smite-evil', name: 'Smite evil' }, { key: 'judgment', name: 'Judgment' }, { key: 'rage', name: 'Rage' }];
+  check('switching smite evil on takes a use', E2.effectSpends([], [{ id: 'smite-evil' }], uses).join(), 'smite-evil');
+  check('changing one judgment for another takes nothing', E2.effectSpends([{ id: 'judgment-justice' }], [{ id: 'judgment-justice', on: false }, { id: 'judgment-destruction' }], uses).join(), '');
+  check('rage: one round; already on, none', `${E2.effectSpends([], [{ id: 'barbarian-rage' }], uses)} | ${E2.effectSpends([{ id: 'barbarian-rage' }], [{ id: 'barbarian-rage' }], uses)}`, 'rage | ');
 }
 
 // The report: every check above (it must stay last, or later checks' failures go unseen).

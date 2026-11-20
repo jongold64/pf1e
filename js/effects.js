@@ -224,6 +224,30 @@ export function effectDr(buffs = []) {
 // Energy resistance from active effects with resist forms (resist energy, a ring of energy resistance...): one entry
 // per energy type, the highest counting (they don't stack). [{ type, value, from }] with value null for protection
 // from energy (absorbs, listed as `absorb`).
+// Class abilities in Active effects that take a use (or the first round) from a Daily uses counter when switched on:
+// [buff ids, the counter's name]. Switching from one to another of the same row (a judgment to another) takes nothing.
+export const EFFECT_SPENDS = [
+  [['smite-evil'], /^smite evil/i], [['smite-good'], /^smite good/i],
+  [['judgment-destruction', 'judgment-justice', 'judgment-protection', 'judgment-purity', 'judgment-other'], /^judgment/i],
+  [['challenge'], /^challenge/i], [['bane'], /^bane/i],
+  [['barbarian-rage', 'unchained-rage'], /^rage(?![a-z])/i], [['barbarian-rage'], /^bloodrage/i],
+  [['inspire-courage', 'inspire-competence', 'inspire-greatness', 'inspire-heroics'], /^bardic performance/i],
+  [['inspired-rage'], /^raging song/i], [['defensive-stance'], /^defensive stance/i],
+];
+// The counters to take 1 from when the active effects change from `before` to `after` ([{ id, on }] lists): for each row
+// with a buff newly on and none of its row on before, the first counter of `uses` (dailyUses) its name matches. [key].
+export function effectSpends(before = [], after = [], uses = []) {
+  const on = list => new Set(list.filter(x => x && x.on !== false).map(x => x.id));
+  const was = on(before), now = on(after);
+  const out = [];
+  for (const [ids, name] of EFFECT_SPENDS) {
+    if (!ids.some(id => now.has(id) && !was.has(id)) || ids.some(id => was.has(id))) continue;
+    const d = uses.find(u => name.test(u.name));
+    if (d && !out.includes(d.key)) out.push(d.key);
+  }
+  return out;
+}
+
 export function effectResist(buffs = []) {
   const best = new Map();
   for (const x of buffs.filter(y => y.on !== false)) {

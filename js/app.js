@@ -35,20 +35,21 @@ import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.
 import { burnState, infusionCosts } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
-import { popWeaponPart, showAttackDetails, showCombatSwitch, popKiWeapons } from './tab-weapons.js';
+import { popWeaponPart, showAttackDetails, showCombatSwitch, popKiWeapons, popBond } from './tab-weapons.js';
 import { popSpell, preparers, slotCount, spellsLeftToChoose } from './tab-spells.js';
 import { tabsToDo } from './tab-todo.js';
 import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance, effectSpends } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent, invocationTalents } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
+import { bondsFor, tidyBonds } from './weapon-bonds.js';
 import { TALENTED_MONK, talentedMonkPicks, talentedMonkEffects, talentedMonkDaily, talentedMonkFeats, tidyKiWeapons } from './talented-monk.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, archetypeAttacks, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
@@ -172,6 +173,7 @@ const state = {
   blessings: [],     // a warpriest's two blessings (data/blessings.json ids)
   daily: {},         // Build tab: uses spent today, by daily.js key
   kiWeapons: { enh: 0, abilities: [], on: false },  // a talented monk's ki weapons (talented-monk.js tidyKiWeapons)
+  weaponBonds: {},  // arcane pool, divine bond, fiendish boon, sacred weapon choices (weapon-bonds.js tidyBond)
   notes: '',         // Build tab: the player's notes
   portrait: '',      // Character tab: the character's picture, a small square JPEG (data URL); '' for the silhouette
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (any class; a cleric, warpriest or inquisitor needs one)
@@ -437,6 +439,7 @@ function load(saved) {
   if (typeof state.casterChoices !== 'object' || state.casterChoices === null) state.casterChoices = {};
   syncDerived();
   state.kiWeapons = tidyKiWeapons(state.kiWeapons);
+  state.weaponBonds = tidyBonds(state.weaponBonds);
   // Gold can be below 0 after selling something bought over budget (Sell keeps Left right).
   if (!(typeof state.gold === 'number' && Number.isFinite(state.gold))) state.gold = null;
   // Items the equipment data no longer has are skipped when shown. The separate masterwork entries that were
@@ -496,7 +499,7 @@ function load(saved) {
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
   state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge', 'linnormStyle', 'linnormStance', 'exploitWeakness', 'exploitDefense',
-    'kiFlurry', 'kiSpeed', 'kiDefense', 'ironLimb', 'ironLimbKi']
+    'kiFlurry', 'kiSpeed', 'kiDefense', 'kiStealth', 'ironLimb', 'ironLimbKi']
     .filter(k => c[k] === true).map(k => [k, true])),
                    ...(typeof c.conjured === 'string' && c.conjured ? { conjured: c.conjured } : {}),
                    ...(Number.isInteger(c.flowingDodge) && c.flowingDodge > 0 ? { flowingDodge: Math.min(20, c.flowingDodge) } : {}),
@@ -988,6 +991,11 @@ function initBuild() {
     // Ki weapons (talented monk): choose and switch on in its popup, or switch off.
     if (e.target.closest('[data-b-kiw]')) { popKiWeapons(app); return; }
     if (e.target.closest('[data-b-kiw-off]')) { update({ kiWeapons: { ...state.kiWeapons, on: false } }); return; }
+    // Arcane pool, divine bond, fiendish boon, sacred weapon (weapon-bonds.js): the same, in their own popup.
+    const bond = e.target.closest('[data-b-bond]');
+    if (bond) { popBond(app, bond.dataset.bBond); return; }
+    const bondOff = e.target.closest('[data-b-bond-off]');
+    if (bondOff) { const id = bondOff.dataset.bBondOff; update({ weaponBonds: { ...state.weaponBonds, [id]: { ...state.weaponBonds[id], on: false } } }); return; }
     // Gear: Use a potion, scroll or wand charge; a magic item's Details.
     const use = e.target.closest('[data-b-use-item]');
     if (use) { useCraftedItem(Number(use.dataset.bUseItem)); return; }
@@ -2047,8 +2055,18 @@ function update(changes) {
   // A ki switch just switched on (an extra attack, +20 ft., +4 dodge AC, iron limb +4): its ki comes off the ki pool.
   if (changes.combat && !changes.daily) {
     const spend = Object.entries(KI_COST).filter(([k]) => changes.combat[k] && !state.combat[k]).reduce((n, [, c]) => n + c, 0);
-    const pool = spend && dailyUsesFor().find(d => d.key === 'ki-pool');
+    const pool = spend && (dailyUsesFor().find(d => d.key === 'ki-pool') || dailyUsesFor().find(d => d.key === 'ki-pool-ninja'));
     if (pool) changes = { ...changes, daily: { ...state.daily, [pool.key]: Math.min(pool.max, (state.daily[pool.key] || 0) + spend) } };
+  }
+  // Smite, judgment, challenge, rage, bardic performance... just switched on in Active effects: a use (or round) is taken.
+  if (changes.buffs && !changes.daily) {
+    const uses = dailyUsesFor();
+    const keys = effectSpends(state.buffs, changes.buffs, uses);
+    if (keys.length) {
+      const daily = { ...state.daily };
+      for (const k of keys) daily[k] = Math.min(uses.find(d => d.key === k).max, (daily[k] || 0) + 1);
+      changes = { ...changes, daily };
+    }
   }
   Object.assign(state, changes);
   syncDerived();
@@ -2355,16 +2373,17 @@ function computeView() {
   }
   classFx.push(...martialClassEffects(initiators));
   // Monk switches (defense.js): a talented monk's ki pool, exploit weakness, iron limb defense and flowing dodge; a
-  // Core Rulebook monk's ki pool from 4th level.
+  // Core Rulebook monk's ki pool from 4th level, an unchained monk's from 3rd; a ninja's from 2nd (ninja option).
   const tmHas = name => tmPicks.some(p => p.name === name);
   const coreMonk = counts.find(e => e.cls.id === 'monk')?.level || 0;
-  const monkOpts = { kiPool: tmHas('Ki Pool') || coreMonk >= 4, exploit: tmHas('Exploit Weakness'), ironLimb: tmHas('Iron Limb Defense'),
-                     flowingDodge: tmHas('Flowing Dodge') ? Math.max(1, statsWith(gear).mod.wis || 0) : 0, level: tmEntry?.level || coreMonk };
+  const unMonk = counts.find(e => e.cls.id === 'monk-unchained')?.level || 0;
+  const monkOpts = { kiPool: tmHas('Ki Pool') || coreMonk >= 4 || unMonk >= 3, exploit: tmHas('Exploit Weakness'), ironLimb: tmHas('Iron Limb Defense'),
+                     flowingDodge: tmHas('Flowing Dodge') ? Math.max(1, statsWith(gear).mod.wis || 0) : 0, level: tmEntry?.level || coreMonk || unMonk };
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
                         magus: counts.find(e => e.cls.id === 'magus')?.level || 0, cavalier: counts.find(e => e.cls.id === 'cavalier')?.level || 0,
-                        monk: monkOpts };
+                        monk: monkOpts, ninja: (counts.find(e => e.cls.id === 'ninja')?.level || 0) >= 2 };
   classFx.push(...defenseEffects(state.combat, defenseOpts));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
@@ -2455,7 +2474,7 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
-    slots, chosen, granted, raceFeats, haveFeats, featChoices, initiators, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
+    bonds: bondsFor(counts, state.alignment), slots, chosen, granted, raceFeats, haveFeats, featChoices, initiators, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
     // Talented monk: level, chosen edges and talents, and how much higher its specialty attack bonus is than its BAB.

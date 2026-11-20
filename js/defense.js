@@ -19,9 +19,11 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 // Monk switches (monk: { kiPool, exploit, ironLimb, flowingDodge (the most it can give, 0 without it), level }): the ki
 // pool's swift actions (1 ki each: an extra attack in a full attack, +20 ft. speed, +4 dodge AC), exploit weakness's two
 // uses, iron limb defense (+2, or +4 for 1 ki) and flowing dodge (a choice of how many enemies are adjacent). KI_COST: the
-// switches that spend ki when switched on (app.js takes it from the ki pool).
-export const KI_COST = { kiFlurry: 1, kiSpeed: 1, kiDefense: 1, ironLimbKi: 1 };
-export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false, monk = {} } = {}) {
+// switches that spend ki when switched on (app.js takes it from the ki pool). A Core Rulebook monk's from 4th level and an
+// unchained monk's from 3rd give the same three. A ninja's ki pool (ninja: true) gives the extra attack, +20 ft. and +4
+// insight on Stealth (kiStealth) instead of the dodge bonus.
+export const KI_COST = { kiFlurry: 1, kiSpeed: 1, kiDefense: 1, ironLimbKi: 1, kiStealth: 1 };
+export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false, monk = {}, ninja = false } = {}) {
   const trained = acrobatics >= 3;
   const step = expertiseStep(bab);
   const out = [];
@@ -67,14 +69,16 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
         ['To use it', 'a swift action, instead of finding a weak point: one creature within 30 ft.']],
       note: 'Until the start of your next turn. Counted in your AC and Reflex while on: only against that creature.' });
   }
-  if (monk.kiPool) {
+  if (monk.kiPool || ninja) {
     out.push({ key: 'kiFlurry', label: 'Ki: extra attack', attack: true, what: 'one more attack at your highest bonus in a full attack (1 ki)',
       rows: [['Full attack this round', 'one more attack at your highest attack bonus (it stacks with a flurry\u2019s)'], ['Cost', '1 ki, a swift action']],
       note: 'Switching it on takes 1 ki from your ki pool (Daily uses). Switch it off after your turn.' });
     out.push({ key: 'kiSpeed', label: 'Ki: +20 ft. speed', what: '+20 ft. speed for 1 round (1 ki)',
       rows: [['Speed for 1 round', '+20 ft.'], ['Cost', '1 ki, a swift action']], note: 'Switching it on takes 1 ki from your ki pool.' });
-    out.push({ key: 'kiDefense', label: 'Ki: +4 dodge AC', what: '+4 dodge AC for 1 round (1 ki)',
+    if (monk.kiPool) out.push({ key: 'kiDefense', label: 'Ki: +4 dodge AC', what: '+4 dodge AC for 1 round (1 ki)',
       rows: [['Dodge bonus to AC for 1 round', '+4'], ['Cost', '1 ki, a swift action']], note: 'Switching it on takes 1 ki from your ki pool.' });
+    if (ninja) out.push({ key: 'kiStealth', label: 'Ki: +4 Stealth', what: '+4 insight on Stealth for 1 round (1 ki)',
+      rows: [['Insight bonus on Stealth checks for 1 round', '+4'], ['Cost', '1 ki, a swift action']], note: 'Ninja. Switching it on takes 1 ki from your ki pool.' });
   }
   if (monk.ironLimb) {
     out.push({ key: 'ironLimb', label: 'Iron limb defense', what: '+2 shield AC and CMD (you started and ended your turn in the same space)',
@@ -125,6 +129,7 @@ export function defenseEffects(combat = {}, opts = {}) {
   }
   if (combat.kiSpeed && has('kiSpeed')) fx('Ki: speed', 'speed', 'untyped', 20);
   if (combat.kiDefense && has('kiDefense')) fx('Ki: defense', 'ac', 'dodge', 4);
+  if (combat.kiStealth && has('kiStealth')) fx('Ki: Stealth', 'skill:Stealth', 'insight', 4);
   if (has('ironLimb') && (combat.ironLimbKi || combat.ironLimb)) {
     const n = combat.ironLimbKi ? 4 : 2;
     fx('Iron limb defense', 'ac', 'shield', n);
