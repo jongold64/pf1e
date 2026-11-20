@@ -4,6 +4,9 @@ import { channelEnergy, layOnHands, smite } from './rules.js';
 import { featureHandling } from './feature-coverage.js';
 import { featureLevel } from './archetypes.js';
 
+// Features the Actions card rolls (feature-coverage.js 'roll') that also have a daily limit, so they get a counter too.
+const ROLL_AND_DAILY = new Set(['monk:quivering palm']);
+
 const levelOf = (counts, ids) => Math.max(0, ...counts.filter(e => ids.includes(e.cls.id)).map(e => e.level));
 const lower = s => String(s || '').toLowerCase();
 const key = s => lower(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -106,13 +109,14 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
     }
     for (const [name, n] of latest.values()) add(`${name}${counts.length > 1 ? ` (${e.cls.name})` : ''}`, n, 'uses', '', { how: `${n}/day at ${e.cls.name} level ${e.level} (the class table)`, cls: e.cls.id, feature: name });
   }
+  // (Features with a roll on the Actions card that are also limited a day, like quivering palm, are in ROLL_AND_DAILY.)
   // Other class features with a daily limit (feature-coverage.js marks them 'daily'): read from their rules text, or
   // worked out here when the text's wording is one powerUses can't follow. Skipped when already listed (a table "N/day").
   for (const e of counts) {
     const replaced = new Set(e.cls.progression.flatMap(r => r.replaced || []).map(lower));
     for (const f of e.cls.features || []) {
       const id = `${e.cls.id}:${lower(f.name)}`;
-      if (featureHandling(e.cls.id, f.name) !== 'daily' || replaced.has(lower(f.name)) || out.some(x => x.key === key(f.name))) continue;
+      if ((featureHandling(e.cls.id, f.name) !== 'daily' && !ROLL_AND_DAILY.has(id)) || replaced.has(lower(f.name)) || out.some(x => x.key === key(f.name))) continue;
       const lv = featureLevel(e.cls, f) || Number(String(f.text).match(/^\s*(?:At|Starting at|Beginning at) (\d+)(?:st|nd|rd|th) level/i)?.[1]) || 1;
       if (e.level < lv) continue;
       const own = FEATURE_USES[id];
@@ -258,7 +262,8 @@ export function powerUses(text, level, mod = {}) {
   }
   // Steps by level: "once per day at 9th level, twice per day at 17th..." and "At 17th level, you can use this ability twice per day".
   const steps = [...[...t.matchAll(/(once|twice|three times|four times) per day at (\d+)(?:st|nd|rd|th)/gi)].map(m => [m[1], m[2]]),
-    ...[...t.matchAll(/At (\d+)(?:st|nd|rd|th) level,[^.]*?(once|twice|three times|four times) per day/gi)].map(m => [m[2], m[1]])]
+    // (Only "At 17th level, ..." starting a sentence: "once per day at 9th level, twice per day at 17th" is the first kind.)
+    ...[...t.matchAll(/(?:^|[.!]\s+)At (\d+)(?:st|nd|rd|th) level,[^.]*?(once|twice|three times|four times) per day/gi)].map(m => [m[2], m[1]])]
     .map(([w, lv]) => [COUNT_WORD[w.toLowerCase()], Number(lv)]);
   // "once per day for every 4 fighter levels he has", "once per day per two class levels".
   const perLevels = t.match(/\bonce per day (?:for every|per|for each) (\w+) (?:[a-z]+ )?levels?\b/i);

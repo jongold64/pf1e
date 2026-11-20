@@ -56,6 +56,22 @@ export function alternateConflict(race, alt, names = []) {
   return '';
 }
 
+// A race's fly speed from its traits (after alternates: pass raceWithAlternates' race): "a fly speed of 60 feet
+// (average)", "fly speed of 30 feet with clumsy maneuverability". An alternate's speed wins over the standard trait's
+// ("Their fly speed is 20 feet (poor) instead"); an alternate that replaces the fly speed takes it away. Variant aasimar
+// abilities (rolled) are left out. Returns { speed, maneuverability, from } or null.
+export function raceFlySpeed(race) {
+  let fly = null;
+  for (const t of race?.traits || []) {
+    if (/^variant/i.test(t.name)) continue;
+    const text = String(t.text || '');
+    if (t.alternate && /replaces the [^.]*fly speed/i.test(text)) { fly = null; continue; }
+    const m = text.match(/fly speed (?:of |is )?(?:only )?(\d+) feet(?: \(([a-z]+)(?: maneuverability)?\)| with (\w+) maneuverability)?/i);
+    if (m && (!fly || t.alternate)) fly = { speed: Number(m[1]), maneuverability: (m[2] || m[3] || '').toLowerCase(), from: t.name };
+  }
+  return fly;
+}
+
 // Energy resistance from the race's traits (after alternates: pass raceWithAlternates' race), read from their text:
 // "acid resistance 5, cold resistance 5", "cold and fire resistance 1", "resistance to acid 5, cold 5". A choice
 // ("resistance 5 to acid, cold, electricity, or fire"; a dragon-scaled kobold's colour) gives { choice: [types], value }.

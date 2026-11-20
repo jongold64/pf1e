@@ -2078,8 +2078,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const k = lv => kensaiEffects([{ cls: magus, level: lv }], { magus: ['magus-kensai'] }, { mod: { int: 4 } }).map(e => `${e.target}:${e.value}`).join();
   check('kensai 1: canny defense +1 (Int up to level); 7: iaijutsu +4 and canny +4', [k(1), k(7)].join('|'), 'ac:1|init:4,ac:4');
   check('kensai in armor: no canny defense', kensaiEffects([{ cls: magus, level: 7 }], { magus: ['magus-kensai'] }, { mod: { int: 4 }, armor: true }).map(e => e.target).join(), 'init');
-  const sp = d => spellsPerDay({ cls: magus, level: 7, scores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }, diminished: d }).rows.map(r => r.total).join();
-  check('diminished spellcasting: one fewer spell of each level from 1st', `${sp(false)}|${sp(true)}`, '5,4,3,1|5,3,2,0');
+  const sp = d => spellsPerDay({ cls: magus, level: 7, scores: { str: 10, dex: 10, con: 10, int: 13, wis: 10, cha: 10 }, diminished: d }).rows.map(r => r.total).join();
+  // Int 13: high enough for 3rd-level spells, with a bonus 1st-level spell (at Int 10 the magus casts no 1st-level spells at all).
+  check('diminished spellcasting: one fewer spell of each level from 1st', `${sp(false)}|${sp(true)}`, '5,5,3,1|5,4,2,0');
   // Weapons class features make (gear): enhancement by class level, masterwork, proficiency.
   const gear = (counts, archetypes, choices, talents) => archetypeChoiceEffects(counts, archetypes, choices, talents).gear
     .map(g => `${g.weapon}+${g.enh}${g.masterwork ? ' mw' : ''}${g.proficient ? ' prof' : ''}${g.material ? ` ${g.material}` : ''}`).join();
@@ -2211,7 +2212,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const { classAttacks, weaponTraining: wt, classWeaponDice } = await import('./class-features.js');
   const { archetypeChoiceEffects: ace } = await import('./archetype-choices.js');
   const ca = (list, o) => classAttacks(list.map(([id, level]) => ({ cls: cls(id), level })), o).map(c => `${c.name}:${c.attack ?? '-'}:${c.dice}`).join();
-  check('rogue 5 / assassin 3: sneak attack 3d6 + 2d6 = 5d6', ca([['rogue', 5], ['assassin', 3]], {}), 'Sneak attack:-:5d6');
+  // (The assassin's death attack, from 1st level, is its own row with no dice.)
+  check('rogue 5 / assassin 3: sneak attack 3d6 + 2d6 = 5d6', ca([['rogue', 5], ['assassin', 3]], {}), 'Sneak attack:-:5d6,Death attack:-:');
   check('alchemist 5, BAB 3, Dex +2, Int +3: bomb +6, 3d6+3', ca([['alchemist', 5]], { bab: [3], mod: { dex: 2, int: 3 } }), 'Bomb:6:3d6+3');
   // Chosen powers' attacks and damage, read from their text (powerAttack): a 5th-level wizard with Int +4.
   {
@@ -2259,7 +2261,7 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 {
   const { featureHandling } = await import('./feature-coverage.js');
   const { classDamageReduction: dr, weaponTraining: wt, situationalBonuses: sit } = await import('./class-features.js');
-  check('feature tags', ['rogue:Sneak attack +3d6', 'ranger:1st favored enemy', 'barbarian:Rage power', 'assassin:+2 save bonus against poison', 'monk:Wild shape', 'cleric:channel energy 3d6', 'wizard:Scribe Scroll', 'druid:Wild shape (2/day)']
+  check('feature tags', ['rogue:Sneak attack +3d6', 'ranger:1st favored enemy', 'barbarian:Rage power', 'assassin:+2 save bonus against poison', 'monk:A feature no list names', 'cleric:channel energy 3d6', 'wizard:Scribe Scroll', 'druid:Wild shape (2/day)']
     .map(x => featureHandling(...x.split(':'))).join(), 'roll,choice,choice,note,text,roll,feat,effect');
   check('skald 14: DR 2/-', dr([{ cls: cls('skald'), level: 14 }])[0]?.value, 2);
   check('duelist 5: precise strike +5 damage with a rapier', wt([{ cls: cls('duelist'), level: 5 }], { id: 'rapier', group: 'one-handed', type: 'P' }).map(t => `${t.value}:${t.on}`).join(), '5:damage');
@@ -2278,8 +2280,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('eidolon (summoner 5, biped): Str 21, AC 20, hp 26, 4 of 8 points', [st.scores.str, st.ac, st.hp, st.used, st.pool].join(), '21,20,26,4,8');
   check('eidolon attacks: 2 claws and a bite at +9', st.attacks.map(a => `${a.count}${a.name}${a.bonus}:${a.damage}`).join(), '2claw9:1d4+5,1bite9:1d6+5');
   const large = eidolonStats({ level: 8, form: biped, chosen: [{ id: 'large' }], table: eid.tables.summoner, evolutions: eid.evolutions.summoner });
-  check('Large eidolon: Str +8 and its claws 1d6', [large.size, large.scores.str, large.attacks[0].damage.split('+')[0]].join(), 'Large,28,1d6');
-  check('every evolution with damage dice reads as an attack', eid.evolutions.summoner.filter(e => /points? of damage \(\d+d\d+ if Large/.test(e.text)).every(e => evolutionAttack(e) || /grappl/i.test(e.text)), true);
+  // Biped Str 16 + 3 (the summoner 8 table's Str/Dex bonus) + 8 for Large.
+  check('Large eidolon: Str +8 and its claws 1d6', [large.size, large.scores.str, large.attacks[0].damage.split('+')[0]].join(), 'Large,27,1d6');
+  check('every evolution with damage dice reads as an attack', eid.evolutions.summoner.filter(e => /points? of damage \(\d+d\d+ if Large/.test(e.text)).every(e => evolutionAttack(e) || /grappl|overrun/i.test(e.text)), true);
   const earth = kin.find(e => e.id === 'element-earth');
   check('earth element: Climb and Knowledge (dungeoneering), earth blast, flesh of stone', [earth.class_skills.join('/'), earth.blasts.map(b => b.name).join(), earth.defense.name].join('|'), 'Climb/Knowledge (dungeoneering)|Earth Blast|Flesh of Stone');
   check('kineticist 6 earth: DR 3/adamantine', kdr([{ cls: cls('kineticist'), level: 6 }], { element: 'earth' }).map(d => `${d.value}/${d.against}`).join(), '3/adamantine');
@@ -2588,6 +2591,9 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   const RO = await import('./race-options.js');
   const rr = (id, alts = []) => RO.raceResistances(RO.raceWithAlternates(races.find(r => r.id === id), alts))
     .map(x => (x.choice ? `${x.choice.join('/')} ${x.value}?` : `${x.type} ${x.value}`)).join(', ');
+  const fl = (id, alts = []) => { const f = RO.raceFlySpeed(RO.raceWithAlternates(races.find(r => r.id === id), alts)); return f ? `${f.speed} ${f.maneuverability}` : 'none'; };
+  check('fly speed: strix 60 average; wing-clipped 20 poor; human none', [fl('strix'), fl('strix', ['Wing-Clipped']), fl('human')].join('|'), '60 average|20 poor|none');
+  check('fly speed: wyvaran 30 clumsy (with ... maneuverability)', fl('wyvaran'), '30 clumsy');
   check('racial resistance: aasimar acid, cold, electricity 5', rr('aasimar'), 'acid 5, cold 5, electricity 5');
   check('racial resistance: tiefling cold, electricity, fire 5', rr('tiefling'), 'cold 5, electricity 5, fire 5');
   check('racial resistance: suli acid, cold, electricity, fire 5', rr('suli'), 'acid 5, cold 5, electricity 5, fire 5');

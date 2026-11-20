@@ -19,7 +19,7 @@ import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
 import { buffById, missChance, effectDr, effectResist } from './effects.js';
-import { raceResistances } from './race-options.js';
+import { raceResistances, raceFlySpeed } from './race-options.js';
 import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -61,6 +61,8 @@ export function renderBuild(app, view, parts) {
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
     ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
   // Energy resistance from active effects (resist energy, a ring of energy resistance); protection from energy absorbs.
+  // A race's fly speed (strix, syrinx, wyvaran...), shown beside the land speed.
+  const fly = raceFlySpeed(view.race);
   // Racial resistance too (race-options.js raceResistances); for each energy the highest counts.
   const raceResist = raceResistances(view.race);
   const fromFx = effectResist(view.buffs);
@@ -85,7 +87,7 @@ export function renderBuild(app, view, parts) {
           ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
           ${stat('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
           ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD ${cmd}`)}
-          ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'))}
+          ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'), fly ? `fly ${fly.speed} ft.${fly.maneuverability ? ` (${fly.maneuverability})` : ''}` : '')}
           ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
           ${resist.length ? stat('Resist', esc(resist.join(', '))) : ''}
           ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}
