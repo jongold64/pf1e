@@ -17,8 +17,8 @@ import { setUntrainedOk,
 } from './skills.js';
 import { armorEffects, speedInArmor, withRacialMaxDex } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
-import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, showDefenseWhy } from './tab-armor.js';
-import { defenseEffects, ARMOR_REVELATIONS, revelationArmor } from './defense.js';
+import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, switchValue, showDefenseWhy } from './tab-armor.js';
+import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor } from './defense.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -495,9 +495,11 @@ function load(saved) {
     .filter(([, v]) => v && typeof v.feat === 'string' && typeof v.value === 'string'));
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
-  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge', 'linnormStyle', 'exploitWeakness']
+  state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge', 'linnormStyle', 'linnormStance', 'exploitWeakness', 'exploitDefense',
+    'kiFlurry', 'kiSpeed', 'kiDefense', 'ironLimb', 'ironLimbKi']
     .filter(k => c[k] === true).map(k => [k, true])),
                    ...(typeof c.conjured === 'string' && c.conjured ? { conjured: c.conjured } : {}),
+                   ...(Number.isInteger(c.flowingDodge) && c.flowingDodge > 0 ? { flowingDodge: Math.min(20, c.flowingDodge) } : {}),
                    main: hand(c.main), off: hand(c.off) };
   syncClassWeapons();
 }
@@ -1003,7 +1005,7 @@ function initBuild() {
   box.addEventListener('change', e => {
     const t = e.target;
     // (The shield's switch reads "in hand": ticked means not put away.)
-    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, switchValue(t)) });
     // A magic item worn or not, or one of its sometimes-bonuses (item-rows.js).
     if (itemRowChange(app, t)) return;
     if (t.dataset.bCast) {
@@ -2042,6 +2044,12 @@ function renderArmorSearch() {
 
 function update(changes) {
   const before = { level: state.level, fortune: !!view?.haveFeats.includes("Hero's Fortune") };
+  // A ki switch just switched on (an extra attack, +20 ft., +4 dodge AC, iron limb +4): its ki comes off the ki pool.
+  if (changes.combat && !changes.daily) {
+    const spend = Object.entries(KI_COST).filter(([k]) => changes.combat[k] && !state.combat[k]).reduce((n, [, c]) => n + c, 0);
+    const pool = spend && dailyUsesFor().find(d => d.key === 'ki-pool');
+    if (pool) changes = { ...changes, daily: { ...state.daily, [pool.key]: Math.min(pool.max, (state.daily[pool.key] || 0) + spend) } };
+  }
   Object.assign(state, changes);
   syncDerived();
   render();
@@ -2346,11 +2354,17 @@ function computeView() {
     classFx.push(...stanceEffects(data.maneuversById.get(x.choice.stance), x.il, { shield: !!gear.shield && !gear.shieldOff }));
   }
   classFx.push(...martialClassEffects(initiators));
+  // Monk switches (defense.js): a talented monk's ki pool, exploit weakness, iron limb defense and flowing dodge; a
+  // Core Rulebook monk's ki pool from 4th level.
+  const tmHas = name => tmPicks.some(p => p.name === name);
+  const coreMonk = counts.find(e => e.cls.id === 'monk')?.level || 0;
+  const monkOpts = { kiPool: tmHas('Ki Pool') || coreMonk >= 4, exploit: tmHas('Exploit Weakness'), ironLimb: tmHas('Iron Limb Defense'),
+                     flowingDodge: tmHas('Flowing Dodge') ? Math.max(1, statsWith(gear).mod.wis || 0) : 0, level: tmEntry?.level || coreMonk };
   // Defensive switches (defense.js): Combat Expertise, fighting defensively, total defense, conjured armor.
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
                         magus: counts.find(e => e.cls.id === 'magus')?.level || 0, cavalier: counts.find(e => e.cls.id === 'cavalier')?.level || 0,
-                        exploit: tmPicks.some(p => p.name === 'Exploit Weakness') };
+                        monk: monkOpts };
   classFx.push(...defenseEffects(state.combat, defenseOpts));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
@@ -4829,7 +4843,7 @@ async function start() {
     if (pop && itemRowChange(app, e.target)) { openBigCard(pop.dataset.bigPop); return; }
     const t = e.target.closest('.b-big [data-b-combat], .b-big [data-b-cast]');
     if (!t) return;
-    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    if (t.dataset.bCombat) update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, switchValue(t)) });
     else {
       // A prepared spell's cast box.
       const [cid, lv, i] = t.dataset.bCast.split('|');

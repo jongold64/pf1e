@@ -2588,6 +2588,20 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
+  {
+    const D2 = await import('./defense.js');
+    const monk = { kiPool: true, exploit: true, ironLimb: true, flowingDodge: 5, level: 13 };
+    const keys = D2.defenseSwitches({ monk, haveFeats: ['Linnorm Style'] }).map(x => x.key);
+    check('monk switches: both exploit weakness uses, both iron limb, both Linnorm halves, ki and flowing dodge',
+      ['exploitWeakness', 'exploitDefense', 'ironLimb', 'ironLimbKi', 'linnormStance', 'linnormStyle', 'kiFlurry', 'kiSpeed', 'kiDefense', 'flowingDodge'].every(k => keys.includes(k)), true);
+    const fx = c => D2.defenseEffects(c, { monk, haveFeats: ['Linnorm Style'] }).map(f => `${f.target}:${f.type}:${f.value}`).join(' ');
+    check('exploit weakness, read a foe (monk 13): +6 dodge AC, Reflex, Sense Motive', fx({ exploitDefense: true }), 'ac:dodge:6 ref:untyped:6 skill:Sense Motive:untyped:6');
+    check('iron limb with ki: +4 shield AC and CMD', fx({ ironLimbKi: true }), 'ac:shield:4 cmd:shield:4');
+    check('ki speed and defense; flowing dodge 3 adjacent; Linnorm in style -2 AC', fx({ kiSpeed: true, kiDefense: true, flowingDodge: 3, linnormStance: true }),
+      'speed:untyped:20 ac:dodge:4 ac:dodge:3 ac:untyped:-2');
+    check('flowing dodge: no more than the Wisdom limit', fx({ flowingDodge: 9 }), 'ac:dodge:5');
+    check('ki costs: extra attack, speed, defense, iron limb +4', Object.keys(D2.KI_COST).join(), 'kiFlurry,kiSpeed,kiDefense,ironLimbKi');
+  }
   const TM = await import('./talented-monk.js');
   const kw = TM.tidyKiWeapons({ enh: 2, abilities: [{ id: 'flaming', name: 'Flaming', bonus: 1 }, { id: 'keen', name: 'Keen', bonus: 1 }], on: true });
   check('ki weapons: +2 and flaming fit in 3 ki; keen is one too many', `${kw.abilities.map(x => x.id)} ${TM.kiWeaponsCost(kw)} ${kw.on}`, 'flaming 3 true');

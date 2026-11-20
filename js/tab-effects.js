@@ -3,7 +3,7 @@
 import { $, esc, paragraphs, facts } from './dom.js';
 import { BUFFS, buffById, BONUS_TYPES, TARGETS, TARGET_NAMES, activeBonuses, EFFECT_GROUPS, buffAmount, effectMods } from './effects.js';
 import { ownedSources, itemRowHtml, itemRowChange, itemRowClick, buffSummary } from './item-rows.js';
-import { defenseSwitchesHtml, setCombatSwitch } from './tab-armor.js';
+import { defenseSwitchesHtml, setCombatSwitch, switchValue } from './tab-armor.js';
 
 // What's counting now, after stacking ("Strength +4", "AC +2 deflection"...).
 function countingNow(view) {
@@ -302,7 +302,7 @@ export function initEffects(app) {
       const i = Number(t.dataset.onnowCustom);
       app.update({ customEffects: state.customEffects.map((c, j) => (j === i ? { ...c, on: t.checked } : c)) });
     } else if (t.dataset.bCombat) {
-      app.update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+      app.update({ combat: setCombatSwitch(state.combat, t.dataset.bCombat, switchValue(t)) });
     } else if (t.dataset.onnowCl) {
       const id = t.dataset.onnowCl;
       const cl = Math.min(20, Math.max(1, Math.floor(Number(t.value)) || 1));

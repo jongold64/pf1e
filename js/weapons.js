@@ -299,7 +299,7 @@ export function weaponAttack({ weapon, entry = {}, bab, mod, sizeAttack = 0, siz
   // Strength to damage depends on how the weapon is held.
   // Finesse training (unchained rogue): Dexterity instead of Strength on damage with the chosen weapon (melee).
   // Linnorm Style: Wisdom instead (swapStr: 'wis').
-  const swapRow = training.find(t => t.swapStr);
+  const swapRow = training.find(t => t.swapStr === 'wis') || training.find(t => t.swapStr);
   const dmgMod = melee && swapRow ? mod[swapRow.swapStr === true ? 'dex' : swapRow.swapStr] : mod.str;
   let strDamage;
   if (hand === 'off') strDamage = dmgMod > 0 && !has.has('Double Slice') ? Math.floor(dmgMod / 2) : dmgMod;

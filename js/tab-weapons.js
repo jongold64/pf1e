@@ -155,7 +155,10 @@ function combatContext(app, view) {
   const byArchetype = w => (view.archFx?.proficient || []).includes(w.id) || (view.deityWeapons || []).includes(w.id);
   // Heirloom Weapon (trait), with proficiency chosen as its benefit.
   const byTrait = w => heirloomFor(view.traits, app.state.traitPicks, w.id).proficient;
-  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w) || tmStyle(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats),
+  // Ki: extra attack switched on (Character tab): one more attack at the highest bonus in a full attack.
+  const kiExtra = !!(app.state.combat.kiFlurry && view.defenseOpts?.monk?.kiPool);
+  const withKi = babs => (kiExtra ? [babs[0], ...babs] : babs);
+  return { proficient: w => proficient(w) || byFeat(w) || byArchetype(w) || byTrait(w) || tmStyle(w), unarmed, flurry, chosenFor, flagsFor, smites: smite(view.stats), withKi,
            tmStyle, tmBab,
            armorPenalty: armorAttackPenalty(view.gear, view.haveFeats) };
 }
@@ -191,7 +194,7 @@ function attackArgs(app, view, ctx, e) {
   return {
     // Arcane archer enhance arrows: arrows fired from a bow are +1 at least.
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w),
-      ...(view.counts.some(c => c.cls.id === 'arcane-archer') && launcherOf(w) === 'bow' ? { ammo: { ...(e.ammo || { id: 'enhance-arrows' }), enh: Math.max(1, e.ammo?.enh || 0) } } : {}) }, bab: ctx.tmStyle(w) ? ctx.tmBab : view.stats.bab, mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
+      ...(view.counts.some(c => c.cls.id === 'arcane-archer') && launcherOf(w) === 'bow' ? { ammo: { ...(e.ammo || { id: 'enhance-arrows' }), enh: Math.max(1, e.ammo?.enh || 0) } } : {}) }, bab: ctx.withKi(ctx.tmStyle(w) ? ctx.tmBab : view.stats.bab), mod: view.stats.mod, sizeAttack: SIZE_AC[view.size] ?? 0,
     size: sized.diceSize, misfit: sized.penalty, sized, haveFeats: view.haveFeats, proficient: ctx.proficient(w) || !!e.proficient,
     armorPenalty: ctx.armorPenalty, unarmedDamage: w.id === 'unarmed-strike' && ctx.unarmed ? ctx.unarmed : null,
     options: app.state.combat,
@@ -245,6 +248,9 @@ function traitRolls(app, view, w, args, crit, weaponName) {
     for (const j of unarmedStyleDamage(view.haveFeats)) {
       out.push({ label: j.label, text: '', damage: `+${j.dice}`, note: j.note, spec: { title: `${weaponName}: ${j.label}`, groups: [{ attacks: [], damage: j.dice, word: 'extra damage' }] } });
     }
+  }
+  if (unarmed && (view.buffs || []).some(b => b.id === 'ethereal-fists' && b.on !== false)) {
+    out.push({ label: 'Ethereal fists', text: '', damage: '', note: 'hits ethereal creatures normally (no miss chance from etherealness)', spec: null });
   }
   if (kiWeaponsOn(app, view, w)) {
     out.push({ label: 'Ki weapons on', text: '', damage: '', note: `${kiWeaponsText(app.state.kiWeapons)}: counted in this weapon's numbers this round`, spec: null });
@@ -485,7 +491,7 @@ export function renderMyWeapons(app, view) {
     const extra = crit.fx.vs.map(v => `<dt>${esc(v.name)}</dt><dd>+${esc(v.dice)} against ${esc(v.vs)}
         ${rollButton({ title: `${weaponName}: ${v.name.toLowerCase()} damage`, groups: [{ attacks: [], damage: v.dice, word: `${v.name.toLowerCase()} damage` }] }, `Roll +${v.dice}`)}</dd>`);
     if (ctx.flurry?.babs && (ctx.flurry.weapons ? ctx.flurry.weapons(w) : isMonkWeapon(w))) {
-      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
+      const f = weaponAttack({ ...args, bab: ctx.withKi(ctx.flurry.babs), hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`<dt>${esc(ctx.flurry.name)}</dt><dd><b>${esc(attackText(f))}</b>, ${esc(f.damage)}${usedText(f)}
         ${rollButton({ title: `${weaponName}: ${ctx.flurry.name.toLowerCase()}`, groups: [rollGroup('', f, crit)] })}</dd>`);
     }
@@ -683,7 +689,7 @@ export function weaponSummaries(app, view) {
     const crit = critOf(w, flags, have, args.entry);
     const extra = crit.fx.vs.map(v => `${v.name} +${v.dice} against ${v.vs}`);
     if (ctx.flurry?.babs && (ctx.flurry.weapons ? ctx.flurry.weapons(w) : isMonkWeapon(w))) {
-      const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
+      const f = weaponAttack({ ...args, bab: ctx.withKi(ctx.flurry.babs), hand: 'flurry', penalty: ctx.flurry.penalty });
       extra.push(`${ctx.flurry.name} ${attackText(f)} (${f.damage})`);
     }
     if (isDouble(w)) {

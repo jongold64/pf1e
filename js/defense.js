@@ -16,7 +16,12 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 // mounted charge instead of +2, no AC penalty; mighty charge at 11th, supreme charge at 20th noted).
 // Linnorm Style (the feat; unarmed strikes, weapons.js) and a talented monk's exploit weakness edge (exploit: true; +2 on
 // attacks this turn) are attack switches too.
-export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false } = {}) {
+// Monk switches (monk: { kiPool, exploit, ironLimb, flowingDodge (the most it can give, 0 without it), level }): the ki
+// pool's swift actions (1 ki each: an extra attack in a full attack, +20 ft. speed, +4 dodge AC), exploit weakness's two
+// uses, iron limb defense (+2, or +4 for 1 ki) and flowing dodge (a choice of how many enemies are adjacent). KI_COST: the
+// switches that spend ki when switched on (app.js takes it from the ki pool).
+export const KI_COST = { kiFlurry: 1, kiSpeed: 1, kiDefense: 1, ironLimbKi: 1 };
+export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false, monk = {} } = {}) {
   const trained = acrobatics >= 3;
   const step = expertiseStep(bab);
   const out = [];
@@ -41,16 +46,47 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
       ...(cavalier >= 11 ? [['Threat range of your weapons (mighty charge)', 'doubled; a free bull rush, disarm, sunder or trip on a hit']] : []),
       ...(cavalier >= 20 ? [['Damage (supreme charge)', 'double (triple with a lance); a confirmed critical stuns 1d4 rounds']] : [])],
     note: 'Use it in place of the Charging effect while you charge on your mount; it lasts until your next turn.' });
-  if (haveFeats.includes('Linnorm Style')) out.push({ key: 'linnormStyle', label: 'Linnorm Style', feat: true, attack: true,
-    what: 'unarmed damage with Wisdom instead of Strength against a creature that attacked you',
-    rows: [['Unarmed strike damage', 'your Wisdom bonus instead of Strength (when it’s higher)'],
-      ...(haveFeats.includes('Linnorm Vengeance') ? [['Unarmed attack rolls against a creature that hit you (Linnorm Vengeance)', '+2']] : []),
-      ['AC against melee attacks while in the style', '−2 (not counted: apply it in play)']],
-    note: 'After a creature makes a melee attack against you, until the start of its next turn. Switch it on for attacks on that creature.' });
-  if (exploit) out.push({ key: 'exploitWeakness', label: 'Exploit weakness', attack: true, what: '+2 on attacks this turn, ignore DR and hardness',
-    rows: [['Attack rolls until the end of your turn', '+2'], ['Damage reduction and hardness', 'ignored'],
-      ['To use it', 'a swift action: Wisdom check + your monk level against DC 10 + the target’s CR (or hardness)']],
-    note: 'Talented monk edge. Switch it on after the check succeeds, and off after your turn.' });
+  if (haveFeats.includes('Linnorm Style')) {
+    out.push({ key: 'linnormStance', label: 'Linnorm Style: in the style', feat: true, what: '−2 AC against melee attacks',
+      rows: [['AC against melee attacks while in the style', '−2 (counted in your AC)']],
+      note: 'A combat style: entering it is a swift action. Switch it on while you\u2019re in it; the damage choice below is the other half.' });
+    out.push({ key: 'linnormStyle', label: 'Linnorm Style: it attacked you', feat: true, attack: true,
+      what: 'unarmed damage with Wisdom instead of Strength against a creature that attacked you',
+      rows: [['Unarmed strike damage', 'your Wisdom bonus instead of Strength (or of Dexterity, if that\u2019s what you add)'],
+        ...(haveFeats.includes('Linnorm Vengeance') ? [['Unarmed attack rolls against a creature that hit you (Linnorm Vengeance)', '+2']] : [])],
+      note: 'After a creature makes a melee attack against you, until the start of its next turn. Switch it on for attacks on that creature.' });
+  }
+  if (exploit || monk.exploit) {
+    out.push({ key: 'exploitWeakness', label: 'Exploit weakness: weak point', attack: true, what: '+2 on attacks this turn, ignore DR and hardness',
+      rows: [['Attack rolls until the end of your turn', '+2'], ['Damage reduction and hardness', 'ignored'],
+        ['To use it', 'a swift action: Wisdom check + your monk level against DC 10 + the target’s CR (or hardness)']],
+      note: 'Talented monk edge. Switch it on after the check succeeds, and off after your turn.' });
+    const half = Math.max(0, Math.floor((monk.level || 0) / 2));
+    out.push({ key: 'exploitDefense', label: 'Exploit weakness: read a foe', what: `+${half} dodge AC and Reflex against one creature`,
+      rows: [['Dodge bonus to AC against that creature (half your monk level)', `+${half}`], ['Reflex saves and Sense Motive checks against it', `+${half}`],
+        ['To use it', 'a swift action, instead of finding a weak point: one creature within 30 ft.']],
+      note: 'Until the start of your next turn. Counted in your AC and Reflex while on: only against that creature.' });
+  }
+  if (monk.kiPool) {
+    out.push({ key: 'kiFlurry', label: 'Ki: extra attack', attack: true, what: 'one more attack at your highest bonus in a full attack (1 ki)',
+      rows: [['Full attack this round', 'one more attack at your highest attack bonus (it stacks with a flurry\u2019s)'], ['Cost', '1 ki, a swift action']],
+      note: 'Switching it on takes 1 ki from your ki pool (Daily uses). Switch it off after your turn.' });
+    out.push({ key: 'kiSpeed', label: 'Ki: +20 ft. speed', what: '+20 ft. speed for 1 round (1 ki)',
+      rows: [['Speed for 1 round', '+20 ft.'], ['Cost', '1 ki, a swift action']], note: 'Switching it on takes 1 ki from your ki pool.' });
+    out.push({ key: 'kiDefense', label: 'Ki: +4 dodge AC', what: '+4 dodge AC for 1 round (1 ki)',
+      rows: [['Dodge bonus to AC for 1 round', '+4'], ['Cost', '1 ki, a swift action']], note: 'Switching it on takes 1 ki from your ki pool.' });
+  }
+  if (monk.ironLimb) {
+    out.push({ key: 'ironLimb', label: 'Iron limb defense', what: '+2 shield AC and CMD (you started and ended your turn in the same space)',
+      rows: [['Shield bonus to AC and CMD until your next turn', '+2']], note: 'Talented monk edge, with bastion stance: only if you didn\u2019t move this turn.' });
+    out.push({ key: 'ironLimbKi', label: 'Iron limb defense, with ki', what: '+4 shield AC and CMD instead (1 ki)',
+      rows: [['Shield bonus to AC and CMD until your next turn', '+4 (instead of +2)'], ['Cost', '1 ki, a swift action']],
+      note: 'Switching it on takes 1 ki from your ki pool.' });
+  }
+  if (monk.flowingDodge) out.push({ key: 'flowingDodge', label: 'Flowing dodge', what: `+1 dodge AC per adjacent enemy (up to +${monk.flowingDodge})`,
+    choices: Array.from({ length: monk.flowingDodge + 1 }, (_, n) => [n, n ? `${n} adjacent` : 'none adjacent']),
+    rows: [['Dodge bonus to AC', `+1 for each adjacent enemy, at most +${monk.flowingDodge} (your Wisdom modifier, at least 1)`]],
+    note: 'Choose how many enemies are next to you now.' });
   out.push({ key: 'totalDefense', label: 'Total defense', what: `no attacks, +${trained ? 6 : 4} dodge AC`,
     rows: [[`Dodge bonus to AC${trained ? ' (3 or more ranks in Acrobatics: +6)' : ''}`, `+${trained ? 6 : 4}`], ['Attacks of opportunity', 'none']],
     note: 'A standard action instead of attacking; it can’t be combined with fighting defensively or Combat Expertise.' });
@@ -80,6 +116,22 @@ export function defenseEffects(combat = {}, opts = {}) {
   if (combat.spellCombat && has('spellCombat')) fx('Spell combat', 'attack', 'untyped', -2);
   if (combat.mountedCharge && has('mountedCharge')) fx('Cavalier’s charge', 'melee-attack', 'untyped', 4);
   if (combat.exploitWeakness && has('exploitWeakness')) fx('Exploit weakness', 'attack', 'untyped', 2);
+  const monk = opts.monk || {};
+  const half = Math.floor((monk.level || 0) / 2);
+  if (combat.exploitDefense && has('exploitDefense') && half) {
+    fx('Exploit weakness (one foe)', 'ac', 'dodge', half);
+    fx('Exploit weakness (one foe)', 'ref', 'untyped', half);
+    fx('Exploit weakness (one foe)', 'skill:Sense Motive', 'untyped', half);
+  }
+  if (combat.kiSpeed && has('kiSpeed')) fx('Ki: speed', 'speed', 'untyped', 20);
+  if (combat.kiDefense && has('kiDefense')) fx('Ki: defense', 'ac', 'dodge', 4);
+  if (has('ironLimb') && (combat.ironLimbKi || combat.ironLimb)) {
+    const n = combat.ironLimbKi ? 4 : 2;
+    fx('Iron limb defense', 'ac', 'shield', n);
+    fx('Iron limb defense', 'cmd', 'shield', n);
+  }
+  if (has('flowingDodge') && combat.flowingDodge > 0) fx('Flowing dodge', 'ac', 'dodge', Math.min(monk.flowingDodge, combat.flowingDodge));
+  if (combat.linnormStance && has('linnormStance')) fx('Linnorm Style (against melee)', 'ac', 'untyped', -2);
   const c = (opts.conjured || []).find(x => x.id === combat.conjured);
   if (c) fx(c.name, 'ac', 'armor', c.bonus);
   return out;

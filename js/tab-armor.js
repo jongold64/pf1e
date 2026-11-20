@@ -199,17 +199,25 @@ export function setCombatSwitch(combat, key, on) {
   c[key] = on;
   // Total defense means no attacks: it switches off the attack-time switches, and they switch it off.
   if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; c.spellCombat = false; c.mountedCharge = false; c.exploitWeakness = false; }
-  if (on && ['combatExpertise', 'fightingDefensively', 'spellCombat', 'mountedCharge', 'exploitWeakness'].includes(key)) c.totalDefense = false;
+  if (on && ['combatExpertise', 'fightingDefensively', 'spellCombat', 'mountedCharge', 'exploitWeakness', 'kiFlurry'].includes(key)) c.totalDefense = false;
+  // Iron limb defense: +2 or +4 (with ki), one at a time.
+  if (on && key === 'ironLimbKi') c.ironLimb = false;
+  if (on && key === 'ironLimb') c.ironLimbKi = false;
   return c;
 }
 
 // The defensive switches as tick boxes (Armor tab, and the Character tab's Defense card): whether each is on, what it
 // does, and a ? (detail: the attribute the ? uses; the Character tab's are its own Details buttons).
+// A switch's value from its control: a tick box (inverted for "shield in hand") or a choice (flowing dodge's count).
+export const switchValue = t => (t.tagName === 'SELECT' ? Number(t.value) : t.dataset.invert ? !t.checked : t.checked);
 const switchOn = (combat, s) => (s.key === 'shieldOff' ? !combat.shieldOff : s.key.startsWith('conjured:') ? combat.conjured === s.key.slice(9) : !!combat[s.key]);
 // attacks: the class attack switches (spell combat, mounted charge) too; without it, only the defensive ones.
 export function defenseSwitchesHtml(view, combat, why, attacks = false) {
-  return defenseSwitches(view.defenseOpts).filter(s => attacks || !s.attack).map(s => `<label class="check-row"><input type="checkbox" data-b-combat="${esc(s.key)}"${s.inverted ? ' data-invert="1"' : ''}${switchOn(combat, s) ? ' checked' : ''}>
-      ${esc(s.label)} <span class="muted">(${esc(s.what)})</span>${why(s)}</label>`).join('');
+  return defenseSwitches(view.defenseOpts).filter(s => attacks || !s.attack).map(s => (s.choices
+    ? `<label class="check-row">${esc(s.label)} <select data-b-combat="${esc(s.key)}">${s.choices.map(([v, t]) => `<option value="${v}"${Number(combat[s.key] || 0) === v ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>
+      <span class="muted">(${esc(s.what)})</span>${why(s)}</label>`
+    : `<label class="check-row"><input type="checkbox" data-b-combat="${esc(s.key)}"${s.inverted ? ' data-invert="1"' : ''}${switchOn(combat, s) ? ' checked' : ''}>
+      ${esc(s.label)} <span class="muted">(${esc(s.what)})</span>${why(s)}</label>`)).join('');
 }
 
 // What a defensive switch does, in a popup.
@@ -224,7 +232,7 @@ export function initArmorTab(app) {
   // Defense options: the switches, and their Details.
   $('defense-switches').addEventListener('change', e => {
     const t = e.target;
-    if (t.dataset.bCombat) app.update({ combat: setCombatSwitch(app.state.combat, t.dataset.bCombat, t.dataset.invert ? !t.checked : t.checked) });
+    if (t.dataset.bCombat) app.update({ combat: setCombatSwitch(app.state.combat, t.dataset.bCombat, switchValue(t)) });
   });
   $('defense-switches').addEventListener('click', e => {
     const b = e.target.closest('[data-defense-why]');

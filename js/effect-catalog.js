@@ -89,6 +89,7 @@ export const MORE_BUFFS = [
   spell('cloak-of-chaos', 'Cloak of chaos', [b('ac', 'deflection', 4), b('saves', 'resistance', 4)], { note: 'against lawful creatures’ attacks and effects; also spell resistance 25' }),
   spell('dispel-evil', 'Dispel evil', [b('ac', 'deflection', 4)], { note: 'against evil creatures’ attacks' }),
   spell('protection-from-spells', 'Protection from spells', [b('saves', 'resistance', 8)], { note: 'only against spells and spell-like abilities' }),
+  spell('ethereal-fists', 'Ethereal fists', [], { note: 'your claws, unarmed strikes and touch spells deal normal damage to ethereal creatures; no miss chance from etherealness (concealment still applies)' }),
   { id: 'resist-energy', name: 'Resist energy', forms: resistForms(RESIST_SPELL), levelName: 'energy', ref: { spell: 'Resist Energy' },
     note: 'reduces damage of the chosen energy type each time; it doesn\u2019t stack with other resistance to that energy (the highest counts)' },
   { id: 'resist-energy-communal', name: 'Resist energy, communal', forms: resistForms(RESIST_SPELL), levelName: 'energy', ref: { spell: 'Resist Energy, Communal' },
