@@ -35,7 +35,7 @@ import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.
 import { burnState, infusionCosts } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
-import { popWeaponPart, showAttackDetails, showCombatSwitch } from './tab-weapons.js';
+import { popWeaponPart, showAttackDetails, showCombatSwitch, popKiWeapons } from './tab-weapons.js';
 import { popSpell, preparers, slotCount, spellsLeftToChoose } from './tab-spells.js';
 import { tabsToDo } from './tab-todo.js';
 import { popBuff, popOnNow } from './tab-effects.js';
@@ -49,7 +49,7 @@ import { initEffects, renderEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
-import { TALENTED_MONK, talentedMonkPicks, talentedMonkEffects, talentedMonkDaily, talentedMonkFeats } from './talented-monk.js';
+import { TALENTED_MONK, talentedMonkPicks, talentedMonkEffects, talentedMonkDaily, talentedMonkFeats, tidyKiWeapons } from './talented-monk.js';
 import { classFeatureEffects, armorTrainingStage, uncannyDodge, classDamageReduction, classSenses, spellResistance, classNumbers, archetypeAttacks, situationalBonuses, skillAccess, classAttacks, weaponTraining, sacredWeaponDice, powerAttack } from './class-features.js';
 import { naturalAttacks, naturalAttackRows } from './natural-attacks.js';
 import { initCompanion, renderCompanion } from './tab-companion.js';
@@ -171,6 +171,7 @@ const state = {
   eidolon: { name: '', evolutions: [], increases: [] },
   blessings: [],     // a warpriest's two blessings (data/blessings.json ids)
   daily: {},         // Build tab: uses spent today, by daily.js key
+  kiWeapons: { enh: 0, abilities: [], on: false },  // a talented monk's ki weapons (talented-monk.js tidyKiWeapons)
   notes: '',         // Build tab: the player's notes
   portrait: '',      // Character tab: the character's picture, a small square JPEG (data URL); '' for the silhouette
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (any class; a cleric, warpriest or inquisitor needs one)
@@ -235,6 +236,7 @@ const app = {
   extraSlotOn: cid => extraSlotOn(cid),
   domainSpells: cid => domainSpellsFor(cid),
   showAcDetails: column => showAcDetails(column),
+  dailyUses: () => dailyUsesFor(),
   get view() { return view; },
 };
 
@@ -434,6 +436,7 @@ function load(saved) {
   if (!levels.includes(state.favoredClass) || byId.get(state.favoredClass)?.category === 'prestige') state.favoredClass = '';
   if (typeof state.casterChoices !== 'object' || state.casterChoices === null) state.casterChoices = {};
   syncDerived();
+  state.kiWeapons = tidyKiWeapons(state.kiWeapons);
   // Gold can be below 0 after selling something bought over budget (Sell keeps Left right).
   if (!(typeof state.gold === 'number' && Number.isFinite(state.gold))) state.gold = null;
   // Items the equipment data no longer has are skipped when shown. The separate masterwork entries that were
@@ -980,6 +983,9 @@ function initBuild() {
     // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
     const big = e.target.closest('[data-big]');
     if (big && !e.target.closest('button, [data-roll], input, select, a, label, textarea')) { openBigCard(big.dataset.big); return; }
+    // Ki weapons (talented monk): choose and switch on in its popup, or switch off.
+    if (e.target.closest('[data-b-kiw]')) { popKiWeapons(app); return; }
+    if (e.target.closest('[data-b-kiw-off]')) { update({ kiWeapons: { ...state.kiWeapons, on: false } }); return; }
     // Gear: Use a potion, scroll or wand charge; a magic item's Details.
     const use = e.target.closest('[data-b-use-item]');
     if (use) { useCraftedItem(Number(use.dataset.bUseItem)); return; }

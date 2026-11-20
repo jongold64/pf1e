@@ -10,7 +10,7 @@ import { proficiencyTest, weaponAttack, weaponCost, weaponCostRows, weaponLabel,
 import { activeBonuses } from './effects.js';
 import { weaponTraining, classWeaponDice, kiStrike, unarmedStyleDamage, linnormRows } from './class-features.js';
 import { traitWeaponRows, heirloomFor } from './traits.js';
-import { styleWeapon, deadlyStrikesDie, simpleCritical, tmFlurryBabs } from './talented-monk.js';
+import { styleWeapon, deadlyStrikesDie, simpleCritical, tmFlurryBabs, kiWeaponsEntry, kiWeaponsCost, kiWeaponsText, KI_WEAPONS_MAX } from './talented-monk.js';
 import { defenseSwitches } from './defense.js';
 import { setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
@@ -174,11 +174,20 @@ function switchedTraitBonus(view, w) {
   return { attack: best(['attack', melee ? 'melee-attack' : 'ranged-attack']), damage: best(['damage', ...(melee ? ['melee-damage'] : [])]) };
 }
 
+// Ki weapons applies to this weapon: a talented monk with the talent, switched on, and an unarmed strike or a weapon of
+// its fighting styles.
+function kiWeaponsOn(app, view, w) {
+  return !!app.state.kiWeapons?.on && !!view.tm?.picks.some(p => p.name === 'Ki Weapons')
+    && (w.id === 'unarmed-strike' || styleWeapon(view.tm.picks, w, view.archFx?.picks?.adaptive || []));
+}
+
 function attackArgs(app, view, ctx, e) {
   const w = app.data.weaponsById.get(e.id);
   // A weapon made for another size: its own damage dice, -2 per size step, and its handedness shifted (with the Titan
   // Mauler's and Titan Fighter's rules for big weapons).
   const sized = sizedWeapon(w, e.size, view.size, titanLevels(app, view), !!e.jotungrip, !!e.lace);
+  // Ki weapons switched on (talented monk, Character tab): its enhancement and abilities on unarmed strikes and style weapons.
+  if (kiWeaponsOn(app, view, w)) e = kiWeaponsEntry(e, app.state.kiWeapons);
   return {
     // Arcane archer enhance arrows: arrows fired from a bow are +1 at least.
     weapon: sized.weapon, entry: { ...e, ...ctx.flagsFor(e, w),
@@ -237,10 +246,8 @@ function traitRolls(app, view, w, args, crit, weaponName) {
       out.push({ label: j.label, text: '', damage: `+${j.dice}`, note: j.note, spec: { title: `${weaponName}: ${j.label}`, groups: [{ attacks: [], damage: j.dice, word: 'extra damage' }] } });
     }
   }
-  if (view.tm?.picks.some(p => p.name === 'Ki Weapons') && (unarmed || styleWeapon(view.tm.picks, w, view.archFx?.picks?.adaptive || [])) && (args.entry.enh || 0) < 3) {
-    const a = weaponAttack({ ...args, entry: { ...args.entry, enh: 3 } });
-    out.push({ label: 'Ki weapons +3', text: attackText(a), damage: a.damage,
-      note: 'talented monk: a free action, 1 ki per +1 for 1 round (up to 3 ki); or weapon special abilities instead', spec: { title: `${weaponName}: ki weapons +3`, groups: [rollGroup('', a, crit)] } });
+  if (kiWeaponsOn(app, view, w)) {
+    out.push({ label: 'Ki weapons on', text: '', damage: '', note: `${kiWeaponsText(app.state.kiWeapons)}: counted in this weapon's numbers this round`, spec: null });
   }
   if (h.maneuver) {
     const m = combatManeuvers(view.stats, view.size, view.haveFeats);
@@ -359,8 +366,8 @@ function renderCombat(app, view, ctx) {
   });
   const off = r.off;
   const spec = { title: 'Two-weapon full attack', groups: [
-    rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have, mainEntry)),
-    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offEntry, offEnd || 0)),
+    rollGroup('Main hand', r.main, critOf(mainWeapon, ctx.flagsFor(mainEntry, mainWeapon), have, mainArgs.entry)),
+    rollGroup('Off hand', off, critOf(offArgs.weapon, ctx.flagsFor(offEntry, offArgs.weapon), have, offArgs.entry, offEnd || 0)),
   ] };
   // The two hands' attacks in pieces, for their Details popups.
   const effects = weaponEffects(app, mainArgs.weapon);
@@ -471,7 +478,7 @@ export function renderMyWeapons(app, view) {
     const args = attackArgs(app, view, ctx, e);
     const a = weaponAttack(args);
     const flags = ctx.flagsFor(e, w);
-    const crit = critOf(w, flags, have, e);
+    const crit = critOf(w, flags, have, args.entry);
     const weaponName = weaponLabel(w, e);
     // Extra lines: situational ability damage (holy vs evil foes, bane vs its chosen type) with a roll of its own,
     // a flurry with monk weapons, and a double weapon used as two weapons.
@@ -497,7 +504,7 @@ export function renderMyWeapons(app, view) {
       const d2 = twoWeaponAttack({ ...args, main: { weapon: w, entry: args.entry, end: 0 }, off: { weapon: w, entry: args.entry, end: 1 } });
       extra.push(`<dt>As two weapons</dt><dd><b>${esc(attackText(d2.main))}</b>, ${esc(d2.main.damage)} and
         <b>${esc(attackText(d2.off))}</b>, ${esc(d2.off.damage)}
-        ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, critOf(w, flags, have, e, 1))] })}</dd>`);
+        ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, critOf(w, flags, have, args.entry, 1))] })}</dd>`);
     }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
@@ -610,7 +617,7 @@ export function showAttackDetails(app, i, part = null) {
   const ctx = combatContext(app, view);
   const args = attackArgs(app, view, ctx, e);
   const a = weaponAttack(args);
-  const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), e);
+  const crit = critOf(w, ctx.flagsFor(e, w), new Set(view.haveFeats), args.entry);
   const b = attackBreakdown(a, { effects: weaponEffects(app, w),
     ...(ctx.tmStyle(w) ? { babLabel: `Specialty attack bonus (talented monk; base attack bonus +${view.stats.bab[0]})` } : {}) });
   // The weapon-size penalty in its pieces (size steps, Giant Weapon Wielder, Massive Weapons, Incredible Heft, Jotungrip).
@@ -673,7 +680,7 @@ export function weaponSummaries(app, view) {
     const args = attackArgs(app, view, ctx, e);
     const a = weaponAttack(args);
     const flags = ctx.flagsFor(e, w);
-    const crit = critOf(w, flags, have, e);
+    const crit = critOf(w, flags, have, args.entry);
     const extra = crit.fx.vs.map(v => `${v.name} +${v.dice} against ${v.vs}`);
     if (ctx.flurry?.babs && (ctx.flurry.weapons ? ctx.flurry.weapons(w) : isMonkWeapon(w))) {
       const f = weaponAttack({ ...args, bab: ctx.flurry.babs, hand: 'flurry', penalty: ctx.flurry.penalty });
@@ -702,6 +709,69 @@ export function weaponSummaries(app, view) {
   }).filter(Boolean);
 }
 
+// The Ki weapons popup (Character tab): enhancement bonus and special abilities for this round, up to 3 ki, then
+// Switch on (spends the ki from the ki pool) or off.
+export async function popKiWeapons(app) {
+  if (!app.data.itemsById) await app.loadItems();
+  const k = app.state.kiWeapons;
+  const cost = kiWeaponsCost(k);
+  const left = KI_WEAPONS_MAX - cost;
+  const pool = app.dailyUses().find(d => d.key === 'ki-pool');
+  const kiLeft = pool ? pool.max - (app.state.daily[pool.key] || 0) : null;
+  const abilities = app.data.items.filter(i => i.category === 'Weapon Special Abilities')
+    .map(i => ({ i, o: abilityOptions(i).find(o => o.bonus && o.bonus <= KI_WEAPONS_MAX) })).filter(x => x.o)
+    .sort((a, b) => a.o.bonus - b.o.bonus || a.i.name.localeCompare(b.i.name));
+  const rows = abilities.map(({ i, o }) => {
+    const on = k.abilities.some(a => a.id === i.id);
+    return `<li><label class="check-row"><input type="checkbox" data-kiw-ability="${esc(i.id)}" data-bonus="${o.bonus}"${on ? ' checked' : ''}${!on && o.bonus > left ? ' disabled' : ''}>
+      ${esc(i.name)}${o.label ? ` (${esc(o.label)})` : ''} <small class="muted">${o.bonus} ki</small></label>
+      <button type="button" class="skill-details q-details" data-ability-pop="${esc(i.id)}" aria-label="${esc(i.name)}: details" title="Details">?</button></li>`;
+  }).join('');
+  app.openDetail('Ki weapons', `<p class="hint">Talented monk: a free action, 1 ki per +1 for 1 round, up to ${KI_WEAPONS_MAX} ki at a time, on your unarmed
+      strikes and fighting style weapons. An enhancement bonus doesn't stack with the weapon's own (the higher counts).</p>
+    <p><b>Now: ${cost ? esc(kiWeaponsText(k)) : 'nothing chosen'}</b>${k.on ? ' · <b>on</b> this round' : ''}${kiLeft !== null ? ` · ki pool: ${kiLeft} of ${pool.max} left` : ''}</p>
+    <label>Enhancement bonus <select data-kiw-enh>${[0, 1, 2, 3].map(n => `<option value="${n}"${n === k.enh ? ' selected' : ''}${n - k.enh > left ? ' disabled' : ''}>${n ? `+${n} (${n} ki)` : 'none'}</option>`).join('')}</select></label>
+    <div class="line-controls">
+      <button type="button" class="primary" data-kiw-on${cost ? '' : ' disabled'}>${k.on ? `Use again (spend ${cost} ki)` : `Switch on (spend ${cost} ki)`}</button>
+      ${k.on ? '<button type="button" data-kiw-off>Switch off</button>' : ''}
+      ${cost ? '<button type="button" data-kiw-clear>Clear choices</button>' : ''}</div>
+    <h3>Special abilities <small class="muted">(${left} ki left to add)</small></h3>
+    <ul class="plain-list kiw-list">${rows}</ul>`);
+}
+function initKiWeapons(app) {
+  const body = $('detail-body');
+  const set = (change, spend = 0) => {
+    const k = { ...app.state.kiWeapons, ...change };
+    const patch = { kiWeapons: k };
+    if (spend) {
+      const pool = app.dailyUses().find(d => d.key === 'ki-pool');
+      if (pool) patch.daily = { ...app.state.daily, [pool.key]: Math.min(pool.max, (app.state.daily[pool.key] || 0) + spend) };
+    }
+    app.update(patch);
+    popKiWeapons(app);
+  };
+  body.addEventListener('change', e => {
+    const t = e.target;
+    if (t.matches('[data-kiw-enh]')) set({ enh: Number(t.value) });
+    else if (t.matches('[data-kiw-ability]')) {
+      const a = app.data.itemsById.get(t.dataset.kiwAbility);
+      const o = abilityOptions(a).find(x => x.bonus === Number(t.dataset.bonus));
+      const list = app.state.kiWeapons.abilities.filter(x => x.id !== a.id);
+      set({ abilities: t.checked ? [...list, { id: a.id, name: a.name, ...(o?.label ? { option: o.label } : {}), bonus: o.bonus }] : list });
+    }
+  });
+  body.addEventListener('click', e => {
+    if (e.target.closest('[data-kiw-on]')) {
+      const cost = kiWeaponsCost(app.state.kiWeapons);
+      const pool = app.dailyUses().find(d => d.key === 'ki-pool');
+      const kiLeft = pool ? pool.max - (app.state.daily[pool.key] || 0) : 0;
+      if (pool && kiLeft < cost && !confirm(`Only ${kiLeft} ki left in your ki pool. Switch it on anyway?`)) return;
+      set({ on: true }, cost);
+    } else if (e.target.closest('[data-kiw-off]')) set({ on: false });
+    else if (e.target.closest('[data-kiw-clear]')) set({ enh: 0, abilities: [], on: false });
+  });
+}
+
 // A weapon to add: a composite bow comes with a strength rating that matches your Strength bonus now.
 function newEntry(app, w) {
   return { id: w.id, enh: 0, ...(isComposite(w) ? { strRating: Math.max(0, app.view.stats.mod.str) } : {}) };
@@ -712,6 +782,7 @@ function changeEntry(app, index, changes) {
 }
 
 export function initWeaponsTab(app) {
+  initKiWeapons(app);
   initCombat(app);
   $('weapon-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
   $('weapon-search').addEventListener('input', () => renderList(app));

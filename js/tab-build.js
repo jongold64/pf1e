@@ -6,6 +6,7 @@ import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
 import { weaponSummaries } from './tab-weapons.js';
+import { kiWeaponsCost, kiWeaponsText } from './talented-monk.js';
 import { weaponLabel } from './weapons.js';
 import { magicPrefix } from './crafting.js';
 import { spellNumbersHtml, itemSpellNumbersHtml } from './tab-spells.js';
@@ -186,10 +187,16 @@ export function renderBuild(app, view, parts) {
         <button type="button" data-b-buffer="spend"${bs.buffer ? '' : ' disabled'}>Spend 1 (instead of burn)</button></span>` : ''}
       ${bs.burn > bs.max ? `<small class="warning b-burn-note">More than 3 + Con modifier (${bs.max}): only burn forced on you counts past that.</small>` : ''}
     </div></div>` : '';
+  // A talented monk's ki weapons: what's chosen and whether it's on this round; Choose opens the popup (tab-weapons.js).
+  const kiw = app.state.kiWeapons;
+  const kiWeaponsHtml = view.tm?.picks.some(p => p.name === 'Ki Weapons') ? `<p class="b-kiw"><b>Ki weapons</b>
+      <span class="${kiw.on ? '' : 'muted'}">${kiWeaponsCost(kiw) ? `${esc(kiWeaponsText(kiw))}${kiw.on ? ' · on this round' : ' · off'}` : 'nothing chosen'}</span>
+      <button type="button" data-b-kiw>Choose</button>${kiw.on ? ' <button type="button" data-b-kiw-off>Switch off</button>' : ''}</p>` : '';
   const noWeapons = atk ? '' : '<p class="hint">No weapons yet: add them on the Weapons tab and they show here with their attack and damage rolls.</p>';
   // Weapons and class abilities in two tables, so a class ability's long note doesn't widen the weapons' columns.
   const attacks = noWeapons + (switches && (atk || classAtk || powerAtk || powers) ? `<div class="b-switches">${switches}</div>` : '')
     + (atk ? `<table class="b-table"><thead><tr><th>Weapon</th><th>Attack</th><th>Damage</th><th>Critical</th><th></th></tr></thead><tbody>${atk}</tbody></table>` : '')
+    + kiWeaponsHtml
     + (classAtk || powerAtk || powers ? `<table class="b-table b-class-table"><tbody class="b-class-attacks">${classAtk}${powerAtk}${powers}</tbody></table>` : '')
     + burnHtml
     + (abilities ? `<h4 class="b-sub">Class abilities</h4><div class="b-feats">${abilities}</div>` : '');

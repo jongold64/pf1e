@@ -2588,6 +2588,14 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
+  const TM = await import('./talented-monk.js');
+  const kw = TM.tidyKiWeapons({ enh: 2, abilities: [{ id: 'flaming', name: 'Flaming', bonus: 1 }, { id: 'keen', name: 'Keen', bonus: 1 }], on: true });
+  check('ki weapons: +2 and flaming fit in 3 ki; keen is one too many', `${kw.abilities.map(x => x.id)} ${TM.kiWeaponsCost(kw)} ${kw.on}`, 'flaming 3 true');
+  check('ki weapons: off when nothing is chosen; enhancement capped at 3', `${TM.tidyKiWeapons({ on: true }).on} ${TM.tidyKiWeapons({ enh: 7 }).enh}`, 'false 3');
+  const ke = TM.kiWeaponsEntry({ id: 'unarmed-strike', enh: 1, abilities: [{ id: 'flaming' }] }, kw);
+  check('ki weapons on: the higher enhancement, abilities not doubled', `${ke.enh} ${ke.abilities.map(x => x.id)}`, '2 flaming');
+  check('ki weapons off: the weapon as it is', TM.kiWeaponsEntry({ enh: 1 }, { ...kw, on: false }).enh, 1);
+  check('ki weapons text', TM.kiWeaponsText(kw), '+2, flaming (3 ki)');
   const RO = await import('./race-options.js');
   const rr = (id, alts = []) => RO.raceResistances(RO.raceWithAlternates(races.find(r => r.id === id), alts))
     .map(x => (x.choice ? `${x.choice.join('/')} ${x.value}?` : `${x.type} ${x.value}`)).join(', ');

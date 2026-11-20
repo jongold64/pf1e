@@ -136,6 +136,34 @@ export function talentedMonkDaily(picks, level, otherLevels, mod = {}) {
   return out;
 }
 
+// Ki weapons (advanced talent): for 1 round, 1 ki per +1 of enhancement bonus or of a special ability's bonus, at
+// most 3 ki at a time, on the monk's unarmed strikes and weapons. state.kiWeapons = { enh, abilities: [{ id, name,
+// option?, bonus }], on } (on: switched on for this round, its ki spent).
+export const KI_WEAPONS_MAX = 3;
+export const kiWeaponsCost = k => (k?.enh || 0) + (k?.abilities || []).reduce((n, a) => n + (a.bonus || 0), 0);
+// A saved choice tidied: enhancement 0-3, abilities with a +1 to +3 bonus, not more than 3 ki in all (later ones dropped).
+export function tidyKiWeapons(saved) {
+  const s = saved && typeof saved === 'object' ? saved : {};
+  const enh = Number.isInteger(s.enh) ? Math.max(0, Math.min(KI_WEAPONS_MAX, s.enh)) : 0;
+  const abilities = [];
+  let left = KI_WEAPONS_MAX - enh;
+  for (const a of Array.isArray(s.abilities) ? s.abilities : []) {
+    if (!a || typeof a.id !== 'string' || !Number.isInteger(a.bonus) || a.bonus < 1 || a.bonus > left || abilities.some(b => b.id === a.id)) continue;
+    abilities.push({ id: a.id, name: String(a.name || a.id), ...(typeof a.option === 'string' && a.option ? { option: a.option } : {}), bonus: a.bonus });
+    left -= a.bonus;
+  }
+  return { enh, abilities, on: s.on === true && enh + abilities.length > 0 };
+}
+// A weapon's entry while ki weapons is on: the higher enhancement bonus (they don't stack) and the abilities added.
+export function kiWeaponsEntry(entry = {}, k) {
+  if (!k?.on) return entry;
+  const own = entry.abilities || [];
+  return { ...entry, enh: Math.max(entry.enh || 0, k.enh || 0), abilities: [...own, ...(k.abilities || []).filter(a => !own.some(b => b.id === a.id))] };
+}
+// "+2, flaming (3 ki)".
+export const kiWeaponsText = k => [k?.enh ? `+${k.enh}` : '', ...(k?.abilities || []).map(a => a.name.toLowerCase())].filter(Boolean).join(', ')
+  + ` (${kiWeaponsCost(k)} ki)`;
+
 // The feats the edges and talents grant (counted like free class feats): unfettered kata gives Improved Unarmed Strike,
 // sohei Mounted Combat, and the talents named after a feat give that feat.
 export function talentedMonkFeats(picks) {
