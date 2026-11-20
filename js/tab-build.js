@@ -19,6 +19,7 @@ import { eidolonStats } from './eidolon.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { offTableFeatures } from './archetypes.js';
 import { buffById, missChance, effectDr, effectResist } from './effects.js';
+import { raceResistances } from './race-options.js';
 import { sizeBonusText } from './burn.js';
 
 // Cards that open larger when tapped (data-big): their title and contents as last drawn, for the popup.
@@ -60,7 +61,14 @@ export function renderBuild(app, view, parts) {
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
     ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
   // Energy resistance from active effects (resist energy, a ring of energy resistance); protection from energy absorbs.
-  const resist = effectResist(view.buffs).map(r => (r.absorb ? `${r.type}: absorbs 12/caster level (max 120)` : `${r.type} ${r.value}`) + ` (${r.from})`);
+  // Racial resistance too (race-options.js raceResistances); for each energy the highest counts.
+  const raceResist = raceResistances(view.race);
+  const fromFx = effectResist(view.buffs);
+  const bestResist = new Map();
+  for (const r of [...raceResist.filter(x => x.type), ...fromFx.filter(x => !x.absorb)]) if (!(bestResist.get(r.type)?.value >= r.value)) bestResist.set(r.type, r);
+  const resist = [...[...bestResist.values()].sort((a, b) => a.type.localeCompare(b.type)).map(r => `${r.type} ${r.value} (${r.from})`),
+    ...raceResist.filter(x => x.choice).map(r => `${r.choice.join(', ').replace(/, (?=[^,]*$)/, ' or ')} ${r.value} (${r.from}: one, your choice)`),
+    ...fromFx.filter(x => x.absorb).map(r => `${r.type}: absorbs 12/caster level (max 120) (${r.from})`)];
   // AC and HP: in the highlighted row at the top, beside who the character is.
   // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.

@@ -56,6 +56,35 @@ export function alternateConflict(race, alt, names = []) {
   return '';
 }
 
+// Energy resistance from the race's traits (after alternates: pass raceWithAlternates' race), read from their text:
+// "acid resistance 5, cold resistance 5", "cold and fire resistance 1", "resistance to acid 5, cold 5". A choice
+// ("resistance 5 to acid, cold, electricity, or fire"; a dragon-scaled kobold's colour) gives { choice: [types], value }.
+// Variant aasimar and tiefling tables (rolled) are left out. Returns [{ type, value, from }] and [{ choice, value, from }].
+const ENERGY = '(?:acid|cold|electricity|fire|sonic)';
+export function raceResistances(race) {
+  const out = [];
+  for (const t of race?.traits || []) {
+    if (/^variant/i.test(t.name) || !/resist/i.test(t.text || '')) continue;
+    const choice = new Set();
+    let choiceValue = 0;
+    for (const sentence of String(t.text).split(/(?<=\.)\s+/)) {
+      const pick = sentence.match(new RegExp(`resistance (\\d+) to ((?:${ENERGY},?\\s*(?:or\\s+)?)+)`, 'i'));
+      if (pick) { pick[2].match(new RegExp(ENERGY, 'gi')).forEach(x => choice.add(x.toLowerCase())); choiceValue = Number(pick[1]); continue; }
+      const found = [];
+      for (const m of sentence.matchAll(new RegExp(`\\b(${ENERGY}(?:,?\\s*(?:and\\s+)?${ENERGY})*) resistance (\\d+)`, 'gi'))) {
+        for (const x of m[1].match(new RegExp(ENERGY, 'gi'))) found.push({ type: x.toLowerCase(), value: Number(m[2]) });
+      }
+      const list = sentence.match(new RegExp(`resistance to ((?:(?:and\\s+)?${ENERGY} \\d+,?\\s*)+)`, 'i'));
+      if (list) for (const m of list[1].matchAll(new RegExp(`(${ENERGY}) (\\d+)`, 'gi'))) found.push({ type: m[1].toLowerCase(), value: Number(m[2]) });
+      // "Blue-scaled kobolds ... gain electricity resistance 5": one of several, by colour.
+      if (/-scaled\b/i.test(sentence)) { found.forEach(f => { choice.add(f.type); choiceValue = f.value; }); continue; }
+      for (const f of found) out.push({ ...f, from: t.name });
+    }
+    if (choice.size) out.push({ choice: [...choice], value: choiceValue, from: t.name });
+  }
+  return out;
+}
+
 // A copy of the race with the chosen alternates in place of the traits they replace. Alternates that set a new base
 // speed ("base speed of 30 feet", "land speed of 15 feet") change `base_speed`; Dual Talent ("pick two ability scores")
 // sets `dual_talent`.

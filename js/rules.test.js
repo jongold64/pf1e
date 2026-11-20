@@ -2057,10 +2057,6 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     new Map([['a', { name: 'A' }], ['b', { name: 'B' }]])).map(x => x.name).join(), 'A');
 }
 
-const failed = results.filter(r => !r.pass);
-document.getElementById('list').innerHTML = results.map(r =>
-  `<li class="${r.pass ? 'pass' : 'fail'}">${r.pass ? '✓' : '✗'} ${r.name}` +
-  (r.pass ? '' : ` — expected ${r.expected}, got ${r.actual}`) + '</li>').join('');
 
 // Archetype choices: the kensai's chosen weapon, the black blade, diminished spellcasting.
 {
@@ -2589,6 +2585,15 @@ document.getElementById('list').innerHTML = results.map(r =>
 
 // Unarmed strike extras: ki strike, Jabbing Style, Linnorm Style, exploit weakness.
 {
+  const RO = await import('./race-options.js');
+  const rr = (id, alts = []) => RO.raceResistances(RO.raceWithAlternates(races.find(r => r.id === id), alts))
+    .map(x => (x.choice ? `${x.choice.join('/')} ${x.value}?` : `${x.type} ${x.value}`)).join(', ');
+  check('racial resistance: aasimar acid, cold, electricity 5', rr('aasimar'), 'acid 5, cold 5, electricity 5');
+  check('racial resistance: tiefling cold, electricity, fire 5', rr('tiefling'), 'cold 5, electricity 5, fire 5');
+  check('racial resistance: suli acid, cold, electricity, fire 5', rr('suli'), 'acid 5, cold 5, electricity 5, fire 5');
+  check('racial resistance: human none; dwarf with Desert Delver cold and fire 1', `${rr('human')}|${rr('dwarf', ['Desert Delver'])}`, '|cold 1, fire 1');
+  check('racial resistance: elf with Elemental Resistance is one choice', rr('elf', ['Elemental Resistance']), 'acid/cold/electricity/fire 5?');
+  check('racial resistance: dragon-scaled kobold is one choice by colour', rr('kobold', ['Dragon-Scaled']), 'acid/electricity/fire/cold 5?');
   const E = await import('./effects.js');
   const re = E.buffById.get('resist-energy');
   const fire20 = re.forms.findIndex(f => f.label.startsWith('Fire 20')) + 1;
@@ -2629,6 +2634,12 @@ document.getElementById('list').innerHTML = results.map(r =>
   check('exploit weakness switch: +2 attack while on', JSON.stringify(D.defenseEffects({ exploitWeakness: true }, { exploit: true }).map(f => [f.target, f.value])), '[["attack",2]]');
   check('Linnorm Style switch only with the feat', [D.defenseSwitches({ haveFeats: ['Linnorm Style'] }), D.defenseSwitches({})].map(l => l.some(s => s.key === 'linnormStyle')).join(), 'true,false');
 }
+
+// The report: every check above (it must stay last, or later checks' failures go unseen).
+const failed = results.filter(r => !r.pass);
+document.getElementById('list').innerHTML = results.map(r =>
+  `<li class="${r.pass ? 'pass' : 'fail'}">${r.pass ? '✓' : '✗'} ${r.name}` +
+  (r.pass ? '' : ` — expected ${r.expected}, got ${r.actual}`) + '</li>').join('');
 
 document.getElementById('summary').textContent =
   failed.length ? `${failed.length} of ${results.length} checks FAILED` : `All ${results.length} checks passed`;
