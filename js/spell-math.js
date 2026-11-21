@@ -215,11 +215,21 @@ export function spellLines(spell, ctx) {
     }
     // A combat maneuver: its check (no critical hits).
     if (maneuver !== null && !roll) roll = { title: `${spell.name}${label ? `: ${label}` : ''}`, check: 'Combat maneuver', plain: true, groups: [{ attacks: [maneuver] }] };
-    if (parts.length) lines.push({ label, text: parts.join(', '), roll, why: { ...why, maneuver: maneuver !== null, attackTotal: attack ?? maneuver, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
+    if (parts.length) lines.push({ label, text: parts.join(', '), roll, kind: a.kind, spellDamage: rollDamage, why: { ...why, maneuver: maneuver !== null, attackTotal: attack ?? maneuver, dcTotal: why.dc ? dc : null, cl: ctx.cl, count } });
   }
   // A save with no action data: the spell's own saving throw line.
   if (!lines.length && dc !== null && spell.saving_throw && !/^none/i.test(spell.saving_throw)) {
     lines.push({ label: '', text: `DC ${dc} ${spell.saving_throw}`, why: { attack: null, dc: dcRows, damage: [], dcTotal: dc, cl: ctx.cl, count: 1 } });
   }
   return lines;
+}
+
+// Spellstrike (magus, 2nd level): a touch spell delivered with a melee weapon attack instead of a touch attack. The
+// weapon's attack roll, threat range and damage, with the spell's damage on a hit; on a confirmed critical the weapon
+// rolls its own multiplier and the spell ×2 (critOnce: rolled once more). weaponGroup: the weapon's Roll group
+// ({ attacks, damage, threat, mult, extra, burst }); spellDamage: "5d6"; spellName.
+export function spellstrikeRoll(title, weaponGroup, spellDamage, spellName) {
+  const spellDice = { dice: spellDamage, type: spellName };
+  return { title, check: 'Attack', groups: [{ ...weaponGroup, label: '', attacks: [weaponGroup.attacks[0]],
+    extra: [...(weaponGroup.extra || []), spellDice], critOnce: [{ ...spellDice, type: `${spellName} (critical ×2)` }] }] };
 }

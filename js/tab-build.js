@@ -438,8 +438,14 @@ function renderSpells(app, view, parts) {
     const ability = parts.castingAbility(cid);
     const mod = view.stats.mod[ability] ?? 0;
     // Each spell's numbers with their rolls (attack, save DC, damage or healing, SR check), as on the Spells tab.
+    // Spellstrike (magus, 2nd level): touch spells through the main-hand weapon (Combat options), else the black blade or
+    // kensai's weapon, else the first melee weapon.
+    const strike = cid === 'magus' && c.classLevel >= 2 ? (list => {
+      const w = list.find(x => String(x.index) === String(state.combat.main)) || list.find(x => x.favored) || list[0];
+      return w && { name: w.name, group: w.rolls.attack.groups[0] };
+    })(weaponSummaries(app, view).filter(x => x.melee)) : null;
     const nums = spell => {
-      const h = spell ? spellNumbersHtml(view, c.cls, c.effectiveLevel, spell) : '';
+      const h = spell ? spellNumbersHtml(view, c.cls, c.effectiveLevel, spell, strike) : '';
       return h ? `<div class="b-spell-nums">${h}</div>` : '';
     };
     const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)}${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')} · save DC 10 + spell level ${signed(mod)}</p>`;

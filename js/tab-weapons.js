@@ -745,6 +745,8 @@ export function weaponSummaries(app, view) {
       // Heirloom Weapon's attack of opportunity or combat maneuver with it (traitRolls), for the Character tab.
       traitRolls: traitRolls(app, view, w, args, crit, weaponLabel(w, e)),
       proficient: args.proficient,
+      // A melee weapon (spellstrike can use it); made by a class feature or chosen by an archetype (black blade, kensai).
+      melee: w.group !== 'ranged', favored: isBlackBlade(e) || app.state.archChoices['magus-kensai:weapon'] === w.id,
       // For the Build tab: its place in the list and the Roll setups the Weapons tab uses.
       index,
       rolls: { attack: { title: weaponLabel(w, e), groups: [rollGroup('', a, crit)] },

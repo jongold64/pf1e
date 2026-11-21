@@ -2463,6 +2463,16 @@ It does a thing. More.` });
     check('black blade strike: +1 at 3rd, +2 at 5th, +5 at 17th', [3, 5, 17].map(bladeStrikeBonus).join(), '1,2,5');
     check('black blade powers at 5th: strike, energy attunement', blackBladePowers(5).map(p => p.id).join(), 'strike,energy');
     const { maxDamage } = await import('./dice.js');
+    {
+      const { spellstrikeRoll } = await import('./spell-math.js');
+      const { rollSpec } = await import('./dice.js');
+      const spec = spellstrikeRoll('Shocking grasp', { attacks: [11, 6], damage: '1d8+7', threat: 19, mult: 3 }, '5d6', 'Shocking Grasp');
+      check('spellstrike: one attack with the weapon’s bonus and threat', [spec.groups[0].attacks.join(), spec.groups[0].threat].join('|'), '11|19');
+      // Every die rolls 2 and the d20 rolls 19: a threat, confirmed.
+      const lines = rollSpec(spec, sides => (sides === 20 ? 19 : 2)).lines.join(' / ');
+      check('spellstrike hit: weapon damage plus the spell', /Damage 1d8 \(2\) \+ 7 = 9; plus Shocking Grasp 5d6 \(2, 2, 2, 2, 2\) = 10/.test(lines), true);
+      check('spellstrike critical: weapon ×3, the spell twice', /Critical damage .* = 27; plus Shocking Grasp 5d6 .* = 10; Shocking Grasp \(critical ×2\) 5d6 .* = 10 → 47/.test(lines), true);
+    }
     check('most damage: 1d8+7 = 15; 2d6-1 = 11', [maxDamage('1d8+7'), maxDamage('2d6-1 slashing')].join(), '15,11');
     const { defenseSwitches: ds, defenseEffects: de } = await import('./defense.js');
     check('Arcane Strike at caster level 5: +2 damage; no switch without an arcane caster level', [de({ arcaneStrike: true }, { haveFeats: ['Arcane Strike'], arcaneCL: 5 }).map(x => `${x.target}:${x.value}`).join(),

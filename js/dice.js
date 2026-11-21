@@ -82,6 +82,11 @@ function rollExtras(g, steps, rng) {
     const r = rollDamage(x.dice, rng);
     if (r) { total += r.total; parts.push(`${x.type || 'extra'} ${r.text}`); }
   }
+  // Rolled once more on a confirmed critical, whatever the multiplier (a spellstrike spell's ×2).
+  for (const x of steps > 0 ? g.critOnce || [] : []) {
+    const r = rollDamage(x.dice, rng);
+    if (r) { total += r.total; parts.push(`${x.type || 'extra'} ${r.text}`); }
+  }
   for (const x of steps > 0 ? g.burst || [] : []) {
     const r = rollDamage(x.dice, rng, steps);
     if (r) { total += r.total; parts.push(`${x.type ? `${x.type} ` : ''}burst ${r.text}`); }
