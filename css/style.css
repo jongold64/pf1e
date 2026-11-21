@@ -509,6 +509,9 @@ button.roll-button:active { background: var(--accent); color: #fff; }
 .defense-row span { display: inline; flex: 1; font-size: 0.95rem; color: var(--text); }
 .defense-row b { font-size: 1.1rem; min-width: 3ch; text-align: right; }
 @media print { .roll-panel { display: none !important; } }
+/* Rolled from inside a popup window (roll-ui.js puts the result in it): kept at the bottom of that window, inside it,
+   however far it's scrolled, rather than at the screen's corner. */
+dialog .roll-panel { position: sticky; right: auto; bottom: 0; width: auto; margin-top: 12px; max-height: 45vh; }
 .defense-row.first-cmb { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
 .abilities td[id^="mod-"] { white-space: nowrap; }
 .abilities button.roll-button { width: auto; padding: 2px 10px; font-size: 0.85rem; }
@@ -1002,6 +1005,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* A Character tab card opened larger: a wider window, every row of its tables on one line. */
 #detail-dialog:has(.b-big) { width: min(1100px, calc(100vw - 32px)); }
 .b-big .b-table td { white-space: nowrap; }
+/* A weapon's note row (ki strike's DR, ki weapons on) wraps, here and on the card, so the window needs no sideways scroll. */
+.b-table td.b-subnote, .b-big .b-table td.b-subnote { white-space: normal; }
 /* On a narrower screen a class ability's note (DC, uses left, Use) may wrap rather than run past the card. */
 /* A class ability's note (DC, uses left, Use) may wrap rather than run past the card (one line when there's room). */
 .b-table .b-class-attacks td:nth-child(4) { white-space: normal; }

@@ -130,7 +130,9 @@ export function renderBuild(app, view, parts) {
       <td>${plus('weapon', `${w.index}`, w.name)}</td></tr>`
     // Under it: an attack of opportunity or a combat maneuver a trait adds with it (Heirloom Weapon).
     + (w.traitRolls || []).map(r => `<tr class="b-subrow"><td><small class="muted">↳ ${esc(r.label)}</small></td>
-      <td>${r.spec ? rc(r.text, roll(r.spec, `${w.name}: ${r.label}`)) : `<small class="muted">${esc(r.note)}</small>`}</td><td>${r.damage ? esc(r.damage) : ''}</td><td class="b-crit"></td><td></td></tr>`).join('')).join('');
+      ${r.spec ? `<td>${rc(r.text, roll(r.spec, `${w.name}: ${r.label}`))}</td><td>${r.damage ? esc(r.damage) : ''}</td><td class="b-crit"></td><td></td>`
+        // A note with nothing to roll (ki strike, ki weapons on) spans the other columns and wraps, so it doesn't widen the table.
+        : `<td colspan="4" class="b-subnote"><small class="muted">${esc(r.note)}</small></td>`}</tr>`).join('')).join('');
   const combat = app.state.combat || {};
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
     .filter(([, f]) => view.haveFeats.includes(f))
