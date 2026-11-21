@@ -1182,6 +1182,10 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-burn-note { flex-basis: 100%; }
 .b-buffer { flex-basis: 100%; margin-top: 4px; }
 .b-defense { flex-basis: 100%; margin-top: 4px; }
+.b-infuse { margin-top: 3px; padding: 1px 10px; min-height: 30px; }
+.b-plan { color: var(--accent); white-space: normal; }
+.blast-pop label { display: block; margin: 6px 0; }
+.blast-pop .check-row { display: inline-flex; margin-right: 12px; }
 .b-defense b { font-size: inherit; min-width: 0; }
 /* Drag and drop: shown while a file is dragged over the page (a dropped character file is imported). */
 .drop-hint { position: fixed; inset: 8px; z-index: 1000; display: flex; align-items: center; justify-content: center;

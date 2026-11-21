@@ -100,3 +100,83 @@ export function forceWardTemps(temps = [], max = 0, add = 0) {
   const now = Math.min(max, (temps.find(t => t.id === 'force-ward')?.amount || 0) + Math.max(0, add));
   return now > 0 ? [{ id: 'force-ward', name: 'Force ward', amount: now }, ...others] : others;
 }
+
+// ---- Infusions and metakinesis on one kinetic blast (the Character tab's Infuse popup) ----
+
+const lower = s => String(s || '').toLowerCase();
+// Infusions with rows of their own (kinetic fist) or a weapon (kinetic blade, whip): not offered on a blast.
+const ON_OTHER_ROWS = new Set(['kinetic-fist-infusion', 'kinetic-blade-infusion', 'kinetic-whip-infusion']);
+// What an infusion does to the blast's numbers, where its text alone doesn't say it plainly.
+// attack: enhancement bonus on the attack roll (focused blast: +1, +1 more for each 2 more burn, to +5);
+// range: the blast's new range.
+const INFUSION_EFFECTS = {
+  'focused-blast-infusion': { attack: 1, focus: true },
+  'extended-range-infusion': { range: '120 ft.' },
+};
+
+// The opening sentences of a text, up to about 200 characters (at least one sentence).
+function firstSentences(text) {
+  let out = '';
+  for (const m of text.matchAll(/[^.!]*[.!](?=\s|$)/g)) {
+    if (out && out.length + m[0].length > 200) break;
+    out += m[0];
+  }
+  return (out || text).trim();
+}
+
+// An infusion's facts, read from its text: { id, name, type: 'form' | 'substance', burn, save ('none', 'Reflex half'...),
+// blasts: the associated blasts in lower case (['any'], ['blue flame', 'fire']), about: its opening sentences }.
+export function infusionFacts(t) {
+  const text = String(t?.text || '');
+  const about = text.split(/\n\s*\n/).slice(1).join(' ').replace(/\s+/g, ' ').trim();
+  return { id: t.id, name: String(t.name || '').replace(/ Infusion$/, ''),
+    type: lower(text.match(/Type (form|substance) infusion/i)?.[1]), burn: Number(text.match(/\bBurn (\d+)/)?.[1] || 0),
+    save: (text.match(/Saving Throw ([^\n]*)/)?.[1] || 'none').trim(),
+    blasts: (text.match(/Associated Blasts ([^\n]*)/)?.[1] || 'any').split(',').map(s => lower(s).trim()).filter(Boolean),
+    about: firstSentences(about) };
+}
+// Whether an infusion can go on a blast ("Telekinetic Blast" takes 'telekinetic' and 'any' infusions).
+export const infusionFits = (f, blastName) => f.blasts.includes('any') || f.blasts.some(b => lower(blastName).startsWith(b));
+
+// One blast with what's chosen for it. plan: { form, substance (talent ids), meta: ['empower'...], gather: 0 (none) |
+// 1 (a move action) | 2 (a full round), focus: focused blast's bonus 1-5 }. kin: kineticist level; talents: the chosen
+// wild talent records; bs: burnState(...); dex, con: modifiers; blast: the blast's name.
+// Returns { form, substance (facts or null), options: { form, substance } (the ones that fit), focus, meta (names),
+//   before (burn of infusions after infusion specialization, plus metakinesis), gatherCut, burn (what to accept), attack
+//   (bonus), range, empower, maximize, saves: [{ name, save, dc }], noAttack (a form infusion with a save replaces the
+//   attack roll), overLimit (more than she can accept a round) }.
+export function blastPlan(plan = {}, { kin = 0, talents = [], bs = null, dex = 0, con = 0, blast = '' } = {}) {
+  const facts = talents.filter(t => t && t.kind === 'infusion' && !ON_OTHER_ROWS.has(t.id)).map(infusionFacts).filter(f => infusionFits(f, blast));
+  const options = { form: facts.filter(f => f.type === 'form'), substance: facts.filter(f => f.type === 'substance') };
+  const form = options.form.find(f => f.id === plan.form) || null;
+  const substance = options.substance.find(f => f.id === plan.substance) || null;
+  const focus = form && INFUSION_EFFECTS[form.id]?.focus ? Math.max(1, Math.min(5, Math.floor(plan.focus) || 1)) : 0;
+  const costs = [form && form.burn + 2 * Math.max(0, focus - 1), substance && substance.burn].filter(n => n !== null);
+  const meta = (bs?.metakinesis || []).filter(m => (plan.meta || []).includes(m.name));
+  const before = (costs.length ? infusionBurn(costs, kin) : 0) + meta.reduce((n, m) => n + m.burn, 0);
+  const gatherCut = plan.gather === 2 ? (bs?.gather.full || 2) : plan.gather === 1 ? (bs?.gather.move || 1) : 0;
+  const burn = Math.max(0, before - gatherCut);
+  // The DC: 10 + the blast's effective spell level (half the kineticist level) + Dex for a form infusion, Con for a substance.
+  const esl = Math.max(1, Math.floor(kin / 2));
+  const dc = f => (f && !/^none\b/i.test(f.save) ? 10 + esl + (f.type === 'form' ? dex : con) : null);
+  const saves = [form, substance].filter(f => dc(f) !== null).map(f => ({ name: f.name, save: f.save, dc: dc(f) }));
+  return { form, substance, options, focus, meta: meta.map(m => m.name), before, gatherCut, burn,
+    attack: form ? (INFUSION_EFFECTS[form.id]?.attack ? focus : 0) : 0, range: (form && INFUSION_EFFECTS[form.id]?.range) || '',
+    empower: meta.some(m => m.name === 'empower'), maximize: meta.some(m => m.name === 'maximize'),
+    saves, noAttack: dc(form) !== null, overLimit: !!bs && burn > bs.perRound };
+}
+
+// "extended range, empower · 1 burn" ('' when nothing is chosen).
+export function blastPlanText(p) {
+  const parts = [p.form && `${lower(p.form.name)}${p.focus > 1 ? ` +${p.focus}` : ''}`, p.substance && lower(p.substance.name), ...p.meta,
+    p.gatherCut && `gather power −${p.gatherCut}`].filter(Boolean);
+  return parts.length ? `${parts.join(', ')} · ${p.burn} burn` : '';
+}
+
+// A saved plan tidied: talent ids as strings, metakinesis names, gather 0-2, focus 1-5.
+export function tidyBlastPlan(s) {
+  const p = s && typeof s === 'object' ? s : {};
+  return { form: typeof p.form === 'string' ? p.form : '', substance: typeof p.substance === 'string' ? p.substance : '',
+    meta: Array.isArray(p.meta) ? p.meta.filter(m => METAKINESIS.some(x => x.name === m)) : [],
+    gather: [1, 2].includes(p.gather) ? p.gather : 0, focus: Number.isInteger(p.focus) ? Math.max(1, Math.min(5, p.focus)) : 1 };
+}

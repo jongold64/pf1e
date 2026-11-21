@@ -25,6 +25,7 @@ import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails } from './tab-equipment.js';
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
+import { popBlast, initBlast } from './tab-blast.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
@@ -32,7 +33,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries, gearMagic } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
-import { burnState, infusionCosts, elementalDefense, forceWardTemps } from './burn.js';
+import { burnState, infusionCosts, elementalDefense, forceWardTemps, blastPlan, blastPlanText, tidyBlastPlan } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch, popKiWeapons, popBond } from './tab-weapons.js';
@@ -122,6 +123,7 @@ const state = {
   hpCurrent: null,           // current hit points during play; null means full
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
+  blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   defenseBurn: 0,            // of that burn, the points accepted to raise her elemental defense (burn.js elementalDefense)
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
   spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
@@ -240,6 +242,9 @@ const app = {
   domainSpells: cid => domainSpellsFor(cid),
   showAcDetails: column => showAcDetails(column),
   dailyUses: () => dailyUsesFor(),
+  blastPlanFor: name => blastPlanFor(name),
+  changeBurn: (how, times) => changeBurn(how, times),
+  burnNow: () => burnNow(),
   get view() { return view; },
 };
 
@@ -255,6 +260,7 @@ function load(saved) {
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
   state.burn = Number.isInteger(state.burn) && state.burn > 0 ? Math.min(40, state.burn) : 0;
   state.buffer = Number.isInteger(state.buffer) && state.buffer > 0 ? Math.min(3, state.buffer) : 0;
+  state.blastPlan = tidyBlastPlan(state.blastPlan);
   state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
@@ -919,6 +925,24 @@ function burnNow() {
 // The burn accepted for the elemental defense that still counts (burn removed takes it with it).
 const defenseBurnNow = () => Math.min(state.defenseBurn || 0, state.burn);
 
+// The kineticist's chosen wild talents (records).
+const kineticistTalents = () => Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v)).filter(Boolean);
+// The Infuse popup's choices on one blast (burn.js blastPlan).
+function blastPlanFor(name) {
+  const kin = view.counts.find(e => e.cls.id === 'kineticist')?.level || 0;
+  return blastPlan(state.blastPlan, { kin, talents: kineticistTalents(), bs: burnNow(), dex: view.stats.mod.dex, con: view.stats.mod.con, blast: name });
+}
+// A blast row changed by its plan. A form infusion with a save has no attack roll (its DC is in the note instead).
+function infusedBlast(c, p) {
+  const text = blastPlanText(p);
+  const note = (p.range ? c.note.replace('30 ft.', p.range) : c.note)
+    + (p.attack ? ` · ${p.form.name.toLowerCase()} +${p.attack}` : '')
+    + p.saves.map(x => ` · ${x.name.toLowerCase()}: DC ${x.dc} ${x.save}`).join('')
+    + (p.maximize ? ` · maximized${p.empower ? ' (empower: add half a normal damage roll)' : ''}` : p.empower ? ' · empowered ×1.5' : '');
+  return { ...c, plan: p, planText: text, note, attack: p.noAttack ? null : c.attack + p.attack, word: 'damage',
+    dice: p.maximize ? String(c.blast.dice * 6 + c.blast.bonus) : c.dice, scale: p.empower && !p.maximize ? 1.5 : 1 };
+}
+
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
 function allClassAttacks(stats) {
   const melee = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
@@ -929,7 +953,9 @@ function allClassAttacks(stats) {
     combat: { deadlyAim: !!state.combat.deadlyAim && view.haveFeats.includes('Deadly Aim'), pointBlank: !!state.combat.pointBlank && view.haveFeats.includes('Point-Blank Shot') },
     talents: Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v)?.name).filter(Boolean) })
       // Kinetic fist's Details: the infusion's own text.
-      .map(c => (c.name === 'Kinetic fist' ? { ...c, text: data.talentsById.get('kinetic-fist-infusion')?.text || '' } : c)),
+      .map(c => (c.name === 'Kinetic fist' ? { ...c, text: data.talentsById.get('kinetic-fist-infusion')?.text || '' } : c))
+      // A kinetic blast with the Infuse popup's choices: their attack bonus, range, save DCs, empower (×1.5) or maximize.
+      .map(c => (c.blast ? infusedBlast(c, blastPlanFor(c.name)) : c)),
     ...naturalAttackRows(classNaturalAttacks(), { melee, str: stats.mod.str })];
 }
 
@@ -1002,6 +1028,8 @@ function initBuild() {
     // Arcane pool, divine bond, fiendish boon, sacred weapon (weapon-bonds.js): the same, in their own popup.
     const bond = e.target.closest('[data-b-bond]');
     if (bond) { popBond(app, bond.dataset.bBond); return; }
+    const inf = e.target.closest('[data-b-infuse]');
+    if (inf) { popBlast(app, inf.dataset.bInfuse); return; }
     const bondOff = e.target.closest('[data-b-bond-off]');
     if (bondOff) { const id = bondOff.dataset.bBondOff; update({ weaponBonds: { ...state.weaponBonds, [id]: { ...state.weaponBonds[id], on: false } } }); return; }
     // Gear: Use a potion, scroll or wand charge; a magic item's Details.
@@ -1058,10 +1086,11 @@ const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneo
 // Burn: + accepts a point, − takes one off (a mistake), rest clears it all (a full night's rest).
 // defense accepts a point to raise the elemental defense (up to its limit); ward fills force ward's temporary hit points
 // (they regenerate 1 a minute); accepting burn (an aether wild talent) gives force ward back the character level.
-function changeBurn(how) {
+// times: how many points + accepts at once (a blast's whole cost: force ward gets its points back once).
+function changeBurn(how, times = 1) {
   const d = burnNow()?.defense;
   if (how === 'defense' && !(d && d.extra < d.maxExtra)) return;
-  const burn = how === 'ward' ? state.burn : how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : 1)));
+  const burn = how === 'ward' ? state.burn : how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : how === 'more' ? times : 1)));
   const defenseBurn = how === 'defense' ? defenseBurnNow() + 1 : Math.min(defenseBurnNow(), burn);
   let tempHp = state.tempHp;
   if (d?.name === 'Force ward') {
@@ -1990,6 +2019,7 @@ function buildControls() {
   initItemsTab(app);
   initEquipmentTab(app);
   initWeaponsTab(app);
+  initBlast(app);
   initSearch(app);
   initManeuvers(app);
   initGuide();
@@ -4875,6 +4905,8 @@ async function start() {
     if (d) { buildDetail(d.dataset.bDetail, d.dataset.arg); return; }
     const ud = e.target.closest('.b-big [data-b-use-daily]');
     if (ud) { spendDaily(ud.dataset.bUseDaily); openBigCard(ud.closest('[data-big-pop]').dataset.bigPop); return; }
+    const inf = e.target.closest('.b-big [data-b-infuse]');
+    if (inf) { popBlast(app, inf.dataset.bInfuse); return; }
     const bn = e.target.closest('.b-big [data-b-burn]');
     if (bn) { changeBurn(bn.dataset.bBurn); openBigCard(bn.closest('[data-big-pop]').dataset.bigPop); return; }
     const bb = e.target.closest('.b-big [data-b-buffer]');

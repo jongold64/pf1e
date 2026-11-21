@@ -8,9 +8,10 @@ export function randomDie(sides) {
 }
 
 // Rolls a damage expression like "1d8+4", "2d6+9 fire" or "3 missiles of 1d4+1" (only the "NdM ± N" part is
-// used). `times` rolls it that many times and adds them up, as a critical hit does.
+// used). `times` rolls it that many times and adds them up, as a critical hit does. `scale` multiplies the total
+// (1.5 for an empowered kinetic blast), rounding down.
 // Returns { total, text: "1d8 (5) + 4 = 9" } or null when there's nothing to roll.
-export function rollDamage(expr, rng = randomDie, times = 1) {
+export function rollDamage(expr, rng = randomDie, times = 1, scale = 1) {
   const s = String(expr).trim();
   // A fixed amount ("110" hit points healed).
   if (/^\d+(\s|$)/.test(s) && !/^\d+d/.test(s)) {
@@ -41,6 +42,10 @@ export function rollDamage(expr, rng = randomDie, times = 1) {
   }
   // Damage is at least 1 even with a penalty (Core Rulebook, Damage).
   total = Math.max(1, total);
+  if (scale !== 1) {
+    const scaled = Math.max(1, Math.floor(total * scale));
+    return { total: scaled, text: `${shown.join(' ')} = ${total} × ${scale} = ${scaled}` };
+  }
   return { total, text: `${shown.join(' ')} = ${total}` };
 }
 
@@ -86,7 +91,7 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       // No attack roll: damage (a fireball, magic missiles), or just a check or save with no damage.
       // `critMult` rolls critical damage: the damage rolled that many times and added up.
       if (g.critMult && g.damage) {
-        const dmg = rollDamage(g.damage, rng, g.critMult);
+        const dmg = rollDamage(g.damage, rng, g.critMult, g.scale || 1);
         const more = rollExtras(g, g.critMult - 1, rng);
         if (dmg) lines.push(`!${prefix}critical damage (×${g.critMult}) ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         continue;
@@ -97,7 +102,7 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
       const each = [];
       let sum = 0;
       for (let i = 0; i < times; i++) {
-        const dmg = g.damage ? rollDamage(g.damage, dmgRng) : null;
+        const dmg = g.damage ? rollDamage(g.damage, dmgRng, 1, g.scale || 1) : null;
         const more = dmg ? rollExtras(g, 0, rng) : null;
         if (!dmg) continue;
         sum += dmg.total + (more?.total || 0);
@@ -138,12 +143,12 @@ export function rollSpec(spec, rng = randomDie, options = {}) {
           under(`Confirm: ${confirm.text} (if it hits AC, ×${times} damage)`);
         }
       }
-      const dmg = autoCrit ? true : rollDamage(g.damage, dmgRng);
+      const dmg = autoCrit ? true : rollDamage(g.damage, dmgRng, 1, g.scale || 1);
       if (dmg) {
         const more = autoCrit ? null : rollExtras(g, 0, rng);
         if (!autoCrit) under(`${g.heal ? 'Healing' : 'Damage'} ${dmg.text}${more ? `; plus ${more.text} → ${dmg.total + more.total} in all` : ''}`);
         if (times > 1) {
-          const crit = rollDamage(g.damage, rng, times);
+          const crit = rollDamage(g.damage, rng, times, g.scale || 1);
           const critMore = rollExtras(g, times - 1, rng);
           // Critical damage is highlighted (a "!" after the tab).
           under(`!Critical damage ${crit.text}${critMore ? `; plus ${critMore.text} → ${crit.total + critMore.total} in all` : ''}`);

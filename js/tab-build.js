@@ -147,9 +147,11 @@ export function renderBuild(app, view, parts) {
     // Class attack switches (spell combat, mounted charge): counted as effects in every number.
     + defenseSwitches(view.defenseOpts).filter(s => s.attack)
       .map(s => `<label class="b-switch"><input type="checkbox" data-b-combat="${esc(s.key)}"${combat[s.key] ? ' checked' : ''}> ${esc(s.label)}</label>${plus('defense', s.key, s.label)}`).join('');
-  const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice || c.dc || '')}${!c.dice ? '' : roll(c.attack !== null
-      ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
-      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: c.word || 'extra damage' }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
+  // A kinetic blast row has Infuse (tab-blast.js): its infusions, metakinesis and gather power, shown under its name.
+  const classAtk = parts.classAttacks.map((c, i) => `<tr><td>${esc(c.name)}${c.blast ? `<br><button type="button" class="b-infuse" data-b-infuse="${esc(c.name)}">Infuse</button>${c.planText
+        ? ` <small class="b-plan">${esc(c.planText)}</small>` : ''}` : ''}</td><td>${c.attack !== null ? esc(signed(c.attack)) : ''}</td><td>${esc(c.dice || c.dc || '')}${c.scale > 1 ? ` <small>×${c.scale}</small>` : ''}${!c.dice ? '' : roll(c.attack !== null
+      ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2, scale: c.scale || 1 }] }
+      : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: c.word || 'extra damage', scale: c.scale || 1 }] }, c.name)}</td><td class="muted">${esc(c.note)}</td><td>${plus('classattack', String(i), c.name)}</td></tr>`).join('');
   // Powers with a roll (force missile, grave touch, fire bolt, a healing touch, extra damage on your attacks...): the
   // touch attack and damage or healing, the save, and their uses left; Details shows the power's text.
   const powerAtk = (parts.powerAttacks || []).map(p => {

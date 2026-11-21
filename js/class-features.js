@@ -329,7 +329,7 @@ export function classAttacks(counts, { bab = [0], mod = {}, fx = {}, sizeAttack 
       const up = overflow?.attack || 0;
       const bonus = (physical ? n + con : Math.floor(con / 2)) + (overflow?.damage || 0) + feat.damage;
       out.push({ name: b.name, note: `${physical ? 'ranged attack' : 'ranged touch attack'}, 30 ft.${b.damage ? ` · ${b.damage}` : ''}${up ? ` · elemental overflow +${up}/+${2 * up}` : ''}${featNote}`,
-        attack: ranged + up, dice: plusDamage(`${n}d6`, bonus) });
+        attack: ranged + up, dice: plusDamage(`${n}d6`, bonus), blast: { dice: n, bonus } });
     }
     // Kinetic fist (form infusion, burn 1): 1d6 per 3 dice of the blast (at least 1d6) on each unarmed strike and natural
     // attack until your next turn, of the blast's damage type, with none of the blast's modifiers (Con, overflow).

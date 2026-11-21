@@ -2347,6 +2347,27 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
     check('flesh of wood 2: burn to +2; 17th: +7', [ed('wood', 2, 2, 5).natural, ed('wood', 17, 17, 9).natural].join(), '2,7');
     check('emptiness with 1 burn: resist 4, 10%, +2 Will', ['resist', 'ignoreCrit', 'will'].map(k => ed('void', 4, 4, 1)[k]).join(), '4,10,2');
     check('no defense at 1st level', ed('aether', 1), null);
+    const { blastPlan, blastPlanText, tidyBlastPlan, burnState: bst } = await import('./burn.js');
+    const inf = (id, type, burn, save = 'none', blasts = 'any') => ({ id, name: id.replace(/-infusion$/, '').replace(/-/g, ' ') + ' Infusion', kind: 'infusion',
+      text: `Element universal; Type ${type} infusion; Level 1; Burn ${burn}
+Associated Blasts ${blasts}
+Saving Throw ${save}
+
+It does a thing. More.` });
+    const tal = [inf('extended-range-infusion', 'form', 1), inf('focused-blast-infusion', 'form', 2), inf('wall', 'form', 3, 'Reflex half'),
+      inf('entangling', 'substance', 2, 'Reflex negates'), inf('burning', 'substance', 1, 'Reflex negates', 'fire, plasma'), inf('kinetic-fist-infusion', 'form', 1)];
+    const bp = (plan, kin = 5) => blastPlan(plan, { kin, talents: tal, bs: bst(kin, 4, kin, 0), dex: 3, con: 4, blast: 'Telekinetic Blast' });
+    check('blast plan: options fit the blast (no kinetic fist, no fire-only)', [bp({}).options.form.map(f => f.id).join(), bp({}).options.substance.map(f => f.id).join()].join('|'), 'extended-range-infusion,focused-blast-infusion,wall|entangling');
+    check('blast plan 5: extended range + entangling = 3 − 1 specialization; empower +1; gather a move −1', [bp({ form: 'extended-range-infusion', substance: 'entangling', meta: ['empower'] }).burn,
+      bp({ form: 'extended-range-infusion', substance: 'entangling', meta: ['empower'], gather: 1 }).burn].join(), '3,2');
+    check('blast plan: gather never below 0; range 120 ft.', [bp({ form: 'extended-range-infusion', gather: 2 }).burn, bp({ form: 'extended-range-infusion' }).range].join(), '0,120 ft.');
+    check('focused blast +3: attack +3, burn 2+4−1', [bp({ form: 'focused-blast-infusion', focus: 3 }).attack, bp({ form: 'focused-blast-infusion', focus: 3 }).burn].join(), '3,5');
+    check('wall: no attack roll, DC 10+2+Dex 3; entangling DC uses Con', JSON.stringify([bp({ form: 'wall', substance: 'entangling' }).noAttack, bp({ form: 'wall', substance: 'entangling' }).saves.map(x => x.dc)]), '[true,[15,16]]');
+    check('blast plan: maximize needs 9th level; over the round limit', [bp({ meta: ['maximize'] }).maximize, bp({ form: 'wall', substance: 'entangling' }).overLimit].join(), 'false,true');
+    check('blast plan text', blastPlanText(bp({ form: 'focused-blast-infusion', focus: 2, meta: ['empower'], gather: 1 })), 'focused blast +2, empower, gather power −1 · 3 burn');
+    check('tidy blast plan', JSON.stringify(tidyBlastPlan({ form: 5, meta: ['empower', 'x'], gather: 3, focus: 9 })), '{"form":"","substance":"","meta":["empower"],"gather":0,"focus":5}');
+    const { rollDamage: rd } = await import('./dice.js');
+    check('empowered damage: ×1.5 rounded down', rd('2d6+3', () => 3, 1, 1.5).text, '2d6 (3, 3) + 3 = 9 × 1.5 = 13');
     const { forceWardTemps: fwt } = await import('./burn.js');
     const tmp = [{ id: 'aid', name: 'Aid', amount: 6 }, { id: 'force-ward', name: 'Force ward', amount: 2 }];
     check('force ward: fill puts it first, at its max', JSON.stringify(fwt(tmp, 5, Infinity).map(t => `${t.id}:${t.amount}`)), '["force-ward:5","aid:6"]');
