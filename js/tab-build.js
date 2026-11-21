@@ -60,7 +60,6 @@ export function renderBuild(app, view, parts) {
   // One row of the numbers card: label, value, d20, ?, then a note (CMD); an empty cell keeps the columns lined up.
   // A long value (a DR or Resist list) takes the rest of the row and may wrap (b-long), so it doesn't run off a narrow card.
   const stat = (label, value, rollHtml = '', plusHtml = '', note = '') => `<div class="b-stat"><span>${label}</span><b${String(value).replace(/<[^>]*>|&[a-z]+;/g, 'x').length > 12 ? ' class="b-long"' : ''}>${value}</b>${rollHtml || '<span></span>'}${plusHtml || '<span></span>'}${note ? `<span class="muted">${note}</span>` : ''}</div>`;
-  const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
     ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
   // Energy resistance from active effects (resist energy, a ring of energy resistance); protection from energy absorbs.
@@ -83,18 +82,20 @@ export function renderBuild(app, view, parts) {
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
           <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
   const acBox = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
-  // The numbers card: the ability scores in a column on the left; the saves, BAB, CMB, initiative and speed on the right.
-  const core = `<div class="b-split">
-        <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a] + (stats.fx.checks || 0) + (view.flawFx?.checks?.[a] || 0)), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
-        <div class="b-grid">
-          ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
-          ${stat('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
-          ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD&nbsp;${cmd}`)}
-          ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'), fly ? `fly&nbsp;${fly.speed}&nbsp;ft.${fly.maneuverability ? ` (${fly.maneuverability})` : ''}` : '')}
-          ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
+  // The banner's row of numbers (under AC): saves, BAB, CMB with CMD, speed (and a fly speed), each with its d20 and ?.
+  const num = (label, value, rollHtml = '', plusHtml = '', note = '') => `<span class="b-num"><span>${label}</span><b>${value}</b>${note ? `<span class="muted">${note}</span>` : ''}${rollHtml}${plusHtml}</span>`;
+  const bSave = (label, key) => num(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
+  const numsRow = `<div class="b-nums">${bSave('Fort', 'fort')}${bSave('Ref', 'ref')}${bSave('Will', 'will')}
+      ${num('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
+      ${num('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'))}${num('CMD', cmd)}
+      ${num('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'), fly ? `fly&nbsp;${fly.speed}&nbsp;ft.${fly.maneuverability ? ` (${fly.maneuverability})` : ''}` : '')}</div>`;
+  // The Abilities card: the ability scores in a column on the left; damage reduction, resistances and SR (when any) on the right.
+  const defStats = `${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
           ${resist.length ? stat('Resist', esc(resist.join(', '))) : ''}
-          ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}
-        </div>
+          ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}`.trim();
+  const core = `<div class="b-split${defStats ? '' : ' b-solo'}">
+        <div class="b-abilities">${ABILITIES.map(a => `<div class="b-ab"><span>${NAMES[a]}</span><b>${stats.scores[a]}</b><span class="muted">${signed(stats.mod[a])}</span>${roll(check(`${NAMES[a]} check`, stats.mod[a] + (stats.fx.checks || 0) + (view.flawFx?.checks?.[a] || 0)), `${NAMES[a]} check`)}${plus('ability', a, NAMES[a])}</div>`).join('')}</div>
+        ${defStats ? `<div class="b-grid">${defStats}</div>` : ''}
       </div>`;
 
   // On now: effects counting, each with a switch-off.
@@ -335,7 +336,7 @@ export function renderBuild(app, view, parts) {
   // Actions: the attacks and class abilities, then the spells.
   const actions = attacks + (spells ? `<h4 class="b-sub">Spells</h4>${spells}` : '');
   // Tap anywhere on a card (not on a roll, ? or switch) to open it larger.
-  bigCards.abilities = { title: 'Abilities and Saves', html: core };
+  bigCards.abilities = { title: 'Abilities', html: core };
   bigCards.actions = { title: 'Actions', html: actions };
   bigCards.defense = { title: 'Defense', html: defense };
   bigCards.gear = { title: 'Gear', html: gearHtml };
@@ -345,7 +346,7 @@ export function renderBuild(app, view, parts) {
   // Notes: a bigger box to write in (it saves as you type, like the card's).
   bigCards.notes = { title: 'Notes', html: `<textarea class="b-notes-big" data-big-notes rows="16" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>` };
   const tap = key => ` b-tapcard" data-big="${key}`;
-  const left = [card('Abilities and Saves', core, tap('abilities')), card('Actions', actions, ` b-wide${tap('actions')}`), card('Defense', defense, tap('defense'))];
+  const left = [card('Abilities', core, tap('abilities')), card('Actions', actions, ` b-wide${tap('actions')}`), card('Defense', defense, tap('defense'))];
   const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`, tap('notes'));
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
   // The highlighted row's extras: initiative, hero points, the class's main pools (what's left; tap to tick them off),
@@ -367,7 +368,7 @@ export function renderBuild(app, view, parts) {
     : `<button type="button" class="b-portrait" data-b-portrait aria-label="Add a character portrait" title="Add a portrait">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
       <span>${esc(initials)}</span></button>`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div><div class="b-ac-row">${acBox}${heroPts}</div><div class="b-extras">${extras}</div></div></div></div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div><div class="b-ac-row">${acBox}${heroPts}</div>${numsRow}<div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
       <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}

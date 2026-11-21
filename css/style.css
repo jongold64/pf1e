@@ -938,6 +938,9 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 .b-hp input { width: 3.2em; min-height: 0; height: 26px; padding: 2px 4px; font-size: 0.85rem; }
 .build button:not(.link):not(.b-term) { padding: 2px 8px; font-size: 0.8rem; min-height: 26px; }
 .b-abilities { display: flex; flex-direction: column; gap: 2px; }
+/* Nothing beside the ability scores (no DR, resistance or SR): they take the whole card, Str/Dex/Con then Int/Wis/Cha. */
+.b-split.b-solo, .b-big .b-split.b-solo { grid-template-columns: 1fr; }
+.b-solo .b-abilities { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(3, auto); gap: 2px 18px; }
 .b-ab span:first-child { color: var(--muted); }
 .b-skills { display: grid; grid-template-columns: 1fr; gap: 0; font-size: 1.02rem; }
 @media (max-width: 520px) { .b-top { grid-template-columns: 1fr; } }
@@ -1251,6 +1254,13 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* Pools, hero points and Daily uses under AC, beside the portrait (nothing under the portrait). */
 .b-extras { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; }
 .b-ac-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; }
+/* The banner's saves, BAB, CMB, CMD and speed: label, number, d20 and ?, side by side, wrapping onto more lines as needed. */
+.b-nums { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; }
+.b-num { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.b-num > span:first-child { font-size: 1.05rem; font-weight: 700; }
+.b-num > b { font-size: 1.5rem; line-height: 1.1; }
+.b-num > .muted { white-space: normal; }
+.b-banner .b-num .roll-button { padding: 2px 6px !important; min-height: 36px !important; }
 /* The portrait picture, and its popup. */
 .b-portrait.b-has-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portrait-pop img { width: 256px; max-width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; border: 2px solid var(--accent); display: block; margin: 0 auto 10px; }

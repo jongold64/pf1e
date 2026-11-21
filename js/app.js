@@ -985,7 +985,7 @@ function initBuild() {
     if (e.target.closest('[data-b-portrait]')) { popPortrait(); return; }
     // A tap anywhere else in the On now card opens it larger (popOnNow).
     if (e.target.closest('.b-onnow')) { popOnNow(app); return; }
-    // Abilities and Saves, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
+    // Abilities, Attacks: a tap that isn't on a roll, ? or switch opens the card larger, with the same rolls and ?s.
     const big = e.target.closest('[data-big]');
     if (big && !e.target.closest('button, [data-roll], input, select, a, label, textarea')) { openBigCard(big.dataset.big); return; }
     // Ki weapons (talented monk): choose and switch on in its popup, or switch off.
