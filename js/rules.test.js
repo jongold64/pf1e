@@ -283,6 +283,8 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
 
   check('monk gets Improved Unarmed Strike free', grantedFeats(cls('monk'), 1, names).includes('Improved Unarmed Strike'), true);
   check('wizard gets Scribe Scroll free', grantedFeats(cls('wizard'), 1, names).includes('Scribe Scroll'), true);
+  check('kineticist: Elemental Focus is the class feature, not the feat', grantedFeats(cls('kineticist'), 1, names).includes('Elemental Focus'), false);
+  check('duelist 10: no Precise Strike or Crippling Critical feats; still Combat Reflexes', ['Precise Strike', 'Crippling Critical', 'Combat Reflexes'].map(n => grantedFeats(cls('duelist'), 10, names).includes(n)).join(), 'false,false,true');
   check('Scorpion Style: monk 1', status('Scorpion Style', ctxFor('human', 'monk', 1, plain)), 'met');
   check('Scorpion Style: fighter 1', status('Scorpion Style', ctxFor('human', 'fighter', 1, plain)), 'unmet');
 
@@ -2335,6 +2337,21 @@ for (const [mod, sl, n] of [[4, 1, 1], [4, 4, 1], [4, 5, 0], [5, 1, 2], [8, 1, 2
   check('kineticist 6: empower, internal buffer 1', g(6), '1/2 [empower:1] buffer 1 composite 0');
   check('kineticist 11: supercharge 2/3, maximize, buffer 2', g(11), '2/3 [empower:1,maximize:2] buffer 2 composite 0');
   check('kineticist 17: all four metakineses, buffer 3, composite specialization', g(17), '2/3 [empower:1,maximize:2,quicken:3,double blast:4] buffer 3 composite 1');
+  {
+    const { elementalDefense: ed } = await import('./burn.js');
+    check('force ward 5: 5 temp HP; 2 burn: 9, regaining 2', [ed('aether', 5, 5).tempMax, ed('aether', 5, 5, 2).tempMax, ed('aether', 5, 5, 2).regen].join(), '5,9,2');
+    check('enveloping winds 7: 25%; at most 75%', [ed('air', 7).miss, ed('air', 7, 7, 20).miss, ed('air', 7, 7, 20).extra].join(), '25,75,10');
+    check('flesh of stone 6: DR 3; burn up to DR 6', [ed('earth', 6).dr, ed('earth', 6, 6, 9).dr].join(), '3,6');
+    check('searing flesh 8: 2; seven burn at most: 16', [ed('fire', 8).damage, ed('fire', 8, 8, 9).damage, ed('fire', 3).damage].join(), '2,16,1');
+    check('shroud of water 6: +5 armor, +3 shield; burn +2 at most', [ed('water', 6).armor, ed('water', 6).shield, ed('water', 6, 6, 5).armor, ed('water', 6, 6, 5).shield].join(), '5,3,7,4');
+    check('flesh of wood 2: burn to +2; 17th: +7', [ed('wood', 2, 2, 5).natural, ed('wood', 17, 17, 9).natural].join(), '2,7');
+    check('emptiness with 1 burn: resist 4, 10%, +2 Will', ['resist', 'ignoreCrit', 'will'].map(k => ed('void', 4, 4, 1)[k]).join(), '4,10,2');
+    check('no defense at 1st level', ed('aether', 1), null);
+    const { forceWardTemps: fwt } = await import('./burn.js');
+    const tmp = [{ id: 'aid', name: 'Aid', amount: 6 }, { id: 'force-ward', name: 'Force ward', amount: 2 }];
+    check('force ward: fill puts it first, at its max', JSON.stringify(fwt(tmp, 5, Infinity).map(t => `${t.id}:${t.amount}`)), '["force-ward:5","aid:6"]');
+    check('force ward: recover 3 up to 4; a lower max cuts it; 0 drops it', [fwt(tmp, 4, 3)[0].amount, fwt(tmp, 1, 0)[0].amount, fwt(tmp, 0, 5).length].join(), '4,1,1');
+  }
   check('burn state carries the infusion specialization cut', [burnState(4, 2, 4, 0).infusionCut, burnState(8, 2, 8, 0).infusionCut].join(), '0,2');
   const fist = lv => kca([{ cls: cls('kineticist'), level: lv }], { bab: [3], mod: { dex: 2, con: 4 }, blasts: kin.find(e => e.id === 'element-aether').blasts,
     talents: ['Kinetic Fist Infusion'], overflow: burnState(lv, 4, lv, 2).overflow }).find(c => c.name === 'Kinetic fist');

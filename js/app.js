@@ -32,7 +32,7 @@ import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries, gearMagic } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
 import { renderBuild, popDailyUses, newDayPrepared, bigCard } from './tab-build.js';
-import { burnState, infusionCosts } from './burn.js';
+import { burnState, infusionCosts, elementalDefense, forceWardTemps } from './burn.js';
 import { archetypeBonusEffects } from './archetype-bonuses.js';
 import { dailyUses, powerUses, usesLeft } from './daily.js';
 import { popWeaponPart, showAttackDetails, showCombatSwitch, popKiWeapons, popBond } from './tab-weapons.js';
@@ -122,6 +122,7 @@ const state = {
   hpCurrent: null,           // current hit points during play; null means full
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
+  defenseBurn: 0,            // of that burn, the points accepted to raise her elemental defense (burn.js elementalDefense)
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
   spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
   heroPoints: null,          // Action Points house rule: hero points now; null until first counted (then starts at 1)
@@ -254,6 +255,7 @@ function load(saved) {
   if (!Number.isInteger(state.hpCurrent)) state.hpCurrent = null;
   state.burn = Number.isInteger(state.burn) && state.burn > 0 ? Math.min(40, state.burn) : 0;
   state.buffer = Number.isInteger(state.buffer) && state.buffer > 0 ? Math.min(3, state.buffer) : 0;
+  state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
     .map(t => ({ id: t.id, name: String(t.name || t.id).slice(0, 60), amount: t.amount })).slice(0, 20);
@@ -910,8 +912,12 @@ function burnNow() {
   const bs = burnState(kin, view.stats.mod.con, state.classLevels.length, state.burn);
   // The chosen infusions' burn on a blast, after infusion specialization.
   const chosen = Object.entries(state.talents).filter(([k]) => k.startsWith('kineticist|')).map(([, v]) => data.talentsById.get(v));
-  return bs && { ...bs, infusions: infusionCosts(chosen, kin), buffer: Math.min(state.buffer, bs.bufferMax) };
+  const element = (kineticElements()[0]?.name || '').toLowerCase();
+  return bs && { ...bs, infusions: infusionCosts(chosen, kin), buffer: Math.min(state.buffer, bs.bufferMax),
+    defense: elementalDefense(element, kin, state.classLevels.length, defenseBurnNow()) };
 }
+// The burn accepted for the elemental defense that still counts (burn removed takes it with it).
+const defenseBurnNow = () => Math.min(state.defenseBurn || 0, state.burn);
 
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
 function allClassAttacks(stats) {
@@ -1006,7 +1012,7 @@ function initBuild() {
     if (ud) { spendDaily(ud.dataset.bUseDaily); return; }
     const u = e.target.closest('[data-b-uses]');
     if (u) { dailyPop(u.dataset.bUses); return; }
-    if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0 });
+    if (e.target.closest('[data-b-newday]')) update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0, defenseBurn: 0 });
     const burn = e.target.closest('[data-b-burn]');
     if (burn) changeBurn(burn.dataset.bBurn);
     const buf = e.target.closest('[data-b-buffer]');
@@ -1050,8 +1056,20 @@ const dailyUsesFor = () => dailyUses(view, { spellTables: buildParts().spontaneo
 
 // One use (round, point) of a daily ability spent, up to its total.
 // Burn: + accepts a point, − takes one off (a mistake), rest clears it all (a full night's rest).
+// defense accepts a point to raise the elemental defense (up to its limit); ward fills force ward's temporary hit points
+// (they regenerate 1 a minute); accepting burn (an aether wild talent) gives force ward back the character level.
 function changeBurn(how) {
-  update({ burn: how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : 1))) });
+  const d = burnNow()?.defense;
+  if (how === 'defense' && !(d && d.extra < d.maxExtra)) return;
+  const burn = how === 'ward' ? state.burn : how === 'rest' ? 0 : Math.max(0, Math.min(40, state.burn + (how === 'less' ? -1 : 1)));
+  const defenseBurn = how === 'defense' ? defenseBurnNow() + 1 : Math.min(defenseBurnNow(), burn);
+  let tempHp = state.tempHp;
+  if (d?.name === 'Force ward') {
+    const kin = view.counts.find(e => e.cls.id === 'kineticist').level;
+    const max = elementalDefense('aether', kin, d.recover, defenseBurn).tempMax;
+    tempHp = forceWardTemps(state.tempHp, max, how === 'ward' ? Infinity : ['more', 'defense'].includes(how) ? d.recover : 0);
+  }
+  update({ burn, defenseBurn, tempHp });
 }
 // Internal buffer: fill accepts 1 burn to store 1 point (up to its most); spend takes a point out instead of accepting burn.
 function changeBuffer(how) {
@@ -2334,7 +2352,7 @@ function computeView() {
   setUntrainedOk(access.untrained);
   const element = (kineticElements()[0]?.name || '').toLowerCase();
   const classFx = classFeatureEffects(counts, { mod: statsWith(gear).mod, armorCategory: gear.armor ? gear.armor.move_category || gear.armor.category : null,
-                                                shield: !!gear.shield, load: load?.load || 'light', element });
+                                                shield: !!gear.shield, load: load?.load || 'light', element, defenseBurn: defenseBurnNow() });
   // Kensai: iaijutsu (Int on initiative) and canny defense (Int to AC with no armor or shield).
   classFx.push(...kensaiEffects(counts, state.archetypes, { mod: statsWith(gear).mod, armor: !!gear.armor, shield: !!gear.shield && !gear.shieldOff }));
   // Steady bonuses archetype features give, read from their text (archetype-bonuses.js): +2 on Will saves, +1 dodge AC...
@@ -2485,9 +2503,9 @@ function computeView() {
       baseSaves: Object.fromEntries(['fort', 'ref', 'will'].map(sv => [sv, counts.reduce((n, e) => n + (e.cls.progression[e.level - 1][sv] || 0), 0)])),
       casterLevel: Math.max(0, ...casting.casting.filter(c => ['wizard', 'witch', 'sorcerer', 'arcanist', 'magus', 'bard', 'summoner'].includes(c.cls.id)).map(c => c.effectiveLevel)) } } : null,
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
-    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element }),
+    classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element, defenseBurn: defenseBurnNow() }),
     senses: classSenses(counts, race?.senses || []), sr: spellResistance(race, counts, classLevels.length), classNumbers: classNumbers(counts),
-    situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element }), familiarNow),
+    situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element, defenseBurn: defenseBurnNow(), charLevel: classLevels.length }), familiarNow),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).

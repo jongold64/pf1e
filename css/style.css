@@ -1068,6 +1068,7 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner .b-hp-big .b-hp-heal { background: #1e5e2a; color: #fff; border-color: #1e5e2a; }
 .b-banner .b-hp-low > b { color: #b06a00; }
 .b-banner .b-hp-down > b { color: #b3261e; }
+.b-banner .b-hp-big > .b-hp-nl { order: 10; flex-basis: 100%; font-size: .95rem; color: #b06a00; }
 /* HP and initiative side by side in matching boxes (a little smaller so both fit on one line). */
 .b-banner .b-vitals { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; flex-basis: 100%; }
 .b-banner .b-hp-big { gap: 6px; padding: 4px 8px; }
@@ -1180,6 +1181,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-burn-count button { padding: 1px 10px; min-height: 30px; }
 .b-burn-note { flex-basis: 100%; }
 .b-buffer { flex-basis: 100%; margin-top: 4px; }
+.b-defense { flex-basis: 100%; margin-top: 4px; }
+.b-defense b { font-size: inherit; min-width: 0; }
 /* Drag and drop: shown while a file is dragged over the page (a dropped character file is imported). */
 .drop-hint { position: fixed; inset: 8px; z-index: 1000; display: flex; align-items: center; justify-content: center;
   border: 3px dashed var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--bg) 85%, transparent); pointer-events: none; }

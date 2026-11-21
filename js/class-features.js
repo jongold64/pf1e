@@ -9,7 +9,7 @@
 // - situationalBonuses: the ones that only apply in some situations (bravery against fear, trap sense, evasion...),
 //   shown as notes in the Details of the save, AC or skill they touch.
 
-import { infusionBurn } from './burn.js';
+import { infusionBurn, elementalDefense } from './burn.js';
 
 const half =lv => Math.max(1, Math.floor(lv / 2));
 // The class levels a feature counts: the highest of the classes listed (the same feature from two classes doesn't
@@ -21,8 +21,9 @@ const KNOWLEDGE = ['arcana', 'dungeoneering', 'engineering', 'geography', 'histo
 
 // gear: { armorCategory (for movement: mithral counts one lighter), shield (bool) }; load: 'light' | 'medium' | 'heavy';
 // mod: ability modifiers (with effects). Returns effects as custom effects: [{ name, target, type, value, more, on }].
-// element: the kineticist's primary element (lower case), for its defense from 2nd level.
-export function classFeatureEffects(counts, { mod = {}, armorCategory = null, shield = false, load = 'light', element = '' } = {}) {
+// element: the kineticist's primary element (lower case), for its defense from 2nd level; defenseBurn: the burn she's
+// accepted to raise it (burn.js elementalDefense).
+export function classFeatureEffects(counts, { mod = {}, armorCategory = null, shield = false, load = 'light', element = '', defenseBurn = 0 } = {}) {
   const out = [];
   const add = (name, parts) => {
     const [first, ...more] = parts.filter(p => p.value);
@@ -88,11 +89,12 @@ export function classFeatureEffects(counts, { mod = {}, armorCategory = null, sh
   // Dragon disciple natural armor increase: +1 at 1st, +2 at 4th, +3 at 7th, added to existing natural armor.
   const dd = levelOf(counts, ['dragon-disciple']);
   if (dd) add('Natural armor increase (dragon disciple)', [{ target: 'ac', type: 'natural armor increase', value: dd >= 7 ? 3 : dd >= 4 ? 2 : 1 }]);
-  // Kineticist elemental defense (2nd): shroud of water (+4 armor bonus, +1 every 4 levels after 2nd; as a shield, +2),
-  // flesh of wood (+1 enhancement to natural armor). Flesh of stone's DR is in classDamageReduction.
+  // Kineticist elemental defense (2nd), with any burn accepted for it: shroud of water (an armor bonus; as a shield,
+  // a smaller shield bonus), flesh of wood (enhancement to natural armor). Flesh of stone's DR is in classDamageReduction.
   const kin = levelOf(counts, ['kineticist']);
-  if (kin >= 2 && element === 'water') add('Shroud of water (kineticist, as armor)', [{ target: 'ac', type: 'armor', value: 4 + Math.floor((kin - 2) / 4) }]);
-  if (kin >= 2 && element === 'wood') add('Flesh of wood (kineticist)', [{ target: 'ac', type: 'natural armor enhancement', value: 1 }]);
+  const kd = elementalDefense(element, kin, kin, defenseBurn);
+  if (kd && element === 'water') add('Shroud of water (kineticist, as armor)', [{ target: 'ac', type: 'armor', value: kd.armor }]);
+  if (kd && element === 'wood') add('Flesh of wood (kineticist)', [{ target: 'ac', type: 'natural armor enhancement', value: kd.natural }]);
   // Ninja no trace (3rd): +1 insight on Disguise, +1 every 3 levels (also opposed Stealth while stationary: not counted).
   const ninja = levelOf(counts, ['ninja']);
   if (ninja >= 3) add('No trace (ninja)', [{ target: 'skill:Disguise', type: 'insight', value: Math.floor(ninja / 3) }]);
@@ -162,14 +164,14 @@ export function classNumbers(counts) {
   return out;
 }
 
-export function classDamageReduction(counts, { armor = null, shield = null, element = '' } = {}) {
+export function classDamageReduction(counts, { armor = null, shield = null, element = '', defenseBurn = 0 } = {}) {
   const out = [];
   for (const e of counts) {
     const lv = e.level;
     if (['barbarian', 'barbarian-unchained', 'bloodrager'].includes(e.cls.id) && lv >= 7) {
       out.push({ value: Math.min(5, 1 + Math.floor((lv - 7) / 3)), against: '—', source: e.cls.name });
     }
-    if (e.cls.id === 'kineticist' && element === 'earth' && lv >= 2) out.push({ value: 1 + Math.floor((lv - 2) / 2), against: 'adamantine', source: 'Flesh of stone (kineticist)' });
+    if (e.cls.id === 'kineticist' && element === 'earth' && lv >= 2) out.push({ value: elementalDefense('earth', lv, lv, defenseBurn).dr, against: 'adamantine', source: 'Flesh of stone (kineticist)' });
     if (e.cls.id === 'skald' && lv >= 9) out.push({ value: lv >= 19 ? 3 : lv >= 14 ? 2 : 1, against: '—', source: e.cls.name });
     if (e.cls.id === 'stalwart-defender' && lv >= 5) out.push({ value: lv >= 10 ? 5 : lv >= 7 ? 3 : 1, against: '—', source: e.cls.name });
     if (e.cls.id === 'fighter' && lv >= 19 && (armor || shield)) out.push({ value: 5, against: '—', source: 'Armor mastery (fighter)' });
@@ -538,7 +540,7 @@ export function skillAccess(counts) {
 }
 
 // Bonuses that only apply in some situations, as notes: { fort, ref, will, ac, skills: { name: [text] } }.
-export function situationalBonuses(counts, mod = {}, { element = '' } = {}) {
+export function situationalBonuses(counts, mod = {}, { element = '', defenseBurn = 0, charLevel = 0 } = {}) {
   const n = { fort: [], ref: [], will: [], ac: [], skills: {} };
   const all = (text) => { n.fort.push(text); n.ref.push(text); n.will.push(text); };
   const skill = (name, text) => (n.skills[name] ??= []).push(text);
@@ -597,11 +599,12 @@ export function situationalBonuses(counts, mod = {}, { element = '' } = {}) {
   if (duel >= 3) n.ac.push('Enhanced mobility (duelist, light or no armor, no shield): +4 AC against attacks of opportunity for moving out of a threatened square.');
   if (duel >= 7) n.ac.push(`Elaborate defense (duelist): +${Math.floor(duel / 3)} more dodge bonus when fighting defensively or in total defense.`);
   const kin = lv(['kineticist']);
-  if (kin >= 2 && element === 'aether') n.ac.push(`Force ward (kineticist): ${kin} temporary hit points, lost first, regaining 1 a minute.`);
-  if (kin >= 2 && element === 'air') n.ac.push('Enveloping winds (kineticist): ranged attacks with physical weapons have a 20% miss chance against you.');
-  if (kin >= 2 && element === 'fire') n.ac.push('Searing flesh (kineticist): a creature that hits you with a natural or unarmed attack takes fire damage.');
-  if (kin >= 2 && element === 'void') n.will.push('Emptiness (kineticist): +1 on Will saves against emotion effects; negative energy resistance 2; 5% to ignore critical hits and sneak attacks.');
-  if (kin >= 2 && element === 'water') n.ac.push('Shroud of water (kineticist): counted as an armor bonus; as a shield it gives a +2 shield bonus instead.');
+  // Elemental defense (2nd), with the burn accepted for it (burn.js): shroud of water and flesh of wood are in AC, flesh
+  // of stone in DR; the rest are notes.
+  const kd = elementalDefense(element, kin, charLevel || kin, defenseBurn);
+  if (kd && element === 'void') n.will.push(`Emptiness (kineticist): ${kd.text}.`);
+  else if (kd && element === 'water') n.ac.push(`Shroud of water (kineticist): counted as an armor bonus (+${kd.armor}); as a shield it gives a +${kd.shield} shield bonus instead.`);
+  else if (kd && element !== 'earth' && element !== 'wood') n.ac.push(`${kd.name} (kineticist): ${kd.text}.`);
   if (lv(['vigilante']) >= 3) skill('Intimidate', `Unshakable (vigilante): others add ${lv(['vigilante'])} to the DC to Intimidate you.`);
   return n;
 }

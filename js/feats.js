@@ -137,8 +137,12 @@ export function slotAccepts(slot, feat) {
 
 // Feats a class gets for free, taken from its class table (e.g. a wizard's Scribe Scroll).
 // A monk's or brawler's "unarmed strike" is the Improved Unarmed Strike feat.
+// Class features that only share a feat's name (the kineticist's Elemental Focus is its element, not the spell feat;
+// the duelist's precise strike isn't the teamwork feat...): never given as that feat.
+const NOT_THE_FEAT = new Set(['elemental focus', 'cruelty', 'implement mastery', 'precise strike', 'quiet death', 'stalwart',
+  'expert trainer', 'instant alchemy', 'crippling critical', 'awesome blow', 'improved awesome blow']);
 export function grantedFeats(cls, level, featNames) {
-  const known = new Map(featNames.map(n => [lower(n), n]));
+  const known = new Map(featNames.filter(n => !NOT_THE_FEAT.has(lower(n))).map(n => [lower(n), n]));
   const out = new Set();
   for (const row of cls.progression.slice(0, level)) {
     for (const special of row.special || []) {

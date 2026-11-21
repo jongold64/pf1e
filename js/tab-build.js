@@ -77,7 +77,11 @@ export function renderBuild(app, view, parts) {
   // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.
   const hpState = hp <= 0 ? ' b-hp-down' : hp * 2 <= stats.hp ? ' b-hp-low' : '';
-  const hpBox = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>
+  // A kineticist's burn deals nonlethal damage (character level per point) that can't be healed until the burn goes:
+  // shown under the number, staggered when it equals the hit points left and unconscious when it's more.
+  const nl = parts.burn?.nonlethal || 0;
+  const nlNote = nl ? `<span class="muted b-hp-nl">${nl} nonlethal (burn)${nl > hp ? ' · unconscious' : nl === hp ? ' · staggered' : ''}</span>` : '';
+  const hpBox = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>${nlNote}
           <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
           <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
@@ -191,6 +195,10 @@ export function renderBuild(app, view, parts) {
       ${bs.bufferMax ? `<span class="b-burn-count b-buffer">Internal buffer <b>${bs.buffer}</b> <span class="muted">/ ${bs.bufferMax}</span>
         <button type="button" data-b-buffer="fill"${bs.buffer < bs.bufferMax ? '' : ' disabled'}>+ Store 1 (accept 1 burn)</button>
         <button type="button" data-b-buffer="spend"${bs.buffer ? '' : ' disabled'}>Spend 1 (instead of burn)</button></span>` : ''}
+      ${bs.defense ? `<span class="b-burn-count b-defense"><span><b>${esc(bs.defense.name)}</b> <small class="muted">${esc(bs.defense.text)}${bs.defense.extra
+          ? ` · ${bs.defense.extra} burn in it` : ''}</small></span>
+        <button type="button" data-b-burn="defense"${bs.defense.extra < bs.defense.maxExtra ? '' : ' disabled'}>+ Accept 1 burn for it</button>${bs.defense.name === 'Force ward'
+          ? ` <button type="button" data-b-burn="ward"${(state.tempHp || []).find(t => t.id === 'force-ward')?.amount >= bs.defense.tempMax ? ' disabled' : ''}>Fill force ward</button>` : ''}</span>` : ''}
       ${bs.burn > bs.max ? `<small class="warning b-burn-note">More than 3 + Con modifier (${bs.max}): only burn forced on you counts past that.</small>` : ''}
     </div></div>` : '';
   // A talented monk's ki weapons: what's chosen and whether it's on this round; Choose opens the popup (tab-weapons.js).
@@ -497,7 +505,7 @@ export function popDailyUses(app, view, parts, focus = '') {
   app.openDetail('Daily uses', `<div class="b-daily"><table class="skill-why"><tbody>${rows || '<tr><td>No limited abilities.</td></tr>'}</tbody></table>
     <p class="hint">Tick a box for each use (rounds of rage or performance, points from a pool, spells cast). New day clears them all,
       and the cast boxes of prepared spells.</p></div>`,
-    [{ label: 'New day', run: () => app.update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0 }) }]);
+    [{ label: 'New day', run: () => app.update({ daily: {}, prepared: newDayPrepared(state.prepared), burn: 0, defenseBurn: 0 }) }]);
 }
 
 // Prepared spells with every cast box cleared.

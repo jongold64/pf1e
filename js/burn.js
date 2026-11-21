@@ -53,3 +53,50 @@ export function sizeBonusText(list) {
   if (list[0] === 4) return '+4 size bonus to one physical ability score, +2 to the other two';
   return '+6 size bonus to one physical ability score, +4 to a second and +2 to the third';
 }
+
+// A kineticist's elemental defense (2nd level) with the burn accepted into it (until her burn is removed).
+// element: lower case; extra: points of burn accepted for the defense. Returns null below 2nd level or for an element
+// without one, else { name, extra (counted), maxExtra (Infinity: no limit but her burn), text, ...numbers }:
+// - aether force ward: tempMax temporary hit points (kineticist level, + half that level per burn), regen a minute
+//   (1, +1 per 2 burn); recover: character level back whenever she accepts burn on an aether wild talent.
+// - air enveloping winds: miss % (20, +5 per 5 levels beyond 2nd, +5 per burn, at most 75).
+// - earth flesh of stone: dr (1, +1 per 2 levels beyond 2nd, +1 per burn, at most the kineticist level) /adamantine.
+// - fire searing flesh: damage (1 per 4 levels, at least 1; the same again per burn, up to seven times).
+// - void emptiness: resist negative energy (2 per step), ignoreCrit % (5 per step), will (+1 per step); a step for
+//   the defense and one per burn.
+// - water shroud of water: armor (+4, +1 per 4 levels beyond 2nd, +1 per burn up to half the starting value) or
+//   shield (+2 and the same, up to half its own start).
+// - wood flesh of wood: natural (+1 enhancement to natural armor, +1 per burn: 1 burn at 2nd, 1 more every 3 levels).
+export function elementalDefense(element, kin, charLevel = kin, extra = 0) {
+  if (kin < 2) return null;
+  const want = Math.max(0, Math.floor(extra) || 0);
+  const pick = (maxExtra, f) => { const x = Math.min(want, maxExtra); return { extra: x, maxExtra, ...f(x) }; };
+  switch (element) {
+    case 'aether': return { name: 'Force ward', ...pick(Infinity, x => ({ tempMax: kin + Math.floor(kin / 2) * x, regen: 1 + Math.floor(x / 2), recover: charLevel })),
+      get text() { return `${this.tempMax} temporary hit points, lost first, regaining ${this.regen} a minute (and ${charLevel} whenever you accept burn on an aether wild talent)`; } };
+    case 'air': { const base = 20 + 5 * Math.floor((kin - 2) / 5);
+      return { name: 'Enveloping winds', ...pick((75 - base) / 5, x => ({ miss: base + 5 * x })),
+        get text() { return `ranged attacks with physical weapons have a ${this.miss}% miss chance against you (not rays)`; } }; }
+    case 'earth': { const base = 1 + Math.floor((kin - 2) / 2);
+      return { name: 'Flesh of stone', ...pick(Math.max(0, kin - base), x => ({ dr: base + x })), get text() { return `DR ${this.dr}/adamantine`; } }; }
+    case 'fire': { const step = Math.max(1, Math.floor(kin / 4));
+      return { name: 'Searing flesh', ...pick(7, x => ({ damage: step * (1 + x) })),
+        get text() { return `a creature that hits you with a natural attack or unarmed strike takes ${this.damage} fire damage (double to a creature grappling you, each of its turns; weapons that hit you take it too)`; } }; }
+    case 'void': return { name: 'Emptiness', ...pick(Infinity, x => ({ resist: 2 * (1 + x), ignoreCrit: 5 * (1 + x), will: 1 + x })),
+      get text() { return `negative energy resistance ${this.resist}, ${this.ignoreCrit}% to ignore critical hits and sneak attacks, +${this.will} on Will saves against emotion effects`; } };
+    case 'water': { const step = Math.floor((kin - 2) / 4), armor = 4 + step, shield = 2 + step;
+      return { name: 'Shroud of water', ...pick(Math.floor(armor / 2), x => ({ armor: armor + x, shield: shield + Math.min(x, Math.floor(shield / 2)) })),
+        get text() { return `+${this.armor} armor bonus to AC (or, as a shield, +${this.shield} shield bonus instead)`; } }; }
+    case 'wood': return { name: 'Flesh of wood', ...pick(1 + Math.floor((kin - 2) / 3), x => ({ natural: 1 + x })),
+      get text() { return `+${this.natural} enhancement bonus to your natural armor`; } };
+    default: return null;
+  }
+}
+
+// Force ward's temporary hit points among the others ([{ id, name, amount }]): up to `add` more (Infinity: filled),
+// at most max, kept first in the list (they're lost first). A max of 0 removes them.
+export function forceWardTemps(temps = [], max = 0, add = 0) {
+  const others = temps.filter(t => t.id !== 'force-ward');
+  const now = Math.min(max, (temps.find(t => t.id === 'force-ward')?.amount || 0) + Math.max(0, add));
+  return now > 0 ? [{ id: 'force-ward', name: 'Force ward', amount: now }, ...others] : others;
+}
