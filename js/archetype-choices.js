@@ -13,6 +13,17 @@ export function blackBlade(level) {
   return row ? { enh: row[1], int: row[2], wisCha: row[3], ego: row[4] } : null;
 }
 
+// Black blade strike (3rd): +1 damage for 1 minute, +1 more for every four magus levels beyond 1st (+2 at 5th).
+export const bladeStrikeBonus = level => (level >= 3 ? 1 + Math.floor((level - 1) / 4) : 0);
+// The black blade's powers that spend its own arcane pool, at a magus level (Ultimate Magic): [{ id, name, note }].
+export function blackBladePowers(level) {
+  return [
+    level >= 3 && { id: 'strike', name: 'Black blade strike', note: `+${bladeStrikeBonus(level)} damage with the blade for 1 minute (a free action, 1 point of the blade's pool)` },
+    level >= 5 && { id: 'energy', name: 'Energy attunement', note: 'the blade deals cold, electricity or fire damage instead of its own (1 point of the blade’s pool), or sonic or force (2 points), until your next turn · a free action' },
+    level >= 9 && { id: 'teleport', name: 'Teleport blade', note: 'call the blade to your hand from up to 1 mile away (a swift action, 1 point of the blade’s pool)' },
+  ].filter(Boolean);
+}
+
 // A value from a level table [[level, value], ...] (0 below the first row).
 const byLevel = table => level => [...table].reverse().find(([lv]) => level >= lv)?.[1] ?? 0;
 

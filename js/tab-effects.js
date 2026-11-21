@@ -54,7 +54,7 @@ export function popOnNow(app) {
     { label: 'Add effects', primary: true, run: () => popAddEffects(app) },
     { label: 'Switch all off', run: () => app.update({ buffs: state.buffs.map(x => ({ ...x, on: false })),
       customEffects: state.customEffects.map(c => ({ ...c, on: false })), traitOn: [],
-      combat: { ...state.combat, powerAttack: false, deadlyAim: false, rapidShot: false, pointBlank: false, combatExpertise: false, fightingDefensively: false, totalDefense: false, spellCombat: false, mountedCharge: false, conjured: undefined } }) },
+      combat: { ...state.combat, powerAttack: false, deadlyAim: false, rapidShot: false, pointBlank: false, combatExpertise: false, fightingDefensively: false, totalDefense: false, spellCombat: false, mountedCharge: false, arcaneStrike: false, conjured: undefined } }) },
   ]);
 }
 

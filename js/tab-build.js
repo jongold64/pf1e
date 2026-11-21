@@ -139,7 +139,9 @@ export function renderBuild(app, view, parts) {
     + (w.traitRolls || []).map(r => `<tr class="b-subrow"><td><small class="muted">↳ ${esc(r.label)}</small></td>
       ${r.spec ? `<td>${rc(r.text, roll(r.spec, `${w.name}: ${r.label}`))}</td><td>${r.damage ? esc(r.damage) : ''}</td><td class="b-crit"></td><td></td>`
         // A note with nothing to roll (ki strike, ki weapons on) spans the other columns and wraps, so it doesn't widen the table.
-        : `<td colspan="4" class="b-subnote"><small class="muted">${esc(r.note)}</small></td>`}</tr>`).join('')).join('');
+        // Perfect strike, energy attunement...: Use takes a point from the pool; black blade strike switches on or off.
+        : `<td colspan="4" class="b-subnote"><small class="muted">${esc(r.note)}</small>${r.use ? useDaily(r.use) : ''}${r.toggle
+          ? ` <button type="button" data-b-toggle="${esc(r.toggle.key)}">${r.toggle.on ? 'Switch off' : 'Switch on'}</button>` : ''}</td>`}</tr>`).join('')).join('');
   const combat = app.state.combat || {};
   const switches = [['powerAttack', 'Power Attack'], ['deadlyAim', 'Deadly Aim'], ['rapidShot', 'Rapid Shot'], ['pointBlank', 'Point-Blank Shot']]
     .filter(([, f]) => view.haveFeats.includes(f))

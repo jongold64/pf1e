@@ -2456,6 +2456,18 @@ It does a thing. More.` });
   const names = (id, level, mod) => dailyUses(v(id, level, mod)).map(d => `${d.name}:${d.max}`).join();
   check('barbarian 5, Con +3: rage 15 rounds', names('barbarian', 5, { con: 3 }), 'Rage:15');
   check('monk 6, Wis +3: ki pool 6', dailyUses(v('monk', 6, { wis: 3 })).find(d => d.name === 'Ki pool')?.max, 6);
+  check('bladebound magus 5, Int +3: arcane pool 4, black blade pool 2; 2nd: no blade pool', [dailyUses(v('magus', 5, { int: 3 }), { bladebound: true }).filter(d => /pool/i.test(d.name)).map(d => `${d.name}:${d.max}`).join(),
+    dailyUses(v('magus', 2, { int: 3 }), { bladebound: true }).some(d => d.name === 'Black blade arcane pool')].join('|'), 'Arcane pool:4,Black blade arcane pool:2|false');
+  {
+    const { bladeStrikeBonus, blackBladePowers } = await import('./archetype-choices.js');
+    check('black blade strike: +1 at 3rd, +2 at 5th, +5 at 17th', [3, 5, 17].map(bladeStrikeBonus).join(), '1,2,5');
+    check('black blade powers at 5th: strike, energy attunement', blackBladePowers(5).map(p => p.id).join(), 'strike,energy');
+    const { maxDamage } = await import('./dice.js');
+    check('most damage: 1d8+7 = 15; 2d6-1 = 11', [maxDamage('1d8+7'), maxDamage('2d6-1 slashing')].join(), '15,11');
+    const { defenseSwitches: ds, defenseEffects: de } = await import('./defense.js');
+    check('Arcane Strike at caster level 5: +2 damage; no switch without an arcane caster level', [de({ arcaneStrike: true }, { haveFeats: ['Arcane Strike'], arcaneCL: 5 }).map(x => `${x.target}:${x.value}`).join(),
+      ds({ haveFeats: ['Arcane Strike'] }).some(x => x.key === 'arcaneStrike')].join('|'), 'damage:2|false');
+  }
   check('monk 6, Wis +3, Extra Ki twice: ki pool 10', dailyUses({ ...v('monk', 6, { wis: 3 }), haveFeats: ['Extra Ki', 'Extra Ki'] }).find(d => d.name === 'Ki pool')?.max, 10);
   check('talented monk ki pool (a chosen power) + Extra Ki', dailyUses({ ...v('fighter', 1), haveFeats: ['Extra Ki'] }, { powers: [{ name: 'Ki pool', max: 3, unit: 'points' }] }).find(d => d.name === 'Ki pool')?.max, 5);
   check('barbarian 5, Extra Rage: 21 rounds', dailyUses({ ...v('barbarian', 5, { con: 3 }), haveFeats: ['Extra Rage'] }).find(d => d.name === 'Rage')?.max, 21);

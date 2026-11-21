@@ -23,7 +23,10 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 // unchained monk's from 3rd give the same three. A ninja's ki pool (ninja: true) gives the extra attack, +20 ft. and +4
 // insight on Stealth (kiStealth) instead of the dodge bonus.
 export const KI_COST = { kiFlurry: 1, kiSpeed: 1, kiDefense: 1, ironLimbKi: 1, kiStealth: 1 };
-export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false, monk = {}, ninja = false } = {}) {
+// Arcane Strike (the feat; arcaneCL: the highest arcane caster level): +1 damage with weapons, +1 per 5 caster levels,
+// and they count as magic, for a round (arcaneStrike).
+export const arcaneStrikeBonus = cl => (cl > 0 ? 1 + Math.floor(cl / 5) : 0);
+export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shield = null, conjured = [], magus = 0, cavalier = 0, exploit = false, monk = {}, ninja = false, arcaneCL = 0 } = {}) {
   const trained = acrobatics >= 3;
   const step = expertiseStep(bab);
   const out = [];
@@ -43,6 +46,10 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
       ['Concentration check to cast defensively', magus >= 14 ? '+ twice the extra attack penalty you choose (greater spell combat)'
         : `${magus >= 8 ? '+2 (improved spell combat) ' : ''}+ the extra attack penalty you choose, up to your Int bonus`]],
     note: 'A full-round action: a light or one-handed melee weapon in one hand, the other free. Switch it off after your turn.' });
+  if (haveFeats.includes('Arcane Strike') && arcaneCL > 0) out.push({ key: 'arcaneStrike', label: 'Arcane Strike', feat: true, attack: true,
+    what: `+${arcaneStrikeBonus(arcaneCL)} damage with weapons, which count as magic`,
+    rows: [['Damage with your weapons (+1, and +1 for every 5 arcane caster levels)', `+${arcaneStrikeBonus(arcaneCL)}`], ['Damage reduction', 'your weapons count as magic']],
+    note: 'A swift action: it lasts until your next turn. Switch it off after your turn.' });
   if (cavalier >= 3) out.push({ key: 'mountedCharge', label: 'Mounted charge', attack: true, what: '+4 melee attack, no AC penalty (cavalier’s charge)',
     rows: [['Melee attack roll on the charge', '+4 (instead of +2)'], ['AC after the charge', 'no −2 penalty'],
       ...(cavalier >= 11 ? [['Threat range of your weapons (mighty charge)', 'doubled; a free bull rush, disarm, sunder or trip on a hit']] : []),
@@ -118,6 +125,7 @@ export function defenseEffects(combat = {}, opts = {}) {
     }
   }
   if (combat.spellCombat && has('spellCombat')) fx('Spell combat', 'attack', 'untyped', -2);
+  if (combat.arcaneStrike && has('arcaneStrike')) fx('Arcane Strike', 'damage', 'untyped', arcaneStrikeBonus(opts.arcaneCL));
   if (combat.mountedCharge && has('mountedCharge')) fx('Cavalier’s charge', 'melee-attack', 'untyped', 4);
   if (combat.exploitWeakness && has('exploitWeakness')) fx('Exploit weakness', 'attack', 'untyped', 2);
   const monk = opts.monk || {};

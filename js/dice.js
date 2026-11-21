@@ -49,6 +49,17 @@ export function rollDamage(expr, rng = randomDie, times = 1, scale = 1) {
   return { total, text: `${shown.join(' ')} = ${total}` };
 }
 
+// The most a damage expression can deal ("1d8+7" -> 15): each NdM as N × M, plus the fixed numbers. null without one.
+export function maxDamage(expr) {
+  const m = String(expr).match(/\d+d\d+(?:\s*[+-]\s*(?:\d+d\d+|\d+))*/);
+  if (!m) return null;
+  return m[0].replace(/\s+/g, '').match(/[+-]?(\d+d\d+|\d+)/g).reduce((n, t) => {
+    const sign = t.startsWith('-') ? -1 : 1;
+    const [a, b] = t.replace(/^[+-]/, '').split('d').map(Number);
+    return n + sign * (b ? a * b : a);
+  }, 0);
+}
+
 // A d20 roll with a bonus: { natural, total, text: "d20 (14) +6 = 20" }.
 export function rollD20(bonus, rng = randomDie) {
   const natural = rng(20);

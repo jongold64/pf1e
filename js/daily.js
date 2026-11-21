@@ -3,6 +3,7 @@
 import { channelEnergy, layOnHands, smite } from './rules.js';
 import { featureHandling } from './feature-coverage.js';
 import { featureLevel } from './archetypes.js';
+import { blackBlade } from './archetype-choices.js';
 
 // Features the Actions card rolls (feature-coverage.js 'roll') that also have a daily limit, so they get a counter too.
 const ROLL_AND_DAILY = new Set(['monk:quivering palm']);
@@ -62,6 +63,11 @@ export function dailyUses(view, { spellTables = [], bladebound = false, powers =
   const magus = levelOf(counts, ['magus']);
   if (magus) add('Arcane pool', Math.max(1, Math.floor(magus / (bladebound ? 3 : 2)) + mod.int), 'points', '',
     { how: `${bladebound ? 'a third' : 'half'} of your magus level (${Math.floor(magus / (bladebound ? 3 : 2))}) ${sg(mod.int)} (Intelligence modifier), at least 1${bladebound ? ' (bladebound)' : ''}`, ...from(['magus'], 'Arcane Pool') });
+  // A bladebound magus's black blade has an arcane pool of its own (Ultimate Magic): 1 + its Intelligence bonus, for
+  // its powers (black blade strike, energy attunement at 5th, teleport blade at 9th, spell defense at 17th).
+  const blade = bladebound && blackBlade(magus);
+  if (blade) add('Black blade arcane pool', 1 + Math.floor((blade.int - 10) / 2), 'points', 'the black blade’s own pool, for its powers',
+    { how: `1 + the black blade’s Intelligence bonus (Int ${blade.int}: +${Math.floor((blade.int - 10) / 2)})` });
   // Weapon bonds (weapon-bonds.js): divine bond and fiendish boon uses, sacred weapon rounds.
   for (const [id, name, feature] of [['paladin', 'Divine bond', 'Divine Bond'], ['antipaladin', 'Fiendish boon', 'Fiendish Boon']]) {
     const lv = levelOf(counts, [id]);

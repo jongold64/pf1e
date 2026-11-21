@@ -13,6 +13,8 @@ import { weaponTraining, classWeaponDice, kiStrike, unarmedStyleDamage, linnormR
 import { traitWeaponRows, heirloomFor } from './traits.js';
 import { styleWeapon, deadlyStrikesDie, simpleCritical, tmFlurryBabs, kiWeaponsEntry, kiWeaponsCost, kiWeaponsText, KI_WEAPONS_MAX } from './talented-monk.js';
 import { defenseSwitches } from './defense.js';
+import { bladeStrikeBonus, blackBladePowers } from './archetype-choices.js';
+import { maxDamage } from './dice.js';
 import { setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
 
@@ -229,9 +231,15 @@ function attackArgs(app, view, ctx, e) {
     // Flaws: Noncombatant (melee) and Shaky (ranged) attack penalties.
     // Melee-only effects (an unchained barbarian's rage) on melee weapons.
     effectAttack: view.stats.fx.attack + (w.group === 'ranged' ? view.flawFx.ranged + (view.stats.fx['ranged-attack'] || 0) : view.flawFx.melee + (view.stats.fx['melee-attack'] || 0)),
-    effectDamage: view.stats.fx.damage + (w.group === 'ranged' ? 0 : view.stats.fx['melee-damage'] || 0),
+    effectDamage: view.stats.fx.damage + (w.group === 'ranged' ? 0 : view.stats.fx['melee-damage'] || 0) + bladeStrikeOn(app, view, e),
   };
 }
+
+// A bladebound magus's magus level (0 without the archetype), and a kensai's.
+const archLevel = (app, view, arch) => ((app.state.archetypes.magus || []).includes(arch) ? view.counts.find(c => c.cls.id === 'magus')?.level || 0 : 0);
+const isBlackBlade = e => e?.classGear === 'magus-bladebound:blade';
+// Black blade strike switched on (Character tab): its damage bonus on the black blade.
+const bladeStrikeOn = (app, view, e) => (app.state.bladeStrike && isBlackBlade(e) ? bladeStrikeBonus(archLevel(app, view, 'magus-bladebound')) : 0);
 
 // Rolls a trait adds with one weapon (Heirloom Weapon, or Bullied with unarmed strikes): an attack of opportunity with
 // it (one attack at your highest bonus, +1 trait bonus) or the combat maneuver chosen for it (CMB, with Improved feats,
@@ -266,6 +274,22 @@ function traitRolls(app, view, w, args, crit, weaponName) {
   }
   if (kiWeaponsOn(app, view, w)) {
     out.push({ label: 'Ki weapons on', text: '', damage: '', note: `${kiWeaponsText(app.state.kiWeapons)}: counted in this weapon's numbers this round`, spec: null });
+  }
+  // Kensai perfect strike (4th) with the chosen weapon: on a hit, 1 arcane pool point for its most damage; on a
+  // confirmed critical, 2 points for 1 more on the multiplier. Use takes a point (tap it twice for the critical).
+  if (archLevel(app, view, 'magus-kensai') >= 4 && app.state.archChoices['magus-kensai:weapon'] === w.id) {
+    const most = maxDamage(weaponAttack(args).damage);
+    out.push({ label: 'Perfect strike', text: '', damage: '', spec: null, use: 'Arcane pool',
+      note: `on a hit, 1 arcane pool point: ${most !== null ? `${most} damage, ` : ''}the weapon's dice maximized (not extra dice, spellstrike or a critical) · on a confirmed critical, 2 points: ×${crit.mult + 1} instead of ×${crit.mult}` });
+  }
+  // The black blade's powers (bladebound): black blade strike as a switch (on: counted in the numbers), the others with Use.
+  const blade = archLevel(app, view, 'magus-bladebound');
+  if (isBlackBlade(args.entry)) {
+    for (const p of blackBladePowers(blade)) {
+      const on = p.id === 'strike' && !!app.state.bladeStrike;
+      out.push({ label: p.name, text: '', damage: '', spec: null, ...(p.id === 'strike' ? { toggle: { key: 'bladeStrike', on } } : { use: 'Black blade arcane pool' }),
+        note: on ? `on: +${bladeStrikeBonus(blade)} damage, counted in this weapon's numbers (1 minute)` : p.note });
+    }
   }
   for (const b of bondsOn(app, view, args.entry || {})) {
     out.push({ label: `${b.name} on`, text: '', damage: '', note: `${bondText(app.state.weaponBonds[b.id])}: counted in this weapon's numbers`, spec: null });

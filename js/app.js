@@ -9,7 +9,7 @@ import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
   repeatable, featEffects, slotCharacterLevel, CHOICE_FEATS, SPELL_SCHOOLS, featApplied, setBloodlineFeats, setStyleFeats,
 } from './feats.js';
-import { castingClasses } from './multiclass.js';
+import { castingClasses, casterLevelOf, ARCANE } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIALS } from './weapons.js';
 import { setUntrainedOk,
@@ -124,6 +124,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  bladeStrike: false,        // a black blade's black blade strike on (bladebound magus; tab-weapons.js)
   defenseBurn: 0,            // of that burn, the points accepted to raise her elemental defense (burn.js elementalDefense)
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
   spiritBoost: 0,            // Spirit Boost (oracle Life revelation): the oracle's level when switched on, 0 when off
@@ -261,6 +262,7 @@ function load(saved) {
   state.burn = Number.isInteger(state.burn) && state.burn > 0 ? Math.min(40, state.burn) : 0;
   state.buffer = Number.isInteger(state.buffer) && state.buffer > 0 ? Math.min(3, state.buffer) : 0;
   state.blastPlan = tidyBlastPlan(state.blastPlan);
+  state.bladeStrike = state.bladeStrike === true;
   state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
@@ -507,7 +509,7 @@ function load(saved) {
   const c = state.combat && typeof state.combat === 'object' ? state.combat : {};
   const hand = v => (typeof v === 'string' && /^\d+(:1)?$/.test(v) ? v : '');
   state.combat = { ...Object.fromEntries(['powerAttack', 'deadlyAim', 'rapidShot', 'pointBlank', 'combatExpertise', 'fightingDefensively', 'totalDefense', 'shieldOff', 'spellCombat', 'mountedCharge', 'linnormStyle', 'linnormStance', 'exploitWeakness', 'exploitDefense',
-    'kiFlurry', 'kiSpeed', 'kiDefense', 'kiStealth', 'ironLimb', 'ironLimbKi']
+    'kiFlurry', 'kiSpeed', 'kiDefense', 'kiStealth', 'ironLimb', 'ironLimbKi', 'arcaneStrike']
     .filter(k => c[k] === true).map(k => [k, true])),
                    ...(typeof c.conjured === 'string' && c.conjured ? { conjured: c.conjured } : {}),
                    ...(Number.isInteger(c.flowingDodge) && c.flowingDodge > 0 ? { flowingDodge: Math.min(20, c.flowingDodge) } : {}),
@@ -1030,6 +1032,7 @@ function initBuild() {
     if (bond) { popBond(app, bond.dataset.bBond); return; }
     const inf = e.target.closest('[data-b-infuse]');
     if (inf) { popBlast(app, inf.dataset.bInfuse); return; }
+    if (e.target.closest('[data-b-toggle="bladeStrike"]')) { toggleBladeStrike(); return; }
     const bondOff = e.target.closest('[data-b-bond-off]');
     if (bondOff) { const id = bondOff.dataset.bBondOff; update({ weaponBonds: { ...state.weaponBonds, [id]: { ...state.weaponBonds[id], on: false } } }); return; }
     // Gear: Use a potion, scroll or wand charge; a magic item's Details.
@@ -1099,6 +1102,14 @@ function changeBurn(how, times = 1) {
     tempHp = forceWardTemps(state.tempHp, max, how === 'ward' ? Infinity : ['more', 'defense'].includes(how) ? d.recover : 0);
   }
   update({ burn, defenseBurn, tempHp });
+}
+// Black blade strike on (a point from the black blade's pool) or off.
+function toggleBladeStrike() {
+  if (state.bladeStrike) { update({ bladeStrike: false }); return; }
+  const d = dailyUsesFor().find(x => x.name === 'Black blade arcane pool');
+  const used = state.daily[d?.key] || 0;
+  if (d && used >= d.max && !confirm('No points left in the black blade’s pool today. Switch it on anyway?')) return;
+  update({ bladeStrike: true, ...(d ? { daily: { ...state.daily, [d.key]: Math.min(d.max, used + 1) } } : {}) });
 }
 // Internal buffer: fill accepts 1 burn to store 1 point (up to its most); spend takes a point out instead of accepting burn.
 function changeBuffer(how) {
@@ -2419,7 +2430,8 @@ function computeView() {
   const defenseOpts = { bab: statsWith(gear).bab[0], haveFeats, acrobatics: state.skills.Acrobatics || 0,
                         shield: gear.shield?.name || '', conjured: conjuredArmors(counts),
                         magus: counts.find(e => e.cls.id === 'magus')?.level || 0, cavalier: counts.find(e => e.cls.id === 'cavalier')?.level || 0,
-                        monk: monkOpts, ninja: (counts.find(e => e.cls.id === 'ninja')?.level || 0) >= 2 };
+                        monk: monkOpts, ninja: (counts.find(e => e.cls.id === 'ninja')?.level || 0) >= 2,
+                        arcaneCL: Math.max(0, ...casting.casting.filter(c => ARCANE.has(c.cls.id)).map(c => casterLevelOf(c.cls, c.effectiveLevel))) };
   classFx.push(...defenseEffects(state.combat, defenseOpts));
   // A familiar's master bonus (wizard's arcane bond or a witch's familiar).
   const familiarNow = ['wizard', 'witch', 'sorcerer'].map(cid => classLevels.some(c => c.id === cid) && pathOf(cid, 'arcane-bond') || (cid === 'witch' && pathOf(cid, 'familiar')))
@@ -4907,6 +4919,7 @@ async function start() {
     if (ud) { spendDaily(ud.dataset.bUseDaily); openBigCard(ud.closest('[data-big-pop]').dataset.bigPop); return; }
     const inf = e.target.closest('.b-big [data-b-infuse]');
     if (inf) { popBlast(app, inf.dataset.bInfuse); return; }
+    if (e.target.closest('.b-big [data-b-toggle="bladeStrike"]')) { toggleBladeStrike(); openBigCard(e.target.closest('[data-big-pop]').dataset.bigPop); return; }
     const bn = e.target.closest('.b-big [data-b-burn]');
     if (bn) { changeBurn(bn.dataset.bBurn); openBigCard(bn.closest('[data-big-pop]').dataset.bigPop); return; }
     const bb = e.target.closest('.b-big [data-b-buffer]');

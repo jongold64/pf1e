@@ -198,7 +198,7 @@ export function setCombatSwitch(combat, key, on) {
   }
   c[key] = on;
   // Total defense means no attacks: it switches off the attack-time switches, and they switch it off.
-  if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; c.spellCombat = false; c.mountedCharge = false; c.exploitWeakness = false; }
+  if (on && key === 'totalDefense') { c.combatExpertise = false; c.fightingDefensively = false; c.spellCombat = false; c.mountedCharge = false; c.exploitWeakness = false; c.arcaneStrike = false; }
   if (on && ['combatExpertise', 'fightingDefensively', 'spellCombat', 'mountedCharge', 'exploitWeakness', 'kiFlurry'].includes(key)) c.totalDefense = false;
   // Iron limb defense: +2 or +4 (with ki), one at a time.
   if (on && key === 'ironLimbKi') c.ironLimb = false;
