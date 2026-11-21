@@ -356,7 +356,7 @@ export function renderBuild(app, view, parts) {
   const pools = daily.filter(d => MAIN_POOL.test(d.name)).map(d => `<span class="b-pool"><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
       <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span>${plus('daily', d.key, d.name)}</span>`).join('');
   const heroPts = state.houseRules.actionPoints && !state.antihero
-    ? `<span class="b-pool"><span>Hero points</span> <b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</span>` : '';
+    ? `<div class="b-hp-big b-hero-big"><span>Hero<br>points</span><b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</div>` : '';
   // Initiative in a box like HP's, beside it (the two things every fight starts with).
   const initBox = `<div class="b-hp-big b-init-big"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>`;
   const extras = `${pools}
@@ -369,7 +369,7 @@ export function renderBuild(app, view, parts) {
     : `<button type="button" class="b-portrait" data-b-portrait aria-label="Add a character portrait" title="Add a portrait">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
       <span>${esc(initials)}</span></button>`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}</div>${heroPts ? `<div class="b-ac-row">${heroPts}</div>` : ''}${numsRow}<div class="b-extras">${extras}</div></div></div></div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}${heroPts}</div>${numsRow}<div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
       <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}
