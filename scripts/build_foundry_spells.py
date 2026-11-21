@@ -134,6 +134,11 @@ def record(doc, book, taken):
     }
 
 
+# Damage of touch spells Foundry gives no formula for (hand-entered from the spell text).
+TOUCH_DAMAGE = {
+    'Chill Touch': {'formula': '1d6', 'types': ['negative']},
+    'Frostbite': {'formula': '1d6 + min(10, @cl)', 'types': ['cold', 'nonlethal']},
+}
 ACTION_KINDS = {'rsak': 'ranged touch', 'msak': 'melee touch', 'rwak': 'ranged', 'twak': 'ranged', 'mwak': 'melee',
                 'rcman': 'maneuver', 'mcman': 'maneuver', 'heal': 'heal', 'spellsave': 'save', 'save': 'save'}
 # "1d6 points of fire damage per caster level", "1d8/two levels damage", "1d6 damage per two levels".
@@ -195,7 +200,7 @@ def healing_from_text(summary, description):
     return None
 
 
-def actions(doc, summary=None, description=None):
+def actions(doc, summary=None, description=None, rng=None):
     """What a spell does that the app can put numbers on: [{name, kind, damage: [{formula, types}], extra_attacks,
     auto_hit, save, save_text, harmless}]. Formulas are Foundry's (roll formulas using @cl for caster level); a spell
     with no damage formula gets one read from its summary when it says "1d6 damage per level (max 10d6)"."""
@@ -225,6 +230,23 @@ def actions(doc, summary=None, description=None):
         heal = healing_from_text(summary, description)
         if heal:
             out.insert(0, {'name': 'Heal', 'kind': 'heal', 'damage': [{'formula': heal, 'types': []}]})
+    # A touch spell whose text calls for a melee touch attack (Chill Touch, Frostbite...) where Foundry has only a save or
+    # nothing: its first save action (or a new one) is the melee touch attack.
+    touch_range = str(rng or '').lower().startswith('touch') or any(
+        ((a.get('range') or {}).get('units') == 'touch') for a in (doc['system'].get('actions') or {}).values())
+    if (touch_range
+            and re.search(r'melee touch attack', f'{summary or ""} {description or ""}', re.I)
+            and not any(a['kind'] == 'melee touch' for a in out)):
+        first = next((a for a in out if a['kind'] in ('save', 'other')), None)
+        if first:
+            first['kind'] = 'melee touch'
+        else:
+            out.insert(0, {'name': 'Use', 'kind': 'melee touch'})
+    hand = TOUCH_DAMAGE.get(clean_name(doc.get('name') or ''))
+    if hand:
+        touch = next((a for a in out if a['kind'] == 'melee touch'), None)
+        if touch and not touch.get('damage'):
+            touch['damage'] = [dict(hand)]
     if not any(a.get('damage') for a in out):
         dmg = damage_from_text(summary, description)
         if dmg:
@@ -265,7 +287,7 @@ def main():
             continue
         existing = by_key.get(key(doc['name']))
         if existing:
-            acts = actions(doc, existing.get('summary'), existing.get('description'))
+            acts = actions(doc, existing.get('summary'), existing.get('description'), existing.get('range'))
             if acts:
                 existing['actions'] = acts
             else:
@@ -278,7 +300,7 @@ def main():
                     levels_added[cid] += 1
             continue
         rec = record(doc, book, {s['id'] for s in spells})
-        acts = actions(doc, rec['summary'], rec['description'])
+        acts = actions(doc, rec['summary'], rec['description'], rec.get('range'))
         if acts:
             rec['actions'] = acts
         if not rec['levels']:

@@ -108,7 +108,7 @@ def main():
         rec = {'id': sid, 'name': name, **{k: info[k] for k in ('source', 'school', 'subschool', 'descriptors')}, 'levels': levels,
                **{k: info[k] for k in ('casting_time', 'components', 'range', 'effects', 'duration', 'saving_throw', 'spell_resistance')},
                'summary': first.group(1) if first else None, 'description': info['description'], 'origin': ORIGIN}
-        acts = actions({'system': {}}, rec['summary'], rec['description'])
+        acts = actions({'system': {}, 'name': name}, rec['summary'], rec['description'], rec.get('range'))
         save = re.match(r'(Fortitude|Reflex|Will)\b', rec['saving_throw'] or '')
         if save and not any(a.get('save') for a in acts):
             act = acts[0] if acts else {'name': 'Use', 'kind': 'save'}

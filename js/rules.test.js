@@ -2467,6 +2467,7 @@ It does a thing. More.` });
       const { spellstrikeRoll } = await import('./spell-math.js');
       const { rollSpec } = await import('./dice.js');
       const spec = spellstrikeRoll('Shocking grasp', { attacks: [11, 6], damage: '1d8+7', threat: 19, mult: 3 }, '5d6', 'Shocking Grasp');
+      check('spellstrike with a touch spell without damage: just the weapon', JSON.stringify(spellstrikeRoll('x', { attacks: [11, 6], damage: '1d8+7', threat: 19, mult: 3 }, null, 'Ghoul Touch').groups[0]), '{"attacks":[11],"damage":"1d8+7","threat":19,"mult":3,"label":""}');
       check('spellstrike: one attack with the weapon’s bonus and threat', [spec.groups[0].attacks.join(), spec.groups[0].threat].join('|'), '11|19');
       // Every die rolls 2 and the d20 rolls 19: a threat, confirmed.
       const lines = rollSpec(spec, sides => (sides === 20 ? 19 : 2)).lines.join(' / ');

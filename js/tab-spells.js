@@ -102,8 +102,8 @@ export function spellNumbersHtml(view, cls, level, spell, strike = null) {
   const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
                              flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
   const parts = spellLines(spell, ctx).flatMap(l => [`<span class="b-spell-num">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}${l.roll ? ` ${rollButton(l.roll)}` : ''}</span>`,
-    ...(strike && l.kind === 'melee touch' && l.spellDamage ? [(g => `<span class="b-spell-num b-strike"><b>Spellstrike with ${esc(strike.name)}:</b> ${esc(signed(g.attacks[0]))}${g.threat < 20 ? ` (${g.threat}–20)` : ''}, ${esc(g.damage)} + ${esc(l.spellDamage)}
-      <small class="muted">(crit: weapon ×${g.mult || 2}, spell ×2)</small> ${rollButton(spellstrikeRoll(`${spell.name}: spellstrike with ${strike.name}`, g, l.spellDamage, spell.name))}</span>`)(strike.group)] : [])]);
+    ...(strike && l.kind === 'melee touch' ? [(g => `<span class="b-spell-num b-strike"><b>Spellstrike with ${esc(strike.name)}:</b> ${esc(signed(g.attacks[0]))}${g.threat < 20 ? ` (${g.threat}–20)` : ''}, ${esc(g.damage)} + ${l.spellDamage ? esc(l.spellDamage) : 'the spell'}
+      <small class="muted">(crit: weapon ×${g.mult || 2}${l.spellDamage ? ', spell ×2' : ''})</small> ${rollButton(spellstrikeRoll(`${spell.name}: spellstrike with ${strike.name}`, g, l.spellDamage, spell.name))}</span>`)(strike.group)] : [])]);
   const sr = srCheck(spell, ctx);
   if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr)}</span>`);
   return parts.join('');

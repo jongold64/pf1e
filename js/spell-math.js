@@ -228,7 +228,9 @@ export function spellLines(spell, ctx) {
 // weapon's attack roll, threat range and damage, with the spell's damage on a hit; on a confirmed critical the weapon
 // rolls its own multiplier and the spell ×2 (critOnce: rolled once more). weaponGroup: the weapon's Roll group
 // ({ attacks, damage, threat, mult, extra, burst }); spellDamage: "5d6"; spellName.
+// With no spell damage (a touch spell with only an effect), just the weapon's attack and damage.
 export function spellstrikeRoll(title, weaponGroup, spellDamage, spellName) {
+  if (!spellDamage) return { title, check: 'Attack', groups: [{ ...weaponGroup, label: '', attacks: [weaponGroup.attacks[0]] }] };
   const spellDice = { dice: spellDamage, type: spellName };
   return { title, check: 'Attack', groups: [{ ...weaponGroup, label: '', attacks: [weaponGroup.attacks[0]],
     extra: [...(weaponGroup.extra || []), spellDice], critOnce: [{ ...spellDice, type: `${spellName} (critical ×2)` }] }] };

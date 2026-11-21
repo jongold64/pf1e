@@ -5195,7 +5195,13 @@
     "saving_throw": "none",
     "spell_resistance": "yes",
     "summary": "Targeted dispel transfers an effect to you.",
-    "description": "This spell functions as a targeted dispel magic spell, except it only affects creatures and it requires a melee touch attack. If the melee touch attack is successful and the spell successfully dispels one spell affecting the target, that spell is instead transferred to you, treating you as the original target. You do not receive a new saving throw or spell resistance check against this spell and must accept its affects even if they are not beneficial. This does not alter the spell's duration; for example, if the spell only has 4 rounds of duration remaining when it is stolen, it only affects you for 4 rounds. If the spell or effect has a duration of permanent, its duration continues for 1 hour per caster level of the original caster, after which it ends. The stolen spell does not revert to the original target."
+    "description": "This spell functions as a targeted dispel magic spell, except it only affects creatures and it requires a melee touch attack. If the melee touch attack is successful and the spell successfully dispels one spell affecting the target, that spell is instead transferred to you, treating you as the original target. You do not receive a new saving throw or spell resistance check against this spell and must accept its affects even if they are not beneficial. This does not alter the spell's duration; for example, if the spell only has 4 rounds of duration remaining when it is stolen, it only affects you for 4 rounds. If the spell or effect has a duration of permanent, its duration continues for 1 hour per caster level of the original caster, after which it ends. The stolen spell does not revert to the original target.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "arcane-cannon",
@@ -7508,7 +7514,13 @@
     "saving_throw": "none",
     "spell_resistance": "no",
     "summary": "Dispels touched illusion or a creature's change in form.",
-    "description": "With a melee touch attack you can dispel an illusion or return a creature to its natural form. This functions as dispel magic directed at the effect in question, except you receive a +2 enhancement bonus on your dispel check and you can only dispel illusions or changes in form created by supernatural effects or spells. If multiple effects are changing the creature's appearance, you can dispel one such effect for every four caster levels you possess, starting with the highest caster level spells and proceeding to spells with lower caster levels. The caster level for supernatural abilities such as change shape is equal to the target creature's Hit Dice. A creature returned to its natural form by banish seeming is prevented from changing its form again for a number of rounds equal to your caster level.\n\nBanish seeming has no effect on nonmagical means of changing appearance, such as that provided by a disguise or extraordinary ability."
+    "description": "With a melee touch attack you can dispel an illusion or return a creature to its natural form. This functions as dispel magic directed at the effect in question, except you receive a +2 enhancement bonus on your dispel check and you can only dispel illusions or changes in form created by supernatural effects or spells. If multiple effects are changing the creature's appearance, you can dispel one such effect for every four caster levels you possess, starting with the highest caster level spells and proceeding to spells with lower caster levels. The caster level for supernatural abilities such as change shape is equal to the target creature's Hit Dice. A creature returned to its natural form by banish seeming is prevented from changing its form again for a number of rounds equal to your caster level.\n\nBanish seeming has no effect on nonmagical means of changing appearance, such as that provided by a disguise or extraordinary ability.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "banishing-blade",
@@ -15529,7 +15541,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "will",
         "save_text": "Will partial"
       }
@@ -16216,7 +16228,7 @@
       },
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "will",
         "save_text": "Will negates (see text)"
       }
@@ -17280,9 +17292,17 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
-        "save_text": "Fortitude partial or Will negates; see text"
+        "save_text": "Fortitude partial or Will negates; see text",
+        "damage": [
+          {
+            "formula": "1d6",
+            "types": [
+              "negative"
+            ]
+          }
+        ]
       }
     ]
   },
@@ -20115,7 +20135,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude negates"
       }
@@ -21139,7 +21159,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "other",
+        "kind": "melee touch",
         "damage": [
           {
             "formula": "(min(5, @cl))d4",
@@ -23526,7 +23546,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude partial (see text)"
       }
@@ -28803,7 +28823,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "will",
         "save_text": "Will negates"
       }
@@ -29366,7 +29386,13 @@
     "spell_resistance": "no",
     "summary": "You are protected from neutral enemies",
     "description": "Pulsing bronze energy surrounds you, bestowing three effects. First, you gain a +3 deflection bonus to AC against attacks by chaotic neutral, lawful neutral, neutral evil, and neutral good creatures. Against attacks by creatures whose alignment is neutral with no other alignment components, this deflection bonus is instead +5. Second, upon making a successful melee touch attack against a creature from another plane with a neutral component to its alignment, you can banish that creature back to its home plane. The creature's spell resistance applies to this attempt, and the creature can negate this effect with a successful Will save. If the creature's alignment is neutral with no other alignment components, the creature takes a -2 penalty on this saving throw. This use discharges and ends the spell. Third, with a touch, you can automatically dispel any one enchantment spell cast by a creature with a neutral component to its alignment. Spells that can't be dispelled by dispel magic also can't be dispelled by dispel balance. Saving Throws and spell resistance do not apply to this effect. This use discharges and ends the spell.",
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "dispel-chaos",
@@ -29421,7 +29447,13 @@
     "saving_throw": "see text",
     "spell_resistance": "see text",
     "summary": "+4 bonus against attacks by evil creatures.",
-    "description": "Shimmering, white holy energy surrounds you. This energy has three effects.\n\nFirst, you gain a +4 deflection bonus to AC against attacks by evil creatures.\n\nSecond, on making a successful melee touch attack against an evil creature from another plane, you can choose to drive that creature back to its home plane. The creature can negate the effects with a successful Will save (spell resistance applies). This use discharges and ends the spell.\n\nThird, with a touch you can automatically dispel any one enchantment spell cast by an evil creature or any one evil spell. Spells that can't be dispelled by dispel magic also can't be dispelled by dispel evil. Saving throws and spell resistance do not apply to this effect. This use discharges and ends the spell."
+    "description": "Shimmering, white holy energy surrounds you. This energy has three effects.\n\nFirst, you gain a +4 deflection bonus to AC against attacks by evil creatures.\n\nSecond, on making a successful melee touch attack against an evil creature from another plane, you can choose to drive that creature back to its home plane. The creature can negate the effects with a successful Will save (spell resistance applies). This use discharges and ends the spell.\n\nThird, with a touch you can automatically dispel any one enchantment spell cast by an evil creature or any one evil spell. Spells that can't be dispelled by dispel magic also can't be dispelled by dispel evil. Saving throws and spell resistance do not apply to this effect. This use discharges and ends the spell.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "dispel-good",
@@ -36492,7 +36524,13 @@
     "spell_resistance": "no",
     "summary": "Create an illusory duplicate of your familiar to fool enemies.",
     "description": "You create an illusory duplicate of your familiar that moves erratically around your familiar's space, frequently moving through the familiar's body with a blurring effect that makes it indistinguishable from the real creature. Attacks against the familiar have a 50% miss chance; attacks that miss instead target the familiar figment, which reacts as if damaged as appropriate to the attack but unlike a mirror image is not destroyed when struck. This spell does not grant your familiar concealment or prevent it from being targeted by spell effects that do not require an attack roll. In addition, as a swift action, your familiar can direct the familiar figment to attempt a melee touch attack, using your base attack bonus and the familiar's Dexterity modifier. If this attack hits, your familiar (but not other creatures) treats that target as flanked until the end of its turn.",
-    "origin": "Foundry VTT pf1"
+    "origin": "Foundry VTT pf1",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "familiar-melding",
@@ -40190,7 +40228,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude partial",
         "damage": [
@@ -41588,7 +41626,22 @@
     "saving_throw": "none",
     "spell_resistance": "yes",
     "summary": "Target takes cold damage and is fatigued.",
-    "description": "Your melee touch attack deals 1d6 points of nonlethal cold damage + 1 point per level, and the target is fatigued. The fatigued condition ends when the target recovers from the nonlethal damage. This spell cannot make a creature exhausted even if it is already fatigued. You can use this melee touch attack up to one time per level."
+    "description": "Your melee touch attack deals 1d6 points of nonlethal cold damage + 1 point per level, and the target is fatigued. The fatigued condition ends when the target recovers from the nonlethal damage. This spell cannot make a creature exhausted even if it is already fatigued. You can use this melee touch attack up to one time per level.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch",
+        "damage": [
+          {
+            "formula": "1d6 + min(10, @cl)",
+            "types": [
+              "cold",
+              "nonlethal"
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "frosthammer",
@@ -44363,7 +44416,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude partial (see text)"
       }
@@ -46251,7 +46304,13 @@
     "saving_throw": "none",
     "spell_resistance": "yes",
     "summary": "You siphon half of all magical healing that the targeted creature receives.",
-    "description": "With this spell you can steal the healing of the target creature. You must succeed at a melee touch attack to strike the target. If you do, until the effect ends, whenever your target is subject to a healing spell or a supernatural effect that heals hit points, the target only receives half the healing (rounded down) and you receive the other half (also rounded down). You must remain within 25 feet (plus 5 feet per two caster levels) of the target to gain this benefit. If you move outside that range, the spell is discharged. Once you steal 5 hit points per your caster level (maximum 50 hit points) of healing from this spell's effect, the spell is discharged."
+    "description": "With this spell you can steal the healing of the target creature. You must succeed at a melee touch attack to strike the target. If you do, until the effect ends, whenever your target is subject to a healing spell or a supernatural effect that heals hit points, the target only receives half the healing (rounded down) and you receive the other half (also rounded down). You must remain within 25 feet (plus 5 feet per two caster levels) of the target to gain this benefit. If you move outside that range, the spell is discharged. Once you steal 5 hit points per your caster level (maximum 50 hit points) of healing from this spell's effect, the spell is discharged.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "healing-token",
@@ -71970,7 +72029,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude negates; see text"
       }
@@ -94578,7 +94637,13 @@
     "saving_throw": "none",
     "spell_resistance": "yes",
     "summary": "Touch attack deals 3d6 damage and staggers target.",
-    "description": "This spell covers your hand with a writhing black aura. As part of casting the spell, you can make a melee touch attack that deals 2d6 points of negative energy damage and causes the target to be staggered for 1 round. If the attack is a critical hit, the target is staggered for 1 minute instead. Creatures immune to precision damage are immune to the staggered effect."
+    "description": "This spell covers your hand with a writhing black aura. As part of casting the spell, you can make a melee touch attack that deals 2d6 points of negative energy damage and causes the target to be staggered for 1 round. If the attack is a critical hit, the target is staggered for 1 minute instead. Creatures immune to precision damage are immune to the staggered effect.",
+    "actions": [
+      {
+        "name": "Use",
+        "kind": "melee touch"
+      }
+    ]
   },
   {
     "id": "strip-scales",
@@ -100477,7 +100542,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude negates"
       }
@@ -102252,7 +102317,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude negates"
       }
@@ -102339,7 +102404,7 @@
     "actions": [
       {
         "name": "Touch",
-        "kind": "save",
+        "kind": "melee touch",
         "damage": [
           {
             "formula": "1d6",
@@ -102563,7 +102628,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "fort",
         "save_text": "Fortitude negates"
       }
@@ -102609,7 +102674,7 @@
     "actions": [
       {
         "name": "Use",
-        "kind": "save",
+        "kind": "melee touch",
         "save": "will",
         "save_text": "Will negates"
       }
