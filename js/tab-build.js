@@ -81,7 +81,8 @@ export function renderBuild(app, view, parts) {
           <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
           <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
-  const acBox = `<div class="b-ac"><span>AC</span><b>${stats.ac}</b><span class="muted">touch ${stats.touch} · flat-footed ${stats.flatFooted}</span>${plus('ac', '', 'AC')}</div>`;
+  // AC in a white box like Init's, beside it.
+  const acBox = `<div class="b-hp-big b-ac b-ac-big"><span>AC</span><b>${stats.ac}</b><span class="muted b-ac-sub"><span>touch ${stats.touch}</span> <span>flat-footed ${stats.flatFooted}</span></span>${plus('ac', '', 'AC')}</div>`;
   // The banner's row of numbers (under AC): saves, BAB, CMB with CMD, speed (and a fly speed), each with its d20 and ?.
   const num = (label, value, rollHtml = '', plusHtml = '', note = '') => `<span class="b-num"><span>${label}</span><b>${value}</b>${note ? `<span class="muted">${note}</span>` : ''}${rollHtml}${plusHtml}</span>`;
   const bSave = (label, key) => num(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
@@ -368,7 +369,7 @@ export function renderBuild(app, view, parts) {
     : `<button type="button" class="b-portrait" data-b-portrait aria-label="Add a character portrait" title="Add a portrait">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
       <span>${esc(initials)}</span></button>`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}</div><div class="b-ac-row">${acBox}${heroPts}</div>${numsRow}<div class="b-extras">${extras}</div></div></div></div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}</div>${heroPts ? `<div class="b-ac-row">${heroPts}</div>` : ''}${numsRow}<div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
       <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}
