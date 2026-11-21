@@ -58,7 +58,8 @@ export function renderBuild(app, view, parts) {
 
   // Core numbers.
   // One row of the numbers card: label, value, d20, ?, then a note (CMD); an empty cell keeps the columns lined up.
-  const stat = (label, value, rollHtml = '', plusHtml = '', note = '') => `<div class="b-stat"><span>${label}</span><b>${value}</b>${rollHtml || '<span></span>'}${plusHtml || '<span></span>'}${note ? `<span class="muted">${note}</span>` : ''}</div>`;
+  // A long value (a DR or Resist list) takes the rest of the row and may wrap (b-long), so it doesn't run off a narrow card.
+  const stat = (label, value, rollHtml = '', plusHtml = '', note = '') => `<div class="b-stat"><span>${label}</span><b${String(value).replace(/<[^>]*>|&[a-z]+;/g, 'x').length > 12 ? ' class="b-long"' : ''}>${value}</b>${rollHtml || '<span></span>'}${plusHtml || '<span></span>'}${note ? `<span class="muted">${note}</span>` : ''}</div>`;
   const save = (label, key) => stat(label, signed(stats[key]), roll(check(label, stats[key]), label), plus('save', { fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[key], label));
   const dr = [...(view.gear.dr ? [`${view.gear.dr}/—`] : []), ...(view.classDr || []).map(d => `${d.value}/${d.against}`),
     ...effectDr(view.buffs).map(d => `${d.value}/${d.against} (${d.from})`)];
@@ -88,8 +89,8 @@ export function renderBuild(app, view, parts) {
         <div class="b-grid">
           ${save('Fort', 'fort')}${save('Ref', 'ref')}${save('Will', 'will')}
           ${stat('BAB', esc(formatBab(stats.bab)), roll({ title: 'Base attack bonus', check: 'BAB', groups: [{ attacks: stats.bab }] }, 'BAB'))}
-          ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD ${cmd}`)}
-          ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'), fly ? `fly ${fly.speed} ft.${fly.maneuverability ? ` (${fly.maneuverability})` : ''}` : '')}
+          ${stat('CMB', signed(cmb), roll({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cmb] }] }, 'CMB'), plus('cmb', '', 'CMB and CMD'), `CMD&nbsp;${cmd}`)}
+          ${stat('Speed', view.speed ? `${view.speed} ft.` : '—', '', plus('result', 'speed', 'speed'), fly ? `fly&nbsp;${fly.speed}&nbsp;ft.${fly.maneuverability ? ` (${fly.maneuverability})` : ''}` : '')}
           ${dr.length ? stat('DR', esc(dr.join(', '))) : ''}
           ${resist.length ? stat('Resist', esc(resist.join(', '))) : ''}
           ${view.sr && (view.sr.value || view.sr.notes.length) ? stat('SR', view.sr.value ? String(view.sr.value) : '—', '', '', esc([view.sr.from, ...view.sr.notes].filter(Boolean).join(' · '))) : ''}

@@ -952,6 +952,10 @@ table.srd-table caption { text-align: left; font-weight: 600; padding: 4px 0; }
 /* While a card is being fitted (fitCards in tab-build.js): its rows on one line, except what may wrap. */
 .b-fitting :is(.b-table, .b-ab, .b-stat, .b-skills > div, .b-feat, .b-switch),
 .b-fitting :is(.b-table, .b-ab, .b-stat, .b-skills > div, .b-feat, .b-switch) * { white-space: nowrap; }
+/* A stat's note (CMD, fly 60 ft. (average)) goes on its own line under the value, and a long value (DR, Resist) takes the
+   rest of the row; both may wrap, so neither runs past a narrow card. */
+.b-stat > .muted, .b-fitting .b-stat > .muted { grid-column: 2 / -1; white-space: normal; min-width: 0; margin-top: -4px; font-size: 0.85em; }
+.b-stat > b.b-long, .b-fitting .b-stat > b.b-long { grid-column: 2 / -1; white-space: normal; min-width: 0; }
 .b-fitting :is(small, .muted, .b-class-table *, .b-spell-nums, .b-spell-nums *, .b-summary, .hint) { white-space: normal; }
 .b-switches { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 4px; }
 .b-switch { display: inline-flex; align-items: center; gap: 4px; }

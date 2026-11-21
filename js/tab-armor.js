@@ -121,7 +121,7 @@ function renderArmorList(app) {
   $('armor-list').innerHTML = groups.map(([cat, label]) => {
     const list = data.armor.filter(a => a.category === cat).sort((x, y) => x.name.localeCompare(y.name));
     return list.length ? `<section class="list-group"><h3 class="list-heading">${esc(label)} <span class="count">${list.length}</span></h3>
-      <ul class="pick-list armor-pick">${list.map(a => {
+      <ul class="pick-list">${list.map(a => {
         const worn = state.armorId === a.id || state.shieldId === a.id;
         return `<li class="with-details"><button type="button" data-armor-pop="${esc(a.id)}"${worn ? ' class="mine"' : ''}>${worn ? '<span class="status met" title="Wearing">✓</span>' : ''}${esc(a.name)}
           <small>${esc(signed(a.bonus))}${a.max_dex !== null ? ` · max Dex ${esc(signed(a.max_dex))}` : ''}${a.price_gp !== null ? ` · ${esc(formatGp(a.price_gp))}` : ''}</small></button>
