@@ -356,7 +356,7 @@ export function renderBuild(app, view, parts) {
   const pools = daily.filter(d => MAIN_POOL.test(d.name)).map(d => `<span class="b-pool"><button type="button" class="link" data-b-uses="${esc(d.key)}">${esc(d.name)}</button>
       <b>${usesLeft(d, state.daily)}</b><span class="muted">/ ${d.max}${d.unit === 'uses' ? '' : ` ${esc(d.unit)}`}</span>${plus('daily', d.key, d.name)}</span>`).join('');
   const heroPts = state.houseRules.actionPoints && !state.antihero
-    ? `<div class="b-hp-big b-hero-big"><span>Hero<br>points</span><b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</div>` : '';
+    ? `<div class="b-hp-big b-hero-big" role="button" tabindex="0" title="Spend a hero point"><span>Hero<br>points</span><b>${state.heroPoints ?? 1}</b>${plus('hero', '', 'hero points')}</div>` : '';
   // Initiative in a box like HP's, beside it (the two things every fight starts with).
   const initBox = `<div class="b-hp-big b-init-big"><span>Init</span><b>${signed(init)}</b>${roll(check('Initiative', init), 'initiative')}${plus('init', '', 'initiative')}</div>`;
   const extras = `${pools}

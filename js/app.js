@@ -990,6 +990,8 @@ function initBuild() {
     if (big && !e.target.closest('button, [data-roll], input, select, a, label, textarea')) { openBigCard(big.dataset.big); return; }
     // Ki weapons (talented monk): choose and switch on in its popup, or switch off.
     if (e.target.closest('[data-b-kiw]')) { popKiWeapons(app); return; }
+    // The Hero points box: a tap anywhere on it opens the popup to spend one.
+    if (e.target.closest('.b-hero-big')) { popHeroPoints(); return; }
     if (e.target.closest('[data-b-kiw-off]')) { update({ kiWeapons: { ...state.kiWeapons, on: false } }); return; }
     // Arcane pool, divine bond, fiendish boon, sacred weapon (weapon-bonds.js): the same, in their own popup.
     const bond = e.target.closest('[data-b-bond]');
@@ -1238,8 +1240,7 @@ function buildDetail(kind, arg) {
     openDetail(c.name, `<p>${c.attack !== null ? `<b>${esc(signed(c.attack))}</b> to hit${c.count > 1 ? ` (${c.count} attacks)` : ''} · ` : ''}${c.dice ? `<b>${esc(c.dice)}</b>${c.attack === null ? ` ${c.word || 'extra damage'}` : ' damage'}` : `<b>${esc(c.dc || '')}</b>`}</p>
       ${c.note ? `<p class="hint">${esc(c.note)}</p>` : ''}${text ? paragraphs(text) : ''}`);
   } else if (kind === 'hero') {
-    openDetail('Hero points', `<p><b>${state.heroPoints ?? 1}</b> of ${heroPointMax(view.haveFeats)} at most. Spend them, or add ones the GM awards, on the Build tab.</p>
-      <ul>${HERO_POINT_USES.map(u => `<li><b>${esc(u.label)}${u.cost > 1 ? ` (${u.cost} points)` : ''}:</b> ${esc(u.text)}</li>`).join('')}</ul>`);
+    popHeroPoints();
   } else if (kind === 'classfeat') {
     // Channel energy, lay on hands, smite...: the class feature's rules text.
     const text = classFeatureText(arg);
@@ -1493,20 +1494,7 @@ function buildControls() {
     if (e.target.closest('[data-cmb-details]')) showManeuverDetails();
   });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
-  $('hero-points').addEventListener('click', e => {
-    const add = e.target.closest('[data-hero-add]');
-    if (add) {
-      heroNote = '';
-      update({ heroPoints: clampHeroPoints((state.heroPoints ?? 1) + Number(add.dataset.heroAdd), view.haveFeats) });
-    }
-    const use = e.target.closest('[data-hero-use]');
-    if (use) {
-      const luck = HERO_POINT_USES.find(u => u.id === use.dataset.heroUse)?.luck && view.haveFeats.includes('Luck of Heroes');
-      const r = spendHeroPoint(state.heroPoints ?? 1, use.dataset.heroUse, { haveFeats: view.haveFeats, d20: luck ? randomDie(20) : null });
-      heroNote = r.note;
-      update({ heroPoints: r.points });
-    }
-  });
+  $('hero-points').addEventListener('click', heroClick);
   $('hero-points').addEventListener('change', e => {
     if (e.target.id === 'antihero') update({ antihero: e.target.checked });
   });
@@ -4294,10 +4282,14 @@ function renderHeroPoints() {
     box.innerHTML = `<h3>Hero points</h3>${antihero}`;
     return;
   }
+  box.innerHTML = `<h3>Hero points</h3>${heroPanel()}${antihero}`;
+}
+// The hero points count with − and +, a button for each way to spend one, and what each does: on the Build tab and in
+// the Character tab's Hero points popup.
+function heroPanel() {
   const points = state.heroPoints ?? 1;
   const max = heroPointMax(view.haveFeats);
-  box.innerHTML = `<h3>Hero points</h3>
-    <div class="hero-count"><b>${points}</b><span class="muted">of ${max} at most</span>
+  return `<div class="hero-count"><b>${points}</b><span class="muted">of ${max} at most</span>
       <span class="base"><button type="button" data-hero-add="-1" aria-label="One fewer hero point">−</button>
         <button type="button" data-hero-add="1" aria-label="One more hero point (awarded by the GM)">+</button></span></div>
     <p class="hint">Spend one (no action; at most 1 a round, cheating death takes 2). + is for points the GM awards; each
@@ -4306,9 +4298,27 @@ function renderHeroPoints() {
       ${points < u.cost ? 'disabled' : ''}>${esc(u.label)}${u.cost > 1 ? ` (${u.cost})` : ''}</button>`).join('')}</div>
     <p id="hero-note" class="hero-note">${esc(heroNote)}</p>
     <details><summary>What each use does</summary><ul>${HERO_POINT_USES.map(u =>
-      `<li><b>${esc(u.label)}${u.cost > 1 ? ` (${u.cost} points)` : ''}:</b> ${esc(u.text)}</li>`).join('')}</ul></details>
-    ${antihero}`;
+      `<li><b>${esc(u.label)}${u.cost > 1 ? ` (${u.cost} points)` : ''}:</b> ${esc(u.text)}</li>`).join('')}</ul></details>`;
 }
+// A click on the hero points panel: + / − or a way to spend one. True when it was one of those.
+function heroClick(e) {
+  const add = e.target.closest('[data-hero-add]');
+  if (add) {
+    heroNote = '';
+    update({ heroPoints: clampHeroPoints((state.heroPoints ?? 1) + Number(add.dataset.heroAdd), view.haveFeats) });
+    return true;
+  }
+  const use = e.target.closest('[data-hero-use]');
+  if (use) {
+    const luck = HERO_POINT_USES.find(u => u.id === use.dataset.heroUse)?.luck && view.haveFeats.includes('Luck of Heroes');
+    const r = spendHeroPoint(state.heroPoints ?? 1, use.dataset.heroUse, { haveFeats: view.haveFeats, d20: luck ? randomDie(20) : null });
+    heroNote = r.note;
+    update({ heroPoints: r.points });
+    return true;
+  }
+  return false;
+}
+const popHeroPoints = () => openDetail('Hero points', `<div class="hero-pop">${heroPanel()}</div>`);
 
 // Drawbacks card (Drawbacks house rule): pick one drawback from the list; its full text shows, and it adds a trait slot.
 function renderDrawback() {
@@ -4851,6 +4861,8 @@ async function start() {
     if (bn) { changeBurn(bn.dataset.bBurn); openBigCard(bn.closest('[data-big-pop]').dataset.bigPop); return; }
     const bb = e.target.closest('.b-big [data-b-buffer]');
     if (bb) { changeBuffer(bb.dataset.bBuffer); openBigCard(bb.closest('[data-big-pop]').dataset.bigPop); return; }
+    // The Hero points popup (Character tab): spend one or change the count, and it shows the new count.
+    if (e.target.closest('.hero-pop') && heroClick(e)) { popHeroPoints(); return; }
     const uo = e.target.closest('.b-big [data-b-uses]');
     if (uo) { popDailyUses(app, view, buildParts(), uo.dataset.bUses); return; }
     const use = e.target.closest('.b-big [data-b-use-item]');
