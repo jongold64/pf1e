@@ -14,8 +14,7 @@ import { castingClasses, casterLevelOf, ARCANE } from './multiclass.js';
 import { checkRequirements, castingByTradition } from './prestige.js';
 import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIALS } from './weapons.js';
 import { setUntrainedOk,
-  SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
-} from './skills.js';
+  SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal, setCustomSkills } from './skills.js';
 import { armorEffects, speedInArmor, withRacialMaxDex, armorAttackPenalty } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, switchValue, showDefenseWhy } from './tab-armor.js';
@@ -35,6 +34,7 @@ import { tidyCustomWeapons, customWeaponRecord } from './custom-weapons.js';
 import { tidyCustomSpells, customSpellRecord } from './custom-spells.js';
 import { tidyCustomArmor, customArmorRecord } from './custom-armor.js';
 import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from './custom-feats.js';
+import { tidyCustomSkills } from './custom-skills.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -136,6 +136,7 @@ const state = {
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
+  customSkills: [],          // custom skills (Skills tab, Custom): custom-skills.js
   customFeats: [],           // custom feats' definitions (Feats tab, Custom): custom-feats.js
   customArmor: [],           // custom armor and shields' definitions (Armor tab, Custom): custom-armor.js
   customSpells: [],          // custom spells' definitions (Spells tab, Custom): custom-spells.js
@@ -412,6 +413,9 @@ function load(saved) {
   state.traits = (Array.isArray(state.traits) ? state.traits : []).slice(0, 4)
     .map(id => (typeof id === 'string' && data.traitsById.has(id) ? id : null));
   if (typeof state.skills !== 'object' || state.skills === null) state.skills = {};
+  // Custom skills join the skill list first, so their ranks stay.
+  state.customSkills = tidyCustomSkills(state.customSkills, SKILLS.filter(s => !s.custom).map(s => s.name));
+  setCustomSkills(state.customSkills);
   for (const [name, ranks] of Object.entries(state.skills)) {
     const known = SKILLS.some(s => s.name === name && !s.family) || state.specialties.includes(name);
     if (!known || !Number.isInteger(ranks) || ranks < 0) delete state.skills[name];
@@ -2212,6 +2216,7 @@ function initTabSearches() {
   };
   live('feat-tab-search-form', 'feat-tab-search', renderFeatTabSearch);
   initFeatAdd();
+  initSkillFilters();
   $('feat-tab-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-feat-result]');
     if (btn) openFeatForSlots(btn.dataset.featResult);
@@ -2443,8 +2448,10 @@ function skillFeatNames() {
 }
 
 // A skill's total as the Skills tab shows it (used for the Spellcraft check when crafting magic items).
+// A custom skill marked as a class skill.
+const customClassSkill = name => (state.customSkills || []).some(d => d.classSkill && d.name === name);
 function skillTotalFor(name) {
-  const isClassSkill = view.allClassSkills || classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = view.allClassSkills || classSkillTest([...view.classes, pathSkills()])(name) || view.traitFx.classSkills.has(name) || customClassSkill(name);
   const featNames = skillFeatNames();
   return skillTotal({ name, ranks: state.skills[name] || 0, scores: view.stats.scores, isClassSkill,
                       racialBonuses: racialSkillBonuses(view.race), featNames, checkPenalty: view.gear.checkPenalty,
@@ -2584,6 +2591,7 @@ function syncCustomFeats() {
 const FEAT_BONUS_TARGETS = TARGETS;
 
 function computeView() {
+  setCustomSkills(state.customSkills || []);
   syncCustomWeapons();
   syncCustomSpells();
   syncCustomArmor();
@@ -4474,6 +4482,8 @@ function openSpecialtyPicker(base) {
 // What a skill does, as the SRD gives it (data/skills.json, Core Rulebook): its description, then each section (Check,
 // Action, Try Again, Special, Untrained...) with its tables. "Knowledge (arcana)", "Craft (bows)": the skill's own entry.
 function skillTextHtml(name) {
+  const custom = (state.customSkills || []).find(d => d.name === name);
+  if (custom) return custom.description ? `<h3>${esc(name)}</h3>${paragraphs(custom.description)}` : '';
   const base = splitSkill(name).base || name;
   const s = data.skillTextByName?.get(base) || data.skillTextByName?.get(name);
   if (!s) return '';
@@ -4495,7 +4505,7 @@ let ranksToDo = 0;  // skill ranks left to spend (negative: too many), for the S
 function renderSkills(race, classes, scores, featNames) {
   // Class skills from the classes, plus any a chosen trait makes a class skill.
   const byClass = classSkillTest([...classes, pathSkills()]);
-  const isClassSkill = name => view.allClassSkills || byClass(name) || view.traitFx.classSkills.has(name);
+  const isClassSkill = name => view.allClassSkills || byClass(name) || view.traitFx.classSkills.has(name) || customClassSkill(name);
   const racial = racialSkillBonuses(race);
   const byLevel = skillRanksByLevel({
     race, classLevels: view.classLevels, favoredClassId: view.favoredClassId, baseScores: state.base,
@@ -4525,7 +4535,18 @@ function renderSkills(race, classes, scores, featNames) {
       <p>${used > available ? `<b class="warning">${used - available} more than you have.</b>` : `<b>${available - used} left.</b>`}
         At most ${state.level} rank${state.level === 1 ? '' : 's'} in one skill (your level).</p>`);
   };
-  const shownNames = names;
+  // The filter buttons (all, class skills, with ranks, by ability, trained only) and Custom.
+  renderSkillFilters();
+  const match = name => {
+    const info = skillInfo(name);
+    if (skillFilter === 'class') return isClassSkill(name);
+    if (skillFilter === 'ranks') return (state.skills[name] || 0) > 0;
+    if (skillFilter === 'trained') return !!info?.trained;
+    if (skillFilter === 'custom') return !!info?.custom;
+    if (skillFilter) return info?.ability === skillFilter;
+    return true;
+  };
+  const shownNames = names.filter(match);
   $('skill-count').textContent = `${used} of ${available} ranks used`;
   $('skill-count').classList.toggle('over', used > available);
 
@@ -4577,7 +4598,8 @@ function renderSkills(race, classes, scores, featNames) {
                             traitBonuses: view.traitFx.skills, effectBonus: view.stats.fx.skills + oneSkillFx(name) + flawSkill(name), size: view.size });
     return `<tr${specialty ? ' class="specialty"' : ''} data-row-skill="${esc(name)}">
       <td><div class="skill-name">${esc(name)} ${tags}
-          ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}</div>
+          ${specialty ? `<button type="button" class="link" data-remove-specialty="${esc(name)}" aria-label="Remove ${esc(name)}">remove</button>` : ''}
+          ${info.custom ? `<span class="tag muted">custom</span> <button type="button" class="link" data-csk-edit="${esc(name)}">change</button>` : ''}</div>
         ${ranks > state.level ? `<div class="warning">More than ${state.level} ranks</div>` : ''}</td>
       <td><span class="base">
         <button type="button" data-skill="${esc(name)}" data-skill-step="-1" aria-label="Fewer ranks in ${esc(name)}">−</button>
@@ -4587,6 +4609,89 @@ function renderSkills(race, classes, scores, featNames) {
       <td class="total">${signed(t.total)}${rollButton({ title: `${name} check${t.usable ? '' : ' (untrained)'}`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}${details(name)}</td>
     </tr>`;
   }).join('');
+}
+
+// Skills tab: filter buttons and the Custom skill builder.
+let skillFilter = '';
+let skillCustomOpen = false;
+let skDraft = null;
+const freshSkill = () => ({ id: '', name: '', ability: 'int', trained: false, acp: false, classSkill: false, description: '' });
+const SKILL_FILTERS = [['', 'All'], ['class', 'Class skills'], ['ranks', 'With ranks'], ['str', 'Str'], ['dex', 'Dex'], ['con', 'Con'],
+  ['int', 'Int'], ['wis', 'Wis'], ['cha', 'Cha'], ['trained', 'Trained only']];
+function renderSkillFilters() {
+  const list = [...SKILL_FILTERS, ...(state.customSkills.length ? [['custom', 'My custom skills']] : [])];
+  $('skill-filter-buttons').innerHTML = list.map(([k, l]) => `<button type="button" data-skill-filter="${k}" aria-pressed="${!skillCustomOpen && skillFilter === k}">${esc(l)}</button>`).join('')
+    + `<button type="button" class="add-custom" data-skill-custom aria-pressed="${skillCustomOpen}">Custom</button>`;
+  $('skill-custom-wrap').hidden = !skillCustomOpen;
+  if (skillCustomOpen) renderSkillCustom();
+}
+function renderSkillCustom() {
+  skDraft ??= freshSkill();
+  const d = skDraft;
+  const opt = (list, v) => list.map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  $('skill-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-csk="name" value="${esc(d.name)}" placeholder="e.g. Sailing" maxlength="40"></label>
+      <label>Key ability <select data-csk="ability">${opt([['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']], d.ability)}</select></label>
+      <label class="check-row"><input type="checkbox" data-csk="trained"${d.trained ? ' checked' : ''}> Trained only</label>
+      <label class="check-row"><input type="checkbox" data-csk="acp"${d.acp ? ' checked' : ''}> Armor check penalty applies</label>
+      <label class="check-row"><input type="checkbox" data-csk="classSkill"${d.classSkill ? ' checked' : ''}> A class skill for me (+3 with a rank)</label>
+    </div>
+    <label>What it does <textarea data-csk="description" rows="2" maxlength="1000" placeholder="How the skill is used">${esc(d.description)}</textarea></label>
+    <p class="hint">It joins your skills: put ranks in it like any other; it shows on the Character tab with its roll.</p>
+    <div class="line-controls"><button type="button" class="primary" data-csk-save>${d.id ? 'Save changes' : 'Add it'}</button>
+      <button type="button" data-csk-clear>${d.id ? 'Stop changing it' : 'Clear'}</button>
+      ${d.id ? '<button type="button" data-csk-delete>Delete it</button>' : ''}
+      <button type="button" data-csk-cancel>Cancel</button></div></div>`;
+}
+function initSkillFilters() {
+  $('skill-filter-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-skill-filter], [data-skill-custom]');
+    if (!b) return;
+    if (b.hasAttribute('data-skill-custom')) { skillCustomOpen = !skillCustomOpen; render(); return; }
+    skillCustomOpen = false;
+    skillFilter = b.dataset.skillFilter;
+    render();
+  });
+  $('skill-rows').addEventListener('click', e => {
+    const ed = e.target.closest('[data-csk-edit]');
+    if (!ed) return;
+    const d = state.customSkills.find(x => x.name === ed.dataset.cskEdit);
+    if (d) { skDraft = { ...d }; skillCustomOpen = true; render(); $('skills-card').scrollIntoView({ block: 'start' }); }
+  });
+  const box = $('skill-custom-wrap');
+  box.addEventListener('input', e => { const k = e.target.dataset.csk; if (k === 'name' || k === 'description') skDraft[k] = e.target.value; });
+  box.addEventListener('change', e => {
+    const k = e.target.dataset.csk;
+    if (k === 'ability') skDraft.ability = e.target.value;
+    else if (['trained', 'acp', 'classSkill'].includes(k)) skDraft[k] = e.target.checked;
+  });
+  box.addEventListener('click', e => {
+    if (e.target.closest('[data-csk-clear]')) { skDraft = freshSkill(); renderSkillCustom(); return; }
+    if (e.target.closest('[data-csk-cancel]')) { skDraft = freshSkill(); skillCustomOpen = false; render(); return; }
+    if (e.target.closest('[data-csk-delete]')) {
+      const d = skDraft;
+      if (!confirm(`Delete the ${d.name} skill? Its ranks come back to you.`)) return;
+      const { [state.customSkills.find(x => x.id === d.id)?.name]: _, ...skills } = state.skills;
+      update({ customSkills: state.customSkills.filter(x => x.id !== d.id), skills });
+      skDraft = freshSkill(); skillCustomOpen = false; render();
+      return;
+    }
+    if (!e.target.closest('[data-csk-save]')) return;
+    const name = skDraft.name.trim();
+    const taken = SKILLS.filter(s => !(s.custom && state.customSkills.find(x => x.id === skDraft.id)?.name === s.name)).map(s => s.name.toLowerCase());
+    if (!name) { alert('Give the skill a name.'); return; }
+    if (taken.includes(name.toLowerCase())) { alert(`There's already a skill called ${name}.`); return; }
+    const def = { ...skDraft, name };
+    const old = state.customSkills.find(x => x.id === def.id);
+    let skills = state.skills;
+    if (old && old.name !== name && skills[old.name] !== undefined) { const { [old.name]: r, ...rest } = skills; skills = { ...rest, [name]: r }; }
+    if (!def.id) def.id = `csk-${Date.now().toString(36)}`;
+    const list = old ? state.customSkills.map(x => (x.id === def.id ? def : x)) : [...state.customSkills, def];
+    setCustomSkills(list);
+    update({ customSkills: list, skills });
+    skDraft = freshSkill(); skillCustomOpen = false; skillFilter = 'custom'; render();
+  });
 }
 
 const STATUS_ICON = {

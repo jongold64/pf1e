@@ -2449,6 +2449,12 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom skills.
+{
+  const { tidyCustomSkills } = await import('./custom-skills.js');
+  const list = tidyCustomSkills([{ name: 'Sailing', ability: 'wis', classSkill: true }, { name: 'Stealth' }, { name: 'sailing' }], ['Stealth']);
+  check('custom skills: a name already used is left out', JSON.stringify(list.map(d => [d.name, d.ability, d.classSkill])), '[["Sailing","wis",true]]');
+}
 // Custom feats.
 {
   const { customFeatRecord, customFeatEffects, tidyCustomFeats } = await import('./custom-feats.js');

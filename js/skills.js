@@ -56,6 +56,12 @@ export function splitSkill(name) {
 }
 
 // The SKILLS entry for a skill or a specialty of a family skill.
+// Custom skills (custom-skills.js) join the list: [{ name, ability, trained, acp }]. The ones from before are replaced.
+export function setCustomSkills(defs = []) {
+  for (let i = SKILLS.length - 1; i >= 0; i--) if (SKILLS[i].custom) SKILLS.splice(i, 1);
+  for (const d of defs) SKILLS.push({ name: d.name, ability: d.ability, ...(d.acp ? { acp: true } : {}), ...(d.trained ? { trained: true } : {}), custom: true });
+}
+
 export function skillInfo(name) {
   return SKILLS.find(s => s.name === name) || SKILLS.find(s => s.family && s.name === splitSkill(name).base) || null;
 }

@@ -248,6 +248,8 @@
         <h2>Skills <span id="skill-count" class="count"></span>
           <button type="button" id="skill-count-details" class="skill-details q-details" aria-label="Where your skill ranks come from" title="Details">?</button></h2>
         <p id="skills-hint" class="hint"></p>
+        <div id="skill-filter-buttons" class="add-buttons"></div>
+        <div id="skill-custom-wrap" hidden></div>
         <table class="skills">
           <thead><tr><th>Skill</th><th>Ranks</th><th>Total</th></tr></thead>
           <tbody id="skill-rows"></tbody>
@@ -941,6 +943,10 @@
           <summary>Skills tab</summary>
           <ul>
             <li>Add ranks with − / +; the count at the top shows how many you have left. Class skills get +3 once they have a rank.</li>
+            <li>The buttons above the list show just some skills: <b>Class skills</b>, <b>With ranks</b>, those of one ability (<b>Str</b> ...
+              <b>Cha</b>), or <b>Trained only</b>; <b>All</b> shows every one. <b>Custom</b> makes a skill the list doesn't have (a homebrew
+              skill, or one from another book): its name, key ability, trained only, armor check penalty, and whether it's a class skill
+              for you. It joins your skills (ranks, roll, the Character tab); <b>change</b> on its line changes or deletes it.</li>
             <li><b>Roll</b> works with no ranks too (just the ability modifier and bonuses). By the rules, trained-only skills need a
               rank, except Knowledge (DC 10 or lower), Handle Animal (domestic animals) and Sleight of Hand (DC 10 or lower); the
               others still have a Roll button, for groups that allow it.</li>
