@@ -2449,6 +2449,22 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Non-magical crafting (Craft skill).
+{
+  const { craftDC, craftSkillFor, newProject, workOn, projectState, weeksTaking10 } = await import('./mundane-craft.js');
+  check('Craft DCs: longsword 15, dagger 12, bastard sword 18, longbow 12, chainmail 16, acid 15, sunrod 25',
+    [craftDC('weapon', { name: 'Longsword', proficiency: 'martial' }), craftDC('weapon', { name: 'Dagger', proficiency: 'simple' }),
+     craftDC('weapon', { name: 'Bastard sword', proficiency: 'exotic' }), craftDC('weapon', { name: 'Longbow', proficiency: 'martial' }),
+     craftDC('armor', { name: 'Chainmail', bonus: 6 }), craftDC('gear', { name: 'Acid', category: 'Alchemical Items' }), craftDC('gear', { name: 'Sunrod', category: 'Alchemical Items' })].join(), '15,12,18,12,16,15,25');
+  check('Craft skills: bows, weapons, armor, alchemy', [craftSkillFor('weapon', { name: 'Shortbow' }), craftSkillFor('weapon', { name: 'Light crossbow' }), craftSkillFor('armor', {}), craftSkillFor('gear', { category: 'Alchemical Items' })].join(), 'Craft (bows),Craft (weapons),Craft (armor),Craft (alchemy)');
+  const p = newProject({ kind: 'weapon', item: { id: 'longsword', name: 'Longsword', price_gp: 15, proficiency: 'martial' }, mw: true, skill: 'Craft (weapons)' });
+  check('masterwork longsword: raw materials (15 + 300) ÷ 3 = 105 gp; DC 15', [p.spent, p.dc, p.mwPrice].join(), '105,15,300');
+  const w1 = workOn(p, 20);
+  check('a week at 20 against DC 15: 300 sp, item done (150 sp), then masterwork', [w1.progress, projectState(w1).itemDone, projectState(w1).dc].join(), '150,true,20');
+  check('missing by 5: half the raw materials again (2.5 gp)', workOn(p, 10).spent, 107.5);
+  check('taking 10 with Craft +10: 1 week for the sword, 8 for the masterwork part', weeksTaking10(p, 10), 9);
+  check('taking 10 can’t make DC 20 with +5', weeksTaking10(w1, 5), null);
+}
 // Custom magic items (Table 15-29).
 {
   const { customItemPrice, customItemEffects, customItemPaid, tidyCustomItems } = await import('./custom-items.js');

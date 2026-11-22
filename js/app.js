@@ -29,6 +29,8 @@ import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from '.
 import { popBlast, initBlast } from './tab-blast.js';
 import { askAmount } from './amount-prompt.js';
 import { customItemEffects, customItemNotes, tidyCustomItems } from './custom-items.js';
+import { tidyProjects } from './mundane-craft.js';
+import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
@@ -128,6 +130,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  craftProjects: [],         // non-magical items being made with the Craft skill (Craft tab): mundane-craft.js
   customItems: [],           // custom magic items (Magic Items tab, Custom): custom-items.js
   noCharge: {},              // kinds of purchase that cost no gold: { armor, gear, weapons, magic } (equipment.js chargedCosts)
   costAdjust: [],            // gold adjustments by hand: [{ note, gp }], gp > 0 not spent after all, < 0 an extra cost
@@ -278,6 +281,7 @@ function load(saved) {
   state.languages = tidyLanguages(state.languages);
   state.noCharge = tidyNoCharge(state.noCharge);
   state.customItems = tidyCustomItems(state.customItems);
+  state.craftProjects = tidyProjects(state.craftProjects);
   state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
@@ -1508,7 +1512,7 @@ function showTab(name) {
   showTabTodo();
   if (name === 'spells') renderSpellList(app, view);
   if (name === 'magic-items') renderItemsTab(app);
-  if (name === 'craft') renderCrafting(app, 'craft');
+  if (name === 'craft') { renderCrafting(app, 'craft'); renderMundaneCraft(app); }
   if (name === 'equipment') renderEquipmentTab(app);
   if (name === 'weapons') renderWeaponsTab(app);
   if (name === 'build') drawBuild();
@@ -2151,6 +2155,7 @@ function buildControls() {
   initEquipmentTab(app);
   initWeaponsTab(app);
   initBlast(app);
+  initMundaneCraft(app);
   initSearch(app);
   initManeuvers(app);
   initGuide();
@@ -4036,7 +4041,7 @@ function render() {
   if (tab === 'spells') renderSpellList(app, view);
   if (tab === 'equipment') renderEquipment(app, view);
   if (tab === 'magic-items') renderMyItems(app);
-  if (tab === 'craft') renderCrafting(app, 'craft');
+  if (tab === 'craft') { renderCrafting(app, 'craft'); renderMundaneCraft(app); }
   if (tab === 'weapons') renderMyWeapons(app, view);
   if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
   renderTabTodo();

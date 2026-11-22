@@ -1328,6 +1328,10 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .add-buttons .add-custom { font-weight: 700; }
 .custom-grid { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; margin: 6px 0; }
 .custom-grid label { display: flex; flex-direction: column; gap: 2px; }
+.custom-grid label.check-row { flex-direction: row; align-items: center; gap: 6px; }
 .custom-builder textarea { width: 100%; box-sizing: border-box; }
 .custom-powers li { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
 .custom-add { border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+
+.make-project progress { width: min(320px, 60%); vertical-align: middle; }
+.make-project p { margin: 4px 0; }

@@ -139,7 +139,8 @@ export function moneyNow(app, view = app.view) {
   const bardingRow = barding ? { name: `Barding for ${state.companion.name || compAnimal.name}: ${barding.name}${state.companion.armorEnh ? ` +${state.companion.armorEnh}` : ''}`,
     cost: bardingCost(barding, companionSize(compAnimal, view.companion.level), state.companion.armorEnh || 0), weight: null } : null;
   const armorListed = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);
-  const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
+  // (Raw materials for things being made on the Craft tab count with equipment until they're finished.)
+  const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0) + (state.craftProjects || []).reduce((n, p) => n + (p.spent || 0), 0);
   const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
   const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0)
