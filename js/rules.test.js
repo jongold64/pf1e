@@ -2449,6 +2449,14 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom weapons.
+{
+  const { sizeDice, customWeaponRecord, tidyCustomWeapons } = await import('./custom-weapons.js');
+  check('custom weapon dice: 1d8 → Small 1d6, Tiny 1d4, Large 2d6', JSON.stringify(sizeDice('1d8')), '{"t":"1d4","s":"1d6","m":"1d8","l":"2d6"}');
+  const r = customWeaponRecord(tidyCustomWeapons([{ id: 'cw-x', name: 'Moon blade', proficiency: 'exotic', group: 'one-handed', damage: '1d10', threat: 19, multiplier: 2, type: 'S', price: 50, weight: 4 }])[0]);
+  check('custom weapon record: critical 19-20/×2, no range, price 50', [r.critical, r.range_ft, r.price_gp, r.category].join(), '19-20/×2,,50,Custom Weapons');
+  check('a thrown custom weapon has a range (10 ft. at least)', customWeaponRecord({ ...tidyCustomWeapons([{ thrown: true }])[0] }).range_ft, 10);
+}
 // Custom equipment.
 {
   const { customGearCost, customGearWeight, tidyCustomGear } = await import('./custom-gear.js');

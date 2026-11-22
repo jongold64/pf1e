@@ -397,6 +397,12 @@
         <div id="twf-hands" class="twf-hands"></div>
         <div id="twf-result"></div>
       </section>
+      <section class="card wide" id="weapon-add-card">
+        <h2>Add weapons</h2>
+        <p class="hint">Choose a kind to see just that part of the list below, or <b>Custom</b> for a weapon the list doesn't have.</p>
+        <div id="weapon-add-buttons" class="add-buttons"></div>
+        <div id="weapon-custom-wrap" hidden></div>
+      </section>
       <section class="card wide">
         <h2>Weapons <span id="weapon-count" class="count"></span></h2>
         <form class="search-row tab-search" id="weapon-search-form" role="search">
@@ -1008,6 +1014,13 @@
         <details>
           <summary>Weapons tab</summary>
           <ul>
+            <li><b>Add weapons</b>: a button for each kind (Simple, Martial, Exotic, Firearms, Technological, and your Custom Weapons)
+              shows just that part of the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of it).
+              <b>Custom</b> makes a weapon the list doesn't have: its name, proficiency (simple, martial, exotic), kind (light,
+              one-handed, two-handed, ranged), Medium damage (Small and Large are worked out), threat range, critical multiplier,
+              damage type, range, price, weight, and whether it can be thrown or used with Weapon Finesse; tick <b>I'm proficient
+              with it</b> if you are, and <b>Free</b> if it cost nothing. It joins My weapons and works like any other (attacks,
+              criticals, magic, selling); <b>change this custom weapon</b> under its ? changes or deletes it.</li>
             <li><b>Remove</b> at the end of a weapon's line takes it off your list (a weapon your class gives, such as a black
               blade, is changed or removed with its choice on the Classes tab instead).</li>
             <li><b>Free</b> on a weapon (in its Details): found, a gift or from a class feature, so it costs no gold. The same box

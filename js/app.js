@@ -31,6 +31,7 @@ import { askAmount } from './amount-prompt.js';
 import { customItemEffects, customItemNotes, tidyCustomItems } from './custom-items.js';
 import { tidyProjects } from './mundane-craft.js';
 import { tidyCustomGear, customGearWeight } from './custom-gear.js';
+import { tidyCustomWeapons, customWeaponRecord } from './custom-weapons.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -131,6 +132,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  customWeapons: [],         // custom weapons' definitions (Weapons tab, Custom): custom-weapons.js
   customGear: [],            // custom equipment (Equipment tab, Custom): custom-gear.js
   craftProjects: [],         // non-magical items being made with the Craft skill (Craft tab): mundane-craft.js
   customItems: [],           // custom magic items (Magic Items tab, Custom): custom-items.js
@@ -297,6 +299,7 @@ function load(saved) {
   state.customItems = tidyCustomItems(state.customItems);
   state.craftProjects = tidyProjects(state.craftProjects);
   state.customGear = tidyCustomGear(state.customGear);
+  state.customWeapons = tidyCustomWeapons(state.customWeapons);
   state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
@@ -2414,7 +2417,18 @@ function withTraitSaves(fb, traitFx) {
 }
 
 // Everything derived from the character, computed once per change and shared by all tabs.
+// Custom weapons go into the weapon data (weaponsById and the list) like the list's own, so every weapon rule works on
+// them; ones no longer defined are taken out.
+function syncCustomWeapons() {
+  if (!data.weaponsById || !Array.isArray(data.weapons)) return;
+  const defs = state.customWeapons || [];
+  for (const id of [...data.weaponsById.keys()]) if (id.startsWith('cw-') && !defs.some(d => d.id === id)) data.weaponsById.delete(id);
+  for (let i = data.weapons.length - 1; i >= 0; i--) if (data.weapons[i].custom) data.weapons.splice(i, 1);
+  for (const d of defs) { const r = customWeaponRecord(d); data.weaponsById.set(d.id, r); data.weapons.push(r); }
+}
+
 function computeView() {
+  syncCustomWeapons();
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).
