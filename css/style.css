@@ -1338,3 +1338,6 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 
 .charges-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
 .charges-row input { width: 5em; }
+
+/* Character tab: Feats and traits under Skills, in the Skills card's look. */
+.b-featlist > div > span:first-child small { font-weight: 400; }

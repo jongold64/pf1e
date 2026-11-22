@@ -301,9 +301,15 @@ export function renderBuild(app, view, parts) {
   const featRows = [...view.chosen.map(f => row(f.name, '', 'chosenfeat', f.id)),
     ...view.granted.map(n => row(n, 'from your class', 'feat', data.feats.find(f => f.name === n)?.id))];
   const racial = (race.traits || []).filter(t => !t.kind);
-  const featSummary = [['Feats', [...view.chosen.map(f => f.name), ...view.granted]], ['Traits', view.traits.map(t => t.name)],
-    ['Racial', (race.traits || []).filter(t => !t.kind).map(t => t.name)]].filter(([, l]) => l.length)
-    .map(([k, l]) => `<p class="b-summary"><b>${k}:</b> ${esc(l.join(' · '))}</p>`).join('') || '<p class="muted">None yet.</p>';
+  // The Feats and traits card under Skills, in the same look: a line each (with what it is, small) and a ? for its text.
+  const skillLike = (name, tag, kind, arg) => `<div class="b-has"><span>${esc(name)}${tag ? ` <small class="muted">${esc(tag)}</small>` : ''}</span>${arg ? plus(kind, arg, name) : '<span></span>'}</div>`;
+  const featList = [
+    ['Feats', [...view.chosen.map(f => skillLike(f.name, '', 'chosenfeat', f.id)),
+      ...view.granted.map(n => skillLike(n, 'from your class', 'feat', data.feats.find(f => f.name === n)?.id))]],
+    ['Traits', view.traits.map(t => skillLike(t.name, t.category ? `${t.category}` : '', 'trait', t.id))],
+    ['Racial traits', racial.map(t => skillLike(t.name, '', 'racial', t.name))],
+  ].filter(([, rows]) => rows.length).map(([h, rows]) => `<h4 class="b-sub">${h}</h4><div class="b-skills b-featlist">${rows.join('')}</div>`).join('')
+    || '<p class="muted">None yet.</p>';
   const feats = `<h4 class="b-sub">Feats</h4><div class="b-feats">${featRows.join('') || '<span class="muted">None</span>'}</div>
     ${view.traits.length ? `<h4 class="b-sub">Traits</h4><div class="b-feats">${view.traits.map(t => row(t.name, t.category ? `${t.category} trait` : '', 'trait', t.id)).join('')}</div>` : ''}
     ${racial.length ? `<h4 class="b-sub">Racial traits</h4><div class="b-feats">${racial.map(t => row(t.name, '', 'racial', t.name)).join('')}</div>` : ''}`;
@@ -406,9 +412,9 @@ export function renderBuild(app, view, parts) {
   box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}${heroPts}</div>${numsRow}${langLine}<div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
       <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
-        ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}
+        ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${comps}
         ${card('Gear', gearHtml, tap('gear'))}${notesCard}</div>
-      <div>${card('Skills', skills, tap('skills'))}</div>
+      <div>${card('Skills', skills, tap('skills'))}${card('Feats and traits', featList, tap('feats'))}</div>
     </div>`;
   fitCards(box, true);
   // Fit them again when the screen turns or the window changes width.
