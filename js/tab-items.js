@@ -279,7 +279,7 @@ export function initItemsTab(app) {
       const item = app.data.itemsById.get(x.id);
       const s = magicItemStats(item, x.option);
       const paid = x.free ? 0 : x.crafted ? listedCost(item, x.option || null, s.price_gp) : s.price_gp;
-      sellItem(app, { name: entryName(item, x.option), value: s.price_gp, paid },
+      sellItem(app, { name: entryName(item, x.option), value: s.price_gp, paid, kind: 'magic' },
         { magicItems: app.state.magicItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
       return;
     }
@@ -287,7 +287,7 @@ export function initItemsTab(app) {
     if (msell) {
       const i = Number(msell.dataset.madeSell);
       const x = app.state.craftedItems[i];
-      sellItem(app, { name: `${SPELL_ITEMS[x.kind].label} of ${x.spellName}`, value: craftedItemPrice(x), paid: craftedItemCost(x) },
+      sellItem(app, { name: `${SPELL_ITEMS[x.kind].label} of ${x.spellName}`, value: craftedItemPrice(x), paid: craftedItemCost(x), kind: 'magic' },
         { craftedItems: app.state.craftedItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
       return;
     }

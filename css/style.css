@@ -1295,7 +1295,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 /* The amount box (amount-prompt.js): opens over the page or a popup when Damage, Heal, Add XP... is pressed. */
 .amount-dialog { border: 2px solid var(--accent); border-radius: 12px; padding: 16px 18px; width: min(92vw, 360px); background: var(--card, #fff); }
 .amount-dialog::backdrop { background: rgba(0, 0, 0, .35); }
-.amount-dialog h3 { margin: 0 0 10px; }
+.amount-dialog h3 { margin: 0 0 10px; font-size: 1.3rem; }
+.amount-dialog .amount-message { font-size: 1.35rem; font-weight: 800; margin: 0 0 10px; }
+.amount-dialog .hint { font-size: 1rem; font-weight: 600; }
 .amount-dialog label { display: block; }
 .amount-dialog { width: min(94vw, 420px); }
 .amount-row { display: flex; gap: 8px; align-items: stretch; margin-top: 6px; }

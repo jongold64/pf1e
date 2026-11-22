@@ -299,7 +299,7 @@ export function initCompanion(app) {
       const b = s?.barding;
       if (!b) return;
       const cost = bardingCost(b.item, s.size, b.enh);
-      sellItem(app, { name: `${b.item.name} barding`, value: cost, paid: cost },
+      sellItem(app, { name: `${b.item.name} barding`, value: cost, paid: cost, kind: 'armor' },
         { companion: { ...state.companion, armorId: '', armorEnh: 0, armorMaterial: '' } });
       return;
     }

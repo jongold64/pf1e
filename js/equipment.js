@@ -130,8 +130,9 @@ export function goldForLeft(left, spent) {
 // Selling one item (Core Rulebook: for half its market price). Gold is what you started with, and Left takes off what
 // your items cost, so taking the item off the list already gives back what it cost (`paid`: 0 if found, the cost to make
 // if crafted): the new Gold is gold + half the value - what it cost. Returns { gold, gets }.
-export function sellGold(gold, value, paid = 0) {
-  const gets = Math.round((value || 0) * 50) / 100;
+// gets: the price agreed, if not half (a better deal haggled for).
+export function sellGold(gold, value, paid = 0, gets = Math.round((value || 0) * 50) / 100) {
+  gets = Math.round((gets || 0) * 100) / 100;
   return { gold: Math.round((gold + gets - (paid || 0)) * 100) / 100, gets };
 }
 

@@ -1,5 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { chargedCosts } from './equipment.js';
+import { askAmount } from './amount-prompt.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
@@ -90,10 +91,15 @@ export function goldNow(app) {
 // A Sell button for an item line (attr: its data attribute), and selling one: after a yes, `change` (the state with the
 // item gone or one fewer) is saved with half its market value (value, each) added to gold. paid: what it cost (0 if found).
 export const sellButton = (attr, name) => `<button type="button" class="wl-sell" ${attr} aria-label="Sell ${esc(name)} for half its price">Sell</button>`;
-export function sellItem(app, { name, value, paid }, change) {
+// The Sell box shows half its price, filled in, which can be changed for a better (or worse) deal. kind: armor, gear,
+// weapons or magic: a kind set to cost nothing (Costs and adjustments) never took its price, so none comes back off.
+export async function sellItem(app, { name, value, paid, kind = '' }, change) {
   if (!value) { alert(`${name} has no price listed, so it can't be sold here: remove it and add the gold by hand.`); return; }
-  const { gold, gets } = sellGold(goldNow(app), value, paid);
-  if (!confirm(`Sell one ${name} for ${formatGp(gets)} (half its price of ${formatGp(value)})? It comes off your list and the gold is added.`)) return;
+  const half = Math.round(value * 50) / 100;
+  const gets = await askAmount({ title: `Sell ${name}`, message: `Half its price: ${formatGp(half)}`, label: 'Sell it for (gp)', value: half, decimals: true, ok: 'Sell',
+    hint: `It's worth ${formatGp(value)}; half is the usual price. Haggled for more (or less)? Change the amount. It comes off your list and the gold is added.` });
+  if (gets === null) return;
+  const { gold } = sellGold(goldNow(app), value, app.state.noCharge?.[kind] ? 0 : paid, gets);
   app.update({ ...change, gold });
 }
 
@@ -408,7 +414,7 @@ export function initEquipmentTab(app) {
       const a = k === 'armor' ? v.gear.armor : v.gear.shield;
       const st = app.state;
       const args = [a, st[`${k}Enh`], st[`${k}Mw`], st[`${k}Abilities`]];
-      sellItem(app, { name: armorLabel(...args), value: armorCost(...args, false), paid: st[`${k}Free`] ? 0 : armorCost(...args, st[`${k}Crafted`]) },
+      sellItem(app, { name: armorLabel(...args), value: armorCost(...args, false), paid: st[`${k}Free`] ? 0 : armorCost(...args, st[`${k}Crafted`]), kind: 'armor' },
         { [`${k}Id`]: '', [`${k}Enh`]: 0, [`${k}Mw`]: false, [`${k}Abilities`]: [], [`${k}Material`]: '', [`${k}Crafted`]: false, [`${k}Free`]: false });
       return;
     }
@@ -419,7 +425,7 @@ export function initEquipmentTab(app) {
       const item = app.data.gearById.get(x.id);
       const s = entryStats(item, x.variant);
       const inv = app.state.inventory.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0);
-      sellItem(app, { name: entryName(item, x.variant), value: s.price_gp, paid: x.free ? 0 : s.price_gp }, { inventory: inv });
+      sellItem(app, { name: entryName(item, x.variant), value: s.price_gp, paid: x.free ? 0 : s.price_gp, kind: 'gear' }, { inventory: inv });
       return;
     }
     const step = e.target.closest('[data-qty]');

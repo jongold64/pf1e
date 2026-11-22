@@ -2451,6 +2451,11 @@ It does a thing. More.` });
 
 // What's charged.
 {
+  const { sellGold } = await import('./equipment.js');
+  check('sell at half: 100 gp item paid 100 → gold 1000 becomes 950', sellGold(1000, 100, 100).gold, 950);
+  check('sell for a haggled 70 gp', [sellGold(1000, 100, 100, 70).gold, sellGold(1000, 100, 100, 70).gets].join(), '970,70');
+}
+{
   const { chargedCosts, tidyAdjustments } = await import('./equipment.js');
   const c = chargedCosts({ armor: 100, gear: 30, weapons: 15, magic: 2000 }, { magic: true }, [{ note: 'gift', gp: 10 }, { note: 'inn', gp: -2.5 }]);
   check('magic items given: not charged; adjustments +10 and −2.5', [c.magic, c.adjust, c.spent].join(), '0,7.5,137.5');

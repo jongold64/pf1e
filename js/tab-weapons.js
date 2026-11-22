@@ -950,7 +950,7 @@ export function initWeaponsTab(app) {
       const we = app.state.weapons[i];
       const ww = app.data.weaponsById.get(we.id);
       openWeapons.clear();
-      sellItem(app, { name: weaponLabel(ww, we), value: weaponCostRows(ww, we).reduce((n, r) => n + r.gp, 0), paid: weaponCost(ww, we) },
+      sellItem(app, { name: weaponLabel(ww, we), value: weaponCostRows(ww, we).reduce((n, r) => n + r.gp, 0), paid: weaponCost(ww, we), kind: 'weapons' },
         { weapons: app.state.weapons.filter((_, j) => j !== i), combat: { ...app.state.combat, main: '', off: '' } });
       return;
     }

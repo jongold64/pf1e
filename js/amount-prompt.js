@@ -5,7 +5,8 @@
 import { esc } from './dom.js';
 
 // note: a label for a text box too (what it's for); then it resolves to { amount, note } (or null).
-export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', decimals = false, roll = null, hint = '', note = '' } = {}) {
+// message: a line in large bold under the title (the Sell box's "Half its price: 50 gp").
+export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', decimals = false, roll = null, hint = '', note = '', message = '' } = {}) {
   return new Promise(resolve => {
     let d = document.getElementById('amount-dialog');
     if (!d) {
@@ -16,6 +17,7 @@ export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', deci
     }
     d.innerHTML = `<form method="dialog">
       <h3>${esc(title)}</h3>
+      ${message ? `<p class="amount-message">${esc(message)}</p>` : ''}
       <label for="amount-input">${esc(label)}</label>
       <div class="amount-row"><button type="button" class="amount-step" data-amount-step="-1" aria-label="One less">−</button>
         <input type="number" id="amount-input" inputmode="${decimals ? 'decimal' : 'numeric'}" min="0" step="${decimals ? '0.01' : '1'}" value="${esc(String(value ?? ''))}">
@@ -28,7 +30,7 @@ export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', deci
     d.querySelector('[data-amount-cancel]').onclick = () => d.close('cancel');
     // − and + (the tablet shows no arrows in a number box): one less or one more, never below 0. Held down, it keeps
     // going: after a short pause, about seven steps a second.
-    const step = b => { input.value = String(Math.max(0, Math.trunc(Number(input.value) || 0) + Number(b.dataset.amountStep))); };
+    const step = b => { input.value = String(Math.max(0, Math.round(((Number(input.value) || 0) + Number(b.dataset.amountStep)) * 100) / 100)); };
     let wait = null, repeat = null;
     const stop = () => { clearTimeout(wait); clearInterval(repeat); wait = repeat = null; };
     for (const b of d.querySelectorAll('[data-amount-step]')) {
