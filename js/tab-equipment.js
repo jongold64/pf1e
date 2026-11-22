@@ -1,5 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { chargedCosts } from './equipment.js';
+import { customGearCost, customGearWeight } from './custom-gear.js';
 import { customItemPaid } from './custom-items.js';
 import { askAmount } from './amount-prompt.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
@@ -55,18 +56,49 @@ function renderPanel(app) {
     b.setAttribute('aria-current', String(b.dataset.gear === selectedId)));
 }
 
+// The Add equipment card: a button for each category (it shows just that part of the list) and Custom.
+let gearCat = '';
+let customOpen = false;
+let gearDraft = null;  // the custom item being made or changed: { id, name, price, weight, qty, free, notes }
+const freshGear = () => ({ id: '', name: '', price: 0, weight: 0, qty: 1, free: false, notes: '' });
+function renderGearButtons(app) {
+  const cats = [...new Set(app.data.gear.map(i => i.category))].sort();
+  $('gear-add-buttons').innerHTML = cats.map(c => `<button type="button" data-gear-add="${esc(c)}" aria-pressed="${!customOpen && gearCat === c}">${esc(c)}</button>`).join('')
+    + `<button type="button" class="add-custom" data-gear-add="" data-gear-custom aria-pressed="${customOpen}">Custom</button>`;
+  $('gear-custom-wrap').hidden = !customOpen;
+  if (customOpen) renderGearCustom();
+}
+function renderGearCustom() {
+  gearDraft ??= freshGear();
+  const g = gearDraft;
+  $('gear-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-cg="name" value="${esc(g.name)}" placeholder="e.g. Grandfather's pipe" maxlength="60"></label>
+      <label>Price each (gp) <input type="number" data-cg="price" value="${g.price}" min="0" step="0.01" inputmode="decimal"></label>
+      <label>Weight each (lbs.) <input type="number" data-cg="weight" value="${g.weight}" min="0" step="0.1" inputmode="decimal"></label>
+      <label>How many <input type="number" data-cg="qty" value="${g.qty}" min="1" step="1" inputmode="numeric"></label>
+    </div>
+    <label class="check-row"><input type="checkbox" data-cg="free"${g.free ? ' checked' : ''}> Free (found or a gift: no gold)</label>
+    <label>Notes <textarea data-cg="notes" rows="2" maxlength="500" placeholder="What it is, what it does...">${esc(g.notes)}</textarea></label>
+    <div class="line-controls"><button type="button" class="primary" data-cg-save>${g.id ? 'Save changes' : 'Add to my inventory'}</button>
+      <button type="button" data-cg-clear>${g.id ? 'Stop changing it' : 'Clear'}</button></div></div>`;
+}
+
 function renderList(app) {
   const items = app.data.gear;
   const filter = $('gear-search').value.trim().toLowerCase();
+  renderGearButtons(app);
   const byCategory = new Map();
   for (const i of items) {
     if (filter && !i.name.toLowerCase().includes(filter)) continue;
+    // A category button shows only that category (a search still looks through everything).
+    if (gearCat && !filter && i.category !== gearCat) continue;
     if (!byCategory.has(i.category)) byCategory.set(i.category, []);
     byCategory.get(i.category).push(i);
   }
   const categories = [...byCategory.keys()].sort();
   const shown = [...byCategory.values()].reduce((n, list) => n + list.length, 0);
-  $('gear-count').textContent = filter ? `${shown} of ${items.length}` : `${items.length}`;
+  $('gear-count').textContent = filter || gearCat ? `${shown} of ${items.length}` : `${items.length}`;
   $('gear-category').innerHTML = '<option value="">Jump to a category…</option>' +
     categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
   $('gear-list').innerHTML = categories.map(c => {
@@ -78,6 +110,7 @@ function renderList(app) {
           <button type="button" class="skill-details q-details" data-gear-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
     </section>`;
   }).join('') || '<p class="hint">No equipment matches.</p>';
+  if (gearCat && !filter) $('gear-list').insertAdjacentHTML('afterbegin', `<p class="hint">Showing ${esc(gearCat)} only. <button type="button" data-gear-all>Show all equipment</button></p>`);
   renderPanel(app);
 }
 
@@ -140,7 +173,8 @@ export function moneyNow(app, view = app.view) {
     cost: bardingCost(barding, companionSize(compAnimal, view.companion.level), state.companion.armorEnh || 0), weight: null } : null;
   const armorListed = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);
   // (Raw materials for things being made on the Craft tab count with equipment until they're finished.)
-  const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0) + (state.craftProjects || []).reduce((n, p) => n + (p.spent || 0), 0);
+  const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0) + (state.craftProjects || []).reduce((n, p) => n + (p.spent || 0), 0)
+    + customGearCost(state.customGear);
   const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
   const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0)
@@ -181,7 +215,7 @@ export async function renderEquipment(app, view) {
   // "Gold left now": typing the gold you have sets Gold to it plus what's been spent.
   spentNow = Math.round((gold - left) * 100) / 100;
   if (document.activeElement !== $('gold-left')) $('gold-left').value = left;
-  const carriedWeight = totals.weight + magic.weight + weaponsWeight;
+  const carriedWeight = totals.weight + magic.weight + weaponsWeight + customGearWeight(state.customGear);
 
   // What each total is made of, for its Details popup.
   const gearRows = state.inventory.map(e => {
@@ -339,6 +373,28 @@ export async function renderEquipment(app, view) {
             ${freeBox(`data-inv-free="${i}"`, e.free)}
           </div></div></div>`;
     }),
+    // Custom equipment (Add equipment, Custom): its own price and weight; Change it and Remove under its ?.
+    ...(state.customGear || []).map((g, i) => {
+      const key = `cgear-${i}`;
+      const open = openLines.has(key);
+      return `<div class="line-card"><div class="fit-line item-line">
+          <span class="line-name">${esc(g.name)}</span><span class="wl-k">custom</span>${g.qty > 1 ? `<span class="wl-part">×${g.qty}</span>` : ''}
+          <span class="wl-part"><b>${esc(g.free ? 'free' : formatGp(g.price * g.qty))}</b></span>
+          <span class="wl-k">${esc(formatLbs(g.weight * g.qty))}</span>
+          ${g.price ? sellButton(`data-cgear-sell="${i}"`, g.name) : ''}
+          <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(g.name)}" title="Details">?</button></div>
+        <div class="line-more"${open ? '' : ' hidden'}>
+          ${g.notes ? `<p class="hint">${esc(g.notes)}</p>` : ''}
+          <div class="line-controls">
+            <span class="base">How many
+              <button type="button" data-cgear-qty="${i}" data-step="-1" aria-label="One fewer ${esc(g.name)}">−</button>
+              <span class="value">${g.qty}</span>
+              <button type="button" data-cgear-qty="${i}" data-step="1" aria-label="One more ${esc(g.name)}">+</button></span>
+            <span>${esc(formatGp(g.price))} and ${esc(formatLbs(g.weight))} each</span>
+            ${freeBox(`data-cgear-free="${i}"`, g.free)}
+            <button type="button" data-cgear-edit="${i}">Change it</button><button type="button" data-cgear-remove="${i}">Remove</button>
+          </div></div></div>`;
+    }),
   ].join('') || '<p class="hint">Nothing yet. Choose items below and add them.</p>';
   requestAnimationFrame(() => fitLines($('inventory-rows')));
 }
@@ -367,7 +423,35 @@ export function initEquipmentTab(app) {
   $('gear-category').addEventListener('change', e => {
     document.getElementById(`gear-cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
+  // Add equipment: a category shows just that part of the list (tap again for all); Custom opens the builder.
+  $('gear-add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-gear-add]');
+    if (!b) return;
+    if (b.hasAttribute('data-gear-custom')) { customOpen = !customOpen; gearCat = ''; renderList(app); return; }
+    customOpen = false;
+    gearCat = gearCat === b.dataset.gearAdd ? '' : b.dataset.gearAdd;
+    renderList(app);
+    if (gearCat) $('gear-list').closest('section').scrollIntoView({ block: 'start' });
+  });
+  $('gear-custom-wrap').addEventListener('input', e => {
+    const k = e.target.dataset.cg;
+    if (!k || k === 'free') return;
+    gearDraft[k] = ['price', 'weight', 'qty'].includes(k) ? Math.max(k === 'qty' ? 1 : 0, Number(e.target.value) || 0) : e.target.value;
+  });
+  $('gear-custom-wrap').addEventListener('change', e => { if (e.target.dataset.cg === 'free') gearDraft.free = e.target.checked; });
+  $('gear-custom-wrap').addEventListener('click', e => {
+    if (e.target.closest('[data-cg-clear]')) { gearDraft = freshGear(); renderGearCustom(); return; }
+    if (!e.target.closest('[data-cg-save]')) return;
+    const g = { ...gearDraft, name: gearDraft.name.trim() || 'Custom item', id: gearDraft.id || `cgear-${Date.now().toString(36)}` };
+    const list = app.state.customGear || [];
+    const at = list.findIndex(x => x.id === g.id);
+    app.update({ customGear: at >= 0 ? list.map((x, j) => (j === at ? g : x)) : [...list, g] });
+    gearDraft = freshGear();
+    renderGearCustom();
+    $('inventory-rows').closest('section').scrollIntoView({ block: 'start' });
+  });
   $('gear-list').addEventListener('click', e => {
+    if (e.target.closest('[data-gear-all]')) { gearCat = ''; renderList(app); return; }
     // Details: the item in a popup, with an Add button for each version.
     const pop = e.target.closest('[data-gear-pop]');
     if (pop) {
@@ -398,7 +482,34 @@ export function initEquipmentTab(app) {
     }
     if (t.dataset.armorFree) app.update({ [`${t.dataset.armorFree}Free`]: t.checked });
   });
+  // Custom equipment's controls in the inventory.
+  $('inventory-rows').addEventListener('change', e => {
+    const f = e.target.closest('[data-cgear-free]');
+    if (f) { const i = Number(f.dataset.cgearFree); app.update({ customGear: app.state.customGear.map((x, j) => (j === i ? { ...x, free: f.checked } : x)) }); }
+  });
   $('inventory-rows').addEventListener('click', e => {
+    const cq = e.target.closest('[data-cgear-qty]');
+    if (cq) {
+      const i = Number(cq.dataset.cgearQty);
+      app.update({ customGear: app.state.customGear.map((x, j) => (j === i ? { ...x, qty: x.qty + Number(cq.dataset.step) } : x)).filter(x => x.qty > 0) });
+      return;
+    }
+    const ce = e.target.closest('[data-cgear-edit]');
+    if (ce) { gearDraft = { ...app.state.customGear[Number(ce.dataset.cgearEdit)] }; customOpen = true; gearCat = ''; renderList(app); $('gear-add-card').scrollIntoView({ block: 'start' }); return; }
+    const cr = e.target.closest('[data-cgear-remove]');
+    if (cr) {
+      const i = Number(cr.dataset.cgearRemove);
+      if (confirm(`Remove ${app.state.customGear[i].name}? (Sell gives gold for it instead.)`)) app.update({ customGear: app.state.customGear.filter((_, j) => j !== i) });
+      return;
+    }
+    const cs = e.target.closest('[data-cgear-sell]');
+    if (cs) {
+      const i = Number(cs.dataset.cgearSell);
+      const g = app.state.customGear[i];
+      sellItem(app, { name: g.name, value: g.price, paid: g.free ? 0 : g.price, kind: 'gear' },
+        { customGear: app.state.customGear.map((x, j) => (j === i ? { ...x, qty: x.qty - 1 } : x)).filter(x => x.qty > 0) });
+      return;
+    }
     const why = e.target.closest('[data-inv-why]');
     if (why) {
       const key = why.dataset.invWhy;

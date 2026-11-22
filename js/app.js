@@ -30,6 +30,7 @@ import { popBlast, initBlast } from './tab-blast.js';
 import { askAmount } from './amount-prompt.js';
 import { customItemEffects, customItemNotes, tidyCustomItems } from './custom-items.js';
 import { tidyProjects } from './mundane-craft.js';
+import { tidyCustomGear, customGearWeight } from './custom-gear.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -130,6 +131,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  customGear: [],            // custom equipment (Equipment tab, Custom): custom-gear.js
   craftProjects: [],         // non-magical items being made with the Craft skill (Craft tab): mundane-craft.js
   customItems: [],           // custom magic items (Magic Items tab, Custom): custom-items.js
   noCharge: {},              // kinds of purchase that cost no gold: { armor, gear, weapons, magic } (equipment.js chargedCosts)
@@ -282,6 +284,7 @@ function load(saved) {
   state.noCharge = tidyNoCharge(state.noCharge);
   state.customItems = tidyCustomItems(state.customItems);
   state.craftProjects = tidyProjects(state.craftProjects);
+  state.customGear = tidyCustomGear(state.customGear);
   state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
@@ -2281,7 +2284,7 @@ function carriedWeight(armorGear, size) {
                                { armor: armorGear.armor, shield: armorGear.shield, size });
   const weapons = state.weapons.reduce((n, e) => { const w = data.weaponsById?.get(e.id); return n + (w ? weaponWeight(w, e, size) : 0); }, 0);
   const magic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById).weight : 0;
-  return Math.round((worn.weight + weapons + magic) * 100) / 100;
+  return Math.round((worn.weight + weapons + magic + customGearWeight(state.customGear)) * 100) / 100;
 }
 
 // "Medium (95 lbs.; light up to 76, medium 153, heavy 230)"

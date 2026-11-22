@@ -432,6 +432,12 @@
         <dl id="money-summary" class="facts wide-facts"></dl>
         <p id="money-note" class="hint"></p>
       </section>
+      <section class="card wide" id="gear-add-card">
+        <h2>Add equipment</h2>
+        <p class="hint">Choose a kind to see just that part of the list below, or <b>Custom</b> for something the list doesn't have.</p>
+        <div id="gear-add-buttons" class="add-buttons"></div>
+        <div id="gear-custom-wrap" hidden></div>
+      </section>
       <section class="card wide">
         <h2>Equipment <span id="gear-count" class="count"></span></h2>
         <form class="search-row tab-search" id="gear-search-form" role="search">
@@ -1175,6 +1181,10 @@
           <ul>
             <li>In <b>Inventory</b>, each item (and the armor and shield you wear) is one line: how many, cost, weight, with
               <b>Details</b> at the end to open how many (− / +), the cost breakdown and the item itself.</li>
+            <li><b>Add equipment</b>: a button for each kind of gear (Adventuring Gear, Alchemical Items, Clothing, Tools and Skill Kits...)
+              shows just that part of the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of it).
+              <b>Custom</b> adds something the list doesn't have: its name, price and weight each, how many, Free, and notes. It goes in
+              your Inventory (marked custom), counts in gold and weight, and can be sold; <b>Change it</b> and Remove are under its ?.</li>
             <li><b>Sell</b> on an item's line (worn armor and shield and gear here, weapons, a companion's barding, magic items, potions, scrolls and wands) opens a box with half its
               price filled in (the Core Rulebook's rate); haggled for a better deal? change the amount (− and +, or type it). <b>Sell</b> takes it off your list and adds that gold to Left, whether you bought it, found it or made it.</li>
             <li><b>Gold left now</b>: everything you buy is taken from Gold in <b>Left</b>. If you've already paid for your gear,

@@ -363,7 +363,7 @@ export function renderBuild(app, view, parts) {
   const carried = data.gearById ? state.inventory.map(e => {
     const item = data.gearById.get(e.id);
     return item ? gearRow(`${item.name}${e.qty > 1 ? ` ×${e.qty}` : ''}`, e.variant && e.variant !== 'Common' ? e.variant.toLowerCase() : '', 'gear', item.id) : '';
-  }).filter(Boolean) : [];
+  }).filter(Boolean).concat((state.customGear || []).map(g => gearRow(`${g.name}${g.qty > 1 ? ` ×${g.qty}` : ''}`, `custom${g.notes ? `: ${g.notes}` : ''}`, '', ''))) : [];
   const gearHtml = `${list('Armor and shield', worn)}${list('Weapons', weaponRows)}${list('From your class', fromClass)}${magic.length ? `<h4 class="b-sub">Magic items</h4><ul class="b-item-list">${magic.join('')}</ul>` : ''}${list('Potions, scrolls and wands', made)}${list('Equipment', carried)}`
     || '<p class="muted">Nothing yet: buy gear on the Equipment, Armor, Weapons and Magic Items tabs.</p>';
 

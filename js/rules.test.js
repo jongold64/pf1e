@@ -2449,6 +2449,13 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom equipment.
+{
+  const { customGearCost, customGearWeight, tidyCustomGear } = await import('./custom-gear.js');
+  const list = [{ name: 'Pipe', price: 2.5, weight: 0.5, qty: 2 }, { name: 'Gift', price: 10, weight: 1, qty: 1, free: true }];
+  check('custom gear: cost 5 gp (the gift free), weight 2 lbs.', [customGearCost(list), customGearWeight(list)].join(), '5,2');
+  check('tidy custom gear: negative price to 0, qty at least 1', JSON.stringify(tidyCustomGear([{ name: 'X', price: -3, qty: 0 }]).map(g => [g.price, g.qty])), '[[0,1]]');
+}
 // Non-magical crafting (Craft skill).
 {
   const { craftDC, craftSkillFor, newProject, workOn, projectState, weeksTaking10 } = await import('./mundane-craft.js');
