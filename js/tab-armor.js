@@ -290,7 +290,8 @@ export function renderArmorTab(app, view) {
   const { state } = app;
   const { gear, stats } = view;
   $('defense-switches').innerHTML = `${defenseSwitchesHtml(view, state.combat, s => ` <button type="button" class="skill-details q-details" data-defense-why="${esc(s.key)}" aria-label="What ${esc(s.label)} does" title="Details">?</button>`)}
-    <p class="hint">Like Power Attack on the Weapons tab: switch them on for the rounds you use them, and every number counts them. They show on the Character tab too.</p>`;
+    <p class="hint">Like Power Attack on the Weapons tab: switch them on for the rounds you use them, and every number counts them. They show on the Character tab too.</p>
+    ${state.combat.conjured === 'instant-armor' ? (view.situational?.ac || []).filter(n => /^Instant armor/.test(n)).map(n => `<p class="b-ready">Instant armor is on: it replaces your worn armor while it lasts (counted as proficient, no penalties). ${esc(n.replace(/^Instant armor \(force\): its/, 'Its'))}</p>`).join('') : ''}`;
   $('armor-select').value = state.armorId;
   $('shield-select').value = state.shieldId;
   $('armor-enh').value = !state.armorEnh && state.armorMw ? 'mw' : state.armorEnh;
