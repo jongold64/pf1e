@@ -1300,6 +1300,8 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .amount-dialog .hint { font-size: 1rem; font-weight: 600; }
 .amount-dialog label { display: block; }
 .amount-dialog { width: min(94vw, 420px); }
+/* Near the top of the screen, so the tablet's keyboard doesn't cover it. */
+dialog.amount-dialog { margin: 6vh auto auto; }
 .amount-row { display: flex; gap: 8px; align-items: stretch; margin-top: 6px; }
 .amount-dialog input { flex: 1; min-width: 0; font-size: 2rem; padding: 6px 10px; text-align: center; box-sizing: border-box; min-height: 64px; }
 /* The browser's own small arrows are hidden: − and + do it, on the laptop and the tablet alike. */
