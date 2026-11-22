@@ -33,6 +33,7 @@ import { tidyProjects } from './mundane-craft.js';
 import { tidyCustomGear, customGearWeight } from './custom-gear.js';
 import { tidyCustomWeapons, customWeaponRecord } from './custom-weapons.js';
 import { tidyCustomSpells, customSpellRecord } from './custom-spells.js';
+import { tidyCustomArmor, customArmorRecord } from './custom-armor.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -134,6 +135,7 @@ const state = {
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
+  customArmor: [],           // custom armor and shields' definitions (Armor tab, Custom): custom-armor.js
   customSpells: [],          // custom spells' definitions (Spells tab, Custom): custom-spells.js
   customWeapons: [],         // custom weapons' definitions (Weapons tab, Custom): custom-weapons.js
   customGear: [],            // custom equipment (Equipment tab, Custom): custom-gear.js
@@ -304,6 +306,7 @@ function load(saved) {
   state.customGear = tidyCustomGear(state.customGear);
   state.customWeapons = tidyCustomWeapons(state.customWeapons);
   state.customSpells = tidyCustomSpells(state.customSpells);
+  state.customArmor = tidyCustomArmor(state.customArmor);
   state.metamagic = Object.fromEntries(Object.entries(state.metamagic && typeof state.metamagic === 'object' ? state.metamagic : {})
     .filter(([id, m]) => typeof id === 'string' && m?.intensified === true).map(([id]) => [id, { intensified: true }]));
   state.costAdjust = tidyAdjustments(state.costAdjust);
@@ -411,6 +414,8 @@ function load(saved) {
   // Older versions saved typed-in armor and shield bonuses as numbers.
   delete state.armor;
   delete state.shield;
+  // (Custom armor counts: it's added to the armor data first.)
+  syncCustomArmor();
   const worn = (id, category) => data.armorById.get(id) && (data.armorById.get(id).category === 'shield') === (category === 'shield');
   if (!worn(state.armorId, 'armor')) state.armorId = '';
   if (!worn(state.shieldId, 'shield')) state.shieldId = '';
@@ -2455,9 +2460,19 @@ function syncCustomSpells() {
   for (const d of defs) { const r = customSpellRecord(d, classIds); data.spellsById.set(d.id, r); data.spells.push(r); }
 }
 
+// Custom armor and shields go into the armor data too.
+function syncCustomArmor() {
+  if (!data.armorById || !Array.isArray(data.armor)) return;
+  const defs = state.customArmor || [];
+  for (const id of [...data.armorById.keys()]) if (id.startsWith('ca-') && !defs.some(d => d.id === id)) data.armorById.delete(id);
+  for (let i = data.armor.length - 1; i >= 0; i--) if (data.armor[i].custom) data.armor.splice(i, 1);
+  for (const d of defs) { const r = customArmorRecord(d); data.armorById.set(d.id, r); data.armor.push(r); }
+}
+
 function computeView() {
   syncCustomWeapons();
   syncCustomSpells();
+  syncCustomArmor();
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).

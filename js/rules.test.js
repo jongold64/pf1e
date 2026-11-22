@@ -2449,6 +2449,14 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom armor.
+{
+  const { customArmorRecord, tidyCustomArmor } = await import('./custom-armor.js');
+  const [d] = tidyCustomArmor([{ id: 'ca-x', name: 'Dragonhide coat', category: 'medium', bonus: 5, maxDex: 3, check: -3, spellFailure: 25, price: 400 }]);
+  const r = customArmorRecord(d);
+  check('custom medium armor: +5, max Dex 3, −3, slows to 20 ft.', [r.bonus, r.max_dex, r.check_penalty, r.speed_30, r.category].join(), '5,3,-3,20,medium');
+  check('custom shield: no limit on Dex, no slowing', [customArmorRecord(tidyCustomArmor([{ category: 'shield', bonus: 2, maxDex: null }])[0]).max_dex, customArmorRecord(tidyCustomArmor([{ category: 'shield' }])[0]).speed_30].join(), ',30');
+}
 // Custom spells.
 {
   const { customSpellFormula, customSpellRecord, tidyCustomSpells } = await import('./custom-spells.js');

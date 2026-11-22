@@ -379,6 +379,12 @@
         <div id="armor-warnings"></div>
         <dl id="armor-summary" class="facts wide-facts"></dl>
       </section>
+      <section class="card wide" id="armor-add-card">
+        <h2>Add armor</h2>
+        <p class="hint">Choose a kind to open the list below at just that kind, or <b>Custom</b> for armor or a shield the list doesn't have.</p>
+        <div id="armor-add-buttons" class="add-buttons"></div>
+        <div id="armor-custom-wrap" hidden></div>
+      </section>
       <section class="card wide" id="armor-list-card">
         <details class="card-fold">
           <summary><h2>All armor and shields <span id="armor-list-count" class="count"></span></h2></summary>
@@ -985,6 +991,11 @@
           <ul>
             <li>The <b>Armor</b> and <b>Shield</b> cards start with one line (what you wear, its bonus, Dex limit, check penalty, spell
               failure); <b>Details</b> at the end opens the choices and full stats. With nothing worn, they stay open.</li>
+            <li><b>Add armor</b>: <b>Light armor</b>, <b>Medium armor</b>, <b>Heavy armor</b> and <b>Shields</b> open the list of all armor and
+              shields at just that kind (tap again, or <b>Show all</b>, for everything). <b>Custom</b> makes armor or a shield the list
+              doesn't have: its kind, armor or shield bonus, max Dex, check penalty, spell failure, price, weight and notes (medium and
+              heavy armor slow you), with <b>Wear it now</b> and <b>Free</b>. It joins the list and works like any armor (quality, material,
+              magic); <b>Change this custom armor</b> in its details changes or deletes it.</li>
             <li><b>Details</b> beside the armor or shield opens it (stats, quality and material, Update, add special abilities, take
               it off). Beside <b>Quality</b>: what masterwork and +1 to +5 do and cost for it, and its price so far. Beside
               <b>Material</b>: what the chosen material changes compared with the usual one, and every material it can be made of.</li>
