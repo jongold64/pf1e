@@ -1348,3 +1348,7 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .b-banner .b-banner-ab .b-ab { grid-template-columns: 34px 26px 30px 28px 28px; column-gap: 2px; min-height: 30px; }
 .b-banner .b-banner-ab .b-ab > b { font-size: 1.05rem; }
 .b-banner .b-banner-ab .b-ab > span:first-child { color: var(--text); font-weight: 700; }
+/* The portrait as wide as the ability scores under it (square). */
+.b-banner .b-pic-col { align-items: stretch; }
+.b-banner .b-pic-col .b-portrait { width: auto; height: auto; min-height: 0; aspect-ratio: 1 / 1; align-self: stretch; }
+.b-banner .b-pic-col .b-portrait.b-has-pic img { position: absolute; inset: 0; }
