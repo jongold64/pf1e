@@ -85,6 +85,11 @@ export function renderBuild(app, view, parts) {
           <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
           <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
+  // Languages under the numbers: tap to choose them (app.js popLanguages); how many are still to choose, or too many.
+  const L = view.languages;
+  const toChoose = L ? L.slots - L.picks.length : 0;
+  const langLine = L ? `<p class="b-langs"><button type="button" class="link" data-b-langs><b>Languages</b></button> ${esc(L.known.join(', ') || 'none yet')}${toChoose > 0
+    ? ` <small class="muted">(${toChoose} more to choose)</small>` : ''}${L.problems.length ? ' <small class="warning">⚠ too many</small>' : ''}</p>` : '';
   // AC in a white box like Init's, beside it.
   const acBox = `<div class="b-hp-big b-ac b-ac-big"><span>AC</span><b>${stats.ac}</b><span class="muted b-ac-sub"><span>touch ${stats.touch}</span> <span>flat-footed ${stats.flatFooted}</span></span>${plus('ac', '', 'AC')}</div>`;
   // The banner's row of numbers (under AC): saves, BAB, CMB with CMD, speed (and a fly speed), each with its d20 and ?.
@@ -292,11 +297,15 @@ export function renderBuild(app, view, parts) {
     ${view.traits.length ? `<h4 class="b-sub">Traits</h4><div class="b-feats">${view.traits.map(t => row(t.name, t.category ? `${t.category} trait` : '', 'trait', t.id)).join('')}</div>` : ''}
     ${racial.length ? `<h4 class="b-sub">Racial traits</h4><div class="b-feats">${racial.map(t => row(t.name, '', 'racial', t.name)).join('')}</div>` : ''}`;
 
-  // Skills: every skill, in its own column on the right (no scrolling); ones with ranks or a bonus beyond the ability modifier stand out,
-  // the rest are greyed; a trained-only skill without ranks says so.
-  const skills = parts.skills.length ? `<div class="b-skills">${parts.skills.map(s => `<div class="${s.ranks > 0 || s.bonus !== 0 ? 'b-has' : 'b-plain'}">
-      <span>${esc(s.name)}${s.usable ? '' : ' <small class="muted">untrained</small>'}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>
-    <p class="hint">${parts.skills.filter(s => s.ranks > 0).length} with ranks.</p>` : '';
+  // Skills: every skill you can use, in its own column on the right (no scrolling); ones with ranks or a bonus beyond the
+  // ability modifier stand out, the rest are greyed.
+  // Trained-only skills without ranks (Knowledge, Handle Animal, Profession...) are left out, even the ones with a small
+  // untrained use (Knowledge checks of DC 10 or less); a class feature that opens them (bardic knowledge...) keeps them.
+  const usable = parts.skills.filter(s => s.usable && !s.limited);
+  const hidden = parts.skills.length - usable.length;
+  const skills = parts.skills.length ? `<div class="b-skills">${usable.map(s => `<div class="${s.ranks > 0 || s.bonus !== 0 ? 'b-has' : 'b-plain'}">
+      <span>${esc(s.name)}</span><b>${signed(s.total)}</b>${roll(check(s.name, s.total), s.name)}${plus('skill', s.name, s.name)}</div>`).join('')}</div>
+    <p class="hint">${parts.skills.filter(s => s.ranks > 0).length} with ranks.${hidden ? ` ${hidden} trained-only skill${hidden === 1 ? '' : 's'} without ranks left out (they're on the Skills tab).` : ''}</p>` : '';
 
   // Companions.
   const comps = renderCompanions(app, view);
@@ -381,7 +390,7 @@ export function renderBuild(app, view, parts) {
     : `<button type="button" class="b-portrait" data-b-portrait aria-label="Add a character portrait" title="Add a portrait">
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M10 60c2-14 11-21 22-21s20 7 22 21z"/></svg>
       <span>${esc(initials)}</span></button>`;
-  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}${heroPts}</div>${numsRow}<div class="b-extras">${extras}</div></div></div></div>
+  box.innerHTML = `<div class="b-banner">${head}<div class="b-vitals">${portrait}<div class="b-vitals-col"><div class="b-vitals-row">${hpBox}${initBox}${acBox}${heroPts}</div>${numsRow}${langLine}<div class="b-extras">${extras}</div></div></div></div>
     <div class="b-main">
       <div>${card('Active effects', effects, ' b-onnow')}${left[0]}${left[1]}${left[2]}
         ${features ? card('Class features and choices', featureSummary, tap('features')) : ''}${card('Feats and traits', featSummary, tap('feats'))}${comps}

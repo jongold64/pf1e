@@ -1182,6 +1182,9 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-burn-note { flex-basis: 100%; }
 .b-buffer { flex-basis: 100%; margin-top: 4px; }
 .b-defense { flex-basis: 100%; margin-top: 4px; }
+.b-langs { margin: 6px 0 0; }
+.b-langs .link { padding: 0; min-height: 0; font-size: inherit; }
+.lang-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 2px 12px; }
 .b-infuse { margin-top: 3px; padding: 1px 10px; min-height: 30px; }
 .b-plan { color: var(--accent); white-space: normal; }
 .blast-pop label { display: block; margin: 6px 0; }

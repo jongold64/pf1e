@@ -26,6 +26,7 @@ import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDe
 import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
+import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
 import { cleanAbilities } from './crafting.js';
@@ -124,6 +125,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  languages: [],             // languages chosen beyond the race's starting ones (languages.js)
   bladeStrike: false,        // a black blade's black blade strike on (bladebound magus; tab-weapons.js)
   defenseBurn: 0,            // of that burn, the points accepted to raise her elemental defense (burn.js elementalDefense)
   tempHp: [],                // temporary hit points: [{ id (rules.js TEMP_HP_SOURCES or 'spirit-boost'), name, amount }]
@@ -263,6 +265,7 @@ function load(saved) {
   state.buffer = Number.isInteger(state.buffer) && state.buffer > 0 ? Math.min(3, state.buffer) : 0;
   state.blastPlan = tidyBlastPlan(state.blastPlan);
   state.bladeStrike = state.bladeStrike === true;
+  state.languages = tidyLanguages(state.languages);
   state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
@@ -966,7 +969,7 @@ function allClassAttacks(stats) {
 function buildParts() {
   const skills = skillRowNames().map(name => {
     const t = skillTotalFor(name);
-    return { name, ranks: state.skills[name] || 0, total: t.total, bonus: t.total - t.abilityMod - (t.armor || 0), usable: t.usable };
+    return { name, ranks: state.skills[name] || 0, total: t.total, bonus: t.total - t.abilityMod - (t.armor || 0), usable: t.usable, limited: !!t.limited };
   }).filter(s => skillInfo(s.name));
   const spontaneous = view.casting.casting.map(c => ({ cls: c.cls, table: spellsPerDay({ cls: c.cls, level: c.effectiveLevel, scores: view.stats.scores,
     extraSlot: extraSlotOn(c.cls.id), knownChange: knownChange(c.cls.id), diminished: diminished(c.cls.id) }) }))
@@ -1026,6 +1029,7 @@ function initBuild() {
     if (e.target.closest('[data-b-kiw]')) { popKiWeapons(app); return; }
     // The Hero points box: a tap anywhere on it opens the popup to spend one.
     if (e.target.closest('.b-hero-big')) { popHeroPoints(); return; }
+    if (e.target.closest('[data-b-langs]')) { popLanguages(); return; }
     if (e.target.closest('[data-b-kiw-off]')) { update({ kiWeapons: { ...state.kiWeapons, on: false } }); return; }
     // Arcane pool, divine bond, fiendish boon, sacred weapon (weapon-bonds.js): the same, in their own popup.
     const bond = e.target.closest('[data-b-bond]');
@@ -1064,6 +1068,14 @@ function initBuild() {
   });
   box.addEventListener('input', e => {
     if (e.target.id === 'b-notes') { state.notes = e.target.value.slice(0, 5000); save(); }
+  });
+  // The Languages popup: a box adds or removes a language, and the popup shows the new count.
+  $('detail-body').addEventListener('change', e => {
+    const t = e.target.closest('.lang-pop [data-lang]');
+    if (!t) return;
+    const rest = state.languages.filter(l => l !== t.dataset.lang);
+    update({ languages: t.checked ? [...rest, t.dataset.lang] : rest });
+    popLanguages();
   });
   // The daily uses popup (in the shared details window): a box ticks that many uses; −/+ for long lists.
   $('detail-body').addEventListener('change', e => {
@@ -2522,6 +2534,9 @@ function computeView() {
   if (speed && fx.flags?.includes('halfSpeed')) speed = Math.max(5, Math.floor(speed / 2 / 5) * 5);
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
+    // Languages: the race's, bonus ones for Intelligence (without temporary effects) and Linguistics ranks.
+    languages: languageState({ race, classIds: counts.map(e => e.cls.id), intMod: Math.floor((plainScores.int - 10) / 2),
+      linguistics: state.skills.Linguistics || 0, chosen: state.languages, all: data.languageNames }),
     bonds: bondsFor(counts, state.alignment), slots, chosen, granted, raceFeats, haveFeats, featChoices, initiators, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,
     schoolBonus: intenseSpells(counts),
     load, fx, size, flawFx, customAll, fastMove, baseSpeed, buffs: allBuffs, fromItems,
@@ -4380,6 +4395,23 @@ function heroClick(e) {
 }
 const popHeroPoints = () => openDetail('Hero points', `<div class="hero-pop">${heroPanel()}</div>`);
 
+// The Languages popup (tap Languages on the Character tab's banner): the ones you start with, then a box for each
+// language to choose (your race's bonus languages first), with how many you have room for.
+function popLanguages() {
+  const L = view.languages;
+  const box = l => `<label class="check-row"><input type="checkbox" data-lang="${esc(l)}"${L.picks.includes(l) ? ' checked' : ''}> ${esc(l)}</label>`;
+  const rest = data.languageNames.filter(l => !L.free.includes(l));
+  const onList = L.anyRace ? [] : rest.filter(l => L.raceList.includes(l));
+  const others = rest.filter(l => !onList.includes(l));
+  openDetail('Languages', `<div class="lang-pop">
+    <p><b>You speak:</b> ${esc(L.free.join(', ') || 'none listed for your race')}</p>
+    <p class="hint">Room for ${L.slots} more: ${L.intCount} for your Intelligence bonus${L.anyRace ? ' (any language but a secret one)' : ' (from your race’s list)'}
+      and ${L.linguistics} for your ranks of Linguistics (any language but a secret one). ${L.picks.length} chosen.</p>
+    ${L.problems.map(x => `<p class="warning">${esc(x)}</p>`).join('')}
+    ${onList.length ? `<h3>Your race’s bonus languages</h3><div class="lang-list">${onList.map(box).join('')}</div>` : ''}
+    <h3>${onList.length ? 'Other languages (a rank of Linguistics each)' : 'Languages'}</h3><div class="lang-list">${others.map(box).join('')}</div></div>`);
+}
+
 // Drawbacks card (Drawbacks house rule): pick one drawback from the list; its full text shows, and it adds a trait slot.
 function renderDrawback() {
   $('drawback-card').hidden = !state.houseRules.drawbacks;
@@ -4885,6 +4917,7 @@ async function start() {
   // Bloodlines in the shape of the other one-time class choices.
   // Each kineticist element lists its basic wild talent (a bonus talent) among its powers.
   data.kineticElements = data.kineticElements.map(e => withBasicTalent(e, data.talents));
+  data.languageNames = allLanguages(data.races);
   data.paths = [...data.classPaths, ...data.familiars, ...data.kineticElements, ...data.bloodlines.map(b => ({
     id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
     facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),

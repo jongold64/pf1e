@@ -2449,6 +2449,22 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Languages.
+{
+  const { languageState, allLanguages, tidyLanguages } = await import('./languages.js');
+  const elf = { languages: { starting: ['Common', 'Elven'], bonus: ['Celestial', 'Draconic', 'Sylvan'] } };
+  const human = { languages: { starting: ['Common'], bonus: ['Any (except secret languages)'] } };
+  const all = allLanguages([elf, human]);
+  check('languages: Druidic and "Any..." aren’t learnable names', [all.includes('Druidic'), all.some(l => /^Any/.test(l)), all.includes('Elven')].join(), 'false,false,true');
+  const e = languageState({ race: elf, intMod: 2, linguistics: 1, chosen: ['Sylvan', 'Elven', 'Orc'], all });
+  check('elf, Int +2, Linguistics 1: room for 3; Elven already known; Orc off the list uses the rank', [e.known.join(), e.slots, e.problems.length].join('|'), 'Common,Elven,Sylvan,Orc|3|0');
+  check('elf, Int +1, no Linguistics: Orc needs a rank, and 2 is too many', languageState({ race: elf, intMod: 1, chosen: ['Sylvan', 'Orc'], all }).problems.length, 2);
+  check('human: any language counts for Intelligence', languageState({ race: human, intMod: 1, chosen: ['Aklo'], all }).problems.length, 0);
+  check('druid knows Druidic; cleric may take Infernal for Intelligence', [languageState({ race: elf, classIds: ['druid'], all }).free.join(),
+    languageState({ race: elf, classIds: ['cleric'], intMod: 1, chosen: ['Infernal'], all }).problems.length].join('|'), 'Common,Elven,Druidic|0');
+  check('tidy languages', JSON.stringify(tidyLanguages(['Orc', 'Orc', 3, ''])), '["Orc"]');
+}
+
 // Daily uses (Build tab).
 {
   const { dailyUses, usesLeft } = await import('./daily.js');
