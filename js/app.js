@@ -2670,7 +2670,8 @@ function computeView() {
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
     classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element, defenseBurn: defenseBurnNow() }),
     senses: classSenses(counts, race?.senses || []), sr: spellResistance(race, counts, classLevels.length), classNumbers: classNumbers(counts),
-    situational: withFamiliarNotes(situationalBonuses(counts, stats.mod, { element, defenseBurn: defenseBurnNow(), charLevel: classLevels.length }), familiarNow),
+    situational: (n => (instant ? { ...n, ac: [...n.ac, `Instant armor (force): its +${instant.armor.bonus} armor bonus also counts against incorporeal touch attacks (AC ${stats.touch + instant.armor.bonus} against them: touch ${stats.touch} + ${instant.armor.bonus}).`] } : n))(
+      withFamiliarNotes(situationalBonuses(counts, stats.mod, { element, defenseBurn: defenseBurnNow(), charLevel: classLevels.length }), familiarNow)),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).
