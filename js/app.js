@@ -24,7 +24,7 @@ import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails, moneyNow } from './tab-equipment.js';
-import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL } from './equipment.js';
+import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL, startingGold } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
 import { askAmount } from './amount-prompt.js';
@@ -1118,9 +1118,22 @@ function initBuild() {
       return;
     }
     if (e.target.closest('.wealth-pop [data-wealth-equipment]')) { $('detail-dialog').close(); showTab('equipment'); }
+    // Use starting gold, or the wealth for your level, as your gold.
+    const use = e.target.closest('.wealth-pop [data-wealth-use]');
+    if (use) {
+      const m = moneyNow(app, view);
+      update({ gold: use.dataset.wealthUse === 'level' ? WEALTH_BY_LEVEL[state.level] : m?.start ?? null });
+      popWealth();
+    }
   });
   $('detail-body').addEventListener('change', e => {
     if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
+    // Max starting gold (the house rule), from the Wealth popup or a class's popup on the Classes tab.
+    if (e.target.matches('[data-max-gold]')) {
+      update({ houseRules: { ...state.houseRules, maxGold: e.target.checked } });
+      if (e.target.closest('.wealth-pop')) popWealth();
+      else if (e.target.dataset.maxGold) popClass(e.target.dataset.maxGold);
+    }
     // A level chosen: the XP at the start of that level.
   });
   // The Languages popup: a box adds or removes a language, and the popup shows the new count.
@@ -2717,8 +2730,10 @@ function popClass(id) {
   openDetail(c.name, `<p class="hint">${esc(c.category)} class · ${esc(sourceText(c))}${mine ? ` · you have ${mine} level${mine === 1 ? '' : 's'}` : ''}</p>
     ${paragraphs(c.summary || c.role || '')}
     ${facts([['Hit die', c.hit_die], ['Skill ranks per level', `${c.skill_ranks_per_level} + Int modifier`], ['Alignment', c.alignment || null],
-             ['Starting wealth', c.starting_wealth?.dice ? `${c.starting_wealth.dice} (average ${c.starting_wealth.average_gp} gp)` : null],
+             ['Starting wealth', c.starting_wealth?.dice ? `${c.starting_wealth.dice} (average ${c.starting_wealth.average_gp} gp${startingGold(c, data.classes, true) !== c.starting_wealth.average_gp ? `, most ${startingGold(c, data.classes, true)} gp` : ''})` : null],
              ['Class skills', (c.class_skills || []).map(s => s.skill).join(', ') || null]])}
+    ${c.starting_wealth?.dice ? `<label class="check-row"><input type="checkbox" data-max-gold="${esc(c.id)}"${state.houseRules.maxGold ? ' checked' : ''}> Max starting gold for this character
+      (the Max Starting Gold house rule: the most the roll gives)</label>` : ''}
     ${reqHtml}
     <h3>Level table</h3>
     <div class="table-scroll"><table class="skill-why class-table"><thead><tr><th>Level</th><th>Base attack</th><th>Fort</th><th>Ref</th><th>Will</th><th>Special</th></tr></thead>
@@ -4481,8 +4496,29 @@ async function popWealth() {
       ${row('Armor and shield', -m.armorSpend)}${row('Equipment', -m.gearSpend)}${row('Weapons', -m.weaponSpend)}${row('Magic items', -m.magic.cost)}
       ${row('Left', m.left, true)}
       ${row('Wealth (gear bought and gold left)', m.gold, true)}</tbody></table>
-    ${lvWealth ? `<p class="hint">Wealth by level ${state.level} (Core Rulebook, for a new character): ${esc(formatGp(lvWealth))}.</p>` : ''}
+    ${startingWealthHtml(m)}
+    ${lvWealth ? `<h3>Wealth by level</h3><p>A new character made at level ${state.level} (Core Rulebook): ${esc(formatGp(lvWealth))}.</p>
+      <div class="line-controls"><button type="button" data-wealth-use="level">Use wealth for level ${state.level} (${esc(formatGp(lvWealth))})</button></div>` : ''}
     <div class="line-controls"><button type="button" data-wealth-equipment>Open the Equipment tab</button></div></div>`);
+}
+
+// Starting wealth (the Wealth popup): the first class's starting gold roll, average or maximum (the Max Starting Gold
+// box, the house rule), traits that change it (Rich Parents...), and a button to use it. m: moneyNow(...).
+function startingWealthHtml(m) {
+  const sw = view.cls?.starting_wealth;
+  const avg = startingGold(view.cls, data.classes, false);
+  const max = startingGold(view.cls, data.classes, true);
+  const on = !!state.houseRules.maxGold;
+  return `<h3>Starting wealth (1st level)</h3>
+    ${m.classStart ? `<table class="skill-why"><tbody>
+      <tr><td>${esc(view.cls.name)}${sw?.dice ? ` (${esc(sw.dice)})` : ''}: ${on ? 'maximum' : 'average'}</td><td class="num">${esc(formatGp(m.classStart))}</td></tr>
+      ${m.traitGold.lines.map(l => `<tr><td>Trait: ${esc(l.name)}</td><td class="num">${esc(l.text)}</td></tr>`).join('')}
+      <tr><td><b>Starting gold</b></td><td class="num"><b>${esc(formatGp(m.start))}</b></td></tr></tbody></table>
+      <label class="check-row"><input type="checkbox" data-max-gold${on ? ' checked' : ''}> Max starting gold: the most the roll gives (${esc(formatGp(max))} instead of the average ${esc(formatGp(avg))})</label>
+      <p class="hint">${m.traitGold.lines.length ? '' : 'No trait of yours changes it (Rich Parents and Lesser Noble do); no feat does. '}${state.gold === null
+        ? 'Your gold is your starting gold until you set it.' : `Your gold is set to ${esc(formatGp(m.gold))}.`}</p>
+      ${state.gold !== null ? `<div class="line-controls"><button type="button" data-wealth-use="start">Use starting gold (${esc(formatGp(m.start))})</button></div>` : ''}`
+      : '<p class="hint">Your class lists no starting gold.</p>'}`;
 }
 
 // The Languages popup (tap Languages on the Character tab's banner): the ones you start with, then a box for each
