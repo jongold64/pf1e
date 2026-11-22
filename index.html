@@ -89,16 +89,12 @@
             <div class="hp-now"><span class="hp-label">Hit Points</span><b id="hp-current"></b><span id="hp-max"></span><span id="hp-temp" class="hp-temp"></span>
               <span id="hp-status" class="warning"></span></div>
             <div class="hp-change">
-              <span class="base">
-                <button type="button" id="hp-minus" aria-label="Lower the amount">−</button>
-                <input id="hp-amount" type="number" inputmode="numeric" value="" aria-label="Amount: negative for damage, positive for healing">
-                <button type="button" id="hp-plus" aria-label="Raise the amount">+</button>
-              </span>
-              <button type="button" id="hp-apply" class="primary">Apply</button>
+              <button type="button" id="hp-damage" class="primary">Damage</button>
+              <button type="button" id="hp-heal">Heal</button>
               <button type="button" id="hp-full">Full</button>
               <button type="button" id="hp-extra" title="Temporary hit points and other ways above the maximum">Xtra-HP</button>
             </div>
-            <p class="hint">Negative for damage, positive for healing.</p>
+            <p class="hint">Damage and Heal ask for the amount.</p>
           </div>
           <div id="hero-points" class="hero-points" hidden></div>
           <div id="race-defense" class="defense"></div>
@@ -591,7 +587,7 @@
               traits for others; ones that clash are greyed out. <b>Details</b> on one shows it beside the standard trait it replaces,
               with Take or Remove. The lists include the Player Companions' and later books' traits (Blood of Shadows' blended
               view...), each with its book; favored class options from those books are there too.</li>
-            <li><b>Hit points</b>: use − / + to set an amount (negative for damage), then <b>Apply</b>; <b>Full</b> heals completely.
+            <li><b>Hit points</b>: <b>Damage</b> or <b>Heal</b> opens a box for the amount; <b>Full</b> heals completely.
               <b>Xtra-HP</b> lists the ways to go above your maximum: switch on <b>Spirit Boost</b> (an oracle's healing past your
               maximum becomes temporary hit points), or add temporary hit points from aid, false life, greater heroism, rage and
               more (roll or type the amount). Temporary hit points show beside your hit points and are lost first.</li>
@@ -668,8 +664,8 @@
         <details>
           <summary>Character tab</summary>
           <ul>
-            <li>Everything you use in a fight, on one page. The <b>banner</b>, the highlighted card under the tabs: who the character is, with <b>XP</b> and <b>Wealth</b> at the end of that line (tap XP to add or take off experience or set the total, and pick the slow, medium or fast track; it shows the XP for your next level and says <i>level up</i> when you have it. Tap Wealth for the gold you have left: Add gold for treasure or a sale, Spend for anything not on your lists, or Set gold left, with what your armor, gear, weapons and magic items cost), <b>HP</b>
-              (beside a portrait: tap it to choose any picture file (on the tablet too: from Files, a cloud drive, your photos or the camera), cropped to a square and saved with the character (Export takes it along), or Remove it to show the silhouette with your initials again; HP is first and largest: type an amount, then Damage or Heal; Full restores them; orange at half or less, red at 0),
+            <li>Everything you use in a fight, on one page. The <b>banner</b>, the highlighted card under the tabs: who the character is, with <b>XP</b> and <b>Wealth</b> at the end of that line (tap XP to add or take off experience or set the total (each opens a box for the amount), or choose a level to set it to the start of that level, and pick the slow, medium or fast track; it shows the XP for your next level and says <i>level up</i> when you have it. Tap Wealth for the gold you have left: Add gold for treasure or a sale, Spend for anything not on your lists, or Set gold left (each opens a box for the amount), with what your armor, gear, weapons and magic items cost), <b>HP</b>
+              (beside a portrait: tap it to choose any picture file (on the tablet too: from Files, a cloud drive, your photos or the camera), cropped to a square and saved with the character (Export takes it along), or Remove it to show the silhouette with your initials again; HP is first and largest: Damage or Heal opens a box to type the amount; Full restores them; orange at half or less, red at 0),
               <b>Init</b> with its d20, <b>AC</b> beside it (touch and flat-footed beside the number), hero points beside AC (tap the box to spend one: +8 or +4 bonus, reroll, extra action and the rest, or + and − for points the GM awards), a row of <b>Fort</b>, <b>Ref</b>, <b>Will</b>, <b>BAB</b>, <b>CMB</b>, <b>CMD</b> and
               <b>Speed</b> (with a fly speed) each with its d20 and ?, your <b>Languages</b> (tap the word to choose them: your race's starting languages, one more for each point of Intelligence bonus from your race's list, which clerics, druids and wizards add to, and one of any kind for each rank of Linguistics; a druid knows Druidic), and your class's daily pools with what's left (tap one to tick it off;
               <b>Daily uses…</b> lists every one, <b>New day</b> resets them).</li>

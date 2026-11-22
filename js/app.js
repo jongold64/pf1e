@@ -27,6 +27,7 @@ import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDe
 import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
+import { askAmount } from './amount-prompt.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
@@ -932,6 +933,16 @@ function burnNow() {
   return bs && { ...bs, infusions: infusionCosts(chosen, kin), buffer: Math.min(state.buffer, bs.bufferMax),
     defense: elementalDefense(element, kin, state.classLevels.length, defenseBurnNow()) };
 }
+// Damage or healing (Character tab banner, Build tab): asks for the amount, then takes it off (temporary hit points
+// first) or adds it (with Spirit Boost, healing past the maximum becomes temporary hit points).
+async function hpAsk(how) {
+  const damage = how === 'damage';
+  const n = await askAmount({ title: damage ? 'Damage' : 'Heal', label: damage ? 'Damage taken' : 'Hit points healed', ok: damage ? 'Take damage' : 'Heal' });
+  if (!n) return;
+  const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount: damage ? -n : n, spiritBoost: state.spiritBoost });
+  update({ hpCurrent: r.current, tempHp: r.temps });
+}
+
 // The burn accepted for the elemental defense that still counts (burn removed takes it with it).
 const defenseBurnNow = () => Math.min(state.defenseBurn || 0, state.burn);
 
@@ -1006,12 +1017,8 @@ function initBuild() {
     const hp = e.target.closest('[data-b-hp]');
     if (hp) {
       if (hp.dataset.bHp === 'full') { update({ hpCurrent: null }); return; }
-      // Damage takes the amount off, Heal adds it (Apply, from older pages: a negative amount is damage).
-      const typed = Math.trunc(Number($('b-hp-amount').value)) || 0;
-      const amount = hp.dataset.bHp === 'damage' ? -Math.abs(typed) : hp.dataset.bHp === 'heal' ? Math.abs(typed) : typed;
-      if (!amount) return;
-      const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount, spiritBoost: state.spiritBoost });
-      update({ hpCurrent: r.current, tempHp: r.temps });
+      // Damage and Heal ask for the amount.
+      hpAsk(hp.dataset.bHp);
       return;
     }
     const off = e.target.closest('[data-b-off]');
@@ -1080,27 +1087,36 @@ function initBuild() {
   $('detail-body').addEventListener('click', e => {
     const x = e.target.closest('.xp-pop [data-xp]');
     if (x) {
-      const n = Math.max(0, Math.floor(Number($('xp-amount').value) || 0));
-      const now = xpProgress(state.xp, state.level, state.xpTrack).xp;
-      update({ xp: x.dataset.xp === 'set' ? n : Math.max(0, now + (x.dataset.xp === 'add' ? n : -n)) });
-      popXp();
+      const how = x.dataset.xp;
+      askAmount({ title: how === 'add' ? 'Add XP' : how === 'sub' ? 'Take off XP' : 'Set total XP', label: 'XP',
+        ok: how === 'set' ? 'Set' : how === 'add' ? 'Add' : 'Take off' }).then(n => {
+        if (n === null) return;
+        const now = xpProgress(state.xp, state.level, state.xpTrack).xp;
+        update({ xp: how === 'set' ? n : Math.max(0, now + (how === 'add' ? n : -n)) });
+        popXp();
+      });
       return;
     }
     const g = e.target.closest('.wealth-pop [data-gold]');
     if (g) {
-      const n = Math.max(0, Math.round((Number($('gold-amount').value) || 0) * 100) / 100);
-      const m = moneyNow(app, view);
-      if (!m) return;
-      const spent = m.gold - m.left;
-      const gold = g.dataset.gold === 'set' ? n + spent : m.gold + (g.dataset.gold === 'add' ? n : -n);
-      update({ gold: Math.round(gold * 100) / 100 });
-      popWealth();
+      const how = g.dataset.gold;
+      askAmount({ title: how === 'add' ? 'Add gold' : how === 'sub' ? 'Spend gold' : 'Set gold left', label: 'Gold (gp)', decimals: true,
+        ok: how === 'add' ? 'Add' : how === 'sub' ? 'Spend' : 'Set' }).then(n => {
+        const m = moneyNow(app, view);
+        if (n === null || !m) return;
+        const spent = m.gold - m.left;
+        const gold = how === 'set' ? n + spent : m.gold + (how === 'add' ? n : -n);
+        update({ gold: Math.round(gold * 100) / 100 });
+        popWealth();
+      });
       return;
     }
     if (e.target.closest('.wealth-pop [data-wealth-equipment]')) { $('detail-dialog').close(); showTab('equipment'); }
   });
   $('detail-body').addEventListener('change', e => {
     if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
+    // A level chosen: the XP at the start of that level.
+    if (e.target.id === 'xp-level' && e.target.value) { update({ xp: XP_TABLE[state.xpTrack][Number(e.target.value) - 1] }); popXp(); }
   });
   // The Languages popup: a box adds or removes a language, and the popup shows the new count.
   $('detail-body').addEventListener('change', e => {
@@ -1522,19 +1538,9 @@ function buildControls() {
     if (name === undefined) return;
     update({ alternates: e.target.checked ? [...state.alternates, name] : state.alternates.filter(n => n !== name) });
   });
-  // Hit point tracker: pick an amount (negative damage, positive healing), then Apply; Full resets.
-  const amount = () => Math.trunc(Number($('hp-amount').value) || 0);
-  // The box starts empty; the buttons set the number (and it empties again when it's back to 0).
-  const setAmount = n => { $('hp-amount').value = n ? String(n) : ''; };
-  $('hp-minus').addEventListener('click', () => setAmount(amount() - 1));
-  $('hp-plus').addEventListener('click', () => setAmount(amount() + 1));
-  $('hp-apply').addEventListener('click', () => {
-    if (!amount()) return;
-    // Damage comes off temporary hit points first; with Spirit Boost, healing past the maximum becomes temporary.
-    const r = applyHp({ current: state.hpCurrent, max: view.stats.hp, temps: state.tempHp, amount: amount(), spiritBoost: state.spiritBoost });
-    setAmount(0);
-    update({ hpCurrent: r.current, tempHp: r.temps });
-  });
+  // Hit point tracker: Damage and Heal ask for the amount (hpAsk); Full resets.
+  $('hp-damage').addEventListener('click', () => hpAsk('damage'));
+  $('hp-heal').addEventListener('click', () => hpAsk('heal'));
   $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
   $('hp-extra').addEventListener('click', showExtraHp);
   // The Xtra-HP popup's controls (it's drawn into the shared details dialog).
@@ -1544,14 +1550,19 @@ function buildControls() {
     const row = e.target.closest('[data-temp-source]');
     const id = row?.dataset.tempSource;
     const src = TEMP_HP_SOURCES.find(s => s.id === id);
-    if (e.target.closest('[data-temp-roll]') && src?.formula) {
+    if (e.target.closest('[data-temp-add]') && src) {
+      // Add asks for the amount: a fixed one (divine power, greater heroism) filled in, dice (aid, false life) with Roll.
       const cl = Number(row.querySelector('[data-temp-cl]')?.value) || view.level;
-      row.querySelector('[data-temp-amount]').value = rollDamage(src.formula(cl, view.level)).total;
-    } else if (e.target.closest('[data-temp-add]') && src) {
-      const n = Number(row.querySelector('[data-temp-amount]').value);
+      const formula = src.formula ? String(src.formula(cl, view.level)) : null;
+      const dice = !!formula && /d/.test(formula);
       const name = id === 'custom' ? (row.querySelector('[data-temp-name]').value.trim() || 'Other') : src.name;
-      update({ tempHp: addTempHp(state.tempHp, { id: id === 'custom' ? `custom-${name.toLowerCase()}` : id, name, amount: n }) });
-      showExtraHp();
+      askAmount({ title: `${name}: temporary hit points`, label: 'Temporary hit points', ok: 'Add',
+        value: formula && !dice ? formula : '', roll: dice ? () => rollDamage(formula).total : null,
+        hint: dice ? `${formula}: Roll, or type what you rolled.` : '' }).then(n => {
+        if (!n) return;
+        update({ tempHp: addTempHp(state.tempHp, { id: id === 'custom' ? `custom-${name.toLowerCase()}` : id, name, amount: n }) });
+        showExtraHp();
+      });
     } else if (e.target.closest('[data-temp-remove]')) {
       update({ tempHp: state.tempHp.filter(t => t.id !== e.target.closest('[data-temp-remove]').dataset.tempRemove) });
       showExtraHp();
@@ -4142,9 +4153,6 @@ function showExtraHp() {
       <div class="xtra-row">
         ${s.id === 'custom' ? '<input type="text" data-temp-name placeholder="Source" aria-label="Source of the temporary hit points">' : ''}
         ${s.usesCl ? `<label>Caster level <input type="number" min="1" max="20" value="${view.level}" data-temp-cl></label>` : ''}
-        <input type="number" min="0" data-temp-amount placeholder="Amount" aria-label="Temporary hit points from ${esc(s.name)}"
-          value="${s.formula && !/d/.test(s.formula(view.level, view.level)) ? s.formula(view.level, view.level) : ''}">
-        ${s.formula ? `<button type="button" data-temp-roll>${/d/.test(s.formula(1, 1)) ? 'Roll' : 'Work out'}</button>` : ''}
         <button type="button" class="primary" data-temp-add>Add</button>
       </div></li>`).join('');
   openDetail('Extra hit points', `<div class="xtra-hp">
@@ -4436,9 +4444,9 @@ function popXp() {
   openDetail('Experience', `<div class="xp-pop">
     <p><b>${n(p.xp)} XP</b> · level ${state.level}${p.next === null ? ' (the highest)' : ` · ${ORD_WORD(state.level + 1)} level at ${n(p.next)} (${n(p.toGo)} to go)`}</p>
     ${p.ready ? `<p class="b-ready">Enough for ${ORD_WORD(p.reached)} level: add the level on the Build tab.</p>` : ''}
-    <div class="line-controls"><input type="number" id="xp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="XP amount">
-      <button type="button" class="primary" data-xp="add">Add XP</button><button type="button" data-xp="sub">Take off</button>
+    <div class="line-controls"><button type="button" class="primary" data-xp="add">Add XP</button><button type="button" data-xp="sub">Take off</button>
       <button type="button" data-xp="set">Set total</button></div>
+    <label>Or set it to the start of level <select id="xp-level"><option value="">choose a level</option>${t.map((x, i) => `<option value="${i + 1}">${i + 1} (${n(x)} XP)</option>`).join('')}</select></label>
     <label>Track <select id="xp-track">${['slow', 'medium', 'fast'].map(k => `<option value="${k}"${k === state.xpTrack ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
     <table class="skill-why"><tbody>${t.map((x, i) => `<tr${i + 1 === state.level ? ' class="mine"' : ''}><td>Level ${i + 1}${i + 1 === state.level ? ' (you)' : ''}</td><td class="num">${n(x)}</td></tr>`).join('')}</tbody></table>
     <p class="hint">Core Rulebook, Table 3-1 (${esc(state.xpTrack)} track). Until you enter XP, it counts as the start of your level.</p></div>`);
@@ -4454,8 +4462,7 @@ async function popWealth() {
   const row = (label, v, b = false) => `<tr><td>${b ? `<b>${label}</b>` : label}</td><td class="num">${b ? `<b>${esc(formatGp(v))}</b>` : esc(formatGp(v))}</td></tr>`;
   openDetail('Wealth', `<div class="wealth-pop">
     <p><b>${esc(formatGp(m.left))} left</b> to spend${m.left < 0 ? ' <span class="warning">(more spent than you have)</span>' : ''}</p>
-    <div class="line-controls"><input type="number" id="gold-amount" inputmode="decimal" min="0" step="0.01" placeholder="0" aria-label="Gold amount">
-      <button type="button" class="primary" data-gold="add">Add gold</button><button type="button" data-gold="sub">Spend</button>
+    <div class="line-controls"><button type="button" class="primary" data-gold="add">Add gold</button><button type="button" data-gold="sub">Spend</button>
       <button type="button" data-gold="set">Set gold left</button></div>
     <p class="hint">Add gold for treasure, a reward or a sale; Spend for anything not on your lists (an inn, a bribe, a spell bought). Gear you add on the Equipment, Armor, Weapons and Magic Items tabs comes off by itself.</p>
     <table class="skill-why"><tbody>

@@ -83,7 +83,7 @@ export function renderBuild(app, view, parts) {
     ...raceResist.filter(x => x.choice).map(r => `${r.choice.join(', ').replace(/, (?=[^,]*$)/, ' or ')} ${r.value} (${r.from}: one, your choice)`),
     ...fromFx.filter(x => x.absorb).map(r => `${r.type}: absorbs 12/caster level (max 120) (${r.from})`)];
   // AC and HP: in the highlighted row at the top, beside who the character is.
-  // HP first and biggest (the most used number in a fight): type an amount, then Damage or Heal; Full restores it.
+  // HP first and biggest (the most used number in a fight): Damage and Heal ask for the amount; Full restores it.
   // Its colour warns when it's low (half or less) and when it's 0 or below.
   const hpState = hp <= 0 ? ' b-hp-down' : hp * 2 <= stats.hp ? ' b-hp-low' : '';
   // A kineticist's burn deals nonlethal damage (character level per point) that can't be healed until the burn goes:
@@ -91,7 +91,6 @@ export function renderBuild(app, view, parts) {
   const nl = parts.burn?.nonlethal || 0;
   const nlNote = nl ? `<span class="muted b-hp-nl">${nl} nonlethal (burn)${nl > hp ? ' · unconscious' : nl === hp ? ' · staggered' : ''}</span>` : '';
   const hpBox = `<div class="b-hp b-hp-big${hpState}"><span>HP</span><b>${hp}</b><span class="muted">/ ${stats.hp}${temp ? ` +${temp} temp` : ''}</span>${nlNote}
-          <input type="number" id="b-hp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="Amount of damage or healing">
           <button type="button" class="b-hp-damage" data-b-hp="damage">Damage</button><button type="button" class="b-hp-heal" data-b-hp="heal">Heal</button>
           <button type="button" data-b-hp="full">Full</button>${plus('result', 'hp', 'hit points')}</div>`;
   // Languages under the numbers: tap to choose them (app.js popLanguages); how many are still to choose, or too many.

@@ -1291,3 +1291,12 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .race-feats:empty { display: none; }
 .race-feat { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .race-feat select { flex: 1 1 12em; min-width: 0; }
+
+/* The amount box (amount-prompt.js): opens over the page or a popup when Damage, Heal, Add XP... is pressed. */
+.amount-dialog { border: 2px solid var(--accent); border-radius: 12px; padding: 16px 18px; width: min(92vw, 360px); background: var(--card, #fff); }
+.amount-dialog::backdrop { background: rgba(0, 0, 0, .35); }
+.amount-dialog h3 { margin: 0 0 10px; }
+.amount-dialog label { display: block; }
+.amount-dialog input { display: block; width: 100%; font-size: 1.6rem; padding: 6px 10px; margin-top: 4px; box-sizing: border-box; }
+.amount-dialog .line-controls { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.amount-dialog button { min-height: 44px; padding: 0 16px; font-size: 1.05rem; }
