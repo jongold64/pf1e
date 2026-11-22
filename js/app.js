@@ -132,6 +132,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
   customWeapons: [],         // custom weapons' definitions (Weapons tab, Custom): custom-weapons.js
   customGear: [],            // custom equipment (Equipment tab, Custom): custom-gear.js
   craftProjects: [],         // non-magical items being made with the Craft skill (Craft tab): mundane-craft.js
@@ -300,6 +301,8 @@ function load(saved) {
   state.craftProjects = tidyProjects(state.craftProjects);
   state.customGear = tidyCustomGear(state.customGear);
   state.customWeapons = tidyCustomWeapons(state.customWeapons);
+  state.metamagic = Object.fromEntries(Object.entries(state.metamagic && typeof state.metamagic === 'object' ? state.metamagic : {})
+    .filter(([id, m]) => typeof id === 'string' && m?.intensified === true).map(([id]) => [id, { intensified: true }]));
   state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
@@ -451,7 +454,7 @@ function load(saved) {
   state.traitOn = (Array.isArray(state.traitOn) ? state.traitOn : []).filter(k => typeof k === 'string');
   state.traitPicks = Object.fromEntries(Object.entries(state.traitPicks && typeof state.traitPicks === 'object' ? state.traitPicks : {})
     .filter(([, v]) => v && typeof v === 'object')
-    .map(([k, v]) => [k, Object.fromEntries(['weapon', 'benefit', 'maneuver'].filter(f => typeof v[f] === 'string').map(f => [f, v[f]]))]));
+    .map(([k, v]) => [k, Object.fromEntries(['weapon', 'benefit', 'maneuver', 'spell'].filter(f => typeof v[f] === 'string').map(f => [f, v[f]]))]));
   state.customEffects = (Array.isArray(state.customEffects) ? state.customEffects : []).filter(x => x && typeof x === 'object')
     .map(x => {
       const part = p => ({ target: TARGETS.some(([t]) => t === p?.target) ? p.target : 'attack',
@@ -1201,6 +1204,14 @@ function initBuild() {
       else if (e.target.dataset.maxGold) popClass(e.target.dataset.maxGold);
     }
     // A level chosen: the XP at the start of that level.
+  });
+  // Intensified Spell ticked or unticked on a spell (Character tab).
+  $('build').addEventListener('change', e => {
+    const b = e.target.closest('[data-b-intensify]');
+    if (!b) return;
+    const id = b.dataset.bIntensify;
+    const { [id]: _, ...rest } = state.metamagic;
+    update({ metamagic: b.checked ? { ...state.metamagic, [id]: { intensified: true } } : rest });
   });
   // The Languages popup: a box adds or removes a language, and the popup shows the new count.
   $('detail-body').addEventListener('change', e => {
@@ -2680,6 +2691,10 @@ function computeView() {
   return {
     race, cls, classLevels, counts, classes, favoredClassId, favoredPicks, flexibleChoice, casting, level: classLevels.length,
     // Languages: the race's, bonus ones for Intelligence (without temporary effects) and Linguistics ranks.
+    // Spells cast intensified (Intensified Spell; ticked on the Character tab).
+    intensified: new Set(haveFeats.includes('Intensified Spell') ? Object.keys(state.metamagic).filter(id => state.metamagic[id]?.intensified) : []),
+    // The spell Magical Lineage was taken for (metamagic on it uses a slot one level lower).
+    lineageSpell: state.traits.includes('magical-lineage') ? state.traitPicks['magical-lineage']?.spell || '' : '',
     languages: languageState({ race, classIds: counts.map(e => e.cls.id), intMod: Math.floor((plainScores.int - 10) / 2),
       linguistics: state.skills.Linguistics || 0, chosen: state.languages, all: data.languageNames }),
     bonds: bondsFor(counts, state.alignment), slots, chosen, granted, raceFeats, haveFeats, featChoices, initiators, gear, stats, ctx, contextAt, speed, requirements, traits: chosenTraits, traitFx, traitSwitches, archFx, defenseOpts,

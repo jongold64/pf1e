@@ -2449,6 +2449,15 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Intensified Spell.
+{
+  const { intensifyFormula, intensifiable } = await import('./spell-math.js');
+  check('intensified: shocking grasp cap 5 → 10, vampiric touch 10 → 12, flat dice unchanged',
+    [intensifyFormula('(min(5, @cl))d6'), intensifyFormula('(min(10, floor(@cl / 2)))d6'), intensifyFormula('1d8 + min(@cl, 5)')].join(' | '),
+    '(min(10, @cl))d6 | (min(12, floor(@cl / 2)))d6 | 1d8 + min(@cl, 5)');
+  check('intensifiable: shocking grasp yes, cure light wounds no', [intensifiable({ actions: [{ damage: [{ formula: '(min(5, @cl))d6' }] }] }),
+    intensifiable({ actions: [{ damage: [{ formula: '1d8 + min(@cl, 5)' }] }] })].join(), 'true,false');
+}
 // Charges.
 {
   const { maxCharges, chargedPrice } = await import('./equipment.js');

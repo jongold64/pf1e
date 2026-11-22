@@ -15,6 +15,7 @@ import { bondCost, bondText } from './weapon-bonds.js';
 import { weaponLabel } from './weapons.js';
 import { magicPrefix } from './crafting.js';
 import { spellNumbersHtml, itemSpellNumbersHtml } from './tab-spells.js';
+import { intensifiable } from './spell-math.js';
 import { ownedSources, itemRowHtml } from './item-rows.js';
 import { defenseSwitchesHtml } from './tab-armor.js';
 import { defenseOn, defenseSwitches } from './defense.js';
@@ -463,10 +464,21 @@ function renderSpells(app, view, parts) {
     // kensai's weapon, else the first melee weapon.
     const strike = cid === 'magus' && c.classLevel >= 2 ? (list => {
       const w = list.find(x => String(x.index) === String(state.combat.main)) || list.find(x => x.favored) || list[0];
-      return w && { name: w.name, group: w.rolls.attack.groups[0] };
+      return w && { name: w.name, group: w.rolls.attack.groups[0],
+        // Close Range (magus arcana): ray spells by spellstrike too.
+        closeRange: Object.entries(state.talents).some(([slot, id]) => slot.startsWith('magus|') && id === 'close-range') };
     })(weaponSummaries(app, view).filter(x => x.melee)) : null;
+    // Intensified Spell: a box on each spell it can raise; the slot it uses (one higher, or its own level with Magical Lineage).
+    const intenseBox = spell => {
+      if (!spell || !view.haveFeats.includes('Intensified Spell') || !intensifiable(spell)) return '';
+      const lv = spell.levels?.[cid] ?? 0;
+      const slot = Math.max(lv, lv + 1 - (view.lineageSpell === spell.id ? 1 : 0));
+      const on = !!state.metamagic[spell.id]?.intensified;
+      return `<label class="check-row b-intense"><input type="checkbox" data-b-intensify="${esc(spell.id)}"${on ? ' checked' : ''}> Intensified
+        <small class="muted">(+5 caster levels on its dice cap; uses a ${ORD(slot)}-level slot${view.lineageSpell === spell.id ? ': Magical Lineage' : ''})</small></label>`;
+    };
     const nums = spell => {
-      const h = spell ? spellNumbersHtml(view, c.cls, c.effectiveLevel, spell, strike) : '';
+      const h = spell ? spellNumbersHtml(view, c.cls, c.effectiveLevel, spell, strike) + intenseBox(spell) : '';
       return h ? `<div class="b-spell-nums">${h}</div>` : '';
     };
     const head = `<p><b>${esc(c.cls.name)}</b> · caster level ${c.effectiveLevel} · concentration ${signed(c.effectiveLevel + mod)}${roll(check(`${c.cls.name} concentration`, c.effectiveLevel + mod), 'concentration')} · save DC 10 + spell level ${signed(mod)}</p>`;

@@ -84,7 +84,16 @@ export function evalFormula(formula, vars = {}) {
 // modifier, BAB and attack modifiers, and school focus bonuses.
 // schoolBonus: extra damage on one school's spells, once a spell (an evocation wizard's Intense Spells):
 // { school, amount, name } or null.
-export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [], flawMelee = 0, flawRanged = 0, schoolBonus = null }) {
+// Intensified Spell: a damage formula's cap on caster level raised by 5 levels ("(min(5, @cl))d6" -> 10; 1d6 per two
+// levels, "min(10, floor(@cl / 2))" -> 12). Formulas without such a cap are unchanged.
+export function intensifyFormula(f) {
+  return String(f).replace(/min\(\s*(\d+)\s*,\s*floor\(\s*@cl\s*\/\s*(\d+)\s*\)\s*\)/g, (m, n, k) => `min(${Number(n) + Math.floor(5 / Number(k))}, floor(@cl / ${k}))`)
+    .replace(/min\(\s*(\d+)\s*,\s*@cl\s*\)/g, (m, n) => `min(${Number(n) + 5}, @cl)`);
+}
+// Whether a spell has damage Intensified Spell can raise (a cap on caster level in a damage formula).
+export const intensifiable = spell => (spell.actions || []).some(a => (a.damage || []).some(d => intensifyFormula(d.formula) !== String(d.formula)));
+
+export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [], haveFeats = [], flawMelee = 0, flawRanged = 0, schoolBonus = null, intensified = null }) {
   const ability = CASTING_ABILITY[cls.id];
   const focus = {};
   for (const c of featChoices) {
@@ -97,6 +106,8 @@ export function spellContext({ cls, effectiveLevel, stats, size, featChoices = [
     // Active effects' bonus on attack rolls counts on spell attacks too (fxAttack).
     sizeAttack: SIZE_AC[size] ?? 0, fxAttack: stats.fx?.attack || 0, fxMelee: stats.fx?.['melee-attack'] || 0, fxRanged: stats.fx?.['ranged-attack'] || 0, focus, penetration, flawMelee, flawRanged,
     abilityName: { int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' }[ability] || ability, schoolBonus,
+    // Spells cast intensified (ids), with Intensified Spell.
+    intensified: intensified instanceof Set ? intensified : new Set(),
   };
 }
 
@@ -184,7 +195,9 @@ export function spellLines(spell, ctx) {
       parts.push(`DC ${dc} ${a.save_text || SAVES[a.save]}${harmless ? ' (harmless)' : ''}`);
       why.dc = dcRows;
     }
-    const amounts = (a.damage || []).map(d => ({ amount: evalFormula(d.formula, vars), types: d.types || [] }))
+    const intense = ctx.intensified?.has(spell.id);
+    const formulaOf = d => (intense ? intensifyFormula(d.formula) : d.formula);
+    const amounts = (a.damage || []).map(d => ({ amount: evalFormula(formulaOf(d), vars), types: d.types || [] }))
       .filter(d => d.amount !== null);
     const count = a.extra_attacks ? 1 + Math.max(0, Number(evalFormula(a.extra_attacks, vars)) || 0) : 1;
     // Intense Spells (evocation wizard): + half the wizard level to the damage, once a spell; on one damage roll it's
@@ -193,7 +206,7 @@ export function spellLines(spell, ctx) {
     const bonus = sb && a.kind !== 'heal' && amounts.length && String(spell.school || '').toLowerCase() === sb.school ? sb.amount : 0;
     if (bonus && count === 1) amounts[0] = { ...amounts[0], amount: `${amounts[0].amount}+${bonus}` };
     const damage = amounts.map(d => `${d.amount}${d.types.length ? ` ${d.types.join('/')}` : ''}`);
-    why.damage = (a.damage || []).map(d => ({ formula: d.formula, amount: evalFormula(d.formula, vars) })).filter(d => d.amount !== null);
+    why.damage = (a.damage || []).map(d => ({ formula: formulaOf(d), amount: evalFormula(formulaOf(d), vars) })).filter(d => d.amount !== null);
     if (damage.length) {
       const what = a.kind === 'heal' ? 'heals ' : '';
       const unit = /missile/i.test(spell.name) ? 'missile' : /ray/i.test(spell.name) ? 'ray' : 'attack';

@@ -76,6 +76,8 @@ export const TRAIT_PICKS = {
     benefits: [['proficiency', 'Proficiency with it'], ['aoo', '+1 trait bonus on attacks of opportunity with it'],
                ['maneuver', '+2 trait bonus on one kind of combat maneuver with it']] },
   'monk-weapon-skill': { weapons: 'monk', label: 'Your monk weapon' },
+  // Magical Lineage: metamagic on this spell uses a slot one level lower (Intensified Spell on the Character tab).
+  'magical-lineage': { spell: true, label: 'Your spell' },
 };
 export function pickableWeapon(kind, w) {
   if (kind === 'monk') return w.id !== 'unarmed-strike' && (w.special || []).some(s => String(s).toLowerCase() === 'monk');

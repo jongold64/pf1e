@@ -38,6 +38,18 @@ function pickControls(app, t) {
   const spec = TRAIT_PICKS[t.id];
   if (!spec) return '';
   const { state, data } = app;
+  if (spec.spell) {
+    // A spell of yours (My spells and prepared ones).
+    if (!data.spells) { app.loadSpells().then(() => renderTraits(app)); return '<p class="hint">Loading spells…</p>'; }
+    const pick = state.traitPicks[t.id] || {};
+    const prepared = Object.values(state.prepared || {}).flatMap(byLv => Object.values(byLv).flat()).map(x => x?.id).filter(Boolean);
+    const ids = [...new Set([...state.spells, ...prepared, pick.spell].filter(Boolean))];
+    const byId = new Map(data.spells.map(s => [s.id, s]));
+    const list = ids.map(id => byId.get(id)).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
+    return `<div class="trait-pick"><label>${esc(spec.label)} <select data-trait-pick="${esc(t.id)}" data-field="spell"><option value="">Choose…</option>
+      ${list.map(s => `<option value="${esc(s.id)}"${s.id === pick.spell ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
+      <p class="hint">${pick.spell ? 'Metamagic on it uses a spell slot one level lower (never lower than the spell\u2019s own level): counted for Intensified Spell on the Character tab.' : 'Choose the spell (from your spells; add more on the Spells tab).'}</p></div>`;
+  }
   if (!data.weaponsById) { app.loadWeapons().then(() => renderTraits(app)); return '<p class="hint">Loading weapons…</p>'; }
   const pick = state.traitPicks[t.id] || {};
   const ok = [...data.weaponsById.values()].filter(w => pickableWeapon(spec.weapons, w)).sort((a, b) => a.name.localeCompare(b.name));

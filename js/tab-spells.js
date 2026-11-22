@@ -98,11 +98,13 @@ function spellRollButtons(roll) {
 // resistance check; '' when it has nothing to roll or work out.
 // strike: a magus's spellstrike weapon ({ name, group: its Roll group }, 2nd level): a melee touch spell's line gets a
 // Spellstrike line with that weapon's attack and the spell's damage.
+// (strike.closeRange: the Close Range arcana, so ray spells, ranged touch, can be delivered by spellstrike too.)
 export function spellNumbersHtml(view, cls, level, spell, strike = null) {
   const ctx = spellContext({ cls, effectiveLevel: level, stats: view.stats, size: view.size, featChoices: view.featChoices,
-                             flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus });
+                             flawMelee: view.flawFx.melee, flawRanged: view.flawFx.ranged, haveFeats: view.haveFeats, schoolBonus: view.schoolBonus,
+                             intensified: view.intensified });
   const parts = spellLines(spell, ctx).flatMap(l => [`<span class="b-spell-num">${l.label ? `<b>${esc(l.label)}:</b> ` : ''}${esc(l.text)}${l.roll ? ` ${rollButton(l.roll)}` : ''}</span>`,
-    ...(strike && l.kind === 'melee touch' ? [(g => `<span class="b-spell-num b-strike"><b>Spellstrike with ${esc(strike.name)}:</b> ${esc(signed(g.attacks[0]))}${g.threat < 20 ? ` (${g.threat}–20)` : ''}, ${esc(g.damage)} + ${l.spellDamage ? esc(l.spellDamage) : 'the spell'}
+    ...(strike && (l.kind === 'melee touch' || (strike.closeRange && l.kind === 'ranged touch')) ? [(g => `<span class="b-spell-num b-strike"><b>Spellstrike with ${esc(strike.name)}:</b> ${esc(signed(g.attacks[0]))}${g.threat < 20 ? ` (${g.threat}–20)` : ''}, ${esc(g.damage)} + ${l.spellDamage ? esc(l.spellDamage) : 'the spell'}
       <small class="muted">(crit: weapon ×${g.mult || 2}${l.spellDamage ? ', spell ×2' : ''})</small> ${rollButton(spellstrikeRoll(`${spell.name}: spellstrike with ${strike.name}`, g, l.spellDamage, spell.name))}</span>`)(strike.group)] : [])]);
   const sr = srCheck(spell, ctx);
   if (sr) parts.push(`<span class="b-spell-num">SR: caster level check ${sr.bonus >= 0 ? '+' : ''}${sr.bonus} ${rollButton(sr)}</span>`);
