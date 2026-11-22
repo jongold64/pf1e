@@ -2449,6 +2449,15 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom feats.
+{
+  const { customFeatRecord, customFeatEffects, tidyCustomFeats } = await import('./custom-feats.js');
+  const [d] = tidyCustomFeats([{ id: 'cf-x', name: 'Blade Dancer', type: 'Combat', prereq: 'Dex 13', bonus: { target: 'skill:Acrobatics', type: 'untyped', value: 2 } }], ['skill:Acrobatics'], ['untyped']);
+  const r = customFeatRecord(d);
+  check('custom feat: Combat, its prerequisite in words (can\u2019t be checked)', [r.types[0], r.prerequisites[0].type].join(), 'Combat,other');
+  check('custom feat bonus counts only while chosen', [customFeatEffects([d], ['cf-x']).length, customFeatEffects([d], []).length].join(), '1,0');
+  check('tidy custom feats: an unknown bonus target dropped', tidyCustomFeats([{ bonus: { target: 'nope', type: 'untyped', value: 2 } }], ['ac'], ['untyped'])[0].bonus, null);
+}
 // Custom armor.
 {
   const { customArmorRecord, tidyCustomArmor } = await import('./custom-armor.js');

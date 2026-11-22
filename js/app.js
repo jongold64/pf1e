@@ -34,6 +34,7 @@ import { tidyCustomGear, customGearWeight } from './custom-gear.js';
 import { tidyCustomWeapons, customWeaponRecord } from './custom-weapons.js';
 import { tidyCustomSpells, customSpellRecord } from './custom-spells.js';
 import { tidyCustomArmor, customArmorRecord } from './custom-armor.js';
+import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from './custom-feats.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -53,7 +54,7 @@ import { popBuff, popOnNow } from './tab-effects.js';
 import { popSource, itemRowChange, itemRowClick } from './item-rows.js';
 import { DEITY_CLASSES, NO_DEITY, deityDomainWhy, favoredWeaponIds, blessingWhy, blessingUses } from './deities.js';
 import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpellcasting, blackBlade, choiceSources } from './archetype-choices.js';
-import { buffById, BONUS_TYPES, TARGETS, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance, effectSpends } from './effects.js';
+import { buffById, BONUS_TYPES, TARGETS, SKILL_TARGET_NAMES, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance, effectSpends } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent, invocationTalents } from './talents.js';
 import { initEffects, renderEffects } from './tab-effects.js';
@@ -135,6 +136,7 @@ const state = {
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
+  customFeats: [],           // custom feats' definitions (Feats tab, Custom): custom-feats.js
   customArmor: [],           // custom armor and shields' definitions (Armor tab, Custom): custom-armor.js
   customSpells: [],          // custom spells' definitions (Spells tab, Custom): custom-spells.js
   customWeapons: [],         // custom weapons' definitions (Weapons tab, Custom): custom-weapons.js
@@ -307,6 +309,7 @@ function load(saved) {
   state.customWeapons = tidyCustomWeapons(state.customWeapons);
   state.customSpells = tidyCustomSpells(state.customSpells);
   state.customArmor = tidyCustomArmor(state.customArmor);
+  state.customFeats = tidyCustomFeats(state.customFeats, FEAT_BONUS_TARGETS.map(([k]) => k), BONUS_TYPES);
   state.metamagic = Object.fromEntries(Object.entries(state.metamagic && typeof state.metamagic === 'object' ? state.metamagic : {})
     .filter(([id, m]) => typeof id === 'string' && m?.intensified === true).map(([id]) => [id, { intensified: true }]));
   state.costAdjust = tidyAdjustments(state.costAdjust);
@@ -366,6 +369,8 @@ function load(saved) {
     ABILITIES.includes(state.increases?.[i]) ? state.increases[i] : '');
   if (typeof state.extraSlots !== 'object' || state.extraSlots === null) state.extraSlots = {};
   if (typeof state.feats !== 'object' || state.feats === null) state.feats = {};
+  // (Custom feats count: they're added to the feat data first.)
+  syncCustomFeats();
   for (const [slotId, featId] of Object.entries(state.feats)) {
     if (!data.featsById.has(featId)) delete state.feats[slotId];
   }
@@ -2206,6 +2211,7 @@ function initTabSearches() {
     $(inputId).addEventListener('input', run);
   };
   live('feat-tab-search-form', 'feat-tab-search', renderFeatTabSearch);
+  initFeatAdd();
   $('feat-tab-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-feat-result]');
     if (btn) openFeatForSlots(btn.dataset.featResult);
@@ -2236,15 +2242,112 @@ function renderFeatTabSearch() {
   })), 'data-feat-result');
 }
 
+// The Add feats card: a button for each kind of feat (it lists them, ✓ / ✗ / ?) and Custom.
+let featType = '';
+let featCustomOpen = false;
+let fDraft = null;
+const freshFeat = () => ({ id: '', name: '', type: 'General', prereq: '', benefit: '', bonus: null });
+function renderFeatAdd() {
+  if (!$('feat-add-buttons')) return;
+  const types = [...FEAT_TYPES.filter(t => data.feats.some(f => !f.custom && (f.types || []).includes(t))), ...(state.customFeats.length ? ['Custom feats'] : [])];
+  $('feat-add-buttons').innerHTML = types.map(t => `<button type="button" data-feat-type="${esc(t)}" aria-pressed="${!featCustomOpen && featType === t}">${esc(t)}</button>`).join('')
+    + `<button type="button" class="add-custom" data-feat-custom aria-pressed="${featCustomOpen}">Custom</button>`;
+  $('feat-type-wrap').hidden = !featType || featCustomOpen;
+  $('feat-custom-wrap').hidden = !featCustomOpen;
+  if (featType && !featCustomOpen) {
+    const only = $('feat-type-qualified').checked;
+    const list = data.feats.filter(f => (featType === 'Custom feats' ? f.custom : !f.custom && (f.types || []).includes(featType)))
+      .map(f => ({ f, st: checkFeat(f, view.ctx).status })).filter(x => !only || x.st !== 'unmet').sort((a, b) => a.f.name.localeCompare(b.f.name));
+    $('feat-type-results').innerHTML = list.slice(0, 400).map(({ f, st }) => `<li><button type="button" data-feat-result="${esc(f.id)}">${STATUS_ICON[st]} ${esc(f.name)}
+      <small>${esc((f.prerequisites_text || '').slice(0, 80))}</small></button></li>`).join('') || '<li class="hint">None to show.</li>';
+  }
+  if (featCustomOpen) renderFeatCustom();
+}
+function renderFeatCustom() {
+  fDraft ??= freshFeat();
+  const d = fDraft;
+  const b = d.bonus || { target: 'attack', type: 'untyped', value: 0 };
+  const opt = (list, v) => list.map(([k, l]) => `<option value="${esc(String(k))}"${String(k) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  $('feat-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-cf="name" value="${esc(d.name)}" placeholder="e.g. Blade Dancer" maxlength="60"></label>
+      <label>Kind <select data-cf="type">${opt(FEAT_TYPES.map(t => [t, t]), d.type)}</select></label>
+      <label>Prerequisites <input type="text" data-cf="prereq" value="${esc(d.prereq)}" placeholder="e.g. Dex 13, base attack bonus +1" maxlength="300"></label>
+    </div>
+    <label>Benefit <textarea data-cf="benefit" rows="3" maxlength="2000" placeholder="What the feat does">${esc(d.benefit)}</textarea></label>
+    <div class="custom-grid">
+      <label>A bonus it gives (optional) <select data-cf="btarget">${opt([['', 'none'], ...FEAT_BONUS_TARGETS], d.bonus ? b.target : '')}</select></label>
+      ${d.bonus ? `<label>Bonus type <select data-cf="btype">${opt(BONUS_TYPES.map(t => [t, t]), b.type)}</select></label>
+        <label>Amount <input type="number" data-cf="bvalue" value="${b.value}" min="-20" max="20" step="1" inputmode="numeric"></label>` : ''}
+    </div>
+    <p class="hint">${d.id ? 'Changes apply wherever it\u2019s chosen.' : 'Add it, then choose it for an open feat slot.'} Prerequisites in words show as ? (the app can't check them).
+      A bonus counts in your numbers while the feat is chosen.</p>
+    <div class="line-controls"><button type="button" class="primary" data-cf-save>${d.id ? 'Save changes' : 'Add it'}</button>
+      <button type="button" data-cf-clear>${d.id ? 'Stop changing it' : 'Clear'}</button>
+      ${d.id ? '<button type="button" data-cf-delete>Delete it</button>' : ''}
+      <button type="button" data-cf-cancel>Cancel</button></div></div>`;
+}
+function initFeatAdd() {
+  $('feat-add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-feat-type], [data-feat-custom]');
+    if (!b) return;
+    if (b.hasAttribute('data-feat-custom')) { featCustomOpen = !featCustomOpen; featType = ''; }
+    else { featCustomOpen = false; featType = featType === b.dataset.featType ? '' : b.dataset.featType; }
+    renderFeatAdd();
+  });
+  $('feat-type-qualified').addEventListener('change', renderFeatAdd);
+  $('feat-type-results').addEventListener('click', e => {
+    const btn = e.target.closest('[data-feat-result]');
+    if (btn) openFeatForSlots(btn.dataset.featResult);
+  });
+  const box = $('feat-custom-wrap');
+  box.addEventListener('input', e => {
+    const k = e.target.dataset.cf;
+    if (['name', 'prereq', 'benefit'].includes(k)) fDraft[k] = e.target.value;
+    else if (k === 'bvalue' && fDraft.bonus) fDraft.bonus.value = Math.max(-20, Math.min(20, Math.trunc(Number(e.target.value)) || 0));
+  });
+  box.addEventListener('change', e => {
+    const k = e.target.dataset.cf;
+    if (k === 'type') fDraft.type = e.target.value;
+    else if (k === 'btarget') fDraft.bonus = e.target.value ? { target: e.target.value, type: fDraft.bonus?.type || 'untyped', value: fDraft.bonus?.value || 1 } : null;
+    else if (k === 'btype' && fDraft.bonus) fDraft.bonus.type = e.target.value;
+    else return;
+    renderFeatCustom();
+  });
+  box.addEventListener('click', e => {
+    if (e.target.closest('[data-cf-clear]')) { fDraft = freshFeat(); renderFeatCustom(); return; }
+    if (e.target.closest('[data-cf-cancel]')) { fDraft = freshFeat(); featCustomOpen = false; renderFeatAdd(); return; }
+    if (e.target.closest('[data-cf-delete]')) {
+      const id = fDraft.id;
+      if (!confirm(`Delete ${fDraft.name || 'this feat'}? It comes out of any feat slot it's in.`)) return;
+      update({ customFeats: state.customFeats.filter(x => x.id !== id), feats: Object.fromEntries(Object.entries(state.feats).filter(([, v]) => v !== id)) });
+      fDraft = freshFeat(); featCustomOpen = false; renderFeatAdd();
+      return;
+    }
+    if (!e.target.closest('[data-cf-save]')) return;
+    const def = { ...fDraft, name: fDraft.name.trim() || 'Custom feat', bonus: fDraft.bonus?.value ? fDraft.bonus : null };
+    const isNew = !def.id;
+    if (isNew) def.id = `cf-${Date.now().toString(36)}`;
+    update({ customFeats: isNew ? [...state.customFeats, def] : state.customFeats.map(x => (x.id === def.id ? def : x)) });
+    fDraft = freshFeat(); featCustomOpen = false; renderFeatAdd();
+    if (isNew) openFeatForSlots(def.id);
+  });
+}
+
 // A feat's details with a button for each open slot it can go in.
 function openFeatForSlots(id) {
   const f = data.featsById.get(id);
   const alreadyHave = view.slots.some(s => state.feats[s.id] === id) && !canRepeat(f);
   const open = view.slots.filter(s => !data.featsById.has(state.feats[s.id]) && slotAccepts(s, f));
-  const actions = alreadyHave ? [] : open.map(s => ({
+  const actions = [...(alreadyHave ? [] : open.map(s => ({
     label: `Choose for ${s.label}`, primary: true,
     run: () => { update({ feats: { ...state.feats, [s.id]: id } }); showTab('feats'); },
-  }));
+  }))), ...(f.custom ? [{ label: 'Change this custom feat', run: () => {
+    const d = state.customFeats.find(x => x.id === id);
+    if (!d) return;
+    fDraft = { ...freshFeat(), ...d, bonus: d.bonus ? { ...d.bonus } : null }; featCustomOpen = true; featType = '';
+    showTab('feats'); renderFeatAdd(); $('feat-add-card').scrollIntoView({ block: 'start' });
+  } }] : [])];
   const note = alreadyHave ? '<p class="hint">You already have this feat.</p>'
     : open.length ? '' : '<p class="hint">No open feat slot can take this feat. Remove or change a feat to make room.</p>';
   openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)) + note, actions);
@@ -2469,10 +2572,22 @@ function syncCustomArmor() {
   for (const d of defs) { const r = customArmorRecord(d); data.armorById.set(d.id, r); data.armor.push(r); }
 }
 
+// Custom feats go into the feat data too (they're chosen in feat slots like any other).
+function syncCustomFeats() {
+  if (!data.featsById || !Array.isArray(data.feats)) return;
+  const defs = state.customFeats || [];
+  for (const id of [...data.featsById.keys()]) if (id.startsWith('cf-') && !defs.some(d => d.id === id)) data.featsById.delete(id);
+  for (let i = data.feats.length - 1; i >= 0; i--) if (data.feats[i].custom) data.feats.splice(i, 1);
+  for (const d of defs) { const r = customFeatRecord(d); data.featsById.set(d.id, r); data.feats.push(r); }
+}
+// What a custom feat's bonus can be on: the custom effect targets and each skill.
+const FEAT_BONUS_TARGETS = TARGETS;
+
 function computeView() {
   syncCustomWeapons();
   syncCustomSpells();
   syncCustomArmor();
+  syncCustomFeats();
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).
@@ -2535,8 +2650,8 @@ function computeView() {
   // Active effects (spells and custom bonuses) and the size they leave the character at (enlarge person...).
   // Flaws (house rule) count like effects: their penalties are untyped, so they add up with everything else.
   const flawFx = flawEffects(state.houseRules.flaws ? state.flaws : []);
-  // (Custom magic items that are worn give their bonuses like custom effects.)
-  const customAll = [...state.customEffects, ...customItemEffects(state.customItems), ...flawFx.effects, ...traitSwitches.filter(s => s.on).map(s => s.effect),
+  // (Custom magic items that are worn give their bonuses like custom effects, and chosen custom feats theirs.)
+  const customAll = [...state.customEffects, ...customItemEffects(state.customItems), ...customFeatEffects(state.customFeats, chosen.map(f => f.id)), ...flawFx.effects, ...traitSwitches.filter(s => s.on).map(s => s.effect),
     ...(flawFx.hpPerLevel ? [{ name: 'Frail (flaw)', target: 'hp', type: 'untyped', value: flawFx.hpPerLevel * classLevels.length, on: true }] : [])];
   // Effects that use an ability modifier (smite evil's Charisma) use the scores without effects.
   const plainMods = Object.fromEntries(Object.entries(finalScores(state.base, race, flexibleChoice))
@@ -4789,6 +4904,7 @@ function popGrantedFeat(id) {
 }
 
 function renderFeats(slots, granted, ctx) {
+  renderFeatAdd();
   // Class features the level table doesn't name (weapon and armor proficiency, bonus languages...), each opening its text.
   alsoItems = [];
   const alsoRows = view.counts.map(e => {

@@ -213,6 +213,16 @@
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
+      <section class="card wide" id="feat-add-card">
+        <h2>Add feats</h2>
+        <p class="hint">Choose a kind of feat to list them (tap one to read it and choose it for an open slot), or <b>Custom</b> for a feat the list doesn't have.</p>
+        <div id="feat-add-buttons" class="add-buttons"></div>
+        <div id="feat-type-wrap" hidden>
+          <label class="check-row"><input type="checkbox" id="feat-type-qualified" checked> Only feats I qualify for</label>
+          <ul id="feat-type-results" class="search-results"></ul>
+        </div>
+        <div id="feat-custom-wrap" hidden></div>
+      </section>
       <section class="card wide" id="traits-card">
         <h2>Traits <span id="trait-count" class="count"></span>
           <button type="button" id="trait-count-details" class="skill-details q-details" aria-label="Your traits: how many and what they do" title="Details">?</button></h2>
@@ -951,6 +961,11 @@
           <ul>
             <li><b>From your class</b>, at the top, lists the class features the level table doesn't name: weapon and armor
               proficiency, a cleric's spontaneous casting, bonus languages... and the bonus feats your class or race gives free (a ranger's Endurance, a black blade's Alertness, a half-elf's Skill Focus). Tap one to read it. They need no feat slot.</li>
+            <li><b>Add feats</b>: a button for each kind of feat (General, Combat, Metamagic, Teamwork, Style, Critical, Item Creation,
+              Story...) lists them with ✓ / ✗ / ? for whether you qualify (<b>Only feats I qualify for</b> is ticked to start); tap one to
+              read it and choose it for an open slot. <b>Custom</b> makes a feat the list doesn't have: name, kind, prerequisites in words
+              (shown with ?), what it does, and an optional bonus (on attacks, AC, a save, a skill...) that counts while it's chosen. After
+              <b>Add it</b>, choose it for a slot; <b>Change this custom feat</b> in its details changes or deletes it.</li>
             <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>,
               <b>Change</b> and <b>Remove</b>; under it, the weapon or skill it's for and any warning. The slots below list only the
               ones still to fill (a removed feat's slot comes back there).</li>
