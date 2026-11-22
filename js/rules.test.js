@@ -2449,6 +2449,21 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom magic items (Table 15-29).
+{
+  const { customItemPrice, customItemEffects, customItemPaid, tidyCustomItems } = await import('./custom-items.js');
+  const cloak = { slot: 'shoulders', powers: [{ kind: 'resistance', bonus: 2 }] };
+  check('custom cloak of resistance +2: 4,000 gp, crafted 2,000', [customItemPrice(cloak).price, customItemPaid({ ...cloak, crafted: true })].join(), '4000,2000');
+  const both = { slot: 'neck', powers: [{ kind: 'natural', bonus: 1 }, { kind: 'resistance', bonus: 1 }] };
+  check('two powers: 2,000 + 1,000 × 1.5 = 3,500', customItemPrice(both).price, 3500);
+  check('slotless doubles: ioun-style +1 deflection 4,000', customItemPrice({ slot: 'slotless', powers: [{ kind: 'deflection', bonus: 1 }] }).price, 4000);
+  check('spell effect: 3rd-level, CL 5, command word, 1/day = 5,400', customItemPrice({ slot: 'ring', powers: [{ kind: 'spell', spellLevel: 3, spellCl: 5, activation: 'command', perDay: 1 }] }).price, 5400);
+  check('skill +5 competence: 2,500; SR 15: 30,000', [customItemPrice({ slot: 'feet', powers: [{ kind: 'skill', bonus: 5, skill: 'Stealth' }] }).price,
+    customItemPrice({ slot: 'ring', powers: [{ kind: 'sr', sr: 15 }] }).price].join(), '2500,30000');
+  check('custom item effects: belt +4 Str; off gives none', [JSON.stringify(customItemEffects([{ name: 'Belt', powers: [{ kind: 'ability', ability: 'str', bonus: 4 }] }]).map(e => `${e.target}:${e.type}:${e.value}`)),
+    customItemEffects([{ name: 'Belt', off: true, powers: [{ kind: 'ability', ability: 'str', bonus: 4 }] }]).length].join('|'), '["str:enhancement:4"]|0');
+  check('tidy custom items: unknown power dropped, slot fixed', JSON.stringify(tidyCustomItems([{ name: 'X', slot: 'tail', powers: [{ kind: 'nope' }, { kind: 'armor', bonus: 3 }] }]).map(i => [i.slot, i.powers.length])), '[["slotless",1]]');
+}
 // Instant armor.
 {
   const { instantArmorId, defenseSwitches: ds2, defenseEffects: de2 } = await import('./defense.js');

@@ -1320,3 +1320,14 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 
 .race-langs { margin: 8px 0; }
 .race-langs button { margin-left: 6px; }
+
+/* Magic Items tab: the Add magic gear buttons and the Custom builder. */
+.add-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+.add-buttons button { min-height: 44px; padding: 0 14px; font-size: 1rem; }
+.add-buttons button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.add-buttons .add-custom { font-weight: 700; }
+.custom-grid { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; margin: 6px 0; }
+.custom-grid label { display: flex; flex-direction: column; gap: 2px; }
+.custom-builder textarea { width: 100%; box-sizing: border-box; }
+.custom-powers li { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.custom-add { border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }

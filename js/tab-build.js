@@ -7,6 +7,8 @@ import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC, xpProgress } from './rules.js';
 import { moneyNow } from './tab-equipment.js';
 import { formatGp } from './equipment.js';
+import { powerByKind } from './custom-items.js';
+const customPowerText = p => powerByKind.get(p.kind)?.text(p) || '';
 import { weaponSummaries } from './tab-weapons.js';
 import { kiWeaponsCost, kiWeaponsText } from './talented-monk.js';
 import { bondCost, bondText } from './weapon-bonds.js';
@@ -324,8 +326,10 @@ export function renderBuild(app, view, parts) {
   const list = (title, rows) => (rows.length ? `<h4 class="b-sub">${title}</h4><div class="b-feats">${rows.join('')}</div>` : '');
   const fromClass = parts.classGear.map((g, i) => gearRow(g.name, g.note, 'classgear', String(i)));
   // Magic items: worn or not (tick), what each gives, its sometimes-bonuses and Details, as in Active effects.
-  const magic = ownedSources(state, data).filter(src => src.ref.startsWith('m:'))
-    .map(src => itemRowHtml(src));
+  const magic = [...ownedSources(state, data).filter(src => src.ref.startsWith('m:')).map(src => itemRowHtml(src)),
+    // Custom magic items (Magic Items tab, Custom): name, what they do, worn or not.
+    ...(state.customItems || []).map(it => `<li><span>${esc(it.name)}${it.qty > 1 ? ` ×${it.qty}` : ''} <small class="muted">${esc(it.slot)} · custom${it.off ? ' · not worn' : ''}
+      · ${esc((it.powers || []).map(p => customPowerText(p)).filter(Boolean).join('; '))}</small></span></li>`)];
   // Potions, scrolls and wands: the spell's numbers and rolls at the item's caster level, and Use (one used up, or a
   // wand charge: 50 to a wand).
   const spellsById = data.spells ? new Map(data.spells.map(s => [s.id, s])) : null;

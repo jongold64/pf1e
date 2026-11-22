@@ -290,14 +290,15 @@
         <p id="my-items-total" class="hint"></p>
       </section>
       <section class="card wide" id="buy-card">
-        <h2>Add magic gear <button type="button" id="buy-toggle" class="primary" aria-expanded="false" aria-controls="buy-wrap">Open</button></h2>
+        <h2>Add magic gear</h2>
+        <p class="hint">Treasure or purchases, at their market price. Choose what kind: the first three make your own, the next
+          show that part of the list below, and Custom makes a new item with the rules for new items.</p>
+        <div id="add-buttons" class="add-buttons"></div>
         <div id="buy-wrap" hidden>
-          <p class="hint">Treasure or purchases: make a weapon or armor magic, or add potions, scrolls and wands, at their
-            market price (no feats or checks needed). Items in the list below have their own Add buttons. To make items
-            yourself, use the Craft tab.</p>
           <div id="buy-body"></div>
-          <button type="button" id="buy-done">Done: close this card</button>
+          <button type="button" id="buy-done">Done: close this</button>
         </div>
+        <div id="custom-wrap" hidden></div>
       </section>
       <section class="card wide">
         <h2>Magic items <span id="item-count" class="count"></span></h2>
@@ -1123,9 +1124,17 @@
               slot each item fills, and warns when two compete for one slot.</li>
             <li>Browse by category or search; choose an item to see it, then <b>Add</b> it (pick a version, e.g. +2, if it has one).
               <b>Details</b> on a row opens the item in a popup, with its Add and Craft buttons.</li>
-            <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed: make a weapon or armor magic,
-              or add potions, scrolls and wands of any spell (type in <b>Search</b> to narrow the spell list: "cure light"). It starts
-              closed: <b>Open</b> shows it, and <b>Close</b> or <b>Done</b> at the bottom puts it away.</li>
+            <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed. Its buttons: <b>Make a weapon
+              magic</b>, <b>Make armor or a shield magic</b> and <b>Potion, scroll or wand</b> (any spell; type in <b>Search</b> to narrow
+              the spell list: "cure light") open that maker below them (<b>Done</b> puts it away); <b>Wondrous items</b>, <b>Rings</b>,
+              <b>Rods</b>, <b>Staves</b>, the specific weapons, armor and shields, <b>Artifacts</b> and the rest show just that part of
+              the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of them).</li>
+            <li><b>Custom</b> makes your own magic item: a name, its slot and caster level, and what it does (an ability score
+              bonus, armor, deflection, natural armor or other AC bonus, a resistance or other save bonus, a skill bonus, spell
+              resistance, or a spell effect with how it's used and how often). Its price is worked out with the Core Rulebook's
+              rules for new items (each extra power ×1.5, slotless ×2); tick <b>Crafted</b> for half the price, or <b>Free</b>.
+              It goes in My magic items, where <b>Change it</b>, Sell and Remove are under its ?, and while it's worn (ticked)
+              its bonuses count in your numbers; spell resistance and spell effects show as notes on the Defense card.</li>
             <li><b>My magic items</b> lists what you own, with − / + for quantities; <b>Details</b> shows how each cost is worked out (market price, or the cost to make for crafted items).</li>
           </ul>
         </details>

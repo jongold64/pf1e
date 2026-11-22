@@ -462,7 +462,8 @@ function renderCard(app, c) {
   const { form } = c;
   const list = casters(app);
   const p = plan(app, list, c);
-  const kinds = `<label>${c.mode === 'buy' ? 'What to add' : 'What to make'} <select data-craft="kind">${c.kinds.map(([k, label]) =>
+  // (On the Magic Items tab the kind is chosen with the Add magic gear card's buttons.)
+  const kinds = c.mode === 'buy' ? '' : `<label>What to make <select data-craft="kind">${c.kinds.map(([k, label]) =>
     `<option value="${k}"${k === form.kind ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${info('kind', 'What each kind of item needs')}`;
   if (p.empty) {
     $(c.body).innerHTML = `${kinds}${kindControls(app, list, p, c)}<p class="hint">${esc(p.empty)}</p>`;
@@ -558,15 +559,22 @@ export function renderCrafting(app, which = null) {
   }
 }
 
-// The Add magic gear card opens and closes (Open / Done); it starts closed.
+// The Add magic gear card's maker (magic weapon, armor or shield, potion/scroll/wand) shows or hides; its button
+// is marked while it's open (tab-items.js addButtonsHtml).
 export function showBuyCard(open) {
   if (!$('buy-wrap')) return;
   $('buy-wrap').hidden = !open;
-  $('buy-toggle').textContent = open ? 'Close' : 'Open';
-  $('buy-toggle').setAttribute('aria-expanded', String(open));
+  if (open && $('custom-wrap')) $('custom-wrap').hidden = true;
+  const kind = open ? CARDS.buy.form.kind : '';
+  for (const b of document.querySelectorAll('#add-buttons [data-add]')) b.setAttribute('aria-pressed', String(b.dataset.add === kind));
+}
+// A kind chosen with its button: the maker set to it (weapon, armor, spell).
+export function openBuyKind(app, kind) {
+  Object.assign(CARDS.buy.form, { kind, confirmed: new Set(), extraUnmet: 0, message: '' });
+  showBuyCard(true);
+  renderCrafting(app, 'buy');
 }
 export function initBuyCard() {
-  $('buy-toggle')?.addEventListener('click', () => showBuyCard($('buy-wrap').hidden));
   $('buy-done')?.addEventListener('click', () => { showBuyCard(false); $('buy-card').scrollIntoView({ block: 'nearest' }); });
 }
 

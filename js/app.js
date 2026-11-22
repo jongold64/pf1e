@@ -28,6 +28,7 @@ import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
 import { askAmount } from './amount-prompt.js';
+import { customItemEffects, customItemNotes, tidyCustomItems } from './custom-items.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
@@ -127,6 +128,7 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  customItems: [],           // custom magic items (Magic Items tab, Custom): custom-items.js
   noCharge: {},              // kinds of purchase that cost no gold: { armor, gear, weapons, magic } (equipment.js chargedCosts)
   costAdjust: [],            // gold adjustments by hand: [{ note, gp }], gp > 0 not spent after all, < 0 an extra cost
   xp: null,                  // experience points (null: none entered, the start of the level); rules.js xpProgress
@@ -275,6 +277,7 @@ function load(saved) {
   state.bladeStrike = state.bladeStrike === true;
   state.languages = tidyLanguages(state.languages);
   state.noCharge = tidyNoCharge(state.noCharge);
+  state.customItems = tidyCustomItems(state.customItems);
   state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
@@ -2459,7 +2462,8 @@ function computeView() {
   // Active effects (spells and custom bonuses) and the size they leave the character at (enlarge person...).
   // Flaws (house rule) count like effects: their penalties are untyped, so they add up with everything else.
   const flawFx = flawEffects(state.houseRules.flaws ? state.flaws : []);
-  const customAll = [...state.customEffects, ...flawFx.effects, ...traitSwitches.filter(s => s.on).map(s => s.effect),
+  // (Custom magic items that are worn give their bonuses like custom effects.)
+  const customAll = [...state.customEffects, ...customItemEffects(state.customItems), ...flawFx.effects, ...traitSwitches.filter(s => s.on).map(s => s.effect),
     ...(flawFx.hpPerLevel ? [{ name: 'Frail (flaw)', target: 'hp', type: 'untyped', value: flawFx.hpPerLevel * classLevels.length, on: true }] : [])];
   // Effects that use an ability modifier (smite evil's Charisma) use the scores without effects.
   const plainMods = Object.fromEntries(Object.entries(finalScores(state.base, race, flexibleChoice))
@@ -2670,8 +2674,8 @@ function computeView() {
     // Damage reduction from class levels, and bonuses that only apply in some situations (shown as notes).
     classDr: classDamageReduction(counts, { armor: gear.armor, shield: gear.shield, element, defenseBurn: defenseBurnNow() }),
     senses: classSenses(counts, race?.senses || []), sr: spellResistance(race, counts, classLevels.length), classNumbers: classNumbers(counts),
-    situational: (n => (instant ? { ...n, ac: [...n.ac, `Instant armor (force): its +${instant.armor.bonus} armor bonus also counts against incorporeal touch attacks (AC ${stats.touch + instant.armor.bonus} against them: touch ${stats.touch} + ${instant.armor.bonus}).`] } : n))(
-      withFamiliarNotes(situationalBonuses(counts, stats.mod, { element, defenseBurn: defenseBurnNow(), charLevel: classLevels.length }), familiarNow)),
+    situational: (n => ({ ...n, ac: [...n.ac, ...customItemNotes(state.customItems)] }))((n => (instant ? { ...n, ac: [...n.ac, `Instant armor (force): its +${instant.armor.bonus} armor bonus also counts against incorporeal touch attacks (AC ${stats.touch + instant.armor.bonus} against them: touch ${stats.touch} + ${instant.armor.bonus}).`] } : n))(
+      withFamiliarNotes(situationalBonuses(counts, stats.mod, { element, defenseBurn: defenseBurnNow(), charLevel: classLevels.length }), familiarNow))),
     // Animal companion's effective druid level (0 = none). A domain with the Animal Companion power counts (cleric, or
     // a druid whose Nature Bond is the Animal domain).
     // Boon Companion: the companion's level 4 higher (at most the character level).

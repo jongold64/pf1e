@@ -3,7 +3,10 @@
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
-import { initCrafting, renderCrafting, craftListedItem, openSpellItem } from './tab-crafting.js';
+import { initCrafting, renderCrafting, craftListedItem, openSpellItem, openBuyKind, showBuyCard } from './tab-crafting.js';
+import { renderCustomBuilder, customRowsHtml, initCustomItems } from './tab-custom-items.js';
+import { customItemPaid } from './custom-items.js';
+import { SKILLS } from './skills.js';
 import { givesHtml, itemRowHtml, itemRowChange, itemRowClick, popSource } from './item-rows.js';
 import { freeBox, sellButton, sellItem } from './tab-equipment.js';
 
@@ -120,12 +123,30 @@ const itemWhy = new Map();
 const whyButton = (key, what) => ` <button type="button" class="skill-details q-details" data-item-why="${esc(key)}" aria-label="How the cost of ${esc(what)} is worked out" title="Details">?</button>`;
 
 // The "My magic items" table: quantity buttons, cost and weight, and totals.
+// The Add magic gear card's buttons: three makers, the list's categories (each shows just that part of the list),
+// and Custom. [key, label]: a maker's kind, 'cat:<category>', or 'custom'.
+const ADD_BUTTONS = [['weapon', 'Make a weapon magic'], ['armor', 'Make armor or a shield magic'], ['spell', 'Potion, scroll or wand'],
+  ['cat:Wondrous Items', 'Wondrous items'], ['cat:Rings', 'Rings'], ['cat:Rods', 'Rods'], ['cat:Staves', 'Staves'],
+  ['cat:Magic Weapons', 'Specific weapons'], ['cat:Magic Armor', 'Specific armor'], ['cat:Magic Shields', 'Specific shields'],
+  ['cat:Artifacts', 'Artifacts'], ['cat:Intelligent Items', 'Intelligent items'], ['cat:Cursed Items', 'Cursed items'], ['custom', 'Custom']];
+let catFilter = '';  // the category the list shows ('' for all)
+const skillNames = () => SKILLS.map(s => s.name).filter(n => !/^(Craft|Perform|Profession)$/.test(n))
+  .concat(['Craft', 'Perform', 'Profession']).sort();
+function renderAddButtons() {
+  if (!$('add-buttons')) return;
+  const open = !$('buy-wrap').hidden ? null : !$('custom-wrap').hidden ? 'custom' : catFilter ? `cat:${catFilter}` : '';
+  $('add-buttons').innerHTML = ADD_BUTTONS.map(([k, label]) => `<button type="button" data-add="${esc(k)}" aria-pressed="${open === k}"${k === 'custom' ? ' class="add-custom"' : ''}>${esc(label)}</button>`).join('');
+  if (open === null) showBuyCard(true);
+}
+
 export function renderMyItems(app) {
   const owned = app.state.magicItems;
   const byId = app.data.itemsById;
   if (!byId) return;
   renderCrafting(app, 'buy');
-  const count = owned.reduce((n, e) => n + e.qty, 0) + app.state.craftedItems.reduce((n, e) => n + e.qty, 0);
+  renderAddButtons();
+  if (!$('custom-wrap').hidden) renderCustomBuilder(app, skillNames());
+  const count = owned.reduce((n, e) => n + e.qty, 0) + app.state.craftedItems.reduce((n, e) => n + e.qty, 0) + app.state.customItems.reduce((n, e) => n + e.qty, 0);
   $('my-items-count').textContent = count ? `${count} item${count === 1 ? '' : 's'}` : '';
   itemWhy.clear();
   const allRows = [];
@@ -200,13 +221,15 @@ export function renderMyItems(app) {
             <button type="button" data-made-qty="${i}" data-step="1" aria-label="One more">+</button></span>
           <span>Cost ${esc(formatGp(craftedItemCost(e) * e.qty))}${whyButton(`c-${i}`, name)}</span>
         </div></div></div>`;
-  }).join('')
+  }).join('') + customRowsHtml(app, openLines)
     || '<p class="hint">No magic items yet. Choose one below, then add it.</p>';
   const listedTotals = magicItemTotals(owned, byId);
-  const totals = { ...listedTotals, cost: listedTotals.cost + app.state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0) };
+  const totals = { ...listedTotals, cost: listedTotals.cost + app.state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0)
+    + app.state.customItems.reduce((n, e) => n + customItemPaid(e) * e.qty, 0) };
+  for (const e of app.state.customItems) allRows.push({ label: `${e.name}${e.qty > 1 ? ` ×${e.qty}` : ''} (custom)`, text: formatGp(customItemPaid(e) * e.qty) });
   itemWhy.set('total', { title: `My magic items: ${formatGp(totals.cost)}`, rows: allRows, total: formatGp(totals.cost),
                           note: 'This total is counted in gold and weight on the Equipment tab.' });
-  $('my-items-total').innerHTML = owned.length || app.state.craftedItems.length
+  $('my-items-total').innerHTML = owned.length || app.state.craftedItems.length || app.state.customItems.length
     ? esc(`Total ${formatGp(totals.cost)}, ${formatLbs(totals.weight)} (counted in gold and weight on the Equipment tab).` +
       (totals.unpriced.length ? ` No price listed for: ${[...new Set(totals.unpriced)].join(', ')}.` : '')) + whyButton('total', 'the total')
     : '';
@@ -230,6 +253,28 @@ function showItemWhy(app, key) {
 }
 
 export function initItemsTab(app) {
+  // The Add magic gear buttons: a maker opens below them, a category shows that part of the list, Custom the builder.
+  const showCustom = () => { showBuyCard(false); $('custom-wrap').hidden = false; catFilter = ''; renderAddButtons(); renderCustomBuilder(app, skillNames()); };
+  initCustomItems(app, { skills: skillNames, show: () => { showCustom(); $('custom-wrap').scrollIntoView({ block: 'start' }); } });
+  $('add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-add]');
+    if (!b) return;
+    const k = b.dataset.add;
+    if (k === 'custom') { showCustom(); return; }
+    $('custom-wrap').hidden = true;
+    if (k.startsWith('cat:')) {
+      showBuyCard(false);
+      catFilter = catFilter === k.slice(4) ? '' : k.slice(4);
+      renderAddButtons();
+      renderList(app);
+      if (catFilter) $('item-list').closest('section').scrollIntoView({ block: 'start' });
+      return;
+    }
+    catFilter = '';
+    openBuyKind(app, k);
+    renderAddButtons();
+    renderList(app);
+  });
   for (const id of ['my-items-rows', 'my-items-total']) {
     $(id).addEventListener('click', e => {
       const b = e.target.closest('[data-item-why]');
@@ -242,6 +287,7 @@ export function initItemsTab(app) {
     document.getElementById(`cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
   });
   $('item-list').addEventListener('click', e => {
+    if (e.target.closest('[data-show-all]')) { catFilter = ''; renderAddButtons(); renderList(app); return; }
     const si = e.target.closest('[data-spell-item]');
     if (si) { openSpellItem(app, si.dataset.spellItem); return; }
     const pop = e.target.closest('[data-item-pop]');
@@ -318,12 +364,14 @@ function renderList(app) {
   const byCategory = new Map();
   for (const i of items) {
     if (filter && !i.name.toLowerCase().includes(filter)) continue;
+    // A category button shows only that category (a search still looks through everything).
+    if (catFilter && !filter && i.category !== catFilter) continue;
     if (!byCategory.has(i.category)) byCategory.set(i.category, []);
     byCategory.get(i.category).push(i);
   }
   const categories = [...byCategory.keys()].sort();
   const shown = [...byCategory.values()].reduce((n, list) => n + list.length, 0);
-  $('item-count').textContent = filter ? `${shown} of ${items.length}` : `${items.length}`;
+  $('item-count').textContent = filter || catFilter ? `${shown} of ${items.length}` : `${items.length}`;
   $('item-category').innerHTML = '<option value="">Jump to a category…</option>' +
     categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
   $('item-list').innerHTML = categories.map(c => {
@@ -337,6 +385,7 @@ function renderList(app) {
   }).join('') || '<p class="hint">No items match.</p>';
   // Potions, scrolls and wands aren't in this list (any spell can be one): searching for them points to Add magic gear.
   const spellItem = ['wand', 'potion', 'scroll'].find(k => filter.includes(k));
+  if (catFilter && !filter) $('item-list').insertAdjacentHTML('afterbegin', `<p class="hint">Showing ${esc(catFilter)} only. <button type="button" data-show-all>Show all magic items</button></p>`);
   if (spellItem) {
     $('item-list').insertAdjacentHTML('afterbegin', `<p class="hint">${spellItem[0].toUpperCase()}${spellItem.slice(1)}s of any spell are added in the
       <b>Add magic gear</b> card: <button type="button" class="primary" data-spell-item="${spellItem}">Add a ${spellItem}</button></p>`);

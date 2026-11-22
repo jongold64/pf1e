@@ -1,5 +1,6 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
 import { chargedCosts } from './equipment.js';
+import { customItemPaid } from './custom-items.js';
 import { askAmount } from './amount-prompt.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
@@ -141,7 +142,8 @@ export function moneyNow(app, view = app.view) {
   const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
   const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
-  const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0);
+  const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0)
+    + (state.customItems || []).reduce((n, e) => n + customItemPaid(e) * e.qty, 0);
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
   const weaponListed = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponsWeight = carried.reduce((sum, [w, e]) => sum + weaponWeight(w, e, view.race.size), 0);
