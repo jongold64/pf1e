@@ -83,6 +83,9 @@ export function levelIncreases(level, choices = []) {
 export function averageHpPerLevel(cls) {
   return hitDieSize(cls) / 2 + 1;
 }
+// Hit points a level gives before Constitution: the full hit die at 1st level (index 0), the average after that; with the
+// Max HP house rule (maxHp), the full hit die at every level.
+export const hpForLevel = (cls, index, maxHp = false) => (index === 0 || maxHp ? hitDieSize(cls) : averageHpPerLevel(cls));
 
 // Iterative attacks as shown on a character sheet, e.g. [11, 6, 1] -> "+11/+6/+1".
 export function formatBab(bab) {
@@ -208,7 +211,7 @@ export function classAbilityBoosts(counts) {
 
 export function characterStats({ race, cls, level = 1, classLevels = null, favoredClassId = null, baseScores,
                                  flexibleChoice, increases = [], favoredHp = false, favoredPicks = null, featBonuses = {}, gear = null,
-                                 effects = null, size: sizeNow = null, uncanny = null }) {
+                                 effects = null, size: sizeNow = null, uncanny = null, maxHp = false }) {
   const levels = classLevels || Array.from({ length: level }, () => cls);
   const total = levels.length;
   const counts = classCounts(levels);
@@ -225,9 +228,10 @@ export function characterStats({ race, cls, level = 1, classLevels = null, favor
   const rowFor = e => e.cls.progression[e.level - 1];
   const sum = key => counts.reduce((n, e) => n + (rowFor(e)[key] || 0), 0);
 
-  // Full hit die at 1st level, the average after that. A Con penalty can't make a level give less than 1 HP.
+  // Full hit die at 1st level, the average after that (every level full with Max HP). A Con penalty can't make a level
+  // give less than 1 HP.
   let hp = 0;
-  levels.forEach((c, i) => { hp += Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + mod.con); });
+  levels.forEach((c, i) => { hp += Math.max(1, hpForLevel(c, i, maxHp) + mod.con); });
   const favored = favoredClassId || levels[0]?.id;
   if (favoredPicks) hp += favoredPicks.filter(p => p === 'hp').length;
   else if (favoredHp) hp += levels.filter(c => c.id === favored).length;

@@ -2,7 +2,7 @@
 import { levelIncreases, abilityModifier, finalScores,
   ABILITIES, ABILITY_NAMES, BUDGETS, POINT_COSTS, INCREASE_LEVELS, scoreRange,
   EXTRA_SLOTS,
-  pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers, CASTING_ABILITY,
+  pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, hpForLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers, CASTING_ABILITY,
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed, fastMovement,
   XP_TABLE, xpProgress,
 } from './rules.js';
@@ -222,6 +222,7 @@ const state = {
 // House rules the player can switch on (Character tab): [key, button label, what it does].
 const HOUSE_RULES = [
   ['encumbrance', 'Encumbrance', 'Encumbrance: what you carry (armor, weapons, equipment, magic items; not coins) sets your load; a medium or heavy load limits Dex, adds a check penalty and slows you.'],
+  ['maxHp', 'Max HP', 'Max HP: every level gives the full hit die in hit points (a d10 class: 10 a level), not just 1st level; Constitution, favored class and Toughness add as usual.'],
   ['maxHealing', 'Max Healing', 'Max Healing: healing rolls (cure spells, channel energy, lay on hands) give their maximum.'],
   ['autoCrit', 'Auto-Crit', "Auto-Crit: a natural 20 on an attack roll is a confirmed critical hit, with no confirmation roll (other numbers in the threat range, like a longsword's 19, still roll to confirm)."],
   ['maxGold', 'Max Starting Gold', "Max Starting Gold: a 1st-level character starts with the most its class's starting gold roll can give (a barbarian's 3d6 × 10 gp: 180 gp) instead of the average (105 gp)."],
@@ -2468,7 +2469,7 @@ function computeView() {
     race, classLevels, favoredClassId, baseScores: state.base, flexibleChoice,
     increases: state.increases, favoredPicks,
     featBonuses: withCrossblooded(withTraitSaves(featEffects(chosen.map(f => f.name), classLevels.length), traitFx)), gear: gearNow,
-    effects, size, uncanny: uncannyDodge(counts),
+    effects, size, uncanny: uncannyDodge(counts), maxHp: !!state.houseRules.maxHp,
   });
   // Encumbrance house rule: the load from everything carried limits Dex and adds a check penalty like armor does
   // (the worse of the two counts, they don't add up). Strength doesn't depend on gear, so it comes from a first pass.
@@ -2583,7 +2584,7 @@ function computeView() {
       const before = classLevels.slice(0, lv);
       const beforeCounts = classCounts(before);
       const beforeStats = characterStats({ race, classLevels: before, baseScores: state.base, flexibleChoice,
-                                           increases: state.increases });
+                                           increases: state.increases, maxHp: !!state.houseRules.maxHp });
       const feats = [
         ...slots.filter(s => s.charLevel <= lv && s.id !== except).map(s => data.featsById.get(state.feats[s.id])?.name).filter(Boolean),
         ...grantedFeatsFor(beforeCounts, data.feats.map(f => f.name)), ...proficiencyFeatsFor(beforeCounts.map(e => e.cls)),
@@ -4145,13 +4146,15 @@ function showResultDetails(key) {
     const levels = view.classLevels;
     if (!levels.length) { openDetail('Hit points', '<p>No class yet: hit points come from your class levels (Classes tab).</p>'); return; }
     const con = stats.mod.con;
+    const maxHp = !!state.houseRules.maxHp;
     const rows = [{ label: `${levels[0].name} at 1st level: full hit die (${levels[0].hit_die})`, text: String(hitDieSize(levels[0])) }];
     for (const e of classCounts(levels.slice(1))) {
-      rows.push({ label: `${e.cls.name} × ${e.level} more level${e.level === 1 ? '' : 's'}: average ${averageHpPerLevel(e.cls)} each (${e.cls.hit_die} ÷ 2 + 1)`,
-                  text: String(averageHpPerLevel(e.cls) * e.level) });
+      const each = hpForLevel(e.cls, 1, maxHp);
+      rows.push({ label: `${e.cls.name} × ${e.level} more level${e.level === 1 ? '' : 's'}: ${maxHp ? `full hit die ${each} each (Max HP house rule)` : `average ${each} each (${e.cls.hit_die} ÷ 2 + 1)`}`,
+                  text: String(each * e.level) });
     }
-    const dice = levels.reduce((n, c, i) => n + (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)), 0);
-    const withCon = levels.reduce((n, c, i) => n + Math.max(1, (i === 0 ? hitDieSize(c) : averageHpPerLevel(c)) + con), 0);
+    const dice = levels.reduce((n, c, i) => n + hpForLevel(c, i, maxHp), 0);
+    const withCon = levels.reduce((n, c, i) => n + Math.max(1, hpForLevel(c, i, maxHp) + con), 0);
     rows.push({ label: `Constitution modifier (${signed(con)}) × ${levels.length} level${levels.length === 1 ? '' : 's'}${withCon - dice !== con * levels.length ? ' (at least 1 hit point a level)' : ''}`,
                 text: signed(withCon - dice) });
     const favoredHp = view.favoredPicks.filter(p => p === 'hp').length;

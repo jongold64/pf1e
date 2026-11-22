@@ -2449,6 +2449,16 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Max HP house rule.
+{
+  const { hpForLevel, characterStats: cs } = await import('./rules.js');
+  const fighter = cls('fighter');
+  check('hit points a level: d10 full at 1st, 6 after; Max HP: 10 every level', [hpForLevel(fighter, 0), hpForLevel(fighter, 3), hpForLevel(fighter, 3, true)].join(), '10,6,10');
+  const base = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+  const human = races.find(r => r.id === 'human');
+  check('fighter 5, Con 10: 34 HP, 50 with Max HP', [cs({ race: human, cls: fighter, level: 5, baseScores: base, flexibleChoice: 'str' }).hp,
+    cs({ race: human, cls: fighter, level: 5, baseScores: base, flexibleChoice: 'str', maxHp: true }).hp].join(), '34,50');
+}
 // What's charged.
 {
   const { sellGold } = await import('./equipment.js');
