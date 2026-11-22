@@ -1085,6 +1085,9 @@ function initBuild() {
   });
   // The XP and Wealth popups: their buttons change the numbers and the popup shows them again.
   $('detail-body').addEventListener('click', e => {
+    // A level tapped: the XP at the start of that level.
+    const lv = e.target.closest('.xp-pop [data-xp-level]');
+    if (lv) { update({ xp: XP_TABLE[state.xpTrack][Number(lv.dataset.xpLevel) - 1] }); popXp(); return; }
     const x = e.target.closest('.xp-pop [data-xp]');
     if (x) {
       const how = x.dataset.xp;
@@ -1116,7 +1119,6 @@ function initBuild() {
   $('detail-body').addEventListener('change', e => {
     if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
     // A level chosen: the XP at the start of that level.
-    if (e.target.id === 'xp-level' && e.target.value) { update({ xp: XP_TABLE[state.xpTrack][Number(e.target.value) - 1] }); popXp(); }
   });
   // The Languages popup: a box adds or removes a language, and the popup shows the new count.
   $('detail-body').addEventListener('change', e => {
@@ -4442,13 +4444,14 @@ function popXp() {
   const t = XP_TABLE[state.xpTrack];
   const n = x => x.toLocaleString('en-US');
   openDetail('Experience', `<div class="xp-pop">
-    <p><b>${n(p.xp)} XP</b> · level ${state.level}${p.next === null ? ' (the highest)' : ` · ${ORD_WORD(state.level + 1)} level at ${n(p.next)} (${n(p.toGo)} to go)`}</p>
+    <p><b>${n(p.xp)} XP</b> · level ${state.level}${p.next === null ? ' (the highest)' : ` · ${ORD_WORD(state.level + 1)} level at ${n(p.next)} (${p.toGo ? `${n(p.toGo)} to go` : 'reached'})`}</p>
     ${p.ready ? `<p class="b-ready">Enough for ${ORD_WORD(p.reached)} level: add the level on the Build tab.</p>` : ''}
     <div class="line-controls"><button type="button" class="primary" data-xp="add">Add XP</button><button type="button" data-xp="sub">Take off</button>
       <button type="button" data-xp="set">Set total</button></div>
-    <label>Or set it to the start of level <select id="xp-level"><option value="">choose a level</option>${t.map((x, i) => `<option value="${i + 1}">${i + 1} (${n(x)} XP)</option>`).join('')}</select></label>
     <label>Track <select id="xp-track">${['slow', 'medium', 'fast'].map(k => `<option value="${k}"${k === state.xpTrack ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
-    <table class="skill-why"><tbody>${t.map((x, i) => `<tr${i + 1 === state.level ? ' class="mine"' : ''}><td>Level ${i + 1}${i + 1 === state.level ? ' (you)' : ''}</td><td class="num">${n(x)}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">Tap a level to set your XP to the start of it.</p>
+    <div class="xp-levels">${t.map((x, i) => `<button type="button" data-xp-level="${i + 1}" class="${[i + 1 === state.level ? 'mine' : '', p.xp >= x && (i === 19 || p.xp < t[i + 1]) ? 'xp-here' : ''].filter(Boolean).join(' ')}">
+      <span>Level ${i + 1}${i + 1 === state.level ? ' (you)' : ''}</span><b>${n(x)}</b></button>`).join('')}</div>
     <p class="hint">Core Rulebook, Table 3-1 (${esc(state.xpTrack)} track). Until you enter XP, it counts as the start of your level.</p></div>`);
 }
 const ORD_WORD = n => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`;
