@@ -16,10 +16,10 @@ import { proficiencyTest, weaponWeight, WEAPON_SIZES, setAmmoData, AMMO_MATERIAL
 import { setUntrainedOk,
   SKILLS, SKILL_FEATS, CRAFTS, skillBreakdown, splitSkill, skillInfo, classSkillTest, skillRanksAvailable, skillRanksByLevel, racialSkillBonuses, skillTotal,
 } from './skills.js';
-import { armorEffects, speedInArmor, withRacialMaxDex } from './armor.js';
+import { armorEffects, speedInArmor, withRacialMaxDex, armorAttackPenalty } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, switchValue, showDefenseWhy } from './tab-armor.js';
-import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor } from './defense.js';
+import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor, instantArmorId } from './defense.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -883,9 +883,20 @@ function channelGrants(counts) {
 
 // Armor the character's revelations conjure (defense.js): [{ id, name, bonus }] at the oracle level.
 function conjuredArmors(counts) {
-  return counts.flatMap(({ cls, level }) => Object.entries(state.talents)
+  const ia = instantArmorFor(counts);
+  return [...counts.flatMap(({ cls, level }) => Object.entries(state.talents)
     .filter(([slot, id]) => slot.split('|')[0] === cls.id && ARMOR_REVELATIONS.has(id))
-    .map(([, id]) => ({ id, name: data.talentsById.get(id)?.name || id, bonus: revelationArmor(level) })));
+    .map(([, id]) => ({ id, name: data.talentsById.get(id)?.name || id, bonus: revelationArmor(level) }))),
+    ...(ia ? [{ id: 'instant-armor', name: `Instant armor (${ia.armor.name.toLowerCase()})`,
+      armor: { name: ia.armor.name, bonus: ia.armor.bonus, maxDex: ia.armor.max_dex, check: ia.armor.check_penalty } }] : [])];
+}
+// Instant armor a kineticist can conjure (Kinetic Invocation's aether talent, caster level = kineticist level):
+// { cl, armor (its armor record) }, or null.
+function instantArmorFor(counts) {
+  const kin = counts.find(e => e.cls.id === 'kineticist')?.level || 0;
+  if (!kin || !Object.entries(state.talents).some(([slot, id]) => slot.startsWith('kineticist|') && id === 'invocation-aether-instant-armor')) return null;
+  const armor = data.armorById.get(instantArmorId(kin));
+  return armor ? { cl: kin, armor } : null;
 }
 
 // What class features make, for the Build tab's Gear and Defense cards: [{ name, kind ('item' | 'armor' | 'weapon'),
@@ -970,6 +981,9 @@ function infusedBlast(c, p) {
     dice: p.maximize ? String(c.blast.dice * 6 + c.blast.bonus) : c.dice, scale: p.empower && !p.maximize ? 1.5 : 1 };
 }
 
+// The attack penalty from armor or a shield you aren't proficient with (0 when none).
+const armorPenaltyNow = () => armorAttackPenalty(view.gear, view.haveFeats);
+
 // Attacks from class features: sneak attack, bombs, kinetic blasts... (classAttacks) and natural attacks.
 function allClassAttacks(stats) {
   const melee = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
@@ -982,7 +996,9 @@ function allClassAttacks(stats) {
       // Kinetic fist's Details: the infusion's own text.
       .map(c => (c.name === 'Kinetic fist' ? { ...c, text: data.talentsById.get('kinetic-fist-infusion')?.text || '' } : c))
       // A kinetic blast with the Infuse popup's choices: their attack bonus, range, save DCs, empower (×1.5) or maximize.
-      .map(c => (c.blast ? infusedBlast(c, blastPlanFor(c.name)) : c)),
+      .map(c => (c.blast ? infusedBlast(c, blastPlanFor(c.name)) : c))
+      // Armor or a shield you aren't proficient with: its check penalty on every attack roll (instant armor on a kineticist).
+      .map(c => (c.attack !== null && c.attack !== undefined && armorPenaltyNow() ? { ...c, attack: c.attack + armorPenaltyNow(), note: `${c.note} · armor −${-armorPenaltyNow()} (not proficient)` } : c)),
     ...naturalAttackRows(classNaturalAttacks(), { melee, str: stats.mod.str })];
 }
 
@@ -2421,9 +2437,12 @@ function computeView() {
   featChoices.push(...archFx.feats.filter(f => f.weapon).map(f => ({ slotId: `arch:${f.from}`, feat: f.name, kind: 'weapon', value: f.weapon, from: f.from })));
   featChoices.push(...raceFeats.filter(f => f.value).map(f => ({ slotId: `race:${f.trait}`, feat: f.feat, kind: f.kind, value: f.value, from: f.trait })));
   const haveFeats = [...chosen.map(f => f.name), ...granted, ...proficiencyFeatsFor(classes)];
+  // Instant armor switched on (Defense card): the armor it makes is worn in place of your own while it lasts.
+  const instant = state.combat.conjured === 'instant-armor' ? instantArmorFor(counts) : null;
   const armorArgs = {
     // (A drow in a spider-silk bodysuit: +2 max Dex.)
-    armor: withRacialMaxDex(withMaterial(data.armorById.get(state.armorId), state.armorMaterial), race) || null, armorEnh: state.armorEnh, armorMw: state.armorMw,
+    armor: instant ? withRacialMaxDex(instant.armor, race) : withRacialMaxDex(withMaterial(data.armorById.get(state.armorId), state.armorMaterial), race) || null,
+    armorEnh: instant ? 0 : state.armorEnh, armorMw: instant ? false : state.armorMw,
     shield: withMaterial(data.armorById.get(state.shieldId), state.shieldMaterial) || null, shieldEnh: state.shieldEnh, shieldMw: state.shieldMw,
     // A fighter's armor training lowers the check penalty, raises the max Dex and lets him move normally in armor.
     training: armorTrainingStage(counts),

@@ -2449,6 +2449,13 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Instant armor.
+{
+  const { instantArmorId, defenseSwitches: ds2, defenseEffects: de2 } = await import('./defense.js');
+  check('instant armor by caster level', [5, 6, 9, 12].map(instantArmorId).join(), 'chainmail,banded-mail,half-plate,full-plate');
+  const ia = { id: 'instant-armor', name: 'Instant armor (chainmail)', armor: { name: 'Chainmail', bonus: 6, maxDex: 2, check: -5 } };
+  check('instant armor: a switch, counted as gear (no armor bonus effect)', [ds2({ conjured: [ia] }).some(s => s.key === 'conjured:instant-armor'), de2({ conjured: 'instant-armor' }, { conjured: [ia] }).length].join(), 'true,0');
+}
 // Max HP house rule.
 {
   const { hpForLevel, characterStats: cs } = await import('./rules.js');

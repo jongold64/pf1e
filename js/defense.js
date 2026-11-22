@@ -8,9 +8,13 @@ export const expertiseStep = bab => 1 + Math.floor(Math.max(0, bab) / 4);
 // Oracle revelations that conjure armor: +4 armor bonus, +2 at 7th level and every 4 levels after.
 export const ARMOR_REVELATIONS = new Set(['air-barrier', 'armor-of-bones', 'ectoplasmic-armor', 'elemental-aegis', 'ice-armor', 'wood-armor']);
 export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 3) / 4));
+// Instant armor (the spell; a kineticist's aether invocation): the armor it makes at a caster level (chainmail at 5th or
+// lower, banded mail at 6th-8th, half-plate at 9th-11th, full plate at 12th+), worn in place of your own armor.
+export const instantArmorId = cl => (cl >= 12 ? 'full-plate' : cl >= 9 ? 'half-plate' : cl >= 6 ? 'banded-mail' : 'chainmail');
 
 // What each switch does now: [{ key, label, what, rows: [[label, value]], note }]. trained: 3 or more ranks in
-// Acrobatics (+1 dodge fighting defensively, +2 on total defense). conjured: [{ id, name, bonus }].
+// Acrobatics (+1 dodge fighting defensively, +2 on total defense). conjured: [{ id, name, bonus }], or { id, name, armor:
+// { name, bonus, maxDex, check } } for armor worn in place of yours (instant armor: counted as gear, not as a bonus).
 // magus / cavalier: class levels, for the attack switches classes give (attack: true; shown with the attack switches):
 // spell combat (magus: -2 on attacks while casting with the free hand) and cavalier's charge (3rd: +4 melee attack on a
 // mounted charge instead of +2, no AC penalty; mighty charge at 11th, supreme charge at 20th noted).
@@ -33,8 +37,12 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
   if (shield) out.push({ key: 'shieldOff', label: `${shield} in hand`, inverted: true, what: 'switch off when you put it away or let go of it',
     rows: [['Shield bonus, check penalty, spell failure', 'count only while it’s in hand']],
     note: 'Off: the shield stays on your Armor tab but adds nothing (a free hand for a spell, a two-handed weapon...).' });
-  for (const c of conjured) out.push({ key: `conjured:${c.id}`, label: c.name, what: `+${c.bonus} armor bonus while conjured`,
-    rows: [['Armor bonus to AC', `+${c.bonus}`]], note: 'An armor bonus: it doesn’t stack with worn armor (the higher one counts).' });
+  for (const c of conjured) out.push(c.armor
+    ? { key: `conjured:${c.id}`, label: c.name, what: `${c.armor.name}: +${c.armor.bonus} armor, max Dex +${c.armor.maxDex}, check penalty ${c.armor.check}, in place of your armor`,
+      rows: [['Armor bonus to AC', `+${c.armor.bonus}`], ['Maximum Dex bonus', `+${c.armor.maxDex}`], ['Armor check penalty', String(c.armor.check)], ['Your worn armor', 'replaced while it lasts']],
+      note: 'Made of force: it works as that armor in every way (spell failure, speed, proficiency). 1 minute per level.' }
+    : { key: `conjured:${c.id}`, label: c.name, what: `+${c.bonus} armor bonus while conjured`,
+      rows: [['Armor bonus to AC', `+${c.bonus}`]], note: 'An armor bonus: it doesn’t stack with worn armor (the higher one counts).' });
   if (haveFeats.includes('Combat Expertise')) out.push({ key: 'combatExpertise', label: 'Combat Expertise', what: `−${step} melee attack and CMB, +${step} dodge AC`,
     rows: [['Your base attack bonus: 1 step, +1 at +4 and every 4 after', `${step} step${step === 1 ? '' : 's'}`], ['Melee attack rolls and combat maneuver checks', `−${step}`], ['Dodge bonus to AC', `+${step}`]],
     note: 'Choose it when you make a melee attack or a full attack; it lasts until your next turn.' });
@@ -146,7 +154,7 @@ export function defenseEffects(combat = {}, opts = {}) {
   if (has('flowingDodge') && combat.flowingDodge > 0) fx('Flowing dodge', 'ac', 'dodge', Math.min(monk.flowingDodge, combat.flowingDodge));
   if (combat.linnormStance && has('linnormStance')) fx('Linnorm Style (against melee)', 'ac', 'untyped', -2);
   const c = (opts.conjured || []).find(x => x.id === combat.conjured);
-  if (c) fx(c.name, 'ac', 'armor', c.bonus);
+  if (c && !c.armor) fx(c.name, 'ac', 'armor', c.bonus);
   return out;
 }
 
