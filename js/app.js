@@ -19,7 +19,7 @@ import { setUntrainedOk,
 import { armorEffects, speedInArmor, withRacialMaxDex, armorAttackPenalty } from './armor.js';
 import { fitLines, openLines, $, esc, signed, ordinal, paragraphs, facts, sourceText, closePopupsOnOutsideClick } from './dom.js';
 import { initArmorTab, renderArmorTab, armorDetails, showArmorWhy, popArmor, setCombatSwitch, switchValue, showDefenseWhy } from './tab-armor.js';
-import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor, instantArmorId } from './defense.js';
+import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor, instantArmorId, unhinderedArmor } from './defense.js';
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
@@ -891,12 +891,12 @@ function conjuredArmors(counts) {
       armor: { name: ia.armor.name, bonus: ia.armor.bonus, maxDex: ia.armor.max_dex, check: ia.armor.check_penalty } }] : [])];
 }
 // Instant armor a kineticist can conjure (Kinetic Invocation's aether talent, caster level = kineticist level):
-// { cl, armor (its armor record) }, or null.
+// { cl, armor (its armor record, counted as proficient and unhindered: defense.js unhinderedArmor) }, or null.
 function instantArmorFor(counts) {
   const kin = counts.find(e => e.cls.id === 'kineticist')?.level || 0;
   if (!kin || !Object.entries(state.talents).some(([slot, id]) => slot.startsWith('kineticist|') && id === 'invocation-aether-instant-armor')) return null;
   const armor = data.armorById.get(instantArmorId(kin));
-  return armor ? { cl: kin, armor } : null;
+  return armor ? { cl: kin, armor: unhinderedArmor(armor) } : null;
 }
 
 // What class features make, for the Build tab's Gear and Defense cards: [{ name, kind ('item' | 'armor' | 'weapon'),

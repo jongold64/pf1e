@@ -11,6 +11,10 @@ export const revelationArmor = level => 4 + 2 * Math.max(0, Math.floor((level - 
 // Instant armor (the spell; a kineticist's aether invocation): the armor it makes at a caster level (chainmail at 5th or
 // lower, banded mail at 6th-8th, half-plate at 9th-11th, full plate at 12th+), worn in place of your own armor.
 export const instantArmorId = cl => (cl >= 12 ? 'full-plate' : cl >= 9 ? 'half-plate' : cl >= 6 ? 'banded-mail' : 'chainmail');
+// The way this app counts instant armor (the user's choice): the wearer is proficient and it hinders nothing, so only
+// its armor bonus counts: no max Dex, check penalty, spell failure or slower speed (counted as light armor).
+export const unhinderedArmor = armor => ({ ...armor, category: 'light', move_category: 'light', max_dex: null, check_penalty: 0,
+  spell_failure: 0, speed_30: 30, speed_20: 20, unhindered: true });
 
 // What each switch does now: [{ key, label, what, rows: [[label, value]], note }]. trained: 3 or more ranks in
 // Acrobatics (+1 dodge fighting defensively, +2 on total defense). conjured: [{ id, name, bonus }], or { id, name, armor:
@@ -38,9 +42,9 @@ export function defenseSwitches({ bab = 0, haveFeats = [], acrobatics = 0, shiel
     rows: [['Shield bonus, check penalty, spell failure', 'count only while it’s in hand']],
     note: 'Off: the shield stays on your Armor tab but adds nothing (a free hand for a spell, a two-handed weapon...).' });
   for (const c of conjured) out.push(c.armor
-    ? { key: `conjured:${c.id}`, label: c.name, what: `${c.armor.name}: +${c.armor.bonus} armor, max Dex +${c.armor.maxDex}, check penalty ${c.armor.check}, in place of your armor`,
-      rows: [['Armor bonus to AC', `+${c.armor.bonus}`], ['Maximum Dex bonus', `+${c.armor.maxDex}`], ['Armor check penalty', String(c.armor.check)], ['Your worn armor', 'replaced while it lasts']],
-      note: 'Made of force: it works as that armor in every way (spell failure, speed, proficiency). 1 minute per level.' }
+    ? { key: `conjured:${c.id}`, label: c.name, what: `+${c.armor.bonus} armor bonus in place of your armor, no penalties`,
+      rows: [['Armor bonus to AC', `+${c.armor.bonus}`], ['Max Dex, check penalty, spell failure, speed', 'none: counted as proficient and unhindered'], ['Your worn armor', 'replaced while it lasts']],
+      note: 'Made of force, 1 minute per level. Counted here as armor you are proficient with that hinders nothing.' }
     : { key: `conjured:${c.id}`, label: c.name, what: `+${c.bonus} armor bonus while conjured`,
       rows: [['Armor bonus to AC', `+${c.bonus}`]], note: 'An armor bonus: it doesn’t stack with worn armor (the higher one counts).' });
   if (haveFeats.includes('Combat Expertise')) out.push({ key: 'combatExpertise', label: 'Combat Expertise', what: `−${step} melee attack and CMB, +${step} dodge AC`,

@@ -2453,6 +2453,9 @@ It does a thing. More.` });
 {
   const { instantArmorId, defenseSwitches: ds2, defenseEffects: de2 } = await import('./defense.js');
   check('instant armor by caster level', [5, 6, 9, 12].map(instantArmorId).join(), 'chainmail,banded-mail,half-plate,full-plate');
+  const { unhinderedArmor } = await import('./defense.js');
+  const u = unhinderedArmor({ id: 'chainmail', category: 'medium', bonus: 6, max_dex: 2, check_penalty: -5, spell_failure: 30, speed_30: 20, speed_20: 15 });
+  check('instant armor hinders nothing: bonus kept, no max Dex, penalties or slower speed', [u.bonus, u.max_dex, u.check_penalty, u.spell_failure, u.speed_30, u.category].join(), '6,,0,0,30,light');
   const ia = { id: 'instant-armor', name: 'Instant armor (chainmail)', armor: { name: 'Chainmail', bonus: 6, maxDex: 2, check: -5 } };
   check('instant armor: a switch, counted as gear (no armor bonus effect)', [ds2({ conjured: [ia] }).some(s => s.key === 'conjured:instant-armor'), de2({ conjured: 'instant-armor' }, { conjured: [ia] }).length].join(), 'true,0');
 }
