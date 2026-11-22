@@ -25,8 +25,11 @@ function addButtons(item) {
         Add ${esc(o.label)} (${esc(formatGp(o.price_gp))})</button>`).join('')
     : `<button type="button" class="primary" data-add-item="${esc(item.id)}">Add to my magic items</button>`;
   const craft = itemKind(item) ? `<button type="button" data-craft-item="${esc(item.id)}">Craft this item</button>` : '';
-  return `<div class="slot-buttons">${buttons}${craft}</div>`;
+  return `${freeBuyBox()}<div class="slot-buttons">${buttons}${craft}</div>`;
 }
+// Buy for free (found or a gift): ticked, Add puts the item in My magic items marked free. Kept while the page is open.
+let freeBuy = false;
+const freeBuyBox = () => `<label class="check-row"><input type="checkbox" data-free-buy${freeBuy ? ' checked' : ''}> Buy for free (found or a gift: no gold)</label>`;
 
 // The item in a popup (the list's Details button): everything the side panel shows, with Add and Craft as buttons.
 // An item you have, in a popup: what it gives, worn or not, and its description (the same popup as in Active effects).
@@ -88,7 +91,7 @@ function popItem(app, id) {
     else actions.push({ label: 'Add to my magic items', primary: true, run: () => addItem(app, item.id) });
   }
   if (itemKind(item)) actions.push({ label: 'Craft this item', run: () => craftListedItem(app, item.id) });
-  app.openDetail(item.name, itemDetails(item, false), actions);
+  app.openDetail(item.name, `${itemDetails(item, false)}${ownable(item) ? freeBuyBox() : ''}`, actions);
 }
 
 function itemDetails(item, withButtons = true) {
@@ -237,9 +240,9 @@ export function renderMyItems(app) {
 
 function addItem(app, id, option) {
   const owned = app.state.magicItems.map(e => ({ ...e }));
-  const existing = owned.find(e => e.id === id && (e.option || null) === (option || null));
+  const existing = owned.find(e => e.id === id && (e.option || null) === (option || null) && !!e.free === freeBuy && !e.crafted);
   if (existing) existing.qty += 1;
-  else owned.push({ id, ...(option ? { option } : {}), qty: 1 });
+  else owned.push({ id, ...(option ? { option } : {}), qty: 1, ...(freeBuy ? { free: true } : {}) });
   app.update({ magicItems: owned });
 }
 
@@ -297,6 +300,10 @@ export function initItemsTab(app) {
     selectedId = btn.dataset.item;
     renderPanel(app);
   });
+  // Buy for free, in the side panel or an item's popup (both show the same box).
+  for (const box of [$('item-panel'), $('detail-body')]) {
+    box.addEventListener('change', e => { if (e.target.matches('[data-free-buy]')) freeBuy = e.target.checked; });
+  }
   $('item-panel').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-item]');
     if (btn) addItem(app, btn.dataset.addItem, btn.dataset.option);
