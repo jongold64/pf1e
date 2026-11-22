@@ -32,6 +32,7 @@ import { customItemEffects, customItemNotes, tidyCustomItems } from './custom-it
 import { tidyProjects } from './mundane-craft.js';
 import { tidyCustomGear, customGearWeight } from './custom-gear.js';
 import { tidyCustomWeapons, customWeaponRecord } from './custom-weapons.js';
+import { tidyCustomSpells, customSpellRecord } from './custom-spells.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -133,6 +134,7 @@ const state = {
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
+  customSpells: [],          // custom spells' definitions (Spells tab, Custom): custom-spells.js
   customWeapons: [],         // custom weapons' definitions (Weapons tab, Custom): custom-weapons.js
   customGear: [],            // custom equipment (Equipment tab, Custom): custom-gear.js
   craftProjects: [],         // non-magical items being made with the Craft skill (Craft tab): mundane-craft.js
@@ -301,6 +303,7 @@ function load(saved) {
   state.craftProjects = tidyProjects(state.craftProjects);
   state.customGear = tidyCustomGear(state.customGear);
   state.customWeapons = tidyCustomWeapons(state.customWeapons);
+  state.customSpells = tidyCustomSpells(state.customSpells);
   state.metamagic = Object.fromEntries(Object.entries(state.metamagic && typeof state.metamagic === 'object' ? state.metamagic : {})
     .filter(([id, m]) => typeof id === 'string' && m?.intensified === true).map(([id]) => [id, { intensified: true }]));
   state.costAdjust = tidyAdjustments(state.costAdjust);
@@ -2442,8 +2445,19 @@ function syncCustomWeapons() {
   for (const d of defs) { const r = customWeaponRecord(d); data.weaponsById.set(d.id, r); data.weapons.push(r); }
 }
 
+// Custom spells go into the spell data too, on the lists of the character's casting classes.
+function syncCustomSpells() {
+  if (!data.spellsById || !Array.isArray(data.spells)) return;
+  const defs = state.customSpells || [];
+  const classIds = [...new Set(state.classLevels)].filter(id => CASTING_ABILITY[id]);
+  for (const id of [...data.spellsById.keys()]) if (id.startsWith('cs-') && !defs.some(d => d.id === id)) data.spellsById.delete(id);
+  for (let i = data.spells.length - 1; i >= 0; i--) if (data.spells[i].custom) data.spells.splice(i, 1);
+  for (const d of defs) { const r = customSpellRecord(d, classIds); data.spellsById.set(d.id, r); data.spells.push(r); }
+}
+
 function computeView() {
   syncCustomWeapons();
+  syncCustomSpells();
   // The race with its chosen alternate racial traits swapped in (everything below reads this one).
   const race = raceWithAlternates(data.races.find(r => r.id === state.race), state.alternates);
   // Each class with its chosen archetypes applied (features replaced, class skills and proficiencies changed).

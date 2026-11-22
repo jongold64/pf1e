@@ -2449,6 +2449,16 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom spells.
+{
+  const { customSpellFormula, customSpellRecord, tidyCustomSpells } = await import('./custom-spells.js');
+  const [d] = tidyCustomSpells([{ id: 'cs-x', name: 'Frost lance', level: 2, attack: 'ranged touch', dice: 'd6', scaling: 'level', max: 10, damageType: 'cold', save: 'none' }]);
+  check('custom spell formula: 1d6 per level, max 10; per two levels; flat 3d8', [customSpellFormula(d), customSpellFormula({ ...d, scaling: 'two', max: 5, dice: 'd8' }), customSpellFormula({ ...d, scaling: 'flat', count: 3, dice: 'd8' })].join(' | '),
+    '(min(10, @cl))d6 | (min(5, floor(@cl / 2)))d8 | 3d8');
+  const r = customSpellRecord(d, ['wizard', 'magus']);
+  check('custom spell record: on the wizard and magus lists at 2nd, a ranged touch with cold damage', [r.levels.wizard, r.levels.magus, r.actions[0].kind, r.actions[0].damage[0].types[0]].join(), '2,2,ranged touch,cold');
+  check('a custom spell with no dice or save has no action', customSpellRecord(tidyCustomSpells([{ dice: 'none', save: 'none' }])[0], ['cleric']).actions.length, 0);
+}
 // Intensified Spell.
 {
   const { intensifyFormula, intensifiable } = await import('./spell-math.js');

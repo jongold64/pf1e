@@ -4,6 +4,7 @@ import { openLines, fitLines, $, esc, signed, paragraphs, facts, sourceText } fr
 import { activeBonuses } from './effects.js';
 import { spellsPerDay, EXTRA_SLOTS } from './rules.js';
 import { spellContext, spellLines, srCheck, spellstrikeRoll } from './spell-math.js';
+import { SCHOOLS as CS_SCHOOLS, DIE_SIZES as CS_DIE_SIZES, SCALINGS as CS_SCALINGS } from './custom-spells.js';
 import { CASTING_ABILITY } from './rules.js';
 import { rollButton } from './roll-ui.js';
 
@@ -45,7 +46,7 @@ function spellDetails(app, spell, cls, withButton = true) {
   return `<h3>${esc(spell.name)}</h3>
     <p class="hint">${esc(school)} · ${esc(sourceText(spell))}</p>
     ${onList ? '' : `<p class="warning">Not on the ${esc(cls.name.toLowerCase())} spell list${mine ? '' : ', so it can\'t be added'}.</p>`}
-    ${button && withButton ? `<div class="slot-buttons">${button}</div>` : ''}
+    ${button && withButton ? `<div class="slot-buttons">${button}${spell.custom ? ` <button type="button" data-cs-edit="${esc(spell.id)}">Change this custom spell</button>` : ''}</div>` : ''}
     ${facts([
       ['Level', levelText(app, spell)],
       ['Casting time', spell.casting_time],
@@ -284,11 +285,69 @@ function showLineDetails(app, key) {
 
 export function initSpellList(app) {
   initPrepared(app);
+  // Add spells: a level shows just that level (tap again for all); Custom opens the builder.
+  $('spell-add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-spell-level], [data-spell-custom]');
+    if (!b) return;
+    if (b.hasAttribute('data-spell-custom')) { spellCustomOpen = !spellCustomOpen; spellLevel = -1; renderSpellList(app, app.view); return; }
+    spellCustomOpen = false;
+    const lv = Number(b.dataset.spellLevel);
+    spellLevel = spellLevel === lv ? -1 : lv;
+    renderSpellList(app, app.view);
+    if (spellLevel >= 0) $('spell-list-card').scrollIntoView({ block: 'start' });
+  });
+  const csBox = $('spell-custom-wrap');
+  csBox.addEventListener('input', e => {
+    const k = e.target.dataset.cs;
+    if (['name', 'castingTime', 'range', 'duration', 'damageType', 'description'].includes(k)) sDraft[k] = e.target.value;
+    else if (['count', 'max'].includes(k)) sDraft[k] = Math.max(1, Math.min(40, Math.round(Number(e.target.value)) || 1));
+  });
+  csBox.addEventListener('change', e => {
+    const k = e.target.dataset.cs;
+    if (!k || ['name', 'castingTime', 'range', 'duration', 'damageType', 'description', 'count', 'max'].includes(k)) return;
+    sDraft[k] = k === 'sr' ? e.target.checked : k === 'level' ? Number(e.target.value) : e.target.value;
+    renderSpellCustom();
+  });
+  csBox.addEventListener('click', e => {
+    if (e.target.closest('[data-cs-clear]')) { sDraft = freshSpell(); renderSpellCustom(); return; }
+    if (e.target.closest('[data-cs-cancel]')) { sDraft = freshSpell(); spellCustomOpen = false; renderSpellList(app, app.view); return; }
+    if (e.target.closest('[data-cs-delete]')) {
+      const id = sDraft.id;
+      if (!confirm(`Delete ${sDraft.name || 'this spell'}? It comes off My spells and any prepared slot.`)) return;
+      const prepared = Object.fromEntries(Object.entries(app.state.prepared || {}).map(([c, byLv]) => [c, Object.fromEntries(Object.entries(byLv)
+        .map(([lv, slots]) => [lv, slots.map(x => (x?.id === id ? { id: '', cast: false } : x))]))]));
+      app.update({ customSpells: app.state.customSpells.filter(x => x.id !== id), spells: app.state.spells.filter(x => x !== id), prepared });
+      sDraft = freshSpell(); spellCustomOpen = false; renderSpellList(app, app.view);
+      return;
+    }
+    if (!e.target.closest('[data-cs-save]')) return;
+    const def = { ...sDraft, name: sDraft.name.trim() || 'Custom spell' };
+    const list = app.state.customSpells || [];
+    if (def.id) app.update({ customSpells: list.map(x => (x.id === def.id ? def : x)) });
+    else {
+      def.id = `cs-${Date.now().toString(36)}`;
+      app.update({ customSpells: [...list, def], spells: [...app.state.spells, def.id] });
+    }
+    selectedId = def.id;
+    sDraft = freshSpell();
+    renderSpellList(app, app.view);
+  });
+  $('spell-panel').addEventListener('click', e => {
+    const ed = e.target.closest('[data-cs-edit]');
+    if (!ed) return;
+    const d = (app.state.customSpells || []).find(x => x.id === ed.dataset.csEdit);
+    if (!d) return;
+    sDraft = { ...freshSpell(), ...d };
+    spellCustomOpen = true; spellLevel = -1;
+    renderSpellList(app, app.view);
+    $('spell-add-card').scrollIntoView({ block: 'start' });
+  });
   $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
   $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
   $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
   $('spell-class').addEventListener('change', e => { listClassId = e.target.value; renderSpellList(app, app.view); });
   $('spell-list').addEventListener('click', e => {
+    if (e.target.closest('[data-spell-all-levels]')) { spellLevel = -1; renderSpellList(app, app.view); return; }
     const pop = e.target.closest('[data-spell-pop]');
     if (pop) { popSpell(app, pop.dataset.spellPop); return; }
     const btn = e.target.closest('[data-spell]');
@@ -423,6 +482,54 @@ function initPrepared(app) {
   });
 }
 
+// The Add spells card: a button for each spell level on the class's list (it shows just that level) and Custom.
+let spellLevel = -1;   // the level the list shows (-1: all)
+let spellCustomOpen = false;
+let sDraft = null;     // the custom spell being made or changed
+const freshSpell = () => ({ id: '', name: '', level: 1, school: 'evocation', castingTime: '1 standard action', range: 'close (25 ft. + 5 ft./2 levels)',
+  duration: 'instantaneous', attack: 'none', save: 'none', saveEffect: 'half', sr: true, dice: 'none', scaling: 'level', count: 1, max: 5, damageType: '', description: '' });
+function renderSpellButtons(onList) {
+  const levels = [...new Set(onList.map(s => s.levels[listClassNow]))].filter(lv => lv !== undefined).sort((a, b) => a - b);
+  $('spell-add-buttons').innerHTML = levels.map(lv => `<button type="button" data-spell-level="${lv}" aria-pressed="${!spellCustomOpen && spellLevel === lv}">${lv === 0 ? 'Cantrips' : `Level ${lv}`}</button>`).join('')
+    + `<button type="button" class="add-custom" data-spell-custom aria-pressed="${spellCustomOpen}">Custom</button>`;
+  $('spell-custom-wrap').hidden = !spellCustomOpen;
+  if (spellCustomOpen) renderSpellCustom();
+}
+let listClassNow = '';
+function renderSpellCustom() {
+  sDraft ??= freshSpell();
+  const d = sDraft;
+  const opt = (list, v) => list.map(([k, l]) => `<option value="${esc(String(k))}"${String(k) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  $('spell-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-cs="name" value="${esc(d.name)}" placeholder="e.g. Frost lance" maxlength="60"></label>
+      <label>Spell level <select data-cs="level">${opt(Array.from({ length: 10 }, (_, i) => [i, i === 0 ? '0 (cantrip)' : String(i)]), d.level)}</select></label>
+      <label>School <select data-cs="school">${opt(CS_SCHOOLS.map(x => [x, x]), d.school)}</select></label>
+      <label>Casting time <input type="text" data-cs="castingTime" value="${esc(d.castingTime)}" maxlength="40"></label>
+      <label>Range <input type="text" data-cs="range" value="${esc(d.range)}" maxlength="60"></label>
+      <label>Duration <input type="text" data-cs="duration" value="${esc(d.duration)}" maxlength="60"></label>
+    </div>
+    <div class="custom-grid">
+      <label>Attack roll <select data-cs="attack">${opt([['none', 'none'], ['melee touch', 'melee touch'], ['ranged touch', 'ranged touch (a ray)']], d.attack)}</select></label>
+      <label>Saving throw <select data-cs="save">${opt([['none', 'none'], ['fort', 'Fortitude'], ['ref', 'Reflex'], ['will', 'Will']], d.save)}</select></label>
+      ${d.save !== 'none' ? `<label>On a save <select data-cs="saveEffect">${opt([['half', 'half'], ['negates', 'negates'], ['partial', 'partial']], d.saveEffect)}</select></label>` : ''}
+      <label class="check-row"><input type="checkbox" data-cs="sr"${d.sr ? ' checked' : ''}> Spell resistance applies</label>
+    </div>
+    <div class="custom-grid">
+      <label>Damage dice <select data-cs="dice">${opt([['none', 'none'], ...CS_DIE_SIZES.map(x => [x, x])], d.dice)}</select></label>
+      ${d.dice !== 'none' ? `<label>How many <select data-cs="scaling">${opt(CS_SCALINGS, d.scaling)}</select></label>
+        ${d.scaling === 'flat' ? `<label>Dice <input type="number" data-cs="count" value="${d.count}" min="1" max="40" inputmode="numeric"></label>`
+          : `<label>At most <input type="number" data-cs="max" value="${d.max}" min="1" max="40" inputmode="numeric"></label>`}
+        <label>Damage type <input type="text" data-cs="damageType" value="${esc(d.damageType)}" placeholder="fire, cold..." maxlength="20"></label>` : ''}
+    </div>
+    <label>What it does <textarea data-cs="description" rows="3" maxlength="2000" placeholder="The spell's full text">${esc(d.description)}</textarea></label>
+    <p class="hint">${d.id ? 'Changes apply wherever it\u2019s chosen or prepared.' : 'It goes on your casting classes\u2019 lists at that level and into My spells; its attack, save DC and damage are worked out like any spell\u2019s.'}</p>
+    <div class="line-controls"><button type="button" class="primary" data-cs-save>${d.id ? 'Save changes' : 'Add to my spells'}</button>
+      <button type="button" data-cs-clear>${d.id ? 'Stop changing it' : 'Clear'}</button>
+      ${d.id ? '<button type="button" data-cs-delete>Delete this spell</button>' : ''}
+      <button type="button" data-cs-cancel>Cancel</button></div></div>`;
+}
+
 export async function renderSpellList(app, view) {
   if (!app.data.spells) {
     $('spell-list').innerHTML = '<p class="hint">Loading spells…</p>';
@@ -437,6 +544,8 @@ export async function renderSpellList(app, view) {
   renderPrepared(app, view);
   const all = app.data.spells;
   const onList = all.filter(s => s.levels[cls.id] !== undefined);
+  listClassNow = cls.id;
+  renderSpellButtons(onList);
   const filter = $('spell-filter').value.trim().toLowerCase();
   // Classes without a spell list can still search every spell.
   $('spell-all').closest('label').hidden = !onList.length;
@@ -460,6 +569,8 @@ export async function renderSpellList(app, view) {
 
   const groups = [];
   for (let lv = 0; lv <= 9; lv++) {
+    // A level button shows only that level (a search still looks through every level).
+    if (spellLevel >= 0 && !filter && lv !== spellLevel) continue;
     const spells = onList.filter(s => s.levels[cls.id] === lv && (!filter || s.name.toLowerCase().includes(filter)));
     if (!spells.length) continue;
     const later = lv > maxLevel;
@@ -468,7 +579,8 @@ export async function renderSpellList(app, view) {
       <ul class="pick-list${later ? ' later' : ''}">${spells.map(s => spellButton(app, s)).join('')}</ul>
     </section>`);
   }
-  $('spell-list').innerHTML = groups.join('') || '<p class="hint">No spells match.</p>';
+  $('spell-list').innerHTML = (spellLevel >= 0 && !filter ? `<p class="hint">Showing ${spellLevel === 0 ? 'cantrips' : `level ${spellLevel}`} only. <button type="button" data-spell-all-levels>Show every level</button></p>` : '')
+    + (groups.join('') || '<p class="hint">No spells match.</p>');
   renderPanel(app, view);
 }
 
