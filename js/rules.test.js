@@ -2463,6 +2463,8 @@ It does a thing. More.` });
   check('druid knows Druidic; cleric may take Infernal for Intelligence', [languageState({ race: elf, classIds: ['druid'], all }).free.join(),
     languageState({ race: elf, classIds: ['cleric'], intMod: 1, chosen: ['Infernal'], all }).problems.length].join('|'), 'Common,Elven,Druidic|0');
   check('tidy languages', JSON.stringify(tidyLanguages(['Orc', 'Orc', 3, ''])), '["Orc"]');
+  const list = [{ name: 'Azlanti', secret: false }, { name: 'Druidic', secret: true }, { name: 'Tien', secret: false }];
+  check('languages from the data file: secret ones left out', allLanguages([elf], list).join(), 'Celestial,Common,Draconic,Elven,Sylvan,Tien'.split(',').concat('Azlanti').sort().join());
 }
 
 // Daily uses (Build tab).

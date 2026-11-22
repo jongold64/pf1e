@@ -1,0 +1,507 @@
+[
+  {
+    "name": "Aboleth",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Abyssal",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Adlet",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Aklo",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Ancient Osiriani",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Androffan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Aquan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Auran",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Azlanti",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Boggard",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Brethedan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Canto",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Catfolk",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Celestial",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Common",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Cyclops",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "D'ziriak",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Dark Folk",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Draconic",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Drow Sign Language",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Druidic",
+    "secret": true,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Dtang",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Dwarven",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Ekekeh",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Elder Thing",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Elven",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Erutaki",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "First Speech",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Flail Snail",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Garuda",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Ghol-Gan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Giant",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Girtablilu",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Gnoll",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Gnome",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Goblin",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Grioth",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Grippli",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Gug",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Halfling",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Hallit",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Hon-La",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Hwan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Ib",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Ignan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Infernal",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Iobaran",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Jandelayan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Jistka",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Kasatha",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Kech",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Kelish",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Kuru",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Lashunta",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Mi-Go",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Minatan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Minkaian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Munavri",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Nagaji",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Necril",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Orc",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Orvian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Osiriani",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Polyglot",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Protean",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Reptoid",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Rougarou",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Sakvroth",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Samsaran",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Sasquatch",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Senzar",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Shadow Tongue",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Shae",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Shoanti",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Shobhad",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Skald",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Sphinx",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Strix",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Sylvan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Syrinx",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Taldane",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Tanuki",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Tekritanin",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Tengu",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Terran",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Thassilonian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Thriae",
+    "secret": false,
+    "source": "Bestiary 3"
+  },
+  {
+    "name": "Tien",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Treant",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Triaxian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Undercommon",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Urdefhan",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Vanaran",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Varisian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Varki",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Vegepygmy",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Vishkanya",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Vudrani",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Wayang",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Yaddithian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  },
+  {
+    "name": "Yithian",
+    "secret": false,
+    "source": "Foundry VTT pf1"
+  }
+]

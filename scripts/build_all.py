@@ -22,6 +22,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     ('build_aon_race_traits.py', 'data/races.json'),
                     # The kineticist's elements (blasts, defenses, class skills, talents by level), from AoN pages.
                     ('build_aon_kineticist.py', 'data/kineticist-elements.json'),
+                    # Languages: Foundry's list of Golarion languages and the ones PSRD stat blocks add.
+                    ('build_languages.py', 'data/languages.json'),
                     # The eidolon's base statistics and evolutions (summoner, unchained summoner), from AoN pages.
                     ('build_aon_eidolon.py', 'data/eidolons.json'),
                     # Deities (alignment, domains, subdomains, favored weapon) for clerics, warpriests and inquisitors.

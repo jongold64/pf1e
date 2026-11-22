@@ -4864,7 +4864,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings, data.languages] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -4884,6 +4884,8 @@ async function start() {
       fetch('data/eidolons.json').then(r => r.json()),
       fetch('data/deities.json').then(r => r.json()),
       fetch('data/blessings.json').then(r => r.json()),
+      // Languages (build_languages.py); a missing file falls back to the short list in languages.js.
+      fetch('data/languages.json').then(r => r.json()).catch(() => []),
     ]);
     // Third-party books (only offered on a character that ticks the book). A missing file just means none.
     data.thirdParty = await fetch('data/third-party.json').then(r => r.json()).catch(() => ({ books: [], classes: [], talents: [] }));
@@ -4917,7 +4919,7 @@ async function start() {
   // Bloodlines in the shape of the other one-time class choices.
   // Each kineticist element lists its basic wild talent (a bonus talent) among its powers.
   data.kineticElements = data.kineticElements.map(e => withBasicTalent(e, data.talents));
-  data.languageNames = allLanguages(data.races);
+  data.languageNames = allLanguages(data.races, data.languages);
   data.paths = [...data.classPaths, ...data.familiars, ...data.kineticElements, ...data.bloodlines.map(b => ({
     id: b.id, kind: 'bloodline', classes: [b.cls], name: b.name, source: b.source, text: b.text, parent: null,
     facts: [['Bonus feats', b.bonus_feats.join(', ')], ['Bloodline arcana', b.arcana]].filter(f => f[1]),

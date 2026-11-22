@@ -3,7 +3,7 @@
 // a wizard Draconic); one language of any kind (not a secret one) per rank of Linguistics. A druid also knows Druidic.
 // state.languages = the languages chosen beyond the starting ones. No page code here.
 
-// Languages any character might learn (the Core Rulebook's and Bestiaries'); the races' own lists are added to these.
+// A short list of languages, used only when data/languages.json is missing; the races' own lists are added to these.
 export const LANGUAGES = ['Aboleth', 'Abyssal', 'Aklo', 'Aquan', 'Auran', 'Boggard', 'Celestial', 'Common', 'Cyclops', 'Dark Folk',
   'Draconic', 'Drow Sign Language', 'Dwarven', 'Elven', 'Giant', 'Gnoll', 'Gnome', 'Goblin', 'Grippli', 'Halfling', 'Ignan',
   'Infernal', 'Necril', 'Orc', 'Protean', 'Sphinx', 'Sylvan', 'Tengu', 'Terran', 'Treant', 'Undercommon', 'Vegepygmy'];
@@ -11,11 +11,12 @@ export const LANGUAGES = ['Aboleth', 'Abyssal', 'Aklo', 'Aquan', 'Auran', 'Bogga
 const SECRET = new Set(['Druidic']);
 const CLASS_BONUS = { cleric: ['Abyssal', 'Celestial', 'Infernal'], druid: ['Sylvan'], wizard: ['Draconic'] };
 
-// Every language name: the list above and each race's starting and bonus languages ("Any..." left out), sorted.
-export function allLanguages(races = []) {
-  const names = new Set(LANGUAGES);
+// Every language name that can be learned: data/languages.json's (secret ones left out; the short list above when it's
+// missing) and each race's starting and bonus languages ("Any..." left out), sorted.
+export function allLanguages(races = [], list = []) {
+  const names = new Set(list.length ? list.filter(l => !l.secret).map(l => l.name) : LANGUAGES);
   // A plain name only: not "either Abyssal or Infernal", "one elemental language" or "D'ziriak (understanding only...)".
-  const plain = l => /^[A-Z][A-Za-z' -]{1,24}$/.test(l) && !/\b(or|and|any|one|choice|polyglot)\b/i.test(l);
+  const plain = l => /^[A-Z][A-Za-z' -]{1,24}$/.test(l) && !/\b(or|and|any|one|choice)\b/i.test(l);
   for (const r of races) for (const l of [...(r.languages?.starting || []), ...(r.languages?.bonus || [])]) if (plain(l)) names.add(l);
   return [...names].filter(l => !SECRET.has(l)).sort((a, b) => a.localeCompare(b));
 }

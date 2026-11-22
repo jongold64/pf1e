@@ -123,6 +123,9 @@ choices. `kind` (`school`, `patron`, `spirit`, `order`, `eidolon-subtype`, `base
 `class_skills`, `spells` ([{ `level`, `name` }]) with `spells_by` (`class` or `spell` level), `powers` ([{ `name`, `level`,
 `text` }]), `hexes` (a spirit's hex names).
 
+**Language** (`languages.json`): `name`, `secret` (true for Druidic: not learned with bonus languages or Linguistics),
+`source` (the Foundry VTT pf1 list of Golarion languages, or the PSRD book whose stat blocks name it).
+
 916 of 1,227 feats have prerequisites that are fully machine-readable. The rest include at least one
 `other` entry, such as "Small size or smaller" or "proficiency with the selected weapon".
 
