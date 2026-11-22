@@ -2468,6 +2468,7 @@ It does a thing. More.` });
   check('XP two levels ahead: Classes and Character tabs flagged', [t.classes, !!t.build].join('|'), 'Your XP reaches level 7: add 2 levels|true');
   check('XP level-up joins other class choices', tabsToDo({ classChoicesLeft: 1, levelsBehind: 1, xpLevel: 6 }).classes, '1 class choice to make; your XP reaches level 6: add 1 level');
   check('no level-up without a class', tabsToDo({ noClass: true, levelsBehind: 1, xpLevel: 2 }).build, undefined);
+  check('languages to choose flag the Build tab', tabsToDo({ languagesLeft: 2 }).character, '2 languages to choose (Race card)');
 }
 {
   const { xpProgress, XP_TABLE } = await import('./rules.js');

@@ -2,7 +2,7 @@
 // tested on its own.
 //
 // left: what is still to do, all numbers (0 when done) except noRace / noClass:
-//   noRace, raceFeatsLeft (a racial bonus feat's skill or weapon not chosen), pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
+//   noRace, raceFeatsLeft (a racial bonus feat's skill or weapon not chosen), languagesLeft (bonus languages not chosen), pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
 //   noClass, classChoicesLeft, ranksLeft (negative is too many), featsLeft, traitsLeft, spellsLeft (spells known not
 //   chosen), noSpells (a caster with no spells chosen at all), levelsBehind (levels the character's XP reaches beyond
 //   the levels taken), xpLevel (the level that XP reaches).
@@ -13,7 +13,11 @@ export function tabsToDo(left = {}, names = {}) {
   const n = (count, one, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
   const which = list => (list?.length ? ` (${list.join(', ')})` : '');
   if (left.noRace) out.character = 'Choose a race';
-  else if (left.raceFeatsLeft > 0) out.character = `${n(left.raceFeatsLeft, 'racial bonus feat choice')} to make${which(names.raceFeats)}`;
+  else {
+    const race = [left.raceFeatsLeft > 0 && `${n(left.raceFeatsLeft, 'racial bonus feat choice')} to make${which(names.raceFeats)}`,
+      left.languagesLeft > 0 && `${n(left.languagesLeft, 'language')} to choose (Race card)`].filter(Boolean);
+    if (race.length) out.character = race.join('; ');
+  }
   const abilities = [];
   if (left.pointsLeft > 0) abilities.push(`${n(left.pointsLeft, 'point')} left to spend`);
   if (left.pointsLeft < 0) abilities.push(`${n(-left.pointsLeft, 'point')} over budget`);

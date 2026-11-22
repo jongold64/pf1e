@@ -1317,3 +1317,6 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .xp-levels button { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; font-size: 1.1rem; text-align: left; }
 .xp-levels button.mine { border: 2px solid var(--accent); }
 .xp-levels button.xp-here { background: var(--accent); color: #fff; }
+
+.race-langs { margin: 8px 0; }
+.race-langs button { margin-left: 6px; }

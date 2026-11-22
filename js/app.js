@@ -1568,6 +1568,7 @@ function buildControls() {
       taken ? [{ label: 'Remove it', run: () => update({ alternates: state.alternates.filter(n => n !== a.name) }) }]
         : conflict ? [] : [{ label: `Take ${a.name}`, primary: true, run: () => update({ alternates: [...state.alternates, a.name] }) }]);
   });
+  $('race-languages').addEventListener('click', e => { if (e.target.closest('[data-race-langs]')) popLanguages(); });
   $('race-feats').addEventListener('change', e => {
     const trait = e.target.dataset.raceFeat;
     if (trait === undefined) return;
@@ -2688,6 +2689,19 @@ function renderRaceFeats() {
       <select data-race-feat="${esc(f.trait)}"><option value="">Choose…</option>${opts.map(([v, n]) =>
         `<option value="${esc(v)}"${v === f.value ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`;
   }).join('');
+}
+
+// Languages (Race card): the ones the character speaks, how many more there's room for (Intelligence bonus and
+// Linguistics ranks), and Choose, which opens the Languages popup (also on the Character tab's banner).
+function renderRaceLanguages() {
+  const L = view.languages;
+  const box = $('race-languages');
+  if (!L || !state.race) { box.innerHTML = ''; return; }
+  const more = L.slots - L.picks.length;
+  box.innerHTML = `<p class="race-langs"><b>Languages:</b> ${esc(L.known.join(', ') || 'none listed')}
+    ${more > 0 ? `<small class="muted">(${more} more to choose: ${L.intCount} for Intelligence, ${L.linguistics} for Linguistics ranks)</small>` : ''}
+    ${L.problems.length ? '<small class="warning">⚠ too many chosen</small>' : ''}
+    <button type="button" data-race-langs>Choose languages</button></p>`;
 }
 
 function renderAlternates(baseRace) {
@@ -3849,6 +3863,7 @@ function render() {
 
   renderAlternates(data.races.find(r => r.id === state.race));
   renderRaceFeats();
+  renderRaceLanguages();
   renderFaith();
   renderClasses(view);
   renderCharacterBar();
@@ -4019,6 +4034,7 @@ function renderTabTodo() {
   const todo = tabsToDo({
     noRace: !race,
     raceFeatsLeft: view.raceFeats.filter(f => !f.value).length,
+    languagesLeft: view.languages ? Math.max(0, view.languages.slots - view.languages.picks.length) : 0,
     pointsLeft: state.budget === 'custom' ? 0 : state.budget - pointsSpent(state.base),
     increasesLeft: state.increases.slice(0, reached).filter(a => !a).length,
     flexibleLeft: (race?.flexible_ability_bonus && !ABILITIES.includes(state.flexible) ? 1 : 0)
