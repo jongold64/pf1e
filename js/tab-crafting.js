@@ -14,7 +14,7 @@ import { weaponLabel } from './weapons.js';
 import { rollButton } from './roll-ui.js';
 
 const HIGH = { str: 30, dex: 30, con: 30, int: 30, wis: 30, cha: 30 };
-const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0, free: false,
+const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0, free: false, charges: 50,
                            itemId: '', option: '', rushed: false, confirmed: new Set(), extraUnmet: 0, message: '',
                            wsearch: '', wslot: '', ssearch: '' });
 
@@ -226,16 +226,20 @@ function plan(app, list, c) {
       why: { price: spellWhy, cost: [...spellWhy, { label: 'Market price', text: formatGp(price.base) },
         ...(buying ? [] : [{ label: 'Making it costs half', text: formatGp(craftCost(price.base)) }])], base: price.base },
       title: `${info.label} of ${spell.name} (caster level ${cl})`, feat: CRAFT_FEATS[form.spellKind], itemCL: cl, clRange: [min, max],
-      base: price.base, market: price.base, cost: buying ? price.base : craftCost(price.base), errors, reqs: [], mandatory: [],
+      base: price.base, market: price.base,
+      cost: buying ? (form.spellKind === 'wand' && form.charges < 50 ? Math.round(price.base * form.charges / 50 * 100) / 100 : price.base) : craftCost(price.base),
+      errors, reqs: [], mandatory: [],
       note: `${info.label} price: ${info.perLevel} gp × spell level ${sl === 0 ? '0 (counts as ½)' : sl}${clsNote ? ` (${clsNote})` : ''} × caster level ${cl}`
-        + (buying ? '.' : '; making it costs half.')
+        + (buying ? (form.spellKind === 'wand' && form.charges < 50 ? `; with ${form.charges} of 50 charges, ${form.charges}/50 of that.` : '.') : '; making it costs half.')
         + (!buying && spell.components && /\bM\b|\bF\b/.test(spell.components) ? ' Material components or a focus the spell needs are extra.' : ''),
       apply: () => {
         const items = state.craftedItems.map(x => ({ ...x }));
         const free = buying && form.free;
-        const same = items.find(x => x.kind === form.spellKind && x.spellId === spell.id && x.cl === cl && !!x.bought === buying && !!x.free === free);
+        const partial = buying && form.spellKind === 'wand' && form.charges < 50 ? form.charges : null;
+        const same = !partial && items.find(x => x.kind === form.spellKind && x.spellId === spell.id && x.cl === cl && !!x.bought === buying && !!x.free === free && !x.startCharges);
         if (same) same.qty += 1;
-        else items.push({ kind: form.spellKind, spellId: spell.id, spellName: spell.name, spellLevel: sl, cl, qty: 1, ...(buying ? { bought: true } : {}), ...(free ? { free: true } : {}) });
+        else items.push({ kind: form.spellKind, spellId: spell.id, spellName: spell.name, spellLevel: sl, cl, qty: 1, ...(buying ? { bought: true } : {}), ...(free ? { free: true } : {}),
+          ...(partial ? { startCharges: partial, charges: partial } : {}) });
         app.update({ craftedItems: items });
       },
     };
@@ -438,7 +442,9 @@ function kindControls(app, list, p, c) {
       .map(n => `<option value="${n}"${n === p.itemCL ? ' selected' : ''}>${n}</option>`).join('')}</select></label>${info('cl', 'What the caster level changes')}` : '';
     const search = `<label>Search <input type="search" data-craft="ssearch" value="${esc(form.ssearch || '')}" placeholder="Spell, e.g. cure light" autocomplete="off"></label>`;
     const spellPick = `<label>Spell <select data-craft="spell">${spellOptions(app, c, list)}</select></label>${form.spell ? info('spell', 'The spell') : ''}`;
-    if (c.mode === 'buy') return `${kindSelect}${search}${spellPick}${clInput}`;
+    // A wand bought or found with fewer than 50 charges costs that much less.
+    const chargesInput = form.spellKind === 'wand' ? `<label>Charges <input type="number" data-craft="charges" min="1" max="50" step="1" inputmode="numeric" value="${form.charges || 50}"></label>` : '';
+    if (c.mode === 'buy') return `${kindSelect}${search}${spellPick}${clInput}${chargesInput}`;
     return `${kindSelect}${search}${spellPick}${clInput}
       ${list.some(x => x.spontaneous) ? '<p class="hint">Sorcerers, bards and other spontaneous casters can use only spells they know: add them under My spells on the Spells tab.</p>' : ''}`;
   }
@@ -638,6 +644,7 @@ function initCard(app, c) {
     else if (k === 'wsearch' || k === 'ssearch') return;
     else if (k === 'rushed') form.rushed = t.checked;
     else if (k === 'free') form.free = t.checked;
+    else if (k === 'charges') form.charges = Math.max(1, Math.min(50, Math.round(Number(t.value)) || 50));
     else if (t.dataset.craftOption !== undefined) form.abilities[Number(t.dataset.craftOption)].option = t.value;
     else if (t.dataset.craftConfirm !== undefined) {
       const i = Number(t.dataset.craftConfirm);

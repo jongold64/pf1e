@@ -112,7 +112,9 @@ export function craftedItemPrice(e) {
 export function craftedItemCost(e) {
   // (Found or a gift: free.)
   if (e.free) return 0;
-  return e.bought ? craftedItemPrice(e) : craftCost(craftedItemPrice(e));
+  // A wand bought with fewer than 50 charges: in proportion.
+  return e.bought ? (e.kind === 'wand' && Number.isInteger(e.startCharges) && e.startCharges < 50 ? Math.round(craftedItemPrice(e) * e.startCharges / 50 * 100) / 100 : craftedItemPrice(e))
+    : craftCost(craftedItemPrice(e));
 }
 
 // Cost to make: half the base price, plus anything paid in full (the masterwork weapon or armor).

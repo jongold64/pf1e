@@ -1335,3 +1335,6 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 
 .make-project progress { width: min(320px, 60%); vertical-align: middle; }
 .make-project p { margin: 4px 0; }
+
+.charges-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.charges-row input { width: 5em; }

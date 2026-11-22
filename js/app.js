@@ -511,6 +511,9 @@ function load(saved) {
                  ...(e.crafted === true ? { crafted: true } : {}),
                  ...(e.free === true ? { free: true } : {}),
                  ...(e.off === true ? { off: true } : {}),
+                 // Charges left, and how many it was bought with (fewer than full: priced in proportion).
+                 ...(Number.isInteger(e.charges) && e.charges >= 0 && e.charges <= 999 ? { charges: e.charges } : {}),
+                 ...(Number.isInteger(e.startCharges) && e.startCharges > 0 && e.startCharges <= 999 ? { startCharges: e.startCharges } : {}),
                  ...(Array.isArray(e.on) && e.on.some(id => buffById.has(id)) ? { on: [...new Set(e.on.filter(id => buffById.has(id)))] } : {}),
                  ...(buffById.has(e.pick) ? { pick: e.pick } : {}) }));
   const FLAGS = ['masterwork', 'focus', 'greaterFocus', 'spec', 'greaterSpec', 'impCrit', 'proficient', 'crafted', 'jotungrip', 'lace', 'free'];
@@ -540,7 +543,8 @@ function load(saved) {
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
       && Number.isInteger(e.spellLevel) && Number.isInteger(e.cl) && e.cl > 0 && Number.isInteger(e.qty) && e.qty > 0)
-    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought, free, charges }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
+    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought, free, charges, startCharges }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
+                                                                          ...(kind === 'wand' && Number.isInteger(startCharges) && startCharges > 0 && startCharges < 50 ? { startCharges } : {}),
                                                                           ...(bought === true ? { bought: true } : {}),
                                                                           ...(free === true ? { free: true } : {}),
                                                                           // A wand's charges left (50 when new).

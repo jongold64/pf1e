@@ -1,7 +1,7 @@
 // Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
 // side panel for the item being looked at.
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs } from './equipment.js';
+import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs, maxCharges, chargedPrice } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem, openBuyKind, showBuyCard } from './tab-crafting.js';
 import { renderCustomBuilder, customRowsHtml, initCustomItems } from './tab-custom-items.js';
@@ -20,13 +20,24 @@ function addButtons(item) {
     return '<p class="hint">Special abilities are added to a magic weapon or armor, so they can\'t be owned on their own.</p>';
   }
   const options = item.price_options || [];
+  const max = maxCharges(item);
+  const n = chargesFor(item);
+  const priced = gp => esc(formatGp(chargedPrice(gp, n, max)));
   const buttons = options.length
     ? options.map(o => `<button type="button" class="primary" data-add-item="${esc(item.id)}" data-option="${esc(o.label)}">
-        Add ${esc(o.label)} (${esc(formatGp(o.price_gp))})</button>`).join('')
-    : `<button type="button" class="primary" data-add-item="${esc(item.id)}">Add to my magic items</button>`;
+        Add ${esc(o.label)} (${priced(o.price_gp)})</button>`).join('')
+    : `<button type="button" class="primary" data-add-item="${esc(item.id)}">Add to my magic items${item.price_gp && max && n < max ? ` (${priced(item.price_gp)})` : ''}</button>`;
   const craft = itemKind(item) ? `<button type="button" data-craft-item="${esc(item.id)}">Craft this item</button>` : '';
-  return `${freeBuyBox()}<div class="slot-buttons">${buttons}${craft}</div>`;
+  return `${chargesBox(item)}${freeBuyBox()}<div class="slot-buttons">${buttons}${craft}</div>`;
 }
+// Charges to buy an item with (wands' are on the Add magic gear card): full unless changed; fewer cost proportionally less.
+let buyCharges = { id: '', n: 0 };
+const chargesFor = item => (buyCharges.id === item.id ? buyCharges.n : maxCharges(item));
+const chargesBox = item => {
+  const max = maxCharges(item);
+  return max ? `<label class="charges-row">Charges <input type="number" data-buy-charges="${esc(item.id)}" min="1" max="${max}" step="1" inputmode="numeric" value="${chargesFor(item)}">
+    <small class="muted">of ${max}${chargesFor(item) < max ? ': the price is in proportion' : ''}</small></label>` : '';
+};
 // Buy for free (found or a gift): ticked, Add puts the item in My magic items marked free. Kept while the page is open.
 let freeBuy = false;
 const freeBuyBox = () => `<label class="check-row"><input type="checkbox" data-free-buy${freeBuy ? ' checked' : ''}> Buy for free (found or a gift: no gold)</label>`;
@@ -87,11 +98,12 @@ function popItem(app, id) {
   const actions = [];
   if (ownable(item)) {
     const options = item.price_options || [];
-    if (options.length) options.forEach((o, n) => actions.push({ label: `Add ${o.label} (${formatGp(o.price_gp)})`, primary: n === 0, run: () => addItem(app, item.id, o.label) }));
+    const priced = gp => formatGp(chargedPrice(gp, chargesFor(item), maxCharges(item)));
+    if (options.length) options.forEach((o, n) => actions.push({ label: `Add ${o.label} (${priced(o.price_gp)})`, primary: n === 0, run: () => addItem(app, item.id, o.label) }));
     else actions.push({ label: 'Add to my magic items', primary: true, run: () => addItem(app, item.id) });
   }
   if (itemKind(item)) actions.push({ label: 'Craft this item', run: () => craftListedItem(app, item.id) });
-  app.openDetail(item.name, `${itemDetails(item, false)}${ownable(item) ? freeBuyBox() : ''}`, actions);
+  app.openDetail(item.name, `${itemDetails(item, false)}${ownable(item) ? `${chargesBox(item)}${freeBuyBox()}` : ''}`, actions);
 }
 
 function itemDetails(item, withButtons = true) {
@@ -157,7 +169,8 @@ export function renderMyItems(app) {
     const item = byId.get(e.id);
     if (!item) return '';
     const s = magicItemStats(item, e.option);
-    const each = e.free ? 0 : e.crafted ? listedCost(item, e.option || null, s.price_gp) : s.price_gp;
+    const maxC = maxCharges(item);
+    const each = e.free ? 0 : e.crafted ? listedCost(item, e.option || null, s.price_gp) : chargedPrice(s.price_gp, e.startCharges, maxC);
     const name = entryName(item, e.option);
     const fromConstruction = e.crafted && item.construction?.cost && each !== null && s.price_gp !== null && each !== s.price_gp / 2;
     itemWhy.set(`l-${i}`, { title: name, rows: [
@@ -177,6 +190,7 @@ export function renderMyItems(app) {
         <input type="checkbox" data-src-worn="m:${i}"${e.off ? '' : ' checked'} aria-label="${esc(name)} worn (its bonuses count in Active effects)" title="Worn: its bonuses count">
         <button type="button" class="link item-link line-name" data-show-item="${esc(item.id)}">${esc(name)}</button>
         ${slot ? `<span class="wl-k">${esc(slot)}</span>` : ''}${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
+        ${maxC ? `<span class="wl-k">${e.charges ?? maxC}/${maxC} charges</span><button type="button" data-item-charge="${i}" data-step="-1"${(e.charges ?? maxC) > 0 ? '' : ' disabled'} aria-label="Use a charge of ${esc(name)}">Use 1</button>` : ''}
         <span class="wl-part"><b>${esc(each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}</b></span>
         <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
         ${s.price_gp ? sellButton(`data-item-sell="${i}"`, name) : ''}
@@ -192,6 +206,10 @@ export function renderMyItems(app) {
             <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
           <span>Cost ${esc(e.free ? 'free' : each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</span>
           ${freeBox(`data-item-free="${i}"`, e.free)}
+          ${maxC ? `<span class="base">Charges
+            <button type="button" data-item-charge="${i}" data-step="-1" aria-label="One charge fewer">−</button>
+            <span class="value">${e.charges ?? maxC}</span>
+            <button type="button" data-item-charge="${i}" data-step="1" aria-label="One charge more">+</button></span>` : ''}
         </div></div></div>`;
   }).join('') + app.state.craftedItems.map((e, i) => {
     const info = SPELL_ITEMS[e.kind];
@@ -210,7 +228,7 @@ export function renderMyItems(app) {
     const open = openLines.has(key);
     return `<div class="line-card"><div class="fit-line item-line">
         <span class="line-name">${esc(name)}</span>
-        <span class="wl-k">caster level ${e.cl}</span>${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
+        <span class="wl-k">caster level ${e.cl}${e.kind === 'wand' ? ` · ${e.charges ?? 50}/50 charges` : ''}</span>${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
         <span class="wl-part"><b>${esc(formatGp(craftedItemCost(e) * e.qty))}</b></span>
         ${sellButton(`data-made-sell="${i}"`, name)}
         <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(name)}" title="Details">?</button></div>
@@ -240,9 +258,14 @@ export function renderMyItems(app) {
 
 function addItem(app, id, option) {
   const owned = app.state.magicItems.map(e => ({ ...e }));
-  const existing = owned.find(e => e.id === id && (e.option || null) === (option || null) && !!e.free === freeBuy && !e.crafted);
+  const item = app.data.itemsById.get(id);
+  const max = item && maxCharges(item);
+  const n = item && max ? chargesFor(item) : null;
+  // An item with charges is its own line (each keeps count of its charges); fewer than full are priced in proportion.
+  const existing = !max && owned.find(e => e.id === id && (e.option || null) === (option || null) && !!e.free === freeBuy && !e.crafted);
   if (existing) existing.qty += 1;
-  else owned.push({ id, ...(option ? { option } : {}), qty: 1, ...(freeBuy ? { free: true } : {}) });
+  else owned.push({ id, ...(option ? { option } : {}), qty: 1, ...(freeBuy ? { free: true } : {}),
+    ...(max ? { charges: n, ...(n < max ? { startCharges: n } : {}) } : {}) });
   app.update({ magicItems: owned });
 }
 
@@ -304,6 +327,25 @@ export function initItemsTab(app) {
   for (const box of [$('item-panel'), $('detail-body')]) {
     box.addEventListener('change', e => { if (e.target.matches('[data-free-buy]')) freeBuy = e.target.checked; });
   }
+  // Charges to buy with, in the side panel or an item's popup.
+  for (const box of [$('item-panel'), $('detail-body')]) {
+    box.addEventListener('change', e => {
+      const c = e.target.closest('[data-buy-charges]');
+      if (!c) return;
+      const item = app.data.itemsById.get(c.dataset.buyCharges);
+      buyCharges = { id: item.id, n: Math.max(1, Math.min(maxCharges(item), Math.round(Number(c.value)) || maxCharges(item))) };
+      if (box === $('item-panel')) renderPanel(app); else popItem(app, item.id);
+    });
+  }
+  // Using up (or putting back) a charge of an item in My magic items.
+  $('my-items-rows').addEventListener('click', e => {
+    const ch = e.target.closest('[data-item-charge]');
+    if (!ch) return;
+    const i = Number(ch.dataset.itemCharge);
+    const it = app.data.itemsById.get(app.state.magicItems[i].id);
+    const max = maxCharges(it);
+    app.update({ magicItems: app.state.magicItems.map((x, j) => (j === i ? { ...x, charges: Math.max(0, Math.min(max, (x.charges ?? max) + Number(ch.dataset.step))) } : x)) });
+  });
   $('item-panel').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-item]');
     if (btn) addItem(app, btn.dataset.addItem, btn.dataset.option);
@@ -331,8 +373,8 @@ export function initItemsTab(app) {
       const x = app.state.magicItems[i];
       const item = app.data.itemsById.get(x.id);
       const s = magicItemStats(item, x.option);
-      const paid = x.free ? 0 : x.crafted ? listedCost(item, x.option || null, s.price_gp) : s.price_gp;
-      sellItem(app, { name: entryName(item, x.option), value: s.price_gp, paid, kind: 'magic' },
+      const paid = x.free ? 0 : x.crafted ? listedCost(item, x.option || null, s.price_gp) : chargedPrice(s.price_gp, x.startCharges, maxCharges(item));
+      sellItem(app, { name: entryName(item, x.option), value: chargedPrice(s.price_gp, x.charges, maxCharges(item)), paid, kind: 'magic' },
         { magicItems: app.state.magicItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
       return;
     }
@@ -340,7 +382,7 @@ export function initItemsTab(app) {
     if (msell) {
       const i = Number(msell.dataset.madeSell);
       const x = app.state.craftedItems[i];
-      sellItem(app, { name: `${SPELL_ITEMS[x.kind].label} of ${x.spellName}`, value: craftedItemPrice(x), paid: craftedItemCost(x), kind: 'magic' },
+      sellItem(app, { name: `${SPELL_ITEMS[x.kind].label} of ${x.spellName}`, value: x.kind === 'wand' ? Math.round(craftedItemPrice(x) * (x.charges ?? 50) / 50 * 100) / 100 : craftedItemPrice(x), paid: craftedItemCost(x), kind: 'magic' },
         { craftedItems: app.state.craftedItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
       return;
     }

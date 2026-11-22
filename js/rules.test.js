@@ -2449,6 +2449,17 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Charges.
+{
+  const { maxCharges, chargedPrice } = await import('./equipment.js');
+  const { craftedItemCost } = await import('./crafting.js');
+  check('charges: a staff 10, ring of the ram 50, a cube of force (renews) none, staff of the magi 50',
+    [maxCharges({ category: 'Staves', description: 'A staff.' }), maxCharges({ category: 'Rings', description: 'A newly created ring has 50 charges. When all the charges are expended, the ring is useless.' }),
+     maxCharges({ category: 'Wondrous Items', description: 'The cube has 36 charges when fully charged-charges used are automatically renewed each day.' }),
+     maxCharges({ category: 'Artifacts', description: 'Like a normal staff, a staff of the magi holds 50 charges and cannot be recharged normally.' })].join(), '10,50,,50');
+  check('a staff with 4 of 10 charges: 40% of the price', chargedPrice(14800, 4, 10), 5920);
+  check('a wand of cure light wounds with 20 charges: 300 gp', craftedItemCost({ kind: 'wand', spellLevel: 1, cl: 1, bought: true, startCharges: 20 }), 300);
+}
 // Custom weapons.
 {
   const { sizeDice, customWeaponRecord, tidyCustomWeapons } = await import('./custom-weapons.js');

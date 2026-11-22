@@ -78,6 +78,26 @@ export function ownable(item) {
 }
 
 // Cost and weight of owned magic items ([{ id, option, qty }]).
+// Charges a listed magic item is made with, or null when it has none that run out: a staff 10 (or what its text says:
+// a staff of the magi 50), and items whose text gives a number of charges that aren't renewed each day (a ring of the
+// ram 50). Charges that come back each day (a cube of force) don't count.
+const CHARGES = /(?:has|with|holds|contains|stores|possesses) (?:up to )?(\d+) charges/i;
+export function maxCharges(item) {
+  const d = String(item?.description || '');
+  const m = CHARGES.exec(d);
+  const n = m ? Number(m[1]) : null;
+  if (m) {
+    const after = d.slice(m.index, m.index + 140).toLowerCase();
+    const renews = /(renew|refresh|restor|regenerat|replenish)/.test(after) && !/(can't|cannot|can not|impossible to)( be)? recharg/.test(after);
+    if (!renews && n > 1) return n;
+  }
+  return item?.category === 'Staves' ? 10 : null;
+}
+// A price for an item bought with fewer charges than it's made with: in proportion (Core Rulebook: an item found with
+// fewer charges is worth proportionally less). charges: how many; max: when full.
+export const chargedPrice = (price, charges, max) => (price === null || price === undefined || !max || !Number.isFinite(charges) || charges >= max
+  ? price : Math.round(price * Math.max(0, charges) / max * 100) / 100);
+
 export function magicItemTotals(owned, itemsById) {
   let cost = 0;
   let weight = 0;
@@ -87,7 +107,8 @@ export function magicItemTotals(owned, itemsById) {
     if (!item) continue;
     const { price_gp, weight_lbs } = magicItemStats(item, entry.option);
     // A crafted item costs its creation cost (its "Cost" line, else half the price).
-    const each = entry.free ? 0 : entry.crafted ? listedCost(item, entry.option || null, price_gp) : price_gp;
+    // (Bought with fewer charges: in proportion.)
+    const each = entry.free ? 0 : entry.crafted ? listedCost(item, entry.option || null, price_gp) : chargedPrice(price_gp, entry.startCharges, maxCharges(item));
     if (each === null || each === undefined) unpriced.push(item.name); else cost += each * entry.qty;
     weight += (weight_lbs || 0) * entry.qty;
   }
