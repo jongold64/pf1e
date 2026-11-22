@@ -4,7 +4,8 @@
 // left: what is still to do, all numbers (0 when done) except noRace / noClass:
 //   noRace, raceFeatsLeft (a racial bonus feat's skill or weapon not chosen), pointsLeft (point buy; negative is over budget), increasesLeft, flexibleLeft (racial +2 not chosen),
 //   noClass, classChoicesLeft, ranksLeft (negative is too many), featsLeft, traitsLeft, spellsLeft (spells known not
-//   chosen), noSpells (a caster with no spells chosen at all).
+//   chosen), noSpells (a caster with no spells chosen at all), levelsBehind (levels the character's XP reaches beyond
+//   the levels taken), xpLevel (the level that XP reaches).
 // names: optional { feats: [slot labels], raceFeats: [trait names] } to say which ones.
 // Returns { tabId: 'why' } for each tab with something left (tab ids as in index.html: 'character' is the Build tab).
 export function tabsToDo(left = {}, names = {}) {
@@ -21,6 +22,12 @@ export function tabsToDo(left = {}, names = {}) {
   if (abilities.length) out.abilities = abilities.join('; ');
   if (left.noClass) out.classes = 'Choose a class';
   else if (left.classChoicesLeft > 0) out.classes = `${n(left.classChoicesLeft, 'class choice')} to make`;
+  // XP enough for a new level: add it on the Classes tab (and the Character tab says so too); its new choices then show here.
+  if (left.levelsBehind > 0 && !left.noClass) {
+    const up = `your XP reaches level ${left.xpLevel}: add ${n(left.levelsBehind, 'level')}`;
+    out.classes = out.classes ? `${out.classes}; ${up}` : up[0].toUpperCase() + up.slice(1);
+    out.build = `Level up: ${up} (Classes tab, or XP on the banner)`;
+  }
   if (left.ranksLeft > 0) out.skills = `${n(left.ranksLeft, 'skill rank')} left to spend`;
   if (left.ranksLeft < 0) out.skills = `${n(-left.ranksLeft, 'skill rank')} too many`;
   const feats = [];

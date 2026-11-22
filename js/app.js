@@ -1085,6 +1085,9 @@ function initBuild() {
   });
   // The XP and Wealth popups: their buttons change the numbers and the popup shows them again.
   $('detail-body').addEventListener('click', e => {
+    // Level up from the XP popup: one more level of that class.
+    const add = e.target.closest('.xp-pop [data-xp-addlevel]');
+    if (add) { if (state.classLevels.length < 20) update({ classLevels: [...state.classLevels, add.dataset.xpAddlevel] }); popXp(); return; }
     // A level tapped: the XP at the start of that level.
     const lv = e.target.closest('.xp-pop [data-xp-level]');
     if (lv) { update({ xp: XP_TABLE[state.xpTrack][Number(lv.dataset.xpLevel) - 1] }); popXp(); return; }
@@ -3987,6 +3990,8 @@ function renderTabTodo() {
     traitsLeft: state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length < traitSlots
       ? traitSlots - state.traits.slice(0, traitSlots).filter(id => data.traitsById.has(id)).length : 0,
     ...spellsLeftToChoose(app, view),
+    // XP entered that reaches a level the character hasn't taken yet.
+    ...(state.xp !== null && state.classLevels.length ? (p => ({ levelsBehind: Math.max(0, p.reached - state.level), xpLevel: p.reached }))(xpProgress(state.xp, state.level, state.xpTrack)) : {}),
   }, {
     feats: view.slots.filter(s => !data.featsById.has(state.feats[s.id])).map(s => s.label),
     raceFeats: view.raceFeats.filter(f => !f.value).map(f => f.trait),
@@ -4445,7 +4450,10 @@ function popXp() {
   const n = x => x.toLocaleString('en-US');
   openDetail('Experience', `<div class="xp-pop">
     <p><b>${n(p.xp)} XP</b> · level ${state.level}${p.next === null ? ' (the highest)' : ` · ${ORD_WORD(state.level + 1)} level at ${n(p.next)} (${p.toGo ? `${n(p.toGo)} to go` : 'reached'})`}</p>
-    ${p.ready ? `<p class="b-ready">Enough for ${ORD_WORD(p.reached)} level: add the level on the Build tab.</p>` : ''}
+    ${p.ready ? `<p class="b-ready">Enough for ${ORD_WORD(p.reached)} level: add ${p.reached - state.level > 1 ? `${p.reached - state.level} levels` : 'the level'} here or on the Classes tab.
+      Its new choices (feats, skill ranks, ability increase, class features, spells) then show in red on their tabs.</p>
+      <div class="line-controls">${[...new Set(state.classLevels)].map(id => data.classes.find(c => c.id === id)).filter(Boolean)
+        .map(c => `<button type="button" class="primary" data-xp-addlevel="${esc(c.id)}">+ Add a ${esc(c.name)} level</button>`).join('')}</div>` : ''}
     <div class="line-controls"><button type="button" class="primary" data-xp="add">Add XP</button><button type="button" data-xp="sub">Take off</button>
       <button type="button" data-xp="set">Set total</button></div>
     <label>Track <select id="xp-track">${['slow', 'medium', 'fast'].map(k => `<option value="${k}"${k === state.xpTrack ? ' selected' : ''}>${k}</option>`).join('')}</select></label>

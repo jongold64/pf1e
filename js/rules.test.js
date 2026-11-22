@@ -2451,6 +2451,13 @@ It does a thing. More.` });
 
 // Experience.
 {
+  const { tabsToDo } = await import('./tab-todo.js');
+  const t = tabsToDo({ levelsBehind: 2, xpLevel: 7 });
+  check('XP two levels ahead: Classes and Character tabs flagged', [t.classes, !!t.build].join('|'), 'Your XP reaches level 7: add 2 levels|true');
+  check('XP level-up joins other class choices', tabsToDo({ classChoicesLeft: 1, levelsBehind: 1, xpLevel: 6 }).classes, '1 class choice to make; your XP reaches level 6: add 1 level');
+  check('no level-up without a class', tabsToDo({ noClass: true, levelsBehind: 1, xpLevel: 2 }).build, undefined);
+}
+{
   const { xpProgress, XP_TABLE } = await import('./rules.js');
   check('XP: medium track 9,000 for 4th level, 3.6 million for 20th', [XP_TABLE.medium[3], XP_TABLE.medium[19]].join(), '9000,3600000');
   const p = xpProgress(12000, 4);
