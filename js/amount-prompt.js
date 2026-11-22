@@ -1,5 +1,5 @@
 // A small box that asks for an amount after a button is pressed (Damage, Heal, Add XP, Add gold...): type it (the
-// keyboard opens on the tablet), then OK or Enter; Cancel or Esc gives null. It opens over any other popup.
+// keyboard opens on the tablet) or step it with − and +, then OK or Enter; Cancel or Esc gives null. It opens over any other popup.
 // askAmount({ title, label, ok, value, decimals, roll, hint }) -> Promise<number | null>. roll: a function giving a
 // number for a Roll button (temporary hit points from a spell).
 import { esc } from './dom.js';
@@ -15,12 +15,19 @@ export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', deci
     }
     d.innerHTML = `<form method="dialog">
       <h3>${esc(title)}</h3>
-      <label>${esc(label)} <input type="number" id="amount-input" inputmode="${decimals ? 'decimal' : 'numeric'}" min="0" step="${decimals ? '0.01' : '1'}" value="${esc(String(value ?? ''))}"></label>
+      <label for="amount-input">${esc(label)}</label>
+      <div class="amount-row"><button type="button" class="amount-step" data-amount-step="-1" aria-label="One less">−</button>
+        <input type="number" id="amount-input" inputmode="${decimals ? 'decimal' : 'numeric'}" min="0" step="${decimals ? '0.01' : '1'}" value="${esc(String(value ?? ''))}">
+        <button type="button" class="amount-step" data-amount-step="1" aria-label="One more">+</button></div>
       ${hint ? `<p class="hint">${esc(hint)}</p>` : ''}
       <div class="line-controls"><button value="ok" class="primary">${esc(ok)}</button>${roll ? '<button type="button" data-amount-roll>Roll</button>' : ''}
         <button type="button" data-amount-cancel>Cancel</button></div></form>`;
     const input = d.querySelector('#amount-input');
     d.querySelector('[data-amount-cancel]').onclick = () => d.close('cancel');
+    // − and + (the tablet shows no arrows in a number box): one less or one more, never below 0.
+    for (const b of d.querySelectorAll('[data-amount-step]')) {
+      b.onclick = () => { input.value = String(Math.max(0, Math.trunc(Number(input.value) || 0) + Number(b.dataset.amountStep))); };
+    }
     const rb = d.querySelector('[data-amount-roll]');
     if (rb) rb.onclick = () => { input.value = String(roll()); input.focus(); };
     d.returnValue = '';
