@@ -24,9 +24,21 @@ export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', deci
         <button type="button" data-amount-cancel>Cancel</button></div></form>`;
     const input = d.querySelector('#amount-input');
     d.querySelector('[data-amount-cancel]').onclick = () => d.close('cancel');
-    // − and + (the tablet shows no arrows in a number box): one less or one more, never below 0.
+    // − and + (the tablet shows no arrows in a number box): one less or one more, never below 0. Held down, it keeps
+    // going: after a short pause, about seven steps a second.
+    const step = b => { input.value = String(Math.max(0, Math.trunc(Number(input.value) || 0) + Number(b.dataset.amountStep))); };
+    let wait = null, repeat = null;
+    const stop = () => { clearTimeout(wait); clearInterval(repeat); wait = repeat = null; };
     for (const b of d.querySelectorAll('[data-amount-step]')) {
-      b.onclick = () => { input.value = String(Math.max(0, Math.trunc(Number(input.value) || 0) + Number(b.dataset.amountStep))); };
+      b.onpointerdown = e => {
+        e.preventDefault();
+        stop();
+        step(b);
+        wait = setTimeout(() => { repeat = setInterval(() => step(b), 140); }, 450);
+      };
+      for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, stop);
+      // A tap or press already stepped on pointerdown; only the keyboard (Space or Enter on the button) steps here.
+      b.onclick = e => { if (e.detail === 0) step(b); };
     }
     const rb = d.querySelector('[data-amount-roll]');
     if (rb) rb.onclick = () => { input.value = String(roll()); input.focus(); };
@@ -35,6 +47,7 @@ export function askAmount({ title, label = 'Amount', ok = 'OK', value = '', deci
     let submitted = false;
     d.querySelector('form').onsubmit = () => { submitted = true; };
     d.onclose = () => {
+      stop();
       const n = Number(input.value);
       resolve(submitted && input.value !== '' && Number.isFinite(n) ? Math.abs(decimals ? Math.round(n * 100) / 100 : Math.trunc(n)) : null);
     };
