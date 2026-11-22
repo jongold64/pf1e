@@ -67,7 +67,8 @@ export function renderCustomBuilder(app, skills) {
     <p class="hint">Costs ${esc(formatGp(customItemPaid(draft)))}${draft.free ? ' (free)' : draft.crafted ? ' (crafted)' : ''}. Check new items with your GM: the table is a guide.</p>
     <div class="line-controls">
       <button type="button" class="primary" data-ci-save${draft.powers.length ? '' : ' disabled'}>${draft.id ? 'Save changes' : 'Add to my magic items'}</button>
-      <button type="button" data-ci-clear>${draft.id ? 'Stop changing it' : 'Clear'}</button></div></div>`;
+      <button type="button" data-ci-clear>${draft.id ? 'Stop changing it' : 'Clear'}</button>
+      <button type="button" data-ci-cancel>Cancel</button></div></div>`;
 }
 
 // The custom items in My magic items: worn box, name, slot, cost, Sell; Edit and Remove under "?".
@@ -118,6 +119,8 @@ export function initCustomItems(app, { skills, show }) {
     const rm = e.target.closest('[data-ci-remove]');
     if (rm) { draft.powers.splice(Number(rm.dataset.ciRemove), 1); redraw(); return; }
     if (e.target.closest('[data-ci-clear]')) { draft = freshDraft(); redraw(); return; }
+    // Cancel: cleared and closed.
+    if (e.target.closest('[data-ci-cancel]')) { draft = freshDraft(); adding = newPower('resistance'); box.hidden = true; document.querySelector('#add-buttons [data-add="custom"]')?.setAttribute('aria-pressed', 'false'); return; }
     if (e.target.closest('[data-ci-save]') && draft.powers.length) {
       const item = { ...draft, name: draft.name.trim() || 'Custom item', id: draft.id || `custom-${Date.now().toString(36)}`, qty: 1, off: false };
       const list = app.state.customItems;

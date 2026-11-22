@@ -281,7 +281,19 @@ function load(saved) {
   state.blastPlan = tidyBlastPlan(state.blastPlan);
   state.bladeStrike = state.bladeStrike === true;
   state.languages = tidyLanguages(state.languages);
-  state.noCharge = tidyNoCharge(state.noCharge);
+  // The "cost nothing" switches for a whole kind of purchase are gone: a save that used them keeps its gold, with
+  // each item of that kind marked free instead.
+  const nc = tidyNoCharge(state.noCharge);
+  if (nc.armor) { state.armorFree = !!state.armorId; state.shieldFree = !!state.shieldId; }
+  if (nc.gear) state.inventory = (state.inventory || []).map(e => ({ ...e, free: true }));
+  if (nc.gear) state.customGear = (state.customGear || []).map(e => ({ ...e, free: true }));
+  if (nc.weapons) state.weapons = (state.weapons || []).map(e => ({ ...e, free: true }));
+  if (nc.magic) {
+    state.magicItems = (state.magicItems || []).map(e => ({ ...e, free: true }));
+    state.craftedItems = (state.craftedItems || []).map(e => ({ ...e, free: true }));
+    state.customItems = (state.customItems || []).map(e => ({ ...e, free: true }));
+  }
+  state.noCharge = {};
   state.customItems = tidyCustomItems(state.customItems);
   state.craftProjects = tidyProjects(state.craftProjects);
   state.customGear = tidyCustomGear(state.customGear);
@@ -525,8 +537,9 @@ function load(saved) {
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'
       && Number.isInteger(e.spellLevel) && Number.isInteger(e.cl) && e.cl > 0 && Number.isInteger(e.qty) && e.qty > 0)
-    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought, charges }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
+    .map(({ kind, spellId, spellName, spellLevel, cl, qty, bought, free, charges }) => ({ kind, spellId, spellName, spellLevel, cl, qty,
                                                                           ...(bought === true ? { bought: true } : {}),
+                                                                          ...(free === true ? { free: true } : {}),
                                                                           // A wand's charges left (50 when new).
                                                                           ...(kind === 'wand' && Number.isInteger(charges) && charges >= 0 && charges <= 50 ? { charges } : {}) }));
   state.featChoices = Object.fromEntries(Object.entries(state.featChoices && typeof state.featChoices === 'object' ? state.featChoices : {})
@@ -1174,12 +1187,6 @@ function initBuild() {
   });
   $('detail-body').addEventListener('change', e => {
     if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
-    // A kind of purchase switched to cost nothing (or back).
-    if (e.target.matches('.wealth-pop [data-no-charge]')) {
-      const k = e.target.dataset.noCharge;
-      update({ noCharge: { ...state.noCharge, [k]: e.target.checked } });
-      popWealth();
-    }
     // Max starting gold (the house rule), from the Wealth popup or a class's popup on the Classes tab.
     if (e.target.matches('[data-max-gold]')) {
       update({ houseRules: { ...state.houseRules, maxGold: e.target.checked } });
@@ -4584,10 +4591,10 @@ async function popWealth() {
 // What's charged (the Wealth popup): a box for each kind of purchase to cost nothing, and gold adjustments by hand.
 function costRulesHtml(m) {
   const kinds = [['armor', 'Armor and shield'], ['gear', 'Equipment'], ['weapons', 'Weapons'], ['magic', 'Magic items']];
+  void kinds;
   return `<h3>Costs and adjustments</h3>
-    <p class="hint">Tick a kind of purchase to cost no gold (all of it given to you). One item at a time: its own <b>Free</b> box on its tab.</p>
-    <div class="cost-kinds">${kinds.map(([k, label]) => `<label class="check-row"><input type="checkbox" data-no-charge="${k}"${m.noCharge[k] ? ' checked' : ''}> ${label} cost nothing
-      <small class="muted">(listed ${esc(formatGp(m.listed[k]))})</small></label>`).join('')}</div>
+    <p class="hint">Something given to you? Tick its own <b>Free</b> box (under its ? on its tab), or <b>Buy for free</b> when adding it.
+      Gold you didn't really spend, or spent on something not on your lists, goes here:</p>
     ${state.costAdjust.length ? `<table class="skill-why"><tbody>${state.costAdjust.map((a, i) => `<tr><td>${esc(a.note || (a.gp > 0 ? 'Gold back' : 'Extra cost'))}</td>
       <td class="num">${a.gp > 0 ? '+' : '−'} ${esc(formatGp(Math.abs(a.gp)))}</td><td><button type="button" class="link" data-adjust-remove="${i}">remove</button></td></tr>`).join('')}</tbody></table>` : ''}
     <div class="line-controls"><button type="button" data-adjust="back">+ Gold back (not spent)</button><button type="button" data-adjust="more">+ Extra cost</button></div>`;

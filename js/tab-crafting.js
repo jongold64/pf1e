@@ -14,7 +14,7 @@ import { weaponLabel } from './weapons.js';
 import { rollButton } from './roll-ui.js';
 
 const HIGH = { str: 30, dex: 30, con: 30, int: 30, wis: 30, cha: 30 };
-const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0,
+const newForm = kind => ({ kind, weapon: 0, target: 'armor', enh: 1, abilities: [], spellKind: 'potion', spell: '', cl: 0, free: false,
                            itemId: '', option: '', rushed: false, confirmed: new Set(), extraUnmet: 0, message: '',
                            wsearch: '', wslot: '', ssearch: '' });
 
@@ -143,7 +143,7 @@ function plan(app, list, c) {
       current = { enh: e.enh || 0, masterwork: !!e.masterwork, abilities: e.abilities || [] };
       apply = (enh, abilities) => {
         const weapons = state.weapons.map((x, i) => (i === form.weapon
-          ? { ...x, enh, masterwork: true, abilities, ...(buying ? {} : { crafted: true }) } : x));
+          ? { ...x, enh, masterwork: true, abilities, ...(buying ? (form.free ? { free: true } : {}) : { crafted: true }) } : x));
         app.update({ weapons });
       };
     } else {
@@ -153,7 +153,7 @@ function plan(app, list, c) {
       const k = form.target;
       current = { enh: state[`${k}Enh`] || 0, masterwork: !!state[`${k}Mw`], abilities: state[`${k}Abilities`] || [] };
       apply = (enh, abilities) => app.update({ [`${k}Enh`]: enh, [`${k}Mw`]: true, [`${k}Abilities`]: abilities,
-                                               ...(buying ? {} : { [`${k}Crafted`]: true }) });
+                                               ...(buying ? (form.free ? { [`${k}Free`]: true } : {}) : { [`${k}Crafted`]: true }) });
     }
     const abilities = form.abilities.map(p => chosenAbility(app, p)).filter(Boolean);
     const price = magicArmsPrice({ kind: form.kind, enh: form.enh, abilities, abilityCls: abilities.map(a => a.cl) });
@@ -232,9 +232,10 @@ function plan(app, list, c) {
         + (!buying && spell.components && /\bM\b|\bF\b/.test(spell.components) ? ' Material components or a focus the spell needs are extra.' : ''),
       apply: () => {
         const items = state.craftedItems.map(x => ({ ...x }));
-        const same = items.find(x => x.kind === form.spellKind && x.spellId === spell.id && x.cl === cl && !!x.bought === buying);
+        const free = buying && form.free;
+        const same = items.find(x => x.kind === form.spellKind && x.spellId === spell.id && x.cl === cl && !!x.bought === buying && !!x.free === free);
         if (same) same.qty += 1;
-        else items.push({ kind: form.spellKind, spellId: spell.id, spellName: spell.name, spellLevel: sl, cl, qty: 1, ...(buying ? { bought: true } : {}) });
+        else items.push({ kind: form.spellKind, spellId: spell.id, spellName: spell.name, spellLevel: sl, cl, qty: 1, ...(buying ? { bought: true } : {}), ...(free ? { free: true } : {}) });
         app.update({ craftedItems: items });
       },
     };
@@ -478,10 +479,12 @@ function renderCard(app, c) {
       <div class="craft-controls">${kindControls(app, list, p, c)}</div>
       <h3>${esc(p.title)}</h3>
       <dl class="facts"><dt>Market price</dt><dd>${esc(p.market === null ? '—' : formatGp(p.market))}</dd>
-        <dt>You pay</dt><dd><b>${esc(p.cost === null ? '—' : formatGp(p.cost))}</b>${why('cost')}</dd></dl>
+        <dt>You pay</dt><dd><b>${esc(form.free ? 'nothing (free)' : p.cost === null ? '—' : formatGp(p.cost))}</b>${why('cost')}</dd></dl>
       ${p.note ? `<p class="hint">${esc(p.note)}</p>` : ''}
+      <label class="check-row"><input type="checkbox" data-craft="free"${form.free ? ' checked' : ''}> Buy for free (found or a gift: no gold${form.kind === 'spell' ? '' : `; the whole ${form.kind === 'weapon' ? 'weapon' : form.target} counts as found`})</label>
       ${p.errors.length ? `<p class="warning">Can't be added: ${esc(p.errors.join('; '))}.</p>` : ''}
-      <div class="slot-buttons"><button type="button" class="primary" data-craft-make${ok ? '' : ' disabled'}>Add it (${esc(p.cost === null ? '—' : formatGp(p.cost))})</button></div>
+      <div class="slot-buttons"><button type="button" class="primary" data-craft-make${ok ? '' : ' disabled'}>Add it (${esc(form.free ? 'free' : p.cost === null ? '—' : formatGp(p.cost))})</button>
+        <button type="button" data-craft-cancel>Cancel</button></div>
       ${done}`;
     return;
   }
@@ -634,6 +637,7 @@ function initCard(app, c) {
     else if (k === 'witem') { form.itemId = t.value; form.option = ''; form.extraUnmet = 0; reset(); }
     else if (k === 'wsearch' || k === 'ssearch') return;
     else if (k === 'rushed') form.rushed = t.checked;
+    else if (k === 'free') form.free = t.checked;
     else if (t.dataset.craftOption !== undefined) form.abilities[Number(t.dataset.craftOption)].option = t.value;
     else if (t.dataset.craftConfirm !== undefined) {
       const i = Number(t.dataset.craftConfirm);
@@ -678,12 +682,19 @@ function initCard(app, c) {
     if (rm) { form.abilities.splice(Number(rm.dataset.craftRemove), 1); reset(); redraw(); return; }
     const extra = e.target.closest('[data-craft-extra]');
     if (extra) { form.extraUnmet = Math.max(0, form.extraUnmet + Number(extra.dataset.craftExtra)); redraw(); return; }
+    // Cancel (Add magic gear): the choices cleared and the maker closed.
+    if (e.target.closest('[data-craft-cancel]')) {
+      Object.assign(form, { enh: 1, abilities: [], spell: '', ssearch: '', cl: 0, free: false, message: '', confirmed: new Set(), extraUnmet: 0 });
+      showBuyCard(false);
+      $('buy-card').scrollIntoView({ block: 'nearest' });
+      return;
+    }
     if (e.target.closest('[data-craft-make]')) {
       const p = plan(app, casters(app), c);
       if (!p.apply) return;
       p.apply();
       form.message = c.mode === 'buy'
-        ? `Added ${p.title} for ${formatGp(p.cost)} (counted in your gold on the Equipment tab).`
+        ? (form.free ? `Added ${p.title}, free (found or a gift).` : `Added ${p.title} for ${formatGp(p.cost)} (counted in your gold on the Equipment tab).`)
         : `Made ${p.title} for ${formatGp(p.cost)} (counted in your gold on the Equipment tab).`;
       form.abilities = [];
       redraw();

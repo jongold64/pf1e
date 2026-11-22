@@ -110,6 +110,8 @@ export function craftedItemPrice(e) {
   return spellItemPrice(e.kind, e.spellLevel, e.cl).base;
 }
 export function craftedItemCost(e) {
+  // (Found or a gift: free.)
+  if (e.free) return 0;
   return e.bought ? craftedItemPrice(e) : craftCost(craftedItemPrice(e));
 }
 
