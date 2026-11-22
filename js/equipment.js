@@ -157,3 +157,19 @@ export function formatLbs(lbs) {
   const n = Math.round(lbs * 100) / 100;
   return `${n.toLocaleString('en-US')} ${n === 1 ? 'lb.' : 'lbs.'}`;
 }
+
+// What's charged (Wealth popup, Equipment tab): spends { armor, gear, weapons, magic } in gp; noCharge: the kinds that
+// cost nothing (gear you were given: { gear: true }...); adjustments: [{ note, gp }] by hand, gp > 0 gold not spent
+// after all (a gift, a discount), gp < 0 an extra cost. Returns { armor, gear, weapons, magic (what's charged),
+// adjust (the adjustments' total), spent (all of it, less the adjustments) }.
+export function chargedCosts(spends = {}, noCharge = {}, adjustments = []) {
+  const out = {};
+  for (const k of ['armor', 'gear', 'weapons', 'magic']) out[k] = noCharge[k] ? 0 : spends[k] || 0;
+  out.adjust = Math.round(adjustments.reduce((n, a) => n + (Number(a?.gp) || 0), 0) * 100) / 100;
+  out.spent = Math.round((out.armor + out.gear + out.weapons + out.magic - out.adjust) * 100) / 100;
+  return out;
+}
+// Saved settings tidied: noCharge's four switches; adjustments with a short note and an amount (at most 50).
+export const tidyNoCharge = s => Object.fromEntries(['armor', 'gear', 'weapons', 'magic'].filter(k => s?.[k] === true).map(k => [k, true]));
+export const tidyAdjustments = s => (Array.isArray(s) ? s : []).filter(a => a && Number.isFinite(a.gp) && a.gp !== 0)
+  .map(a => ({ note: String(a.note || '').slice(0, 80), gp: Math.round(a.gp * 100) / 100 })).slice(0, 50);

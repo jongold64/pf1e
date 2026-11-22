@@ -24,7 +24,7 @@ import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
 import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails, moneyNow } from './tab-equipment.js';
-import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL, startingGold } from './equipment.js';
+import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL, startingGold, tidyNoCharge, tidyAdjustments } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
 import { askAmount } from './amount-prompt.js';
@@ -127,6 +127,8 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  noCharge: {},              // kinds of purchase that cost no gold: { armor, gear, weapons, magic } (equipment.js chargedCosts)
+  costAdjust: [],            // gold adjustments by hand: [{ note, gp }], gp > 0 not spent after all, < 0 an extra cost
   xp: null,                  // experience points (null: none entered, the start of the level); rules.js xpProgress
   xpTrack: 'medium',         // the campaign's XP track: slow, medium or fast
   languages: [],             // languages chosen beyond the race's starting ones (languages.js)
@@ -249,6 +251,7 @@ const app = {
   domainSpells: cid => domainSpellsFor(cid),
   showAcDetails: column => showAcDetails(column),
   dailyUses: () => dailyUsesFor(),
+  popWealth: () => popWealth(),
   blastPlanFor: name => blastPlanFor(name),
   changeBurn: (how, times) => changeBurn(how, times),
   burnNow: () => burnNow(),
@@ -270,6 +273,8 @@ function load(saved) {
   state.blastPlan = tidyBlastPlan(state.blastPlan);
   state.bladeStrike = state.bladeStrike === true;
   state.languages = tidyLanguages(state.languages);
+  state.noCharge = tidyNoCharge(state.noCharge);
+  state.costAdjust = tidyAdjustments(state.costAdjust);
   state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
   if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
   state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
@@ -1118,6 +1123,20 @@ function initBuild() {
       return;
     }
     if (e.target.closest('.wealth-pop [data-wealth-equipment]')) { $('detail-dialog').close(); showTab('equipment'); }
+    // Costs and adjustments: an adjustment added (amount and what for) or removed.
+    const adj = e.target.closest('.wealth-pop [data-adjust]');
+    if (adj) {
+      const back = adj.dataset.adjust === 'back';
+      askAmount({ title: back ? 'Gold back (not spent)' : 'Extra cost', label: 'Gold (gp)', decimals: true, ok: 'Add', note: 'What for',
+        hint: back ? 'Gold you didn\u2019t really spend on something listed: a gift, a discount, a share of the party\u2019s loot.' : 'Gold spent on something not on your lists.' }).then(r => {
+        if (!r || !r.amount) return;
+        update({ costAdjust: [...state.costAdjust, { note: r.note, gp: back ? r.amount : -r.amount }] });
+        popWealth();
+      });
+      return;
+    }
+    const rm = e.target.closest('.wealth-pop [data-adjust-remove]');
+    if (rm) { update({ costAdjust: state.costAdjust.filter((_, i) => i !== Number(rm.dataset.adjustRemove)) }); popWealth(); return; }
     // Use starting gold, or the wealth for your level, as your gold.
     const use = e.target.closest('.wealth-pop [data-wealth-use]');
     if (use) {
@@ -1128,6 +1147,12 @@ function initBuild() {
   });
   $('detail-body').addEventListener('change', e => {
     if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
+    // A kind of purchase switched to cost nothing (or back).
+    if (e.target.matches('.wealth-pop [data-no-charge]')) {
+      const k = e.target.dataset.noCharge;
+      update({ noCharge: { ...state.noCharge, [k]: e.target.checked } });
+      popWealth();
+    }
     // Max starting gold (the house rule), from the Wealth popup or a class's popup on the Classes tab.
     if (e.target.matches('[data-max-gold]')) {
       update({ houseRules: { ...state.houseRules, maxGold: e.target.checked } });
@@ -4493,13 +4518,28 @@ async function popWealth() {
     <p class="hint">Add gold for treasure, a reward or a sale; Spend for anything not on your lists (an inn, a bribe, a spell bought). Gear you add on the Equipment, Armor, Weapons and Magic Items tabs comes off by itself.</p>
     <table class="skill-why"><tbody>
       ${row(state.gold === null ? 'Gold (starting gold)' : 'Gold', m.gold)}
-      ${row('Armor and shield', -m.armorSpend)}${row('Equipment', -m.gearSpend)}${row('Weapons', -m.weaponSpend)}${row('Magic items', -m.magic.cost)}
+      ${[['armor', 'Armor and shield', m.armorSpend], ['gear', 'Equipment', m.gearSpend], ['weapons', 'Weapons', m.weaponSpend], ['magic', 'Magic items', m.magic.cost]]
+        .map(([k, label, v]) => (m.noCharge[k] ? `<tr><td>${label}</td><td class="num">not charged</td></tr>` : row(label, -v))).join('')}
+      ${m.adjust ? `<tr><td>Adjustments</td><td class="num">${m.adjust > 0 ? '+' : '−'} ${esc(formatGp(Math.abs(m.adjust)))}</td></tr>` : ''}
       ${row('Left', m.left, true)}
       ${row('Wealth (gear bought and gold left)', m.gold, true)}</tbody></table>
+    ${costRulesHtml(m)}
     ${startingWealthHtml(m)}
     ${lvWealth ? `<h3>Wealth by level</h3><p>A new character made at level ${state.level} (Core Rulebook): ${esc(formatGp(lvWealth))}.</p>
       <div class="line-controls"><button type="button" data-wealth-use="level">Use wealth for level ${state.level} (${esc(formatGp(lvWealth))})</button></div>` : ''}
     <div class="line-controls"><button type="button" data-wealth-equipment>Open the Equipment tab</button></div></div>`);
+}
+
+// What's charged (the Wealth popup): a box for each kind of purchase to cost nothing, and gold adjustments by hand.
+function costRulesHtml(m) {
+  const kinds = [['armor', 'Armor and shield'], ['gear', 'Equipment'], ['weapons', 'Weapons'], ['magic', 'Magic items']];
+  return `<h3>Costs and adjustments</h3>
+    <p class="hint">Tick a kind of purchase to cost no gold (all of it given to you). One item at a time: its own <b>Free</b> box on its tab.</p>
+    <div class="cost-kinds">${kinds.map(([k, label]) => `<label class="check-row"><input type="checkbox" data-no-charge="${k}"${m.noCharge[k] ? ' checked' : ''}> ${label} cost nothing
+      <small class="muted">(listed ${esc(formatGp(m.listed[k]))})</small></label>`).join('')}</div>
+    ${state.costAdjust.length ? `<table class="skill-why"><tbody>${state.costAdjust.map((a, i) => `<tr><td>${esc(a.note || (a.gp > 0 ? 'Gold back' : 'Extra cost'))}</td>
+      <td class="num">${a.gp > 0 ? '+' : '−'} ${esc(formatGp(Math.abs(a.gp)))}</td><td><button type="button" class="link" data-adjust-remove="${i}">remove</button></td></tr>`).join('')}</tbody></table>` : ''}
+    <div class="line-controls"><button type="button" data-adjust="back">+ Gold back (not spent)</button><button type="button" data-adjust="more">+ Extra cost</button></div>`;
 }
 
 // Starting wealth (the Wealth popup): the first class's starting gold roll, average or maximum (the Max Starting Gold

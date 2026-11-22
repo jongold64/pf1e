@@ -1,4 +1,5 @@
 // Equipment tab: browse mundane gear by category, keep an inventory, and track gold and weight.
+import { chargedCosts } from './equipment.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
 import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
@@ -130,17 +131,22 @@ export function moneyNow(app, view = app.view) {
     && (withMaterial(data.armorById.get(state.companion.armorId), state.companion.armorMaterial) || data.armorById.get(state.companion.armorId));
   const bardingRow = barding ? { name: `Barding for ${state.companion.name || compAnimal.name}: ${barding.name}${state.companion.armorEnh ? ` +${state.companion.armorEnh}` : ''}`,
     cost: bardingCost(barding, companionSize(compAnimal, view.companion.level), state.companion.armorEnh || 0), weight: null } : null;
-  const armorSpend = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);
-  const gearSpend = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
+  const armorListed = wornItems.reduce((n, x) => n + x.cost, 0) + (bardingRow?.cost || 0);
+  const gearListed = totals.cost - wornItems.reduce((n, x) => n + x.plain, 0);
   const listedMagic = data.itemsById ? magicItemTotals(state.magicItems, data.itemsById) : { cost: 0, weight: 0, unpriced: [] };
   // Potions, scrolls and wands the character made count at their crafting cost.
   const made = state.craftedItems.reduce((n, e) => n + craftedItemCost(e) * e.qty, 0);
-  const magic = { ...listedMagic, cost: listedMagic.cost + made };
   const carried = state.weapons.map(e => [data.weaponsById?.get(e.id), e]).filter(([w]) => w);
-  const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
+  const weaponListed = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponsWeight = carried.reduce((sum, [w, e]) => sum + weaponWeight(w, e, view.race.size), 0);
-  const left = Math.round((gold - armorSpend - gearSpend - magic.cost - weaponSpend) * 100) / 100;
-  return { maxGold, classStart, traitGold, start, wealth, gold, totals, sizeFactor, wornItems, compAnimal, barding, bardingRow, armorSpend, gearSpend, listedMagic, made, magic, carried, weaponSpend, weaponsWeight, left };
+  // What's charged: kinds switched to cost nothing come to 0; hand adjustments add gold back (or take more).
+  const listed = { armor: armorListed, gear: gearListed, weapons: weaponListed, magic: listedMagic.cost + made };
+  const charged = chargedCosts(listed, state.noCharge || {}, state.costAdjust || []);
+  const armorSpend = charged.armor, gearSpend = charged.gear, weaponSpend = charged.weapons;
+  const magic = { ...listedMagic, cost: charged.magic };
+  const left = Math.round((gold - charged.spent) * 100) / 100;
+  return { maxGold, classStart, traitGold, start, wealth, gold, totals, sizeFactor, wornItems, compAnimal, barding, bardingRow, armorSpend, gearSpend, listedMagic, made, magic, carried, weaponSpend, weaponsWeight, left,
+           listed, adjust: charged.adjust, noCharge: state.noCharge || {} };
 }
 
 // What the character has spent (Gold − Left), from the last draw: the "Gold left now" box adds it to what's typed.
@@ -199,7 +205,8 @@ export async function renderEquipment(app, view) {
     left: { title: `Left: ${formatGp(left)}`, total: formatGp(left), rows: [
       { label: state.gold === null ? `Gold (${view.cls ? `${view.cls.name.toLowerCase()} starting gold` : 'no class yet'})` : 'Gold', text: formatGp(gold) },
       { label: 'Armor and shield', text: `− ${formatGp(armorSpend)}` }, { label: 'Equipment', text: `− ${formatGp(gearSpend)}` },
-      { label: 'Weapons', text: `− ${formatGp(weaponSpend)}` }, { label: 'Magic items', text: `− ${formatGp(magic.cost)}` }] },
+      { label: 'Weapons', text: `− ${formatGp(weaponSpend)}` }, { label: 'Magic items', text: `− ${formatGp(magic.cost)}` },
+      ...(m.adjust ? [{ label: 'Adjustments (Costs and adjustments)', text: `${m.adjust > 0 ? '+' : '−'} ${formatGp(Math.abs(m.adjust))}` }] : [])] },
     weight: { title: `Weight carried: ${formatLbs(carriedWeight)}`, total: formatLbs(carriedWeight),
       rows: [...armorRows.filter(r => r.weight !== null), ...weaponRows, ...gearRows, ...magicRows.filter(r => r.weight !== null)]
         .map(r => ({ label: r.label, text: r.weight === null ? 'no weight listed' : formatLbs(r.weight) })),
@@ -242,6 +249,7 @@ export async function renderEquipment(app, view) {
     ['Equipment', esc(formatGp(gearSpend)) + details('gear')],
     ['Weapons', esc(formatGp(weaponSpend)) + details('weapons')],
     ['Magic items', esc(formatGp(magic.cost)) + details('magic')],
+    ...(m.adjust ? [['Adjustments', esc(`${m.adjust > 0 ? '+' : '−'} ${formatGp(Math.abs(m.adjust))}`)]] : []),
     ['Left', `<span class="${left < 0 ? 'warning' : ''}">${esc(formatGp(left))}${left < 0 ? ' (over budget)' : ''}</span>${details('left')}`],
     ['Weight carried', esc(formatLbs(carriedWeight)) + details('weight')],
     ['Carrying capacity', esc(`light ${cap.light}, medium ${cap.medium}, heavy ${cap.heavy} lbs. (${loadNow.load} now)`) + details('carry')],
@@ -257,6 +265,8 @@ export async function renderEquipment(app, view) {
   if (state.magicItems.length) notes.push('Magic items are listed on the Magic Items tab.');
   if (state.weapons.length) notes.push('Weapons are listed on the Weapons tab.');
   if (totals.unweighed.length) notes.push(`No weight listed for: ${[...new Set(totals.unweighed)].join(', ')}.`);
+  const free = [['armor', 'armor and shield'], ['gear', 'equipment'], ['weapons', 'weapons'], ['magic', 'magic items']].filter(([k]) => m.noCharge[k]).map(([, t]) => t);
+  if (free.length) notes.push(`Not charged (Costs and adjustments): ${free.join(', ')}.`);
   $('money-note').textContent = notes.join(' ');
 
   const count = state.inventory.reduce((n, e) => n + e.qty, 0);
@@ -429,6 +439,7 @@ export function initEquipmentTab(app) {
     const n = Number(e.target.value);
     app.update({ gold: Number.isFinite(n) && n >= 0 ? n : null });
   });
+  $('money-adjust').addEventListener('click', () => app.popWealth());
   $('gold-start').addEventListener('click', () => app.update({ gold: traitStartingGold(startingGold(app.view.cls, app.data.classes, !!app.state.houseRules.maxGold), app.view.traits).gp }));
   $('gold-wealth').addEventListener('click', () => app.update({ gold: WEALTH_BY_LEVEL[app.state.level] }));
 }

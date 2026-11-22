@@ -2449,6 +2449,13 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// What's charged.
+{
+  const { chargedCosts, tidyAdjustments } = await import('./equipment.js');
+  const c = chargedCosts({ armor: 100, gear: 30, weapons: 15, magic: 2000 }, { magic: true }, [{ note: 'gift', gp: 10 }, { note: 'inn', gp: -2.5 }]);
+  check('magic items given: not charged; adjustments +10 and −2.5', [c.magic, c.adjust, c.spent].join(), '0,7.5,137.5');
+  check('tidy adjustments: amounts only, no zeros', JSON.stringify(tidyAdjustments([{ note: 'x', gp: 5 }, { gp: 0 }, { note: 'y' }])), '[{"note":"x","gp":5}]');
+}
 // Experience.
 {
   const { tabsToDo } = await import('./tab-todo.js');
