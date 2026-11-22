@@ -96,31 +96,19 @@ export function sellItem(app, { name, value, paid }, change) {
   app.update({ ...change, gold });
 }
 
-// What the character has spent (Gold − Left), from the last draw: the "Gold left now" box adds it to what's typed.
-let spentNow = 0;
-
-export const freeBox = (attr, on) => `<label class="check-row small free-box"><input type="checkbox" ${attr}${on ? ' checked' : ''}> Free (found or a gift: no gold)</label>`;
-
-export async function renderEquipment(app, view) {
+// Money now (the Equipment tab, and the Wealth popup on the Character tab's banner): starting gold, the gold entered (or
+// the starting gold), what's been spent on armor, equipment, weapons and magic items, and what's left. Needs the
+// equipment data (data.gear): null until it's loaded.
+export function moneyNow(app, view = app.view) {
   const { state, data } = app;
-  if (!data.gear || (state.magicItems.length && !data.itemsById) || (state.weapons.length && !data.weaponsById)) {
-    $('inventory-rows').innerHTML = '<p class="hint">Loading equipment…</p>';
-    await Promise.all([app.loadGear(), state.magicItems.length ? app.loadItems() : null,
-                       state.weapons.length ? app.loadWeapons() : null]);
-    view = app.view;
-  }
+  if (!data.gear) return null;
   const maxGold = !!state.houseRules.maxGold;
   // The class's starting gold, changed by traits like Rich Parents (traitStartingGold).
   const classStart = startingGold(view.cls, data.classes, maxGold);
   const traitGold = traitStartingGold(classStart, view.traits);
   const start = traitGold.gp;
   const wealth = WEALTH_BY_LEVEL[state.level];
-  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} ${maxGold ? 'maximum ' : ''}starting gold${traitGold.lines.length ? ' with traits' : ''} (${formatGp(start)})` : 'No starting gold listed';
-  $('gold-start').disabled = !start;
-  $('gold-wealth').hidden = !wealth;
-  if (wealth) $('gold-wealth').textContent = `Use wealth for level ${state.level} (${formatGp(wealth)})`;
   const gold = state.gold ?? start ?? 0;
-  if (document.activeElement !== $('gold')) $('gold').value = gold;
 
   const totals = equipmentTotals(state.inventory, data.gearById, {
     armor: view.gear.armor, armorEnh: state.armorEnh, armorMw: state.armorMw,
@@ -152,6 +140,29 @@ export async function renderEquipment(app, view) {
   const weaponSpend = carried.reduce((sum, [w, e]) => sum + weaponCost(w, e), 0);
   const weaponsWeight = carried.reduce((sum, [w, e]) => sum + weaponWeight(w, e, view.race.size), 0);
   const left = Math.round((gold - armorSpend - gearSpend - magic.cost - weaponSpend) * 100) / 100;
+  return { maxGold, classStart, traitGold, start, wealth, gold, totals, sizeFactor, wornItems, compAnimal, barding, bardingRow, armorSpend, gearSpend, listedMagic, made, magic, carried, weaponSpend, weaponsWeight, left };
+}
+
+// What the character has spent (Gold − Left), from the last draw: the "Gold left now" box adds it to what's typed.
+let spentNow = 0;
+
+export const freeBox = (attr, on) => `<label class="check-row small free-box"><input type="checkbox" ${attr}${on ? ' checked' : ''}> Free (found or a gift: no gold)</label>`;
+
+export async function renderEquipment(app, view) {
+  const { state, data } = app;
+  if (!data.gear || (state.magicItems.length && !data.itemsById) || (state.weapons.length && !data.weaponsById)) {
+    $('inventory-rows').innerHTML = '<p class="hint">Loading equipment…</p>';
+    await Promise.all([app.loadGear(), state.magicItems.length ? app.loadItems() : null,
+                       state.weapons.length ? app.loadWeapons() : null]);
+    view = app.view;
+  }
+  const m = moneyNow(app, view);
+  const { maxGold, classStart, traitGold, start, wealth, gold, totals, sizeFactor, wornItems, compAnimal, barding, bardingRow, armorSpend, gearSpend, listedMagic, made, magic, carried, weaponSpend, weaponsWeight, left } = m;
+  $('gold-start').textContent = start ? `Use ${view.cls.name.toLowerCase()} ${maxGold ? 'maximum ' : ''}starting gold${traitGold.lines.length ? ' with traits' : ''} (${formatGp(start)})` : 'No starting gold listed';
+  $('gold-start').disabled = !start;
+  $('gold-wealth').hidden = !wealth;
+  if (wealth) $('gold-wealth').textContent = `Use wealth for level ${state.level} (${formatGp(wealth)})`;
+  if (document.activeElement !== $('gold')) $('gold').value = gold;
   // "Gold left now": typing the gold you have sets Gold to it plus what's been spent.
   spentNow = Math.round((gold - left) * 100) / 100;
   if (document.activeElement !== $('gold-left')) $('gold-left').value = left;

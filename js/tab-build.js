@@ -4,7 +4,9 @@
 // notes. Sections show only when the character has something for them; Actions holds the attacks, class abilities and spells.
 import { $, esc, signed } from './dom.js';
 import { rollButton } from './roll-ui.js';
-import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC } from './rules.js';
+import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC, xpProgress } from './rules.js';
+import { moneyNow } from './tab-equipment.js';
+import { formatGp } from './equipment.js';
 import { weaponSummaries } from './tab-weapons.js';
 import { kiWeaponsCost, kiWeaponsText } from './talented-monk.js';
 import { bondCost, bondText } from './weapon-bonds.js';
@@ -49,12 +51,19 @@ export function renderBuild(app, view, parts) {
   const hp = currentHp(state.hpCurrent, stats.hp);
   const temp = (state.tempHp || []).reduce((n, t) => n + t.amount, 0);
 
-  // Header.
+  // Header, with XP and Wealth at its end: each opens its popup (app.js popXp, popWealth) to change it.
+  const xp = xpProgress(state.xp, state.level, state.xpTrack);
+  const money = moneyNow(app, view);
+  // Wealth needs the equipment data: loaded once, then drawn again.
+  if (!money && !data.gear) app.loadGear().then(() => app.update({}));
+  const headMoney = `<span class="b-head-money"><button type="button" class="b-chip" data-b-xp title="Experience"><small>XP</small> ${xp.xp.toLocaleString('en-US')}${xp.next !== null
+      ? `<small class="muted"> / ${xp.next.toLocaleString('en-US')}</small>` : ''}${xp.ready ? ' <small class="b-ready">level up</small>' : ''}</button>
+    <button type="button" class="b-chip" data-b-wealth title="Wealth"><small>Wealth</small> ${money ? esc(formatGp(money.left)) : '…'}</button></span>`;
   const deity = data.deitiesById?.get(state.deity);
   const head = `<div class="b-head">${state.name ? `<b class="b-name">${esc(state.name)}</b>` : ''}
       <span>${esc(race.name)} ${esc(view.counts.map(e => `${e.cls.name}${e.cls.archetypes?.length ? ` (${e.cls.archetypes.join(', ')})` : ''} ${e.level}`).join(' / '))}</span>
       <span class="muted">${esc([race.size, state.alignment, deity ? `${deity.name} (${deity.alignment})` : '',
-        (view.senses || race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span></div>`;
+        (view.senses || race.senses || []).join(', ')].filter(Boolean).join(' · '))}</span>${headMoney}</div>`;
 
   // Core numbers.
   // One row of the numbers card: label, value, d20, ?, then a note (CMD); an empty cell keeps the columns lined up.

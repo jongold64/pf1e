@@ -2449,6 +2449,17 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Experience.
+{
+  const { xpProgress, XP_TABLE } = await import('./rules.js');
+  check('XP: medium track 9,000 for 4th level, 3.6 million for 20th', [XP_TABLE.medium[3], XP_TABLE.medium[19]].join(), '9000,3600000');
+  const p = xpProgress(12000, 4);
+  check('level 4 with 12,000 XP (medium): 15,000 next, 3,000 to go, not ready', [p.next, p.toGo, p.ready].join(), '15000,3000,false');
+  check('level 4 with 16,000 XP: ready (reaches 5th)', [xpProgress(16000, 4).ready, xpProgress(16000, 4).reached].join(), 'true,5');
+  check('no XP entered: the start of the level; fast track', [xpProgress(null, 5).xp, xpProgress(null, 5, 'fast').xp].join(), '15000,10000');
+  check('20th level: no next', xpProgress(4000000, 20).next, null);
+}
+
 // Languages.
 {
   const { languageState, allLanguages, tidyLanguages } = await import('./languages.js');

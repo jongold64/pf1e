@@ -622,3 +622,22 @@ export function racialAc(race) {
   }
   return out;
 }
+
+// Experience (Core Rulebook, Table 3-1: Character Advancement): the XP needed to reach each level on the slow, medium
+// and fast tracks. XP_TABLE[track][level - 1].
+export const XP_TABLE = {
+  slow: [0, 3000, 7500, 14000, 23000, 35000, 53000, 77000, 115000, 160000, 235000, 330000, 475000, 665000, 955000, 1350000, 1900000, 2700000, 3850000, 5350000],
+  medium: [0, 2000, 5000, 9000, 15000, 23000, 35000, 51000, 75000, 105000, 155000, 220000, 315000, 445000, 635000, 890000, 1300000, 1800000, 2550000, 3600000],
+  fast: [0, 1300, 3300, 6000, 10000, 15000, 23000, 34000, 50000, 71000, 105000, 145000, 210000, 295000, 425000, 600000, 850000, 1200000, 1700000, 2400000],
+};
+// Where a character stands: xp (null: none entered, so the start of their level), level (character level), track.
+// Returns { xp, next (XP for the next level; null at 20th), reached (the level that XP reaches), ready (enough to level
+// up), toGo (XP still needed) }.
+export function xpProgress(xp, level, track = 'medium') {
+  const t = XP_TABLE[track] || XP_TABLE.medium;
+  const lv = Math.max(1, Math.min(20, level || 1));
+  const have = Number.isFinite(xp) ? Math.max(0, Math.floor(xp)) : t[lv - 1];
+  const reached = t.filter(n => have >= n).length;
+  const next = lv < 20 ? t[lv] : null;
+  return { xp: have, next, reached, ready: reached > lv, toGo: next === null ? 0 : Math.max(0, next - have) };
+}

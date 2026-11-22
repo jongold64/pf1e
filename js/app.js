@@ -4,6 +4,7 @@ import { levelIncreases, abilityModifier, finalScores,
   EXTRA_SLOTS,
   pointsSpent, racialAdjustments, characterStats, hitDieSize, averageHpPerLevel, saveBreakdown, initiativeBreakdown, acBreakdown, maneuverBreakdown, MONK_IDS, formatBab, spellsPerDay, classCounts, initiative, combatManeuvers, CASTING_ABILITY,
   currentHp, changeHp, applyHp, addTempHp, TEMP_HP_SOURCES, hpStatus, channelEnergy, layOnHands, smite, SIZE_AC, carryingCapacity, encumbrance, slowedSpeed, fastMovement,
+  XP_TABLE, xpProgress,
 } from './rules.js';
 import {
   BONUS_FEAT_RULES, featSlots, slotAccepts, grantedFeatsFor, proficiencyFeatsFor, featContext, featureIndex, checkFeat,
@@ -22,8 +23,8 @@ import { defenseEffects, KI_COST, ARMOR_REVELATIONS, revelationArmor } from './d
 import { initSpellList, renderSpellList, showSpell } from './tab-spells.js';
 import { initItemsTab, renderItemsTab, renderMyItems, showItem } from './tab-items.js';
 import { renderCrafting } from './tab-crafting.js';
-import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails } from './tab-equipment.js';
-import { equipmentTotals, magicItemTotals, sizeWeightFactor } from './equipment.js';
+import { initEquipmentTab, renderEquipmentTab, renderEquipment, showGear, gearDetails, moneyNow } from './tab-equipment.js';
+import { equipmentTotals, magicItemTotals, sizeWeightFactor, formatGp, WEALTH_BY_LEVEL } from './equipment.js';
 import { initWeaponsTab, renderWeaponsTab, renderMyWeapons, showWeapon } from './tab-weapons.js';
 import { popBlast, initBlast } from './tab-blast.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
@@ -125,6 +126,8 @@ const state = {
   burn: 0,                   // a kineticist's points of burn now (burn.js); a new day clears it
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
+  xp: null,                  // experience points (null: none entered, the start of the level); rules.js xpProgress
+  xpTrack: 'medium',         // the campaign's XP track: slow, medium or fast
   languages: [],             // languages chosen beyond the race's starting ones (languages.js)
   bladeStrike: false,        // a black blade's black blade strike on (bladebound magus; tab-weapons.js)
   defenseBurn: 0,            // of that burn, the points accepted to raise her elemental defense (burn.js elementalDefense)
@@ -266,6 +269,8 @@ function load(saved) {
   state.blastPlan = tidyBlastPlan(state.blastPlan);
   state.bladeStrike = state.bladeStrike === true;
   state.languages = tidyLanguages(state.languages);
+  state.xp = Number.isFinite(state.xp) && state.xp >= 0 ? Math.min(99999999, Math.floor(state.xp)) : null;
+  if (!XP_TABLE[state.xpTrack]) state.xpTrack = 'medium';
   state.defenseBurn = Number.isInteger(state.defenseBurn) && state.defenseBurn > 0 ? Math.min(state.burn, state.defenseBurn) : 0;
   state.tempHp = (Array.isArray(state.tempHp) ? state.tempHp : [])
     .filter(t => t && typeof t.id === 'string' && Number.isInteger(t.amount) && t.amount > 0)
@@ -1030,6 +1035,8 @@ function initBuild() {
     // The Hero points box: a tap anywhere on it opens the popup to spend one.
     if (e.target.closest('.b-hero-big')) { popHeroPoints(); return; }
     if (e.target.closest('[data-b-langs]')) { popLanguages(); return; }
+    if (e.target.closest('[data-b-xp]')) { popXp(); return; }
+    if (e.target.closest('[data-b-wealth]')) { popWealth(); return; }
     if (e.target.closest('[data-b-kiw-off]')) { update({ kiWeapons: { ...state.kiWeapons, on: false } }); return; }
     // Arcane pool, divine bond, fiendish boon, sacred weapon (weapon-bonds.js): the same, in their own popup.
     const bond = e.target.closest('[data-b-bond]');
@@ -1068,6 +1075,32 @@ function initBuild() {
   });
   box.addEventListener('input', e => {
     if (e.target.id === 'b-notes') { state.notes = e.target.value.slice(0, 5000); save(); }
+  });
+  // The XP and Wealth popups: their buttons change the numbers and the popup shows them again.
+  $('detail-body').addEventListener('click', e => {
+    const x = e.target.closest('.xp-pop [data-xp]');
+    if (x) {
+      const n = Math.max(0, Math.floor(Number($('xp-amount').value) || 0));
+      const now = xpProgress(state.xp, state.level, state.xpTrack).xp;
+      update({ xp: x.dataset.xp === 'set' ? n : Math.max(0, now + (x.dataset.xp === 'add' ? n : -n)) });
+      popXp();
+      return;
+    }
+    const g = e.target.closest('.wealth-pop [data-gold]');
+    if (g) {
+      const n = Math.max(0, Math.round((Number($('gold-amount').value) || 0) * 100) / 100);
+      const m = moneyNow(app, view);
+      if (!m) return;
+      const spent = m.gold - m.left;
+      const gold = g.dataset.gold === 'set' ? n + spent : m.gold + (g.dataset.gold === 'add' ? n : -n);
+      update({ gold: Math.round(gold * 100) / 100 });
+      popWealth();
+      return;
+    }
+    if (e.target.closest('.wealth-pop [data-wealth-equipment]')) { $('detail-dialog').close(); showTab('equipment'); }
+  });
+  $('detail-body').addEventListener('change', e => {
+    if (e.target.id === 'xp-track' && e.target.closest('.xp-pop')) { update({ xpTrack: e.target.value }); popXp(); }
   });
   // The Languages popup: a box adds or removes a language, and the popup shows the new count.
   $('detail-body').addEventListener('change', e => {
@@ -4394,6 +4427,45 @@ function heroClick(e) {
   return false;
 }
 const popHeroPoints = () => openDetail('Hero points', `<div class="hero-pop">${heroPanel()}</div>`);
+
+// The XP popup (XP on the Character tab's banner): add or take off experience, or set the total; the track; the table.
+function popXp() {
+  const p = xpProgress(state.xp, state.level, state.xpTrack);
+  const t = XP_TABLE[state.xpTrack];
+  const n = x => x.toLocaleString('en-US');
+  openDetail('Experience', `<div class="xp-pop">
+    <p><b>${n(p.xp)} XP</b> · level ${state.level}${p.next === null ? ' (the highest)' : ` · ${ORD_WORD(state.level + 1)} level at ${n(p.next)} (${n(p.toGo)} to go)`}</p>
+    ${p.ready ? `<p class="b-ready">Enough for ${ORD_WORD(p.reached)} level: add the level on the Build tab.</p>` : ''}
+    <div class="line-controls"><input type="number" id="xp-amount" inputmode="numeric" min="0" placeholder="0" aria-label="XP amount">
+      <button type="button" class="primary" data-xp="add">Add XP</button><button type="button" data-xp="sub">Take off</button>
+      <button type="button" data-xp="set">Set total</button></div>
+    <label>Track <select id="xp-track">${['slow', 'medium', 'fast'].map(k => `<option value="${k}"${k === state.xpTrack ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
+    <table class="skill-why"><tbody>${t.map((x, i) => `<tr${i + 1 === state.level ? ' class="mine"' : ''}><td>Level ${i + 1}${i + 1 === state.level ? ' (you)' : ''}</td><td class="num">${n(x)}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">Core Rulebook, Table 3-1 (${esc(state.xpTrack)} track). Until you enter XP, it counts as the start of your level.</p></div>`);
+}
+const ORD_WORD = n => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`;
+
+// The Wealth popup (Wealth on the banner): gold left, add or spend gold (or set what's left), and where it went.
+async function popWealth() {
+  if (!data.gear) { await loadGear(); }
+  const m = moneyNow(app, view);
+  if (!m) return;
+  const lvWealth = WEALTH_BY_LEVEL[state.level];
+  const row = (label, v, b = false) => `<tr><td>${b ? `<b>${label}</b>` : label}</td><td class="num">${b ? `<b>${esc(formatGp(v))}</b>` : esc(formatGp(v))}</td></tr>`;
+  openDetail('Wealth', `<div class="wealth-pop">
+    <p><b>${esc(formatGp(m.left))} left</b> to spend${m.left < 0 ? ' <span class="warning">(more spent than you have)</span>' : ''}</p>
+    <div class="line-controls"><input type="number" id="gold-amount" inputmode="decimal" min="0" step="0.01" placeholder="0" aria-label="Gold amount">
+      <button type="button" class="primary" data-gold="add">Add gold</button><button type="button" data-gold="sub">Spend</button>
+      <button type="button" data-gold="set">Set gold left</button></div>
+    <p class="hint">Add gold for treasure, a reward or a sale; Spend for anything not on your lists (an inn, a bribe, a spell bought). Gear you add on the Equipment, Armor, Weapons and Magic Items tabs comes off by itself.</p>
+    <table class="skill-why"><tbody>
+      ${row(state.gold === null ? 'Gold (starting gold)' : 'Gold', m.gold)}
+      ${row('Armor and shield', -m.armorSpend)}${row('Equipment', -m.gearSpend)}${row('Weapons', -m.weaponSpend)}${row('Magic items', -m.magic.cost)}
+      ${row('Left', m.left, true)}
+      ${row('Wealth (gear bought and gold left)', m.gold, true)}</tbody></table>
+    ${lvWealth ? `<p class="hint">Wealth by level ${state.level} (Core Rulebook, for a new character): ${esc(formatGp(lvWealth))}.</p>` : ''}
+    <div class="line-controls"><button type="button" data-wealth-equipment>Open the Equipment tab</button></div></div>`);
+}
 
 // The Languages popup (tap Languages on the Character tab's banner): the ones you start with, then a box for each
 // language to choose (your race's bonus languages first), with how many you have room for.

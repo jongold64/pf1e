@@ -1044,6 +1044,11 @@ button.skill-details.q-details.on, button.skill-details.q-details[aria-expanded=
 .b-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 28px; margin: 0 0 8px; padding: 8px 12px; border-radius: 8px;
   background: color-mix(in srgb, var(--warn) 22%, var(--card)); border: 1px solid var(--warn); border-left-width: 5px; font-weight: 700; }
 .b-banner .b-head { margin: 0; }
+.b-head-money { margin-left: auto; display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.b-chip { background: var(--card); border: 2px solid var(--accent); border-radius: 10px; padding: 2px 10px; min-height: 36px; }
+.build .b-banner button.b-chip { font-size: 1.1rem; }
+.b-chip small { font-weight: 600; font-size: .85em; }
+.b-ready { color: #1e5e2a; font-weight: 700; }
 .b-banner .b-head span, .b-banner .muted, .b-banner input, .b-banner button { font-weight: 700; }
 .b-banner .muted { color: var(--text); opacity: 0.8; }
 /* Classes tab: your levels, one row each, with Remove. */
