@@ -1,7 +1,7 @@
 // Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
 // side panel for the item being looked at.
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { magicItemStats, magicItemTotals, magicItemPaid, ownable, formatGp, formatLbs, maxCharges, chargedPrice, priceChange } from './equipment.js';
+import { magicItemStats, magicItemTotals, magicItemPaid, ownable, formatGp, formatLbs, maxCharges, chargedPrice, priceChange, upgradeDiscount } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem, openBuyKind, showBuyCard } from './tab-crafting.js';
 import { renderCustomBuilder, customRowsHtml, initCustomItems } from './tab-custom-items.js';
@@ -362,7 +362,12 @@ export function initItemsTab(app) {
         const item = app.data.itemsById.get(x.id);
         const was = magicItemPaid(item, x);
         if (freeUpgrade && !x.free) return { ...x, option: t.value, paid: was };
-        return Number.isFinite(x.paid) ? { ...x, option: t.value, paid: Math.max(0, x.paid + versionPrice(item, x, t.value) - versionPrice(item, x, x.option)) } : { ...x, option: t.value };
+        if (!Number.isFinite(x.paid)) return { ...x, option: t.value };
+        // Paid for after a free upgrade: what came free stays off, except that going down a version takes it away first.
+        const before = versionPrice(item, x, x.option), after = versionPrice(item, x, t.value);
+        const off = upgradeDiscount({ off: Math.max(0, before - x.paid), before, after });
+        const { paid: _old, ...rest } = x;
+        return { ...rest, option: t.value, ...(off > 0 ? { paid: Math.max(0, after - off) } : {}) };
       }) });
       return;
     }

@@ -536,7 +536,9 @@ function load(saved) {
   state.inventory = (Array.isArray(state.inventory) ? state.inventory : [])
     .filter(e => e && typeof e.id === 'string' && Number.isInteger(e.qty) && e.qty > 0)
     .map(e => (MERGED[e.id] ? { id: MERGED[e.id], variant: 'Masterwork', qty: e.qty }
-      : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty, ...(e.free === true ? { free: true } : {}) }));
+      : { id: e.id, ...(typeof e.variant === 'string' ? { variant: e.variant } : {}), qty: e.qty, ...(e.free === true ? { free: true } : {}),
+          // Upgraded to another version for free: the gp that came off its price (each).
+          ...(Number.isFinite(e.off) && e.off > 0 ? { off: e.off } : {}) }));
   state.spells = [...new Set((Array.isArray(state.spells) ? state.spells : []).filter(id => typeof id === 'string'))];
   const prep = state.prepared && typeof state.prepared === 'object' && !Array.isArray(state.prepared) ? state.prepared : {};
   state.prepared = Object.fromEntries(Object.entries(prep).filter(([, lv]) => lv && typeof lv === 'object').map(([cid, lv]) =>

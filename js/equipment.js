@@ -108,9 +108,9 @@ export function wornPaid(market, { free = false, paid = null, id = '' } = {}) {
 
 // The part of an item's price that free upgrades gave (off, gp) after a change of quality or material from a market price
 // of `before` to `after`: upgraded for free, the change is added to it; paid for, it stays (you pay the difference).
-// 0 for none.
+// A change to something cheaper takes the free part away first (no gold back for what you never paid). 0 for none.
 export function upgradeDiscount({ off = 0, before, after, free = false }) {
-  return free ? Math.max(0, Math.round((off + after - before) * 100) / 100) : off;
+  return free || after < before ? Math.max(0, Math.round((off + after - before) * 100) / 100) : off;
 }
 
 // What one owned magic item cost: nothing when free; what was paid when it was upgraded for free (entry.paid: the old
@@ -146,6 +146,14 @@ export function sizeWeightFactor(size) {
 
 // Totals for the inventory ([{ id, variant, qty }]) plus worn armor and shield ({ armor, armorEnh, shield, shieldEnh,
 // size }). Items with no listed price or weight count as 0 and are listed in `unpriced` / `unweighed`.
+// What one piece of gear cost (each): nothing when free; its version's price less what free upgrades gave (entry.off);
+// null when the item has no listed price.
+export function gearPaid(item, entry) {
+  if (entry.free) return 0;
+  const { price_gp } = entryStats(item, entry.variant);
+  return price_gp === null ? null : Math.max(0, price_gp - (Number.isFinite(entry.off) ? entry.off : 0));
+}
+
 export function equipmentTotals(inventory, itemsById, worn = {}) {
   let cost = armorCost(worn.armor, worn.armorEnh, worn.armorMw) + armorCost(worn.shield, worn.shieldEnh, worn.shieldMw);
   let weight = ((worn.armor?.weight_lbs || 0) + (worn.shield?.weight_lbs || 0)) * sizeWeightFactor(worn.size);
@@ -154,9 +162,10 @@ export function equipmentTotals(inventory, itemsById, worn = {}) {
   for (const entry of inventory) {
     const item = itemsById.get(entry.id);
     if (!item) continue;
-    const { price_gp, weight_lbs } = entryStats(item, entry.variant);
-    // Free gear (found, a gift) costs no gold.
-    if (entry.free) { /* no cost */ } else if (price_gp === null) unpriced.push(item.name); else cost += price_gp * entry.qty;
+    const { weight_lbs } = entryStats(item, entry.variant);
+    // Free gear (found, a gift) costs no gold; one upgraded for free, its price less that.
+    const each = gearPaid(item, entry);
+    if (each === null) unpriced.push(item.name); else cost += each * entry.qty;
     if (weight_lbs === null) unweighed.push(item.name); else weight += weight_lbs * entry.qty;
   }
   return { cost: Math.round(cost * 100) / 100, weight: Math.round(weight * 100) / 100, unpriced, unweighed };

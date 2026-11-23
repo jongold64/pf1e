@@ -2481,6 +2481,12 @@ It does a thing. More.` });
     [wornPaid(1250, { paid: { id: 'chain-shirt', off: 1150 }, id: 'chain-shirt' }), wornPaid(1250, { paid: { id: 'other', off: 1150 }, id: 'chain-shirt' }), wornPaid(1250, { free: true })].join(), '100,1250,0');
   check('free upgrade adds the change to the discount; a paid one keeps it (you pay the difference)',
     [upgradeDiscount({ before: 100, after: 1250, free: true }), upgradeDiscount({ off: 1150, before: 1250, after: 4250 }), upgradeDiscount({ off: 1150, before: 1250, after: 4250, free: true })].join(), '1150,1150,4150');
+  check('back down from a free upgrade: the free part goes first (a free masterwork backpack back to common costs the 2 gp paid)',
+    [upgradeDiscount({ off: 48, before: 50, after: 2 }), upgradeDiscount({ off: 1150, before: 4250, after: 1250 })].join(), '0,0');
+  const { gearPaid } = await import('./equipment.js');
+  const pack = { id: 'backpack', price_gp: 2, variants: [{ name: 'Common', price_gp: 2 }, { name: 'Masterwork', price_gp: 50 }] };
+  check('a masterwork backpack costs 50 gp; upgraded for free from common, 2 gp; free, nothing',
+    [gearPaid(pack, { variant: 'Masterwork' }), gearPaid(pack, { variant: 'Masterwork', off: 48 }), gearPaid(pack, { variant: 'Masterwork', free: true })].join(), '50,2,0');
   const { magicItemPaid } = await import('./equipment.js');
   const cloak = { id: 'cloak', price_options: [{ label: '+1', price_gp: 1000 }, { label: '+3', price_gp: 9000 }] };
   check('a +3 cloak bought costs 9,000 gp; upgraded for free from +1 it counts at the 1,000 paid; free costs nothing',

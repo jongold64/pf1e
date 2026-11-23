@@ -4,7 +4,7 @@ import { customGearCost, customGearWeight } from './custom-gear.js';
 import { customItemPaid } from './custom-items.js';
 import { askAmount } from './amount-prompt.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { wornPaid } from './equipment.js';
+import { wornPaid, gearPaid, magicItemPaid, priceChange, upgradeDiscount } from './equipment.js';
 import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
@@ -208,7 +208,7 @@ export async function renderEquipment(app, view) {
     const item = data.gearById.get(e.id);
     if (!item) return null;
     const st = entryStats(item, e.variant);
-    return { label: `${entryName(item, e.variant)}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: e.free ? 0 : (st.price_gp || 0) * e.qty, note: e.free ? 'free' : '',
+    return { label: `${entryName(item, e.variant)}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (gearPaid(item, e) || 0) * e.qty, note: e.free ? 'free' : Number.isFinite(e.off) ? 'upgraded for free' : '',
              weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
   }).filter(Boolean);
   const magicRows = [
@@ -216,7 +216,7 @@ export async function renderEquipment(app, view) {
       const item = data.itemsById?.get(e.id);
       if (!item) return null;
       const st = magicItemStats(item, e.option);
-      return { label: `${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: e.free ? 0 : (st.price_gp || 0) * e.qty, note: e.free ? 'free' : '',
+      return { label: `${item.name}${e.option ? ` (${e.option})` : ''}${e.qty > 1 ? ` ×${e.qty}` : ''}`, cost: (magicItemPaid(item, e) || 0) * e.qty, note: e.free ? 'free' : Number.isFinite(e.paid) ? 'upgraded for free' : '',
                weight: st.weight_lbs === null ? null : st.weight_lbs * e.qty };
     }).filter(Boolean),
     ...state.craftedItems.map(e => ({ label: `${e.kind[0].toUpperCase()}${e.kind.slice(1)} of ${e.spellName}${e.qty > 1 ? ` ×${e.qty}` : ''}`,
@@ -329,8 +329,9 @@ export async function renderEquipment(app, view) {
       // Its price and weight, each and in all, for the row's Details popup.
       invWhy.set(`inv-${i}`, { title: entryName(item, e.variant), rows: [
         { label: `Price each${e.variant ? ` (${e.variant.toLowerCase()} version)` : ''}`, text: s.price_gp !== null ? formatGp(s.price_gp) : 'not listed' },
+        ...(Number.isFinite(e.off) && !e.free ? [{ label: 'Less a free upgrade (each)', text: `−${formatGp(e.off)}` }] : []),
         { label: 'Quantity', text: `× ${e.qty}` },
-        { label: 'Price in all', text: s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—' },
+        { label: 'Price in all', text: gearPaid(item, e) !== null ? formatGp(gearPaid(item, e) * e.qty) : '—' },
         { label: 'Weight each', text: s.weight_lbs !== null ? formatLbs(s.weight_lbs) : 'not listed' },
         { label: 'Weight in all', text: s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—' },
       ], note: [`Counted in Equipment (gold) and Weight carried above.`, view.race.size === 'Small'
@@ -342,7 +343,7 @@ export async function renderEquipment(app, view) {
       return `<div class="line-card"><div class="fit-line item-line">
           <button type="button" class="link item-link line-name" data-show-gear="${esc(item.id)}">${esc(entryName(item, e.variant))}</button>
           ${e.qty > 1 ? `<span class="wl-part">×${e.qty}</span>` : ''}
-          <span class="wl-part"><b>${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}</b></span>
+          <span class="wl-part"><b>${esc(e.free ? 'free' : gearPaid(item, e) !== null ? formatGp(gearPaid(item, e) * e.qty) : '—')}</b></span>
           <span class="wl-k">${esc(s.weight_lbs !== null ? formatLbs(s.weight_lbs * e.qty) : '—')}</span>
           ${s.price_gp ? sellButton(`data-inv-sell="${i}"`, entryName(item, e.variant)) : ''}
           <button type="button" class="skill-details q-details wl-more${open ? ' on' : ''}" data-line-more="${key}" aria-expanded="${open}" aria-label="Everything about ${esc(item.name)}" title="Details">?</button></div>
@@ -354,9 +355,10 @@ export async function renderEquipment(app, view) {
               <button type="button" data-qty="${i}" data-step="-1" aria-label="One fewer ${esc(item.name)}">−</button>
               <span class="value">${e.qty}</span>
               <button type="button" data-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
-            <span>Cost ${esc(e.free ? 'free' : s.price_gp !== null ? formatGp(s.price_gp * e.qty) : '—')}
+            <span>Cost ${esc(e.free ? 'free' : gearPaid(item, e) !== null ? formatGp(gearPaid(item, e) * e.qty) : '—')}
               <button type="button" class="skill-details q-details" data-inv-why="inv-${i}" aria-label="Price and weight of ${esc(item.name)}" title="Details">?</button></span>
             ${freeBox(`data-inv-free="${i}"`, e.free)}
+            ${gearVersionChoice(item, e, i)}
           </div></div></div>`;
     }),
     // Custom equipment (Add equipment, Custom): its own price and weight; Change it and Remove under its ?.
@@ -383,6 +385,21 @@ export async function renderEquipment(app, view) {
     }),
   ].join('') || '<p class="hint">Nothing yet. Choose items below and add them.</p>';
   requestAnimationFrame(() => fitLines($('inventory-rows')));
+}
+
+// Upgrade for free ticked: a new version of a piece of gear costs nothing. Kept while the page is open.
+let freeGearUpgrade = false;
+// A piece of gear with versions (a common or masterwork backpack, a chest from small to huge): the Version choice, each
+// version saying what it adds to the price of one (or takes off), with Upgrade for free on the same line.
+function gearVersionChoice(item, e, i) {
+  const versions = item.variants || [];
+  if (versions.length < 2) return '';
+  const price = v => entryStats(item, v).price_gp;
+  const now = price(e.variant);
+  return `<span class="item-version-row"><label class="item-version">Version <select data-inv-variant="${i}">${versions.map(v => `<option value="${esc(v.name)}"${v.name === e.variant ? ' selected' : ''}>${esc(v.name)}${priceChange(now, price(v.name))}</option>`).join('')}</select></label>
+      ${e.free ? '' : `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-gear-free-upgrade${freeGearUpgrade ? ' checked' : ''}> Upgrade for free</label>`}</span>
+    <p class="hint">Beside each version: what it adds to the price${e.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so a new version costs no gold.' : ''}
+      ${Number.isFinite(e.off) && !e.free ? `Upgraded for free: ${esc(formatGp(e.off))} comes off its price${e.qty > 1 ? ' (each)' : ''}.` : ''}</p>`;
 }
 
 function addToInventory(app, id, variant) {
@@ -428,6 +445,20 @@ export function initEquipmentTab(app) {
   // Free: found or a gift, so it costs no gold (gear, and the worn armor or shield).
   $('inventory-rows').addEventListener('change', e => {
     const t = e.target;
+    if (t.dataset.gearFreeUpgrade !== undefined) { freeGearUpgrade = t.checked; return; }
+    // Another version (an upgrade): for free, the change comes off its price; paid for, you pay the difference.
+    if (t.dataset.invVariant !== undefined) {
+      const i = Number(t.dataset.invVariant);
+      app.update({ inventory: app.state.inventory.map((x, j) => {
+        if (j !== i) return x;
+        const item = app.data.gearById.get(x.id);
+        const off = upgradeDiscount({ off: Number.isFinite(x.off) ? x.off : 0, before: entryStats(item, x.variant).price_gp || 0,
+          after: entryStats(item, t.value).price_gp || 0, free: freeGearUpgrade && !x.free });
+        const { off: _old, ...rest } = x;
+        return { ...rest, variant: t.value, ...(off > 0 ? { off } : {}) };
+      }) });
+      return;
+    }
     if (t.dataset.invFree !== undefined) {
       const i = Number(t.dataset.invFree);
       app.update({ inventory: app.state.inventory.map((x, j) => { if (j !== i) return x; const { free, ...rest } = x; return t.checked ? { ...rest, free: true } : rest; }) });
@@ -491,7 +522,7 @@ export function initEquipmentTab(app) {
       const item = app.data.gearById.get(x.id);
       const s = entryStats(item, x.variant);
       const inv = app.state.inventory.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0);
-      sellItem(app, { name: entryName(item, x.variant), value: s.price_gp, paid: x.free ? 0 : s.price_gp, kind: 'gear' }, { inventory: inv });
+      sellItem(app, { name: entryName(item, x.variant), value: s.price_gp, paid: gearPaid(item, x), kind: 'gear' }, { inventory: inv });
       return;
     }
     const step = e.target.closest('[data-qty]');
