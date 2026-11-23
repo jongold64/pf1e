@@ -39,7 +39,7 @@ function ammoControls(app, w, e, i) {
       ${ammo.description ? `<details class="rules"><summary>About ${esc(ammo.name.toLowerCase())}</summary>${paragraphs(ammo.description)}</details>` : ''}` : ''}</div>`;
 }
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
-import { formatGp, formatLbs } from './equipment.js';
+import { formatGp, formatLbs, priceChange } from './equipment.js';
 import { sellButton, sellItem } from './tab-equipment.js';
 import { rollButton } from './roll-ui.js';
 
@@ -584,6 +584,9 @@ export function renderMyWeapons(app, view) {
         ${rollButton({ title: `${weaponName} as two weapons`, groups: [rollGroup('First end', d2.main, crit), rollGroup('Other end', d2.off, critOf(w, flags, have, args.entry, 1))] })}</dd>`);
     }
     const quality = e.enh > 0 ? `+${e.enh}` : e.masterwork ? 'mw' : '0';
+    // A choice's price change from this weapon as it is (market price, free or not).
+    const market = x => weaponCostRows(w, x).reduce((n, r) => n + r.gp, 0);
+    const up = change => priceChange(market(e), market({ ...e, ...change }));
     const featBoxes = WEAPON_FEATS.filter(([, feat]) => have.has(feat) && !ctx.chosenFor(feat).size).map(([key, feat, what]) =>
       `<label class="check-row small"><input type="checkbox" data-weapon-flag="${key}" data-index="${i}" ${e[key] ? 'checked' : ''}> ${esc(feat)} (${what})</label>`).join('');
     const fromFeats = WEAPON_FEATS.filter(([key, feat]) => flags[key] && have.has(feat) && ctx.chosenFor(feat).size).map(([, feat]) => feat);
@@ -639,13 +642,14 @@ export function renderMyWeapons(app, view) {
             </select></label>${wpart(i, 'rating', 'The strength rating')}${compositeRating(w, e, str) > str ? '<p class="warning small">Your Strength bonus is below its rating: −2 on attacks with it.</p>' : ''}`;
         })() : ''}
         <span class="control-with-details"><label>Quality <select data-weapon-quality="${i}">
-          <option value="0"${quality === '0' ? ' selected' : ''}>Normal</option>
-          <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)</option>
-          ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}</option>`).join('')}
+          <option value="0"${quality === '0' ? ' selected' : ''}>Normal${up({ enh: 0, masterwork: false })}</option>
+          <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)${up({ enh: 0, masterwork: true })}</option>
+          ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}${up({ enh: n, masterwork: false })}</option>`).join('')}
         </select></label>${wpart(i, 'quality', 'What masterwork and magic do')}</span>
         ${weaponMaterialsFor(w).length ? `<label>Material <select data-weapon-material="${i}">
-          <option value="">Normal (steel or wood)</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}
+          <option value="">Normal (steel or wood)${up({ material: undefined })}</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}${up({ material: m.id })}</option>`).join('')}
         </select></label>` : ''}
+        ${e.classGear ? '' : `<p class="hint">Beside each quality and material: what it adds to the price (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so changes to it cost no gold: untick Free to pay for an upgrade.' : ''}</p>`}
         ${weaponMaterialById.get(e.material) ? `<p class="hint">${esc(weaponMaterialById.get(e.material).name)}: ${esc(weaponMaterialById.get(e.material).notes)}${weaponMaterialById.get(e.material).mw ? ' Always masterwork (+1 on attacks).' : ''}</p>` : ''}
         ${ammoControls(app, w, e, i)}
         ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {

@@ -3,9 +3,9 @@ import { magicPrefix, magicPart } from './crafting.js';
 import { openLines, $, esc, signed, paragraphs, facts, sourceText } from './dom.js';
 import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureByClass, speedInArmor } from './armor.js';
 import { MONK_IDS, slowedSpeed } from './rules.js';
-import { materialsFor, withMaterial } from './materials.js';
+import { materialsFor, withMaterial, materialById } from './materials.js';
 import { openMagicArmor } from './tab-crafting.js';
-import { armorCost, formatGp } from './equipment.js';
+import { armorCost, formatGp, priceChange } from './equipment.js';
 import { defenseSwitches } from './defense.js';
 import { CATEGORIES as CA_CATEGORIES } from './custom-armor.js';
 import { pickList } from './pick-list.js';
@@ -89,12 +89,18 @@ export function popArmor(app, id, back = null) {
   const enh = worn ? state[`${k}Enh`] : 0;
   const quality = worn && !enh && state[`${k}Mw`] ? 'mw' : String(enh);
   const mats = materialsFor(a);
+  // Each choice's price change from what's worn now (or from the plain item, when it isn't worn).
+  const abilities = worn ? state[`${k}Abilities`] || [] : [], crafted = worn && state[`${k}Crafted`];
+  const material = worn ? state[`${k}Material`] : '';
+  const cost = (m, e, mw) => armorCost(withMaterial(a, m), e, mw, abilities, crafted);
+  const now = cost(material, enh, worn && state[`${k}Mw`]);
   const controls = `<div class="pop-armor-choices">
-      <label>Quality <select data-pop-armor="enh"><option value="0">None</option><option value="mw">Masterwork</option>
-        ${Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}</option>`).join('')}</select></label>
-      ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual</option>${mats.map(m =>
-        `<option value="${esc(m.id)}"${worn && state[`${k}Material`] === m.id ? ' selected' : ''}>${esc(m.name)} (${esc((m.price(a) - a.price_gp >= 0 ? '+' : '') + (m.price(a) - a.price_gp).toLocaleString())} gp)</option>`).join('')}</select></label>` : ''}
+      <label>Quality <select data-pop-armor="enh"><option value="0">None${priceChange(now, cost(material, 0, false))}</option><option value="mw">Masterwork${priceChange(now, cost(material, 0, true))}</option>
+        ${Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}${priceChange(now, cost(material, i + 1, false))}</option>`).join('')}</select></label>
+      ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual${priceChange(now, cost('', enh, worn && state[`${k}Mw`]))}</option>${mats.map(m =>
+        `<option value="${esc(m.id)}"${material === m.id ? ' selected' : ''}>${esc(m.name)}${priceChange(now, cost(m.id, enh, worn && state[`${k}Mw`]))}</option>`).join('')}</select></label>` : ''}
     </div>
+    <p class="hint">${worn ? `Now ${esc(formatGp(now))}. Beside each choice: what it adds to the price (you pay the difference) or takes off.` : `Beside each choice: what it adds to the ${esc(formatGp(a.price_gp))} price.`}</p>
     ${worn && state[`${k}Abilities`]?.length ? `<p class="hint">Special abilities on it now: ${esc(state[`${k}Abilities`].map(x => x.name).join(', '))}.</p>` : ''}`;
   // The choices in the popup, applied when a button is pressed.
   const choose = () => {
@@ -411,6 +417,21 @@ export function renderArmorTab(app, view) {
     $(`${k}-material`).disabled = !list.length;
     $(`${k}-enh`).querySelector('option[value="mw"]').textContent = gear[k]?.mw_included ? 'Masterwork (included)' : 'Masterwork';
     $(`${k}-enh`).querySelector('option[value="0"]').textContent = gear[k]?.mw_included ? 'Not magic' : 'None';
+    // Upgrading what you wear: each choice says what it would add to (or take off) the price now.
+    if (!base) for (const o of $(`${k}-enh`).options) o.textContent = o.value === 'mw' ? 'Masterwork' : o.value === '0' ? 'None' : `+${o.value}`;
+    if (base) {
+      const abilities = state[`${k}Abilities`] || [], crafted = state[`${k}Crafted`];
+      const cost = (material, enh, mw) => armorCost(withMaterial(base, material), enh, mw, abilities, crafted);
+      const now = cost(state[`${k}Material`], state[`${k}Enh`], state[`${k}Mw`]);
+      for (const o of $(`${k}-enh`).options) {
+        const q = o.value === 'mw' ? { enh: 0, mw: true } : { enh: Number(o.value), mw: false };
+        const label = o.value === 'mw' ? (base.mw_included ? 'Masterwork (included)' : 'Masterwork') : o.value === '0' ? (base.mw_included ? 'Not magic' : 'None') : `+${o.value}`;
+        o.textContent = label + priceChange(now, cost(state[`${k}Material`], q.enh, q.mw));
+      }
+      for (const o of $(`${k}-material`).options) {
+        o.textContent = `${o.value ? materialById.get(o.value)?.name || o.value : list.length ? 'Usual (steel, wood or leather)' : 'Usual'}${priceChange(now, cost(o.value, state[`${k}Enh`], state[`${k}Mw`]))}`;
+      }
+    }
   }
   // Special abilities (added with the Crafting card on the Magic Items tab).
   const abilities = list => (list.length ? `<p><b>Special abilities:</b> ${esc(magicPrefix(0, false, list))}

@@ -2470,6 +2470,13 @@ It does a thing. More.` });
   check('no age row for a race without a table', ageRow(ages, 'elf'), null);
   check('a random hair colour comes from the list', HAIR.includes(pickOne(HAIR)), true);
 }
+// Upgrading gear: the price change beside a quality or material.
+{
+  const { priceChange } = await import('./equipment.js');
+  check('price change: +1 armor from plain chain shirt (100 gp) to 1,250 gp', priceChange(100, 1250), ' (+1,150 gp)');
+  check('price change: back to plain is less', priceChange(1250, 100), ' (−1,150 gp)');
+  check('price change: the same price says nothing', priceChange(300, 300), '');
+}
 // Custom races.
 {
   const { customRaceRecord, tidyCustomRaces } = await import('./custom-races.js');

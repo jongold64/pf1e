@@ -158,6 +158,13 @@ export function sellGold(gold, value, paid = 0, gets = Math.round((value || 0) *
 }
 
 // 1250 -> "1,250 gp", 0.5 -> "5 sp", 0.01 -> "1 cp", 2.55 -> "2 gp 5 sp 5 cp", null -> "—".
+// What changing gear to another quality or material costs, beside that choice: " (+2,150 gp)", " (−150 gp)" for
+// one that costs less, '' for the same price. now and then: the market prices before and after.
+export function priceChange(now, then) {
+  const d = Math.round(((then || 0) - (now || 0)) * 100) / 100;
+  return d ? ` (${d > 0 ? '+' : ''}${formatGp(d)})` : '';
+}
+
 export function formatGp(gp) {
   if (gp === null || gp === undefined) return '—';
   const sign = gp < 0 ? '−' : '';
