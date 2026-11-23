@@ -2,7 +2,7 @@
 // here it's laid out compactly, with a small d20 to roll and a small + for Details (the same popups as the other tabs),
 // daily uses to tick off (a running total beside each; the popup marks them and starts a new day), and the player's
 // notes. Sections show only when the character has something for them; Actions holds the attacks, class abilities and spells.
-import { $, esc, signed } from './dom.js';
+import { $, esc, signed, paragraphs } from './dom.js';
 import { rollButton } from './roll-ui.js';
 import { ABILITIES, formatBab, combatManeuvers, initiative, currentHp, channelEnergy, layOnHands, smite, SIZE_AC, xpProgress } from './rules.js';
 import { moneyNow } from './tab-equipment.js';
@@ -399,7 +399,14 @@ export function renderBuild(app, view, parts) {
   bigCards.notes = { title: 'Notes', html: `<textarea class="b-notes-big" data-big-notes rows="16" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>` };
   const tap = key => ` b-tapcard" data-big="${key}`;
   const left = ['', card('Actions', actions, ` b-wide${tap('actions')}`), card('Defense', defense, tap('defense'))];
-  const notesCard = card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`, tap('notes'));
+  // About: the details from the Build tab's Character card (only the ones filled in).
+  const det = state.details || {};
+  const detRows = [['Player', det.player], ['Campaign', det.campaign], ['Gender', det.gender], ['Age', det.age], ['Height', det.height],
+    ['Weight', det.weight], ['Hair', det.hair], ['Eyes', det.eyes], ['Homeland', det.homeland]].filter(([, v]) => v);
+  const aboutCard = detRows.length || det.story ? `<section class="b-card b-details"><h3>About</h3>
+    ${detRows.length ? `<dl>${detRows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+    ${det.story ? paragraphs(det.story) : ''}</section>` : '';
+  const notesCard = aboutCard + card('Notes', `<textarea id="b-notes" rows="5" placeholder="Anything to remember: allies, quests, loot...">${esc(state.notes || '')}</textarea>`, tap('notes'));
   // Everything on the left, in the order it was; every skill on the right, in full (no scrolling).
   // The highlighted row's extras: initiative, hero points, the class's main pools (what's left; tap to tick them off),
   // each caster's spell DC and concentration, and the Daily uses popup / New day.

@@ -644,26 +644,16 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 .guide ul { margin: 4px 0 8px; padding-left: 20px; }
 .guide li { margin: 4px 0; }
 
-/* Active effects card */
-#effects ul { list-style: none; padding: 0; margin: 6px 0; }
-#effects .buff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px 16px; }
-#effects .buff-active li { padding: 4px 0; border-bottom: 1px solid var(--border); }
-#effects .buff-active li:last-child { border-bottom: 0; }
-#effects .cl-input { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 4px 32px; font-size: 0.9rem; }
-#effects .cl-input input { width: 64px; }
-#effects .custom-effect { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
-#effects .custom-effect input[type="text"] { flex: 1 1 180px; min-width: 0; font: inherit; min-height: 40px;
+/* Custom effects, to change (Character tab, Active effects popup) */
+.onnow-pop .custom-effects { list-style: none; padding: 0; margin: 6px 0; }
+.onnow-pop .custom-effect { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.onnow-pop .fx-head, .onnow-pop .fx-part { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
+.onnow-pop .fx-part { margin-left: 30px; }
+.onnow-pop .custom-effect input[type="text"] { flex: 1 1 180px; min-width: 0; font: inherit; min-height: 40px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); padding: 0 10px; }
-#effects .custom-effect select { width: auto; flex: 0 1 auto; max-width: 100%; }
-#effects .custom-effect input[type="number"] { width: 70px; }
-#effects .custom-effect input[type="checkbox"] { width: 22px; height: 22px; }
-#effects .effect-totals { margin: 0 0 4px; }
-#effects .on-now { background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
-#effects .on-now h3 { margin: 0 0 4px; }
-#effects .on-now ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
-#effects .on-now li { font-size: 0.9rem; }
-#effects .tick { width: 20px; text-align: center; color: var(--muted); }
-#effects h3 { font-size: 1rem; margin: 12px 0 4px; }
+#detail-body .onnow-pop .custom-effect select { width: auto; flex: 0 1 auto; max-width: 100%; min-height: 40px; }
+.onnow-pop .custom-effect input[type="number"] { width: 70px; min-height: 40px; }
+.onnow-pop .custom-effect input[type="checkbox"] { width: 22px; height: 22px; }
 
 /* Animal companion card */
 #companion h3 { font-size: 1rem; margin: 12px 0 4px; }
@@ -1361,3 +1351,17 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .b-banner-fx .b-chips { display: contents; }
 .b-banner-fx .b-chips li { background: var(--bg, #fff); }
 .b-banner .b-banner-fx .b-addfx { margin-left: auto; min-height: 36px; padding: 0 12px; }
+
+/* Build tab: the Character card (who, faith, details) and the folded Game options card. */
+.details-who { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 4px 0 10px; font-size: 1.05rem; }
+.details-who .muted { font-size: 0.95rem; }
+.char-details .details-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 12px; margin: 10px 0; }
+.char-details .details-grid label { display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+.char-details .details-grid input { min-height: 40px; font-size: 1rem; }
+.char-details .details-wide { grid-column: span 2; }
+.char-details textarea { width: 100%; box-sizing: border-box; font-size: 1rem; }
+.game-options > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-height: 44px; }
+.game-options > summary h2 { margin: 0; }
+.b-details dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0 0 6px; }
+.b-details dt { color: var(--muted, #666); }
+.b-details dd { margin: 0; }

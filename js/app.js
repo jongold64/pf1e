@@ -59,7 +59,7 @@ import { archetypeChoices, archetypeChoiceEffects, kensaiEffects, diminishedSpel
 import { buffById, BONUS_TYPES, TARGETS, SKILL_TARGET_NAMES, effectTotals, shiftSize, activeBonuses, countedBonuses, setEffectMods, missChance, effectSpends } from './effects.js';
 import { FLAWS, flawById, flawEffects } from './flaws.js';
 import { talentSlots, talentOptions, ruleOf, pluralOf, archetypeEffects, featTalentSlots, withBasicTalent, invocationTalents } from './talents.js';
-import { initEffects, renderEffects } from './tab-effects.js';
+import { initEffects } from './tab-effects.js';
 import { companionLevel, ANIMAL_SKILLS, TRICKS } from './companion.js';
 import { renderFamiliar } from './tab-familiar.js';
 import { initEidolon, renderEidolon } from './tab-eidolon.js';
@@ -208,6 +208,7 @@ const state = {
   kiWeapons: { enh: 0, abilities: [], on: false },  // a talented monk's ki weapons (talented-monk.js tidyKiWeapons)
   weaponBonds: {},  // arcane pool, divine bond, fiendish boon, sacred weapon choices (weapon-bonds.js tidyBond)
   notes: '',         // Build tab: the player's notes
+  details: {},       // Build tab, Character card: player, campaign, gender, age, height, weight, hair, eyes, homeland, story
   portrait: '',      // Character tab: the character's picture, a small square JPEG (data URL); '' for the silhouette
   deity: '',         // data/deities.json id, 'none' for an ideal or philosophy, '' not chosen (any class; a cleric, warpriest or inquisitor needs one)
   alignment: '',     // 'LG', 'NG'... 'CE' (alignment.js), '' not chosen
@@ -441,6 +442,7 @@ function load(saved) {
   state.daily = Object.fromEntries(Object.entries(state.daily && typeof state.daily === 'object' && !Array.isArray(state.daily) ? state.daily : {})
     .filter(([k, v]) => typeof k === 'string' && Number.isInteger(v) && v > 0).map(([k, v]) => [k, Math.min(999, v)]));
   state.notes = typeof state.notes === 'string' ? state.notes.slice(0, 5000) : '';
+  state.details = tidyDetails(state.details);
   state.blessings = [...new Set((Array.isArray(state.blessings) ? state.blessings : []).filter(id => data.blessingsById?.has(id)))].slice(0, 2);
   state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
   state.alignment = Object.hasOwn(ALIGNMENT_NAMES, state.alignment) ? state.alignment : '';
@@ -1662,10 +1664,6 @@ function buildControls() {
     update({ alternates: e.target.checked ? [...state.alternates, name] : state.alternates.filter(n => n !== name) });
   });
   // Hit point tracker: Damage and Heal ask for the amount (hpAsk); Full resets.
-  $('hp-damage').addEventListener('click', () => hpAsk('damage'));
-  $('hp-heal').addEventListener('click', () => hpAsk('heal'));
-  $('hp-full').addEventListener('click', () => update({ hpCurrent: null }));
-  $('hp-extra').addEventListener('click', showExtraHp);
   // The Xtra-HP popup's controls (it's drawn into the shared details dialog).
   $('detail-body').addEventListener('click', e => {
     const box = e.target.closest('.xtra-hp');
@@ -1722,19 +1720,12 @@ function buildControls() {
       activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
     openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
   });
-  // Details popup for a saving throw.
-  $('race-defense').addEventListener('click', e => {
-    const b = e.target.closest('[data-save-details]');
-    if (b) showSaveDetails(b.dataset.saveDetails);
-    const acd = e.target.closest('[data-ac-details]');
-    if (acd) showAcDetails(acd.dataset.acDetails || null);
-    if (e.target.closest('[data-cmb-details]')) showManeuverDetails();
-  });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
   $('hero-points').addEventListener('click', heroClick);
   $('hero-points').addEventListener('change', e => {
     if (e.target.id === 'antihero') update({ antihero: e.target.checked });
   });
+  initDetails();
   $('house-rules').addEventListener('click', e => {
     const key = e.target.closest('[data-house-rule]')?.dataset.houseRule;
     if (key) update({ houseRules: { ...state.houseRules, [key]: !state.houseRules[key] } });
@@ -3387,6 +3378,42 @@ function deityList(q, align) {
 // Alignment and deity (Build tab, under the race): for every character; the classes' alignment rules (a paladin is
 // lawful good, a monk lawful, a cleric within one step of her deity) with a button to fix it when only one will do.
 // The deity is the same one the Classes tab's picker sets for a cleric, warpriest or inquisitor.
+// Build tab, Character card: race and class at a glance (buttons to their places) and the details boxes. A box saves
+// when you leave it, so the page isn't redrawn while you type.
+const DETAIL_FIELDS = [['player', 'Player'], ['campaign', 'Campaign'], ['gender', 'Gender'], ['age', 'Age'], ['height', 'Height'],
+  ['weight', 'Weight'], ['hair', 'Hair'], ['eyes', 'Eyes'], ['homeland', 'Homeland']];
+function tidyDetails(saved) {
+  const d = saved && typeof saved === 'object' ? saved : {};
+  const out = {};
+  for (const [k] of DETAIL_FIELDS) if (typeof d[k] === 'string' && d[k].trim()) out[k] = d[k].slice(0, 80);
+  if (typeof d.story === 'string' && d.story.trim()) out.story = d.story.slice(0, 5000);
+  return out;
+}
+function renderDetails() {
+  const race = data.races.find(r => r.id === state.race);
+  const cls = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
+  $('details-who').innerHTML = `<b>${esc(state.name || 'No name yet')}</b>
+    <span>${esc(race?.name || '')} ${cls ? esc(cls) : '<span class="muted">no class yet</span>'}</span>
+    <button type="button" data-details-go="classes">${cls ? 'Classes' : 'Choose a class'}</button>
+    <button type="button" data-details-go="abilities">Ability scores</button>`;
+  const box = $('char-details');
+  const focused = document.activeElement?.closest?.('#char-details') ? document.activeElement.dataset.detail : null;
+  if (focused) return; // don't redraw under the cursor
+  const d = state.details || {};
+  box.innerHTML = `<div class="details-grid">${DETAIL_FIELDS.map(([k, l]) => `<label${k === 'homeland' ? ' class="details-wide"' : ''}>${l}
+      <input type="text" data-detail="${k}" value="${esc(d[k] || '')}" maxlength="80" autocomplete="off"></label>`).join('')}</div>
+    <label>Appearance and backstory <textarea data-detail="story" rows="4" maxlength="5000" placeholder="What they look like, where they come from, what they want">${esc(d.story || '')}</textarea></label>
+    <p class="hint">These show on the Character tab.</p>`;
+}
+function initDetails() {
+  $('details-who').addEventListener('click', e => { const b = e.target.closest('[data-details-go]'); if (b) showTab(b.dataset.detailsGo); });
+  $('char-details').addEventListener('change', e => {
+    const k = e.target.dataset.detail;
+    if (!k) return;
+    update({ details: tidyDetails({ ...state.details, [k]: e.target.value }) });
+  });
+}
+
 function renderFaith() {
   const deity = data.deitiesById.get(state.deity) || null;
   const problems = alignmentProblems(state.alignment, view.counts.map(e => ({ id: e.cls.id, name: e.cls.name, alignment: e.cls.alignment })), deity);
@@ -4140,6 +4167,7 @@ function render() {
   renderRaceFeats();
   renderRaceLanguages();
   renderFaith();
+  renderDetails();
   renderClasses(view);
   renderCharacterBar();
 
@@ -4196,17 +4224,12 @@ function render() {
       <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
   }).join('');
   $('third-party-note').textContent = tpBooks.filter(b => state.books[b.id]).map(b => b.note).join(' ');
+  // Game options (folded): what's switched on, in one line.
+  const rulesOn = HOUSE_RULES.filter(([k]) => state.houseRules[k]).map(([, l]) => l);
+  const booksOn = tpBooks.filter(b => state.houseRules.thirdParty && state.books[b.id]).map(b => b.name || b.title || b.id);
+  $('game-options-summary').textContent = [rulesOn.length ? `House rules: ${rulesOn.join(', ')}` : 'No house rules on', ...(booksOn.length ? [`Books: ${booksOn.join(', ')}`] : [])].join(' · ');
   setRollOptions({ maxHealing: !!state.houseRules.maxHealing, autoCrit: !!state.houseRules.autoCrit });
 
-  // Hit point tracker: current hit points (full unless damage has been applied) and what they mean at 0 or below.
-  const hpNow = currentHp(state.hpCurrent, stats.hp);
-  $('hp-current').textContent = hpNow;
-  $('hp-max').textContent = `of ${stats.hp}`;
-  const temp = state.tempHp.reduce((n, t) => n + t.amount, 0);
-  $('hp-temp').textContent = temp ? `+ ${temp} temporary` : '';
-  $('hp-temp').title = state.tempHp.map(t => `${t.name}: ${t.amount}`).join(', ');
-  $('hp-status').textContent = hpStatus(hpNow, stats.scores.con);
-  $('hp-current').classList.toggle('hurt', hpNow < stats.hp);
   const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
   const cm = combatManeuvers(stats, view.size, view.haveFeats);
   const why = (key, what) => `<button type="button" class="skill-details q-details" data-result-details="${key}" aria-label="How ${esc(what)} is worked out" title="Details">?</button>`;
@@ -4232,47 +4255,11 @@ function render() {
     $(`mod-${a}`).innerHTML = `${esc(signed(stats.mod[a]))}${rollButton({ title: `${ABILITY_NAMES[a]} check${stats.fx.checks ? ` (${signed(stats.fx.checks)} from effects)` : ''}`,
       check: ABILITY_NAMES[a], plain: true, groups: [{ attacks: [check] }] })}`;
   }
-  $('race-defense').innerHTML = `
-    <div class="defense-ac">
-      <div><span>AC</span><b>${stats.ac}</b>
-        <button type="button" class="skill-details q-details" data-ac-details aria-label="What adds to AC, touch and flat-footed" title="Details">?</button></div>
-      <div><span>Touch</span><b>${stats.touch}</b>
-        <button type="button" class="skill-details q-details" data-ac-details="touch" aria-label="What counts for touch AC" title="Details">?</button></div>
-      <div><span>Flat-footed</span><b>${stats.flatFooted}</b>
-        <button type="button" class="skill-details q-details" data-ac-details="flat" aria-label="What counts for flat-footed AC" title="Details">?</button></div>
-      <div class="cmd-box"><span>CMD</span><b>${cm.cmd}</b>
-        <button type="button" class="skill-details q-details" data-cmb-details aria-label="What adds to CMD" title="Details">?</button></div>
-      <div class="cmb-box"><span>CMB</span><b>${esc(signed(cm.cmb))}</b>
-        ${rollButton({ title: 'Combat maneuver check', check: 'CMB', groups: [{ attacks: [cm.cmb] }] })}
-        <button type="button" class="skill-details q-details" data-cmb-details aria-label="What adds to CMB and CMD" title="Details">?</button></div>
-    </div>
-    ${cm.maneuvers.length ? `<p class="hint">CMD against ${esc(cm.maneuvers.map(m => `${m.name.toLowerCase()} ${m.cmd}`).join(', '))}.</p>` : ''}
-    ${saveRow('Fortitude', stats.fort)}${saveRow('Reflex', stats.ref)}${saveRow('Will', stats.will)}
-    ${channelEnergy(stats, view.haveFeats).map(c => `<div class="defense-row channel-row">
-      <span>Channel energy${c.source !== 'Cleric' ? ` (${esc(c.source)})` : ''}<small>${esc(c.energy)} · DC ${c.dc} Will half · ${c.uses}/day${c.items.length ? ` · ${esc(c.items.join('; '))}` : ''}</small></span>
-      <b>${esc(c.dice)}</b>${rollButton({ title: `Channel ${c.energy} energy`, groups: [{ attacks: [], damage: c.dice, word: 'heals or harms', heal: true }] })}</div>`).join('')}
-    ${layOnHands(stats).map(l => {
-      // Touch of corruption needs a melee touch attack: BAB + Str + size.
-      const touch = stats.bab[0] + stats.mod.str + (SIZE_AC[view.size] ?? 0) + stats.fx.attack + (stats.fx['melee-attack'] || 0);
-      const spec = l.heals ? { title: l.name, groups: [{ attacks: [], damage: l.dice, heal: true }] }
-        : { title: l.name, check: 'Melee touch', groups: [{ attacks: [touch], damage: l.dice, threat: 20, mult: 2 }] };
-      return `<div class="defense-row channel-row"><span>${esc(l.name)}<small>${l.heals ? 'heals (or harms undead)' : `melee touch ${esc(signed(touch))}`} · ${l.uses}/day</small></span>
-        <b>${esc(l.dice)}</b>${rollButton(spec)}</div>`;
-    }).join('')}
-    ${allClassAttacks(stats).map(c => `<div class="defense-row channel-row">
-      <span>${esc(c.name)}<small>${c.attack !== null ? `${esc(signed(c.attack))} · ` : ''}${esc(c.note)}${c.uses ? ` · ${c.uses}/day` : ''}</small></span>
-      <b>${esc(c.dice)}</b>${rollButton(c.attack !== null ? { title: c.name, check: c.name, groups: [{ attacks: Array(c.count || 1).fill(c.attack), damage: c.dice, threat: 20, mult: 2 }] }
-        : { title: c.name, groups: [{ attacks: [], damage: c.dice, word: 'extra damage' }] })}</div>`).join('')}
-    ${smite(stats).map(sm => `<div class="defense-row channel-row"><span>${esc(sm.name)}<small>+${sm.attack} attack, +${sm.damage} damage
-      (+${sm.firstHit} on the first hit against ${sm.name === 'Smite evil' ? 'evil outsiders, evil dragons and undead' : 'good outsiders, good dragons, and good clerics and paladins'}),
-      +${sm.deflection} deflection to AC against the target · roll it on the Weapons tab</small></span><b>${sm.uses}/day</b></div>`).join('')}
-    ${cm.maneuvers.map((m, i) => rollRow(`${m.name} (CMB)`, m.cmb, { title: `${m.name} check`, check: m.name, groups: [{ attacks: [m.cmb] }] },
-      i === 0 ? 'defense-row first-cmb' : 'defense-row')).join('')}`;
 
   renderSkills(race, view.classes, stats.scores, skillFeatNames());
   renderFeats(view.slots, view.granted, view.ctx);
   renderTraits(app);
-  renderEffects(app, view);
+
   renderCompanion(app, view);
   renderFamiliar(app, view);
   renderManeuvers(app, view);
@@ -5058,7 +5045,7 @@ function choiceSelect(c) {
 }
 
 // Flaws card (Flaws house rule): two lines to type a flaw and its penalty; each named flaw adds a bonus feat slot.
-// Hero points card (Action Points house rule), in the Race card under the hit points.
+// Hero points (Action Points house rule), in the Build tab's Game options: how many, and the antihero choice.
 function renderHeroPoints() {
   const box = $('hero-points');
   box.hidden = !state.houseRules.actionPoints;
@@ -5069,9 +5056,9 @@ function renderHeroPoints() {
     box.innerHTML = `<h3>Hero points</h3>${antihero}`;
     return;
   }
-  box.innerHTML = `<h3>Hero points</h3>${heroPanel()}${antihero}`;
+  box.innerHTML = `<h3>Hero points</h3><p class="hint">You have ${state.heroPoints ?? 1}: spend them from the Character tab.</p>${antihero}`;
 }
-// The hero points count with − and +, a button for each way to spend one, and what each does: on the Build tab and in
+// The hero points count with − and +, a button for each way to spend one, and what each does: in
 // the Character tab's Hero points popup.
 function heroPanel() {
   const points = state.heroPoints ?? 1;

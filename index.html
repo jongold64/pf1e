@@ -62,19 +62,15 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
-      <section class="card wide house-rules">
-        <h2>House rules</h2>
-        <div id="house-rules" class="house-rule-buttons"></div>
-        <p id="house-rules-note" class="hint"></p>
+      <!-- Who the character is: race and class at a glance, alignment and deity, and the details (looks, homeland,
+           player, campaign, story) shown on the Character tab. -->
+      <section class="card wide details-card" id="details-card">
+        <h2>Character</h2>
+        <div id="details-who" class="details-who"></div>
+        <div id="faith" class="faith"></div>
+        <div id="char-details" class="char-details"></div>
       </section>
-      <section class="card wide house-rules" id="third-party-card" hidden>
-        <h2>Third-party books</h2>
-        <p class="hint">Books from other publishers, not Paizo. Each is off until you switch it on for this character.</p>
-        <div id="third-party-books" class="house-rule-buttons"></div>
-        <p id="third-party-note" class="hint"></p>
-      </section>
-      <!-- Two columns: Race on the left, Results and Active effects on the right (one column, in the order Race,
-           Results, Active effects, on narrow screens). -->
+      <!-- Two columns: Race on the left, Results on the right (one column on narrow screens). -->
       <div class="char-column">
         <section class="card order-1">
           <h2>Race <span id="race-current" class="count"></span></h2>
@@ -89,34 +85,29 @@
           <!-- Racial bonus feats with a choice: a half-elf's Skill Focus, Ancestral Arms' weapon. -->
           <div id="race-feats" class="race-feats"></div>
           <div id="race-languages" class="race-languages"></div>
-          <div id="faith" class="faith"></div>
-          <div class="hp-tracker">
-            <div class="hp-now"><span class="hp-label">Hit Points</span><b id="hp-current"></b><span id="hp-max"></span><span id="hp-temp" class="hp-temp"></span>
-              <span id="hp-status" class="warning"></span></div>
-            <div class="hp-change">
-              <button type="button" id="hp-damage" class="primary">Damage</button>
-              <button type="button" id="hp-heal">Heal</button>
-              <button type="button" id="hp-full">Full</button>
-              <button type="button" id="hp-extra" title="Temporary hit points and other ways above the maximum">Xtra-HP</button>
-            </div>
-            <p class="hint">Damage and Heal ask for the amount.</p>
-          </div>
-          <div id="hero-points" class="hero-points" hidden></div>
-          <div id="race-defense" class="defense"></div>
         </section>
       </div>
       <div class="char-column">
         <section class="card results order-2">
           <h2>Results</h2>
           <dl id="results"></dl>
-        </section>
-        <section class="card order-5" id="effects-card">
-          <h2>Active effects <span id="effects-count" class="count"></span></h2>
-          <div id="effects"></div>
+          <p class="hint">Hit points, AC, saves and active effects are kept on the Character tab.</p>
         </section>
       </div>
-
-
+      <!-- Set once: house rules, third-party books and hero points, folded shut with a line saying what's on. -->
+      <details class="card wide house-rules game-options" id="game-options">
+        <summary><h2>Game options</h2> <span id="game-options-summary" class="muted"></span></summary>
+        <h3>House rules</h3>
+        <div id="house-rules" class="house-rule-buttons"></div>
+        <p id="house-rules-note" class="hint"></p>
+        <div id="third-party-card" hidden>
+          <h3>Third-party books</h3>
+          <p class="hint">Books from other publishers, not Paizo. Each is off until you switch it on for this character.</p>
+          <div id="third-party-books" class="house-rule-buttons"></div>
+          <p id="third-party-note" class="hint"></p>
+        </div>
+        <div id="hero-points" class="hero-points" hidden></div>
+      </details>
     </main>
 
     <!-- Abilities -->
@@ -600,9 +591,17 @@
           <summary>Build tab</summary>
           <ul>
             <li>Popup windows (Details, the feat and trait lists) close with their <b>Close</b> button or by tapping anywhere outside them.</li>
-            <li><b>Tap a card to open it in a window</b> (House rules, Race, Results, Active effects): tap anywhere on it except a list, box or
-              button. Everything in it works there as on the tab (choose a race or alternate traits, alignment and deity, damage and healing,
-              switch effects on); a <b>?</b> opens its Details and the card comes back when that closes. Tap empty space or Close to put it back.</li>
+            <li>The Build tab goes in building order: <b>Character</b> (who they are), <b>Race</b>, <b>Results</b>, then <b>Game options</b>
+              folded at the bottom. Hit points, AC, CMD, saves, hero points to spend and Active effects are on the Character tab.</li>
+            <li><b>Character</b> card: the name, race and classes at a glance, with <b>Classes</b> (or <b>Choose a class</b>) and <b>Ability
+              scores</b> buttons that go to those tabs; <b>Alignment</b> and <b>Deity</b>; and the details: player, campaign, gender, age, height,
+              weight, hair, eyes, homeland, and appearance and backstory. Each box saves when you leave it; the filled-in ones show in an
+              <b>About</b> card on the Character tab, beside Notes.</li>
+            <li><b>Game options</b> (folded; tap it to open): the line beside it says which house rules and books are on. Inside: the
+              house rules, the third-party books (with the 3rd Party house rule) and, with the Action Points house rule, the antihero choice.</li>
+            <li><b>Tap a card to open it in a window</b> (Race, Results): tap anywhere on it except a list, box or
+              button. Everything in it works there as on the tab; a <b>?</b> opens its Details and the card comes back when that closes.
+              Tap empty space or Close to put it back.</li>
             <li><b>House rules</b>: switch each one Y or N. Max HP (every level gives the full hit die in hit points, not just 1st level: your table's own rule, not a Paizo one), Encumbrance (what you carry slows you), Max Starting Gold (a 1st-level character's starting gold is the most its class's roll can give, e.g. a barbarian's 180 gp instead of 105), Auto-Crit (a natural 20 on an attack is a critical hit with no confirmation roll; other threats like a 19 still roll to confirm), Max Healing (healing rolls give their
               maximum), Action Points (Pathfinder hero points), Flaws (up to two, chosen from a list, each gives a bonus feat and its penalty is
               applied), Extra Campaign Trait (a third trait), Drawbacks (Paizo: take one drawback for an extra trait), Extra Channel (multiple) (Extra Channel can be taken more than once, two more channels a day each time; officially it's once only), 3rd Party (shows the <b>Third-party books</b> card).</li>
@@ -628,7 +627,7 @@
               feats in the feat list (Greater Unarmed Strike, Martial Training, the discipline style feats...) and the Knowledge
               (martial) skill. With the book unticked none of it shows. Black Seraph maneuvers have only a one-line summary (that's
               all the source page has).</li>
-            <li><b>Alignment</b> and <b>Deity</b> (under the race): for any character. Classes with alignment rules say so in red with a
+            <li><b>Alignment</b> and <b>Deity</b> (in the Character card): for any character. Classes with alignment rules say so in red with a
               fix when only one will do (a paladin must be lawful good, an antipaladin chaotic evil; a monk lawful, a barbarian not lawful, a
               druid neutral on at least one axis; a cleric, warpriest or inquisitor within one step of the deity). The deity is the same one a
               cleric, warpriest or inquisitor chooses on the Classes tab. The <b>Deity</b> button opens a search: type a name, a title or what it
@@ -646,14 +645,6 @@
               you speak and how many more you have room for (one per point of Intelligence bonus, one per rank of Linguistics, which
               counts as soon as you put ranks in it); <b>Choose languages</b> picks them (the same popup as Languages on the
               Character tab's banner). Until they're chosen the Build tab is tinted red.</li>
-            <li><b>Hit points</b>: <b>Damage</b> or <b>Heal</b> opens a box for the amount; <b>Full</b> heals completely.
-              <b>Xtra-HP</b> lists the ways to go above your maximum: switch on <b>Spirit Boost</b> (an oracle's healing past your
-              maximum becomes temporary hit points), or add temporary hit points from aid, false life, greater heroism, rage and
-              more (roll or type the amount). Temporary hit points show beside your hit points and are lost first.</li>
-            <li>AC, CMD, CMB, saves and combat maneuvers are in the Race card, each with a Roll button.</li>
-            <li>On the Race card, <b>Details</b> beside each saving throw lists what adds to it: each class's base save, the
-              ability modifier, feats, traits and active effects. The <b>Details</b> under AC shows every piece of AC and which ones
-              count for touch and flat-footed AC; Touch, Flat-footed and CMD each have their own, and the one beside CMB explains CMB and CMD.</li>
             <li>On the <b>Results</b> card, <b>Details</b> explains maximum hit points (hit dice, Con, favored class, Toughness), initiative,
               base attack bonus (each class's share), speed (with fast movement for barbarians, bloodragers and monks), what you wear and your load.</li>
             <li><b>Class features that change your numbers</b> are counted by themselves, and named in each Details: a paladin's
@@ -670,20 +661,21 @@
               are listed with their numbers under the class abilities; a shadowdancer's shadow jump is a daily counter in 10-ft. jumps.
               Bonuses that only apply sometimes (bravery against fear, trap sense, evasion, still mind, poison resistance,
               well-versed, track...) are listed under <b>In some situations</b> in the Details of that save, AC or skill.</li>
-            <li><b>On now</b>, at the top of the card, names everything counting right now: effects you switched on, your items'
-              effects, custom effects and always-on class features. <b>Counting now</b> below it adds them up.</li>
-            <li><b>From your magic items</b> lists every magic item you own, ticked while you wear or hold it: its bonuses count
+            <li><b>Active effects</b> are on the Character tab banner: tap them (or <b>+ Add effects</b>) to open them larger.
+              <b>Counting now</b>, at the top, adds up everything counting right now: effects you switched on, your items'
+              effects, custom effects and always-on class features.</li>
+            <li><b>From your magic items</b> (in Active effects) lists the magic items you wear or hold; switch each on or off on the Magic Items tab. Its bonuses count
               (a belt's +4 Strength, a cloak of resistance, Bracers of Falcon's Aim giving aspect of the falcon). Untick it to take it
               off. A bonus that only applies sometimes (Boots of Speed's haste, a terrain, against one kind of attack) has its own box,
               off to start; a belt of physical might has a choice of which two abilities. <b>Details</b> shows what it gives and the
               item's description. Items stay listed until removed on the Magic Items tab. Special abilities on the armor and shield
               you wear and on your weapons are listed too (✓): shadow armor's +5 Stealth counts; a weapon's (dueling's +4 initiative)
               has its own box, since it applies only while you wield that weapon.</li>
-            <li>Effects you switch on go into <b>Your effects</b> at the top of the card. Unticking one switches it off but keeps
+            <li>Effects you switch on go into <b>Your effects</b> in Active effects. Unticking one switches it off but keeps
               it there for next time (favored terrain, flanking, a condition...); <b>remove</b> takes it off the list.</li>
             <li><b>From your traits</b> (in Active effects): your traits' attack, damage, AC, CMB and CMD bonuses, each with the
               trait's words saying when it applies; tick one on while it does.</li>
-            <li><b>Active effects</b> has six lists to switch things on from: <b>Spell adjustments</b> (spells cast on you),
+            <li><b>Add effects</b> (in Active effects) sorts everything into six lists to add from: <b>Spell adjustments</b> (spells cast on you),
               <b>Conferred abilities</b> (rage, bardic performances, defensive stance, studied target, favored enemy, challenge),
               <b>Other adjustments</b> (belts, headbands, rings of protection, amulets of natural armor, cloaks of resistance,
               bracers of armor, with the bonus they give), <b>Circumstances</b> (aid another, favorable or unfavorable conditions,
@@ -697,7 +689,7 @@
               Skills tab). Each entry's <b>Details</b> shows the spell, item or class text it comes from.</li>
             <li><b>Active effects</b>: switch on spells cast on you (bless, haste, bull's strength, mage armor, barkskin, enlarge
               person...) or class abilities (rage for barbarians and bloodragers, the unchained barbarian's rage, a skald's inspired
-              rage, inspire courage) and set the caster level where it matters. Add your own for anything else (name, bonus, type, what it
+              rage, inspire courage) and set the caster level where it matters. Under <b>Custom effects</b> add your own for anything else (<b>Add a custom effect</b>: name, bonus, type, what it
               affects, including <b>Melee attack rolls</b> or <b>Melee damage rolls</b> only; <b>+ another bonus</b> gives one effect several, like a rage's Str, Con, Will and AC
               ; <b>All d20 rolls</b> covers attacks, saves, skills and ability checks). Every number and roll in the app (scores, AC,
               attacks, damage, saves, skills, ability checks, initiative, CMB, speed) counts them, following the
