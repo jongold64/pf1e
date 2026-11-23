@@ -1378,3 +1378,9 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .details-roll label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 #char-details .details-roll select { width: auto; min-height: 40px; }
 #detail-body .race-search { width: 100%; min-height: 40px; font: inherit; padding: 0 12px; margin-bottom: 10px; }
+/* Choose a race: one race per row, A to Z, with its size, ability changes and kind under the name. */
+#detail-body .race-column { display: flex; flex-direction: column; gap: 6px; }
+#detail-body .race-column button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left; padding: 8px 12px; min-height: 48px; }
+#detail-body .race-column button[hidden] { display: none; }
+#detail-body .race-column small { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+#detail-body .race-column button[aria-pressed="true"] small { color: inherit; }

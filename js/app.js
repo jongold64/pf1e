@@ -4823,12 +4823,18 @@ function renderRaceCustom() {
       ${d.id ? '<button type="button" data-cr-delete>Delete it</button>' : ''}
       <button type="button" data-cr-cancel>Cancel</button></div></div>`;
 }
+// One line under a race's name in the Choose a race list: size, ability changes and its kind.
+const RACE_KINDS = Object.fromEntries(RACE_GROUPS.map(([g, l]) => [g, l === 'My custom races' ? 'Custom' : l]));
+function raceLine(r) {
+  const mods = ABILITIES.map(a => [a, r.ability_modifiers?.[a]]).filter(([, v]) => v).map(([a, v]) => `${v > 0 ? '+' : '−'}${Math.abs(v)} ${ABILITY_NAMES[a].slice(0, 3)}`);
+  return [r.size, r.flexible_ability_bonus ? '+2 to one ability' : mods.join(', '), RACE_KINDS[r.category] || ''].filter(Boolean).join(' · ');
+}
 // The Choose a race popup: a search box, every race A to Z (custom ones marked), and Make a custom race.
 function popRacePicker() {
   const races = [...data.races].sort((a, b) => a.name.localeCompare(b.name));
   openDetail('Choose a race', `<input type="search" class="race-search" placeholder="Search races by name" autocomplete="off" aria-label="Search races">
-    <div class="add-buttons race-pick">${races.map(r => `<button type="button" data-race-pick="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"
-      aria-pressed="${r.id === state.race}">${esc(r.name)}${r.custom ? ' <small>(custom)</small>' : ''}</button>`).join('')}</div>
+    <div class="race-pick race-column">${races.map(r => `<button type="button" data-race-pick="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"
+      aria-pressed="${r.id === state.race}"><b>${esc(r.name)}</b><small>${esc(raceLine(r))}</small></button>`).join('')}</div>
     <p class="hint race-none" hidden>No race by that name.</p>
     <p class="hint">Tap a race to become it; its traits show in the Race card. Not here? Make your own:</p>`,
   [{ label: 'Make a custom race', run: () => { crDraft = freshRace(); raceCustomOpen = true; render(); $('race-custom-wrap').scrollIntoView({ block: 'start' }); } }]);
