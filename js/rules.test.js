@@ -2449,6 +2449,16 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom races.
+{
+  const { customRaceRecord, tidyCustomRaces } = await import('./custom-races.js');
+  const [d] = tidyCustomRaces([{ id: 'cr-x', name: 'Sky folk', size: 'Small', speed: 20, flexible: false, mods: { dex: 2, con: -2, wis: 3 }, darkvision: true, skilled: true }]);
+  const r = customRaceRecord(d);
+  check('custom race: Small, speed 20, +2 Dex −2 Con (a +3 is dropped), darkvision, Skilled, Common',
+    [r.size, r.base_speed, JSON.stringify(r.ability_modifiers), r.senses.join(), r.traits.some(t => t.name === 'Skilled'), r.languages.starting.join()].join(' | '),
+    'Small | 20 | {"dex":2,"con":-2} | darkvision 60 ft. | true | Common');
+  check('custom race with +2 to one ability is flexible', customRaceRecord(tidyCustomRaces([{ name: 'X' }])[0]).flexible_ability_bonus, true);
+}
 // Custom classes.
 {
   const { babAt, saveAt, customClassRecord, tidyCustomClasses } = await import('./custom-classes.js');

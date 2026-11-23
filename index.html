@@ -77,8 +77,12 @@
            Results, Active effects, on narrow screens). -->
       <div class="char-column">
         <section class="card order-1">
-          <h2>Race</h2>
-          <select id="race"></select>
+          <h2>Race <span id="race-current" class="count"></span></h2>
+          <p class="hint">Choose a kind of race, then tap a race. <b>Custom</b> makes a homebrew race.</p>
+          <div id="race-add-buttons" class="add-buttons"></div>
+          <div id="race-add-list" class="add-buttons race-pick" hidden></div>
+          <div id="race-custom-wrap" hidden></div>
+          <select id="race" aria-label="Race" hidden></select>
           <p class="hint term-hint">Tap or point at an item to see what it does.</p>
           <div id="race-info" class="info"></div>
           <div id="race-alternates" class="race-alternates"></div>
@@ -630,7 +634,12 @@
               cleric, warpriest or inquisitor chooses on the Classes tab. The <b>Deity</b> button opens a search: type a name, a title or what it
               stands for (sun, healing, a domain, a favored weapon), narrow it by alignment, and <b>Choose</b> (or <b>?</b> for its domains and favored weapon). Both show on the
               Character tab and the printed sheet.</li>
-            <li><b>Race</b>: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
+            <li><b>Race</b>: a button for each kind of race (Core, Featured, Uncommon, Other, and My custom races once you've
+              made one); tap one to see its races as buttons, and tap a race to become it (yours is highlighted). <b>Custom</b>
+              makes a homebrew race: name, size, type, base speed, +2 to one ability of your choice or set changes to each
+              ability, a bonus feat, Skilled, darkvision, low-light vision, other traits with their text, and languages. Those
+              count like any race's; <b>Change</b> beside it under My custom races changes or deletes it.</li>
+            <li>The race's items: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
               traits for others; ones that clash are greyed out. <b>Details</b> on one shows it beside the standard trait it replaces,
               with Take or Remove. The lists include the Player Companions' and later books' traits (Blood of Shadows' blended
               view...), each with its book; favored class options from those books are there too. <b>Languages</b> lists the ones

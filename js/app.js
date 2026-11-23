@@ -36,6 +36,7 @@ import { tidyCustomArmor, customArmorRecord } from './custom-armor.js';
 import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from './custom-feats.js';
 import { tidyCustomSkills } from './custom-skills.js';
 import { BAB_KINDS, customClassRecord, tidyCustomClasses } from './custom-classes.js';
+import { RACE_SIZES, RACE_TYPES, RACE_SPEEDS, customRaceRecord, tidyCustomRaces } from './custom-races.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -85,7 +86,7 @@ import { tidyChoices, initiatorClasses, initiatorLevel, maxManeuverLevel, maneuv
          maneuverFeatCounts, choiceProblems, stanceEffects, martialClassEffects, martialDaily, martialFeats } from './maneuvers.js';
 import { renderManeuvers, initManeuvers } from './tab-maneuvers.js';
 
-const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
+const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other'], ['custom', 'My custom races']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
                       ['alternate', 'Alternate'], ['prestige', 'Prestige'], ['third-party', 'Third-party'], ['custom', 'My custom classes']];
 const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'build', 'guide'];
@@ -138,6 +139,7 @@ const state = {
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
   customClasses: [],         // custom classes (Classes tab, Custom): custom-classes.js
+  customRaces: [],           // custom races (Build tab, Custom): custom-races.js
   customSkills: [],          // custom skills (Skills tab, Custom): custom-skills.js
   customFeats: [],           // custom feats' definitions (Feats tab, Custom): custom-feats.js
   customArmor: [],           // custom armor and shields' definitions (Armor tab, Custom): custom-armor.js
@@ -329,6 +331,9 @@ function load(saved) {
   state.houseRules = Object.fromEntries(HOUSE_RULES.filter(([k]) => hr[k] === true).map(([k]) => [k, true]));
   const books = state.books && typeof state.books === 'object' ? state.books : {};
   state.books = Object.fromEntries((data.thirdParty?.books || []).filter(b => books[b.id] === true).map(b => [b.id, true]));
+  // Custom races join the race data first, so a character of one keeps it.
+  state.customRaces = tidyCustomRaces(state.customRaces);
+  syncCustomRaces();
   if (!data.races.some(r => r.id === state.race)) state.race = DEFAULTS.race;
   if (!BUDGETS.some(b => b.points === state.budget)) state.budget = DEFAULTS.budget;
   if (!ABILITIES.includes(state.flexible)) state.flexible = DEFAULTS.flexible;
@@ -2223,6 +2228,7 @@ function initTabSearches() {
   initFeatAdd();
   initSkillFilters();
   initClassAdd();
+  initRaceAdd();
   $('feat-tab-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-feat-result]');
     if (btn) openFeatForSlots(btn.dataset.featResult);
@@ -2596,6 +2602,13 @@ function syncCustomFeats() {
 // What a custom feat's bonus can be on: the custom effect targets and each skill.
 const FEAT_BONUS_TARGETS = TARGETS;
 
+// Custom races go into the race data.
+function syncCustomRaces() {
+  if (!Array.isArray(data.races)) return;
+  for (let i = data.races.length - 1; i >= 0; i--) if (data.races[i].custom) data.races.splice(i, 1);
+  for (const d of state.customRaces || []) data.races.push(customRaceRecord(d));
+}
+
 // Custom classes go into the class data too.
 function syncCustomClasses() {
   if (!Array.isArray(data.classes)) return;
@@ -2604,6 +2617,7 @@ function syncCustomClasses() {
 }
 
 function computeView() {
+  syncCustomRaces();
   syncCustomClasses();
   setCustomSkills(state.customSkills || []);
   syncCustomWeapons();
@@ -4112,7 +4126,7 @@ function render() {
 
   // Race info: each item opens a popup explaining it. Redrawn only when the race changes, so an open
   // popup isn't left pointing at a button that no longer exists.
-  const raceKey = `${race.id}|${(race.alternates || []).join('|')}`;
+  const raceKey = `${race.id}|${(race.alternates || []).join('|')}${race.custom ? JSON.stringify(state.customRaces.find(d => d.id === race.id)) : ''}`;
   if ($('race-info').dataset.race !== raceKey) {
     raceItems = raceTerms(race);
     $('race-info').dataset.race = raceKey;
@@ -4121,6 +4135,7 @@ function render() {
       ${termButtons(raceItems)}`;
   }
 
+  renderRaceAdd();
   renderAlternates(data.races.find(r => r.id === state.race));
   renderRaceFeats();
   renderRaceLanguages();
@@ -4644,6 +4659,136 @@ function renderSkills(race, classes, scores, featNames) {
       <td class="total">${signed(t.total)}${rollButton({ title: `${name} check${t.usable ? '' : ' (untrained)'}`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}${details(name)}</td>
     </tr>`;
   }).join('');
+}
+
+// Build tab, Race card: a button for each kind of race (its races as buttons; tap one to become it) and the Custom
+// race builder.
+let raceGroup = null;
+let raceCustomOpen = false;
+let crDraft = null;
+const freshRace = () => ({ id: '', name: '', size: 'Medium', type: 'humanoid', speed: 30, flexible: true,
+  mods: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 }, lowLight: false, darkvision: false, bonusFeat: false, skilled: false,
+  languages: ['Common'], bonusLanguages: [], traits: [], summary: '' });
+function renderRaceAdd() {
+  const cur = data.races.find(r => r.id === state.race);
+  raceGroup ??= cur?.category || 'core';
+  // The hidden list keeps every race (custom ones too) so code that reads it sees the race.
+  const opts = groupedOptions(data.races, RACE_GROUPS);
+  if ($('race').dataset.opts !== String(data.races.length) + (state.customRaces || []).map(d => d.id + d.name).join()) {
+    $('race').innerHTML = opts;
+    $('race').dataset.opts = String(data.races.length) + (state.customRaces || []).map(d => d.id + d.name).join();
+  }
+  $('race').value = state.race;
+  $('race-current').textContent = cur ? cur.name : '';
+  const groups = RACE_GROUPS.filter(([g]) => data.races.some(r => r.category === g));
+  $('race-add-buttons').innerHTML = groups.map(([g, l]) => `<button type="button" data-race-group="${g}" aria-pressed="${!raceCustomOpen && raceGroup === g}">${esc(l)}</button>`).join('')
+    + `<button type="button" class="add-custom" data-race-custom aria-pressed="${raceCustomOpen}">Custom</button>`;
+  const list = raceGroup && !raceCustomOpen ? data.races.filter(r => r.category === raceGroup).sort((a, b) => a.name.localeCompare(b.name)) : [];
+  $('race-add-list').hidden = !list.length;
+  $('race-add-list').innerHTML = list.map(r => `<button type="button" data-race-pick="${esc(r.id)}" aria-pressed="${r.id === state.race}">${esc(r.name)}</button>`).join('')
+    + (cur?.custom && raceGroup === 'custom' ? `<button type="button" class="link" data-race-change>Change ${esc(cur.name)}</button>` : '');
+  $('race-custom-wrap').hidden = !raceCustomOpen;
+  if (raceCustomOpen) renderRaceCustom();
+}
+function renderRaceCustom() {
+  crDraft ??= freshRace();
+  const d = crDraft;
+  const opt = (list, v) => list.map(([k, l]) => `<option value="${esc(String(k))}"${String(k) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  const modOpts = [[-4, '−4'], [-2, '−2'], [0, '0'], [2, '+2'], [4, '+4']];
+  $('race-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-cr="name" value="${esc(d.name)}" placeholder="e.g. Sky folk" maxlength="40"></label>
+      <label>Size <select data-cr="size">${opt(RACE_SIZES.map(s => [s, s]), d.size)}</select></label>
+      <label>Type <select data-cr="type">${opt(RACE_TYPES.map(s => [s, s[0].toUpperCase() + s.slice(1)]), d.type)}</select></label>
+      <label>Base speed <select data-cr="speed">${opt(RACE_SPEEDS.map(s => [s, `${s} ft.`]), d.speed)}</select></label>
+    </div>
+    <h3>Ability scores</h3>
+    <label class="check-row"><input type="checkbox" data-cr="flexible"${d.flexible ? ' checked' : ''}> +2 to one ability of my choice (like a human)</label>
+    ${d.flexible ? '' : `<div class="custom-grid">${ABILITIES.map(a => `<label>${ABILITY_NAMES[a]} <select data-cr-mod="${a}">${opt(modOpts, d.mods[a])}</select></label>`).join('')}</div>`}
+    <h3>Traits</h3>
+    <div class="custom-grid">
+      <label class="check-row"><input type="checkbox" data-cr="bonusFeat"${d.bonusFeat ? ' checked' : ''}> Bonus feat at 1st level</label>
+      <label class="check-row"><input type="checkbox" data-cr="skilled"${d.skilled ? ' checked' : ''}> Skilled (+1 skill rank a level)</label>
+      <label class="check-row"><input type="checkbox" data-cr="darkvision"${d.darkvision ? ' checked' : ''}> Darkvision 60 ft.</label>
+      <label class="check-row"><input type="checkbox" data-cr="lowLight"${d.lowLight ? ' checked' : ''}> Low-light vision</label>
+    </div>
+    ${d.traits.length ? `<ul class="plain-list custom-powers">${d.traits.map((t, i) => `<li><span><b>${esc(t.name)}</b>${t.text ? ` <small class="muted">${esc(t.text.slice(0, 80))}</small>` : ''}</span>
+      <button type="button" class="link" data-cr-trait-remove="${i}">remove</button></li>`).join('')}</ul>` : ''}
+    <div class="custom-add custom-grid">
+      <label>Other trait <input type="text" id="cr-t-name" placeholder="e.g. Glide" maxlength="60"></label>
+      <label>What it does <input type="text" id="cr-t-text" placeholder="Short rules text" maxlength="1000"></label>
+      <button type="button" data-cr-trait-add>Add this trait</button></div>
+    <div class="custom-grid">
+      <label>Languages <input type="text" data-cr-langs="languages" value="${esc(d.languages.join(', '))}" placeholder="Common"></label>
+      <label>Bonus languages <input type="text" data-cr-langs="bonusLanguages" value="${esc(d.bonusLanguages.join(', '))}" placeholder="e.g. Elven, Sylvan"></label>
+    </div>
+    <label>About the race <textarea data-cr="summary" rows="2" maxlength="1000">${esc(d.summary)}</textarea></label>
+    <p class="hint">Its ability scores, size, speed, senses, languages, bonus feat and Skilled count like any race's; other traits are listed with their text.</p>
+    <div class="line-controls"><button type="button" class="primary" data-cr-save>${d.id ? 'Save changes' : 'Add it and use it'}</button>
+      <button type="button" data-cr-clear>${d.id ? 'Stop changing it' : 'Clear'}</button>
+      ${d.id ? '<button type="button" data-cr-delete>Delete it</button>' : ''}
+      <button type="button" data-cr-cancel>Cancel</button></div></div>`;
+}
+function initRaceAdd() {
+  $('race-add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-race-group], [data-race-custom]');
+    if (!b) return;
+    if (b.hasAttribute('data-race-custom')) raceCustomOpen = !raceCustomOpen;
+    else { raceCustomOpen = false; raceGroup = b.dataset.raceGroup; }
+    render();
+  });
+  $('race-add-list').addEventListener('click', e => {
+    const p = e.target.closest('[data-race-pick]');
+    if (p) { if (p.dataset.racePick !== state.race) update({ race: p.dataset.racePick, alternates: [] }); return; }
+    if (e.target.closest('[data-race-change]')) {
+      const d = state.customRaces.find(x => x.id === state.race);
+      if (d) { crDraft = structuredClone(d); raceCustomOpen = true; render(); }
+    }
+  });
+  const box = $('race-custom-wrap');
+  const splitNames = v => v.split(',').map(x => x.trim()).filter(Boolean);
+  box.addEventListener('input', e => {
+    const k = e.target.dataset.cr;
+    if (k === 'name' || k === 'summary') crDraft[k] = e.target.value;
+    else if (e.target.dataset.crLangs) crDraft[e.target.dataset.crLangs] = splitNames(e.target.value);
+  });
+  box.addEventListener('change', e => {
+    const k = e.target.dataset.cr;
+    if (k === 'speed') crDraft.speed = Number(e.target.value);
+    else if (k === 'size' || k === 'type') crDraft[k] = e.target.value;
+    else if (k === 'flexible') { crDraft.flexible = e.target.checked; renderRaceCustom(); }
+    else if (['bonusFeat', 'skilled', 'darkvision', 'lowLight'].includes(k)) crDraft[k] = e.target.checked;
+    else if (e.target.dataset.crMod) crDraft.mods[e.target.dataset.crMod] = Number(e.target.value);
+  });
+  box.addEventListener('click', e => {
+    if (e.target.closest('[data-cr-trait-add]')) {
+      const name = box.querySelector('#cr-t-name').value.trim();
+      if (!name) return;
+      crDraft.traits.push({ name, text: box.querySelector('#cr-t-text').value.trim() });
+      renderRaceCustom();
+      return;
+    }
+    const tr = e.target.closest('[data-cr-trait-remove]');
+    if (tr) { crDraft.traits.splice(Number(tr.dataset.crTraitRemove), 1); renderRaceCustom(); return; }
+    if (e.target.closest('[data-cr-clear]')) { crDraft = freshRace(); renderRaceCustom(); return; }
+    if (e.target.closest('[data-cr-cancel]')) { crDraft = freshRace(); raceCustomOpen = false; render(); return; }
+    if (e.target.closest('[data-cr-delete]')) {
+      const id = crDraft.id;
+      if (!confirm(`Delete ${crDraft.name || 'this race'}?${state.race === id ? ' Your character goes back to human.' : ''}`)) return;
+      update({ customRaces: state.customRaces.filter(x => x.id !== id), ...(state.race === id ? { race: DEFAULTS.race, alternates: [] } : {}) });
+      crDraft = freshRace(); raceCustomOpen = false; raceGroup = null; render();
+      return;
+    }
+    if (!e.target.closest('[data-cr-save]')) return;
+    const def = { ...crDraft, name: crDraft.name.trim() || 'Custom race' };
+    const isNew = !def.id;
+    if (isNew) def.id = `cr-${Date.now().toString(36)}`;
+    const list = isNew ? [...state.customRaces, def] : state.customRaces.map(x => (x.id === def.id ? def : x));
+    state.customRaces = list;
+    syncCustomRaces();
+    update({ customRaces: list, ...(isNew || state.race === def.id ? { race: def.id, alternates: [] } : {}) });
+    crDraft = freshRace(); raceCustomOpen = false; raceGroup = 'custom'; render();
+  });
 }
 
 // Classes tab: the Add a level buttons (a kind of class, then its classes; tap one to read it and add a level) and the
