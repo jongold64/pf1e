@@ -1714,15 +1714,6 @@ function buildControls() {
       <tfoot><tr><td><b>Per day</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>
       <p class="hint">Ability scores here include active effects (an owl's wisdom, for example).</p>`);
   });
-  // Details popup for initiative (Results card).
-  $('results').addEventListener('click', e => {
-    const rd = e.target.closest('[data-result-details]');
-    if (rd) { showResultDetails(rd.dataset.resultDetails); return; }
-    if (!e.target.closest('[data-init-details]')) return;
-    const b = initiativeBreakdown(view.stats, view.haveFeats, view.traits,
-      activeBonuses(view.buffs, view.customAll).filter(x => x.target === 'init'));
-    openDetail(`Initiative ${signed(b.total)}`, detailsTable(b.lines, b.total));
-  });
   // Hero points: +/− for GM awards and corrections, a button for each way to spend one, and the antihero choice.
   $('hero-points').addEventListener('click', heroClick);
   $('hero-points').addEventListener('change', e => {
@@ -4342,8 +4333,6 @@ function render() {
   const unchosen = state.increases.slice(0, reached).filter(a => !a).length;
   $('increase-note').textContent = unchosen ? `${unchosen} increase${unchosen > 1 ? 's' : ''} still to choose.` : '';
 
-  // Results
-  const worn = [view.gear.armor, view.gear.shield].filter(Boolean).map(a => a.name).join(' and ');
   // House rules: a Y/N button for each, and what the ones switched on do.
   $('house-rules').innerHTML = HOUSE_RULES.map(([key, label]) => {
     const on = !!state.houseRules[key];
@@ -4367,18 +4356,6 @@ function render() {
   $('game-options-summary').textContent = [rulesOn.length ? `House rules: ${rulesOn.join(', ')}` : 'No house rules on', ...(booksOn.length ? [`Books: ${booksOn.join(', ')}`] : [])].join(' · ');
   setRollOptions({ maxHealing: !!state.houseRules.maxHealing, autoCrit: !!state.houseRules.autoCrit });
 
-  const init = initiative(stats, view.haveFeats, view.traitFx.initiative);
-  const cm = combatManeuvers(stats, view.size, view.haveFeats);
-  const why = (key, what) => `<button type="button" class="skill-details q-details" data-result-details="${key}" aria-label="How ${esc(what)} is worked out" title="Details">?</button>`;
-  const results = [
-    ['Maximum hit points', esc(stats.hp) + why('hp', 'maximum hit points')],
-    ['Initiative', `${esc(signed(init))}${rollButton({ title: 'Initiative', check: 'Initiative', plain: true, groups: [{ attacks: [init] }] })}<button type="button" class="skill-details q-details" data-init-details aria-label="What adds to initiative" title="Details">?</button>`],
-    ['Base attack bonus', esc(formatBab(stats.bab)) + why('bab', 'base attack bonus')],
-    ['Speed', esc(view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.`) + why('speed', 'speed')],
-    ['Wearing', esc(worn || 'no armor') + why('worn', 'what you wear')],
-    ...(view.load ? [['Load', `<span class="${view.load.load === 'light' ? '' : 'warning'}">${esc(loadText(view.load))}</span>${why('load', 'your load')}`]] : []),
-  ];
-  $('results').innerHTML = results.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
   // Armor Class and saving throws, in the Race card; each save has a Roll button.
   const rollRow = (name, value, spec, cls = 'defense-row') => `<div class="${cls}"><span>${esc(name)}</span><b>${esc(signed(value))}</b>
@@ -4785,9 +4762,8 @@ function renderSkills(race, classes, scores, featNames) {
   }).join('');
 }
 
-// Build tab, Race card: a button for each kind of race (its races as buttons; tap one to become it) and the Custom
-// race builder.
-let raceGroup = null;
+// Build tab, Race card: one Choose a race button opens every race A to Z (with a search box; players needn't know
+// which book or kind a race is), and Make a custom race opens the Custom race builder in the card.
 let raceCustomOpen = false;
 let crDraft = null;
 const freshRace = () => ({ id: '', name: '', size: 'Medium', type: 'humanoid', speed: 30, flexible: true,
@@ -4795,7 +4771,6 @@ const freshRace = () => ({ id: '', name: '', size: 'Medium', type: 'humanoid', s
   languages: ['Common'], bonusLanguages: [], traits: [], summary: '' });
 function renderRaceAdd() {
   const cur = data.races.find(r => r.id === state.race);
-  raceGroup ??= cur?.category || 'core';
   // The hidden list keeps every race (custom ones too) so code that reads it sees the race.
   const opts = groupedOptions(data.races, RACE_GROUPS);
   if ($('race').dataset.opts !== String(data.races.length) + (state.customRaces || []).map(d => d.id + d.name).join()) {
@@ -4804,13 +4779,8 @@ function renderRaceAdd() {
   }
   $('race').value = state.race;
   $('race-current').textContent = cur ? cur.name : '';
-  const groups = RACE_GROUPS.filter(([g]) => data.races.some(r => r.category === g));
-  $('race-add-buttons').innerHTML = groups.map(([g, l]) => `<button type="button" data-race-group="${g}" aria-pressed="${!raceCustomOpen && raceGroup === g}">${esc(l)}</button>`).join('')
-    + `<button type="button" class="add-custom" data-race-custom aria-pressed="${raceCustomOpen}">Custom</button>`;
-  const list = raceGroup && !raceCustomOpen ? data.races.filter(r => r.category === raceGroup).sort((a, b) => a.name.localeCompare(b.name)) : [];
-  $('race-add-list').hidden = !list.length;
-  $('race-add-list').innerHTML = list.map(r => `<button type="button" data-race-pick="${esc(r.id)}" aria-pressed="${r.id === state.race}">${esc(r.name)}</button>`).join('')
-    + (cur?.custom && raceGroup === 'custom' ? `<button type="button" class="link" data-race-change>Change ${esc(cur.name)}</button>` : '');
+  $('race-add-buttons').innerHTML = `<button type="button" class="primary" data-race-choose>${cur ? `Choose a race <small>(now ${esc(cur.name)})</small>` : 'Choose a race'}</button>`
+    + (cur?.custom ? `<button type="button" data-race-change>Change ${esc(cur.name)}</button>` : '');
   $('race-custom-wrap').hidden = !raceCustomOpen;
   if (raceCustomOpen) renderRaceCustom();
 }
@@ -4853,17 +4823,34 @@ function renderRaceCustom() {
       ${d.id ? '<button type="button" data-cr-delete>Delete it</button>' : ''}
       <button type="button" data-cr-cancel>Cancel</button></div></div>`;
 }
+// The Choose a race popup: a search box, every race A to Z (custom ones marked), and Make a custom race.
+function popRacePicker() {
+  const races = [...data.races].sort((a, b) => a.name.localeCompare(b.name));
+  openDetail('Choose a race', `<input type="search" class="race-search" placeholder="Search races by name" autocomplete="off" aria-label="Search races">
+    <div class="add-buttons race-pick">${races.map(r => `<button type="button" data-race-pick="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"
+      aria-pressed="${r.id === state.race}">${esc(r.name)}${r.custom ? ' <small>(custom)</small>' : ''}</button>`).join('')}</div>
+    <p class="hint race-none" hidden>No race by that name.</p>
+    <p class="hint">Tap a race to become it; its traits show in the Race card. Not here? Make your own:</p>`,
+  [{ label: 'Make a custom race', run: () => { crDraft = freshRace(); raceCustomOpen = true; render(); $('race-custom-wrap').scrollIntoView({ block: 'start' }); } }]);
+  const body = $('detail-body');
+  body.querySelector('.race-search').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    for (const b of body.querySelectorAll('[data-race-pick]')) { b.hidden = !!q && !b.dataset.name.includes(q); shown += !b.hidden; }
+    body.querySelector('.race-none').hidden = shown > 0;
+  });
+  body.querySelector('.race-pick').addEventListener('click', e => {
+    const p = e.target.closest('[data-race-pick]');
+    if (!p) return;
+    $('detail-dialog').close();
+    raceCustomOpen = false;
+    if (p.dataset.racePick !== state.race) update({ race: p.dataset.racePick, alternates: [] });
+    else render();
+  });
+}
 function initRaceAdd() {
   $('race-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-race-group], [data-race-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-race-custom')) raceCustomOpen = !raceCustomOpen;
-    else { raceCustomOpen = false; raceGroup = b.dataset.raceGroup; }
-    render();
-  });
-  $('race-add-list').addEventListener('click', e => {
-    const p = e.target.closest('[data-race-pick]');
-    if (p) { if (p.dataset.racePick !== state.race) update({ race: p.dataset.racePick, alternates: [] }); return; }
+    if (e.target.closest('[data-race-choose]')) { popRacePicker(); return; }
     if (e.target.closest('[data-race-change]')) {
       const d = state.customRaces.find(x => x.id === state.race);
       if (d) { crDraft = structuredClone(d); raceCustomOpen = true; render(); }
@@ -4900,7 +4887,7 @@ function initRaceAdd() {
       const id = crDraft.id;
       if (!confirm(`Delete ${crDraft.name || 'this race'}?${state.race === id ? ' Your character goes back to human.' : ''}`)) return;
       update({ customRaces: state.customRaces.filter(x => x.id !== id), ...(state.race === id ? { race: DEFAULTS.race, alternates: [] } : {}) });
-      crDraft = freshRace(); raceCustomOpen = false; raceGroup = null; render();
+      crDraft = freshRace(); raceCustomOpen = false; render();
       return;
     }
     if (!e.target.closest('[data-cr-save]')) return;
@@ -4911,7 +4898,7 @@ function initRaceAdd() {
     state.customRaces = list;
     syncCustomRaces();
     update({ customRaces: list, ...(isNew || state.race === def.id ? { race: def.id, alternates: [] } : {}) });
-    crDraft = freshRace(); raceCustomOpen = false; raceGroup = 'custom'; render();
+    crDraft = freshRace(); raceCustomOpen = false; render();
   });
 }
 
@@ -5670,9 +5657,12 @@ function openDetail(title, bodyHtml, actions = []) {
   if (poppedCard) { resumeCard = poppedCard; restoreCard(); }
   $('detail-title').textContent = title;
   $('detail-body').innerHTML = bodyHtml;
+  // Every popup ends with a way out: Cancel beside its choices, or Close when it only shows something.
   $('detail-actions').innerHTML = actions.map((a, i) =>
-    `<button type="button" data-action="${i}"${a.primary ? ' class="primary"' : ''}>${esc(a.label)}</button>`).join('');
+    `<button type="button" data-action="${i}"${a.primary ? ' class="primary"' : ''}>${esc(a.label)}</button>`).join('')
+    + `<button type="button" data-action-close>${actions.length ? 'Cancel' : 'Close'}</button>`;
   $('detail-actions').onclick = e => {
+    if (e.target.closest('[data-action-close]')) { $('detail-dialog').close(); return; }
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     $('detail-dialog').close();

@@ -44,7 +44,7 @@ function render(panel) {
   const host = [...document.querySelectorAll('dialog[open]')].at(-1) || document.body;
   if (panel.parentElement !== host) host.append(panel);
   panel.innerHTML = `<div class="roll-head"><b>${esc(latest.title)}</b>
-      <button type="button" class="link" data-roll-close aria-label="Close">close</button></div>
+      <button type="button" data-roll-close>Close</button></div>
     <ul class="roll-lines">${latest.lines.map(line).join('') || '<li>Nothing to roll.</li>'}</ul>
     ${older.length ? `<details class="roll-older"><summary>Earlier rolls</summary>${older.map(r =>
       `<div class="roll-earlier"><b>${esc(r.title)}</b><ul class="roll-lines">${r.lines.map(line).join('')}</ul></div>`).join('')}</details>` : ''}`;

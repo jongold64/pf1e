@@ -90,7 +90,7 @@ export function initTermPopover(container, getItems) {
     current?.setAttribute('aria-expanded', 'false');
     current = btn;
     btn.setAttribute('aria-expanded', 'true');
-    pop.innerHTML = `<h3>${esc(item.title)}</h3>${item.text.map(p => `<p>${esc(p)}</p>`).join('')}`;
+    pop.innerHTML = `<div class="term-head"><h3>${esc(item.title)}</h3><button type="button" data-term-close>Close</button></div>${item.text.map(p => `<p>${esc(p)}</p>`).join('')}`;
     // Inside a popup window (a Build tab card opened in one) it goes in that window, so it shows on top.
     const home = btn.closest('dialog') || document.body;
     if (pop.parentElement !== home) home.append(pop);
@@ -123,6 +123,7 @@ export function initTermPopover(container, getItems) {
     show(btn);
     pinned = true;
   });
+  pop.addEventListener('click', e => { if (e.target.closest('[data-term-close]')) hide(); });
   document.addEventListener('click', e => { if (!pop.hidden && !termOf(e) && !pop.contains(e.target)) hide(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) hide(); });
   window.addEventListener('scroll', () => { if (!pop.hidden) hide(); }, { passive: true });

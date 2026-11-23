@@ -62,30 +62,21 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
-      <!-- Two columns: Race on the left, Results on the right (one column on narrow screens). -->
-      <div class="char-column">
-        <section class="card order-1">
-          <h2>Race <span id="race-current" class="count"></span></h2>
-          <p class="hint">Choose a kind of race, then tap a race. <b>Custom</b> makes a homebrew race.</p>
-          <div id="race-add-buttons" class="add-buttons"></div>
-          <div id="race-add-list" class="add-buttons race-pick" hidden></div>
-          <div id="race-custom-wrap" hidden></div>
-          <select id="race" aria-label="Race" hidden></select>
-          <p class="hint term-hint">Tap or point at an item to see what it does.</p>
-          <div id="race-info" class="info"></div>
-          <div id="race-alternates" class="race-alternates"></div>
-          <!-- Racial bonus feats with a choice: a half-elf's Skill Focus, Ancestral Arms' weapon. -->
-          <div id="race-feats" class="race-feats"></div>
-          <div id="race-languages" class="race-languages"></div>
-        </section>
-      </div>
-      <div class="char-column">
-        <section class="card results order-2">
-          <h2>Results</h2>
-          <dl id="results"></dl>
-          <p class="hint">Hit points, AC, saves and active effects are kept on the Character tab.</p>
-        </section>
-      </div>
+      <!-- Race: one button opens the list of every race (and a custom race); the race's traits below. -->
+      <section class="card wide race-card" id="race-card">
+        <h2>Race <span id="race-current" class="count"></span></h2>
+        <p class="hint"><b>Choose a race</b> lists every race; you can also make a homebrew one there.</p>
+        <div id="race-add-buttons" class="add-buttons"></div>
+        <div id="race-add-list" class="add-buttons race-pick" hidden></div>
+        <div id="race-custom-wrap" hidden></div>
+        <select id="race" aria-label="Race" hidden></select>
+        <p class="hint term-hint">Tap or point at an item to see what it does.</p>
+        <div id="race-info" class="info"></div>
+        <div id="race-alternates" class="race-alternates"></div>
+        <!-- Racial bonus feats with a choice: a half-elf's Skill Focus, Ancestral Arms' weapon. -->
+        <div id="race-feats" class="race-feats"></div>
+        <div id="race-languages" class="race-languages"></div>
+      </section>
       <!-- Who the character is: race and class at a glance, alignment and deity, and the details (looks, homeland,
            player, campaign, story) shown on the Character tab. -->
       <section class="card wide details-card" id="details-card">
@@ -590,8 +581,10 @@
         <details>
           <summary>Build tab</summary>
           <ul>
-            <li>Popup windows (Details, the feat and trait lists) close with their <b>Close</b> button or by tapping anywhere outside them.</li>
-            <li>The Build tab goes in building order: <b>Race</b> and <b>Results</b> side by side, <b>Character</b> (who they are), then <b>Game options</b>
+            <li>Every popup has a way out: popup windows (Details, the feat and trait lists, search) have <b>Close</b> at the top, which
+              stays in view as you scroll, and a <b>Close</b> (or <b>Cancel</b>, beside its choices) at the bottom; the small boxes that
+              explain a race's items and the roll result box have their own <b>Close</b>. Tapping anywhere outside one closes it too.</li>
+            <li>The Build tab goes in building order: <b>Race</b>, <b>Character</b> (who they are), then <b>Game options</b>
               folded at the bottom. Hit points, AC, CMD, saves, hero points to spend and Active effects are on the Character tab.</li>
             <li><b>Character</b> card: the name, race and classes at a glance, with <b>Classes</b> (or <b>Choose a class</b>) and <b>Ability
               scores</b> buttons that go to those tabs; <b>Alignment</b> and <b>Deity</b>; and the details. <b>Player</b>, <b>Campaign</b> and
@@ -609,7 +602,7 @@
               saves when you leave it; the filled-in details show in an <b>About</b> card on the Character tab, beside Notes.</li>
             <li><b>Game options</b> (folded; tap it to open): the line beside it says which house rules and books are on. Inside: the
               house rules, the third-party books (with the 3rd Party house rule) and, with the Action Points house rule, the antihero choice.</li>
-            <li><b>Tap a card to open it in a window</b> (Race, Results): tap anywhere on it except a list, box or
+            <li><b>Tap a card to open it in a window</b> (Race, Character): tap anywhere on it except a list, box or
               button. Everything in it works there as on the tab; a <b>?</b> opens its Details and the card comes back when that closes.
               Tap empty space or Close to put it back.</li>
             <li><b>House rules</b>: switch each one Y or N. Max HP (every level gives the full hit die in hit points, not just 1st level: your table's own rule, not a Paizo one), Encumbrance (what you carry slows you), Max Starting Gold (a 1st-level character's starting gold is the most its class's roll can give, e.g. a barbarian's 180 gp instead of 105), Auto-Crit (a natural 20 on an attack is a critical hit with no confirmation roll; other threats like a 19 still roll to confirm), Max Healing (healing rolls give their
@@ -643,11 +636,11 @@
               cleric, warpriest or inquisitor chooses on the Classes tab. The <b>Deity</b> button opens a search: type a name, a title or what it
               stands for (sun, healing, a domain, a favored weapon), narrow it by alignment, and <b>Choose</b> (or <b>?</b> for its domains and favored weapon). Both show on the
               Character tab and the printed sheet.</li>
-            <li><b>Race</b>: a button for each kind of race (Core, Featured, Uncommon, Other, and My custom races once you've
-              made one); tap one to see its races as buttons, and tap a race to become it (yours is highlighted). <b>Custom</b>
-              makes a homebrew race: name, size, type, base speed, +2 to one ability of your choice or set changes to each
+            <li><b>Race</b>: <b>Choose a race</b> opens every race from A to Z in one list (you don't need to know which book or kind
+              it is), with a search box; tap a race to become it (yours is highlighted). <b>Make a custom race</b> at the bottom of that
+              list makes a homebrew race: name, size, type, base speed, +2 to one ability of your choice or set changes to each
               ability, a bonus feat, Skilled, darkvision, low-light vision, other traits with their text, and languages. Those
-              count like any race's; <b>Change</b> beside it under My custom races changes or deletes it.</li>
+              count like any race's, and it joins the list marked (custom); while you are one, <b>Change</b> beside Choose a race changes or deletes it.</li>
             <li>The race's items: tap any item (Medium, Darkvision...) to see what it does. Open <b>Alternate racial traits</b> to swap some
               traits for others; ones that clash are greyed out. <b>Details</b> on one shows it beside the standard trait it replaces,
               with Take or Remove. The lists include the Player Companions' and later books' traits (Blood of Shadows' blended
@@ -655,8 +648,6 @@
               you speak and how many more you have room for (one per point of Intelligence bonus, one per rank of Linguistics, which
               counts as soon as you put ranks in it); <b>Choose languages</b> picks them (the same popup as Languages on the
               Character tab's banner). Until they're chosen the Build tab is tinted red.</li>
-            <li>On the <b>Results</b> card, <b>Details</b> explains maximum hit points (hit dice, Con, favored class, Toughness), initiative,
-              base attack bonus (each class's share), speed (with fast movement for barbarians, bloodragers and monks), what you wear and your load.</li>
             <li><b>Class features that change your numbers</b> are counted by themselves, and named in each Details: a paladin's
               divine grace (Cha on saves; an antipaladin's unholy resilience), bardic knowledge (bard, skald: Knowledge), nature
               sense (druid), stern gaze and cunning initiative (inquisitor), trapfinding (rogue, investigator: Disable Device),
