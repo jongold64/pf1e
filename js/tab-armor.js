@@ -80,19 +80,24 @@ export function wearArmor(app, a) {
 
 // Upgrade for free ticked (in a card or the popup): a new quality or material costs nothing; the worn item keeps counting
 // at what it cost. Kept while the page is open.
-const freeUpgrade = { armor: false, shield: false };
+const freeUpgrade = { armor: { quality: false, material: false }, shield: { quality: false, material: false } };
 // The worn armor (k 'armor') or shield changed to another quality or material: changes are state keys ({ armorEnh, ... }).
 // Upgraded for free, the change comes off its price (armorPaid.off); paid for, you pay the difference.
-function upgradeArmor(app, k, changes, extra = {}) {
-  const { state } = app;
+// which: 'quality' or 'material', whose Upgrade for free applies.
+function upgradeArmor(app, k, changes, which) {
+  app.update(armorUpgrade(app, k, app.state, changes, which));
+}
+// The state changes for one upgrade from state s (a popup's quality and material are applied one after the other).
+function armorUpgrade(app, k, s, changes, which) {
+  const state = s;
   const base = app.data.armorById.get(state[`${k}Id`]);
-  if (!base) { app.update({ ...changes, ...extra }); return; }
+  if (!base) return changes;
   const abilities = state[`${k}Abilities`] || [], crafted = state[`${k}Crafted`];
   const market = s => armorCost(withMaterial(base, s[`${k}Material`]), s[`${k}Enh`], s[`${k}Mw`], abilities, crafted);
   const before = market(state), after = market({ ...state, ...changes });
   const id = state[`${k}Id`], paid = state[`${k}Paid`];
-  const off = upgradeDiscount({ off: paid && paid.id === id ? paid.off : 0, before, after, free: freeUpgrade[k] && !state[`${k}Free`] });
-  app.update({ ...changes, ...extra, [`${k}Paid`]: off > 0 ? { id, off } : null });
+  const off = upgradeDiscount({ off: paid && paid.id === id ? paid.off : 0, before, after, free: freeUpgrade[k][which] && !state[`${k}Free`] });
+  return { ...changes, [`${k}Paid`]: off > 0 ? { id, off } : null };
 }
 
 // An armor or shield in a popup: its stats, a quality (masterwork or +1 to +5) and material to wear it with, and buttons
@@ -114,9 +119,10 @@ export function popArmor(app, id, back = null) {
   const controls = `<div class="pop-armor-choices">
       <span class="pop-quality"><label>Quality <select data-pop-armor="enh"><option value="0">None${priceChange(now, cost(material, 0, false))}</option><option value="mw">Masterwork${priceChange(now, cost(material, 0, true))}</option>
         ${Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}${priceChange(now, cost(material, i + 1, false))}</option>`).join('')}</select></label>
-        ${worn && !state[`${k}Free`] ? `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-pop-free-upgrade${freeUpgrade[k] ? ' checked' : ''}> Upgrade for free</label>` : ''}</span>
-      ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual${priceChange(now, cost('', enh, worn && state[`${k}Mw`]))}</option>${mats.map(m =>
-        `<option value="${esc(m.id)}"${material === m.id ? ' selected' : ''}>${esc(m.name)}${priceChange(now, cost(m.id, enh, worn && state[`${k}Mw`]))}</option>`).join('')}</select></label>` : ''}
+        ${worn && !state[`${k}Free`] ? `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-pop-free-upgrade="quality"${freeUpgrade[k].quality ? ' checked' : ''}> Upgrade for free</label>` : ''}</span>
+      ${mats.length ? `<span class="pop-quality"><label>Material <select data-pop-armor="material"><option value="">Usual${priceChange(now, cost('', enh, worn && state[`${k}Mw`]))}</option>${mats.map(m =>
+        `<option value="${esc(m.id)}"${material === m.id ? ' selected' : ''}>${esc(m.name)}${priceChange(now, cost(m.id, enh, worn && state[`${k}Mw`]))}</option>`).join('')}</select></label>
+        ${worn && !state[`${k}Free`] ? `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-pop-free-upgrade="material"${freeUpgrade[k].material ? ' checked' : ''}> Upgrade for free</label>` : ''}</span>` : ''}
     </div>
     <p class="hint">${worn ? `Now ${esc(formatGp(now))}. Beside each choice: what it adds to the price (you pay the difference) or takes off.` : `Beside each choice: what it adds to the ${esc(formatGp(a.price_gp))} price.`}</p>
     ${worn && state[`${k}Abilities`]?.length ? `<p class="hint">Special abilities on it now: ${esc(state[`${k}Abilities`].map(x => x.name).join(', '))}.</p>` : ''}`;
@@ -128,8 +134,11 @@ export function popArmor(app, id, back = null) {
     const keep = worn ? { [`${k}Abilities`]: state[`${k}Abilities`], [`${k}Crafted`]: state[`${k}Crafted`] } : { [`${k}Abilities`]: [], [`${k}Crafted`]: false };
     const changes = { [`${k}Enh`]: q === 'mw' ? 0 : Number(q), [`${k}Mw`]: q === 'mw', [`${k}Material`]: material };
     if (worn) {
-      freeUpgrade[k] = !!box.querySelector('[data-pop-free-upgrade]')?.checked;
-      upgradeArmor(app, k, changes);
+      for (const which of ['quality', 'material']) freeUpgrade[k][which] = !!box.querySelector(`[data-pop-free-upgrade="${which}"]`)?.checked;
+      // The quality first, then the material, each with its own Upgrade for free.
+      const q1 = armorUpgrade(app, k, state, { [`${k}Enh`]: changes[`${k}Enh`], [`${k}Mw`]: changes[`${k}Mw`] }, 'quality');
+      const q2 = armorUpgrade(app, k, { ...state, ...q1 }, { [`${k}Material`]: material }, 'material');
+      app.update({ ...q1, ...q2 });
     } else app.update({ [`${k}Id`]: a.id, ...changes, ...keep, [`${k}Paid`]: null });
   };
   const wear = k === 'shield' ? 'Use this shield' : 'Wear this armor';
@@ -394,12 +403,15 @@ export function initArmorTab(app) {
   // Another armor or shield doesn't keep the special abilities put on the old one.
   $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value, armorAbilities: [], armorCrafted: false, armorMaterial: '' }));
   $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value, shieldAbilities: [], shieldCrafted: false, shieldMaterial: '' }));
-  $('armor-material').addEventListener('change', e => upgradeArmor(app, 'armor', { armorMaterial: e.target.value }));
-  $('shield-material').addEventListener('change', e => upgradeArmor(app, 'shield', { shieldMaterial: e.target.value }));
+  $('armor-material').addEventListener('change', e => upgradeArmor(app, 'armor', { armorMaterial: e.target.value }, 'material'));
+  $('shield-material').addEventListener('change', e => upgradeArmor(app, 'shield', { shieldMaterial: e.target.value }, 'material'));
   const quality = v => (v === 'mw' ? { enh: 0, mw: true } : { enh: Number(v), mw: false });
-  $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'armor', { armorEnh: q.enh, armorMw: q.mw }); });
-  $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'shield', { shieldEnh: q.enh, shieldMw: q.mw }); });
-  for (const k of ['armor', 'shield']) $(`${k}-free-upgrade`).addEventListener('change', e => { freeUpgrade[k] = e.target.checked; });
+  $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'armor', { armorEnh: q.enh, armorMw: q.mw }, 'quality'); });
+  $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'shield', { shieldEnh: q.enh, shieldMw: q.mw }, 'quality'); });
+  for (const k of ['armor', 'shield']) {
+    $(`${k}-free-upgrade`).addEventListener('change', e => { freeUpgrade[k].quality = e.target.checked; });
+    $(`${k}-free-material`).addEventListener('change', e => { freeUpgrade[k].material = e.target.checked; });
+  }
 }
 
 // The armor and shield lists to wear from (custom ones too), kept as chosen.
@@ -431,8 +443,10 @@ export function renderArmorTab(app, view) {
   $('armor-enh').disabled = !gear.armor;
   $('shield-enh').disabled = !gear.shield;
   for (const k of ['armor', 'shield']) {
-    $(`${k}-free-upgrade`).checked = freeUpgrade[k];
+    $(`${k}-free-upgrade`).checked = freeUpgrade[k].quality;
     $(`${k}-free-upgrade`).closest('label').hidden = !gear[k] || state[`${k}Free`];
+    $(`${k}-free-material`).checked = freeUpgrade[k].material;
+    $(`${k}-free-material`).closest('label').hidden = !gear[k] || state[`${k}Free`] || !materialsFor(app.data.armorById.get(state[`${k}Id`])).length;
   }
   // Materials the worn item can be made of (price changes shown); a material that includes masterwork hides "Masterwork".
   for (const k of ['armor', 'shield']) {
