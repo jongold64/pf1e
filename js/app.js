@@ -37,7 +37,7 @@ import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from
 import { tidyCustomSkills } from './custom-skills.js';
 import { BAB_KINDS, customClassRecord, tidyCustomClasses } from './custom-classes.js';
 import { RACE_SIZES, RACE_TYPES, RACE_SPEEDS, customRaceRecord, tidyCustomRaces } from './custom-races.js';
-import { GENDERS, heightRow, rollHeightWeight, heightRange, formatHeight, parseHeight, parseWeight } from './details.js';
+import { GENDERS, heightRow, rollHeightWeight, heightRange, formatHeight, parseHeight, parseWeight, AGE_GROUPS, ageRow, ageGroup, rollAge, HAIR, EYES, pickOne } from './details.js';
 import { wheelHtml, startWheels } from './wheel.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
@@ -3412,6 +3412,7 @@ function tidyDetails(saved) {
   }
   if (out.gender === 'other' && typeof d.genderText === 'string' && d.genderText.trim()) out.genderText = d.genderText.slice(0, 40);
   if (['male', 'female'].includes(d.table)) out.table = d.table;
+  if (AGE_GROUPS.some(([g]) => g === d.ageGroup)) out.ageGroup = d.ageGroup;
   // Height in inches and weight in pounds (older saves typed them).
   const h = Number.isInteger(d.heightIn) ? d.heightIn : parseHeight(d.height);
   if (h && h >= 12 && h <= 131) out.heightIn = h;
@@ -3433,6 +3434,15 @@ function detailsRow() {
   const g = ['male', 'female'].includes(d.gender) ? d.gender : d.table || 'female';
   return heightRow(data.heights, state.race, g);
 }
+// Random starting age: the race's row and the first class's group (a class the table doesn't name rolls as the group
+// chosen under the details, Self-Taught until one is). null without a table for the race.
+function ageRoll() {
+  const row = ageRow(data.ages, state.race);
+  if (!row) return null;
+  const cls = view.counts[0]?.cls || null;
+  const official = cls ? ageGroup(data.ages, cls.id) : null;
+  return { row, cls, official, group: official || state.details?.ageGroup || 'self_taught' };
+}
 function renderDetails() {
   const race = data.races.find(r => r.id === state.race);
   const cls = view.counts.map(e => `${e.cls.name} ${e.level}`).join(' / ');
@@ -3442,14 +3452,23 @@ function renderDetails() {
     <button type="button" data-details-go="abilities">Ability scores</button>`;
   const box = $('char-details');
   // Redrawn only when something in it changed (not while typing, and not under a wheel being turned).
-  const key = JSON.stringify([state.details, state.race]);
+  const key = JSON.stringify([state.details, state.race, view.counts[0]?.cls.id || '']);
   if (box.dataset.key === key || document.activeElement?.closest?.('#char-details input, #char-details textarea')) return;
   box.dataset.key = key;
   const d = state.details || {};
   const row = detailsRow();
   const range = row && heightRange(row);
-  const text = ([k, l]) => `<label>${l}<input type="text" data-detail="${k}" value="${esc(d[k] || '')}" maxlength="80" autocomplete="off"
-      ${REMEMBERED.includes(k) ? 'placeholder="Remembered" title="Remembered for your next character"' : ''}></label>`;
+  const age = ageRoll();
+  // Age, hair and eyes end with a dice button: a random age from the table, a random colour.
+  const dice = k => k === 'age' ? (age ? 'Roll a starting age' : '') : k === 'hair' ? 'Random hair colour' : k === 'eyes' ? 'Random eye colour' : '';
+  const text = ([k, l]) => `<label>${l}<span class="detail-input"><input type="text" data-detail="${k}" value="${esc(d[k] || '')}" maxlength="80" autocomplete="off"
+      ${REMEMBERED.includes(k) ? 'placeholder="Remembered" title="Remembered for your next character"' : ''}>${dice(k)
+      ? `<button type="button" class="detail-dice" data-detail-random="${k}" title="${dice(k)}" aria-label="${dice(k)}">🎲</button>` : ''}</span></label>`;
+  const ageCls = age?.cls ? esc(age.cls.name) : 'No class yet';
+  const ageHint = age ? `<p class="hint">Age: ${esc(race.name)} adulthood ${age.row.adulthood} years, plus ${esc(age.row[age.group])}
+      (${AGE_GROUPS.find(([g]) => g === age.group)[1]}${age.official ? `, as ${esc(age.cls.name)}` : ''}).</p>` : '';
+  const ageChoice = age && !age.official ? `<label class="age-group">${ageCls}${age.cls ? " isn't in Paizo's age table" : ''}: roll age as
+      <select data-detail="ageGroup">${AGE_GROUPS.map(([g, l]) => `<option value="${g}"${age.group === g ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : '';
   // Wheels: feet and inches, and pounds (a "—" at the top for not chosen).
   const h = d.heightIn;
   const ftVals = [['', '—'], ...Array.from({ length: 10 }, (_, i) => [i + 1, `${i + 1} ft.`])];
@@ -3464,6 +3483,7 @@ function renderDetails() {
       ${d.gender === 'other' ? `<label>Gender, in your words <input type="text" data-detail="genderText" value="${esc(d.genderText || '')}" maxlength="40" autocomplete="off"></label>` : ''}
       ${TEXT_DETAILS.slice(3).map(text).join('')}
     </div>
+    ${d.ageRolled ? `<p class="hint">${esc(d.ageRolled)}</p>` : ageHint}${ageChoice}
     <div class="details-body">
       ${wheelHtml('heightFt', 'Height', ftVals, h ? Math.floor(h / 12) : '')}
       ${wheelHtml('heightIn', '&nbsp;', inVals, h ? h % 12 : '')}
@@ -3505,6 +3525,23 @@ function initDetails() {
     update({ details });
   });
   $('char-details').addEventListener('click', e => {
+    const rnd = e.target.closest('[data-detail-random]')?.dataset.detailRandom;
+    if (rnd === 'age') {
+      const a = ageRoll();
+      if (!a) return;
+      const r = rollAge(a.row, a.group);
+      update({ details: { ...tidyDetails({ ...state.details, age: String(r.age) }),
+        ageRolled: `Rolled ${r.dice}: ${r.rolls.join(' + ')} = ${r.age - a.row.adulthood}, plus adulthood ${a.row.adulthood}, so ${r.age} years.` } });
+      return;
+    }
+    if (rnd === 'hair' || rnd === 'eyes') {
+      const list = rnd === 'hair' ? HAIR : EYES;
+      // Never the same colour twice in a row.
+      const pick = pickOne(list.filter(x => x !== state.details?.[rnd]));
+      const { ageRolled, rolled } = state.details || {};
+      update({ details: { ...tidyDetails({ ...state.details, [rnd]: pick }), ...(ageRolled ? { ageRolled } : {}), ...(rolled ? { rolled } : {}) } });
+      return;
+    }
     if (!e.target.closest('[data-details-roll]')) return;
     const row = detailsRow();
     if (!row) return;
@@ -5742,7 +5779,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings, data.languages, data.heights] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings, data.languages, data.heights, data.ages] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -5766,6 +5803,8 @@ async function start() {
       fetch('data/languages.json').then(r => r.json()).catch(() => []),
       // Random height and weight (build_heights.py); without it, the wheels have no Roll.
       fetch('data/heights.json').then(r => r.json()).catch(() => []),
+      // Random starting ages (build_ages.py); without it, Age has no dice button.
+      fetch('data/ages.json').then(r => r.json()).catch(() => null),
     ]);
     // Third-party books (only offered on a character that ticks the book). A missing file just means none.
     data.thirdParty = await fetch('data/third-party.json').then(r => r.json()).catch(() => ({ books: [], classes: [], talents: [] }));

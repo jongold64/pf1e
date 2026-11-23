@@ -45,3 +45,27 @@ export function parseWeight(text) {
   const m = /(\d+)/.exec(String(text ?? ''));
   return m ? Number(m[1]) : null;
 }
+
+// Random starting age (Paizo's Random Starting Ages table, data/ages.json): the race's adulthood plus the dice for the
+// class's group. ages: { groups: { intuitive: [class ids], self_taught, trained }, races: [{ race, adulthood, intuitive,
+// self_taught, trained }] }.
+export const AGE_GROUPS = [['intuitive', 'Intuitive'], ['self_taught', 'Self-Taught'], ['trained', 'Trained']];
+export const ageRow = (ages, raceId) => (ages?.races || []).find(r => r.race === raceId) || null;
+// The group the table puts a class in (the unchained barbarian, monk, rogue and summoner as their originals), or null.
+export function ageGroup(ages, classId) {
+  const id = String(classId || '').replace(/-unchained$/, '');
+  return AGE_GROUPS.map(([g]) => g).find(g => (ages?.groups?.[g] || []).includes(id)) || null;
+}
+// { dice: '2d6', rolls: [3, 5], age: 23 }.
+export function rollAge(row, group, rng = Math.random) {
+  const d = parseDice(row[group]);
+  const rolls = Array.from({ length: d.count }, () => 1 + Math.floor(rng() * d.sides));
+  return { dice: row[group], rolls, age: row.adulthood + rolls.reduce((n, x) => n + x, 0) };
+}
+
+// Hair and eye colours to pick from at random (no Paizo table: plain words).
+export const HAIR = ['black', 'dark brown', 'brown', 'chestnut', 'auburn', 'red', 'copper', 'strawberry blond', 'blond',
+  'golden', 'ash blond', 'platinum', 'white', 'silver', 'grey', 'salt and pepper', 'bald'];
+export const EYES = ['brown', 'dark brown', 'hazel', 'amber', 'green', 'grey', 'blue', 'pale blue', 'violet', 'black',
+  'golden', 'silver', 'one blue and one green'];
+export const pickOne = (list, rng = Math.random) => list[Math.floor(rng() * list.length)];

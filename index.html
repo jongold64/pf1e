@@ -62,14 +62,6 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
-      <!-- Who the character is: race and class at a glance, alignment and deity, and the details (looks, homeland,
-           player, campaign, story) shown on the Character tab. -->
-      <section class="card wide details-card" id="details-card">
-        <h2>Character</h2>
-        <div id="details-who" class="details-who"></div>
-        <div id="faith" class="faith"></div>
-        <div id="char-details" class="char-details"></div>
-      </section>
       <!-- Two columns: Race on the left, Results on the right (one column on narrow screens). -->
       <div class="char-column">
         <section class="card order-1">
@@ -94,6 +86,14 @@
           <p class="hint">Hit points, AC, saves and active effects are kept on the Character tab.</p>
         </section>
       </div>
+      <!-- Who the character is: race and class at a glance, alignment and deity, and the details (looks, homeland,
+           player, campaign, story) shown on the Character tab. -->
+      <section class="card wide details-card" id="details-card">
+        <h2>Character</h2>
+        <div id="details-who" class="details-who"></div>
+        <div id="faith" class="faith"></div>
+        <div id="char-details" class="char-details"></div>
+      </section>
       <!-- Set once: house rules, third-party books and hero points, folded shut with a line saying what's on. -->
       <details class="card wide house-rules game-options" id="game-options">
         <summary><h2>Game options</h2> <span id="game-options-summary" class="muted"></span></summary>
@@ -591,7 +591,7 @@
           <summary>Build tab</summary>
           <ul>
             <li>Popup windows (Details, the feat and trait lists) close with their <b>Close</b> button or by tapping anywhere outside them.</li>
-            <li>The Build tab goes in building order: <b>Character</b> (who they are), <b>Race</b>, <b>Results</b>, then <b>Game options</b>
+            <li>The Build tab goes in building order: <b>Race</b> and <b>Results</b> side by side, <b>Character</b> (who they are), then <b>Game options</b>
               folded at the bottom. Hit points, AC, CMD, saves, hero points to spend and Active effects are on the Character tab.</li>
             <li><b>Character</b> card: the name, race and classes at a glance, with <b>Classes</b> (or <b>Choose a class</b>) and <b>Ability
               scores</b> buttons that go to those tabs; <b>Alignment</b> and <b>Deity</b>; and the details. <b>Player</b>, <b>Campaign</b> and
@@ -600,7 +600,12 @@
               <b>Weight</b> are wheels: turn one, or tap a value, to choose. <b>Roll height and weight</b> rolls on Paizo's Random Height &amp;
               Weight table for your race (Advanced Race Guide): the base height plus the dice in inches, and the base weight plus the same
               roll times the race's multiplier; it uses the male or female row, and for Nonbinary or Other you choose which row. Races
-              without a table (and custom races) just use the wheels. Age, hair, eyes and appearance and backstory are typed. Each box
+              without a table (and custom races) just use the wheels. <b>Age</b>, <b>Hair</b> and <b>Eyes</b> are typed, each with a 🎲 button at
+              the end: for age it rolls on Paizo's Random Starting Ages table (Advanced Race Guide), the race's adulthood plus dice set by your
+              first class (Intuitive: barbarian, oracle, rogue, sorcerer; Self-Taught: bard, cavalier, fighter, gunslinger, paladin, ranger,
+              summoner, witch; Trained: alchemist, cleric, druid, inquisitor, magus, monk, wizard). Paizo's table names no other classes, so
+              for those you choose which dice to roll; races without a table have no age button. For hair and eyes it picks a colour at
+              random (tap again for another). Appearance and backstory is typed. Each box
               saves when you leave it; the filled-in details show in an <b>About</b> card on the Character tab, beside Notes.</li>
             <li><b>Game options</b> (folded; tap it to open): the line beside it says which house rules and books are on. Inside: the
               house rules, the third-party books (with the 3rd Party house rule) and, with the Action Points house rule, the antihero choice.</li>

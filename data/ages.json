@@ -1,0 +1,327 @@
+{
+  "groups": {
+    "intuitive": [
+      "barbarian",
+      "oracle",
+      "rogue",
+      "sorcerer"
+    ],
+    "self_taught": [
+      "bard",
+      "cavalier",
+      "fighter",
+      "gunslinger",
+      "paladin",
+      "ranger",
+      "summoner",
+      "witch"
+    ],
+    "trained": [
+      "alchemist",
+      "cleric",
+      "druid",
+      "inquisitor",
+      "magus",
+      "monk",
+      "wizard"
+    ]
+  },
+  "races": [
+    {
+      "race": "dwarf",
+      "adulthood": 40,
+      "intuitive": "3d6",
+      "self_taught": "5d6",
+      "trained": "7d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "elf",
+      "adulthood": 110,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "10d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "gnome",
+      "adulthood": 40,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "9d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "half-elf",
+      "adulthood": 20,
+      "intuitive": "1d6",
+      "self_taught": "2d6",
+      "trained": "3d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "half-orc",
+      "adulthood": 14,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "halfling",
+      "adulthood": 20,
+      "intuitive": "2d4",
+      "self_taught": "3d6",
+      "trained": "4d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "human",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "aasimar",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "catfolk",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "dhampir",
+      "adulthood": 110,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "10d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "drow",
+      "adulthood": 110,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "10d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "fetchling",
+      "adulthood": 20,
+      "intuitive": "1d6",
+      "self_taught": "2d6",
+      "trained": "3d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "goblin",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "hobgoblin",
+      "adulthood": 14,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "ifrit",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "kobold",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "orc",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "oread",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "ratfolk",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "sylph",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "tengu",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "tiefling",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "undine",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "changeling",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "duergar",
+      "adulthood": 40,
+      "intuitive": "3d6",
+      "self_taught": "5d6",
+      "trained": "7d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "gillman",
+      "adulthood": 20,
+      "intuitive": "1d6",
+      "self_taught": "2d6",
+      "trained": "3d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "grippli",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "kitsune",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "merfolk",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "nagaji",
+      "adulthood": 20,
+      "intuitive": "1d6",
+      "self_taught": "2d6",
+      "trained": "3d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "samsaran",
+      "adulthood": 60,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "8d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "strix",
+      "adulthood": 12,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "suli",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "svirfneblin",
+      "adulthood": 40,
+      "intuitive": "4d6",
+      "self_taught": "6d6",
+      "trained": "9d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "vanara",
+      "adulthood": 14,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "vishkanya",
+      "adulthood": 15,
+      "intuitive": "1d4",
+      "self_taught": "1d6",
+      "trained": "2d6",
+      "source": "Advanced Race Guide"
+    },
+    {
+      "race": "wayang",
+      "adulthood": 40,
+      "intuitive": "4d6",
+      "self_taught": "5d6",
+      "trained": "6d6",
+      "source": "Advanced Race Guide"
+    }
+  ]
+}

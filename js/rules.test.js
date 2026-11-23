@@ -2461,6 +2461,14 @@ It does a thing. More.` });
   check('a race with one row (changeling) uses it for any gender', heightRow(rows, 'changeling', 'male')?.gender, 'female');
   check('no row for a race without a table', heightRow(rows, 'elf', 'male'), null);
   check('older typed heights and weights are read', [parseHeight('5 ft. 4 in.'), parseHeight(`5'10"`), parseHeight('6 ft'), parseHeight('tall'), parseWeight('150 lbs.')].join(), '64,70,72,,150');
+  const { ageRow, ageGroup, rollAge, HAIR, pickOne } = await import('./details.js');
+  const ages = { groups: { intuitive: ['barbarian', 'rogue'], self_taught: ['fighter'], trained: ['wizard', 'monk'] },
+    races: [{ race: 'human', adulthood: 15, intuitive: '1d4', self_taught: '1d6', trained: '2d6' }] };
+  check('age groups: rogue intuitive, unchained monk trained, kineticist none', [ageGroup(ages, 'rogue'), ageGroup(ages, 'monk-unchained'), ageGroup(ages, 'kineticist')].join(), 'intuitive,trained,');
+  const a = rollAge(ageRow(ages, 'human'), 'trained', () => 0.5); // each d6 rolls 4
+  check('human wizard: 15 + 2d6 (4+4) = 23', [a.dice, a.rolls.join('+'), a.age].join(' '), '2d6 4+4 23');
+  check('no age row for a race without a table', ageRow(ages, 'elf'), null);
+  check('a random hair colour comes from the list', HAIR.includes(pickOne(HAIR)), true);
 }
 // Custom races.
 {

@@ -33,6 +33,8 @@ for script, out in [('build_races.py', 'data/races.json'),
                     # Warpriest blessings (minor and major powers), from AoN pages.
                     ('build_aon_blessings.py', 'data/blessings.json'),
                     ('build_classes.py', 'data/classes.json'),
+                    # Random starting ages by race and class group (Advanced Race Guide, Appendix 2); needs classes.json.
+                    ('build_ages.py', 'data/ages.json'),
                     # Adds post-2015 classes (occult, unchained, shifter, vigilante) after the PSRD ones.
                     ('build_foundry_classes.py', 'data/classes.json'),
                     # Class choices (rage powers, rogue talents, hexes...) from Foundry, books from PSRD where Foundry has none.
