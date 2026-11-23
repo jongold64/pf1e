@@ -194,23 +194,15 @@
           <button type="button" id="feat-count-details" class="skill-details q-details" aria-label="Every feat slot and where it comes from" title="Details">?</button></h2>
         <!-- The feats chosen, one line each. -->
         <ul id="feat-chosen" class="feat-chosen" hidden></ul>
-        <form class="search-row tab-search" id="feat-tab-search-form" role="search">
-          <input id="feat-tab-search" type="search" autocomplete="off" placeholder="Search all feats by name" aria-label="Search feats">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <ul id="feat-tab-results" class="search-results" hidden></ul>
+        <!-- Add a feat: every feat A to Z in a popup, with a search box. -->
+        <div id="feat-add-buttons" class="add-buttons"></div>
         <ul id="feat-slots" class="feat-slots"></ul>
         <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked (rules the app can't read)</p>
       </section>
-      <section class="card wide" id="feat-add-card">
-        <h2>Add feats</h2>
-        <p class="hint">Choose a kind of feat to list them (tap one to read it and choose it for an open slot), or <b>Custom</b> for a feat the list doesn't have.</p>
-        <div id="feat-add-buttons" class="add-buttons"></div>
-        <div id="feat-type-wrap" hidden>
-          <label class="check-row"><input type="checkbox" id="feat-type-qualified" checked> Only feats I qualify for</label>
-          <ul id="feat-type-results" class="search-results"></ul>
-        </div>
-        <div id="feat-custom-wrap" hidden></div>
+      <!-- The Custom feat builder, opened from Add a feat's Make a custom feat (or Change this custom feat). -->
+      <section class="card wide" id="feat-add-card" hidden>
+        <h2>Custom feat</h2>
+        <div id="feat-custom-wrap"></div>
       </section>
       <section class="card wide" id="traits-card">
         <h2>Traits <span id="trait-count" class="count"></span>
@@ -981,9 +973,10 @@
           <ul>
             <li><b>From your class</b>, at the top, lists the class features the level table doesn't name: weapon and armor
               proficiency, a cleric's spontaneous casting, bonus languages... and the bonus feats your class or race gives free (a ranger's Endurance, a black blade's Alertness, a half-elf's Skill Focus). Tap one to read it. They need no feat slot.</li>
-            <li><b>Add feats</b>: a button for each kind of feat (General, Combat, Metamagic, Teamwork, Style, Critical, Item Creation,
-              Story...) lists them with ✓ / ✗ / ? for whether you qualify (<b>Only feats I qualify for</b> is ticked to start); tap one to
-              read it and choose it for an open slot. <b>Custom</b> makes a feat the list doesn't have: name, kind, prerequisites in words
+            <li><b>Add a feat</b> (on the Feats card) opens every feat from A to Z in one column, with a search box; under each name in
+              small print: ✓ / ✗ / ? for whether you qualify, its kinds (General, Combat, Metamagic, Teamwork, Style...) and its
+              prerequisites. <b>Only feats I qualify for</b> is ticked to start. It shows 150 at a time: search to narrow it. Tap a feat to
+              read it and choose it for an open slot. <b>Make a custom feat</b> at the bottom makes a feat the list doesn't have: name, kind, prerequisites in words
               (shown with ?), what it does, and an optional bonus (on attacks, AC, a save, a skill...) that counts while it's chosen. After
               <b>Add it</b>, choose it for a slot; <b>Change this custom feat</b> in its details changes or deletes it.</li>
             <li>At the top of the Feats card, each feat you've chosen is on one line (✓ / ✗, the feat, its slot) with <b>Details</b>,

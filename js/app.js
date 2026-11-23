@@ -2209,15 +2209,10 @@ function initTabSearches() {
     $(formId).addEventListener('submit', e => { e.preventDefault(); run(); });
     $(inputId).addEventListener('input', run);
   };
-  live('feat-tab-search-form', 'feat-tab-search', renderFeatTabSearch);
   initFeatAdd();
   initSkillFilters();
   initClassAdd();
   initRaceAdd();
-  $('feat-tab-results').addEventListener('click', e => {
-    const btn = e.target.closest('[data-feat-result]');
-    if (btn) openFeatForSlots(btn.dataset.featResult);
-  });
   live('armor-search-form', 'armor-search', renderArmorSearch);
   $('armor-search-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-armor-result]');
@@ -2235,35 +2230,56 @@ function resultList(el, query, items, attr, limit = 60) {
       <small>${esc(r.detail || '')}</small></button></li>`).join('') || '<li class="hint">Nothing found by that name.</li>';
 }
 
-function renderFeatTabSearch() {
-  const q = $('feat-tab-search').value.trim().toLowerCase();
-  const hits = data.feats.filter(f => f.name.toLowerCase().includes(q))
-    .sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || a.name.localeCompare(b.name));
-  resultList($('feat-tab-results'), q, hits.map(f => ({
-    id: f.id, name: f.name, detail: (f.types || []).join(', '), icon: STATUS_ICON[checkFeat(f, view.ctx).status],
-  })), 'data-feat-result');
-}
-
-// The Add feats card: a button for each kind of feat (it lists them, ✓ / ✗ / ?) and Custom.
-let featType = '';
+// Feats tab: one Add a feat button opens every feat A to Z (search box, Only feats I qualify for); tap one to read it
+// and choose it for an open slot. Make a custom feat opens the Custom feat builder (the Custom feat card).
 let featCustomOpen = false;
+let featOnlyQualified = true;
 let fDraft = null;
 const freshFeat = () => ({ id: '', name: '', type: 'General', prereq: '', benefit: '', bonus: null });
 function renderFeatAdd() {
   if (!$('feat-add-buttons')) return;
-  const types = [...FEAT_TYPES.filter(t => data.feats.some(f => !f.custom && (f.types || []).includes(t))), ...(state.customFeats.length ? ['Custom feats'] : [])];
-  $('feat-add-buttons').innerHTML = types.map(t => `<button type="button" data-feat-type="${esc(t)}" aria-pressed="${!featCustomOpen && featType === t}">${esc(t)}</button>`).join('')
-    + `<button type="button" class="add-custom" data-feat-custom aria-pressed="${featCustomOpen}">Custom</button>`;
-  $('feat-type-wrap').hidden = !featType || featCustomOpen;
-  $('feat-custom-wrap').hidden = !featCustomOpen;
-  if (featType && !featCustomOpen) {
-    const only = $('feat-type-qualified').checked;
-    const list = data.feats.filter(f => (featType === 'Custom feats' ? f.custom : !f.custom && (f.types || []).includes(featType)))
-      .map(f => ({ f, st: checkFeat(f, view.ctx).status })).filter(x => !only || x.st !== 'unmet').sort((a, b) => a.f.name.localeCompare(b.f.name));
-    $('feat-type-results').innerHTML = list.slice(0, 400).map(({ f, st }) => `<li><button type="button" data-feat-result="${esc(f.id)}">${STATUS_ICON[st]} ${esc(f.name)}
-      <small>${esc((f.prerequisites_text || '').slice(0, 80))}</small></button></li>`).join('') || '<li class="hint">None to show.</li>';
-  }
+  $('feat-add-buttons').innerHTML = '<button type="button" class="primary" data-feat-choose>Add a feat</button>';
+  $('feat-add-card').hidden = !featCustomOpen;
   if (featCustomOpen) renderFeatCustom();
+}
+// The Add a feat popup's list: the feats whose name has the search words, A to Z (those starting with them first), each
+// with ✓ / ✗ / ?, its kinds and prerequisites. At most 150 rows; a line says how many more.
+const FEAT_POP_LIMIT = 150;
+function featPickRows(q) {
+  const s = q.trim().toLowerCase();
+  let hidden = 0;
+  const list = [];
+  for (const f of data.feats) {
+    if (f.third_party && !bookOn(f.third_party)) continue;
+    if (s && !f.name.toLowerCase().includes(s)) continue;
+    const st = checkFeat(f, view.ctx).status;
+    if (featOnlyQualified && st === 'unmet') { hidden++; continue; }
+    list.push({ f, st });
+  }
+  list.sort((a, b) => (s ? b.f.name.toLowerCase().startsWith(s) - a.f.name.toLowerCase().startsWith(s) : 0) || a.f.name.localeCompare(b.f.name));
+  const kinds = f => [...(f.types || []), ...(f.custom ? ['Custom'] : [])].join(', ');
+  return { count: `${list.length > FEAT_POP_LIMIT ? `Showing ${FEAT_POP_LIMIT} of ${list.length} feats: search to narrow the list.` : `${list.length} feat${list.length === 1 ? '' : 's'}.`}`
+      + (hidden ? ` ${hidden} more you don't qualify for yet${featOnlyQualified ? ' (untick the box to see them)' : ''}.` : ''),
+    html: list.slice(0, FEAT_POP_LIMIT).map(({ f, st }) => `<button type="button" data-feat-result="${esc(f.id)}"><b>${esc(f.name)}</b>
+      <small>${STATUS_ICON[st]} ${esc([kinds(f), (f.prerequisites_text || '').slice(0, 90)].filter(Boolean).join(' · '))}</small></button>`).join('') };
+}
+function popFeatPicker() {
+  openDetail('Add a feat', `<input type="search" class="pick-search" placeholder="Search feats by name" autocomplete="off" aria-label="Search feats">
+    <label class="check-row"><input type="checkbox" class="feat-only"${featOnlyQualified ? ' checked' : ''}> Only feats I qualify for</label>
+    <p class="hint feat-pick-count"></p>
+    <div class="pick-column"></div>
+    <p class="hint">✓ prerequisites met · ✗ not met · ? can't be checked. Tap a feat to read it and choose it for an open slot. Not here? Make your own:</p>`,
+  [{ label: 'Make a custom feat', run: () => { fDraft = freshFeat(); featCustomOpen = true; renderFeatAdd(); $('feat-add-card').scrollIntoView({ block: 'start' }); } }]);
+  const body = $('detail-body');
+  const draw = () => {
+    const r = featPickRows(body.querySelector('.pick-search').value);
+    body.querySelector('.pick-column').innerHTML = r.html || '<p class="hint">No feats match.</p>';
+    body.querySelector('.feat-pick-count').textContent = r.count;
+  };
+  draw();
+  body.querySelector('.pick-search').addEventListener('input', draw);
+  body.querySelector('.feat-only').addEventListener('change', e => { featOnlyQualified = e.target.checked; draw(); });
+  body.querySelector('.pick-column').addEventListener('click', e => { const b = e.target.closest('[data-feat-result]'); if (b) openFeatForSlots(b.dataset.featResult); });
 }
 function renderFeatCustom() {
   fDraft ??= freshFeat();
@@ -2290,18 +2306,7 @@ function renderFeatCustom() {
       <button type="button" data-cf-cancel>Cancel</button></div></div>`;
 }
 function initFeatAdd() {
-  $('feat-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-feat-type], [data-feat-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-feat-custom')) { featCustomOpen = !featCustomOpen; featType = ''; }
-    else { featCustomOpen = false; featType = featType === b.dataset.featType ? '' : b.dataset.featType; }
-    renderFeatAdd();
-  });
-  $('feat-type-qualified').addEventListener('change', renderFeatAdd);
-  $('feat-type-results').addEventListener('click', e => {
-    const btn = e.target.closest('[data-feat-result]');
-    if (btn) openFeatForSlots(btn.dataset.featResult);
-  });
+  $('feat-add-buttons').addEventListener('click', e => { if (e.target.closest('[data-feat-choose]')) popFeatPicker(); });
   const box = $('feat-custom-wrap');
   box.addEventListener('input', e => {
     const k = e.target.dataset.cf;
@@ -2347,7 +2352,7 @@ function openFeatForSlots(id) {
   }))), ...(f.custom ? [{ label: 'Change this custom feat', run: () => {
     const d = state.customFeats.find(x => x.id === id);
     if (!d) return;
-    fDraft = { ...freshFeat(), ...d, bonus: d.bonus ? { ...d.bonus } : null }; featCustomOpen = true; featType = '';
+    fDraft = { ...freshFeat(), ...d, bonus: d.bonus ? { ...d.bonus } : null }; featCustomOpen = true;
     showTab('feats'); renderFeatAdd(); $('feat-add-card').scrollIntoView({ block: 'start' });
   } }] : [])];
   const note = alreadyHave ? '<p class="hint">You already have this feat.</p>'
@@ -4389,7 +4394,6 @@ function render() {
   if (tab === 'magic-items') renderMyItems(app);
   if (tab === 'craft') { renderCrafting(app, 'craft'); renderMundaneCraft(app); }
   if (tab === 'weapons') renderMyWeapons(app, view);
-  if (tab === 'feats' && !$('feat-tab-results').hidden) renderFeatTabSearch();
   renderTabTodo();
   requestAnimationFrame(() => fitLines());
 }
