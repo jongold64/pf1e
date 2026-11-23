@@ -2,8 +2,8 @@
 // price rules are in custom-items.js. The item being made is kept here while the page is open; Add saves it to
 // state.customItems.
 import { $, esc } from './dom.js';
-import { formatGp } from './equipment.js';
-import { SLOTS, POWERS, powerByKind, OTHER_TYPES, ACTIVATIONS, DURATIONS, customItemPrice, customItemPaid } from './custom-items.js';
+import { formatGp, priceChange, upgradeDiscount } from './equipment.js';
+import { SLOTS, POWERS, powerByKind, OTHER_TYPES, ACTIVATIONS, DURATIONS, customItemPrice, customItemPaid, customItemBase } from './custom-items.js';
 import { sellButton, sellItem } from './tab-equipment.js';
 
 const ABILITIES = [['str', 'Strength'], ['dex', 'Dexterity'], ['con', 'Constitution'], ['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']];
@@ -72,6 +72,26 @@ export function renderCustomBuilder(app, skills) {
 }
 
 // The custom items in My magic items: worn box, name, slot, cost, Sell; Edit and Remove under "?".
+// Upgrade for free ticked: a new bonus on a custom item costs nothing. Kept while the page is open.
+let freeCustomUpgrade = false;
+const withBonus = (it, n, bonus) => ({ ...it, powers: it.powers.map((q, m) => (m === n ? { ...q, bonus } : q)) });
+// Each power with a choice of bonus (+1 to +5 resistance, +2 / +4 / +6 to an ability...): the bonus to change it to, each
+// saying what it adds to the price of one (or takes off), and Upgrade for free on the first line.
+function bonusChoices(it, i) {
+  const now = customItemBase(it);
+  const rows = (it.powers || []).map((p, n) => {
+    const def = powerByKind.get(p.kind);
+    if (!def?.bonuses || def.bonuses.length < 2) return '';
+    return `<label class="item-version">${esc(def.label.replace(/ \(.*\)$/, ''))}${p.kind === 'ability' ? ` (${esc(p.ability.toUpperCase())})` : p.kind === 'skill' ? ` (${esc(p.skill)})` : ''}
+      <select data-custom-bonus="${i}|${n}">${def.bonuses.map(b => `<option value="${b}"${b === p.bonus ? ' selected' : ''}>+${b}${priceChange(now, customItemBase(withBonus(it, n, b)))}</option>`).join('')}</select></label>`;
+  }).filter(Boolean);
+  if (!rows.length) return '';
+  return `<div class="custom-upgrades"><span class="item-version-row">${rows[0]}${it.free ? '' : `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-custom-free-upgrade${freeCustomUpgrade ? ' checked' : ''}> Upgrade for free</label>`}</span>
+    ${rows.slice(1).map(r => `<span class="item-version-row">${r}</span>`).join('')}
+    <p class="hint">Beside each bonus: what it adds to the price${it.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${it.free ? ' This one is marked Free, so a new bonus costs no gold.' : ''}
+      ${Number.isFinite(it.discount) && !it.free ? `Upgraded for free: ${esc(formatGp(it.discount))} comes off its price.` : ''}</p></div>`;
+}
+
 export function customRowsHtml(app, openLines) {
   return app.state.customItems.map((it, i) => {
     const key = `custom-${i}`;
@@ -88,6 +108,7 @@ export function customRowsHtml(app, openLines) {
         <div class="breakdown">${esc((it.powers || []).map(p => powerByKind.get(p.kind)?.text(p)).filter(Boolean).join('; '))} · caster level ${it.cl}
           · market price ${esc(formatGp(pr.price))}${it.free ? ' · free' : it.crafted ? ` · crafted (${esc(formatGp(pr.cost))})` : ''}</div>
         ${it.notes ? `<p class="hint">${esc(it.notes)}</p>` : ''}
+        ${bonusChoices(it, i)}
         <div class="line-controls"><button type="button" data-custom-edit="${i}">Change it</button><button type="button" data-custom-remove="${i}">Remove</button></div>
       </div></div>`;
   }).join('');
@@ -132,6 +153,20 @@ export function initCustomItems(app, { skills, show }) {
     }
   });
   $('my-items-rows').addEventListener('change', e => {
+    if (e.target.dataset.customFreeUpgrade !== undefined) { freeCustomUpgrade = e.target.checked; return; }
+    // A new bonus (an upgrade): for free, the change comes off its price; paid for, you pay the difference.
+    const nb = e.target.dataset.customBonus;
+    if (nb !== undefined) {
+      const [i, n] = nb.split('|').map(Number);
+      app.update({ customItems: app.state.customItems.map((x, j) => {
+        if (j !== i) return x;
+        const next = withBonus(x, n, Number(e.target.value));
+        const off = upgradeDiscount({ off: Number.isFinite(x.discount) ? x.discount : 0, before: customItemBase(x), after: customItemBase(next), free: freeCustomUpgrade && !x.free });
+        const { discount: _old, ...rest } = next;
+        return { ...rest, ...(off > 0 ? { discount: off } : {}) };
+      }) });
+      return;
+    }
     const w = e.target.closest('[data-custom-worn]');
     if (w) { const i = Number(w.dataset.customWorn); app.update({ customItems: app.state.customItems.map((x, j) => (j === i ? { ...x, off: !w.checked } : x)) }); }
   });

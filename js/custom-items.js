@@ -1,7 +1,8 @@
 // Custom magic items (Magic Items tab, Custom button), priced with the Core Rulebook's Table 15-29 (Estimating Magic
 // Item Gold Piece Values), and the bonuses they give, as custom effects. No page code here.
 //
-// state.customItems = [{ id, name, slot, cl, powers: [power], crafted, free, off, qty, notes }], each power
+// state.customItems = [{ id, name, slot, cl, powers: [power], crafted, free, off (not worn), discount, qty, notes }], each power
+// (discount: gp that free upgrades took off its price, each)
 // { kind, bonus, ability, type, skill, sr, spellLevel, spellCl, activation, perDay, duration }.
 
 export const SLOTS = ['head', 'headband', 'eyes', 'shoulders', 'neck', 'chest', 'body', 'belt', 'wrists', 'hands', 'ring', 'feet', 'slotless'];
@@ -62,8 +63,9 @@ export function customItemPrice(item) {
   return { price, cost: Math.round(price / 2 * 100) / 100, lines, multi, slotless: item.slot === 'slotless' };
 }
 
-// What one costs the character: nothing if free, half if crafted, else the price.
-export const customItemPaid = item => (item.free ? 0 : item.crafted ? customItemPrice(item).cost : customItemPrice(item).price);
+// What one costs the character: nothing if free; half the price if crafted, else the price, less any free upgrades.
+export const customItemBase = item => (item.crafted ? customItemPrice(item).cost : customItemPrice(item).price);
+export const customItemPaid = item => (item.free ? 0 : Math.max(0, customItemBase(item) - (Number.isFinite(item.discount) ? item.discount : 0)));
 
 // The bonuses a worn custom item gives, as custom effects: [{ name, target, type, value, on }].
 export function customItemEffects(items = []) {
@@ -82,6 +84,7 @@ export function tidyCustomItems(saved) {
     id: typeof i.id === 'string' && i.id ? i.id.slice(0, 40) : `custom-${n}`,
     name: String(i.name || 'Custom item').slice(0, 60), slot: SLOTS.includes(i.slot) ? i.slot : 'slotless',
     cl: num(i.cl, 1, 20, 1), crafted: i.crafted === true, free: i.free === true, off: i.off === true, qty: num(i.qty, 1, 99, 1),
+    ...(Number.isFinite(i.discount) && i.discount > 0 ? { discount: i.discount } : {}),
     notes: String(i.notes || '').slice(0, 500),
     powers: (Array.isArray(i.powers) ? i.powers : []).filter(p => p && powerByKind.has(p.kind)).slice(0, 6).map(p => ({
       kind: p.kind, bonus: num(p.bonus, 0, 30, 1), ability: ABILITY_NAMES[p.ability] ? p.ability : 'str',

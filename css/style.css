@@ -1398,3 +1398,6 @@ label.free-upgrade { white-space: nowrap; flex: none !important; font-size: 0.9r
 #tab-armor .enh-row label.free-upgrade { flex: none; }
 .pop-quality, .item-version-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .control-with-details { flex-wrap: wrap; }
+.custom-upgrades { display: flex; flex-direction: column; gap: 6px; margin: 6px 0; }
+.custom-upgrades label.item-version { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.custom-upgrades label.item-version select { width: auto; min-height: 40px; }

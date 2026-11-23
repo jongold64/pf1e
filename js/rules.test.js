@@ -2608,6 +2608,7 @@ It does a thing. More.` });
   const { customItemPrice, customItemEffects, customItemPaid, tidyCustomItems } = await import('./custom-items.js');
   const cloak = { slot: 'shoulders', powers: [{ kind: 'resistance', bonus: 2 }] };
   check('custom cloak of resistance +2: 4,000 gp, crafted 2,000', [customItemPrice(cloak).price, customItemPaid({ ...cloak, crafted: true })].join(), '4000,2000');
+  check('custom cloak upgraded for free (3,000 off): counts at 1,000 gp', customItemPaid({ ...cloak, discount: 3000 }), 1000);
   const both = { slot: 'neck', powers: [{ kind: 'natural', bonus: 1 }, { kind: 'resistance', bonus: 1 }] };
   check('two powers: 2,000 + 1,000 × 1.5 = 3,500', customItemPrice(both).price, 3500);
   check('slotless doubles: ioun-style +1 deflection 4,000', customItemPrice({ slot: 'slotless', powers: [{ kind: 'deflection', bonus: 1 }] }).price, 4000);
