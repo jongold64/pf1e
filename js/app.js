@@ -2177,11 +2177,6 @@ function initTabSearches() {
   initSkillFilters();
   initClassAdd();
   initRaceAdd();
-  live('armor-search-form', 'armor-search', renderArmorSearch);
-  $('armor-search-results').addEventListener('click', e => {
-    const btn = e.target.closest('[data-armor-result]');
-    if (btn) openResult('armor', btn.dataset.armorResult);
-  });
 }
 
 // A list of results under a tab's search box: items are [{ id, name, detail, icon }].
@@ -2324,13 +2319,6 @@ function openFeatForSlots(id) {
   openDetail(f.name, featDetails(f, checkFeat(f, view.ctx)) + note, actions);
 }
 
-function renderArmorSearch() {
-  const q = $('armor-search').value.trim().toLowerCase();
-  const hits = data.armor.filter(a => a.name.toLowerCase().includes(q));
-  resultList($('armor-search-results'), q, hits.map(a => ({
-    id: a.id, name: a.name, detail: `${a.category === 'shield' ? 'shield' : `${a.category} armor`} · ${signed(a.bonus)}`,
-  })), 'data-armor-result');
-}
 
 function update(changes) {
   const before = { level: state.level, fortune: !!view?.haveFeats.includes("Hero's Fortune") };

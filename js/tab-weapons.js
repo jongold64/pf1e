@@ -18,6 +18,7 @@ import { bladeStrikeBonus, blackBladePowers } from './archetype-choices.js';
 import { maxDamage } from './dice.js';
 import { setCombatSwitch, showDefenseWhy } from './tab-armor.js';
 import { launcherOf, ammoFor, AMMO_MATERIALS, ammoPiecePrice, laceFits, LACE_PRICE, graceRow } from './weapons.js';
+import { pickList } from './pick-list.js';
 
 // A launcher's ammunition (bows, crossbows, slings...): which kind, how many, a special material and a magic bonus. The
 // ammunition's enhancement and the launcher's don't stack (the higher counts); its material's effects show under it.
@@ -42,8 +43,6 @@ import { formatGp, formatLbs } from './equipment.js';
 import { sellButton, sellItem } from './tab-equipment.js';
 import { rollButton } from './roll-ui.js';
 
-let selectedId = null;
-let listed = false;
 
 const WEAPON_FEATS = [
   ['focus', 'Weapon Focus', '+1 attack'],
@@ -72,24 +71,34 @@ function weaponDetails(w, withButton = true) {
     ${paragraphs(w.description) || '<p class="hint">The source has no description for this weapon.</p>'}`;
 }
 
-function renderPanel(app) {
-  const w = app.data.weaponsById?.get(selectedId);
-  $('weapon-panel').innerHTML = w ? weaponDetails(w) : '<p class="hint">Choose a weapon to see its details and add it.</p>';
-  document.querySelectorAll('#weapon-list [data-weapon]').forEach(b =>
-    b.setAttribute('aria-current', String(b.dataset.weapon === selectedId)));
+// A weapon in a popup, with Add to my weapons. back: reopens the Add a weapon list (after adding, and from Back to the list).
+function popWeapon(app, id, back = null) {
+  const w = app.data.weaponsById.get(id);
+  if (!w) return;
+  app.openDetail(w.name, weaponDetails(w, false), [
+    { label: 'Add to my weapons', primary: true, run: () => { app.update({ weapons: [...app.state.weapons, newEntry(app, w)] }); if (back) back(); } },
+    ...(back ? [{ label: 'Back to the list', run: back }] : [])]);
+}
+// Add a weapon: every weapon A to Z (simple, martial or exotic, how it's held, damage and price under the name), and Make
+// a custom weapon.
+function popWeaponPicker(app) {
+  const have = new Set(app.state.weapons.map(e => e.id));
+  const kind = c => String(c || '').replace(/ Weapons$/, '').replace(/s$/, '');
+  pickList(app, { key: 'weapon', title: 'Add a weapon', placeholder: 'Search weapons by name', noun: 'weapons', limit: 500,
+    items: () => app.data.weapons, mark: w => have.has(w.id),
+    line: w => [kind(w.category), GROUP_TEXT[w.group] || w.group || '', w.damage.m ? `${w.damage.m} ${w.critical || ''}`.trim() : '', w.price_gp !== null ? formatGp(w.price_gp) : (w.price || '')].filter(Boolean).join(' · '),
+    onPick: (id, back) => popWeapon(app, id, back),
+    foot: '<p class="hint">Tap a weapon to read it and add it to My weapons. Not here? Make your own:</p>',
+    actions: [{ label: 'Make a custom weapon', run: () => { wDraft = freshWeapon(); weaponCustomOpen = true; renderWeaponButtons(app); $('weapon-add-card').scrollIntoView({ block: 'start' }); } }] });
 }
 
-// The Add weapons card: a button for each category (it shows just that part of the list) and Custom.
-const WEAPON_ORDER = ['Simple Weapons', 'Martial Weapons', 'Exotic Weapons', 'Firearms', 'Technological Weapons', 'Custom Weapons'];
-let weaponCat = '';
+// The Add weapons card: Add a weapon (the list popup), and the Custom weapon builder when it's open.
 let weaponCustomOpen = false;
 let wDraft = null;  // the custom weapon being made or changed
 const freshWeapon = () => ({ id: '', name: '', proficiency: 'martial', group: 'one-handed', damage: '1d8', threat: 20, multiplier: 2, type: 'S',
   range: 0, thrown: false, finesse: false, price: 0, weight: 0, notes: '', proficientMe: false, free: false });
 function renderWeaponButtons(app) {
-  const cats = WEAPON_ORDER.filter(c => app.data.weapons.some(w => w.category === c));
-  $('weapon-add-buttons').innerHTML = cats.map(c => `<button type="button" data-weapon-add="${esc(c)}" aria-pressed="${!weaponCustomOpen && weaponCat === c}">${esc(c)}</button>`).join('')
-    + `<button type="button" class="add-custom" data-weapon-custom aria-pressed="${weaponCustomOpen}">Custom</button>`;
+  $('weapon-add-buttons').innerHTML = '<button type="button" class="primary" data-weapon-choose>Add a weapon</button>';
   $('weapon-custom-wrap').hidden = !weaponCustomOpen;
   if (weaponCustomOpen) renderWeaponCustom();
 }
@@ -124,32 +133,6 @@ function renderWeaponCustom() {
       <button type="button" data-cw-cancel>Cancel</button></div></div>`;
 }
 
-function renderList(app) {
-  const all = app.data.weapons;
-  const filter = $('weapon-search').value.trim().toLowerCase();
-  renderWeaponButtons(app);
-  const byCategory = new Map();
-  for (const w of all) {
-    if (filter && !w.name.toLowerCase().includes(filter)) continue;
-    // A category button shows only that category (a search still looks through everything).
-    if (weaponCat && !filter && w.category !== weaponCat) continue;
-    if (!byCategory.has(w.category)) byCategory.set(w.category, []);
-    byCategory.get(w.category).push(w);
-  }
-  const categories = WEAPON_ORDER.filter(c => byCategory.has(c));
-  const shown = [...byCategory.values()].reduce((n, l) => n + l.length, 0);
-  $('weapon-count').textContent = filter || weaponCat ? `${shown} of ${all.length}` : `${all.length}`;
-  $('weapon-category').innerHTML = '<option value="">Jump to a category…</option>' +
-    categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
-  $('weapon-list').innerHTML = categories.map(c => `<section class="list-group" id="wcat-${slug(c)}">
-      <h3 class="list-heading">${esc(c)} <span class="count">${byCategory.get(c).length}</span></h3>
-      <ul class="pick-list">${byCategory.get(c).map(w =>
-        `<li class="with-details"><button type="button" data-weapon="${esc(w.id)}">${esc(w.name)}<small>${esc(w.damage.m || '')}</small></button>
-          <button type="button" class="skill-details q-details" data-weapon-pop="${esc(w.id)}" aria-label="${esc(w.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
-    </section>`).join('') || '<p class="hint">No weapons match.</p>';
-  if (weaponCat && !filter) $('weapon-list').insertAdjacentHTML('afterbegin', `<p class="hint">Showing ${esc(weaponCat)} only. <button type="button" data-weapon-all>Show all weapons</button></p>`);
-  renderPanel(app);
-}
 
 const attackText = a => a.attacks.map(signed).join('/');
 
@@ -958,18 +941,8 @@ export function initWeaponsTab(app) {
   initKiWeapons(app);
   initBonds(app);
   initCombat(app);
-  $('weapon-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
-  $('weapon-search').addEventListener('input', () => renderList(app));
-  // Add weapons: a category shows just that part of the list (tap again for all); Custom opens the builder.
-  $('weapon-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-weapon-add], [data-weapon-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-weapon-custom')) { weaponCustomOpen = !weaponCustomOpen; weaponCat = ''; renderList(app); return; }
-    weaponCustomOpen = false;
-    weaponCat = weaponCat === b.dataset.weaponAdd ? '' : b.dataset.weaponAdd;
-    renderList(app);
-    if (weaponCat) $('weapon-list').closest('section').scrollIntoView({ block: 'start' });
-  });
+  // Add a weapon opens the list popup.
+  $('weapon-add-buttons').addEventListener('click', e => { if (e.target.closest('[data-weapon-choose]')) popWeaponPicker(app); });
   const cwBox = $('weapon-custom-wrap');
   cwBox.addEventListener('input', e => {
     const k = e.target.dataset.cw;
@@ -991,7 +964,7 @@ export function initWeaponsTab(app) {
       const n = app.state.weapons.filter(x => x.id === id).length;
       if (!confirm(`Delete ${wDraft.name || 'this weapon'}${n ? ` (and the ${n} you have)` : ''}?`)) return;
       app.update({ customWeapons: app.state.customWeapons.filter(x => x.id !== id), weapons: app.state.weapons.filter(x => x.id !== id), combat: { ...app.state.combat, main: '', off: '' } });
-      wDraft = freshWeapon(); weaponCustomOpen = false; renderList(app);
+      wDraft = freshWeapon(); weaponCustomOpen = false; renderWeaponButtons(app);
       return;
     }
     if (!e.target.closest('[data-cw-save]')) return;
@@ -1004,7 +977,8 @@ export function initWeaponsTab(app) {
       app.update({ customWeapons: [...list, def], weapons: [...app.state.weapons, { id: def.id, enh: 0, ...(proficientMe ? { proficient: true } : {}), ...(free ? { free: true } : {}) }] });
     }
     wDraft = freshWeapon();
-    renderList(app);
+    weaponCustomOpen = false;
+    renderWeaponButtons(app);
     $('my-weapons').closest('section').scrollIntoView({ block: 'start' });
   });
   $('my-weapons').addEventListener('click', e => {
@@ -1013,31 +987,9 @@ export function initWeaponsTab(app) {
     const d = (app.state.customWeapons || []).find(x => x.id === ed.dataset.cwEdit);
     if (!d) return;
     wDraft = { ...freshWeapon(), ...d };
-    weaponCustomOpen = true; weaponCat = '';
-    renderList(app);
+    weaponCustomOpen = true;
+    renderWeaponButtons(app);
     $('weapon-add-card').scrollIntoView({ block: 'start' });
-  });
-  $('weapon-category').addEventListener('change', e => {
-    document.getElementById(`wcat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
-  });
-  $('weapon-list').addEventListener('click', e => {
-    if (e.target.closest('[data-weapon-all]')) { weaponCat = ''; renderList(app); return; }
-    // Details: the weapon in a popup, with Add to my weapons.
-    const pop = e.target.closest('[data-weapon-pop]');
-    if (pop) {
-      const w = app.data.weaponsById.get(pop.dataset.weaponPop);
-      if (w) app.openDetail(w.name, weaponDetails(w, false),
-        [{ label: 'Add to my weapons', primary: true, run: () => app.update({ weapons: [...app.state.weapons, newEntry(app, w)] }) }]);
-      return;
-    }
-    const btn = e.target.closest('[data-weapon]');
-    if (!btn) return;
-    selectedId = btn.dataset.weapon;
-    renderPanel(app);
-  });
-  $('weapon-panel').addEventListener('click', e => {
-    const btn = e.target.closest('[data-add-weapon]');
-    if (btn) app.update({ weapons: [...app.state.weapons, newEntry(app, app.data.weaponsById.get(btn.dataset.addWeapon) || { id: btn.dataset.addWeapon })] });
   });
   $('my-weapons').addEventListener('click', e => {
     const more = e.target.closest('[data-weapon-more]');
@@ -1165,25 +1117,17 @@ function initCombat(app) {
 
 export async function renderWeaponsTab(app) {
   if (!app.data.weapons) {
-    $('weapon-list').innerHTML = '<p class="hint">Loading weapons…</p>';
+    $('weapon-add-buttons').innerHTML = '<p class="hint">Loading weapons…</p>';
     await app.loadWeapons();
   }
   // Special abilities come from the magic item data.
   if (!app.data.itemsById) await app.loadItems();
   renderMyWeapons(app, app.view);
-  if (listed) return;
-  listed = true;
-  renderList(app);
+  renderWeaponButtons(app);
 }
 
-// Used by search: show a weapon in the side panel and scroll the list to it.
+// Used by search: a weapon in a popup, with Add to my weapons.
 export async function showWeapon(app, id) {
-  selectedId = id;
-  await renderWeaponsTab(app);
-  if ($('weapon-search').value) {
-    $('weapon-search').value = '';
-    renderList(app);
-  }
-  renderPanel(app);
-  document.querySelector(`#weapon-list [data-weapon="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center' });
+  if (!app.data.weapons) await app.loadWeapons();
+  popWeapon(app, id);
 }

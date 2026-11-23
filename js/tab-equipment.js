@@ -12,9 +12,8 @@ import { showArmorWhy } from './tab-armor.js';
 import { carryingCapacity, encumbrance } from './rules.js';
 import { bardingCost, companionSize } from './companion.js';
 import { withMaterial } from './materials.js';
+import { pickList } from './pick-list.js';
 
-let selectedId = null;
-let listed = false;
 // What each money / weight total is made of (filled when the tab is drawn, shown by its Details button).
 let moneyDetails = {};
 // Each inventory row's price and weight, by key, for its Details popup.
@@ -49,22 +48,36 @@ export function gearDetails(item, withButtons = true) {
     ${paragraphs(item.description)}`;
 }
 
-function renderPanel(app) {
-  const item = app.data.gearById?.get(selectedId);
-  $('gear-panel').innerHTML = item ? gearDetails(item) : '<p class="hint">Choose an item to see its details and add it to your inventory.</p>';
-  document.querySelectorAll('#gear-list [data-gear]').forEach(b =>
-    b.setAttribute('aria-current', String(b.dataset.gear === selectedId)));
+// An item of equipment in a popup, with an Add button for each version. back: reopens the Add equipment list (after
+// adding, and from Back to the list).
+function popGear(app, id, back = null) {
+  const item = app.data.gearById.get(id);
+  if (!item) return;
+  const versions = item.variants || [];
+  const then = () => { if (back) back(); };
+  const actions = [...(versions.length
+    ? versions.map((v, n) => ({ label: `Add ${v.name.toLowerCase()} (${formatGp(v.price_gp)})`, primary: n === 0, run: () => { addToInventory(app, item.id, v.name); then(); } }))
+    : [{ label: 'Add to inventory', primary: true, run: () => { addToInventory(app, item.id); then(); } }]),
+    ...(back ? [{ label: 'Back to the list', run: back }] : [])];
+  app.openDetail(item.name, gearDetails(item, false), actions);
+}
+// Add equipment: every item A to Z (its category and price under the name), and Make custom equipment.
+function popGearPicker(app) {
+  const have = new Set(app.state.inventory.map(e => e.id));
+  pickList(app, { key: 'gear', title: 'Add equipment', placeholder: 'Search equipment by name', noun: 'items', limit: 1000,
+    items: () => app.data.gear, mark: i => have.has(i.id),
+    line: i => [i.category, i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''), i.weight_lbs ? formatLbs(i.weight_lbs) : ''].filter(Boolean).join(' · '),
+    onPick: (id, back) => popGear(app, id, back),
+    foot: '<p class="hint">Tap an item to read it and add it to your inventory. Not here? Make your own:</p>',
+    actions: [{ label: 'Make custom equipment', run: () => { gearDraft = freshGear(); customOpen = true; renderGearButtons(app); $('gear-add-card').scrollIntoView({ block: 'start' }); } }] });
 }
 
-// The Add equipment card: a button for each category (it shows just that part of the list) and Custom.
-let gearCat = '';
+// The Add equipment card: Add equipment (the list popup), and the Custom equipment builder when it's open.
 let customOpen = false;
 let gearDraft = null;  // the custom item being made or changed: { id, name, price, weight, qty, free, notes }
 const freshGear = () => ({ id: '', name: '', price: 0, weight: 0, qty: 1, free: false, notes: '' });
 function renderGearButtons(app) {
-  const cats = [...new Set(app.data.gear.map(i => i.category))].sort();
-  $('gear-add-buttons').innerHTML = cats.map(c => `<button type="button" data-gear-add="${esc(c)}" aria-pressed="${!customOpen && gearCat === c}">${esc(c)}</button>`).join('')
-    + `<button type="button" class="add-custom" data-gear-add="" data-gear-custom aria-pressed="${customOpen}">Custom</button>`;
+  $('gear-add-buttons').innerHTML = '<button type="button" class="primary" data-gear-choose>Add equipment</button>';
   $('gear-custom-wrap').hidden = !customOpen;
   if (customOpen) renderGearCustom();
 }
@@ -81,38 +94,10 @@ function renderGearCustom() {
     <label class="check-row"><input type="checkbox" data-cg="free"${g.free ? ' checked' : ''}> Free (found or a gift: no gold)</label>
     <label>Notes <textarea data-cg="notes" rows="2" maxlength="500" placeholder="What it is, what it does...">${esc(g.notes)}</textarea></label>
     <div class="line-controls"><button type="button" class="primary" data-cg-save>${g.id ? 'Save changes' : 'Add to my inventory'}</button>
-      <button type="button" data-cg-clear>${g.id ? 'Stop changing it' : 'Clear'}</button></div></div>`;
+      <button type="button" data-cg-clear>${g.id ? 'Stop changing it' : 'Clear'}</button>
+      <button type="button" data-cg-cancel>Cancel</button></div></div>`;
 }
 
-function renderList(app) {
-  const items = app.data.gear;
-  const filter = $('gear-search').value.trim().toLowerCase();
-  renderGearButtons(app);
-  const byCategory = new Map();
-  for (const i of items) {
-    if (filter && !i.name.toLowerCase().includes(filter)) continue;
-    // A category button shows only that category (a search still looks through everything).
-    if (gearCat && !filter && i.category !== gearCat) continue;
-    if (!byCategory.has(i.category)) byCategory.set(i.category, []);
-    byCategory.get(i.category).push(i);
-  }
-  const categories = [...byCategory.keys()].sort();
-  const shown = [...byCategory.values()].reduce((n, list) => n + list.length, 0);
-  $('gear-count').textContent = filter || gearCat ? `${shown} of ${items.length}` : `${items.length}`;
-  $('gear-category').innerHTML = '<option value="">Jump to a category…</option>' +
-    categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
-  $('gear-list').innerHTML = categories.map(c => {
-    const list = byCategory.get(c).sort((a, b) => a.name.localeCompare(b.name));
-    return `<section class="list-group" id="gear-cat-${slug(c)}">
-      <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
-      <ul class="pick-list">${list.map(i =>
-        `<li class="with-details"><button type="button" data-gear="${esc(i.id)}">${esc(i.name)}<small>${esc(i.price_gp !== null ? formatGp(i.price_gp) : (i.price || ''))}</small></button>
-          <button type="button" class="skill-details q-details" data-gear-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
-    </section>`;
-  }).join('') || '<p class="hint">No equipment matches.</p>';
-  if (gearCat && !filter) $('gear-list').insertAdjacentHTML('afterbegin', `<p class="hint">Showing ${esc(gearCat)} only. <button type="button" data-gear-all>Show all equipment</button></p>`);
-  renderPanel(app);
-}
 
 // Money, weight and the inventory table. Needs the equipment data, so it waits for it on first use.
 // A "Free" tick box: found, a gift or from a class feature, so it costs no gold.
@@ -418,21 +403,8 @@ export function initEquipmentTab(app) {
     app.openDetail(d.title, `<table class="skill-why"><tbody>${rows}</tbody>
       <tfoot><tr><td><b>Total</b></td><td class="num"><b>${esc(d.total)}</b></td></tr></tfoot></table>${d.note ? `<p class="hint">${esc(d.note)}</p>` : ''}`);
   });
-  $('gear-search-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
-  $('gear-search').addEventListener('input', () => renderList(app));
-  $('gear-category').addEventListener('change', e => {
-    document.getElementById(`gear-cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
-  });
-  // Add equipment: a category shows just that part of the list (tap again for all); Custom opens the builder.
-  $('gear-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-gear-add]');
-    if (!b) return;
-    if (b.hasAttribute('data-gear-custom')) { customOpen = !customOpen; gearCat = ''; renderList(app); return; }
-    customOpen = false;
-    gearCat = gearCat === b.dataset.gearAdd ? '' : b.dataset.gearAdd;
-    renderList(app);
-    if (gearCat) $('gear-list').closest('section').scrollIntoView({ block: 'start' });
-  });
+  // Add equipment opens the list popup.
+  $('gear-add-buttons').addEventListener('click', e => { if (e.target.closest('[data-gear-choose]')) popGearPicker(app); });
   $('gear-custom-wrap').addEventListener('input', e => {
     const k = e.target.dataset.cg;
     if (!k || k === 'free') return;
@@ -441,37 +413,16 @@ export function initEquipmentTab(app) {
   $('gear-custom-wrap').addEventListener('change', e => { if (e.target.dataset.cg === 'free') gearDraft.free = e.target.checked; });
   $('gear-custom-wrap').addEventListener('click', e => {
     if (e.target.closest('[data-cg-clear]')) { gearDraft = freshGear(); renderGearCustom(); return; }
+    if (e.target.closest('[data-cg-cancel]')) { gearDraft = freshGear(); customOpen = false; renderGearButtons(app); return; }
     if (!e.target.closest('[data-cg-save]')) return;
     const g = { ...gearDraft, name: gearDraft.name.trim() || 'Custom item', id: gearDraft.id || `cgear-${Date.now().toString(36)}` };
     const list = app.state.customGear || [];
     const at = list.findIndex(x => x.id === g.id);
     app.update({ customGear: at >= 0 ? list.map((x, j) => (j === at ? g : x)) : [...list, g] });
     gearDraft = freshGear();
-    renderGearCustom();
+    customOpen = false;
+    renderGearButtons(app);
     $('inventory-rows').closest('section').scrollIntoView({ block: 'start' });
-  });
-  $('gear-list').addEventListener('click', e => {
-    if (e.target.closest('[data-gear-all]')) { gearCat = ''; renderList(app); return; }
-    // Details: the item in a popup, with an Add button for each version.
-    const pop = e.target.closest('[data-gear-pop]');
-    if (pop) {
-      const item = app.data.gearById.get(pop.dataset.gearPop);
-      if (!item) return;
-      const versions = item.variants || [];
-      const actions = versions.length
-        ? versions.map((v, n) => ({ label: `Add ${v.name.toLowerCase()} (${formatGp(v.price_gp)})`, primary: n === 0, run: () => addToInventory(app, item.id, v.name) }))
-        : [{ label: 'Add to inventory', primary: true, run: () => addToInventory(app, item.id) }];
-      app.openDetail(item.name, gearDetails(item, false), actions);
-      return;
-    }
-    const btn = e.target.closest('[data-gear]');
-    if (!btn) return;
-    selectedId = btn.dataset.gear;
-    renderPanel(app);
-  });
-  $('gear-panel').addEventListener('click', e => {
-    const btn = e.target.closest('[data-add-gear]');
-    if (btn) addToInventory(app, btn.dataset.addGear, btn.dataset.variant);
   });
   // Free: found or a gift, so it costs no gold (gear, and the worn armor or shield).
   $('inventory-rows').addEventListener('change', e => {
@@ -495,7 +446,7 @@ export function initEquipmentTab(app) {
       return;
     }
     const ce = e.target.closest('[data-cgear-edit]');
-    if (ce) { gearDraft = { ...app.state.customGear[Number(ce.dataset.cgearEdit)] }; customOpen = true; gearCat = ''; renderList(app); $('gear-add-card').scrollIntoView({ block: 'start' }); return; }
+    if (ce) { gearDraft = { ...app.state.customGear[Number(ce.dataset.cgearEdit)] }; customOpen = true; renderGearButtons(app); $('gear-add-card').scrollIntoView({ block: 'start' }); return; }
     const cr = e.target.closest('[data-cgear-remove]');
     if (cr) {
       const i = Number(cr.dataset.cgearRemove);
@@ -566,24 +517,15 @@ export function initEquipmentTab(app) {
 
 export async function renderEquipmentTab(app) {
   if (!app.data.gear) {
-    $('gear-list').innerHTML = '<p class="hint">Loading equipment…</p>';
+    $('gear-add-buttons').innerHTML = '<p class="hint">Loading equipment…</p>';
     await app.loadGear();
   }
-  if (!listed) {
-    listed = true;
-    renderList(app);
-  }
+  renderGearButtons(app);
   await renderEquipment(app, app.view);
 }
 
-// Used by search: show an item in the side panel and scroll the list to it.
+// Used by search and the inventory: an item in a popup, with its Add buttons.
 export async function showGear(app, id) {
-  selectedId = id;
-  await renderEquipmentTab(app);
-  if ($('gear-search').value) {
-    $('gear-search').value = '';
-    renderList(app);
-  }
-  renderPanel(app);
-  document.querySelector(`#gear-list [data-gear="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center' });
+  if (!app.data.gear) await app.loadGear();
+  popGear(app, id);
 }

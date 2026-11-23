@@ -9,9 +9,8 @@ import { customItemPaid } from './custom-items.js';
 import { SKILLS } from './skills.js';
 import { givesHtml, itemRowHtml, itemRowChange, itemRowClick, popSource } from './item-rows.js';
 import { freeBox, sellButton, sellItem } from './tab-equipment.js';
+import { pickList } from './pick-list.js';
 
-let selectedId = null;
-let listed = false;
 
 const entryName = (item, option) => (option ? `${item.name} (${option})` : item.name);
 
@@ -92,19 +91,39 @@ function popSlots(app) {
       add the ones you wear as active effects on the Build tab.</p>`);
 }
 
-function popItem(app, id) {
+// back: reopens the Add a magic item list (after adding, and from Back to the list); kept while its charges change.
+let itemBack = null;
+function popItem(app, id, back = undefined) {
+  if (back !== undefined) itemBack = back;
   const item = app.data.itemsById.get(id);
   if (!item) return;
   const actions = [];
+  const then = () => { if (itemBack) itemBack(); };
   if (ownable(item)) {
     const options = item.price_options || [];
     const priced = gp => formatGp(chargedPrice(gp, chargesFor(item), maxCharges(item)));
-    if (options.length) options.forEach((o, n) => actions.push({ label: `Add ${o.label} (${priced(o.price_gp)})`, primary: n === 0, run: () => addItem(app, item.id, o.label) }));
-    else actions.push({ label: 'Add to my magic items', primary: true, run: () => addItem(app, item.id) });
+    if (options.length) options.forEach((o, n) => actions.push({ label: `Add ${o.label} (${priced(o.price_gp)})`, primary: n === 0, run: () => { addItem(app, item.id, o.label); then(); } }));
+    else actions.push({ label: 'Add to my magic items', primary: true, run: () => { addItem(app, item.id); then(); } });
   }
   if (itemKind(item)) actions.push({ label: 'Craft this item', run: () => craftListedItem(app, item.id) });
+  if (itemBack) actions.push({ label: 'Back to the list', run: itemBack });
   app.openDetail(item.name, `${itemDetails(item, false)}${ownable(item) ? `${chargesBox(item)}${freeBuyBox()}` : ''}`, actions);
 }
+// Add a magic item: every item A to Z (its kind, slot and price under the name), and Make a custom item. Potions,
+// scrolls and wands of any spell are made with the Potion, scroll or wand button instead.
+const KIND_NAME = { 'Magic Weapons': 'specific weapon', 'Magic Armor': 'specific armor', 'Magic Shields': 'specific shield' };
+function popItemPicker(app) {
+  const have = new Set(app.state.magicItems.map(e => e.id));
+  pickList(app, { key: 'item', title: 'Add a magic item', placeholder: 'Search magic items by name', noun: 'items',
+    items: () => app.data.items, mark: i => have.has(i.id),
+    line: i => [KIND_NAME[i.category] || String(i.category || '').replace(/s$/, '').replace(/^Stave$/, 'Staff').replace(/ Item$/, ' item').toLowerCase(),
+      i.slot && !['none', 'slotless'].includes(i.slot) ? `${i.slot} slot` : '', i.price || ''].filter(Boolean).join(' · '),
+    onPick: (id, back) => popItem(app, id, back),
+    top: '<p class="hint">Potions, scrolls and wands of any spell: use <b>Potion, scroll or wand</b> on the Add magic gear card.</p>',
+    foot: '<p class="hint">Tap an item to read it and add it (with charges and Buy for free there) or craft it. Not here? Make your own:</p>',
+    actions: [{ label: 'Make a custom item', run: () => { showCustomCard(app); $('custom-wrap').scrollIntoView({ block: 'start' }); } }] });
+}
+let showCustomCard = () => {};
 
 function itemDetails(item, withButtons = true) {
   const c = item.construction || {};
@@ -124,12 +143,6 @@ function itemDetails(item, withButtons = true) {
     ${c.requirements || c.cost ? `<h4>Construction</h4>${facts([['Requirements', c.requirements], ['Cost', c.cost]])}` : ''}`;
 }
 
-function renderPanel(app) {
-  const item = app.data.itemsById?.get(selectedId);
-  $('item-panel').innerHTML = item ? itemDetails(item) : '<p class="hint">Choose an item to see its details.</p>';
-  document.querySelectorAll('#item-list [data-item]').forEach(b =>
-    b.setAttribute('aria-current', String(b.dataset.item === selectedId)));
-}
 
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
@@ -140,17 +153,13 @@ const whyButton = (key, what) => ` <button type="button" class="skill-details q-
 // The "My magic items" table: quantity buttons, cost and weight, and totals.
 // The Add magic gear card's buttons: three makers, the list's categories (each shows just that part of the list),
 // and Custom. [key, label]: a maker's kind, 'cat:<category>', or 'custom'.
-const ADD_BUTTONS = [['weapon', 'Make a weapon magic'], ['armor', 'Make armor or a shield magic'], ['spell', 'Potion, scroll or wand'],
-  ['cat:Wondrous Items', 'Wondrous items'], ['cat:Rings', 'Rings'], ['cat:Rods', 'Rods'], ['cat:Staves', 'Staves'],
-  ['cat:Magic Weapons', 'Specific weapons'], ['cat:Magic Armor', 'Specific armor'], ['cat:Magic Shields', 'Specific shields'],
-  ['cat:Artifacts', 'Artifacts'], ['cat:Intelligent Items', 'Intelligent items'], ['cat:Cursed Items', 'Cursed items'], ['custom', 'Custom']];
-let catFilter = '';  // the category the list shows ('' for all)
+const ADD_BUTTONS = [['list', 'Add a magic item'], ['weapon', 'Make a weapon magic'], ['armor', 'Make armor or a shield magic'], ['spell', 'Potion, scroll or wand']];
 const skillNames = () => SKILLS.map(s => s.name).filter(n => !/^(Craft|Perform|Profession)$/.test(n))
   .concat(['Craft', 'Perform', 'Profession']).sort();
 function renderAddButtons() {
   if (!$('add-buttons')) return;
-  const open = !$('buy-wrap').hidden ? null : !$('custom-wrap').hidden ? 'custom' : catFilter ? `cat:${catFilter}` : '';
-  $('add-buttons').innerHTML = ADD_BUTTONS.map(([k, label]) => `<button type="button" data-add="${esc(k)}" aria-pressed="${open === k}"${k === 'custom' ? ' class="add-custom"' : ''}>${esc(label)}</button>`).join('');
+  const open = !$('buy-wrap').hidden ? null : '';
+  $('add-buttons').innerHTML = ADD_BUTTONS.map(([k, label]) => `<button type="button" data-add="${esc(k)}"${k === 'list' ? ' class="primary"' : ` aria-pressed="${open === k}"`}>${esc(label)}</button>`).join('');
   if (open === null) showBuyCard(true);
 }
 
@@ -280,26 +289,17 @@ function showItemWhy(app, key) {
 
 export function initItemsTab(app) {
   // The Add magic gear buttons: a maker opens below them, a category shows that part of the list, Custom the builder.
-  const showCustom = () => { showBuyCard(false); $('custom-wrap').hidden = false; catFilter = ''; renderAddButtons(); renderCustomBuilder(app, skillNames()); };
+  const showCustom = () => { showBuyCard(false); $('custom-wrap').hidden = false; renderAddButtons(); renderCustomBuilder(app, skillNames()); };
+  showCustomCard = showCustom;
   initCustomItems(app, { skills: skillNames, show: () => { showCustom(); $('custom-wrap').scrollIntoView({ block: 'start' }); } });
   $('add-buttons').addEventListener('click', e => {
     const b = e.target.closest('[data-add]');
     if (!b) return;
     const k = b.dataset.add;
-    if (k === 'custom') { showCustom(); return; }
+    if (k === 'list') { popItemPicker(app); return; }
     $('custom-wrap').hidden = true;
-    if (k.startsWith('cat:')) {
-      showBuyCard(false);
-      catFilter = catFilter === k.slice(4) ? '' : k.slice(4);
-      renderAddButtons();
-      renderList(app);
-      if (catFilter) $('item-list').closest('section').scrollIntoView({ block: 'start' });
-      return;
-    }
-    catFilter = '';
     openBuyKind(app, k);
     renderAddButtons();
-    renderList(app);
   });
   for (const id of ['my-items-rows', 'my-items-total']) {
     $(id).addEventListener('click', e => {
@@ -307,36 +307,16 @@ export function initItemsTab(app) {
       if (b) showItemWhy(app, b.dataset.itemWhy);
     });
   }
-  $('item-filter').addEventListener('input', () => renderList(app));
-  $('item-filter-form').addEventListener('submit', e => { e.preventDefault(); renderList(app); });
-  $('item-category').addEventListener('change', e => {
-    document.getElementById(`cat-${e.target.value}`)?.scrollIntoView({ block: 'start' });
+  // Buy for free, in an item's popup.
+  $('detail-body').addEventListener('change', e => { if (e.target.matches('[data-free-buy]')) freeBuy = e.target.checked; });
+  // Charges to buy with, in an item's popup.
+  $('detail-body').addEventListener('change', e => {
+    const c = e.target.closest('[data-buy-charges]');
+    if (!c) return;
+    const item = app.data.itemsById.get(c.dataset.buyCharges);
+    buyCharges = { id: item.id, n: Math.max(1, Math.min(maxCharges(item), Math.round(Number(c.value)) || maxCharges(item))) };
+    popItem(app, item.id);
   });
-  $('item-list').addEventListener('click', e => {
-    if (e.target.closest('[data-show-all]')) { catFilter = ''; renderAddButtons(); renderList(app); return; }
-    const si = e.target.closest('[data-spell-item]');
-    if (si) { openSpellItem(app, si.dataset.spellItem); return; }
-    const pop = e.target.closest('[data-item-pop]');
-    if (pop) { popItem(app, pop.dataset.itemPop); return; }
-    const btn = e.target.closest('[data-item]');
-    if (!btn) return;
-    selectedId = btn.dataset.item;
-    renderPanel(app);
-  });
-  // Buy for free, in the side panel or an item's popup (both show the same box).
-  for (const box of [$('item-panel'), $('detail-body')]) {
-    box.addEventListener('change', e => { if (e.target.matches('[data-free-buy]')) freeBuy = e.target.checked; });
-  }
-  // Charges to buy with, in the side panel or an item's popup.
-  for (const box of [$('item-panel'), $('detail-body')]) {
-    box.addEventListener('change', e => {
-      const c = e.target.closest('[data-buy-charges]');
-      if (!c) return;
-      const item = app.data.itemsById.get(c.dataset.buyCharges);
-      buyCharges = { id: item.id, n: Math.max(1, Math.min(maxCharges(item), Math.round(Number(c.value)) || maxCharges(item))) };
-      if (box === $('item-panel')) renderPanel(app); else popItem(app, item.id);
-    });
-  }
   // Using up (or putting back) a charge of an item in My magic items.
   $('my-items-rows').addEventListener('click', e => {
     const ch = e.target.closest('[data-item-charge]');
@@ -345,12 +325,6 @@ export function initItemsTab(app) {
     const it = app.data.itemsById.get(app.state.magicItems[i].id);
     const max = maxCharges(it);
     app.update({ magicItems: app.state.magicItems.map((x, j) => (j === i ? { ...x, charges: Math.max(0, Math.min(max, (x.charges ?? max) + Number(ch.dataset.step))) } : x)) });
-  });
-  $('item-panel').addEventListener('click', e => {
-    const btn = e.target.closest('[data-add-item]');
-    if (btn) addItem(app, btn.dataset.addItem, btn.dataset.option);
-    const craft = e.target.closest('[data-craft-item]');
-    if (craft) craftListedItem(app, craft.dataset.craftItem);
   });
   initCrafting(app);
   $('my-items-slots').addEventListener('click', () => popSlots(app));
@@ -407,60 +381,18 @@ export function initItemsTab(app) {
   });
 }
 
-function renderList(app) {
-  const items = app.data.items;
-  const filter = $('item-filter').value.trim().toLowerCase();
-  const byCategory = new Map();
-  for (const i of items) {
-    if (filter && !i.name.toLowerCase().includes(filter)) continue;
-    // A category button shows only that category (a search still looks through everything).
-    if (catFilter && !filter && i.category !== catFilter) continue;
-    if (!byCategory.has(i.category)) byCategory.set(i.category, []);
-    byCategory.get(i.category).push(i);
-  }
-  const categories = [...byCategory.keys()].sort();
-  const shown = [...byCategory.values()].reduce((n, list) => n + list.length, 0);
-  $('item-count').textContent = filter || catFilter ? `${shown} of ${items.length}` : `${items.length}`;
-  $('item-category').innerHTML = '<option value="">Jump to a category…</option>' +
-    categories.map(c => `<option value="${slug(c)}">${esc(c)} (${byCategory.get(c).length})</option>`).join('');
-  $('item-list').innerHTML = categories.map(c => {
-    const list = byCategory.get(c).sort((a, b) => a.name.localeCompare(b.name));
-    return `<section class="list-group" id="cat-${slug(c)}">
-      <h3 class="list-heading">${esc(c)} <span class="count">${list.length}</span></h3>
-      <ul class="pick-list">${list.map(i =>
-        `<li class="with-details"><button type="button" data-item="${esc(i.id)}">${esc(i.name)}${i.slot && !['none', 'slotless'].includes(i.slot) ? `<small>${esc(i.slot)}</small>` : ''}</button>
-          <button type="button" class="skill-details q-details" data-item-pop="${esc(i.id)}" aria-label="${esc(i.name)} in a popup" title="Details">?</button></li>`).join('')}</ul>
-    </section>`;
-  }).join('') || '<p class="hint">No items match.</p>';
-  // Potions, scrolls and wands aren't in this list (any spell can be one): searching for them points to Add magic gear.
-  const spellItem = ['wand', 'potion', 'scroll'].find(k => filter.includes(k));
-  if (catFilter && !filter) $('item-list').insertAdjacentHTML('afterbegin', `<p class="hint">Showing ${esc(catFilter)} only. <button type="button" data-show-all>Show all magic items</button></p>`);
-  if (spellItem) {
-    $('item-list').insertAdjacentHTML('afterbegin', `<p class="hint">${spellItem[0].toUpperCase()}${spellItem.slice(1)}s of any spell are added in the
-      <b>Add magic gear</b> card: <button type="button" class="primary" data-spell-item="${spellItem}">Add a ${spellItem}</button></p>`);
-  }
-  renderPanel(app);
-}
 
 export async function renderItemsTab(app) {
   if (!app.data.items) {
-    $('item-list').innerHTML = '<p class="hint">Loading magic items…</p>';
+    $('add-buttons').innerHTML = '<p class="hint">Loading magic items…</p>';
     await app.loadItems();
   }
   renderMyItems(app);
-  if (listed) return;
-  listed = true;
-  renderList(app);
+  renderAddButtons();
 }
 
-// Used by search: show an item in the side panel and scroll the list to it.
+// Used by search and My magic items: an item in a popup, with its Add and Craft buttons.
 export async function showItem(app, id) {
-  selectedId = id;
-  await renderItemsTab(app);
-  if ($('item-filter').value) {
-    $('item-filter').value = '';
-    renderList(app);
-  }
-  renderPanel(app);
-  document.querySelector(`#item-list [data-item="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center' });
+  if (!app.data.items) await app.loadItems();
+  popItem(app, id, null);
 }

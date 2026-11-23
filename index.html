@@ -279,25 +279,13 @@
       </section>
       <section class="card wide" id="buy-card">
         <h2>Add magic gear</h2>
-        <p class="hint">Treasure or purchases, at their market price. Choose what kind: the first three make your own, the next
-          show that part of the list below, and Custom makes a new item with the rules for new items.</p>
+        <p class="hint">Treasure or purchases, at their market price. <b>Add a magic item</b> lists every item A to Z (and makes a
+          custom one); the other three make your own magic weapon, armor or shield, or a potion, scroll or wand.</p>
         <div id="add-buttons" class="add-buttons"></div>
         <div id="buy-wrap" hidden>
           <div id="buy-body"></div>
         </div>
         <div id="custom-wrap" hidden></div>
-      </section>
-      <section class="card wide">
-        <h2>Magic items <span id="item-count" class="count"></span></h2>
-        <form class="search-row tab-search" id="item-filter-form" role="search">
-          <input id="item-filter" type="search" autocomplete="off" placeholder="Search magic items by name" aria-label="Search magic items">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <select id="item-category" class="jump" aria-label="Jump to a category"></select>
-        <div class="browser">
-          <div class="browser-list" id="item-list" aria-label="Magic items"></div>
-          <aside class="browser-panel" id="item-panel" aria-live="polite"></aside>
-        </div>
       </section>
     </main>
 
@@ -323,7 +311,8 @@
         <h2>Armor</h2>
         <div id="armor-line" class="fit-line item-line"></div>
         <div id="armor-more" class="line-more">
-        <div class="row armor-pick"><select id="armor-select" aria-label="Armor"></select>
+        <div class="row armor-pick"><select id="armor-select" aria-label="Armor" hidden></select>
+          <button type="button" id="armor-choose" class="primary" data-armor-choose="armor">Choose armor</button>
           <button type="button" class="skill-details q-details" data-armor-part="armor|item" aria-label="The armor in a popup" title="Details">?</button></div>
         <div class="row enh-row"><label>Quality <select id="armor-enh"></select></label>
           <button type="button" class="skill-details q-details" data-armor-part="armor|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
@@ -336,7 +325,8 @@
         <h2>Shield</h2>
         <div id="shield-line" class="fit-line item-line"></div>
         <div id="shield-more" class="line-more">
-        <div class="row armor-pick"><select id="shield-select" aria-label="Shield"></select>
+        <div class="row armor-pick"><select id="shield-select" aria-label="Shield" hidden></select>
+          <button type="button" id="shield-choose" class="primary" data-armor-choose="shield">Choose a shield</button>
           <button type="button" class="skill-details q-details" data-armor-part="shield|item" aria-label="The shield in a popup" title="Details">?</button></div>
         <div class="row enh-row"><label>Quality <select id="shield-enh"></select></label>
           <button type="button" class="skill-details q-details" data-armor-part="shield|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
@@ -350,30 +340,14 @@
         <div id="defense-switches"></div>
       </section>
       <section class="card wide">
-        <form class="search-row tab-search" id="armor-search-form" role="search">
-          <input id="armor-search" type="search" autocomplete="off" placeholder="Search armor and shields by name" aria-label="Search armor">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <ul id="armor-search-results" class="search-results" hidden></ul>
-      </section>
-      <section class="card wide">
         <h2>In this armor</h2>
         <div id="armor-warnings"></div>
         <dl id="armor-summary" class="facts wide-facts"></dl>
       </section>
-      <section class="card wide" id="armor-add-card">
-        <h2>Add armor</h2>
-        <p class="hint">Choose a kind to open the list below at just that kind, or <b>Custom</b> for armor or a shield the list doesn't have.</p>
-        <div id="armor-add-buttons" class="add-buttons"></div>
+      <!-- The Custom armor builder, opened from Choose armor's (or Choose a shield's) Make custom armor. -->
+      <section class="card wide" id="armor-add-card" hidden>
+        <h2>Custom armor or shield</h2>
         <div id="armor-custom-wrap" hidden></div>
-      </section>
-      <section class="card wide" id="armor-list-card">
-        <details class="card-fold">
-          <summary><h2>All armor and shields <span id="armor-list-count" class="count"></span></h2></summary>
-          <p class="hint">Tap an item or its Details to see it; wear it from there, with a quality and material, or go on to add
-            special abilities. ✓ marks what you're wearing.</p>
-          <div id="armor-list"></div>
-        </details>
       </section>
     </main>
 
@@ -393,21 +367,9 @@
       </section>
       <section class="card wide" id="weapon-add-card">
         <h2>Add weapons</h2>
-        <p class="hint">Choose a kind to see just that part of the list below, or <b>Custom</b> for a weapon the list doesn't have.</p>
+        <p class="hint"><b>Add a weapon</b> lists every weapon A to Z; tap one to read it and add it. You can also make your own there.</p>
         <div id="weapon-add-buttons" class="add-buttons"></div>
         <div id="weapon-custom-wrap" hidden></div>
-      </section>
-      <section class="card wide">
-        <h2>Weapons <span id="weapon-count" class="count"></span></h2>
-        <form class="search-row tab-search" id="weapon-search-form" role="search">
-          <input id="weapon-search" type="search" autocomplete="off" placeholder="Search weapons by name" aria-label="Search weapons">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <select id="weapon-category" class="jump" aria-label="Jump to a category"></select>
-        <div class="browser">
-          <div class="browser-list" id="weapon-list" aria-label="Weapons"></div>
-          <aside class="browser-panel" id="weapon-panel" aria-live="polite"></aside>
-        </div>
       </section>
     </main>
 
@@ -433,21 +395,9 @@
       </section>
       <section class="card wide" id="gear-add-card">
         <h2>Add equipment</h2>
-        <p class="hint">Choose a kind to see just that part of the list below, or <b>Custom</b> for something the list doesn't have.</p>
+        <p class="hint"><b>Add equipment</b> lists every item A to Z; tap one to read it and add it. You can also make your own there.</p>
         <div id="gear-add-buttons" class="add-buttons"></div>
         <div id="gear-custom-wrap" hidden></div>
-      </section>
-      <section class="card wide">
-        <h2>Equipment <span id="gear-count" class="count"></span></h2>
-        <form class="search-row tab-search" id="gear-search-form" role="search">
-          <input id="gear-search" type="search" autocomplete="off" placeholder="Search equipment by name" aria-label="Search equipment">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <select id="gear-category" class="jump" aria-label="Jump to a category"></select>
-        <div class="browser">
-          <div class="browser-list" id="gear-list" aria-label="Equipment"></div>
-          <aside class="browser-panel" id="gear-panel" aria-live="polite"></aside>
-        </div>
       </section>
     </main>
 
@@ -1011,8 +961,11 @@
           <ul>
             <li>The <b>Armor</b> and <b>Shield</b> cards start with one line (what you wear, its bonus, Dex limit, check penalty, spell
               failure); <b>Details</b> at the end opens the choices and full stats. With nothing worn, they stay open.</li>
-            <li><b>Add armor</b>: <b>Light armor</b>, <b>Medium armor</b>, <b>Heavy armor</b> and <b>Shields</b> open the list of all armor and
-              shields at just that kind (tap again, or <b>Show all</b>, for everything). <b>Custom</b> makes armor or a shield the list
+            <li><b>Choose armor</b> (in the Armor card) and <b>Choose a shield</b> (in the Shield card) open every armor, or every
+              shield, from A to Z in one column with a search box; under each name: its kind, bonus, max Dex, check penalty and price,
+              and ✓ on what you wear. Tap one to see it, pick a quality (masterwork or +1 to +5) and material, and wear it; or go
+              straight on to <b>Add special abilities</b> (bought) or <b>Craft it magic</b>; <b>Back to the list</b> returns to it.
+              <b>Take off</b> (or Put down) is at the bottom of the list. <b>Make custom armor</b> (or a custom shield) makes one the list
               doesn't have: its kind, armor or shield bonus, max Dex, check penalty, spell failure, price, weight and notes (medium and
               heavy armor slow you), with <b>Wear it now</b> and <b>Free</b>. It joins the list and works like any armor (quality, material,
               magic); <b>Change this custom armor</b> in its details changes or deletes it.</li>
@@ -1041,9 +994,6 @@
             <li><b>Material</b> makes it mithral, adamantine, darkwood, dragonhide and so on (only the ones that item can be made
               of are listed); price, weight and stats change to match. Dragonhide, darkwood and the leathers are fine for druids.</li>
             <li>To add special abilities (fortification...), use <b>Add magic gear</b> on the Magic Items tab.</li>
-            <li><b>All armor and shields</b> at the bottom (tap its heading to open it) lists every one by category. Tap one or its
-              <b>Details</b> to see it, pick a quality (masterwork or +1 to +5) and material, and wear it; or go straight on to
-              <b>Add special abilities</b> (bought) or <b>Craft it magic</b>.</li>
             <li><b>Details</b> buttons show how the price, AC, Dex bonus, check penalty, spell failure and speed are worked out.</li>
           </ul>
         </details>
@@ -1051,9 +1001,10 @@
         <details>
           <summary>Weapons tab</summary>
           <ul>
-            <li><b>Add weapons</b>: a button for each kind (Simple, Martial, Exotic, Firearms, Technological, and your Custom Weapons)
-              shows just that part of the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of it).
-              <b>Custom</b> makes a weapon the list doesn't have: its name, proficiency (simple, martial, exotic), kind (light,
+            <li><b>Add a weapon</b> opens every weapon from A to Z in one column, with a search box; under each name: simple, martial or
+              exotic (or firearm...), how it's held, damage and critical, and price, with ✓ on ones you have. Tap one to read it and
+              <b>Add to my weapons</b>: you go back to the list (where you were) to add the next. <b>Make a custom weapon</b> at the bottom
+              makes a weapon the list doesn't have: its name, proficiency (simple, martial, exotic), kind (light,
               one-handed, two-handed, ranged), Medium damage (Small and Large are worked out), threat range, critical multiplier,
               damage type, range, price, weight, and whether it can be thrown or used with Weapon Finesse; tick <b>I'm proficient
               with it</b> if you are, and <b>Free</b> if it cost nothing. It joins My weapons and works like any other (attacks,
@@ -1085,7 +1036,7 @@
               cost and weight join the weapon's.</li>
             <li>The weapon list includes later books' weapons (Adventurer's Armory 2, Inner Sea Combat, Weapon Master's Handbook...),
               such as the butchering axe.</li>
-            <li>Pick a weapon in the list below, then <b>Add</b> it (or press <b>Details</b> on its row to see it in a popup and add it from there). Each weapon shows its attacks, damage and critical with Roll buttons; <b>Details</b> beside the attack lists everything that adds to it, the one beside the damage shows the damage and special abilities, and the one beside Critical explains the threat range, multiplier and critical damage.</li>
+            <li>Each weapon in My weapons shows its attacks, damage and critical with Roll buttons; <b>Details</b> beside the attack lists everything that adds to it, the one beside the damage shows the damage and special abilities, and the one beside Critical explains the threat range, multiplier and critical damage.</li>
             <li><b>Size</b> picks a weapon made for a Small, Medium or Large creature (normally your own size). A different size uses
               that size's damage dice, gives −2 on attacks per size step, and changes how many hands it needs (a Large longsword is
               two-handed for a Medium character); a Large weapon costs and weighs twice as much. The <b>Titan Mauler</b> (barbarian)
@@ -1189,7 +1140,7 @@
             <li>The box at the start of each item's line is ticked while you wear it: its bonuses count in Active effects on the
               Build tab (the same switch as there). The line's <b>Details</b> shows what it gives, with a box for each bonus
               that applies only sometimes; <b>About it</b> opens what it gives, whether each bonus counts, and its description.</li>
-            <li>Every item in the list (and the side panel) shows <b>What it gives</b>: the bonuses the builder counts, for each
+            <li>Every item's popup shows <b>What it gives</b>: the bonuses the builder counts, for each
               price option (+2, +4, +6), and when they apply.</li>
             <li>In <b>My magic items</b>, each item is one line (slot, how many, cost, weight); <b>Details</b> opens how many, the
               cost breakdown and the item itself.</li>
@@ -1200,10 +1151,11 @@
               <b>Details</b> on a row opens the item in a popup, with its Add and Craft buttons.</li>
             <li><b>Add magic gear</b> is for treasure and purchases at market price, no feats needed. Its buttons: <b>Make a weapon
               magic</b>, <b>Make armor or a shield magic</b> and <b>Potion, scroll or wand</b> (any spell; type in <b>Search</b> to narrow
-              the spell list: "cure light") open that maker below them, with <b>Buy for free</b> (found or a gift: no gold; a magic weapon or armor then counts as found whole) and <b>Cancel</b> (clears it and puts it away); <b>Wondrous items</b>, <b>Rings</b>,
-              <b>Rods</b>, <b>Staves</b>, the specific weapons, armor and shields, <b>Artifacts</b> and the rest show just that part of
-              the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of them). An item from the list (a staff, a ring, a wondrous item...) has its Add buttons in its panel or popup, with a <b>Buy for free</b> box (found or a gift: no gold). An item with charges (a staff's 10, a ring of the ram's 50...) also has a <b>Charges</b> box: buy it with fewer and the price drops in proportion (Core Rulebook); a wand's Charges box is in the Potion, scroll or wand maker. In My magic items each shows its charges left, with <b>Use 1</b> (and − / + under its ? to fix the count); selling it gets half of what its charges left are worth.</li>
-            <li><b>Custom</b> makes your own magic item: a name, its slot and caster level, and what it does (an ability score
+              the spell list: "cure light") open that maker below them, with <b>Buy for free</b> (found or a gift: no gold; a magic weapon or armor then counts as found whole) and <b>Cancel</b> (clears it and puts it away).
+              <b>Add a magic item</b> opens every item from A to Z in one column (150 at a time: search to narrow it), with its kind
+              (wondrous item, ring, rod, staff, specific weapon or armor, artifact...), slot and price under the name; tap one to read it,
+              then add it (you go back to the list where you were) or craft it. An item from the list (a staff, a ring, a wondrous item...) has its Add buttons in its popup, with a <b>Buy for free</b> box (found or a gift: no gold). An item with charges (a staff's 10, a ring of the ram's 50...) also has a <b>Charges</b> box: buy it with fewer and the price drops in proportion (Core Rulebook); a wand's Charges box is in the Potion, scroll or wand maker. In My magic items each shows its charges left, with <b>Use 1</b> (and − / + under its ? to fix the count); selling it gets half of what its charges left are worth.</li>
+            <li><b>Make a custom item</b> (at the bottom of the Add a magic item list) makes your own magic item: a name, its slot and caster level, and what it does (an ability score
               bonus, armor, deflection, natural armor or other AC bonus, a resistance or other save bonus, a skill bonus, spell
               resistance, or a spell effect with how it's used and how often). Its price is worked out with the Core Rulebook's
               rules for new items (each extra power ×1.5, slotless ×2); tick <b>Crafted</b> for half the price, or <b>Free</b>; <b>Clear</b> starts over and <b>Cancel</b> closes it.
@@ -1248,9 +1200,10 @@
           <ul>
             <li>In <b>Inventory</b>, each item (and the armor and shield you wear) is one line: how many, cost, weight, with
               <b>Details</b> at the end to open how many (− / +), the cost breakdown and the item itself.</li>
-            <li><b>Add equipment</b>: a button for each kind of gear (Adventuring Gear, Alchemical Items, Clothing, Tools and Skill Kits...)
-              shows just that part of the list below (tap again, or <b>Show all</b>, for everything; a search looks through all of it).
-              <b>Custom</b> adds something the list doesn't have: its name, price and weight each, how many, Free, and notes. It goes in
+            <li><b>Add equipment</b> opens every item from A to Z in one column, with a search box; under each name: its kind (Adventuring
+              Gear, Alchemical Items, Tools and Skill Kits...), price and weight, and ✓ on what you have. Tap one to read it and add it (an
+              item with versions has an Add button for each); you go back to the list where you were. <b>Make custom equipment</b> at the
+              bottom adds something the list doesn't have: its name, price and weight each, how many, Free, and notes. It goes in
               your Inventory (marked custom), counts in gold and weight, and can be sold; <b>Change it</b> and Remove are under its ?.</li>
             <li><b>Sell</b> on an item's line (worn armor and shield and gear here, weapons, a companion's barding, magic items, potions, scrolls and wands) opens a box with half its
               price filled in (the Core Rulebook's rate); haggled for a better deal? change the amount (− and +, or type it). <b>Sell</b> takes it off your list and adds that gold to Left, whether you bought it, found it or made it.</li>
@@ -1259,7 +1212,7 @@
             <li><b>Details</b> beside <b>Gold</b> shows your class's starting gold and the wealth-by-level table; beside
               <b>Carrying capacity</b>, the light, medium and heavy loads for your Strength and size, what each does, and your load now.</li>
             <li>Set your <b>gold</b>, or use your class's starting gold (with any trait that changes it, like Rich Parents) or the wealth for your level. <b>Costs and adjustments…</b> adds gold back or an extra cost by hand.</li>
-            <li>Add gear from the list below (or press <b>Details</b> on its row to see it in a popup and add it from there). Totals show what you've spent (armor, weapons, magic items and gear) and what's left,
+            <li>Totals show what you've spent (armor, weapons, magic items and gear) and what's left,
               plus the weight you carry (and your load, with the Encumbrance house rule). <b>Details</b> beside each total lists the items in it, and each inventory row has one for its price and weight.</li>
           </ul>
         </details>

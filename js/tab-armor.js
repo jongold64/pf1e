@@ -8,6 +8,7 @@ import { openMagicArmor } from './tab-crafting.js';
 import { armorCost, formatGp } from './equipment.js';
 import { defenseSwitches } from './defense.js';
 import { CATEGORIES as CA_CATEGORIES } from './custom-armor.js';
+import { pickList } from './pick-list.js';
 
 // What makes up each number on the tab, by key, for its Details popup (filled when the tab is drawn).
 const armorWhy = new Map();
@@ -79,7 +80,7 @@ export function wearArmor(app, a) {
 
 // An armor or shield in a popup: its stats, a quality (masterwork or +1 to +5) and material to wear it with, and buttons
 // to wear it, to go on and add special abilities (bought, or crafted), or to take it off.
-export function popArmor(app, id) {
+export function popArmor(app, id, back = null) {
   const a = app.data.armorById.get(id);
   if (!a) return;
   const { state } = app;
@@ -109,27 +110,45 @@ export function popArmor(app, id) {
     { label: 'Add special abilities (buy)', run: () => { choose(); openMagicArmor(app, k, 'buy'); } },
     { label: 'Craft it magic', run: () => { choose(); openMagicArmor(app, k, 'craft'); } },
     ...(worn ? [{ label: 'Take it off', run: () => { wearArmor(app, a); app.showTab('armor'); } }] : []),
+    ...(back ? [{ label: 'Back to the list', run: back }] : []),
     ...(a.custom ? [{ label: 'Change this custom armor', run: () => {
       const d = (state.customArmor || []).find(x => x.id === a.id);
       if (!d) return;
-      aDraft = { ...freshArmor(), ...d }; armorCustomOpen = true; armorKind = '';
-      app.showTab('armor'); renderArmorList(app); $('armor-add-card').scrollIntoView({ block: 'start' });
+      aDraft = { ...freshArmor(), ...d }; armorCustomOpen = true;
+      app.showTab('armor'); renderArmorButtons(app); $('armor-add-card').scrollIntoView({ block: 'start' });
     } }] : []),
   ]);
   const sel = document.querySelector('#detail-body [data-pop-armor="enh"]');
   if (sel) sel.value = quality;
 }
 
-// The list of every armor and shield, grouped by category, each row with a Details button.
-// The Add armor card: a button for each kind (it opens the list at just that kind) and Custom.
-let armorKind = '';
+// Choose armor / Choose a shield: every armor (or shield) A to Z, with its kind, bonus, max Dex, check penalty and price
+// under the name; tap one to read it and wear it with a quality and material. Make custom armor at the bottom.
+const KIND_NAMES = { light: 'Light armor', medium: 'Medium armor', heavy: 'Heavy armor', shield: 'Shield' };
+export function popArmorPicker(app, k) {
+  const { state } = app;
+  const worn = app.data.armorById.get(state[`${k}Id`]);
+  pickList(app, { key: `armor-${k}`, title: k === 'shield' ? 'Choose a shield' : 'Choose armor', placeholder: k === 'shield' ? 'Search shields by name' : 'Search armor by name',
+    noun: k === 'shield' ? 'shields' : 'armor',
+    items: () => app.data.armor.filter(a => (a.category === 'shield') === (k === 'shield')),
+    mark: a => state.armorId === a.id || state.shieldId === a.id,
+    line: a => [KIND_NAMES[a.category] || a.category, signed(a.bonus), a.max_dex !== null && a.max_dex !== undefined ? `max Dex ${signed(a.max_dex)}` : '',
+      a.check_penalty ? `check ${a.check_penalty}` : '', a.price_gp !== null ? formatGp(a.price_gp) : '', a.custom ? 'custom' : ''].filter(Boolean).join(' · '),
+    onPick: (id, back) => popArmor(app, id, back),
+    foot: `<p class="hint">Tap one to read it and ${k === 'shield' ? 'use it' : 'wear it'} (choose a quality and material there). Not here? Make your own:</p>`,
+    actions: [...(worn ? [{ label: k === 'shield' ? `Put down ${worn.name}` : `Take off ${worn.name}`, run: () => wearArmor(app, worn) }] : []),
+      { label: k === 'shield' ? 'Make a custom shield' : 'Make custom armor', run: () => {
+        aDraft = { ...freshArmor(), category: k === 'shield' ? 'shield' : 'light' }; armorCustomOpen = true; renderArmorButtons(app);
+        $('armor-add-card').scrollIntoView({ block: 'start' });
+      } }] });
+}
+
+// The Custom armor card, shown while the builder is open.
 let armorCustomOpen = false;
 let aDraft = null;   // the custom armor or shield being made or changed
 const freshArmor = () => ({ id: '', name: '', category: 'light', bonus: 2, maxDex: 6, check: 0, spellFailure: 10, price: 0, weight: 0, notes: '', wear: true, free: false });
-const KIND_BUTTONS = [['light', 'Light armor'], ['medium', 'Medium armor'], ['heavy', 'Heavy armor'], ['shield', 'Shields']];
 function renderArmorButtons(app) {
-  $('armor-add-buttons').innerHTML = KIND_BUTTONS.map(([k, l]) => `<button type="button" data-armor-kind="${k}" aria-pressed="${!armorCustomOpen && armorKind === k}">${l}</button>`).join('')
-    + `<button type="button" class="add-custom" data-armor-custom aria-pressed="${armorCustomOpen}">Custom</button>`;
+  $('armor-add-card').hidden = !armorCustomOpen;
   $('armor-custom-wrap').hidden = !armorCustomOpen;
   if (armorCustomOpen) renderArmorCustom();
 }
@@ -159,22 +178,6 @@ function renderArmorCustom() {
       <button type="button" data-ca2-cancel>Cancel</button></div></div>`;
 }
 
-function renderArmorList(app) {
-  const { data, state } = app;
-  renderArmorButtons(app);
-  const groups = [...GROUPS, ['shield', 'Shields']].filter(([cat]) => !armorKind || cat === armorKind);
-  $('armor-list-count').textContent = armorKind ? `${data.armor.filter(a => a.category === armorKind).length} of ${data.armor.length}` : `${data.armor.length}`;
-  $('armor-list').innerHTML = (armorKind ? `<p class="hint">Showing ${esc(KIND_BUTTONS.find(([k]) => k === armorKind)[1].toLowerCase())} only. <button type="button" data-armor-all>Show all</button></p>` : '') + groups.map(([cat, label]) => {
-    const list = data.armor.filter(a => a.category === cat).sort((x, y) => x.name.localeCompare(y.name));
-    return list.length ? `<section class="list-group"><h3 class="list-heading">${esc(label)} <span class="count">${list.length}</span></h3>
-      <ul class="pick-list">${list.map(a => {
-        const worn = state.armorId === a.id || state.shieldId === a.id;
-        return `<li class="with-details"><button type="button" data-armor-pop="${esc(a.id)}"${worn ? ' class="mine"' : ''}>${worn ? '<span class="status met" title="Wearing">✓</span>' : ''}${esc(a.name)}
-          <small>${esc(signed(a.bonus))}${a.max_dex !== null ? ` · max Dex ${esc(signed(a.max_dex))}` : ''}${a.price_gp !== null ? ` · ${esc(formatGp(a.price_gp))}` : ''}</small></button>
-          <button type="button" class="skill-details q-details" data-armor-pop="${esc(a.id)}" aria-label="${esc(a.name)} in a popup" title="Details">?</button></li>`;
-      }).join('')}</ul></section>` : '';
-  }).join('');
-}
 
 // The Details beside Quality: what masterwork and +1 to +5 do for this item and what each costs, and its price now.
 function popQuality(app, k) {
@@ -293,17 +296,19 @@ export function initArmorTab(app) {
       const [k, part] = b.dataset.armorPart.split('|');
       if (part === 'item') {
         if (app.state[`${k}Id`]) popArmor(app, app.state[`${k}Id`]);
-        else app.openDetail(k === 'shield' ? 'No shield' : 'No armor', `<p>Choose ${k === 'shield' ? 'a shield' : 'armor'} in the list, or browse
-          <b>All armor and shields</b> at the bottom of this tab.</p>`);
+        else popArmorPicker(app, k);
       }
       if (part === 'quality') popQuality(app, k);
       if (part === 'material') popMaterial(app, k);
     });
   }
-  $('armor-list').addEventListener('click', e => {
-    const b = e.target.closest('[data-armor-pop]');
-    if (b) popArmor(app, b.dataset.armorPop);
-  });
+  // Choose armor / Choose a shield (in the Armor and Shield cards).
+  for (const card of ['armor-select', 'shield-select']) {
+    $(card).closest('section').addEventListener('click', e => {
+      const b = e.target.closest('[data-armor-choose]');
+      if (b) popArmorPicker(app, b.dataset.armorChoose);
+    });
+  }
   for (const id of ['armor-summary', 'armor-info', 'shield-info']) {
     $(id).addEventListener('click', e => {
       const b = e.target.closest('[data-armor-why]');
@@ -311,17 +316,6 @@ export function initArmorTab(app) {
     });
   }
   fillArmorSelects(app);
-  // Add armor: a kind opens the list at just that kind (tap again for all); Custom opens the builder.
-  $('armor-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-armor-kind], [data-armor-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-armor-custom')) { armorCustomOpen = !armorCustomOpen; armorKind = ''; renderArmorList(app); return; }
-    armorCustomOpen = false;
-    armorKind = armorKind === b.dataset.armorKind ? '' : b.dataset.armorKind;
-    renderArmorList(app);
-    if (armorKind) { $('armor-list-card').querySelector('details').open = true; $('armor-list-card').scrollIntoView({ block: 'start' }); }
-  });
-  $('armor-list').addEventListener('click', e => { if (e.target.closest('[data-armor-all]')) { armorKind = ''; renderArmorList(app); } });
   const caBox = $('armor-custom-wrap');
   caBox.addEventListener('input', e => {
     const k = e.target.dataset.ca2;
@@ -340,13 +334,13 @@ export function initArmorTab(app) {
   caBox.addEventListener('click', e => {
     const s = app.state;
     if (e.target.closest('[data-ca2-clear]')) { aDraft = freshArmor(); renderArmorCustom(); return; }
-    if (e.target.closest('[data-ca2-cancel]')) { aDraft = freshArmor(); armorCustomOpen = false; renderArmorList(app); return; }
+    if (e.target.closest('[data-ca2-cancel]')) { aDraft = freshArmor(); armorCustomOpen = false; renderArmorButtons(app); return; }
     if (e.target.closest('[data-ca2-delete]')) {
       const id = aDraft.id;
       if (!confirm(`Delete ${aDraft.name || 'this armor'}?${s.armorId === id || s.shieldId === id ? ' You take it off.' : ''}`)) return;
       app.update({ customArmor: s.customArmor.filter(x => x.id !== id), ...(s.armorId === id ? { armorId: '', armorEnh: 0, armorMw: false, armorAbilities: [], armorFree: false } : {}),
         ...(s.shieldId === id ? { shieldId: '', shieldEnh: 0, shieldMw: false, shieldAbilities: [], shieldFree: false } : {}) });
-      aDraft = freshArmor(); armorCustomOpen = false; renderArmorList(app);
+      aDraft = freshArmor(); armorCustomOpen = false; renderArmorButtons(app);
       return;
     }
     if (!e.target.closest('[data-ca2-save]')) return;
@@ -359,7 +353,8 @@ export function initArmorTab(app) {
       app.update({ customArmor: [...list, def], ...(wear ? { [`${k}Id`]: def.id, [`${k}Enh`]: 0, [`${k}Mw`]: false, [`${k}Abilities`]: [], [`${k}Material`]: '', [`${k}Crafted`]: false, [`${k}Free`]: !!free } : {}) });
     }
     aDraft = freshArmor();
-    renderArmorList(app);
+    armorCustomOpen = false;
+    renderArmorButtons(app);
     window.scrollTo({ top: 0 });
   });
   // None, Masterwork (-1 check penalty, +150 gp), then +1 to +5 (always masterwork).
@@ -400,6 +395,8 @@ export function renderArmorTab(app, view) {
     ${state.combat.conjured === 'instant-armor' ? (view.situational?.ac || []).filter(n => /^Instant armor/.test(n)).map(n => `<p class="b-ready">Instant armor is on: it replaces your worn armor while it lasts (counted as proficient, no penalties). ${esc(n.replace(/^Instant armor \(force\): its/, 'Its'))}</p>`).join('') : ''}`;
   $('armor-select').value = state.armorId;
   $('shield-select').value = state.shieldId;
+  $('armor-choose').textContent = gear.armor ? 'Change armor' : 'Choose armor';
+  $('shield-choose').textContent = gear.shield ? 'Change shield' : 'Choose a shield';
   $('armor-enh').value = !state.armorEnh && state.armorMw ? 'mw' : state.armorEnh;
   $('shield-enh').value = !state.shieldEnh && state.shieldMw ? 'mw' : state.shieldEnh;
   $('armor-enh').disabled = !gear.armor;
@@ -510,6 +507,6 @@ export function renderArmorTab(app, view) {
     ['Speed', view.speed === null || view.speed === undefined ? '—' : `${view.speed} ft.` +
       (gear.slows && view.speed === base && base ? ' (not slowed)' : ''), 'speed'],
   ];
-  renderArmorList(app);
+  renderArmorButtons(app);
   $('armor-summary').innerHTML = rows.map(([k, v, key]) => `<dt>${esc(k)}</dt><dd>${esc(v)}${key ? whyButton(key, k) : ''}</dd>`).join('');
 }
