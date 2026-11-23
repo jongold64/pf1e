@@ -2449,6 +2449,15 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// The Craft tab.
+{
+  const { craftingAvailable } = await import('./crafting.js');
+  const feats = ['Brew Potion', 'Scribe Scroll'];
+  check('Craft tab: a Craft skill, an item creation feat, an artificer, an alchemist; not a plain fighter',
+    [craftingAvailable({ specialties: ['Craft (weapons)'] }), craftingAvailable({ haveFeats: ['Scribe Scroll'], itemCreationFeats: feats }),
+     craftingAvailable({ archetypes: ['magus-jistkan-artificer'] }), craftingAvailable({ classIds: ['alchemist'] }), craftingAvailable({ classIds: ['fighter'], haveFeats: ['Power Attack'], itemCreationFeats: feats })].join(),
+    'true,true,true,true,false');
+}
 // Custom skills.
 {
   const { tidyCustomSkills } = await import('./custom-skills.js');

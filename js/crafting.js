@@ -217,3 +217,14 @@ export function listedCost(item, optionLabel = null, price = null) {
   }
   return price === null ? null : craftCost(price);
 }
+
+// Whether the Craft tab is shown: the character can make things. A Craft skill (a Craft specialty, or ranks in one), an
+// item creation feat, an artificer archetype (the magus's Jistkan artificer), an alchemist or investigator (alchemy
+// makes alchemical items), or something still being made there.
+export function craftingAvailable({ specialties = [], skills = {}, haveFeats = [], itemCreationFeats = [], archetypes = [], classIds = [], projects = [] } = {}) {
+  const craftSkill = specialties.some(n => /^Craft \(/.test(n)) || Object.entries(skills).some(([n, r]) => /^Craft\b/.test(n) && r > 0);
+  const creation = haveFeats.some(f => itemCreationFeats.includes(f));
+  const artificer = archetypes.some(a => /artificer/i.test(a)) || classIds.some(c => /artificer/i.test(c));
+  const alchemy = classIds.some(c => c === 'alchemist' || c === 'investigator');
+  return craftSkill || creation || artificer || alchemy || projects.length > 0;
+}

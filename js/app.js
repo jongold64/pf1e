@@ -39,7 +39,7 @@ import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
 import { raceTerms, termButtons, initTermPopover } from './race-terms.js';
-import { cleanAbilities } from './crafting.js';
+import { cleanAbilities, craftingAvailable } from './crafting.js';
 import { withMaterial, materialById, weaponMaterialById } from './materials.js';
 import { itemBuffs, abilityEntries, gearMagic } from './item-effects.js';
 import { featureHandling, HANDLING } from './feature-coverage.js';
@@ -4067,6 +4067,12 @@ window.addEventListener('resize', () => fitLines());
 function render() {
   view = computeView();
   const { race, cls, stats } = view;
+  // The Craft tab only for a character who can make things (crafting.js craftingAvailable).
+  const crafter = craftingAvailable({ specialties: state.specialties, skills: state.skills, haveFeats: view.haveFeats,
+    itemCreationFeats: data.feats.filter(f => (f.types || []).includes('Item Creation')).map(f => f.name),
+    archetypes: Object.values(state.archetypes || {}).flat(), classIds: [...new Set(state.classLevels)], projects: state.craftProjects || [] });
+  document.querySelector('.tabs [data-tab="craft"]').hidden = !crafter;
+  if (!crafter && tab === 'craft') showTab('character');
 
   // Controls changed from elsewhere (e.g. "Make my character a dwarf" in search) show their new value.
   $('race').value = state.race;
