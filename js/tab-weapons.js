@@ -645,12 +645,12 @@ export function renderMyWeapons(app, view) {
           <option value="0"${quality === '0' ? ' selected' : ''}>Normal${up({ enh: 0, masterwork: false })}</option>
           <option value="mw"${quality === 'mw' ? ' selected' : ''}>Masterwork (+1 attack)${up({ enh: 0, masterwork: true })}</option>
           ${[1, 2, 3, 4, 5].map(n => `<option value="+${n}"${quality === `+${n}` ? ' selected' : ''}>+${n}${up({ enh: n, masterwork: false })}</option>`).join('')}
-        </select></label>${wpart(i, 'quality', 'What masterwork and magic do')}</span>
+        </select></label>${wpart(i, 'quality', 'What masterwork and magic do')}
+          ${e.classGear || e.free ? '' : `<label class="check-row small free-upgrade" title="A gift, or the GM's say-so: a new quality or material costs no gold"><input type="checkbox" data-weapon-free-upgrade${freeWeaponUpgrade ? ' checked' : ''}> Upgrade for free</label>`}</span>
         ${weaponMaterialsFor(w).length ? `<label>Material <select data-weapon-material="${i}">
           <option value="">Normal (steel or wood)${up({ material: undefined })}</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}${up({ material: m.id })}</option>`).join('')}
         </select></label>` : ''}
-        ${e.classGear ? '' : `${e.free ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-free-upgrade${freeWeaponUpgrade ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: a new quality or material costs no gold)</label>`}
-          <p class="hint">Beside each quality and material: what it adds to the price (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so changes to it cost no gold: untick Free to pay for an upgrade.' : ''}
+        ${e.classGear ? '' : `<p class="hint">Beside each quality and material: what it adds to the price (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so changes to it cost no gold: untick Free to pay for an upgrade.' : ''}
           ${Number.isFinite(e.off) && !e.free ? `Upgraded for free: ${esc(formatGp(e.off))} comes off its price, so it counts at ${esc(formatGp(weaponCost(w, e)))}.` : ''}</p>`}
         ${weaponMaterialById.get(e.material) ? `<p class="hint">${esc(weaponMaterialById.get(e.material).name)}: ${esc(weaponMaterialById.get(e.material).notes)}${weaponMaterialById.get(e.material).mw ? ' Always masterwork (+1 on attacks).' : ''}</p>` : ''}
         ${ammoControls(app, w, e, i)}

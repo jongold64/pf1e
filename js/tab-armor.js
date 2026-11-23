@@ -112,12 +112,12 @@ export function popArmor(app, id, back = null) {
   const cost = (m, e, mw) => armorCost(withMaterial(a, m), e, mw, abilities, crafted);
   const now = cost(material, enh, worn && state[`${k}Mw`]);
   const controls = `<div class="pop-armor-choices">
-      <label>Quality <select data-pop-armor="enh"><option value="0">None${priceChange(now, cost(material, 0, false))}</option><option value="mw">Masterwork${priceChange(now, cost(material, 0, true))}</option>
+      <span class="pop-quality"><label>Quality <select data-pop-armor="enh"><option value="0">None${priceChange(now, cost(material, 0, false))}</option><option value="mw">Masterwork${priceChange(now, cost(material, 0, true))}</option>
         ${Array.from({ length: ENHANCEMENT_MAX }, (_, i) => `<option value="${i + 1}">+${i + 1}${priceChange(now, cost(material, i + 1, false))}</option>`).join('')}</select></label>
+        ${worn && !state[`${k}Free`] ? `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-pop-free-upgrade${freeUpgrade[k] ? ' checked' : ''}> Upgrade for free</label>` : ''}</span>
       ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual${priceChange(now, cost('', enh, worn && state[`${k}Mw`]))}</option>${mats.map(m =>
         `<option value="${esc(m.id)}"${material === m.id ? ' selected' : ''}>${esc(m.name)}${priceChange(now, cost(m.id, enh, worn && state[`${k}Mw`]))}</option>`).join('')}</select></label>` : ''}
     </div>
-    ${worn && !state[`${k}Free`] ? `<label class="check-row"><input type="checkbox" data-pop-free-upgrade${freeUpgrade[k] ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: no gold)</label>` : ''}
     <p class="hint">${worn ? `Now ${esc(formatGp(now))}. Beside each choice: what it adds to the price (you pay the difference) or takes off.` : `Beside each choice: what it adds to the ${esc(formatGp(a.price_gp))} price.`}</p>
     ${worn && state[`${k}Abilities`]?.length ? `<p class="hint">Special abilities on it now: ${esc(state[`${k}Abilities`].map(x => x.name).join(', '))}.</p>` : ''}`;
   // The choices in the popup, applied when a button is pressed.

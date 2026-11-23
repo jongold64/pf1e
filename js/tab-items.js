@@ -176,8 +176,8 @@ function versionChoice(item, e, i) {
   const options = item.price_options || [];
   if (options.length < 2) return '';
   const now = versionPrice(item, e, e.option);
-  return `<label class="item-version">Version <select data-item-option="${i}">${options.map(o => `<option value="${esc(o.label)}"${o.label === e.option ? ' selected' : ''}>${esc(o.label)}${priceChange(now, versionPrice(item, e, o.label))}</option>`).join('')}</select></label>
-    ${e.free ? '' : `<label class="check-row"><input type="checkbox" data-free-upgrade${freeUpgrade ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: no gold)</label>`}
+  return `<span class="item-version-row"><label class="item-version">Version <select data-item-option="${i}">${options.map(o => `<option value="${esc(o.label)}"${o.label === e.option ? ' selected' : ''}>${esc(o.label)}${priceChange(now, versionPrice(item, e, o.label))}</option>`).join('')}</select></label>
+    ${e.free ? '' : `<label class="check-row free-upgrade" title="A gift, or the GM's say-so: no gold"><input type="checkbox" data-free-upgrade${freeUpgrade ? ' checked' : ''}> Upgrade for free</label>`}</span>
     <p class="hint">Beside each version: what it adds to the price${e.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so a new version costs no gold.' : ''}
       ${Number.isFinite(e.paid) && !e.free ? `Upgraded for free: it counts at ${esc(formatGp(e.paid))}${e.qty > 1 ? ' each' : ''}, what it cost before.` : ''}</p>`;
 }
