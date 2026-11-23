@@ -98,6 +98,21 @@ export function maxCharges(item) {
 export const chargedPrice = (price, charges, max) => (price === null || price === undefined || !max || !Number.isFinite(charges) || charges >= max
   ? price : Math.round(price * Math.max(0, charges) / max * 100) / 100);
 
+// What worn armor or a shield cost: nothing when free; its market price less what free upgrades added (paid: { id, off },
+// for that item only: another item counts at its full price); else its market price. Special abilities bought later
+// still cost their price.
+export function wornPaid(market, { free = false, paid = null, id = '' } = {}) {
+  if (free) return 0;
+  return paid && paid.id === id && Number.isFinite(paid.off) ? Math.max(0, market - paid.off) : market;
+}
+
+// The part of an item's price that free upgrades gave (off, gp) after a change of quality or material from a market price
+// of `before` to `after`: upgraded for free, the change is added to it; paid for, it stays (you pay the difference).
+// 0 for none.
+export function upgradeDiscount({ off = 0, before, after, free = false }) {
+  return free ? Math.max(0, Math.round((off + after - before) * 100) / 100) : off;
+}
+
 // What one owned magic item cost: nothing when free; what was paid when it was upgraded for free (entry.paid: the old
 // version's cost); else a crafted item's cost to make, or the market price (bought with fewer charges: in proportion).
 export function magicItemPaid(item, entry) {

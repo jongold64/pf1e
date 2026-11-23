@@ -4,6 +4,7 @@ import { customGearCost, customGearWeight } from './custom-gear.js';
 import { customItemPaid } from './custom-items.js';
 import { askAmount } from './amount-prompt.js';
 import { openLines, fitLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
+import { wornPaid } from './equipment.js';
 import { WEALTH_BY_LEVEL, goldForLeft, sellGold, startingGold, traitStartingGold, armorCost, equipmentTotals, magicItemTotals, magicItemStats, entryStats, formatGp, formatLbs,
          sizeWeightFactor } from './equipment.js';
 import { weaponCost, weaponLabel, weaponWeight } from './weapons.js';
@@ -146,7 +147,7 @@ export function moneyNow(app, view = app.view) {
   // own cost is the total less that).
   const wornItems = [[view.gear.armor, 'armor'], [view.gear.shield, 'shield']].filter(([a]) => a).map(([a, k]) => ({
     name: armorLabel(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`]),
-    cost: state[`${k}Free`] ? 0 : armorCost(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]),
+    cost: wornPaid(armorCost(a, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]), { free: state[`${k}Free`], paid: state[`${k}Paid`], id: state[`${k}Id`] }),
     plain: armorCost(a, state[`${k}Enh`], state[`${k}Mw`]),
     weight: (a.weight_lbs || 0) * sizeFactor, crafted: state[`${k}Crafted`],
   }));
@@ -307,7 +308,7 @@ export async function renderEquipment(app, view) {
       const key = a === view.gear.armor ? 'inv-armor' : 'inv-shield';
       const k = a === view.gear.armor ? 'armor' : 'shield';
       const open = openLines.has(key);
-      const cost = state[`${k}Free`] ? 0 : armorCost(a, enh, mw, abilities, crafted);
+      const cost = wornPaid(armorCost(a, enh, mw, abilities, crafted), { free: state[`${k}Free`], paid: state[`${k}Paid`], id: state[`${k}Id`] });
       return `<div class="line-card"><div class="fit-line item-line">
           <b class="line-name">${esc(armorLabel(a, enh, mw, abilities))}</b><span class="wl-k">worn</span>
           <span class="wl-part"><b>${esc(state[`${k}Free`] ? 'free' : formatGp(cost))}</b></span>
@@ -479,8 +480,8 @@ export function initEquipmentTab(app) {
       const a = k === 'armor' ? v.gear.armor : v.gear.shield;
       const st = app.state;
       const args = [a, st[`${k}Enh`], st[`${k}Mw`], st[`${k}Abilities`]];
-      sellItem(app, { name: armorLabel(...args), value: armorCost(...args, false), paid: st[`${k}Free`] ? 0 : armorCost(...args, st[`${k}Crafted`]), kind: 'armor' },
-        { [`${k}Id`]: '', [`${k}Enh`]: 0, [`${k}Mw`]: false, [`${k}Abilities`]: [], [`${k}Material`]: '', [`${k}Crafted`]: false, [`${k}Free`]: false });
+      sellItem(app, { name: armorLabel(...args), value: armorCost(...args, false), paid: wornPaid(armorCost(...args, st[`${k}Crafted`]), { free: st[`${k}Free`], paid: st[`${k}Paid`], id: st[`${k}Id`] }), kind: 'armor' },
+        { [`${k}Id`]: '', [`${k}Enh`]: 0, [`${k}Mw`]: false, [`${k}Abilities`]: [], [`${k}Material`]: '', [`${k}Crafted`]: false, [`${k}Free`]: false, [`${k}Paid`]: null });
       return;
     }
     const sell = e.target.closest('[data-inv-sell]');

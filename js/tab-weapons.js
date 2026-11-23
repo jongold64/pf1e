@@ -39,7 +39,7 @@ function ammoControls(app, w, e, i) {
       ${ammo.description ? `<details class="rules"><summary>About ${esc(ammo.name.toLowerCase())}</summary>${paragraphs(ammo.description)}</details>` : ''}` : ''}</div>`;
 }
 import { weaponMaterialsFor, weaponMaterialById } from './materials.js';
-import { formatGp, formatLbs, priceChange } from './equipment.js';
+import { formatGp, formatLbs, priceChange, upgradeDiscount } from './equipment.js';
 import { sellButton, sellItem } from './tab-equipment.js';
 import { rollButton } from './roll-ui.js';
 
@@ -649,7 +649,9 @@ export function renderMyWeapons(app, view) {
         ${weaponMaterialsFor(w).length ? `<label>Material <select data-weapon-material="${i}">
           <option value="">Normal (steel or wood)${up({ material: undefined })}</option>${weaponMaterialsFor(w).map(m => `<option value="${esc(m.id)}"${e.material === m.id ? ' selected' : ''}>${esc(m.name)}${up({ material: m.id })}</option>`).join('')}
         </select></label>` : ''}
-        ${e.classGear ? '' : `<p class="hint">Beside each quality and material: what it adds to the price (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so changes to it cost no gold: untick Free to pay for an upgrade.' : ''}</p>`}
+        ${e.classGear ? '' : `${e.free ? '' : `<label class="check-row small"><input type="checkbox" data-weapon-free-upgrade${freeWeaponUpgrade ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: a new quality or material costs no gold)</label>`}
+          <p class="hint">Beside each quality and material: what it adds to the price (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so changes to it cost no gold: untick Free to pay for an upgrade.' : ''}
+          ${Number.isFinite(e.off) && !e.free ? `Upgraded for free: ${esc(formatGp(e.off))} comes off its price, so it counts at ${esc(formatGp(weaponCost(w, e)))}.` : ''}</p>`}
         ${weaponMaterialById.get(e.material) ? `<p class="hint">${esc(weaponMaterialById.get(e.material).name)}: ${esc(weaponMaterialById.get(e.material).notes)}${weaponMaterialById.get(e.material).mw ? ' Always masterwork (+1 on attacks).' : ''}</p>` : ''}
         ${ammoControls(app, w, e, i)}
         ${app.data.itemsById ? abilityPicker(app, 'Weapon Special Abilities', e.abilities || [], {
@@ -937,6 +939,23 @@ function newEntry(app, w) {
   return { id: w.id, enh: 0, ...(isComposite(w) ? { strRating: Math.max(0, app.view.stats.mod.str) } : {}) };
 }
 
+// Upgrade for free ticked: a weapon's new quality or material costs nothing; it keeps counting at what it cost.
+let freeWeaponUpgrade = false;
+// A weapon changed to another quality or material (changes: { enh, masterwork } or { material }; material '' for none).
+// Upgraded for free, the change comes off its price (entry.off); paid for, you pay the difference.
+function upgradeWeapon(app, index, changes) {
+  const e = app.state.weapons[index];
+  const w = app.data.weaponsById.get(e.id);
+  const next = { ...e, ...changes };
+  if (!next.material) delete next.material;
+  if (w && !e.classGear) {
+    const market = x => weaponCostRows(w, x).reduce((n, r) => n + r.gp, 0);
+    const off = upgradeDiscount({ off: Number.isFinite(e.off) ? e.off : 0, before: market(e), after: market(next), free: freeWeaponUpgrade && !e.free });
+    if (off > 0) next.off = off; else delete next.off;
+  }
+  app.update({ weapons: app.state.weapons.map((x, i) => (i === index ? next : x)) });
+}
+
 function changeEntry(app, index, changes) {
   app.update({ weapons: app.state.weapons.map((e, i) => (i === index ? { ...e, ...changes } : e)) });
 }
@@ -1064,16 +1083,16 @@ export function initWeaponsTab(app) {
       app.update({ weapons: app.state.weapons.map((x, j) => (j === i ? (next ? { ...rest, ammo: next } : rest) : x)) });
       return;
     }
+    if (e.target.dataset.weaponFreeUpgrade !== undefined) { freeWeaponUpgrade = e.target.checked; renderMyWeapons(app, app.view); return; }
     const material = e.target.dataset.weaponMaterial;
     if (material !== undefined) {
-      const { material: _old, ...rest } = app.state.weapons[Number(material)];
-      app.update({ weapons: app.state.weapons.map((x, j) => (j === Number(material) ? (e.target.value ? { ...rest, material: e.target.value } : rest) : x)) });
+      upgradeWeapon(app, Number(material), { material: e.target.value });
       return;
     }
     const quality = e.target.dataset.weaponQuality;
     if (quality !== undefined) {
       const v = e.target.value;
-      changeEntry(app, Number(quality), { enh: v.startsWith('+') ? Number(v.slice(1)) : 0, masterwork: v === 'mw' });
+      upgradeWeapon(app, Number(quality), { enh: v.startsWith('+') ? Number(v.slice(1)) : 0, masterwork: v === 'mw' });
     }
     const flag = e.target.dataset.weaponFlag;
     if (flag) changeEntry(app, Number(e.target.dataset.index), { [flag]: e.target.checked });

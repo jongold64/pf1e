@@ -487,8 +487,10 @@ export function flurryBabs(kind, classLevel, classBab, bab) {
 // bow's strength rating: 100 gp (longbow) or 75 gp (shortbow) per point. A special material adds its price (cold iron
 // doubles the weapon's, +2,000 gp once magic); one that's always masterwork has the masterwork cost in its price.
 // A weapon marked free (found, a gift, a class feature like the black blade) costs no gold.
+// Free upgrades (entry.off, gp) come off the price.
 export function weaponCost(weapon, entry = {}) {
-  return entry.free ? 0 : weaponCostRows(weapon, entry).reduce((n, r) => n + r.gp, 0);
+  if (entry.free) return 0;
+  return Math.max(0, weaponCostRows(weapon, entry).reduce((n, r) => n + r.gp, 0) - (Number.isFinite(entry.off) ? entry.off : 0));
 }
 
 // The parts of a weapon's price, for its Details: [{ label, gp }] adding up to weaponCost.

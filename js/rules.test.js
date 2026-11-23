@@ -2476,6 +2476,11 @@ It does a thing. More.` });
   check('price change: +1 armor from plain chain shirt (100 gp) to 1,250 gp', priceChange(100, 1250), ' (+1,150 gp)');
   check('price change: back to plain is less', priceChange(1250, 100), ' (−1,150 gp)');
   check('price change: the same price says nothing', priceChange(300, 300), '');
+  const { wornPaid, upgradeDiscount } = await import('./equipment.js');
+  check('+1 chain shirt (1,250 gp) upgraded for free from plain (100): 1,150 off, for that armor only; free costs nothing',
+    [wornPaid(1250, { paid: { id: 'chain-shirt', off: 1150 }, id: 'chain-shirt' }), wornPaid(1250, { paid: { id: 'other', off: 1150 }, id: 'chain-shirt' }), wornPaid(1250, { free: true })].join(), '100,1250,0');
+  check('free upgrade adds the change to the discount; a paid one keeps it (you pay the difference)',
+    [upgradeDiscount({ before: 100, after: 1250, free: true }), upgradeDiscount({ off: 1150, before: 1250, after: 4250 }), upgradeDiscount({ off: 1150, before: 1250, after: 4250, free: true })].join(), '1150,1150,4150');
   const { magicItemPaid } = await import('./equipment.js');
   const cloak = { id: 'cloak', price_options: [{ label: '+1', price_gp: 1000 }, { label: '+3', price_gp: 9000 }] };
   check('a +3 cloak bought costs 9,000 gp; upgraded for free from +1 it counts at the 1,000 paid; free costs nothing',

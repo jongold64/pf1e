@@ -228,6 +228,8 @@ const state = {
   armorCrafted: false,  // made by the character (its magic costs half)
   armorFree: false,     // found or a gift: costs no gold
   shieldFree: false,
+  armorPaid: null,      // upgraded for free: { id (the armor), off (gp the free upgrades added) }; null: its market price
+  shieldPaid: null,
   shieldCrafted: false,
   craftedItems: [],     // potions, scrolls and wands: [{ kind, spellId, spellName, spellLevel, cl, qty, bought? }] (made, or bought)
   gold: null,      // gold the character has; null means the class's average starting gold
@@ -566,6 +568,8 @@ function load(saved) {
                  ...(e.ammo && typeof e.ammo.id === 'string' ? { ammo: { id: e.ammo.id, count: Math.min(9999, Math.max(0, Math.floor(Number(e.ammo.count)) || 0)),
                    ...(AMMO_MATERIALS[e.ammo.material] ? { material: e.ammo.material } : {}),
                    enh: Number.isInteger(e.ammo.enh) && e.ammo.enh >= 0 && e.ammo.enh <= 5 ? e.ammo.enh : 0 } } : {}),
+                 // Upgraded for free: the gp the free upgrades added (taken off its price).
+                 ...(Number.isFinite(e.off) && e.off > 0 ? { off: e.off } : {}),
                  // A composite bow's strength rating (0-10); none on older saves (counts as your Strength).
                  ...(Number.isInteger(e.strRating) && e.strRating >= 0 && e.strRating <= 10 ? { strRating: e.strRating } : {}),
                  // A weapon a class feature made (its archetype-choices id); older saves marked the black blade blackBlade.
@@ -576,6 +580,10 @@ function load(saved) {
   state.armorCrafted = state.armorCrafted === true;
   state.armorFree = state.armorFree === true;
   state.shieldFree = state.shieldFree === true;
+  for (const k of ['armorPaid', 'shieldPaid']) {
+    const p = state[k];
+    state[k] = p && typeof p.id === 'string' && Number.isFinite(p.off) && p.off > 0 ? { id: p.id, off: p.off } : null;
+  }
   state.shieldCrafted = state.shieldCrafted === true;
   state.craftedItems = (Array.isArray(state.craftedItems) ? state.craftedItems : [])
     .filter(e => e && ['potion', 'scroll', 'wand'].includes(e.kind) && typeof e.spellId === 'string' && typeof e.spellName === 'string'

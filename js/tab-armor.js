@@ -5,7 +5,7 @@ import { ENHANCEMENT_MAX, proficiencyWarnings, druidMetalWarnings, spellFailureB
 import { MONK_IDS, slowedSpeed } from './rules.js';
 import { materialsFor, withMaterial, materialById } from './materials.js';
 import { openMagicArmor } from './tab-crafting.js';
-import { armorCost, formatGp, priceChange } from './equipment.js';
+import { armorCost, formatGp, priceChange, wornPaid, upgradeDiscount } from './equipment.js';
 import { defenseSwitches } from './defense.js';
 import { CATEGORIES as CA_CATEGORIES } from './custom-armor.js';
 import { pickList } from './pick-list.js';
@@ -78,6 +78,23 @@ export function wearArmor(app, a) {
   app.update({ [`${k}Id`]: off ? '' : a.id, [`${k}Abilities`]: [], [`${k}Crafted`]: false, [`${k}Material`]: '' });
 }
 
+// Upgrade for free ticked (in a card or the popup): a new quality or material costs nothing; the worn item keeps counting
+// at what it cost. Kept while the page is open.
+const freeUpgrade = { armor: false, shield: false };
+// The worn armor (k 'armor') or shield changed to another quality or material: changes are state keys ({ armorEnh, ... }).
+// Upgraded for free, the change comes off its price (armorPaid.off); paid for, you pay the difference.
+function upgradeArmor(app, k, changes, extra = {}) {
+  const { state } = app;
+  const base = app.data.armorById.get(state[`${k}Id`]);
+  if (!base) { app.update({ ...changes, ...extra }); return; }
+  const abilities = state[`${k}Abilities`] || [], crafted = state[`${k}Crafted`];
+  const market = s => armorCost(withMaterial(base, s[`${k}Material`]), s[`${k}Enh`], s[`${k}Mw`], abilities, crafted);
+  const before = market(state), after = market({ ...state, ...changes });
+  const id = state[`${k}Id`], paid = state[`${k}Paid`];
+  const off = upgradeDiscount({ off: paid && paid.id === id ? paid.off : 0, before, after, free: freeUpgrade[k] && !state[`${k}Free`] });
+  app.update({ ...changes, ...extra, [`${k}Paid`]: off > 0 ? { id, off } : null });
+}
+
 // An armor or shield in a popup: its stats, a quality (masterwork or +1 to +5) and material to wear it with, and buttons
 // to wear it, to go on and add special abilities (bought, or crafted), or to take it off.
 export function popArmor(app, id, back = null) {
@@ -100,6 +117,7 @@ export function popArmor(app, id, back = null) {
       ${mats.length ? `<label>Material <select data-pop-armor="material"><option value="">Usual${priceChange(now, cost('', enh, worn && state[`${k}Mw`]))}</option>${mats.map(m =>
         `<option value="${esc(m.id)}"${material === m.id ? ' selected' : ''}>${esc(m.name)}${priceChange(now, cost(m.id, enh, worn && state[`${k}Mw`]))}</option>`).join('')}</select></label>` : ''}
     </div>
+    ${worn && !state[`${k}Free`] ? `<label class="check-row"><input type="checkbox" data-pop-free-upgrade${freeUpgrade[k] ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: no gold)</label>` : ''}
     <p class="hint">${worn ? `Now ${esc(formatGp(now))}. Beside each choice: what it adds to the price (you pay the difference) or takes off.` : `Beside each choice: what it adds to the ${esc(formatGp(a.price_gp))} price.`}</p>
     ${worn && state[`${k}Abilities`]?.length ? `<p class="hint">Special abilities on it now: ${esc(state[`${k}Abilities`].map(x => x.name).join(', '))}.</p>` : ''}`;
   // The choices in the popup, applied when a button is pressed.
@@ -108,7 +126,11 @@ export function popArmor(app, id, back = null) {
     const q = box.querySelector('[data-pop-armor="enh"]').value;
     const material = box.querySelector('[data-pop-armor="material"]')?.value || '';
     const keep = worn ? { [`${k}Abilities`]: state[`${k}Abilities`], [`${k}Crafted`]: state[`${k}Crafted`] } : { [`${k}Abilities`]: [], [`${k}Crafted`]: false };
-    app.update({ [`${k}Id`]: a.id, [`${k}Enh`]: q === 'mw' ? 0 : Number(q), [`${k}Mw`]: q === 'mw', [`${k}Material`]: material, ...keep });
+    const changes = { [`${k}Enh`]: q === 'mw' ? 0 : Number(q), [`${k}Mw`]: q === 'mw', [`${k}Material`]: material };
+    if (worn) {
+      freeUpgrade[k] = !!box.querySelector('[data-pop-free-upgrade]')?.checked;
+      upgradeArmor(app, k, changes);
+    } else app.update({ [`${k}Id`]: a.id, ...changes, ...keep, [`${k}Paid`]: null });
   };
   const wear = k === 'shield' ? 'Use this shield' : 'Wear this armor';
   app.openDetail(a.name, armorDetails(a) + controls, [
@@ -372,11 +394,12 @@ export function initArmorTab(app) {
   // Another armor or shield doesn't keep the special abilities put on the old one.
   $('armor-select').addEventListener('change', e => app.update({ armorId: e.target.value, armorAbilities: [], armorCrafted: false, armorMaterial: '' }));
   $('shield-select').addEventListener('change', e => app.update({ shieldId: e.target.value, shieldAbilities: [], shieldCrafted: false, shieldMaterial: '' }));
-  $('armor-material').addEventListener('change', e => app.update({ armorMaterial: e.target.value }));
-  $('shield-material').addEventListener('change', e => app.update({ shieldMaterial: e.target.value }));
+  $('armor-material').addEventListener('change', e => upgradeArmor(app, 'armor', { armorMaterial: e.target.value }));
+  $('shield-material').addEventListener('change', e => upgradeArmor(app, 'shield', { shieldMaterial: e.target.value }));
   const quality = v => (v === 'mw' ? { enh: 0, mw: true } : { enh: Number(v), mw: false });
-  $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ armorEnh: q.enh, armorMw: q.mw }); });
-  $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); app.update({ shieldEnh: q.enh, shieldMw: q.mw }); });
+  $('armor-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'armor', { armorEnh: q.enh, armorMw: q.mw }); });
+  $('shield-enh').addEventListener('change', e => { const q = quality(e.target.value); upgradeArmor(app, 'shield', { shieldEnh: q.enh, shieldMw: q.mw }); });
+  for (const k of ['armor', 'shield']) $(`${k}-free-upgrade`).addEventListener('change', e => { freeUpgrade[k] = e.target.checked; });
 }
 
 // The armor and shield lists to wear from (custom ones too), kept as chosen.
@@ -407,6 +430,10 @@ export function renderArmorTab(app, view) {
   $('shield-enh').value = !state.shieldEnh && state.shieldMw ? 'mw' : state.shieldEnh;
   $('armor-enh').disabled = !gear.armor;
   $('shield-enh').disabled = !gear.shield;
+  for (const k of ['armor', 'shield']) {
+    $(`${k}-free-upgrade`).checked = freeUpgrade[k];
+    $(`${k}-free-upgrade`).closest('label').hidden = !gear[k] || state[`${k}Free`];
+  }
   // Materials the worn item can be made of (price changes shown); a material that includes masterwork hides "Masterwork".
   for (const k of ['armor', 'shield']) {
     const base = app.data.armorById.get(state[`${k}Id`]);
@@ -442,9 +469,11 @@ export function renderArmorTab(app, view) {
     const item = gear[k];
     const args = [item, state[`${k}Enh`], state[`${k}Mw`], state[`${k}Abilities`], state[`${k}Crafted`]];
     const total = armorCost(...args);
+    const counts = wornPaid(total, { free: state[`${k}Free`], paid: state[`${k}Paid`], id: state[`${k}Id`] });
+    const upgraded = !state[`${k}Free`] && counts !== total;
     armorWhy.set(`price-${k}`, { title: `Price: ${formatGp(total)}`, rows: priceRows(...args), total: formatGp(total),
-      note: 'This price counts on the Equipment tab.' });
-    return `<p><b>Price with quality and abilities:</b> ${esc(formatGp(total))}${whyButton(`price-${k}`, 'the price')}</p>`;
+      note: upgraded ? `Upgraded for free: it counts at ${formatGp(counts)} on the Equipment tab (the free upgrades come off).` : 'This price counts on the Equipment tab.' });
+    return `<p><b>Price with quality and abilities:</b> ${esc(formatGp(total))}${upgraded ? ` <span class="muted">(counts at ${esc(formatGp(counts))}: upgraded for free)</span>` : ''}${whyButton(`price-${k}`, 'the price')}</p>`;
   };
   // One line each for the armor and the shield (Details opens the choices and full stats; with nothing worn they stay open).
   for (const k of ['armor', 'shield']) {

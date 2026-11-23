@@ -318,6 +318,7 @@
           <button type="button" class="skill-details q-details" data-armor-part="armor|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
         <div class="row enh-row"><label>Material <select id="armor-material"></select></label>
           <button type="button" class="skill-details q-details" data-armor-part="armor|material" aria-label="What the material changes" title="Details">?</button></div>
+        <label class="check-row"><input type="checkbox" id="armor-free-upgrade"> Upgrade for free (a gift, or the GM's say-so: a new quality or material costs no gold)</label>
         <div id="armor-info" class="info"></div>
         </div>
       </section>
@@ -332,6 +333,7 @@
           <button type="button" class="skill-details q-details" data-armor-part="shield|quality" aria-label="What masterwork and magic do" title="Details">?</button></div>
         <div class="row enh-row"><label>Material <select id="shield-material"></select></label>
           <button type="button" class="skill-details q-details" data-armor-part="shield|material" aria-label="What the material changes" title="Details">?</button></div>
+        <label class="check-row"><input type="checkbox" id="shield-free-upgrade"> Upgrade for free (a gift, or the GM's say-so: a new quality or material costs no gold)</label>
         <div id="shield-info" class="info"></div>
         </div>
       </section>
@@ -993,7 +995,9 @@
               failure and speed update for you, with warnings if you aren't proficient.</li>
             <li><b>Upgrading</b>: each <b>Quality</b> and <b>Material</b> choice (in the card's Details and in the armor's popup) shows
               what it adds to the price of what you wear now, or takes off: from a plain chain shirt, +1 says (+1,150 gp). Choose it
-              and you pay the difference: it comes off Gold left on the Equipment tab.</li>
+              and you pay the difference: it comes off Gold left on the Equipment tab. Tick <b>Upgrade for free</b> first (a gift,
+              or the GM's say-so) and the new quality or material costs nothing: that part comes off its price, while special
+              abilities bought later still cost their price.</li>
             <li><b>Material</b> makes it mithral, adamantine, darkwood, dragonhide and so on (only the ones that item can be made
               of are listed); price, weight and stats change to match. Dragonhide, darkwood and the leathers are fine for druids.</li>
             <li>To add special abilities (fortification...), use <b>Add magic gear</b> on the Magic Items tab.</li>
@@ -1052,7 +1056,8 @@
               and <b>Details</b> shows what it does, its price, aura, caster level and what making it needs, with an Add button.</li>
             <li><b>Quality</b> sets masterwork or +1 to +5, and <b>Material</b> adamantine, cold iron, silver...; beside each choice is
               what it adds to the weapon's price now (or takes off), so you can see what an upgrade costs: you pay the difference
-              (a weapon marked Free pays nothing). <b>Special abilities</b> (flaming, keen, holy...) add their damage
+              (a weapon marked Free pays nothing). Tick <b>Upgrade for free</b> first and a new quality or material costs nothing.
+              <b>Special abilities</b> (flaming, keen, holy...) add their damage
               automatically. Situational ones (holy against evil) get their own Roll button.</li>
             <li><b>Monk switches</b> (Character tab, with the attack switches and in Defense): the ki pool's swift actions (<b>Ki: extra
               attack</b> in a full attack, <b>Ki: +20 ft. speed</b>, <b>Ki: +4 dodge AC</b>), each taking 1 ki from your ki pool when switched
