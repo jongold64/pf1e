@@ -1377,13 +1377,17 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .details-roll .hint { margin: 0; }
 .details-roll label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 #char-details .details-roll select { width: auto; min-height: 40px; }
-#detail-body .pick-search { width: 100%; min-height: 40px; font: inherit; padding: 0 12px; margin-bottom: 10px; }
+dialog .pick-search { width: 100%; min-height: 40px; font: inherit; padding: 0 12px; margin-bottom: 10px; }
 /* Choose a race, Add a level: one per row, A to Z, with a line about it under the name. */
-#detail-body .pick-column { display: flex; flex-direction: column; gap: 6px; }
-#detail-body .pick-column button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left; padding: 8px 12px; min-height: 48px; }
-#detail-body .pick-column button[hidden] { display: none; }
-#detail-body .pick-column small { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
-#detail-body .pick-column button[aria-pressed="true"] small { color: inherit; }
-#detail-body .pick-column button.muted b { color: var(--muted); }
-#detail-body .pick-heading { margin: 12px 0 6px; font-size: 0.95rem; color: var(--muted); }
-#detail-body .pick-heading:first-of-type { margin-top: 0; }
+dialog .pick-column { display: flex; flex-direction: column; gap: 6px; }
+dialog .pick-column button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left; padding: 8px 12px; min-height: 48px; }
+dialog .pick-column button[hidden] { display: none; }
+dialog .pick-column small { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+dialog .pick-column button[aria-pressed="true"] small { color: inherit; }
+dialog .pick-column button.muted b { color: var(--muted); }
+dialog .pick-heading { margin: 12px 0 6px; font-size: 0.95rem; color: var(--muted); }
+dialog .pick-heading:first-of-type { margin-top: 0; }
+/* Traits list (its own popup) and the drawback and flaw rows. */
+#trait-list.pick-column { border-top: none; }
+#drawback-row .slot-buttons, #flaw-rows .slot-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#flaw-rows .slot-label { min-width: 52px; }

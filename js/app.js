@@ -1738,68 +1738,32 @@ function buildControls() {
   initEidolon(app);
   initBuild();
   // Flaws (house rule): typing in a name or effect saves it when the box loses focus.
-  // Details on a drawback: its text, what it gives (an extra trait slot, and the trait in it), and Take / Remove.
+  // Drawback: Choose a drawback / Change opens the list; Remove takes it off; ? shows it.
   $('drawback-row').addEventListener('click', e => {
+    if (e.target.closest('[data-drawback-choose]')) { popDrawbackPicker(); return; }
+    if (e.target.closest('[data-drawback-remove]')) { update({ drawback: '' }); return; }
     const b = e.target.closest('[data-drawback-pop]');
-    if (!b) return;
-    const d = data.drawbacksById.get(b.dataset.drawbackPop);
-    if (!d) return;
-    const mine = state.drawback === d.id;
-    const slot = traitSlotCount(state.houseRules, d.id) - 1;
-    const trait = mine ? data.traitsById.get(state.traits[slot]) : null;
-    openDetail(d.name, `<p class="hint">Drawback · ${esc(d.source)}</p>${paragraphs(d.text)}
-      <h3>In the app</h3><p>It gives you an extra trait slot${mine ? `: ${trait ? `you chose ${esc(trait.name)}` : 'not filled yet (Traits card above)'}` : ''}.
-        Its penalty isn't counted automatically, since most apply only in some situations: apply it in play, or add a custom
-        effect on the Build tab when it applies.</p>
-      ${!mine && state.drawback ? `<p class="hint">Taking it replaces ${esc(data.drawbacksById.get(state.drawback)?.name || 'your drawback')} (only one drawback).</p>` : ''}`,
-      mine ? [{ label: 'Remove it', run: () => update({ drawback: '' }) }] : [{ label: `Take ${d.name}`, primary: true, run: () => update({ drawback: d.id }) }]);
+    if (b) popDrawback(b.dataset.drawbackPop);
   });
-  $('drawback-row').addEventListener('change', e => {
-    if (e.target.id === 'drawback-select') update({ drawback: e.target.value });
-  });
-  // Details on a flaw: its full text, exactly what the app changes, the bonus feat it gives, and Take / Remove.
+  // Flaws: Choose a flaw / Change opens the list for that slot; Remove empties it; ? shows the flaw.
   $('flaw-rows').addEventListener('click', e => {
+    const c = e.target.closest('[data-flaw-choose]');
+    if (c) { popFlawPicker(Number(c.dataset.flawChoose)); return; }
+    const r = e.target.closest('[data-flaw-remove]');
+    if (r) {
+      update({ flaws: [0, 1].map(j => (j === Number(r.dataset.flawRemove) ? { id: '', name: '', effect: '' } : { id: '', name: '', effect: '', ...(state.flaws[j] || {}) })) });
+      return;
+    }
     const b = e.target.closest('[data-flaw-pop]');
-    if (!b) return;
-    const f = flawById.get(b.dataset.flawPop);
-    if (!f) return;
-    const at = state.flaws.findIndex(x => x?.id === f.id);
-    const mine = at >= 0;
-    const fx = flawEffects([{ id: f.id, choice: mine ? state.flaws[at].choice : 'str' }]);
-    const applied = [
-      ...fx.effects.map(x => `${TARGETS.find(([t]) => t === x.target)?.[1] || x.target} ${x.value}`),
-      ...Object.entries(fx.checks).map(([a, v]) => `${ABILITY_NAMES[a]} checks and ${ABILITY_NAMES[a]}-based skills ${v}`),
-      ...Object.entries(fx.skills).map(([n, v]) => `${n} ${v}`),
-      ...(fx.melee ? [`melee attack rolls ${fx.melee}`] : []), ...(fx.ranged ? [`ranged attack rolls ${fx.ranged}`] : []),
-      ...(fx.hpPerLevel ? [`${fx.hpPerLevel} hit point per level`] : []), ...(fx.halfSpeed ? ['base land speed halved'] : []),
-    ];
-    const featSlot = mine ? view.slots.find(s => s.id === `flaw-${at + 1}`) : null;
-    const feat = featSlot && data.featsById.get(state.feats[featSlot.id]);
-    const free = [0, 1].find(j => !state.flaws[j]?.id);
-    openDetail(f.name, `<p class="hint">Flaw · Unearthed Arcana (d20 SRD)</p><p><i>${esc(f.flavor)}</i></p>
-      <p><b>Effect:</b> ${esc(f.effect)}</p>${f.special ? `<p><b>Special:</b> ${esc(f.special)}</p>` : ''}
-      <h3>In the app</h3>${applied.length ? `<ul class="plain-list">${applied.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
-        <p class="hint">Counted in your numbers and rolls (each Details popup lists it).</p>` : '<p>Not counted automatically: roll the miss chance twice in play.</p>'}
-      <p>It gives a bonus feat at 1st level${mine ? `: ${feat ? `you chose ${esc(feat.name)}` : 'not chosen yet (Feats card below)'}` : ''}.</p>
-      ${f.choice && !mine ? '<p class="hint">After taking it, choose which ability it lowers on the Flaws card.</p>' : ''}
-      ${!mine && free === undefined ? '<p class="warning">You already have two flaws: change one of them on the Flaws card.</p>' : ''}`,
-      mine ? [{ label: 'Remove it', run: () => update({ flaws: state.flaws.map((x, j) => (j === at ? { id: '', name: '', effect: '' } : x)) }) }]
-        : free === undefined ? [] : [{ label: `Take ${f.name}`, primary: true, run: () => {
-          const flaws = [0, 1].map(j => ({ id: '', name: '', effect: '', ...(state.flaws[j] || {}) }));
-          flaws[free] = { id: f.id, name: f.name, effect: '', ...(f.choice ? { choice: 'str' } : {}) };
-          update({ flaws });
-        } }]);
+    if (b) popFlaw(b.dataset.flawPop, b.dataset.slot === undefined ? -1 : Number(b.dataset.slot));
   });
+  // A flaw's ability choice, or a typed-in flaw's name and penalty (saved when the box loses focus).
   $('flaw-rows').addEventListener('change', e => {
     const i = Number(e.target.dataset.flaw);
     const field = e.target.dataset.flawField;
     if (!field) return;
     const flaws = [0, 1].map(j => ({ id: '', name: '', effect: '', ...(state.flaws[j] || {}) }));
-    if (field === 'id') {
-      const f = flawById.get(e.target.value);
-      flaws[i] = f ? { id: f.id, name: f.name, effect: '', ...(f.choice ? { choice: 'str' } : {}) }
-        : e.target.value === 'other' ? { id: 'other', name: '', effect: '' } : { id: '', name: '', effect: '' };
-    } else if (field === 'choice') flaws[i].choice = e.target.value;
+    if (field === 'choice') flaws[i].choice = e.target.value;
     else flaws[i][field] = e.target.value.slice(0, field === 'name' ? 60 : 200);
     update({ flaws });
   });
@@ -5342,19 +5306,63 @@ function popLanguages() {
     <h3>${onList.length ? 'Other languages (a rank of Linguistics each)' : 'Languages'}</h3><div class="lang-list">${others.map(box).join('')}</div></div>`);
 }
 
+// A drawback's details: its text, what it gives (an extra trait slot, and the trait in it), and Take / Remove.
+function popDrawback(id) {
+  const d = data.drawbacksById.get(id);
+  if (!d) return;
+  const mine = state.drawback === d.id;
+  const slot = traitSlotCount(state.houseRules, d.id) - 1;
+  const trait = mine ? data.traitsById.get(state.traits[slot]) : null;
+  openDetail(d.name, `<p class="hint">Drawback · ${esc(d.source)}</p>${paragraphs(d.text)}
+    <h3>In the app</h3><p>It gives you an extra trait slot${mine ? `: ${trait ? `you chose ${esc(trait.name)}` : 'not filled yet (Traits card above)'}` : ''}.
+      Its penalty isn't counted automatically, since most apply only in some situations: apply it in play, or add a custom
+      effect on the Build tab when it applies.</p>
+    ${!mine && state.drawback ? `<p class="hint">Taking it replaces ${esc(data.drawbacksById.get(state.drawback)?.name || 'your drawback')} (only one drawback).</p>` : ''}`,
+    mine ? [{ label: 'Remove it', run: () => update({ drawback: '' }) }] : [{ label: `Take ${d.name}`, primary: true, run: () => update({ drawback: d.id }) }]);
+}
+// A flaw's details: its full text, exactly what the app changes, the bonus feat it gives, and Take (into slot, or the
+// first free one) / Remove.
+function popFlaw(id, slot = -1) {
+  const f = flawById.get(id);
+  if (!f) return;
+  const at = state.flaws.findIndex(x => x?.id === f.id);
+  const mine = at >= 0;
+  const fx = flawEffects([{ id: f.id, choice: mine ? state.flaws[at].choice : 'str' }]);
+  const applied = [
+    ...fx.effects.map(x => `${TARGETS.find(([t]) => t === x.target)?.[1] || x.target} ${x.value}`),
+    ...Object.entries(fx.checks).map(([a, v]) => `${ABILITY_NAMES[a]} checks and ${ABILITY_NAMES[a]}-based skills ${v}`),
+    ...Object.entries(fx.skills).map(([n, v]) => `${n} ${v}`),
+    ...(fx.melee ? [`melee attack rolls ${fx.melee}`] : []), ...(fx.ranged ? [`ranged attack rolls ${fx.ranged}`] : []),
+    ...(fx.hpPerLevel ? [`${fx.hpPerLevel} hit point per level`] : []), ...(fx.halfSpeed ? ['base land speed halved'] : []),
+  ];
+  const featSlot = mine ? view.slots.find(s => s.id === `flaw-${at + 1}`) : null;
+  const feat = featSlot && data.featsById.get(state.feats[featSlot.id]);
+  const free = slot >= 0 ? slot : [0, 1].find(j => !state.flaws[j]?.id);
+  openDetail(f.name, `<p class="hint">Flaw · Unearthed Arcana (d20 SRD)</p><p><i>${esc(f.flavor)}</i></p>
+    <p><b>Effect:</b> ${esc(f.effect)}</p>${f.special ? `<p><b>Special:</b> ${esc(f.special)}</p>` : ''}
+    <h3>In the app</h3>${applied.length ? `<ul class="plain-list">${applied.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <p class="hint">Counted in your numbers and rolls (each Details popup lists it).</p>` : '<p>Not counted automatically: roll the miss chance twice in play.</p>'}
+    <p>It gives a bonus feat at 1st level${mine ? `: ${feat ? `you chose ${esc(feat.name)}` : 'not chosen yet (Feats card below)'}` : ''}.</p>
+    ${f.choice && !mine ? '<p class="hint">After taking it, choose which ability it lowers on the Flaws card.</p>' : ''}
+    ${!mine && free === undefined ? '<p class="warning">You already have two flaws: change one of them on the Flaws card.</p>' : ''}
+    ${!mine && slot >= 0 && state.flaws[slot]?.id ? `<p class="hint">Taking it replaces ${esc(flawById.get(state.flaws[slot].id)?.name || 'that flaw')}.</p>` : ''}`,
+    mine ? [{ label: 'Remove it', run: () => update({ flaws: state.flaws.map((x, j) => (j === at ? { id: '', name: '', effect: '' } : x)) }) }]
+      : free === undefined ? [] : [{ label: `Take ${f.name}`, primary: true, run: () => {
+        const flaws = [0, 1].map(j => ({ id: '', name: '', effect: '', ...(state.flaws[j] || {}) }));
+        flaws[free] = { id: f.id, name: f.name, effect: '', ...(f.choice ? { choice: 'str' } : {}) };
+        update({ flaws });
+      } }]);
+}
+
 // Drawbacks card (Drawbacks house rule): pick one drawback from the list; its full text shows, and it adds a trait slot.
 function renderDrawback() {
   $('drawback-card').hidden = !state.houseRules.drawbacks;
   if ($('drawback-card').hidden) return;
   const d = data.drawbacksById.get(state.drawback);
-  const browseOpen = $('drawback-row').querySelector('details.flaw-browse')?.open || false;
-  $('drawback-row').innerHTML = `<label>Drawback <select id="drawback-select"><option value="">— none —</option>
-      ${data.drawbacks.map(x => `<option value="${esc(x.id)}"${x.id === state.drawback ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
-    ${d ? `<button type="button" class="skill-details q-details" data-drawback-pop="${esc(d.id)}" title="Details" aria-label="Details">?</button>` : ''}
-    <details class="flaw-browse"${browseOpen ? ' open' : ''}><summary>Browse all ${data.drawbacks.length} drawbacks</summary>
-      <ul class="pick-list">${data.drawbacks.map(x => `<li class="with-details"><button type="button" data-drawback-pop="${esc(x.id)}"${x.id === state.drawback ? ' class="mine"' : ''}>${x.id === state.drawback ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
-          <small>${esc(x.source)}</small></button>
-        <button type="button" class="skill-details q-details" data-drawback-pop="${esc(x.id)}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`).join('')}</ul></details>
+  $('drawback-row').innerHTML = `<div class="slot-buttons">${d ? `<b>${esc(d.name)}</b>
+      <button type="button" data-drawback-choose>Change</button><button type="button" data-drawback-remove>Remove</button>
+      <button type="button" class="skill-details q-details" data-drawback-pop="${esc(d.id)}" title="Details" aria-label="Details">?</button>`
+      : '<button type="button" class="primary" data-drawback-choose>Choose a drawback</button>'}</div>
     ${d ? `<div class="flaw-details"><p class="hint">${esc(d.source)}</p>${paragraphs(d.text)}
       <p class="hint">It gives you an extra trait slot (in the Traits card above). Its penalty isn't counted automatically: most
         apply only in some situations, so apply it in play (or add a custom effect on the Build tab).</p></div>` : ''}`;
@@ -5365,11 +5373,9 @@ function renderFlaws() {
   if ($('flaws-card').hidden) return;
   const active = document.activeElement?.dataset?.flawField ? document.activeElement : null;
   if (active && active.tagName === 'INPUT' && $('flaw-rows').contains(active)) return;  // don't redraw while typing
-  const otherIds = i => state.flaws.filter((f, j) => j !== i && f?.id && f.id !== 'other').map(f => f.id);
   $('flaw-rows').innerHTML = [0, 1].map(i => {
     const f = state.flaws[i] || { id: '', name: '', effect: '' };
     const known = flawById.get(f.id);
-    const options = FLAWS.filter(x => !otherIds(i).includes(x.id)).map(x => `<option value="${x.id}"${f.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('');
     const choice = known?.choice ? `<label>Ability <select data-flaw="${i}" data-flaw-field="choice">${ABILITIES.map(a =>
       `<option value="${a}"${f.choice === a ? ' selected' : ''}>${ABILITY_NAMES[a]}</option>`).join('')}</select></label>` : '';
     const details = known ? `<div class="flaw-details"><p><i>${esc(known.flavor)}</i></p><p><b>Effect:</b> ${esc(known.effect)}</p>
@@ -5378,17 +5384,39 @@ function renderFlaws() {
       : f.id === 'other' ? `<label>Name <input type="text" data-flaw="${i}" data-flaw-field="name" maxlength="60" value="${esc(f.name)}" placeholder="Flaw name"></label>
         <label>Penalty <input type="text" data-flaw="${i}" data-flaw-field="effect" maxlength="200" value="${esc(f.effect)}" placeholder="e.g. -2 on Strength-based checks"></label>
         <p class="hint">A typed-in flaw's penalty isn't applied: add it as a custom effect on the Build tab.</p>` : '';
-    return `<div class="flaw-row"><label>Flaw ${i + 1} <select data-flaw="${i}" data-flaw-field="id">
-        <option value="">— none —</option>${options}<option value="other"${f.id === 'other' ? ' selected' : ''}>Other (type it in)</option></select></label>
-      ${known ? `<button type="button" class="skill-details q-details" data-flaw-pop="${known.id}" data-slot="${i}" title="Details" aria-label="Details">?</button>` : ''}
+    const name = known ? known.name : f.id === 'other' ? 'Other (typed in)' : '';
+    return `<div class="flaw-row"><div class="slot-buttons"><span class="slot-label">Flaw ${i + 1}</span>
+        ${f.id ? `<b>${esc(name)}</b><button type="button" data-flaw-choose="${i}">Change</button><button type="button" data-flaw-remove="${i}">Remove</button>`
+          : `<button type="button" class="primary" data-flaw-choose="${i}">Choose a flaw</button>`}
+        ${known ? `<button type="button" class="skill-details q-details" data-flaw-pop="${known.id}" data-slot="${i}" title="Details" aria-label="Details">?</button>` : ''}</div>
       ${choice}${details}</div>`;
-  }).join('') + `<details class="flaw-browse"${$('flaw-rows').querySelector('details.flaw-browse')?.open ? ' open' : ''}><summary>Browse all ${FLAWS.length} flaws</summary>
-      <ul class="pick-list">${FLAWS.map(x => {
-        const mine = state.flaws.some(f => f?.id === x.id);
-        return `<li class="with-details"><button type="button" data-flaw-pop="${x.id}"${mine ? ' class="mine"' : ''}>${mine ? '<span class="status met">✓</span>' : ''}${esc(x.name)}
-            <small>${esc(x.effect.length > 60 ? `${x.effect.slice(0, 57)}…` : x.effect)}</small></button>
-          <button type="button" class="skill-details q-details" data-flaw-pop="${x.id}" aria-label="${esc(x.name)} in a popup" title="Details">?</button></li>`;
-      }).join('')}</ul></details>`;
+  }).join('');
+}
+// Choose a drawback / Choose a flaw: every one A to Z in one column with a search box; tap one to read it and take it.
+function popPickList(title, placeholder, rows, open, actions = []) {
+  openDetail(title, `<input type="search" class="pick-search" placeholder="${esc(placeholder)}" autocomplete="off" aria-label="${esc(placeholder)}">
+    <div class="pick-column">${rows.map(r => `<button type="button" data-pick-id="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"${r.mine ? ' aria-pressed="true"' : ''}${r.muted ? ' class="muted"' : ''}>
+      <b>${esc(r.name)}</b><small>${esc(r.line)}</small></button>`).join('')}</div>
+    <p class="hint pick-none" hidden>None by that name.</p>`, actions);
+  const body = $('detail-body');
+  body.querySelector('.pick-search').addEventListener('input', e => filterPicks(body, e.target.value));
+  body.querySelector('.pick-column').addEventListener('click', e => { const b = e.target.closest('[data-pick-id]'); if (b) open(b.dataset.pickId); });
+}
+function popDrawbackPicker() {
+  popPickList('Choose a drawback', 'Search drawbacks by name', [...data.drawbacks].sort((a, b) => a.name.localeCompare(b.name)).map(x => ({
+    id: x.id, name: x.name, mine: x.id === state.drawback,
+    line: `${x.source} · ${String(x.text || '').replace(/\s+/g, ' ').slice(0, 90)}${String(x.text || '').length > 90 ? '…' : ''}` })), popDrawback);
+}
+function popFlawPicker(slot) {
+  const taken = state.flaws.filter((f, j) => j !== slot && f?.id).map(f => f.id);
+  popPickList(`Flaw ${slot + 1}`, 'Search flaws by name', [...FLAWS].sort((a, b) => a.name.localeCompare(b.name)).map(x => ({
+    id: x.id, name: x.name, mine: state.flaws[slot]?.id === x.id, muted: taken.includes(x.id),
+    line: (taken.includes(x.id) ? 'your other flaw · ' : '') + (x.effect.length > 90 ? `${x.effect.slice(0, 87)}…` : x.effect) })), id => popFlaw(id, slot),
+  [{ label: 'Other (type it in)', run: () => {
+    const flaws = [0, 1].map(j => ({ id: '', name: '', effect: '', ...(state.flaws[j] || {}) }));
+    flaws[slot] = { id: 'other', name: '', effect: '' };
+    update({ flaws });
+  } }]);
 }
 
 // Which prerequisites aren't met by the character as it is now.

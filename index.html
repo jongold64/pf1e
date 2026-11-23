@@ -62,6 +62,20 @@
 
     <!-- Character -->
     <main class="tab-panel" id="tab-character" role="tabpanel">
+      <!-- Set once: house rules, third-party books and hero points, folded shut with a line saying what's on. -->
+      <details class="card wide house-rules game-options" id="game-options">
+        <summary><h2>Game options</h2> <span id="game-options-summary" class="muted"></span></summary>
+        <h3>House rules</h3>
+        <div id="house-rules" class="house-rule-buttons"></div>
+        <p id="house-rules-note" class="hint"></p>
+        <div id="third-party-card" hidden>
+          <h3>Third-party books</h3>
+          <p class="hint">Books from other publishers, not Paizo. Each is off until you switch it on for this character.</p>
+          <div id="third-party-books" class="house-rule-buttons"></div>
+          <p id="third-party-note" class="hint"></p>
+        </div>
+        <div id="hero-points" class="hero-points" hidden></div>
+      </details>
       <!-- Race: one button opens the list of every race (and a custom race); the race's traits below. -->
       <section class="card wide race-card" id="race-card">
         <h2>Race <span id="race-current" class="count"></span></h2>
@@ -84,20 +98,6 @@
         <div id="faith" class="faith"></div>
         <div id="char-details" class="char-details"></div>
       </section>
-      <!-- Set once: house rules, third-party books and hero points, folded shut with a line saying what's on. -->
-      <details class="card wide house-rules game-options" id="game-options">
-        <summary><h2>Game options</h2> <span id="game-options-summary" class="muted"></span></summary>
-        <h3>House rules</h3>
-        <div id="house-rules" class="house-rule-buttons"></div>
-        <p id="house-rules-note" class="hint"></p>
-        <div id="third-party-card" hidden>
-          <h3>Third-party books</h3>
-          <p class="hint">Books from other publishers, not Paizo. Each is off until you switch it on for this character.</p>
-          <div id="third-party-books" class="house-rule-buttons"></div>
-          <p id="third-party-note" class="hint"></p>
-        </div>
-        <div id="hero-points" class="hero-points" hidden></div>
-      </details>
     </main>
 
     <!-- Abilities -->
@@ -574,8 +574,8 @@
             <li>Every popup has a way out: popup windows (Details, the feat and trait lists, search) have <b>Close</b> at the top, which
               stays in view as you scroll, and a <b>Close</b> (or <b>Cancel</b>, beside its choices) at the bottom; the small boxes that
               explain a race's items and the roll result box have their own <b>Close</b>. Tapping anywhere outside one closes it too.</li>
-            <li>The Build tab goes in building order: <b>Race</b>, <b>Character</b> (who they are), then <b>Game options</b>
-              folded at the bottom. Hit points, AC, CMD, saves, hero points to spend and Active effects are on the Character tab.</li>
+            <li>The Build tab goes in building order: <b>Game options</b> (folded) at the top, then <b>Race</b> and
+              <b>Character</b> (who they are). Hit points, AC, CMD, saves, hero points to spend and Active effects are on the Character tab.</li>
             <li><b>Character</b> card: the name, race and classes at a glance, with <b>Classes</b> (or <b>Choose a class</b>) and <b>Ability
               scores</b> buttons that go to those tabs; <b>Alignment</b> and <b>Deity</b>; and the details. <b>Player</b>, <b>Campaign</b> and
               <b>Homeland</b> are remembered on this device: a new character starts with the last ones you typed (change them any time).
@@ -1004,13 +1004,16 @@
               you to choose a weapon has the choice in its slot: Monk Weapon Skill (+1 damage with the monk weapon you pick) and
               Heirloom Weapon (its weapon and benefit: proficiency with it is counted; +1 on attacks of opportunity or +2 on one
               combat maneuver with it gets a roll of its own under that weapon, on the Weapons tab and the Character tab's Actions). Other benefits (bonuses against fear...) are for you to apply in play. <b>Details</b>
-              shows each bonus and whether it counts (two trait bonuses to the same thing don't stack). In the trait list, <b>Details</b> on a
-              row shows the trait, what it would count alongside your other trait, and a Choose button. Each trait must come from a
+              shows each bonus and whether it counts (two trait bonuses to the same thing don't stack). <b>Choose a trait</b> opens every trait from A to Z in one column, with a search box (name, category or
+              race/region); under each name in small print: its category, what it counts and, greyed, whether you already have a
+              trait of that category. Tap one to read it, what it would count alongside your other trait, and Choose it. Each trait must come from a
               different category (combat, faith, magic, social, race, regional...): traits from a category you already have are
               greyed out with the reason.</li>
-            <li><b>Flaws</b> and <b>Drawback</b> cards appear when those house rules are on: choose from the list to see the full text.
-              Flaw penalties count in your numbers and rolls; a drawback adds a trait slot (its penalty is applied in play).
-              <b>Details</b> beside a choice, or in <b>Browse all</b>, shows the full text, what the app changes and the feat or trait it gives.</li>
+            <li><b>Flaws</b> and <b>Drawback</b> cards appear when those house rules are on. <b>Choose a drawback</b> and each flaw's
+              <b>Choose a flaw</b> open every one from A to Z in one column, with a search box and a line about each; tap one to read
+              its full text, what the app changes and the feat or trait it gives, then <b>Take</b> it. A chosen one shows its text with
+              <b>Change</b> and <b>Remove</b>; <b>Other (type it in)</b> at the bottom of the flaw list is for a flaw that isn't there.
+              Flaw penalties count in your numbers and rolls; a drawback adds a trait slot (its penalty is applied in play).</li>
           </ul>
         </details>
 
@@ -1292,10 +1295,10 @@
       <h2 id="trait-picker-title"></h2>
       <button type="button" id="trait-picker-close">Close</button>
     </div>
-    <input id="trait-search" type="search" placeholder="Search traits by name or race/region" autocomplete="off">
-    <div class="picker-filters"><select id="trait-category" aria-label="Trait category"></select></div>
+    <input id="trait-search" class="pick-search" type="search" placeholder="Search traits by name, category or race/region" autocomplete="off">
     <p id="trait-picker-count" class="hint"></p>
-    <div id="trait-list"></div>
+    <div id="trait-list" class="pick-column"></div>
+    <p class="hint">Tap a trait to read it and choose it. Greyed: you already have a trait of its category (one from each).</p>
   </dialog>
 
   <!-- Search everything: opened by the Search button beside Print. -->

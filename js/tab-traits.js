@@ -110,20 +110,22 @@ function blockedBy(app, t) {
   return same ? `You already have a ${t.category} trait (${same.name}): the rules allow one trait from each category.` : '';
 }
 
+// The trait list: one trait per row, A to Z (names starting with the search words first), with its category,
+// requirement and what it counts under the name. Tap one to read it and choose it. At most 150 rows.
+const TRAIT_LIMIT = 150;
 function renderPicker(app) {
   const search = $('trait-search').value.trim().toLowerCase();
-  const category = $('trait-category').value;
-  const list = app.data.traits.filter(t => (!category || t.category === category)
-    && (!search || t.name.toLowerCase().includes(search) || (t.requirement || '').toLowerCase().includes(search)));
-  $('trait-picker-count').textContent = `${list.length} trait${list.length === 1 ? '' : 's'}`;
-  $('trait-list').innerHTML = list.map(t => `<details class="feat-item${blockedBy(app, t) ? ' unavailable' : ''}">
-      <summary><span class="feat-name">${esc(t.name)}</span> <small>${esc(t.category)}${t.requirement ? ` · ${esc(t.requirement)}` : ''}</small>
-        <button type="button" class="skill-details q-details" data-trait-pop="${esc(t.id)}" aria-label="${esc(t.name)} in a popup" title="Details">?</button></summary>
-      <div class="feat-body"><p class="hint">${esc(traitLabel(t))}</p>${paragraphs(t.text)}
-        ${effectText(t) ? `<p class="hint">Counted: ${esc(effectText(t))}.</p>` : ''}
-        ${blockedBy(app, t) ? `<p class="warning">${esc(blockedBy(app, t))}</p>`
-          : `<button type="button" class="primary" data-trait-pick="${esc(t.id)}">Choose ${esc(t.name)}</button>`}</div>
-    </details>`).join('') || '<p class="hint">No traits match.</p>';
+  const list = app.data.traits.filter(t => !search || t.name.toLowerCase().includes(search) || t.category.toLowerCase().includes(search)
+      || (t.requirement || '').toLowerCase().includes(search))
+    .sort((a, b) => (search ? b.name.toLowerCase().startsWith(search) - a.name.toLowerCase().startsWith(search) : 0) || a.name.localeCompare(b.name));
+  $('trait-picker-count').textContent = list.length > TRAIT_LIMIT ? `Showing ${TRAIT_LIMIT} of ${list.length} traits: search to narrow the list.`
+    : `${list.length} trait${list.length === 1 ? '' : 's'}`;
+  $('trait-list').innerHTML = list.slice(0, TRAIT_LIMIT).map(t => {
+    const blocked = blockedBy(app, t);
+    const line = [`${t.category}${t.requirement ? ` (${t.requirement})` : ''}`, effectText(t) ? `Counted: ${effectText(t)}` : '',
+      blocked ? `you already have a ${t.category} trait` : ''].filter(Boolean).join(' · ');
+    return `<button type="button" data-trait-pop="${esc(t.id)}"${blocked ? ' class="muted"' : ''}><b>${esc(t.name)}</b><small>${esc(line)}</small></button>`;
+  }).join('') || '<p class="hint">No traits match.</p>';
 }
 
 // Details popup for a trait slot: where the slot comes from, the trait's category, requirement and book, and each
@@ -192,9 +194,6 @@ function popTraits(app) {
 
 export function initTraits(app) {
   $('trait-count-details').addEventListener('click', () => popTraits(app));
-  const categories = [...new Set(app.data.traits.map(t => t.category))].sort();
-  $('trait-category').innerHTML = '<option value="">All categories</option>' +
-    categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
   // A trait's choice (Heirloom Weapon's weapon and benefit, Monk Weapon Skill's weapon).
   $('trait-slots').addEventListener('change', e => {
     const t = e.target.closest('[data-trait-pick]');
@@ -222,7 +221,6 @@ export function initTraits(app) {
     }
   });
   $('trait-search').addEventListener('input', () => renderPicker(app));
-  $('trait-category').addEventListener('change', () => renderPicker(app));
   $('trait-picker-close').addEventListener('click', () => $('trait-picker').close());
   const choose = id => {
     const t = app.data.traitsById.get(id);
