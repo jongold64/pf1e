@@ -545,6 +545,8 @@ function load(saved) {
     .map(e => ({ id: e.id, ...(typeof e.option === 'string' ? { option: e.option } : {}), qty: e.qty,
                  ...(e.crafted === true ? { crafted: true } : {}),
                  ...(e.free === true ? { free: true } : {}),
+                 // Upgraded to another version for free: what it cost before (each).
+                 ...(Number.isFinite(e.paid) && e.paid >= 0 ? { paid: e.paid } : {}),
                  ...(e.off === true ? { off: true } : {}),
                  // Charges left, and how many it was bought with (fewer than full: priced in proportion).
                  ...(Number.isInteger(e.charges) && e.charges >= 0 && e.charges <= 999 ? { charges: e.charges } : {}),

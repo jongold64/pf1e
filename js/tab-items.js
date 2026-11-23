@@ -1,7 +1,7 @@
 // Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
 // side panel for the item being looked at.
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs, maxCharges, chargedPrice, priceChange } from './equipment.js';
+import { magicItemStats, magicItemTotals, magicItemPaid, ownable, formatGp, formatLbs, maxCharges, chargedPrice, priceChange } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem, openBuyKind, showBuyCard } from './tab-crafting.js';
 import { renderCustomBuilder, customRowsHtml, initCustomItems } from './tab-custom-items.js';
@@ -166,16 +166,20 @@ function renderAddButtons() {
 // An owned item with versions (a cloak of resistance +1 to +5, a belt +2 / +4 / +6): a choice of version, each saying
 // what it adds to the price of one (or takes off): bought at market price, crafted at the cost to make. You pay the
 // difference. '' for an item with one version.
+// Upgrade for free ticked: a new version costs nothing (the item keeps counting at what it cost). Kept while the page is open.
+let freeUpgrade = false;
+const versionPrice = (item, e, label) => {
+  const p = magicItemStats(item, label).price_gp;
+  return e.crafted ? listedCost(item, label || null, p) : chargedPrice(p, e.startCharges, maxCharges(item));
+};
 function versionChoice(item, e, i) {
   const options = item.price_options || [];
   if (options.length < 2) return '';
-  const each = label => {
-    const p = magicItemStats(item, label).price_gp;
-    return e.crafted ? listedCost(item, label || null, p) : chargedPrice(p, e.startCharges, maxCharges(item));
-  };
-  const now = each(e.option);
-  return `<label class="item-version">Version <select data-item-option="${i}">${options.map(o => `<option value="${esc(o.label)}"${o.label === e.option ? ' selected' : ''}>${esc(o.label)}${priceChange(now, each(o.label))}</option>`).join('')}</select></label>
-    <p class="hint">Beside each version: what it adds to the price${e.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so a new version costs no gold: untick Free to pay for an upgrade.' : ''}</p>`;
+  const now = versionPrice(item, e, e.option);
+  return `<label class="item-version">Version <select data-item-option="${i}">${options.map(o => `<option value="${esc(o.label)}"${o.label === e.option ? ' selected' : ''}>${esc(o.label)}${priceChange(now, versionPrice(item, e, o.label))}</option>`).join('')}</select></label>
+    ${e.free ? '' : `<label class="check-row"><input type="checkbox" data-free-upgrade${freeUpgrade ? ' checked' : ''}> Upgrade for free (a gift, or the GM's say-so: no gold)</label>`}
+    <p class="hint">Beside each version: what it adds to the price${e.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so a new version costs no gold.' : ''}
+      ${Number.isFinite(e.paid) && !e.free ? `Upgraded for free: it counts at ${esc(formatGp(e.paid))}${e.qty > 1 ? ' each' : ''}, what it cost before.` : ''}</p>`;
 }
 
 export function renderMyItems(app) {
@@ -194,11 +198,12 @@ export function renderMyItems(app) {
     if (!item) return '';
     const s = magicItemStats(item, e.option);
     const maxC = maxCharges(item);
-    const each = e.free ? 0 : e.crafted ? listedCost(item, e.option || null, s.price_gp) : chargedPrice(s.price_gp, e.startCharges, maxC);
+    const each = magicItemPaid(item, e);
     const name = entryName(item, e.option);
     const fromConstruction = e.crafted && item.construction?.cost && each !== null && s.price_gp !== null && each !== s.price_gp / 2;
     itemWhy.set(`l-${i}`, { title: name, rows: [
       { label: 'Market price (each)', text: s.price_gp !== null ? formatGp(s.price_gp) : 'not listed' },
+      ...(Number.isFinite(e.paid) && !e.free ? [{ label: 'Paid (each): upgraded for free, so what it cost before', text: formatGp(e.paid) }] : []),
       ...(e.crafted ? [{ label: fromConstruction ? 'Cost to make (each, from its Construction line)' : 'Cost to make (each): half the market price',
                          text: each !== null ? formatGp(each) : '—' }] : []),
       { label: 'Quantity', text: `× ${e.qty}` },
@@ -348,9 +353,17 @@ export function initItemsTab(app) {
   $('my-items-rows').addEventListener('change', e => {
     const t = e.target;
     // Another version of an owned item (an upgrade): its option changes; charges stay as they are.
+    if (t.dataset.freeUpgrade !== undefined) { freeUpgrade = t.checked; return; }
+    // Upgraded for free, it keeps counting at what it cost; paid for, a free-upgraded one adds the difference to that.
     if (t.dataset.itemOption !== undefined) {
       const i = Number(t.dataset.itemOption);
-      app.update({ magicItems: app.state.magicItems.map((x, j) => (j === i ? { ...x, option: t.value } : x)) });
+      app.update({ magicItems: app.state.magicItems.map((x, j) => {
+        if (j !== i) return x;
+        const item = app.data.itemsById.get(x.id);
+        const was = magicItemPaid(item, x);
+        if (freeUpgrade && !x.free) return { ...x, option: t.value, paid: was };
+        return Number.isFinite(x.paid) ? { ...x, option: t.value, paid: Math.max(0, x.paid + versionPrice(item, x, t.value) - versionPrice(item, x, x.option)) } : { ...x, option: t.value };
+      }) });
       return;
     }
     if (t.dataset.itemFree !== undefined) {
@@ -369,7 +382,7 @@ export function initItemsTab(app) {
       const x = app.state.magicItems[i];
       const item = app.data.itemsById.get(x.id);
       const s = magicItemStats(item, x.option);
-      const paid = x.free ? 0 : x.crafted ? listedCost(item, x.option || null, s.price_gp) : chargedPrice(s.price_gp, x.startCharges, maxCharges(item));
+      const paid = magicItemPaid(item, x);
       sellItem(app, { name: entryName(item, x.option), value: chargedPrice(s.price_gp, x.charges, maxCharges(item)), paid, kind: 'magic' },
         { magicItems: app.state.magicItems.map((y, j) => (j === i ? { ...y, qty: y.qty - 1 } : y)).filter(y => y.qty > 0) });
       return;

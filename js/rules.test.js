@@ -2476,6 +2476,10 @@ It does a thing. More.` });
   check('price change: +1 armor from plain chain shirt (100 gp) to 1,250 gp', priceChange(100, 1250), ' (+1,150 gp)');
   check('price change: back to plain is less', priceChange(1250, 100), ' (−1,150 gp)');
   check('price change: the same price says nothing', priceChange(300, 300), '');
+  const { magicItemPaid } = await import('./equipment.js');
+  const cloak = { id: 'cloak', price_options: [{ label: '+1', price_gp: 1000 }, { label: '+3', price_gp: 9000 }] };
+  check('a +3 cloak bought costs 9,000 gp; upgraded for free from +1 it counts at the 1,000 paid; free costs nothing',
+    [magicItemPaid(cloak, { option: '+3' }), magicItemPaid(cloak, { option: '+3', paid: 1000 }), magicItemPaid(cloak, { option: '+3', free: true })].join(), '9000,1000,0');
 }
 // Custom races.
 {

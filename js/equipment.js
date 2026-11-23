@@ -98,6 +98,15 @@ export function maxCharges(item) {
 export const chargedPrice = (price, charges, max) => (price === null || price === undefined || !max || !Number.isFinite(charges) || charges >= max
   ? price : Math.round(price * Math.max(0, charges) / max * 100) / 100);
 
+// What one owned magic item cost: nothing when free; what was paid when it was upgraded for free (entry.paid: the old
+// version's cost); else a crafted item's cost to make, or the market price (bought with fewer charges: in proportion).
+export function magicItemPaid(item, entry) {
+  if (entry.free) return 0;
+  if (Number.isFinite(entry.paid)) return entry.paid;
+  const { price_gp } = magicItemStats(item, entry.option);
+  return entry.crafted ? listedCost(item, entry.option || null, price_gp) : chargedPrice(price_gp, entry.startCharges, maxCharges(item));
+}
+
 export function magicItemTotals(owned, itemsById) {
   let cost = 0;
   let weight = 0;
@@ -105,10 +114,8 @@ export function magicItemTotals(owned, itemsById) {
   for (const entry of owned) {
     const item = itemsById.get(entry.id);
     if (!item) continue;
-    const { price_gp, weight_lbs } = magicItemStats(item, entry.option);
-    // A crafted item costs its creation cost (its "Cost" line, else half the price).
-    // (Bought with fewer charges: in proportion.)
-    const each = entry.free ? 0 : entry.crafted ? listedCost(item, entry.option || null, price_gp) : chargedPrice(price_gp, entry.startCharges, maxCharges(item));
+    const { weight_lbs } = magicItemStats(item, entry.option);
+    const each = magicItemPaid(item, entry);
     if (each === null || each === undefined) unpriced.push(item.name); else cost += each * entry.qty;
     weight += (weight_lbs || 0) * entry.qty;
   }
