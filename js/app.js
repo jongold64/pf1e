@@ -3032,7 +3032,7 @@ function popClass(id) {
      ...(c.custom ? [{ label: 'Change it', run: () => {
        const d = state.customClasses.find(x => x.id === id);
        if (!d) return;
-       ccDraft = structuredClone(d); classCustomOpen = true; classGroup = ''; showTab('classes'); render();
+       ccDraft = structuredClone(d); classCustomOpen = true; showTab('classes'); render();
        $('class-add-buttons').scrollIntoView({ block: 'start' });
      } }] : [])]);
 }
@@ -4832,20 +4832,15 @@ function raceLine(r) {
 // The Choose a race popup: a search box, every race A to Z (custom ones marked), and Make a custom race.
 function popRacePicker() {
   const races = [...data.races].sort((a, b) => a.name.localeCompare(b.name));
-  openDetail('Choose a race', `<input type="search" class="race-search" placeholder="Search races by name" autocomplete="off" aria-label="Search races">
-    <div class="race-pick race-column">${races.map(r => `<button type="button" data-race-pick="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"
+  openDetail('Choose a race', `<input type="search" class="pick-search" placeholder="Search races by name" autocomplete="off" aria-label="Search races">
+    <div class="pick-column">${races.map(r => `<button type="button" data-race-pick="${esc(r.id)}" data-name="${esc(r.name.toLowerCase())}"
       aria-pressed="${r.id === state.race}"><b>${esc(r.name)}</b><small>${esc(raceLine(r))}</small></button>`).join('')}</div>
-    <p class="hint race-none" hidden>No race by that name.</p>
+    <p class="hint pick-none" hidden>No race by that name.</p>
     <p class="hint">Tap a race to become it; its traits show in the Race card. Not here? Make your own:</p>`,
   [{ label: 'Make a custom race', run: () => { crDraft = freshRace(); raceCustomOpen = true; render(); $('race-custom-wrap').scrollIntoView({ block: 'start' }); } }]);
   const body = $('detail-body');
-  body.querySelector('.race-search').addEventListener('input', e => {
-    const q = e.target.value.trim().toLowerCase();
-    let shown = 0;
-    for (const b of body.querySelectorAll('[data-race-pick]')) { b.hidden = !!q && !b.dataset.name.includes(q); shown += !b.hidden; }
-    body.querySelector('.race-none').hidden = shown > 0;
-  });
-  body.querySelector('.race-pick').addEventListener('click', e => {
+  body.querySelector('.pick-search').addEventListener('input', e => filterPicks(body, e.target.value));
+  body.querySelector('.pick-column').addEventListener('click', e => {
     const p = e.target.closest('[data-race-pick]');
     if (!p) return;
     $('detail-dialog').close();
@@ -4908,25 +4903,50 @@ function initRaceAdd() {
   });
 }
 
-// Classes tab: the Add a level buttons (a kind of class, then its classes; tap one to read it and add a level) and the
-// Custom class builder.
-let classGroup = '';
+// Classes tab: one Add a level button opens every class A to Z (with a search box; players needn't know which kind a
+// class is); tap one to read it and add a level. Make a custom class opens the Custom class builder.
 let classCustomOpen = false;
+let classOffer = { offered: [], classLevels: [] };
 let ccDraft = null;
 const freshClass = () => ({ id: '', name: '', hitDie: 8, bab: 'medium', fort: true, ref: false, will: false, skillRanks: 4, classSkills: [], features: [], summary: '' });
 function renderClassAdd(offered, classLevels) {
-  const groups = CLASS_GROUPS.filter(([g]) => offered.some(c => (c.category || 'base') === g));
-  $('class-add-buttons').innerHTML = groups.map(([g, l]) => `<button type="button" data-class-group="${g}" aria-pressed="${!classCustomOpen && classGroup === g}">${esc(l)}</button>`).join('')
-    + `<button type="button" class="add-custom" data-class-custom aria-pressed="${classCustomOpen}">Custom</button>`;
-  const list = classGroup && !classCustomOpen ? offered.filter(c => (c.category || 'base') === classGroup).sort((a, b) => a.name.localeCompare(b.name)) : [];
-  $('class-add-list').hidden = !list.length;
-  $('class-add-list').innerHTML = list.map(c => {
-    const req = prestigeNow(c);
-    const blocked = (!classLevels.length && c.category === 'prestige') || classLevels.length >= 20;
-    return `<button type="button" data-class-open="${esc(c.id)}"${blocked ? ' class="muted"' : ''}>${req ? `${STATUS_ICON[req.status]} ` : ''}${esc(c.name)}</button>`;
-  }).join('');
+  classOffer = { offered, classLevels };
+  $('class-add-buttons').innerHTML = classLevels.length >= 20 ? '<p class="hint">You have all 20 levels.</p>'
+    : `<button type="button" class="primary" data-class-choose>${classLevels.length ? `Add a level <small>(level ${classLevels.length + 1})</small>` : 'Choose a class'}</button>`;
   $('class-custom-wrap').hidden = !classCustomOpen;
   if (classCustomOpen) renderClassCustom();
+}
+// One line under a class's name in the Add a level list: hit die, skill ranks, its kind, levels you have, and for a
+// prestige class whether you meet its requirements. HTML (the ✓ or ✗ mark).
+const CLASS_KINDS = Object.fromEntries(CLASS_GROUPS.map(([g, l]) => [g, l === 'My custom classes' ? 'Custom' : l]));
+function classLine(c, classLevels) {
+  const have = classLevels.filter(x => (x?.id ?? x) === c.id).length;
+  const req = prestigeNow(c);
+  const ranks = parseInt(c.skill_ranks_per_level, 10);
+  return [c.hit_die ? `${c.hit_die} hit die` : '', ranks ? `${ranks} + Int skill ranks` : '',
+    CLASS_KINDS[c.category || 'base'] || '', have ? `you have ${have} level${have > 1 ? 's' : ''}` : ''].filter(Boolean).map(esc).join(' · ')
+    + (req ? ` · ${STATUS_ICON[req.status]} ${req.status === 'met' ? 'requirements met' : !classLevels.length ? 'not at 1st level' : req.status === 'unknown' ? 'some requirements can’t be checked' : 'requirements not met'}` : '');
+}
+// The Add a level popup: a search box, every class you can take A to Z, and Make a custom class.
+function popClassPicker() {
+  const { offered, classLevels } = classOffer;
+  const list = [...offered].sort((a, b) => a.name.localeCompare(b.name));
+  openDetail(classLevels.length ? `Add level ${classLevels.length + 1}` : 'Choose a class', `<input type="search" class="pick-search" placeholder="Search classes by name" autocomplete="off" aria-label="Search classes">
+    <div class="pick-column">${list.map(c => `<button type="button" data-class-open="${esc(c.id)}" data-name="${esc(c.name.toLowerCase())}"
+      ${(!classLevels.length && c.category === 'prestige') ? ' class="muted"' : ''}><b>${esc(c.name)}</b><small>${classLine(c, classLevels)}</small></button>`).join('')}</div>
+    <p class="hint pick-none" hidden>No class by that name.</p>
+    <p class="hint">Tap a class to read it and add a level. Not here? Make your own:</p>`,
+  [{ label: 'Make a custom class', run: () => { ccDraft = freshClass(); classCustomOpen = true; render(); $('class-custom-wrap').scrollIntoView({ block: 'start' }); } }]);
+  const body = $('detail-body');
+  body.querySelector('.pick-search').addEventListener('input', e => filterPicks(body, e.target.value));
+  body.querySelector('.pick-column').addEventListener('click', e => { const b = e.target.closest('[data-class-open]'); if (b) popClass(b.dataset.classOpen); });
+}
+// Hides the rows of a popup's pick list whose name doesn't contain the search words.
+function filterPicks(body, text) {
+  const q = text.trim().toLowerCase();
+  let shown = 0;
+  for (const b of body.querySelectorAll('.pick-column [data-name]')) { b.hidden = !!q && !b.dataset.name.includes(q); shown += !b.hidden; }
+  body.querySelector('.pick-none').hidden = shown > 0;
 }
 function renderClassCustom() {
   ccDraft ??= freshClass();
@@ -4959,14 +4979,7 @@ function renderClassCustom() {
       <button type="button" data-cc-cancel>Cancel</button></div></div>`;
 }
 function initClassAdd() {
-  $('class-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-class-group], [data-class-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-class-custom')) { classCustomOpen = !classCustomOpen; classGroup = ''; }
-    else { classCustomOpen = false; classGroup = classGroup === b.dataset.classGroup ? '' : b.dataset.classGroup; }
-    render();
-  });
-  $('class-add-list').addEventListener('click', e => { const b = e.target.closest('[data-class-open]'); if (b) popClass(b.dataset.classOpen); });
+  $('class-add-buttons').addEventListener('click', e => { if (e.target.closest('[data-class-choose]')) popClassPicker(); });
   const box = $('class-custom-wrap');
   box.addEventListener('input', e => { const k = e.target.dataset.cc; if (k === 'name' || k === 'summary') ccDraft[k] = e.target.value; });
   box.addEventListener('change', e => {
@@ -5007,7 +5020,7 @@ function initClassAdd() {
     const isNew = !def.id;
     if (isNew) def.id = `cc-${Date.now().toString(36)}`;
     update({ customClasses: isNew ? [...state.customClasses, def] : state.customClasses.map(x => (x.id === def.id ? def : x)) });
-    ccDraft = freshClass(); classCustomOpen = false; classGroup = 'custom'; render();
+    ccDraft = freshClass(); classCustomOpen = false; render();
     if (isNew) popClass(def.id);
   });
 }
