@@ -2449,6 +2449,14 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Custom classes.
+{
+  const { babAt, saveAt, customClassRecord, tidyCustomClasses } = await import('./custom-classes.js');
+  check('custom class: full BAB at 11 is +11/+6/+1, three-quarters at 8 is +6/+1, half at 4 is +2', [babAt('full', 11).join('/'), babAt('medium', 8).join('/'), babAt('half', 4).join('/')].join(' | '), '11/6/1 | 6/1 | 2');
+  check('saves: good at 5 is +4, poor at 5 is +1', [saveAt(true, 5), saveAt(false, 5)].join(), '4,1');
+  const r = customClassRecord(tidyCustomClasses([{ id: 'cc-x', name: 'Spellblade', hitDie: 10, bab: 'full', fort: true, features: [{ level: 2, name: 'Arcane strike', text: 'x' }] }])[0]);
+  check('custom class record: d10, 20 levels, its feature at 2nd', [r.hit_die, r.progression.length, r.progression[1].special.join(), r.category].join(), 'd10,20,Arcane strike,custom');
+}
 // The Craft tab.
 {
   const { craftingAvailable } = await import('./crafting.js');

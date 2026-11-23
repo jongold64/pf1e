@@ -35,6 +35,7 @@ import { tidyCustomSpells, customSpellRecord } from './custom-spells.js';
 import { tidyCustomArmor, customArmorRecord } from './custom-armor.js';
 import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from './custom-feats.js';
 import { tidyCustomSkills } from './custom-skills.js';
+import { BAB_KINDS, customClassRecord, tidyCustomClasses } from './custom-classes.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -86,7 +87,7 @@ import { renderManeuvers, initManeuvers } from './tab-maneuvers.js';
 
 const RACE_GROUPS = [['core', 'Core'], ['featured', 'Featured'], ['uncommon', 'Uncommon'], ['other', 'Other']];
 const CLASS_GROUPS = [['core', 'Core'], ['base', 'Base'], ['hybrid', 'Hybrid'], ['occult', 'Occult'], ['unchained', 'Unchained'],
-                      ['alternate', 'Alternate'], ['prestige', 'Prestige'], ['third-party', 'Third-party']];
+                      ['alternate', 'Alternate'], ['prestige', 'Prestige'], ['third-party', 'Third-party'], ['custom', 'My custom classes']];
 const TABS = ['character', 'abilities', 'classes', 'feats', 'skills', 'spells', 'magic-items', 'craft', 'armor', 'weapons', 'equipment', 'build', 'guide'];
 
 // Everything loaded from data/. Spells and magic items are big, so they load the first time they're needed.
@@ -136,6 +137,7 @@ const state = {
   buffer: 0,                 // points in a kineticist's internal buffer (6th level); they stay until spent
   blastPlan: { form: '', substance: '', meta: [], gather: 0, focus: 1 }, // the kineticist's infusions and metakinesis on her next blast (burn.js blastPlan)
   metamagic: {},             // metamagic applied to a spell when cast: { [spell id]: { intensified: true } } (Character tab)
+  customClasses: [],         // custom classes (Classes tab, Custom): custom-classes.js
   customSkills: [],          // custom skills (Skills tab, Custom): custom-skills.js
   customFeats: [],           // custom feats' definitions (Feats tab, Custom): custom-feats.js
   customArmor: [],           // custom armor and shields' definitions (Armor tab, Custom): custom-armor.js
@@ -490,6 +492,9 @@ function load(saved) {
     if (!(Number.isInteger(state[k]) && state[k] >= 0 && state[k] <= 5)) state[k] = 0;
   }
   // Classes: older saves have one class and a level. The first level can't be a prestige class.
+  // Custom classes join the class data first, so their levels stay.
+  state.customClasses = tidyCustomClasses(state.customClasses);
+  syncCustomClasses();
   const byId = new Map(data.classes.map(c => [c.id, c]));
   const firstBase = id => (byId.has(id) && byId.get(id).category !== 'prestige' ? id : data.classes[0].id);
   let levels = Array.isArray(state.classLevels) ? state.classLevels.filter(id => byId.has(id)).slice(0, 20) : [];
@@ -2217,6 +2222,7 @@ function initTabSearches() {
   live('feat-tab-search-form', 'feat-tab-search', renderFeatTabSearch);
   initFeatAdd();
   initSkillFilters();
+  initClassAdd();
   $('feat-tab-results').addEventListener('click', e => {
     const btn = e.target.closest('[data-feat-result]');
     if (btn) openFeatForSlots(btn.dataset.featResult);
@@ -2590,7 +2596,15 @@ function syncCustomFeats() {
 // What a custom feat's bonus can be on: the custom effect targets and each skill.
 const FEAT_BONUS_TARGETS = TARGETS;
 
+// Custom classes go into the class data too.
+function syncCustomClasses() {
+  if (!Array.isArray(data.classes)) return;
+  for (let i = data.classes.length - 1; i >= 0; i--) if (data.classes[i].custom) data.classes.splice(i, 1);
+  for (const d of state.customClasses || []) data.classes.push(customClassRecord(d));
+}
+
 function computeView() {
+  syncCustomClasses();
   setCustomSkills(state.customSkills || []);
   syncCustomWeapons();
   syncCustomSpells();
@@ -2885,6 +2899,13 @@ function computeView() {
 }
 
 // A prestige class's requirements for the character as it was before taking it (ctx from view.contextAt).
+// A prestige class's requirements: as they were when it was first taken, or, not taken yet, as the character is now.
+function prestigeNow(c) {
+  if (c.category !== 'prestige') return null;
+  if (view.requirements.has(c.id)) return view.requirements.get(c.id);
+  const lv = view.classLevels;
+  return prestigeCheck(c, lv, view.race, lv.length ? view.contextAt(lv.length) : null);
+}
 function prestigeCheck(prestige, before, race, ctx) {
   const counts = classCounts(before);
   if (!counts.length) return { status: 'unmet', parts: [{ status: 'unmet', why: 'Needs a level in another class first' }] };
@@ -2984,7 +3005,7 @@ function popClass(id) {
   const c = data.classes.find(x => x.id === id);
   if (!c) return;
   const mine = view.counts.find(e => e.cls.id === id)?.level || 0;
-  const req = view.requirements.get(id);
+  const req = prestigeNow(c);
   const reqHtml = req ? `<h3>Requirements ${STATUS_ICON[req.status]} ${esc(STATUS_WORD[req.status])}</h3>
       <ul class="prereqs">${req.parts.map(x => `<li>${STATUS_ICON[x.status]} ${esc(x.why)}</li>`).join('')}</ul>`
     : c.category === 'prestige' && c.requirements ? `<h3>Requirements</h3>${paragraphs(Array.isArray(c.requirements) ? c.requirements.map(r => r.text || r).join('\n\n') : String(c.requirements))}` : '';
@@ -3002,11 +3023,18 @@ function popClass(id) {
     <h3>Level table</h3>
     <div class="table-scroll"><table class="skill-why class-table"><thead><tr><th>Level</th><th>Base attack</th><th>Fort</th><th>Ref</th><th>Will</th><th>Special</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-    ${mine ? '<p class="hint">Your levels are shaded. Tap a feature in the class\u2019s section to read it.</p>' : ''}`,
+    ${mine ? '<p class="hint">Your levels are shaded. Tap a feature in the class\u2019s section to read it.</p>' : ''}
+    ${c.custom && c.features.length ? `<h3>Features</h3>${c.features.map(f => `<p><b>${esc(f.name)}</b> (level ${c.progression.find(r => r.special.includes(f.name))?.level || '?'}) ${esc(f.text === f.name ? '' : f.text)}</p>`).join('')}` : ''}`,
     [...(total < 20 ? [{ label: `Add a level of ${c.name}`, primary: true, run: () => update({ classLevels: [...state.classLevels, id] }) }] : []),
      ...(mine && total > 1 ? [{ label: `Remove a ${c.name} level`, run: () => {
        const i = state.classLevels.lastIndexOf(id);
        update({ classLevels: state.classLevels.filter((_, j) => j !== i), favoredPicks: state.favoredPicks.filter((_, j) => j !== i) });
+     } }] : []),
+     ...(c.custom ? [{ label: 'Change it', run: () => {
+       const d = state.customClasses.find(x => x.id === id);
+       if (!d) return;
+       ccDraft = structuredClone(d); classCustomOpen = true; classGroup = ''; showTab('classes'); render();
+       $('class-add-buttons').scrollIntoView({ block: 'start' });
      } }] : [])]);
 }
 
@@ -3908,6 +3936,7 @@ function renderClasses(view) {
     sel.value = view.favoredPicks[Number(sel.dataset.favoredIndex)];
   });
   $('remove-all-levels').disabled = !classLevels.length;
+  renderClassAdd(offered, classLevels);
   // Add a level of: any class, or only ones that can be taken at 1st level when there are none yet.
   const addSel = $('add-level-class');
   const keep = addSel.value || classLevels.at(-1)?.id || '';
@@ -4615,6 +4644,110 @@ function renderSkills(race, classes, scores, featNames) {
       <td class="total">${signed(t.total)}${rollButton({ title: `${name} check${t.usable ? '' : ' (untrained)'}`, check: name, plain: true, groups: [{ attacks: [t.total] }] })}${details(name)}</td>
     </tr>`;
   }).join('');
+}
+
+// Classes tab: the Add a level buttons (a kind of class, then its classes; tap one to read it and add a level) and the
+// Custom class builder.
+let classGroup = '';
+let classCustomOpen = false;
+let ccDraft = null;
+const freshClass = () => ({ id: '', name: '', hitDie: 8, bab: 'medium', fort: true, ref: false, will: false, skillRanks: 4, classSkills: [], features: [], summary: '' });
+function renderClassAdd(offered, classLevels) {
+  const groups = CLASS_GROUPS.filter(([g]) => offered.some(c => (c.category || 'base') === g));
+  $('class-add-buttons').innerHTML = groups.map(([g, l]) => `<button type="button" data-class-group="${g}" aria-pressed="${!classCustomOpen && classGroup === g}">${esc(l)}</button>`).join('')
+    + `<button type="button" class="add-custom" data-class-custom aria-pressed="${classCustomOpen}">Custom</button>`;
+  const list = classGroup && !classCustomOpen ? offered.filter(c => (c.category || 'base') === classGroup).sort((a, b) => a.name.localeCompare(b.name)) : [];
+  $('class-add-list').hidden = !list.length;
+  $('class-add-list').innerHTML = list.map(c => {
+    const req = prestigeNow(c);
+    const blocked = (!classLevels.length && c.category === 'prestige') || classLevels.length >= 20;
+    return `<button type="button" data-class-open="${esc(c.id)}"${blocked ? ' class="muted"' : ''}>${req ? `${STATUS_ICON[req.status]} ` : ''}${esc(c.name)}</button>`;
+  }).join('');
+  $('class-custom-wrap').hidden = !classCustomOpen;
+  if (classCustomOpen) renderClassCustom();
+}
+function renderClassCustom() {
+  ccDraft ??= freshClass();
+  const d = ccDraft;
+  const opt = (list, v) => list.map(([k, l]) => `<option value="${esc(String(k))}"${String(k) === String(v) ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  const skillNames = SKILLS.filter(s => !s.book || bookOn(s.book)).map(s => s.name);
+  $('class-custom-wrap').innerHTML = `<div class="custom-builder">
+    <div class="custom-grid">
+      <label>Name <input type="text" data-cc="name" value="${esc(d.name)}" placeholder="e.g. Spellblade" maxlength="40"></label>
+      <label>Hit die <select data-cc="hitDie">${opt([[6, 'd6'], [8, 'd8'], [10, 'd10'], [12, 'd12']], d.hitDie)}</select></label>
+      <label>Base attack <select data-cc="bab">${opt(BAB_KINDS, d.bab)}</select></label>
+      <label>Skill ranks a level <select data-cc="skillRanks">${opt([[2, '2'], [4, '4'], [6, '6'], [8, '8']], d.skillRanks)} </select></label>
+    </div>
+    <div class="custom-grid"><span>Good saves:</span>
+      ${['fort', 'ref', 'will'].map(k => `<label class="check-row"><input type="checkbox" data-cc="${k}"${d[k] ? ' checked' : ''}> ${{ fort: 'Fortitude', ref: 'Reflex', will: 'Will' }[k]}</label>`).join('')}</div>
+    <details><summary>Class skills (${d.classSkills.length})</summary><div class="lang-list">${skillNames.map(n => `<label class="check-row"><input type="checkbox" data-cc-skill="${esc(n)}"${d.classSkills.includes(n) ? ' checked' : ''}> ${esc(n)}</label>`).join('')}</div></details>
+    <h3>Class features</h3>
+    ${d.features.length ? `<ul class="plain-list custom-powers">${d.features.map((f, i) => `<li><span>Level ${f.level}: <b>${esc(f.name)}</b>${f.text ? ` <small class="muted">${esc(f.text.slice(0, 80))}</small>` : ''}</span>
+      <button type="button" class="link" data-cc-feature-remove="${i}">remove</button></li>`).join('')}</ul>` : '<p class="hint">None yet.</p>'}
+    <div class="custom-add custom-grid">
+      <label>Level <select id="cc-f-level">${opt(Array.from({ length: 20 }, (_, i) => [i + 1, String(i + 1)]), 1)}</select></label>
+      <label>Feature <input type="text" id="cc-f-name" placeholder="e.g. Arcane strike" maxlength="60"></label>
+      <label>What it does <input type="text" id="cc-f-text" placeholder="Short rules text" maxlength="1000"></label>
+      <button type="button" data-cc-feature-add>Add this feature</button></div>
+    <label>About the class <textarea data-cc="summary" rows="2" maxlength="1000">${esc(d.summary)}</textarea></label>
+    <p class="hint">It takes levels like any class (hit points, base attack, saves, skill ranks, class skills); its features are listed at their levels with their text. No spellcasting.</p>
+    <div class="line-controls"><button type="button" class="primary" data-cc-save>${d.id ? 'Save changes' : 'Add it'}</button>
+      <button type="button" data-cc-clear>${d.id ? 'Stop changing it' : 'Clear'}</button>
+      ${d.id ? '<button type="button" data-cc-delete>Delete it</button>' : ''}
+      <button type="button" data-cc-cancel>Cancel</button></div></div>`;
+}
+function initClassAdd() {
+  $('class-add-buttons').addEventListener('click', e => {
+    const b = e.target.closest('[data-class-group], [data-class-custom]');
+    if (!b) return;
+    if (b.hasAttribute('data-class-custom')) { classCustomOpen = !classCustomOpen; classGroup = ''; }
+    else { classCustomOpen = false; classGroup = classGroup === b.dataset.classGroup ? '' : b.dataset.classGroup; }
+    render();
+  });
+  $('class-add-list').addEventListener('click', e => { const b = e.target.closest('[data-class-open]'); if (b) popClass(b.dataset.classOpen); });
+  const box = $('class-custom-wrap');
+  box.addEventListener('input', e => { const k = e.target.dataset.cc; if (k === 'name' || k === 'summary') ccDraft[k] = e.target.value; });
+  box.addEventListener('change', e => {
+    const k = e.target.dataset.cc;
+    if (['hitDie', 'skillRanks'].includes(k)) ccDraft[k] = Number(e.target.value);
+    else if (k === 'bab') ccDraft.bab = e.target.value;
+    else if (['fort', 'ref', 'will'].includes(k)) ccDraft[k] = e.target.checked;
+    else if (e.target.dataset.ccSkill) {
+      const n = e.target.dataset.ccSkill;
+      ccDraft.classSkills = e.target.checked ? [...new Set([...ccDraft.classSkills, n])] : ccDraft.classSkills.filter(x => x !== n);
+      const sum = box.querySelector('details summary'); if (sum) sum.textContent = `Class skills (${ccDraft.classSkills.length})`;
+    }
+  });
+  box.addEventListener('click', e => {
+    if (e.target.closest('[data-cc-feature-add]')) {
+      const name = box.querySelector('#cc-f-name').value.trim();
+      if (!name) return;
+      ccDraft.features.push({ level: Number(box.querySelector('#cc-f-level').value), name, text: box.querySelector('#cc-f-text').value.trim() });
+      ccDraft.features.sort((a, b) => a.level - b.level);
+      renderClassCustom();
+      return;
+    }
+    const fr = e.target.closest('[data-cc-feature-remove]');
+    if (fr) { ccDraft.features.splice(Number(fr.dataset.ccFeatureRemove), 1); renderClassCustom(); return; }
+    if (e.target.closest('[data-cc-clear]')) { ccDraft = freshClass(); renderClassCustom(); return; }
+    if (e.target.closest('[data-cc-cancel]')) { ccDraft = freshClass(); classCustomOpen = false; render(); return; }
+    if (e.target.closest('[data-cc-delete]')) {
+      const id = ccDraft.id;
+      const n = state.classLevels.filter(x => x === id).length;
+      if (!confirm(`Delete ${ccDraft.name || 'this class'}${n ? ` (and your ${n} level${n === 1 ? '' : 's'} of it)` : ''}?`)) return;
+      const keep = state.classLevels.map((x, i) => [x, i]).filter(([x]) => x !== id);
+      update({ customClasses: state.customClasses.filter(x => x.id !== id), classLevels: keep.map(([x]) => x), favoredPicks: keep.map(([, i]) => state.favoredPicks[i]).filter(Boolean) });
+      ccDraft = freshClass(); classCustomOpen = false; render();
+      return;
+    }
+    if (!e.target.closest('[data-cc-save]')) return;
+    const def = { ...ccDraft, name: ccDraft.name.trim() || 'Custom class' };
+    const isNew = !def.id;
+    if (isNew) def.id = `cc-${Date.now().toString(36)}`;
+    update({ customClasses: isNew ? [...state.customClasses, def] : state.customClasses.map(x => (x.id === def.id ? def : x)) });
+    ccDraft = freshClass(); classCustomOpen = false; classGroup = 'custom'; render();
+    if (isNew) popClass(def.id);
+  });
 }
 
 // Skills tab: filter buttons and the Custom skill builder.

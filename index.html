@@ -154,7 +154,12 @@
         <div class="level-rows-head"><h3>Your levels</h3><button type="button" id="remove-all-levels">Remove all</button></div>
         <ol id="level-rows" class="level-rows"></ol>
         <p id="level-legend" class="hint how-legend"></p>
-        <div class="slot-buttons add-level-row">
+        <h3>Add a level</h3>
+        <p class="hint">Choose a kind of class, then tap a class to read it and add a level of it. <b>Custom</b> makes a homebrew class.</p>
+        <div id="class-add-buttons" class="add-buttons"></div>
+        <div id="class-add-list" class="add-buttons class-pick" hidden></div>
+        <div id="class-custom-wrap" hidden></div>
+        <div class="slot-buttons add-level-row" hidden>
           <label>Add a level of <select id="add-level-class" aria-label="Class for the new level"></select></label>
           <button type="button" id="add-level" class="primary">Add</button>
           <button type="button" id="add-level-details" class="skill-details q-details" aria-label="The chosen class in a popup" title="Details">?</button>
@@ -820,7 +825,14 @@
               features it gives (tap one to read what it does; struck-out ones were replaced by an archetype, coloured ones come
               from it), its <b>?</b> and <b>Remove</b> (the levels after it move down one; a prestige class can't become your 1st level). <b>Remove all</b>
               takes away every level. A new character, or anyone opening the link for the first time, starts with no class.
-              Use <b>Add a level of</b> under the list to add one (multiclassing works; the first level can't be a prestige class).
+              Use <b>Add a level</b> under the list to add one (multiclassing works; the first level can't be a prestige class).</li>
+            <li><b>Add a level</b>: a button for each kind of class (Core, Base, Hybrid, Occult, Unchained, Alternate, Prestige,
+              Third-party when it's on, and My custom classes once you've made one). Tap one to see its classes as buttons;
+              prestige classes show ✓ or ✗ for whether you meet their requirements now. Tap a class to read it, then
+              <b>Add a level of</b> it. <b>Custom</b> makes a homebrew class: name, hit die, base attack (full, three-quarters or
+              half), good saves, skill ranks a level, class skills and features at each level. It takes levels like any class
+              (hit points, base attack, saves, skills); it has no spellcasting. To change or delete one, open My custom
+              classes, tap it and use <b>Change it</b> in its details (deleting it removes your levels of it).
               An <b>Also</b> row above the levels lists each class's features the level table doesn't name (a cleric's spontaneous
               casting, proficiencies, bonus languages...).</li>
             <li>Each class's section (its deity, domains, archetypes, bloodline, school and other choices) stays open so you can
@@ -829,7 +841,7 @@
               class bonus, feats, traits, ability increases), add or remove a level of it, or change it to another class (its levels
               stay). In your favored class, choose +1 hit point, +1 skill rank or your race's option at each level. Race, ability
               scores, feats, traits and gear stay when classes are removed.</li>
-            <li><b>Details</b> on a class line, on a class's section, or beside <b>Add a level of</b> (for the class chosen there)
+            <li><b>Details</b> on a class line, on a class's section or a class button under <b>Add a level</b>
               shows the class: book, hit die, skill ranks, alignment, starting wealth (with a <b>Max starting gold</b> box for this character), class skills, requirements for a prestige class, and its
               level table (base attack, saves and features) with your levels marked, with Add a level and Remove a level.
               <b>Details</b> beside <b>Favored class</b> shows what your favored class bonuses add up to and every favored class
