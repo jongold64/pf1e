@@ -4927,19 +4927,23 @@ function classLine(c, classLevels) {
     CLASS_KINDS[c.category || 'base'] || '', have ? `you have ${have} level${have > 1 ? 's' : ''}` : ''].filter(Boolean).map(esc).join(' · ')
     + (req ? ` · ${STATUS_ICON[req.status]} ${req.status === 'met' ? 'requirements met' : !classLevels.length ? 'not at 1st level' : req.status === 'unknown' ? 'some requirements can’t be checked' : 'requirements not met'}` : '');
 }
-// The Add a level popup: a search box, every class you can take A to Z, and Make a custom class.
+// The Add a level popup: a search box, the classes you have first (in the order taken), then every other class you can
+// take A to Z, and Make a custom class.
 function popClassPicker() {
   const { offered, classLevels } = classOffer;
-  const list = [...offered].sort((a, b) => a.name.localeCompare(b.name));
+  const mine = [...new Set(classLevels.map(x => x?.id ?? x))].map(id => offered.find(c => c.id === id)).filter(Boolean);
+  const rest = offered.filter(c => !mine.includes(c)).sort((a, b) => a.name.localeCompare(b.name));
+  const row = c => `<button type="button" data-class-open="${esc(c.id)}" data-name="${esc(c.name.toLowerCase())}"
+      ${(!classLevels.length && c.category === 'prestige') ? ' class="muted"' : ''}><b>${esc(c.name)}</b><small>${classLine(c, classLevels)}</small></button>`;
   openDetail(classLevels.length ? `Add level ${classLevels.length + 1}` : 'Choose a class', `<input type="search" class="pick-search" placeholder="Search classes by name" autocomplete="off" aria-label="Search classes">
-    <div class="pick-column">${list.map(c => `<button type="button" data-class-open="${esc(c.id)}" data-name="${esc(c.name.toLowerCase())}"
-      ${(!classLevels.length && c.category === 'prestige') ? ' class="muted"' : ''}><b>${esc(c.name)}</b><small>${classLine(c, classLevels)}</small></button>`).join('')}</div>
+    ${mine.length ? `<h3 class="pick-heading">Your class${mine.length > 1 ? 'es' : ''}</h3><div class="pick-column">${mine.map(row).join('')}</div>
+      <h3 class="pick-heading">All classes</h3>` : ''}<div class="pick-column">${rest.map(row).join('')}</div>
     <p class="hint pick-none" hidden>No class by that name.</p>
     <p class="hint">Tap a class to read it and add a level. Not here? Make your own:</p>`,
   [{ label: 'Make a custom class', run: () => { ccDraft = freshClass(); classCustomOpen = true; render(); $('class-custom-wrap').scrollIntoView({ block: 'start' }); } }]);
   const body = $('detail-body');
   body.querySelector('.pick-search').addEventListener('input', e => filterPicks(body, e.target.value));
-  body.querySelector('.pick-column').addEventListener('click', e => { const b = e.target.closest('[data-class-open]'); if (b) popClass(b.dataset.classOpen); });
+  for (const col of body.querySelectorAll('.pick-column')) col.addEventListener('click', e => { const b = e.target.closest('[data-class-open]'); if (b) popClass(b.dataset.classOpen); });
 }
 // Hides the rows of a popup's pick list whose name doesn't contain the search words.
 function filterPicks(body, text) {
@@ -4947,6 +4951,8 @@ function filterPicks(body, text) {
   let shown = 0;
   for (const b of body.querySelectorAll('.pick-column [data-name]')) { b.hidden = !!q && !b.dataset.name.includes(q); shown += !b.hidden; }
   body.querySelector('.pick-none').hidden = shown > 0;
+  // A heading goes with the list after it: hidden when none of that list's rows are shown.
+  for (const h of body.querySelectorAll('.pick-heading')) h.hidden = ![...h.nextElementSibling.children].some(b => !b.hidden);
 }
 function renderClassCustom() {
   ccDraft ??= freshClass();

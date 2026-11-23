@@ -1385,3 +1385,5 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 #detail-body .pick-column small { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
 #detail-body .pick-column button[aria-pressed="true"] small { color: inherit; }
 #detail-body .pick-column button.muted b { color: var(--muted); }
+#detail-body .pick-heading { margin: 12px 0 6px; font-size: 0.95rem; color: var(--muted); }
+#detail-body .pick-heading:first-of-type { margin-top: 0; }
