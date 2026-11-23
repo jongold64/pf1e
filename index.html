@@ -259,24 +259,13 @@
         <h2>Spells per day</h2>
         <div id="spells-tables"></div>
       </section>
+      <!-- Add a spell: the class's list in a popup (by level, A to Z), with a search box; the Custom spell builder below it. -->
       <section class="card wide" id="spell-add-card">
-        <h2>Add spells</h2>
-        <p class="hint">Choose a spell level to see just that part of your class's list below, or <b>Custom</b> for a spell the list doesn't have.</p>
+        <h2 id="spell-add-title">Add spells</h2>
+        <p class="hint"><b>Add a spell</b> lists your class's spells by level, A to Z; tap one to read it and add it. You can
+          also make a homebrew spell there.</p>
         <div id="spell-add-buttons" class="add-buttons"></div>
         <div id="spell-custom-wrap" hidden></div>
-      </section>
-      <section class="card wide" id="spell-list-card">
-        <h2 id="spell-list-title">Spell list</h2>
-        <label id="spell-class-row" class="row" hidden>Spell list for <select id="spell-class"></select></label>
-        <form class="search-row tab-search" id="spell-filter-form" role="search">
-          <input id="spell-filter" type="search" autocomplete="off" placeholder="Search spells by name" aria-label="Search spells">
-          <button type="submit" class="primary">Search</button>
-        </form>
-        <label class="check-row"><input type="checkbox" id="spell-all"> Search all spells, not just my class's list</label>
-        <div class="browser">
-          <div class="browser-list" id="spell-list" aria-label="Spells"></div>
-          <aside class="browser-panel" id="spell-panel" aria-live="polite"></aside>
-        </div>
       </section>
     </main>
 
@@ -1162,9 +1151,12 @@
           <summary>Spells tab</summary>
           <ul>
             <li>In <b>My spells</b>, each spell is one line (its main numbers with Roll buttons); <b>Details</b> opens the rest.</li>
-            <li><b>Add spells</b>: a button for each spell level on your class's list (Cantrips, Level 1...) shows just that level in the
-              list below (tap again, or <b>Show every level</b>, for all; a search looks through every level). <b>Custom</b> makes a spell
-              the list doesn't have: name, level, school, casting time, range, duration, an attack roll (melee touch or a ray), a
+            <li><b>Add a spell</b> opens your class's spell list in one column, by spell level (cantrips first) and A to Z within each
+              level, with a search box; levels you can't cast yet say <i>not yet</i>, and spells you have are ticked. Under each name:
+              its school (and prohibited, for a wizard's opposition school). With several spellcasting classes, choose whose list at
+              the top. <b>Every spell</b> lists all spells A to Z instead (150 at a time: search to narrow it). Tap a spell to read it
+              and <b>Add to my spells</b> (or Remove); you go back to the list to add the next one, or <b>Back to the list</b>.
+              <b>Make a custom spell</b> at the bottom makes a spell the list doesn't have: name, level, school, casting time, range, duration, an attack roll (melee touch or a ray), a
               saving throw, spell resistance, and damage dice (per caster level, per two levels, or a set number, with a cap and a
               type). It goes on your casting classes' lists and into My spells, and its attack, save DC, damage (Intensified Spell
               and spellstrike too) are worked out like any spell's; <b>Change this custom spell</b> in its details changes or deletes it.</li>

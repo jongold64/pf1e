@@ -8,7 +8,6 @@ import { SCHOOLS as CS_SCHOOLS, DIE_SIZES as CS_DIE_SIZES, SCALINGS as CS_SCALIN
 import { CASTING_ABILITY } from './rules.js';
 import { rollButton } from './roll-ui.js';
 
-let selectedId = null;
 // The numbers behind each spell line shown in My spells, by key, for its Details popup.
 const lineDetails = new Map();
 let listClassId = null;  // which class's spell list is shown, for characters with several
@@ -60,21 +59,13 @@ function spellDetails(app, spell, cls, withButton = true) {
     ${paragraphs(spell.description)}`;
 }
 
-function renderPanel(app, view) {
-  const spell = app.data.spells?.find(s => s.id === selectedId);
-  $('spell-panel').innerHTML = spell ? spellDetails(app, spell, listClass(app, view).cls)
-    : '<p class="hint">Choose a spell to see its details.</p>';
-  document.querySelectorAll('#spell-list [data-spell]').forEach(b =>
-    b.setAttribute('aria-current', String(b.dataset.spell === selectedId)));
-}
-
-// A spell button in a list; spells the character has are marked with a tick.
-function spellButton(app, s) {
+// One row of the Add a spell list: the name, and under it ✓ in my spells, the school, prohibited, not yet (a level you
+// can't cast yet) or the classes' levels (when every spell is listed).
+function spellRow(app, s, note = '') {
   const mine = app.state.spells.includes(s.id);
   const banned = (app.prohibitedSchools?.('wizard') || []).some(x => x.toLowerCase() === String(s.school || '').toLowerCase());
-  return `<li class="with-details"><button type="button" data-spell="${esc(s.id)}"${mine ? ' class="mine"' : ''}>` +
-    `${mine ? '<span class="status met" title="In my spells">✓</span>' : ''}${esc(s.name)}<small>${esc(s.school || '')}${banned ? ' · prohibited' : ''}</small></button>` +
-    `<button type="button" class="skill-details q-details" data-spell-pop="${esc(s.id)}" aria-label="${esc(s.name)} in a popup" title="Details">?</button></li>`;
+  const line = [mine ? 'in my spells' : '', s.school || '', banned ? 'prohibited' : '', note].filter(Boolean).join(' · ');
+  return `<button type="button" data-spell-pick="${esc(s.id)}"${mine ? ' aria-pressed="true"' : ''}><b>${mine ? '<span class="status met">✓</span> ' : ''}${esc(s.name)}</b><small>${esc(line)}</small></button>`;
 }
 
 // The character's chosen spells, grouped by spell level for their class. Spontaneous casters see how many
@@ -235,15 +226,83 @@ function popSpellLevel(app, lv) {
 }
 
 // The spell in a popup (the list's Details button): everything the side panel shows, with Add or Remove as a button.
-export function popSpell(app, id) {
+// A spell in a popup with Add to my spells (or Remove) and, for a custom spell, Change. fromList: opened from the Add a
+// spell list, so Add and Remove go back to the list (to add the next one) and Back to the list returns to it.
+export function popSpell(app, id, fromList = false) {
   const spell = app.data.spells?.find(s => s.id === id);
   if (!spell) return;
   const { cls } = listClass(app, app.view);
   const mine = app.state.spells.includes(spell.id);
   const onList = spell.levels[cls.id] !== undefined;
-  const actions = mine ? [{ label: 'Remove from my spells', run: () => removeSpell(app, spell.id) }]
-    : onList ? [{ label: 'Add to my spells', primary: true, run: () => addSpell(app, spell.id) }] : [];
+  const back = () => { if (fromList) popSpellPicker(app, true); };
+  const actions = [...(mine ? [{ label: 'Remove from my spells', run: () => { removeSpell(app, spell.id); back(); } }]
+    : onList ? [{ label: 'Add to my spells', primary: true, run: () => { addSpell(app, spell.id); back(); } }] : []),
+    ...(spell.custom ? [{ label: 'Change this custom spell', run: () => editCustomSpell(app, spell.id) }] : []),
+    ...(fromList ? [{ label: 'Back to the list', run: back }] : [])];
   app.openDetail(spell.name, spellDetails(app, spell, cls, false), actions);
+}
+
+// Add a spell: the class's list in one column, by spell level (cantrips first) and A to Z within each, with a search
+// box; levels you can't cast yet say so. "Every spell" lists all spells A to Z instead (search to narrow it). A
+// character with several spellcasting classes picks whose list. Make a custom spell is at the bottom.
+const pick = { q: '', all: false, scroll: 0 };
+const ALL_LIMIT = 150;
+function spellPickHtml(app) {
+  const { cls, maxLevel } = listClass(app, app.view);
+  const spells = app.data.spells;
+  const onList = spells.filter(s => s.levels[cls.id] !== undefined);
+  const q = pick.q.trim().toLowerCase();
+  const all = pick.all || !onList.length;
+  const has = s => !q || s.name.toLowerCase().includes(q);
+  if (all) {
+    const hits = spells.filter(has).sort((a, b) => (q ? b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q) : 0) || a.name.localeCompare(b.name));
+    return `<p class="hint">${hits.length > ALL_LIMIT ? `Showing ${ALL_LIMIT} of ${hits.length.toLocaleString()} spells: search to narrow the list.` : `${hits.length} spell${hits.length === 1 ? '' : 's'}.`}
+        ${onList.length ? '' : `${esc(cls.name)}${cls.id ? 's don\u2019t have a spell list' : ''}: only spells on your list can be added.`}</p>
+      <div class="pick-column">${hits.slice(0, ALL_LIMIT).map(s => spellRow(app, s, levelText(app, s))).join('')}</div>`;
+  }
+  let html = '';
+  for (let lv = 0; lv <= 9; lv++) {
+    const list = onList.filter(s => s.levels[cls.id] === lv && has(s)).sort((a, b) => a.name.localeCompare(b.name));
+    if (!list.length) continue;
+    html += `<h3 class="pick-heading">${LEVEL_NAMES[lv]} <span class="count">${list.length}${lv > maxLevel ? ' · not yet' : ''}</span></h3>
+      <div class="pick-column${lv > maxLevel ? ' later' : ''}">${list.map(s => spellRow(app, s)).join('')}</div>`;
+  }
+  return html || '<p class="hint">No spells match.</p>';
+}
+export async function popSpellPicker(app, keepPlace = false) {
+  if (!app.data.spells) await app.loadSpells();
+  const { withList, cls } = listClass(app, app.view);
+  const onList = app.data.spells.some(s => s.levels[cls.id] !== undefined);
+  app.openDetail(onList ? `Add a ${cls.name.toLowerCase()} spell` : 'Spells', `
+    ${withList.length > 1 ? `<label class="row">Spell list for <select class="spell-pick-class">${withList.map(c => `<option value="${esc(c.id)}"${c.id === cls.id ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>` : ''}
+    <input type="search" class="pick-search" placeholder="Search spells by name" autocomplete="off" aria-label="Search spells" value="${esc(pick.q)}">
+    ${onList ? `<label class="check-row"><input type="checkbox" class="spell-pick-all"${pick.all ? ' checked' : ''}> Every spell, not just the ${esc(cls.name.toLowerCase())} list</label>` : ''}
+    <div class="spell-pick-list">${spellPickHtml(app)}</div>
+    <p class="hint">Tap a spell to read it and add it to My spells. Not here? Make your own:</p>`,
+  [{ label: 'Make a custom spell', run: () => { sDraft = freshSpell(); spellCustomOpen = true; renderSpellList(app, app.view); $('spell-add-card').scrollIntoView({ block: 'start' }); } }]);
+  const body = document.getElementById('detail-body');
+  const draw = () => { body.querySelector('.spell-pick-list').innerHTML = spellPickHtml(app); };
+  body.querySelector('.pick-search').addEventListener('input', e => { pick.q = e.target.value; draw(); });
+  body.querySelector('.spell-pick-all')?.addEventListener('change', e => { pick.all = e.target.checked; draw(); });
+  body.querySelector('.spell-pick-class')?.addEventListener('change', e => { listClassId = e.target.value; renderSpellList(app, app.view); popSpellPicker(app); });
+  const dlg = document.getElementById('detail-dialog');
+  // Back from a spell: the list where you left it.
+  dlg.scrollTop = keepPlace ? pick.scroll : 0;
+  body.querySelector('.spell-pick-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-spell-pick]');
+    if (!b) return;
+    pick.scroll = dlg.scrollTop;
+    popSpell(app, b.dataset.spellPick, true);
+  });
+}
+function editCustomSpell(app, id) {
+  const d = (app.state.customSpells || []).find(x => x.id === id);
+  if (!d) return;
+  sDraft = { ...freshSpell(), ...d };
+  spellCustomOpen = true;
+  app.showTab?.('spells');
+  renderSpellList(app, app.view);
+  $('spell-add-card').scrollIntoView({ block: 'start' });
 }
 
 function addSpell(app, id) {
@@ -285,17 +344,8 @@ function showLineDetails(app, key) {
 
 export function initSpellList(app) {
   initPrepared(app);
-  // Add spells: a level shows just that level (tap again for all); Custom opens the builder.
-  $('spell-add-buttons').addEventListener('click', e => {
-    const b = e.target.closest('[data-spell-level], [data-spell-custom]');
-    if (!b) return;
-    if (b.hasAttribute('data-spell-custom')) { spellCustomOpen = !spellCustomOpen; spellLevel = -1; renderSpellList(app, app.view); return; }
-    spellCustomOpen = false;
-    const lv = Number(b.dataset.spellLevel);
-    spellLevel = spellLevel === lv ? -1 : lv;
-    renderSpellList(app, app.view);
-    if (spellLevel >= 0) $('spell-list-card').scrollIntoView({ block: 'start' });
-  });
+  // Add a spell opens the list popup.
+  $('spell-add-buttons').addEventListener('click', e => { if (e.target.closest('[data-spell-choose]')) popSpellPicker(app); });
   const csBox = $('spell-custom-wrap');
   csBox.addEventListener('input', e => {
     const k = e.target.dataset.cs;
@@ -328,35 +378,12 @@ export function initSpellList(app) {
       def.id = `cs-${Date.now().toString(36)}`;
       app.update({ customSpells: [...list, def], spells: [...app.state.spells, def.id] });
     }
-    selectedId = def.id;
     sDraft = freshSpell();
+    spellCustomOpen = false;
     renderSpellList(app, app.view);
   });
-  $('spell-panel').addEventListener('click', e => {
-    const ed = e.target.closest('[data-cs-edit]');
-    if (!ed) return;
-    const d = (app.state.customSpells || []).find(x => x.id === ed.dataset.csEdit);
-    if (!d) return;
-    sDraft = { ...freshSpell(), ...d };
-    spellCustomOpen = true; spellLevel = -1;
-    renderSpellList(app, app.view);
-    $('spell-add-card').scrollIntoView({ block: 'start' });
-  });
-  $('spell-filter').addEventListener('input', () => renderSpellList(app, app.view));
-  $('spell-filter-form').addEventListener('submit', e => { e.preventDefault(); renderSpellList(app, app.view); });
-  $('spell-all').addEventListener('change', () => renderSpellList(app, app.view));
-  $('spell-class').addEventListener('change', e => { listClassId = e.target.value; renderSpellList(app, app.view); });
-  $('spell-list').addEventListener('click', e => {
-    if (e.target.closest('[data-spell-all-levels]')) { spellLevel = -1; renderSpellList(app, app.view); return; }
-    const pop = e.target.closest('[data-spell-pop]');
-    if (pop) { popSpell(app, pop.dataset.spellPop); return; }
-    const btn = e.target.closest('[data-spell]');
-    if (!btn) return;
-    selectedId = btn.dataset.spell;
-    renderPanel(app, app.view);
-  });
-  // Add/remove buttons in the side panel and in My spells (app.update re-renders the whole tab).
-  for (const el of [$('spell-panel'), $('my-spells')]) {
+  // Add/remove buttons in My spells (app.update re-renders the whole tab).
+  for (const el of [$('my-spells')]) {
     el.addEventListener('click', e => {
       const add = e.target.closest('[data-add-spell]');
       if (add) addSpell(app, add.dataset.addSpell);
@@ -482,20 +509,16 @@ function initPrepared(app) {
   });
 }
 
-// The Add spells card: a button for each spell level on the class's list (it shows just that level) and Custom.
-let spellLevel = -1;   // the level the list shows (-1: all)
+// The Add spells card: Add a spell (the list popup), and the Custom spell builder when it's open.
 let spellCustomOpen = false;
 let sDraft = null;     // the custom spell being made or changed
 const freshSpell = () => ({ id: '', name: '', level: 1, school: 'evocation', castingTime: '1 standard action', range: 'close (25 ft. + 5 ft./2 levels)',
   duration: 'instantaneous', attack: 'none', save: 'none', saveEffect: 'half', sr: true, dice: 'none', scaling: 'level', count: 1, max: 5, damageType: '', description: '' });
-function renderSpellButtons(onList) {
-  const levels = [...new Set(onList.map(s => s.levels[listClassNow]))].filter(lv => lv !== undefined).sort((a, b) => a - b);
-  $('spell-add-buttons').innerHTML = levels.map(lv => `<button type="button" data-spell-level="${lv}" aria-pressed="${!spellCustomOpen && spellLevel === lv}">${lv === 0 ? 'Cantrips' : `Level ${lv}`}</button>`).join('')
-    + `<button type="button" class="add-custom" data-spell-custom aria-pressed="${spellCustomOpen}">Custom</button>`;
+function renderSpellButtons(cls, onList) {
+  $('spell-add-buttons').innerHTML = `<button type="button" class="primary" data-spell-choose>${onList.length ? 'Add a spell' : 'Look up a spell'}</button>`;
   $('spell-custom-wrap').hidden = !spellCustomOpen;
   if (spellCustomOpen) renderSpellCustom();
 }
-let listClassNow = '';
 function renderSpellCustom() {
   sDraft ??= freshSpell();
   const d = sDraft;
@@ -532,62 +555,20 @@ function renderSpellCustom() {
 
 export async function renderSpellList(app, view) {
   if (!app.data.spells) {
-    $('spell-list').innerHTML = '<p class="hint">Loading spells…</p>';
+    $('spell-add-buttons').innerHTML = '<p class="hint">Loading spells…</p>';
     await app.loadSpells();
     view = app.view;  // the character may have changed while loading
   }
-  const { withList, cls, maxLevel } = listClass(app, view);
-  $('spell-class-row').hidden = withList.length < 2;
-  $('spell-class').innerHTML = withList.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
-  $('spell-class').value = cls.id;
+  const { cls } = listClass(app, view);
   renderMySpells(app, view);
   renderPrepared(app, view);
-  const all = app.data.spells;
-  const onList = all.filter(s => s.levels[cls.id] !== undefined);
-  listClassNow = cls.id;
-  renderSpellButtons(onList);
-  const filter = $('spell-filter').value.trim().toLowerCase();
-  // Classes without a spell list can still search every spell.
-  $('spell-all').closest('label').hidden = !onList.length;
-  const searchAll = $('spell-all').checked || !onList.length;
-  $('spell-list-title').textContent = onList.length ? `${cls.name} spells (${onList.length})` : 'Spells';
-
-  if (searchAll) {
-    if (filter.length < 2) {
-      $('spell-list').innerHTML = `<p class="hint">${onList.length ? '' : `${esc(cls.name)}s don't have a spell list. `}` +
-        `Type at least 2 letters to search all ${all.length.toLocaleString()} spells.</p>`;
-    } else {
-      const hits = all.filter(s => s.name.toLowerCase().includes(filter));
-      $('spell-list').innerHTML = hits.length ? `<section class="list-group">
-        <h3 class="list-heading">All spells <span class="count">${hits.length}</span></h3>
-        <ul class="pick-list">${hits.slice(0, 200).map(s => spellButton(app, s)).join('')}</ul>
-      </section>` : '<p class="hint">No spells match.</p>';
-    }
-    renderPanel(app, view);
-    return;
-  }
-
-  const groups = [];
-  for (let lv = 0; lv <= 9; lv++) {
-    // A level button shows only that level (a search still looks through every level).
-    if (spellLevel >= 0 && !filter && lv !== spellLevel) continue;
-    const spells = onList.filter(s => s.levels[cls.id] === lv && (!filter || s.name.toLowerCase().includes(filter)));
-    if (!spells.length) continue;
-    const later = lv > maxLevel;
-    groups.push(`<section class="list-group">
-      <h3 class="list-heading">${LEVEL_NAMES[lv]} <span class="count">${spells.length}${later ? ' · not yet' : ''}</span></h3>
-      <ul class="pick-list${later ? ' later' : ''}">${spells.map(s => spellButton(app, s)).join('')}</ul>
-    </section>`);
-  }
-  $('spell-list').innerHTML = (spellLevel >= 0 && !filter ? `<p class="hint">Showing ${spellLevel === 0 ? 'cantrips' : `level ${spellLevel}`} only. <button type="button" data-spell-all-levels>Show every level</button></p>` : '')
-    + (groups.join('') || '<p class="hint">No spells match.</p>');
-  renderPanel(app, view);
+  const onList = app.data.spells.filter(s => s.levels[cls.id] !== undefined);
+  $('spell-add-title').textContent = onList.length ? `Add ${cls.name.toLowerCase()} spells` : 'Spells';
+  renderSpellButtons(cls, onList);
 }
 
-// Used by search: open a spell in the side panel (even one that isn't on the class list).
+// Used by search and My spells: open a spell in a popup (even one that isn't on the class list).
 export async function showSpell(app, id) {
-  selectedId = id;
-  await renderSpellList(app, app.view);
-  document.querySelector(`#spell-list [data-spell="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'center' });
-  $('spell-panel').scrollIntoView({ block: 'nearest' });
+  if (!app.data.spells) await app.loadSpells();
+  popSpell(app, id);
 }
