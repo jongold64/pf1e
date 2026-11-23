@@ -1,7 +1,7 @@
 // Magic Items tab: the character's magic items, and every magic item (alphabetical within its category) with a
 // side panel for the item being looked at.
 import { openLines, $, esc, paragraphs, facts, sourceText } from './dom.js';
-import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs, maxCharges, chargedPrice } from './equipment.js';
+import { magicItemStats, magicItemTotals, ownable, formatGp, formatLbs, maxCharges, chargedPrice, priceChange } from './equipment.js';
 import { itemKind, listedCost, craftedItemCost, craftedItemPrice, SPELL_ITEMS } from './crafting.js';
 import { initCrafting, renderCrafting, craftListedItem, openSpellItem, openBuyKind, showBuyCard } from './tab-crafting.js';
 import { renderCustomBuilder, customRowsHtml, initCustomItems } from './tab-custom-items.js';
@@ -163,6 +163,21 @@ function renderAddButtons() {
   if (open === null) showBuyCard(true);
 }
 
+// An owned item with versions (a cloak of resistance +1 to +5, a belt +2 / +4 / +6): a choice of version, each saying
+// what it adds to the price of one (or takes off): bought at market price, crafted at the cost to make. You pay the
+// difference. '' for an item with one version.
+function versionChoice(item, e, i) {
+  const options = item.price_options || [];
+  if (options.length < 2) return '';
+  const each = label => {
+    const p = magicItemStats(item, label).price_gp;
+    return e.crafted ? listedCost(item, label || null, p) : chargedPrice(p, e.startCharges, maxCharges(item));
+  };
+  const now = each(e.option);
+  return `<label class="item-version">Version <select data-item-option="${i}">${options.map(o => `<option value="${esc(o.label)}"${o.label === e.option ? ' selected' : ''}>${esc(o.label)}${priceChange(now, each(o.label))}</option>`).join('')}</select></label>
+    <p class="hint">Beside each version: what it adds to the price${e.qty > 1 ? ' of each one' : ''} (you pay the difference) or takes off.${e.free ? ' This one is marked Free, so a new version costs no gold: untick Free to pay for an upgrade.' : ''}</p>`;
+}
+
 export function renderMyItems(app) {
   const owned = app.state.magicItems;
   const byId = app.data.itemsById;
@@ -215,6 +230,7 @@ export function renderMyItems(app) {
             <button type="button" data-item-qty="${i}" data-step="1" aria-label="One more ${esc(item.name)}">+</button></span>
           <span>Cost ${esc(e.free ? 'free' : each !== null && each !== undefined ? formatGp(each * e.qty) : '—')}${whyButton(`l-${i}`, name)}</span>
           ${freeBox(`data-item-free="${i}"`, e.free)}
+          ${versionChoice(item, e, i)}
           ${maxC ? `<span class="base">Charges
             <button type="button" data-item-charge="${i}" data-step="-1" aria-label="One charge fewer">−</button>
             <span class="value">${e.charges ?? maxC}</span>
@@ -331,6 +347,12 @@ export function initItemsTab(app) {
   // Worn or not, a bonus that applies sometimes, a belt's choice: the same switches as in Active effects (item-rows.js).
   $('my-items-rows').addEventListener('change', e => {
     const t = e.target;
+    // Another version of an owned item (an upgrade): its option changes; charges stay as they are.
+    if (t.dataset.itemOption !== undefined) {
+      const i = Number(t.dataset.itemOption);
+      app.update({ magicItems: app.state.magicItems.map((x, j) => (j === i ? { ...x, option: t.value } : x)) });
+      return;
+    }
     if (t.dataset.itemFree !== undefined) {
       const i = Number(t.dataset.itemFree);
       app.update({ magicItems: app.state.magicItems.map((x, j) => { if (j !== i) return x; const { free, ...rest } = x; return t.checked ? { ...rest, free: true } : rest; }) });

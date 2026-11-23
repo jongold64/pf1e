@@ -1392,3 +1392,4 @@ dialog .pick-heading:first-of-type { margin-top: 0; }
 #drawback-row .slot-buttons, #flaw-rows .slot-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 #flaw-rows .slot-label { min-width: 52px; }
 dialog .pick-column.later button { opacity: 0.7; }
+.line-controls .item-version select { width: auto; min-height: 40px; }
