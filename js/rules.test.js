@@ -2449,6 +2449,19 @@ It does a thing. More.` });
   check('blessings a day: 3 + half the level', [blessingUses(1), blessingUses(10)].join(), '3,8');
 }
 
+// Character details: height and weight.
+{
+  const { heightRow, rollHeightWeight, heightRange, formatHeight, parseHeight, parseWeight } = await import('./details.js');
+  const rows = [{ race: 'dwarf', gender: 'male', base_height: 45, base_weight: 150, dice: '2d4', weight_multiplier: 7 },
+    { race: 'changeling', gender: 'female', base_height: 58, base_weight: 90, dice: '2d4', weight_multiplier: 5 }];
+  const dwarf = heightRow(rows, 'dwarf', 'male');
+  const r = rollHeightWeight(dwarf, () => 0.5); // each d4 rolls 3
+  check('dwarf male: 3 ft. 9 in. + 2d4 (3+3) = 4 ft. 3 in., 150 + 6 × 7 = 192 lbs.', [formatHeight(r.height), r.weight].join(', '), '4 ft. 3 in., 192');
+  check('dwarf male range: 3 ft. 11 in. to 4 ft. 5 in., 164 to 206 lbs.', JSON.stringify(heightRange(dwarf)), '{"height":[47,53],"weight":[164,206]}');
+  check('a race with one row (changeling) uses it for any gender', heightRow(rows, 'changeling', 'male')?.gender, 'female');
+  check('no row for a race without a table', heightRow(rows, 'elf', 'male'), null);
+  check('older typed heights and weights are read', [parseHeight('5 ft. 4 in.'), parseHeight(`5'10"`), parseHeight('6 ft'), parseHeight('tall'), parseWeight('150 lbs.')].join(), '64,70,72,,150');
+}
 // Custom races.
 {
   const { customRaceRecord, tidyCustomRaces } = await import('./custom-races.js');

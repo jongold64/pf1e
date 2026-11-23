@@ -37,6 +37,8 @@ import { FEAT_TYPES, customFeatRecord, customFeatEffects, tidyCustomFeats } from
 import { tidyCustomSkills } from './custom-skills.js';
 import { BAB_KINDS, customClassRecord, tidyCustomClasses } from './custom-classes.js';
 import { RACE_SIZES, RACE_TYPES, RACE_SPEEDS, customRaceRecord, tidyCustomRaces } from './custom-races.js';
+import { GENDERS, heightRow, rollHeightWeight, heightRange, formatHeight, parseHeight, parseWeight } from './details.js';
+import { wheelHtml, startWheels } from './wheel.js';
 import { renderMundaneCraft, initMundaneCraft } from './tab-mundane-craft.js';
 import { allLanguages, languageState, tidyLanguages } from './languages.js';
 import { initSearch } from './search-ui.js';
@@ -442,7 +444,8 @@ function load(saved) {
   state.daily = Object.fromEntries(Object.entries(state.daily && typeof state.daily === 'object' && !Array.isArray(state.daily) ? state.daily : {})
     .filter(([k, v]) => typeof k === 'string' && Number.isInteger(v) && v > 0).map(([k, v]) => [k, Math.min(999, v)]));
   state.notes = typeof state.notes === 'string' ? state.notes.slice(0, 5000) : '';
-  state.details = tidyDetails(state.details);
+  // Player, campaign and homeland: an empty one takes the remembered one (the last typed on this device).
+  state.details = withRemembered(tidyDetails(state.details));
   state.blessings = [...new Set((Array.isArray(state.blessings) ? state.blessings : []).filter(id => data.blessingsById?.has(id)))].slice(0, 2);
   state.deity = typeof state.deity === 'string' && (state.deity === NO_DEITY || data.deitiesById?.has(state.deity)) ? state.deity : '';
   state.alignment = Object.hasOwn(ALIGNMENT_NAMES, state.alignment) ? state.alignment : '';
@@ -3378,16 +3381,57 @@ function deityList(q, align) {
 // Alignment and deity (Build tab, under the race): for every character; the classes' alignment rules (a paladin is
 // lawful good, a monk lawful, a cleric within one step of her deity) with a button to fix it when only one will do.
 // The deity is the same one the Classes tab's picker sets for a cleric, warpriest or inquisitor.
-// Build tab, Character card: race and class at a glance (buttons to their places) and the details boxes. A box saves
-// when you leave it, so the page isn't redrawn while you type.
-const DETAIL_FIELDS = [['player', 'Player'], ['campaign', 'Campaign'], ['gender', 'Gender'], ['age', 'Age'], ['height', 'Height'],
-  ['weight', 'Weight'], ['hair', 'Hair'], ['eyes', 'Eyes'], ['homeland', 'Homeland']];
+// Build tab, Character card: race and class at a glance (buttons to their places) and the details. Player, campaign and
+// homeland are remembered for the next character (this device only); gender is a choice; height and weight are wheels,
+// with Roll on Paizo's Random Height & Weight table for the race (and the male or female row). A text box saves when you
+// leave it, so the page isn't redrawn while you type.
+const TEXT_DETAILS = [['player', 'Player'], ['campaign', 'Campaign'], ['homeland', 'Homeland'], ['age', 'Age'], ['hair', 'Hair'], ['eyes', 'Eyes']];
+const REMEMBERED = ['player', 'campaign', 'homeland'];
+const REMEMBER_KEY = 'pf1e-builder-details';
+function remembered() {
+  try { const r = JSON.parse(localStorage.getItem(REMEMBER_KEY) || '{}'); return r && typeof r === 'object' ? r : {}; } catch { return {}; }
+}
+function remember(details) {
+  try {
+    const r = remembered();
+    for (const k of REMEMBERED) if (details[k]) r[k] = details[k];
+    localStorage.setItem(REMEMBER_KEY, JSON.stringify(r));
+  } catch { /* private window: nothing remembered */ }
+}
 function tidyDetails(saved) {
   const d = saved && typeof saved === 'object' ? saved : {};
   const out = {};
-  for (const [k] of DETAIL_FIELDS) if (typeof d[k] === 'string' && d[k].trim()) out[k] = d[k].slice(0, 80);
+  for (const [k] of TEXT_DETAILS) if (typeof d[k] === 'string' && d[k].trim()) out[k] = d[k].slice(0, 80);
+  if (GENDERS.some(([g]) => g === d.gender)) out.gender = d.gender;
+  // Older saves typed gender: Male/Female become the choice, anything else is Other with its words.
+  else if (typeof d.gender === 'string' && d.gender.trim()) {
+    const g = d.gender.trim().toLowerCase();
+    if (['male', 'm', 'man'].includes(g)) out.gender = 'male';
+    else if (['female', 'f', 'woman'].includes(g)) out.gender = 'female';
+    else { out.gender = 'other'; out.genderText = d.gender.trim().slice(0, 40); }
+  }
+  if (out.gender === 'other' && typeof d.genderText === 'string' && d.genderText.trim()) out.genderText = d.genderText.slice(0, 40);
+  if (['male', 'female'].includes(d.table)) out.table = d.table;
+  // Height in inches and weight in pounds (older saves typed them).
+  const h = Number.isInteger(d.heightIn) ? d.heightIn : parseHeight(d.height);
+  if (h && h >= 12 && h <= 131) out.heightIn = h;
+  const w = Number.isInteger(d.weightLb) ? d.weightLb : parseWeight(d.weight);
+  if (w && w >= 1 && w <= 2000) out.weightLb = w;
   if (typeof d.story === 'string' && d.story.trim()) out.story = d.story.slice(0, 5000);
   return out;
+}
+// Fills an empty player, campaign or homeland from the remembered ones.
+function withRemembered(details) {
+  const r = remembered();
+  const out = { ...details };
+  for (const k of REMEMBERED) if (!out[k] && typeof r[k] === 'string' && r[k].trim()) out[k] = r[k].slice(0, 80);
+  return out;
+}
+// The table row to roll on: the gender's, or for nonbinary and other the row chosen beside Roll.
+function detailsRow() {
+  const d = state.details || {};
+  const g = ['male', 'female'].includes(d.gender) ? d.gender : d.table || 'female';
+  return heightRow(data.heights, state.race, g);
 }
 function renderDetails() {
   const race = data.races.find(r => r.id === state.race);
@@ -3397,20 +3441,76 @@ function renderDetails() {
     <button type="button" data-details-go="classes">${cls ? 'Classes' : 'Choose a class'}</button>
     <button type="button" data-details-go="abilities">Ability scores</button>`;
   const box = $('char-details');
-  const focused = document.activeElement?.closest?.('#char-details') ? document.activeElement.dataset.detail : null;
-  if (focused) return; // don't redraw under the cursor
+  // Redrawn only when something in it changed (not while typing, and not under a wheel being turned).
+  const key = JSON.stringify([state.details, state.race]);
+  if (box.dataset.key === key || document.activeElement?.closest?.('#char-details input, #char-details textarea')) return;
+  box.dataset.key = key;
   const d = state.details || {};
-  box.innerHTML = `<div class="details-grid">${DETAIL_FIELDS.map(([k, l]) => `<label${k === 'homeland' ? ' class="details-wide"' : ''}>${l}
-      <input type="text" data-detail="${k}" value="${esc(d[k] || '')}" maxlength="80" autocomplete="off"></label>`).join('')}</div>
+  const row = detailsRow();
+  const range = row && heightRange(row);
+  const text = ([k, l]) => `<label>${l}<input type="text" data-detail="${k}" value="${esc(d[k] || '')}" maxlength="80" autocomplete="off"
+      ${REMEMBERED.includes(k) ? 'placeholder="Remembered" title="Remembered for your next character"' : ''}></label>`;
+  // Wheels: feet and inches, and pounds (a "—" at the top for not chosen).
+  const h = d.heightIn;
+  const ftVals = [['', '—'], ...Array.from({ length: 10 }, (_, i) => [i + 1, `${i + 1} ft.`])];
+  const inVals = [['', '—'], ...Array.from({ length: 12 }, (_, i) => [i, `${i} in.`])];
+  const wMax = race?.size === 'Large' ? 1500 : race?.size === 'Small' ? 250 : 600;
+  const lbVals = [['', '—'], ...Array.from({ length: wMax / 5 }, (_, i) => [(i + 1) * 5, `${(i + 1) * 5} lbs.`])];
+  // A rolled weight that isn't a multiple of 5 gets its own place in the list.
+  if (d.weightLb && d.weightLb % 5) lbVals.splice(lbVals.findIndex(([v]) => v > d.weightLb), 0, [d.weightLb, `${d.weightLb} lbs.`]);
+  box.innerHTML = `<div class="details-grid">
+      ${TEXT_DETAILS.slice(0, 3).map(text).join('')}
+      <label>Gender <select data-detail="gender"><option value="">—</option>${GENDERS.map(([g, l]) => `<option value="${g}"${d.gender === g ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+      ${d.gender === 'other' ? `<label>Gender, in your words <input type="text" data-detail="genderText" value="${esc(d.genderText || '')}" maxlength="40" autocomplete="off"></label>` : ''}
+      ${TEXT_DETAILS.slice(3).map(text).join('')}
+    </div>
+    <div class="details-body">
+      ${wheelHtml('heightFt', 'Height', ftVals, h ? Math.floor(h / 12) : '')}
+      ${wheelHtml('heightIn', '&nbsp;', inVals, h ? h % 12 : '')}
+      ${wheelHtml('weightLb', 'Weight', lbVals, d.weightLb ?? '')}
+      <div class="details-roll">
+        ${row ? `${!['male', 'female'].includes(d.gender) ? `<label>Roll on the <select data-detail="table">
+            <option value="female"${(d.table || 'female') === 'female' ? ' selected' : ''}>female</option>
+            <option value="male"${d.table === 'male' ? ' selected' : ''}>male</option></select> row</label>` : ''}
+          <button type="button" class="primary" data-details-roll>Roll height and weight</button>
+          <p class="hint">${esc(race.name)}${['male', 'female'].includes(row.gender) ? `, ${row.gender}` : ''}: ${esc(formatHeight(row.base_height))} + ${esc(row.dice)} in.;
+            ${row.base_weight} lbs. + that roll × ${row.weight_multiplier} lbs. (${esc(formatHeight(range.height[0]))} to ${esc(formatHeight(range.height[1]))},
+            ${range.weight[0]} to ${range.weight[1]} lbs.)</p>
+          ${d.rolled ? `<p class="hint">${esc(d.rolled)}</p>` : ''}`
+        : `<p class="hint">${race?.custom ? 'A custom race' : esc(race?.name || 'This race')} has no height and weight table: turn the wheels.</p>`}
+      </div>
+    </div>
     <label>Appearance and backstory <textarea data-detail="story" rows="4" maxlength="5000" placeholder="What they look like, where they come from, what they want">${esc(d.story || '')}</textarea></label>
     <p class="hint">These show on the Character tab.</p>`;
+  startWheels(box, (k, v) => {
+    const cur = state.details || {};
+    const n = v === '' ? null : Number(v);
+    let next = { ...cur, rolled: undefined };
+    if (k === 'weightLb') next.weightLb = n ?? undefined;
+    else {
+      const ft = k === 'heightFt' ? n : cur.heightIn ? Math.floor(cur.heightIn / 12) : null;
+      const inch = k === 'heightIn' ? n : cur.heightIn ? cur.heightIn % 12 : 0;
+      next.heightIn = ft ? ft * 12 + (inch || 0) : undefined;
+    }
+    update({ details: { ...tidyDetails(next), ...(next.rolled ? { rolled: next.rolled } : {}) } });
+  });
 }
 function initDetails() {
   $('details-who').addEventListener('click', e => { const b = e.target.closest('[data-details-go]'); if (b) showTab(b.dataset.detailsGo); });
   $('char-details').addEventListener('change', e => {
     const k = e.target.dataset.detail;
     if (!k) return;
-    update({ details: tidyDetails({ ...state.details, [k]: e.target.value }) });
+    const details = tidyDetails({ ...state.details, [k]: e.target.value });
+    if (REMEMBERED.includes(k)) remember(details);
+    update({ details });
+  });
+  $('char-details').addEventListener('click', e => {
+    if (!e.target.closest('[data-details-roll]')) return;
+    const row = detailsRow();
+    if (!row) return;
+    const r = rollHeightWeight(row);
+    update({ details: { ...tidyDetails({ ...state.details, heightIn: r.height, weightLb: r.weight }),
+      rolled: `Rolled ${row.dice}: ${r.dice.join(' + ')} = ${r.roll}, so ${formatHeight(r.height)} and ${r.weight} lbs.` } });
   });
 }
 
@@ -5642,7 +5742,7 @@ function openResult(type, id) {
 
 async function start() {
   try {
-    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings, data.languages] = await Promise.all([
+    [data.races, data.classes, data.feats, data.armor, data.traits, data.archetypes, data.domains, data.companions, data.drawbacks, data.talents, data.mysteries, data.skillTexts, data.bloodlines, data.classPaths, data.familiars, data.kineticElements, data.eidolons, data.deities, data.blessings, data.languages, data.heights] = await Promise.all([
       fetch('data/races.json').then(r => r.json()),
       fetch('data/classes.json').then(r => r.json()),
       fetch('data/feats.json').then(r => r.json()),
@@ -5664,6 +5764,8 @@ async function start() {
       fetch('data/blessings.json').then(r => r.json()),
       // Languages (build_languages.py); a missing file falls back to the short list in languages.js.
       fetch('data/languages.json').then(r => r.json()).catch(() => []),
+      // Random height and weight (build_heights.py); without it, the wheels have no Roll.
+      fetch('data/heights.json').then(r => r.json()).catch(() => []),
     ]);
     // Third-party books (only offered on a character that ticks the book). A missing file just means none.
     data.thirdParty = await fetch('data/third-party.json').then(r => r.json()).catch(() => ({ books: [], classes: [], talents: [] }));

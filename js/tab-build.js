@@ -401,8 +401,10 @@ export function renderBuild(app, view, parts) {
   const left = ['', card('Actions', actions, ` b-wide${tap('actions')}`), card('Defense', defense, tap('defense'))];
   // About: the details from the Build tab's Character card (only the ones filled in).
   const det = state.details || {};
-  const detRows = [['Player', det.player], ['Campaign', det.campaign], ['Gender', det.gender], ['Age', det.age], ['Height', det.height],
-    ['Weight', det.weight], ['Hair', det.hair], ['Eyes', det.eyes], ['Homeland', det.homeland]].filter(([, v]) => v);
+  const genderWords = det.gender === 'other' ? det.genderText || 'Other' : det.gender ? det.gender[0].toUpperCase() + det.gender.slice(1) : '';
+  const detRows = [['Player', det.player], ['Campaign', det.campaign], ['Gender', genderWords], ['Age', det.age],
+    ['Height', det.heightIn ? `${Math.floor(det.heightIn / 12)} ft. ${det.heightIn % 12} in.` : ''], ['Weight', det.weightLb ? `${det.weightLb} lbs.` : ''],
+    ['Hair', det.hair], ['Eyes', det.eyes], ['Homeland', det.homeland]].filter(([, v]) => v);
   const aboutCard = detRows.length || det.story ? `<section class="b-card b-details"><h3>About</h3>
     ${detRows.length ? `<dl>${detRows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
     ${det.story ? paragraphs(det.story) : ''}</section>` : '';

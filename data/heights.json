@@ -1,0 +1,659 @@
+[
+  {
+    "race": "dwarf",
+    "gender": "male",
+    "base_height": 45,
+    "base_weight": 150,
+    "dice": "2d4",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "dwarf",
+    "gender": "female",
+    "base_height": 43,
+    "base_weight": 120,
+    "dice": "2d4",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "elf",
+    "gender": "male",
+    "base_height": 64,
+    "base_weight": 100,
+    "dice": "2d8",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "elf",
+    "gender": "female",
+    "base_height": 64,
+    "base_weight": 90,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "gnome",
+    "gender": "male",
+    "base_height": 36,
+    "base_weight": 35,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "gnome",
+    "gender": "female",
+    "base_height": 34,
+    "base_weight": 30,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "half-elf",
+    "gender": "male",
+    "base_height": 62,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "half-elf",
+    "gender": "female",
+    "base_height": 60,
+    "base_weight": 90,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "half-orc",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 150,
+    "dice": "2d12",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "half-orc",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 110,
+    "dice": "2d12",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "halfling",
+    "gender": "male",
+    "base_height": 32,
+    "base_weight": 30,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "halfling",
+    "gender": "female",
+    "base_height": 30,
+    "base_weight": 25,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "human",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "human",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "aasimar",
+    "gender": "male",
+    "base_height": 62,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "aasimar",
+    "gender": "female",
+    "base_height": 60,
+    "base_weight": 90,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "catfolk",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "catfolk",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "dhampir",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "dhampir",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "drow",
+    "gender": "male",
+    "base_height": 64,
+    "base_weight": 90,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "drow",
+    "gender": "female",
+    "base_height": 64,
+    "base_weight": 100,
+    "dice": "2d8",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "fetchling",
+    "gender": "male",
+    "base_height": 64,
+    "base_weight": 90,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "fetchling",
+    "gender": "female",
+    "base_height": 62,
+    "base_weight": 80,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "goblin",
+    "gender": "male",
+    "base_height": 32,
+    "base_weight": 30,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "goblin",
+    "gender": "female",
+    "base_height": 30,
+    "base_weight": 25,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "hobgoblin",
+    "gender": "male",
+    "base_height": 50,
+    "base_weight": 165,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "hobgoblin",
+    "gender": "female",
+    "base_height": 48,
+    "base_weight": 145,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "ifrit",
+    "gender": "male",
+    "base_height": 62,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "ifrit",
+    "gender": "female",
+    "base_height": 60,
+    "base_weight": 90,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "kobold",
+    "gender": "male",
+    "base_height": 30,
+    "base_weight": 25,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "kobold",
+    "gender": "female",
+    "base_height": 28,
+    "base_weight": 20,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "orc",
+    "gender": "male",
+    "base_height": 61,
+    "base_weight": 160,
+    "dice": "2d12",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "orc",
+    "gender": "female",
+    "base_height": 57,
+    "base_weight": 120,
+    "dice": "2d12",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "oread",
+    "gender": "male",
+    "base_height": 48,
+    "base_weight": 150,
+    "dice": "2d6",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "oread",
+    "gender": "female",
+    "base_height": 45,
+    "base_weight": 120,
+    "dice": "2d6",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "ratfolk",
+    "gender": "male",
+    "base_height": 43,
+    "base_weight": 65,
+    "dice": "2d4",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "ratfolk",
+    "gender": "female",
+    "base_height": 40,
+    "base_weight": 50,
+    "dice": "2d4",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "sylph",
+    "gender": "male",
+    "base_height": 62,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "sylph",
+    "gender": "female",
+    "base_height": 60,
+    "base_weight": 90,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "tengu",
+    "gender": "male",
+    "base_height": 48,
+    "base_weight": 65,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "tengu",
+    "gender": "female",
+    "base_height": 46,
+    "base_weight": 55,
+    "dice": "2d6",
+    "weight_multiplier": 3,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "tiefling",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "tiefling",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "undine",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "undine",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "changeling",
+    "gender": "female",
+    "base_height": 50,
+    "base_weight": 85,
+    "dice": "2d4",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "duergar",
+    "gender": "male",
+    "base_height": 45,
+    "base_weight": 150,
+    "dice": "2d4",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "duergar",
+    "gender": "female",
+    "base_height": 43,
+    "base_weight": 120,
+    "dice": "2d4",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "gillman",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "gillman",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "grippli",
+    "gender": "male",
+    "base_height": 19,
+    "base_weight": 25,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "grippli",
+    "gender": "female",
+    "base_height": 17,
+    "base_weight": 20,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "kitsune",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 100,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "kitsune",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "merfolk",
+    "gender": "male",
+    "base_height": 70,
+    "base_weight": 145,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "merfolk",
+    "gender": "female",
+    "base_height": 68,
+    "base_weight": 135,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "nagaji",
+    "gender": "male",
+    "base_height": 69,
+    "base_weight": 180,
+    "dice": "2d10",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "nagaji",
+    "gender": "female",
+    "base_height": 66,
+    "base_weight": 160,
+    "dice": "2d10",
+    "weight_multiplier": 7,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "samsaran",
+    "gender": "male",
+    "base_height": 64,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "samsaran",
+    "gender": "female",
+    "base_height": 66,
+    "base_weight": 110,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "strix",
+    "gender": "male",
+    "base_height": 64,
+    "base_weight": 125,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "strix",
+    "gender": "female",
+    "base_height": 62,
+    "base_weight": 115,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "suli",
+    "gender": "male",
+    "base_height": 58,
+    "base_weight": 120,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "suli",
+    "gender": "female",
+    "base_height": 53,
+    "base_weight": 85,
+    "dice": "2d10",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "svirfneblin",
+    "gender": "male",
+    "base_height": 36,
+    "base_weight": 35,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "svirfneblin",
+    "gender": "female",
+    "base_height": 34,
+    "base_weight": 30,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "vanara",
+    "gender": "male",
+    "base_height": 56,
+    "base_weight": 105,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "vanara",
+    "gender": "female",
+    "base_height": 50,
+    "base_weight": 90,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "vishkanya",
+    "gender": "male",
+    "base_height": 63,
+    "base_weight": 85,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "vishkanya",
+    "gender": "female",
+    "base_height": 61,
+    "base_weight": 75,
+    "dice": "2d8",
+    "weight_multiplier": 5,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "wayang",
+    "gender": "male",
+    "base_height": 36,
+    "base_weight": 35,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  },
+  {
+    "race": "wayang",
+    "gender": "female",
+    "base_height": 34,
+    "base_weight": 30,
+    "dice": "2d4",
+    "weight_multiplier": 1,
+    "source": "Advanced Race Guide"
+  }
+]

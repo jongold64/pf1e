@@ -1365,3 +1365,19 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .b-details dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0 0 6px; }
 .b-details dt { color: var(--muted, #666); }
 .b-details dd { margin: 0; }
+
+/* Selection wheels (wheel.js): three rows showing, the middle one chosen. */
+.details-body { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 16px; margin: 6px 0 12px; }
+.wheel-wrap { display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+.wheel { position: relative; height: 120px; width: 104px; overflow-y: auto; scroll-snap-type: y mandatory; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--bg); -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  background-image: linear-gradient(transparent 40px, color-mix(in srgb, var(--accent) 14%, transparent) 40px,
+    color-mix(in srgb, var(--accent) 14%, transparent) 80px, transparent 80px); }
+.wheel::-webkit-scrollbar { display: none; }
+.wheel ul { list-style: none; margin: 0; padding: 40px 0; }
+.wheel li { height: 40px; line-height: 40px; text-align: center; scroll-snap-align: center; font-size: 1.05rem; color: var(--muted, #777); cursor: pointer; }
+.wheel li[aria-selected] { color: var(--text); font-weight: 700; }
+.details-roll { flex: 1 1 260px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-top: 18px; }
+.details-roll .hint { margin: 0; }
+.details-roll label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+#char-details .details-roll select { width: auto; min-height: 40px; }
