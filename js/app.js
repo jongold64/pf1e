@@ -4319,7 +4319,7 @@ function render() {
       <span class="yn">${on ? 'Y' : 'N'}</span></button>`;
   }).join('');
   $('third-party-note').textContent = tpBooks.filter(b => state.books[b.id]).map(b => b.note).join(' ');
-  // Game options (folded): what's switched on, in one line.
+  // House rules (folded): what's switched on, in one line.
   const rulesOn = HOUSE_RULES.filter(([k]) => state.houseRules[k]).map(([, l]) => l);
   const booksOn = tpBooks.filter(b => state.houseRules.thirdParty && state.books[b.id]).map(b => b.name || b.title || b.id);
   $('game-options-summary').textContent = [rulesOn.length ? `House rules: ${rulesOn.join(', ')}` : 'No house rules on', ...(booksOn.length ? [`Books: ${booksOn.join(', ')}`] : [])].join(' · ');
@@ -5162,7 +5162,7 @@ function choiceSelect(c) {
 }
 
 // Flaws card (Flaws house rule): two lines to type a flaw and its penalty; each named flaw adds a bonus feat slot.
-// Hero points (Action Points house rule), in the Build tab's Game options: how many, and the antihero choice.
+// Hero points (Action Points house rule), in the Build tab's House rules: how many, and the antihero choice.
 function renderHeroPoints() {
   const box = $('hero-points');
   box.hidden = !state.houseRules.actionPoints;

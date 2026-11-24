@@ -678,7 +678,7 @@ ol.features li > b { min-width: 1.4em; padding-top: 5px; }
 #companion details summary { cursor: pointer; padding: 4px 0; }
 #companion .defense-row small { display: block; color: var(--muted); font-size: 0.8rem; }
 
-/* Build tab: the Race card, the Character card and Game options, each the full width. */
+/* Build tab: the Race card, the Character card and House rules, each the full width. */
 .abilities-card table.abilities th, .abilities-card table.abilities td { padding: 6px 1px; }
 .abilities-card .abilities .base { gap: 4px; }
 .abilities-card .abilities button { width: 30px; }
@@ -1343,7 +1343,7 @@ dialog.amount-dialog { margin: 6vh auto auto; }
 .b-banner-fx .b-chips li { background: var(--bg, #fff); }
 .b-banner .b-banner-fx .b-addfx { margin-left: auto; min-height: 36px; padding: 0 12px; }
 
-/* Build tab: the Character card (who, faith, details) and the folded Game options card. */
+/* Build tab: the Character card (who, faith, details) and the folded House rules card. */
 .details-who { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 4px 0 10px; font-size: 1.05rem; }
 .details-who .muted { font-size: 0.95rem; }
 .char-details .details-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 12px; margin: 10px 0; }
